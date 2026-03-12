@@ -3,14 +3,13 @@ import { log } from '@unchainedshop/logger';
 import {
   actionValidators,
   QuotationManagementSchema,
-  QuotationManagementZodSchema,
   type QuotationManagementParams,
   type ActionName,
 } from './schemas.ts';
 import actionHandlers from './handlers/index.ts';
 import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.ts';
 
-export { QuotationManagementSchema, QuotationManagementZodSchema };
+export { QuotationManagementSchema };
 export type { QuotationManagementParams };
 
 export async function quotationManagement(context: Context, params: QuotationManagementParams) {

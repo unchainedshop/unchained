@@ -3,14 +3,13 @@ import { log } from '@unchainedshop/logger';
 import {
   actionValidators,
   LocalizationManagementSchema,
-  LocalizationManagementZodSchema,
   type LocalizationManagementParams,
   type ActionName,
 } from './schemas.ts';
 import actionHandlers from './handlers/index.ts';
 import { createMcpErrorResponse, createMcpResponse } from '../../utils/sharedSchemas.ts';
 
-export { LocalizationManagementSchema, LocalizationManagementZodSchema };
+export { LocalizationManagementSchema };
 export type { LocalizationManagementParams };
 
 export async function localizationManagement(context: Context, params: LocalizationManagementParams) {

@@ -7,31 +7,25 @@ export default function buildTextMap<T extends { locale?: string }[]>(
   texts: Readonly<T>,
   buildId: (item: ArrayElement<T>) => string,
 ) {
-  const textsMap: Record<string, ArrayElement<T>> = {}; // Added type for textsMap
-  const localeMapKeys = Object.keys(localeMap);
+  const textsMap: Record<string, ArrayElement<T>> = {};
 
   // eslint-disable-next-line
-  for (let i = 0; i < localeMapKeys.length; i++) {
-    const originLocale = localeMapKeys[i];
-    const localesForText = localeMap[originLocale];
+  for (let j = 0; j < texts.length; j++) {
+    const text = texts[j];
+    if (!text.locale) continue;
+    const localesForText = localeMap[text.locale];
+    if (!localesForText) continue;
+
+    const idPart = buildId(text as ArrayElement<T>);
 
     // eslint-disable-next-line
-    for (let j = 0; j < texts.length; j++) {
-      const text = texts[j];
-      if (originLocale !== text.locale) continue;
-
-      const idPart = buildId(text as ArrayElement<T>); // Ensured correct type for buildId argument
-
-      // eslint-disable-next-line
-      for (let k = 0; k < localesForText.length; k++) {
-        const locale = localesForText[k];
-        const key = locale + idPart;
-        if (textsMap[key] && locale !== text.locale) {
-          // If the key already exists and the locale is a fallback, skip this text
-          continue;
-        }
-        textsMap[key] = text as ArrayElement<T>; // Ensured correct type for assignment
+    for (let k = 0; k < localesForText.length; k++) {
+      const locale = localesForText[k];
+      const key = locale + idPart;
+      if (textsMap[key] && locale !== text.locale) {
+        continue;
       }
+      textsMap[key] = text as ArrayElement<T>;
     }
   }
   return textsMap;

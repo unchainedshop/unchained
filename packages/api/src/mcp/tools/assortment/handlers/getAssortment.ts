@@ -7,7 +7,7 @@ export default async function getAssortment(context: Context, params: Params<'GE
   const { modules } = context;
   const { assortmentId, slug } = params;
 
-  let query: any = {};
+  let query: { assortmentId?: string; slug?: string };
   if (assortmentId) query = { assortmentId };
   else if (slug) query = { slug };
   else throw new Error('Either assortmentId or slug must be provided');

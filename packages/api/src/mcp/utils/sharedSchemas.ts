@@ -1,77 +1,111 @@
-import { z } from 'zod';
+import { z } from 'zod/v4-mini';
 import { SortDirection } from '@unchainedshop/utils';
 
 const sortDirectionKeys = Object.keys(SortDirection) as [string, ...string[]];
 
 export const PaginationSchema = {
-  limit: z.number().int().min(1).max(100).optional().describe('Maximum number of results to return'),
-  offset: z.number().int().min(0).optional().describe('Number of results to skip for pagination'),
+  limit: z
+    .optional(z.int().check(z.gte(1), z.lte(100)))
+    .check(z.describe('Maximum number of results to return')),
+  offset: z
+    .optional(z.int().check(z.gte(0)))
+    .check(z.describe('Number of results to skip for pagination')),
 };
 
 export const SortingSchema = {
   sort: z
-    .array(
-      z.object({
-        key: z.string().describe('Field to sort by'),
-        value: z.enum(sortDirectionKeys).describe('Sort direction (ASC/DESC)'),
-      }),
+    .optional(
+      z.array(
+        z.object({
+          key: z.string().check(z.describe('Field to sort by')),
+          value: z.enum(sortDirectionKeys).check(z.describe('Sort direction (ASC/DESC)')),
+        }),
+      ),
     )
-    .optional()
-    .describe('Array of sort options'),
+    .check(z.describe('Array of sort options')),
 };
 
 export const SearchSchema = {
-  queryString: z.string().optional().describe('Search query string for text-based filtering'),
+  queryString: z.optional(z.string()).check(z.describe('Search query string for text-based filtering')),
   includeInactive: z
-    .boolean()
-    .optional()
-    .default(true)
-    .describe('Whether to include inactive/disabled items'),
+    ._default(z.boolean(), true)
+    .check(z.describe('Whether to include inactive/disabled items')),
 };
 
 export const LocalizationTextSchema = z.object({
   locale: z
     .string()
-    .min(2)
-    .describe(
-      'Locale code (e.g., "en-US", "de-CH"). Must match an available language from the shop languages resource. If the language does not exist, prompt the user to add it first. NEVER add it automatically unless explicitly specified by the user.',
+    .check(
+      z.minLength(2),
+      z.describe(
+        'Locale code (e.g., "en-US", "de-CH"). Must match an available language from the shop languages resource. If the language does not exist, prompt the user to add it first. NEVER add it automatically unless explicitly specified by the user.',
+      ),
     ),
-  title: z.string().min(1).describe('Localized title'),
-  subtitle: z.string().optional().describe('Optional localized subtitle'),
+  title: z.string().check(z.minLength(1), z.describe('Localized title')),
+  subtitle: z.optional(z.string()).check(z.describe('Optional localized subtitle')),
 });
 
 export const DateRangeSchema = {
-  from: z.string().datetime().optional().describe('Start date in ISO format'),
-  to: z.string().datetime().optional().describe('End date in ISO format'),
+  from: z.optional(z.iso.datetime()).check(z.describe('Start date in ISO format')),
+  to: z.optional(z.iso.datetime()).check(z.describe('End date in ISO format')),
 };
 
 export const OrderFilterSchema = {
-  paymentProviderIds: z.array(z.string()).optional().describe('Filter by payment provider IDs'),
-  deliveryProviderIds: z.array(z.string()).optional().describe('Filter by delivery provider IDs'),
+  paymentProviderIds: z
+    .optional(z.array(z.string()))
+    .check(z.describe('Filter by payment provider IDs')),
+  deliveryProviderIds: z
+    .optional(z.array(z.string()))
+    .check(z.describe('Filter by delivery provider IDs')),
   status: z
-    .array(z.enum(['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED']))
-    .optional()
-    .describe('Filter by order statuses'),
+    .optional(z.array(z.enum(['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED'])))
+    .check(z.describe('Filter by order statuses')),
 };
 
 export const EntityIdSchema = {
-  id: z.string().min(1).optional().describe('Entity ID'),
+  id: z.optional(z.string().check(z.minLength(1))).check(z.describe('Entity ID')),
 };
 
 export const MediaUrlSchema = {
-  url: z.string().url().optional().describe('Media URL'),
+  url: z.optional(z.url()).check(z.describe('Media URL')),
 };
 
 export function createManagementSchema<T extends readonly string[]>(
   actions: T,
-  additionalFields: Record<string, z.ZodType> = {},
+  additionalFields: Record<string, z.core.$ZodType> = {},
 ) {
   return {
-    action: z.enum(actions as any).describe(`Management action: ${actions.join(', ')}`),
+    action: z.enum(actions as any).check(z.describe(`Management action: ${actions.join(', ')}`)),
     ...PaginationSchema,
     ...SortingSchema,
     ...SearchSchema,
     ...additionalFields,
+  };
+}
+
+export interface ManagementParams {
+  action: string;
+  [key: string]: unknown;
+}
+
+type ManagementSchemaShape = { action: z.core.$ZodType<string> } & Record<string, z.core.$ZodType>;
+
+export function createManagementSchemaFromValidators(
+  validators: Record<string, { shape: Record<string, z.core.$ZodType> }>,
+): ManagementSchemaShape {
+  const merged: Record<string, z.core.$ZodType> = {};
+  for (const validator of Object.values(validators)) {
+    for (const [key, schema] of Object.entries<z.core.$ZodType>(validator.shape)) {
+      if (!merged[key]) {
+        merged[key] = z.optional(schema);
+      }
+    }
+  }
+  return {
+    action: z
+      .enum(Object.keys(validators) as [string, ...string[]])
+      .check(z.describe('Action to perform')),
+    ...merged,
   };
 }
 

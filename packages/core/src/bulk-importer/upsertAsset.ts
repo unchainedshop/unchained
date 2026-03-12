@@ -1,16 +1,16 @@
 import { createLogger } from '@unchainedshop/logger';
 import type { Modules } from '../modules.ts';
 import type { Services } from '../services/index.ts';
-import { z } from 'zod';
+import { z } from 'zod/v4-mini';
 
 const logger = createLogger('unchained:bulk-import');
 
 export const AssetSchema = z.object({
-  _id: z.string().optional(),
+  _id: z.optional(z.string()),
   url: z.string(),
-  meta: z.record(z.any(), z.any()).optional(),
+  meta: z.optional(z.record(z.any(), z.any())),
   fileName: z.string(),
-  headers: z.record(z.string(), z.any()).optional(),
+  headers: z.optional(z.record(z.string(), z.any())),
 });
 
 const upsertAsset = async (

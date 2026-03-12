@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod/v4-mini';
 import mime from 'mime/lite';
 import type * as aiTypes from 'ai';
 import { createLogger } from '@unchainedshop/logger';
@@ -17,23 +17,24 @@ try {
 }
 
 const inputSchema = z.object({
-  prompt: z.string().describe('The prompt to generate the image from'),
+  prompt: z.string().check(z.describe('The prompt to generate the image from')),
   size: z
-    .enum([
-      '512x512',
-      '768x768',
-      '1024x1024',
-      '512x896',
-      '640x1120',
-      '768x1344',
-      '1024x1792',
-      '896x512',
-      '1120x640',
-      '1344x768',
-      '1792x1024',
-    ])
-    .optional()
-    .describe('The size of the image (default is 1024x1024).'),
+    .optional(
+      z.enum([
+        '512x512',
+        '768x768',
+        '1024x1024',
+        '512x896',
+        '640x1120',
+        '768x1344',
+        '1024x1792',
+        '896x512',
+        '1120x640',
+        '1344x768',
+        '1792x1024',
+      ]),
+    )
+    .check(z.describe('The size of the image (default is 1024x1024).')),
 });
 
 const generateImageHandler =

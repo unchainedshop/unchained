@@ -4,8 +4,7 @@ import { HalfPriceManual } from './discount-half-price-manual.ts';
 
 describe('HalfPriceManual', () => {
   it('isManualAdditionAllowed', async () => {
-    let x;
-    assert.strictEqual(await HalfPriceManual.isManualAdditionAllowed(x), true);
+    assert.strictEqual(await HalfPriceManual.isManualAdditionAllowed(undefined), true);
   });
 
   it('isManualRemovalAllowed', async () => {

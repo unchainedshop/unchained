@@ -1,14 +1,14 @@
-import { z } from 'zod';
+import { z } from 'zod/v4-mini';
 import type { AssortmentProduct } from '@unchainedshop/core-assortments';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.ts';
 import type { Modules } from '../../../modules.ts';
 
 export const AssortmentProductSchema = z.object({
-  _id: z.string().optional(),
+  _id: z.optional(z.string()),
   productId: z.string(),
-  tags: z.array(z.string()).optional(),
-  sortKey: z.number().optional(),
-  meta: z.record(z.any(), z.any()).optional(),
+  tags: z.optional(z.array(z.string())),
+  sortKey: z.optional(z.number()),
+  meta: z.optional(z.record(z.any(), z.any())),
 });
 
 const upsert = async (

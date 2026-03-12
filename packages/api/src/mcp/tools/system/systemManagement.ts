@@ -25,5 +25,5 @@ export async function systemManagement(context: Context, params: SystemManagemen
   }
 }
 
-export { SystemManagementSchema, SystemManagementZodSchema } from './schemas.ts';
+export { SystemManagementSchema } from './schemas.ts';
 export type { SystemManagementParams } from './schemas.ts';

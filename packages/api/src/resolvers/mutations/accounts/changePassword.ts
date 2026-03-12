@@ -19,16 +19,12 @@ export default async function changePassword(
     (await modules.users.verifyPassword(user!.services?.password, params.oldPassword));
   if (!isValidCurrentPassword) throw new InvalidCredentialsError({});
 
-  let success = false;
-
   try {
     await modules.users.setPassword(user!._id, params.newPassword);
-    success = true;
   } catch (e) {
-    success = false;
     if (e.cause === 'PASSWORD_INVALID') throw new PasswordInvalidError({ userId });
     else throw e;
   }
 
-  return { success };
+  return { success: true };
 }

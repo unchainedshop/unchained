@@ -4,8 +4,7 @@ import { HundredOff } from './discount-100-off.ts';
 
 describe('HundredOff', () => {
   it('isManualAdditionAllowed', async () => {
-    let x;
-    assert.strictEqual(await HundredOff.isManualAdditionAllowed(x), true);
+    assert.strictEqual(await HundredOff.isManualAdditionAllowed(undefined), true);
   });
   it('isManualRemovalAllowed', async () => {
     assert.strictEqual(await HundredOff.isManualRemovalAllowed(), true);

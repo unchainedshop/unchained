@@ -3,7 +3,6 @@ import type * as mcpSDKClientTypes from '@modelcontextprotocol/sdk/types.js';
 import type * as mcpSDKServerTypes from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { Context } from '../context.ts';
 import type { Request, RequestHandler } from 'express';
-import initMCPServer from '../mcp/index.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api:mcp');
@@ -56,6 +55,7 @@ const handlePostRequest: RequestHandler = async (req: Request & { unchainedConte
 
     const roles = req.unchainedContext.user?.roles || [];
 
+    const { default: initMCPServer } = await import('../mcp/index.ts');
     const server = initMCPServer(
       new McpServer({
         name: 'Unchained MCP Server',

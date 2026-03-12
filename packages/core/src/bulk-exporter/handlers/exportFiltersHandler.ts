@@ -1,13 +1,13 @@
 import type { UnchainedCore } from '../../core-index.ts';
 import generateCSVFileAndURL from './generateCSVFileAndUrl.ts';
-import { z } from 'zod';
+import { z } from 'zod/v4-mini';
 import { EXPORTS_DIRECTORY } from '../createBulkExporter.ts';
 
 export const FilterExportPayloadSchema = z.object({
-  exportFilters: z.boolean().optional(),
-  exportFilterOptions: z.boolean().optional(),
-  queryString: z.string().optional(),
-  includeInactive: z.boolean().optional(),
+  exportFilters: z.optional(z.boolean()),
+  exportFilterOptions: z.optional(z.boolean()),
+  queryString: z.optional(z.string()),
+  includeInactive: z.optional(z.boolean()),
 });
 
 export interface FilterExportParams {

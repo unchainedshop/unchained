@@ -3,14 +3,13 @@ import { log } from '@unchainedshop/logger';
 import {
   actionValidators,
   FilterManagementSchema,
-  FilterManagementZodSchema,
   type FilterManagementParams,
   type ActionName,
 } from './schemas.ts';
 import actionHandlers from './handlers/index.ts';
 import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.ts';
 
-export { FilterManagementSchema, FilterManagementZodSchema };
+export { FilterManagementSchema };
 export type { FilterManagementParams };
 
 export async function filterManagement(context: Context, params: FilterManagementParams) {

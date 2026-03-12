@@ -1,34 +1,34 @@
-import { z } from 'zod';
+import { z } from 'zod/v4-mini';
 import type { ProductVariation } from '@unchainedshop/core-products';
 import type { Modules } from '../../../modules.ts';
 
 const ProductVariationOptionSchema = z.object({
   value: z.string(),
-  content: z
-    .record(
+  content: z.optional(
+    z.record(
       z.string(), // locale
       z.object({
-        title: z.string().optional(),
-        subtitle: z.string().optional(),
+        title: z.optional(z.string()),
+        subtitle: z.optional(z.string()),
       }),
-    )
-    .optional(),
+    ),
+  ),
 });
 
 export const ProductVariationSchema = z.object({
-  _id: z.string().optional(),
+  _id: z.optional(z.string()),
   key: z.string(),
   type: z.string(),
   options: z.array(ProductVariationOptionSchema),
-  content: z
-    .record(
+  content: z.optional(
+    z.record(
       z.string(), // locale
       z.object({
-        title: z.string().optional(),
-        subtitle: z.string().optional(),
+        title: z.optional(z.string()),
+        subtitle: z.optional(z.string()),
       }),
-    )
-    .optional(),
+    ),
+  ),
 });
 
 const upsert = async (

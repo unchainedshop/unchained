@@ -3,14 +3,13 @@ import { log } from '@unchainedshop/logger';
 import {
   actionValidators,
   ProductManagementSchema,
-  ProductManagementZodSchema,
   type ProductManagementParams,
   type ActionName,
 } from './schemas.ts';
 import { actionHandlers } from './handlers/index.ts';
 import { createMcpErrorResponse, createMcpResponse } from '../../utils/sharedSchemas.ts';
 
-export { ProductManagementSchema, ProductManagementZodSchema };
+export { ProductManagementSchema };
 export type { ProductManagementParams };
 
 export async function productManagement(context: Context, params: ProductManagementParams) {

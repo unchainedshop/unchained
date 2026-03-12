@@ -7,7 +7,7 @@ export default async function getProduct(context: Context, params: Params<'GET'>
   const { modules } = context;
   const { productId, slug, sku } = params;
 
-  let query: any = {};
+  let query: { productId: string } | { slug: string } | { sku: string };
   if (productId) query = { productId };
   else if (slug) query = { slug };
   else if (sku) query = { sku };

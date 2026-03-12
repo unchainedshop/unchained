@@ -1,23 +1,23 @@
-import { z } from 'zod';
+import { z } from 'zod/v4-mini';
 import type { Services } from '../../../services/index.ts';
 import type { Modules } from '../../../modules.ts';
 import upsertAsset, { AssetSchema } from '../../upsertAsset.ts';
 import type { AssortmentMediaType } from '@unchainedshop/core-assortments';
 
 export const MediaSchema = z.object({
-  _id: z.string().optional(),
+  _id: z.optional(z.string()),
   asset: AssetSchema,
-  content: z
-    .record(
+  content: z.optional(
+    z.record(
       z.string(), // locale
       z.object({
-        title: z.string().optional(),
-        subtitle: z.string().optional(),
+        title: z.optional(z.string()),
+        subtitle: z.optional(z.string()),
       }),
-    )
-    .optional(),
-  tags: z.array(z.string()).optional(),
-  sortKey: z.number().optional(),
+    ),
+  ),
+  tags: z.optional(z.array(z.string())),
+  sortKey: z.optional(z.number()),
 });
 
 const upsertMediaObject = async (media, unchainedAPI: { modules: Modules; services: Services }) => {

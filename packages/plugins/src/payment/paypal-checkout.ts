@@ -116,7 +116,7 @@ const PaypalCheckout: IPaymentAdapter = {
           throw new Error(`Payment mismatch`);
         } catch (e) {
           logger.warn(e);
-          throw new Error(e);
+          throw new Error((e as Error).message, { cause: e });
         }
       },
     };

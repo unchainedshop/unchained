@@ -3,14 +3,13 @@ import { log } from '@unchainedshop/logger';
 import {
   actionValidators,
   ProviderManagementSchema,
-  ProviderManagementZodSchema,
   type ProviderManagementParams,
   type ActionName,
 } from './schemas.ts';
 import actionHandlers from './handlers/index.ts';
 import { createMcpErrorResponse, createMcpResponse } from '../../utils/sharedSchemas.ts';
 
-export { ProviderManagementSchema, ProviderManagementZodSchema };
+export { ProviderManagementSchema };
 export type { ProviderManagementParams };
 
 export async function providerManagement(context: Context, params: ProviderManagementParams) {

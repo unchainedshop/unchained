@@ -2,7 +2,7 @@ import exportProductsHandler from './handlers/exportProductsHandler.ts';
 import exportAssortmentsHandler from './handlers/exportAssortmentsHandler.ts';
 import exportFiltersHandler from './handlers/exportFiltersHandler.ts';
 import { createLogger } from '@unchainedshop/logger';
-import { z } from 'zod';
+import { z } from 'zod/v4-mini';
 import type { CSVFileResult } from './handlers/generateCSVFileAndUrl.ts';
 import exportUsersHandler from './handlers/exportUsersHandler.ts';
 
@@ -19,7 +19,7 @@ export interface BulkExportOperationResult {
 }
 
 export interface BulkExportHandler<T = unknown> {
-  payloadSchema?: z.ZodObject<z.ZodRawShape>;
+  payloadSchema?: z.ZodMiniObject;
   (params: Record<string, unknown>, locales: string[], unchainedAPI: T): Promise<ExportFiles>;
 }
 
@@ -54,7 +54,7 @@ export default function createBulkExporterFactory(bulkExporterOptions?: BulkExpo
             exportHandler.payloadSchema.parse(payload);
           }
         } catch (e) {
-          throw new Error(`${type}: ${(e as Error).message}`);
+          throw new Error(`${type}: ${(e as Error).message}`, { cause: e });
         }
       },
 

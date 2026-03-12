@@ -1,16 +1,16 @@
 import type { UnchainedCore } from '../../core-index.ts';
 import generateCSVFileAndURL from './generateCSVFileAndUrl.ts';
-import { z } from 'zod';
+import { z } from 'zod/v4-mini';
 import { EXPORTS_DIRECTORY } from '../createBulkExporter.ts';
 
 export const UserExportPayloadSchema = z.object({
-  exportReviews: z.boolean().optional(),
-  exportOrders: z.boolean().optional(),
-  exportBookmarks: z.boolean().optional(),
-  exportEvents: z.boolean().optional(),
-  exportQuotations: z.boolean().optional(),
-  exportEnrollments: z.boolean().optional(),
-  userId: z.string().optional(),
+  exportReviews: z.optional(z.boolean()),
+  exportOrders: z.optional(z.boolean()),
+  exportBookmarks: z.optional(z.boolean()),
+  exportEvents: z.optional(z.boolean()),
+  exportQuotations: z.optional(z.boolean()),
+  exportEnrollments: z.optional(z.boolean()),
+  userId: z.optional(z.string()),
 });
 
 export interface UserExportParams {

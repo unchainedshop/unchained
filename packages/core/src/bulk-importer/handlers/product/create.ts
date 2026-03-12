@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod/v4-mini';
 import type { Modules } from '../../../modules.ts';
 import type { Services } from '../../../services/index.ts';
 import upsertVariations, { ProductVariationSchema } from './upsertVariations.ts';
@@ -10,39 +10,39 @@ import { ProductType } from '@unchainedshop/core-products';
 export const ProductCreateSpecificationSchema = z.object({
   type: z.enum(ProductType),
   sequence: z.number(),
-  status: z.string().optional().nullable(), // or null!
-  published: z.string().datetime().optional().nullable(), // or null!
-  tags: z.array(z.string()).optional(),
-  commerce: z
-    .object({
+  status: z.nullish(z.string()), // or null!
+  published: z.nullish(z.iso.datetime()), // or null!
+  tags: z.optional(z.array(z.string())),
+  commerce: z.optional(
+    z.object({
       pricing: z.array(
         z.object({
           amount: z.number(),
-          maxQuantity: z.number().optional(),
-          isTaxable: z.boolean().optional(),
-          isNetPrice: z.boolean().optional(),
-          currencyCode: z.string().min(1, 'currencyCode is required'),
-          countryCode: z.string().min(1, 'countryCode is required'),
+          maxQuantity: z.optional(z.number()),
+          isTaxable: z.optional(z.boolean()),
+          isNetPrice: z.optional(z.boolean()),
+          currencyCode: z.string().check(z.minLength(1, 'currencyCode is required')),
+          countryCode: z.string().check(z.minLength(1, 'countryCode is required')),
         }),
       ),
-    })
-    .optional(),
-  warehousing: z
-    .object({
-      sku: z.string().optional(),
-      baseUnit: z.string().optional(),
-    })
-    .optional(),
-  supply: z
-    .object({
-      weightInGram: z.number().optional(),
-      heightInMillimeters: z.number().optional(),
-      lengthInMillimeters: z.number().optional(),
-      widthInMillimeters: z.number().optional(),
-    })
-    .optional(),
-  bundleItems: z
-    .array(
+    }),
+  ),
+  warehousing: z.optional(
+    z.object({
+      sku: z.optional(z.string()),
+      baseUnit: z.optional(z.string()),
+    }),
+  ),
+  supply: z.optional(
+    z.object({
+      weightInGram: z.optional(z.number()),
+      heightInMillimeters: z.optional(z.number()),
+      lengthInMillimeters: z.optional(z.number()),
+      widthInMillimeters: z.optional(z.number()),
+    }),
+  ),
+  bundleItems: z.optional(
+    z.array(
       z.object({
         productId: z.string(),
         quantity: z.number(),
@@ -53,36 +53,36 @@ export const ProductCreateSpecificationSchema = z.object({
           }),
         ),
       }),
-    )
-    .optional(),
-  meta: z.record(z.any(), z.any()).optional(),
+    ),
+  ),
+  meta: z.optional(z.record(z.any(), z.any())),
   content: z.record(
     z.string(), // locale
     z.object({
-      title: z.string().optional(),
-      subtitle: z.string().optional(),
-      slug: z.string().optional(),
-      description: z.string().optional(),
-      brand: z.string().optional(),
-      vendor: z.string().optional(),
-      labels: z.array(z.string()).optional(),
+      title: z.optional(z.string()),
+      subtitle: z.optional(z.string()),
+      slug: z.optional(z.string()),
+      description: z.optional(z.string()),
+      brand: z.optional(z.string()),
+      vendor: z.optional(z.string()),
+      labels: z.optional(z.array(z.string())),
     }),
   ),
-  variationResolvers: z
-    .array(
+  variationResolvers: z.optional(
+    z.array(
       z.object({
         vector: z.record(z.string(), z.any()),
         productId: z.string(),
       }),
-    )
-    .optional(),
+    ),
+  ),
 });
 
 export const ProductCreatePayloadSchema = z.object({
   _id: z.string(),
   specification: ProductCreateSpecificationSchema,
-  media: z.array(MediaSchema).optional(),
-  variations: z.array(ProductVariationSchema).optional(),
+  media: z.optional(z.array(MediaSchema)),
+  variations: z.optional(z.array(ProductVariationSchema)),
 });
 
 const transformSpecification = (specification: z.infer<typeof ProductCreateSpecificationSchema>) => {

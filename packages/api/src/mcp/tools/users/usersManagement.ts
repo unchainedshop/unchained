@@ -3,14 +3,13 @@ import { log } from '@unchainedshop/logger';
 import {
   actionValidators,
   UsersManagementSchema,
-  UsersManagementZodSchema,
   type UsersManagementParams,
   type ActionName,
 } from './schemas.ts';
 import actionHandlers from './handlers/index.ts';
 import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.ts';
 
-export { UsersManagementSchema, UsersManagementZodSchema };
+export { UsersManagementSchema };
 export type { UsersManagementParams };
 
 export async function usersManagement(context: Context, params: UsersManagementParams) {

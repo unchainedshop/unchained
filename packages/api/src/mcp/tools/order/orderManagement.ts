@@ -3,14 +3,13 @@ import { log } from '@unchainedshop/logger';
 import {
   actionValidators,
   OrderManagementSchema,
-  OrderManagementZodSchema,
   type OrderManagementParams,
   type ActionName,
 } from './schemas.ts';
 import actionHandlers from './handlers/index.ts';
 import { createMcpResponse, createMcpErrorResponse } from '../../utils/sharedSchemas.ts';
 
-export { OrderManagementSchema, OrderManagementZodSchema };
+export { OrderManagementSchema };
 export type { OrderManagementParams };
 
 export async function orderManagement(context: Context, params: OrderManagementParams) {
