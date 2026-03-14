@@ -3,6 +3,7 @@ import { mongodb, buildDbIndexes, type TimestampFields } from '@unchainedshop/mo
 export const DeliveryProviderType = {
   SHIPPING: 'SHIPPING',
   PICKUP: 'PICKUP',
+  DOWNLOAD: 'DOWNLOAD',
 } as const;
 
 export type DeliveryProviderType = (typeof DeliveryProviderType)[keyof typeof DeliveryProviderType];

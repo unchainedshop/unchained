@@ -146,6 +146,7 @@ import rejectOrder from './orders/rejectOrder.ts';
 import removePushSubscription from './users/removePushSubscription.ts';
 import addPushSubscription from './users/addPushSubscription.ts';
 import removeUserProductReviews from './users/removeUserProductReviews.ts';
+import updateCartDeliveryDownload from './orders/updateCartDeliveryDownload.ts';
 import updateCartDeliveryPickUp from './orders/updateCartDeliveryPickUp.ts';
 import updateCartDeliveryShipping from './orders/updateCartDeliveryShipping.ts';
 import updateCartPaymentGeneric from './orders/updateCartPaymentGeneric.ts';
@@ -242,6 +243,7 @@ export default {
   updateCartItem: acl(actions.updateOrderItem)(updateCartItem),
   removeCartItem: acl(actions.updateOrderItem)(removeCartItem),
   removeCartDiscount: acl(actions.updateOrderDiscount)(removeCartDiscount),
+  updateCartDeliveryDownload: acl(actions.updateCart)(updateCartDeliveryDownload),
   updateCartDeliveryPickUp: acl(actions.updateCart)(updateCartDeliveryPickUp),
   updateCartDeliveryShipping: acl(actions.updateCart)(updateCartDeliveryShipping),
   updateCartPaymentGeneric: acl(actions.updateCart)(updateCartPaymentGeneric),

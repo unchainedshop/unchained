@@ -16,6 +16,11 @@ export default [
       Shipping
       """
       SHIPPING
+
+      """
+      Download (digital delivery)
+      """
+      DOWNLOAD
     }
 
     enum DeliveryProviderError {
@@ -63,6 +68,24 @@ export default [
     }
 
     type DeliveryProviderShipping implements DeliveryProvider @cacheControl(maxAge: 60) {
+      _id: ID!
+      created: DateTime
+      updated: DateTime
+      deleted: DateTime
+      type: DeliveryProviderType
+      interface: DeliveryInterface
+      configuration: JSON
+      configurationError: DeliveryProviderError
+      isActive: Boolean
+      simulatedPrice(
+        currencyCode: String
+        useNetPrice: Boolean = false
+        orderId: ID
+        context: JSON
+      ): Price @cacheControl(scope: PRIVATE, maxAge: 10)
+    }
+
+    type DeliveryProviderDownload implements DeliveryProvider @cacheControl(maxAge: 60) {
       _id: ID!
       created: DateTime
       updated: DateTime

@@ -248,6 +248,15 @@ export default [
       ): Order!
 
       """
+      Update the cart by changing the delivery provider and using a download specific configuration
+      """
+      updateCartDeliveryDownload(
+        orderId: ID
+        deliveryProviderId: ID!
+        meta: JSON
+      ): Order!
+
+      """
       Update the cart by changing the payment provider and using an invoice-type specific configuration
       """
       updateCartPaymentInvoice(orderId: ID, paymentProviderId: ID!, meta: JSON): Order!

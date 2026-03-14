@@ -45,5 +45,14 @@ export default [
       discounts: [OrderDeliveryDiscount!]
       address: Address
     }
+
+    type OrderDeliveryDownload implements OrderDelivery {
+      _id: ID!
+      provider: DeliveryProvider
+      status: OrderDeliveryStatus
+      delivered: DateTime
+      fee: Price
+      discounts: [OrderDeliveryDiscount!]
+    }
   `,
 ];

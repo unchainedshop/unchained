@@ -67,6 +67,7 @@ import { Web3Address } from './web3-address.ts';
 import { LoginMethodResponse } from './login-method-response-types.ts';
 import { ProductSearchResult } from './product-search-result-types.ts';
 import { OrderStatistics } from './order/order-statistics-types.ts';
+import { DeliveryProviderDownload } from './delivery-provider-download-types.ts';
 import { DeliveryProviderPickUp } from './delivery-provider-pickup-types.ts';
 import { DeliveryProviderShipping } from './delivery-provider-shipping-types.ts';
 
@@ -83,6 +84,7 @@ const types = {
   Country,
   Currency,
   DeliveryProvider,
+  DeliveryProviderDownload,
   DeliveryProviderPickUp,
   DeliveryProviderShipping,
   Dimensions,

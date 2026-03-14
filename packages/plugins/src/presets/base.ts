@@ -13,6 +13,7 @@ import { InvoicePlugin } from '../payment/invoice/index.ts';
 
 // Import plugins - Delivery
 import { PostPlugin } from '../delivery/post/index.ts';
+import { DownloadPlugin } from '../delivery/download/index.ts';
 
 // Import plugins - Warehousing
 import { StorePlugin } from '../warehousing/store/index.ts';
@@ -58,6 +59,7 @@ export function registerBasePlugins() {
 
   // Delivery
   pluginRegistry.register(PostPlugin);
+  pluginRegistry.register(DownloadPlugin);
 
   // Warehousing
   pluginRegistry.register(StorePlugin);
