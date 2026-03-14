@@ -15746,6 +15746,16 @@ export type IVerifyQuotationMutation = {
   };
 };
 
+export type ITagsCountQueryVariables = Exact<{
+  tag: Scalars['LowerCaseString']['input'];
+}>;
+
+export type ITagsCountQuery = {
+  productsCount: number;
+  assortmentsCount: number;
+  usersCount: number;
+};
+
 export type IInvalidateTokenMutationVariables = Exact<{
   tokenId: Scalars['ID']['input'];
 }>;
