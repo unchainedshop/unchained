@@ -1,5 +1,5 @@
 import { setupDatabase, createAnonymousGraphqlFetch, disconnect } from './helpers.js';
-import { SimpleProduct2, SimpleProduct } from './seeds/products.js';
+import { SimpleProduct } from './seeds/products.js';
 import assert from 'node:assert';
 import test from 'node:test';
 

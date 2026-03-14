@@ -62,25 +62,21 @@ export const configureProductPricesModule = ({
       quantity = 1,
     }: { countryCode: string; currencyCode?: string; quantity?: number },
   ): Promise<ProductPrice | null> => {
-    const pricing = getPriceLevels({
-      product,
-      currencyCode,
-      countryCode,
-    });
+    const pricing = getPriceLevels({ product, currencyCode, countryCode });
+    if (!pricing.length) return null;
 
-    const foundPrice = pricing.find((level) => !level.maxQuantity || level.maxQuantity >= quantity);
-    if (!foundPrice) return null;
+    // Filter tiers that match the quantity, take the last because pricing is sorted
+    const matched = pricing.filter((level) => (level.minQuantity ?? 0) <= quantity).pop();
 
-    const normalizedPrice = {
-      isTaxable: false,
-      isNetPrice: false,
-      ...foundPrice,
+    if (!matched) return null;
+
+    return {
+      isTaxable: !!matched.isTaxable,
+      isNetPrice: !!matched.isNetPrice,
+      amount: matched.amount,
+      currencyCode: matched.currencyCode,
+      countryCode: matched.countryCode,
     };
-
-    if (normalizedPrice.amount !== null) {
-      return normalizedPrice;
-    }
-    return null;
   };
 
   return {
@@ -147,34 +143,41 @@ export const configureProductPricesModule = ({
         price: ProductPrice;
       }[]
     > => {
-      let previousMax: number | undefined;
-
-      const filteredAndSortedPriceLevels = getPriceLevels({
+      const sorted = getPriceLevels({
         product,
         currencyCode,
         countryCode,
       });
 
-      return filteredAndSortedPriceLevels.map((priceLevel, i) => {
-        const max = priceLevel.maxQuantity || 0;
-        const min = previousMax ? previousMax + 1 : 0;
-        previousMax = priceLevel.maxQuantity;
+      const result: {
+        minQuantity: number;
+        maxQuantity: number;
+        price: ProductPrice;
+      }[] = [];
 
-        return {
+      for (let i = 0; i < sorted.length; i++) {
+        const current = sorted[i];
+        const next = sorted[i + 1];
+
+        const min = current.minQuantity ?? 0;
+
+        // next.minQuantity - 1 OR keep same if no next level
+        const max = next ? (next.minQuantity ?? 0) - 1 : min; // or keep as `Infinity` if needed
+
+        result.push({
           minQuantity: min,
-          maxQuantity:
-            i === 0 && priceLevel.maxQuantity && priceLevel.maxQuantity > 0
-              ? priceLevel.maxQuantity
-              : max,
+          maxQuantity: max,
           price: {
-            isTaxable: !!priceLevel.isTaxable,
-            isNetPrice: !!priceLevel.isNetPrice,
-            amount: priceLevel.amount,
+            isTaxable: !!current.isTaxable,
+            isNetPrice: !!current.isNetPrice,
+            amount: current.amount,
             currencyCode,
             countryCode,
           },
-        };
-      });
+        });
+      }
+
+      return result;
     },
 
     rates: {
