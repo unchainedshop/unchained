@@ -1,21 +1,29 @@
 export const permissions = async (userRoles: any, allRoles: any) => {
-  const actions = userRoles?.flatMap((role) => {
-    const foundRole: any = Object.values(allRoles).find((r: any) => r.name === role);
-    if (!foundRole) return [];
-    return Object.entries(foundRole.allowRules || {}).flatMap(([roleName, funcs]: any) => {
-      return funcs.map(async (f) => {
+  const rolesByName = new Map<string, any>();
+  for (const r of Object.values(allRoles) as any[]) {
+    if (r?.name) rolesByName.set(r.name, r);
+  }
+
+  const result: string[] = [];
+  const seen = new Set<string>();
+
+  for (const role of userRoles || []) {
+    const foundRole = rolesByName.get(role);
+    if (!foundRole) continue;
+    for (const [actionName, funcs] of Object.entries(foundRole.allowRules || {}) as any) {
+      if (seen.has(actionName)) continue;
+      for (const f of funcs) {
         try {
-          // return permissions that are by default activated for that role,
-          // accidentally don't check context
-          const r = await f(null, null, null);
-          if (r) return roleName;
-          return null;
+          if (await f(null, null, null)) {
+            seen.add(actionName);
+            result.push(actionName);
+            break;
+          }
         } catch {
-          return null;
+          // Permission function threw — treat as denied
         }
-      });
-    });
-  });
-  const resolvedActions = await Promise.all(actions);
-  return [...new Set(resolvedActions)].filter(Boolean).toSorted((a: any, b: any) => a.localeCompare(b));
+      }
+    }
+  }
+  return result.sort((a, b) => a.localeCompare(b));
 };

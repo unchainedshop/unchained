@@ -47,12 +47,11 @@ const wrapFunction = (fn, name, action, userOptions?: any) => {
   const key = name || fn.name;
   const options = { ...defaultOptions, ...userOptions };
   ensureIsFunction(fn, action, options, key);
-  return async (root, params, context, ...other) => {
-    const args = options.mapArgs(root, params, ...other);
-    await checkAction(context, action, args, {
-      key: options.showKey ? key : '',
-    });
-    return fn(root, params, context, ...other);
+  const actionOptions = { key: options.showKey ? key : '' };
+  return async (root, params, context, info) => {
+    const args = options.mapArgs(root, params, info);
+    await checkAction(context, action, args, actionOptions);
+    return fn(root, params, context, info);
   };
 };
 
