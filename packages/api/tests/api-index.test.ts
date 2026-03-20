@@ -1,11 +1,10 @@
 // Import the function to be tested.
-import { describe, it, mock, before, after } from 'node:test';
+import { describe, it, mock } from 'node:test';
 import assert from 'node:assert';
 import { admin } from '../src/roles/admin.ts';
 import { actions } from '../src/roles/index.ts';
 import { checkAction, ensureActionExists, ensureIsFunction } from '../src/acl.ts';
 import { NoPermissionError, PermissionSystemError } from '../src/errors.ts';
-import { Roles } from '@unchainedshop/roles';
 import { registerEvents } from '@unchainedshop/events';
 import { API_EVENTS } from '../src/events.ts';
 
@@ -66,20 +65,11 @@ describe('API', () => {
   });
 
   describe('checkAction', () => {
-    let originalUserHasPermission: typeof Roles.userHasPermission;
-
-    before(() => {
-      originalUserHasPermission = Roles.userHasPermission;
-    });
-
-    after(() => {
-      Roles.userHasPermission = originalUserHasPermission;
-    });
-
     it('should throw a NoPermissionError if the user does not have permission to perform the action', async () => {
-      Roles.userHasPermission = mock.fn(async () => false);
-
-      const context = { userId: '123' };
+      const context = {
+        userId: '123',
+        roles: { userHasPermission: mock.fn(async () => false) },
+      };
       const action = 'some action';
       const args: any = [];
       const options = { key: 'some key' };
@@ -88,9 +78,10 @@ describe('API', () => {
     });
 
     it('should not throw an error if the user has permission to perform the action', async () => {
-      Roles.userHasPermission = mock.fn(async () => true);
-
-      const context = { userId: '123' };
+      const context = {
+        userId: '123',
+        roles: { userHasPermission: mock.fn(async () => true) },
+      };
       const action = 'some action';
       const args: any = {};
       const options = { key: 'some key' };

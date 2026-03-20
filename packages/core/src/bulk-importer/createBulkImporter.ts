@@ -103,7 +103,9 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
           const issues = e?.issues
             ? e.issues.map((i) => `${i.path?.join('.')}: ${i.message}`).join(', ')
             : e.message;
-          throw new Error(`🤧 ${entity}.${operation}.${event.payload?._id || '*'} (${issues})`);
+          throw new Error(`🤧 ${entity}.${operation}.${event.payload?._id || '*'} (${issues})`, {
+            cause: e,
+          });
         }
       },
       prepare: async (event, unchainedAPI: { modules: Modules; services: Services }) => {

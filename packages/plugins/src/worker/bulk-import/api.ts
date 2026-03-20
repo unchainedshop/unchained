@@ -1,6 +1,6 @@
 import { createLogger } from '@unchainedshop/logger';
 import type { UnchainedCore } from '@unchainedshop/core';
-import { Roles } from '@unchainedshop/roles';
+import type { RolesInterface } from '@unchainedshop/roles';
 
 const logger = createLogger('unchained:bulk-import');
 
@@ -9,13 +9,13 @@ export async function bulkImportHandler(
   context: UnchainedCore & {
     params: Record<string, string>;
     rawRequest?: any;
+    roles?: RolesInterface;
     userId?: string;
     user?: any;
   },
 ): Promise<Response> {
   try {
-    // ACL check - cast context for Roles compatibility
-    const hasPermission = await Roles.userHasPermission(
+    const hasPermission = await context.roles?.userHasPermission(
       context as { userId?: string; user?: any },
       'bulkImport',
       [],

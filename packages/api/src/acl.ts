@@ -1,5 +1,4 @@
 import type { CheckPermissionArgs } from '@unchainedshop/roles';
-import { Roles } from '@unchainedshop/roles';
 import { emit } from '@unchainedshop/events';
 import { NoPermissionError, PermissionSystemError } from './errors.ts';
 import { API_EVENTS } from './events.ts';
@@ -45,7 +44,7 @@ const isSensitiveAction = (action: string): boolean => {
 const checkAction = async (context, action, args = emptyArray, options: any = emptyObject) => {
   const { key } = options || emptyObject;
 
-  const hasPermission = await Roles.userHasPermission(context, action, args);
+  const hasPermission = await context.roles.userHasPermission(context, action, args);
   if (hasPermission) {
     if (isSensitiveAction(action)) {
       await emit(API_EVENTS.ACL_GRANTED_SENSITIVE, {

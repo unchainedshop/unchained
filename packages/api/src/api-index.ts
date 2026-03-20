@@ -19,12 +19,13 @@ export * as roles from './roles/index.ts';
 export type { OIDCProviderConfig, AuthConfig } from './auth.ts';
 export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
 
+import type { RolesInterface } from '@unchainedshop/roles';
 import { buildDefaultTypeDefs } from './schema/index.ts';
 import resolvers from './resolvers/index.ts';
 import { actions } from './roles/index.ts';
 
 export type UnchainedServerOptions = {
-  roles?: any;
+  roles?: RolesInterface;
   adminUiConfig?: AdminUiConfig;
   unchainedAPI: UnchainedCore;
   context?: (defaultResolver: UnchainedContextResolver) => UnchainedContextResolver;

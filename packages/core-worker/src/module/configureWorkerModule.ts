@@ -282,7 +282,15 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
         worker,
       });
     }
-    logger.debug(`work details:`, { workId, type: work.type, success: work.success });
+    logger.debug(`work details:`, {
+      workId,
+      type: work.type,
+      retries: work.retries,
+      started: work.started,
+      finished: work.finished,
+      success: work.success,
+      worker,
+    });
     emit(WorkerEventTypes.FINISHED, removePrivateFields(work));
 
     return work;

@@ -8,7 +8,7 @@ import type { PaymentCredentials } from '@unchainedshop/core-payment';
 import type { Quotation } from '@unchainedshop/core-quotations';
 import type { Email, User as UserType, UserProfile } from '@unchainedshop/core-users';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
-import { Roles, permissions } from '@unchainedshop/roles';
+import { permissions } from '@unchainedshop/roles';
 import type { ProductReview } from '@unchainedshop/core-products';
 import type { Contact } from '@unchainedshop/mongodb';
 import type { Country } from '@unchainedshop/core-countries';
@@ -217,8 +217,8 @@ export const User: UserHelperTypes = {
   allowedActions: async (user, params, context) => {
     await checkAction(context, viewUserPrivateInfos, [user, params]);
 
-    const userRoles = Roles.getUserRoles(user?._id, user.roles, true);
-    return permissions(userRoles, context.roles) as Promise<string[]>;
+    const userRoles = context.roles!.getUserRoles(user?._id, user.roles, true);
+    return permissions(userRoles, context.roles!.roles) as Promise<string[]>;
   },
 
   orders: async (user, params, context) => {

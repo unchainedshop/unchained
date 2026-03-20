@@ -1,15 +1,7 @@
-import { Roles, Role } from '@unchainedshop/roles';
+import { createRoles, Role, type RolesInterface } from '@unchainedshop/roles';
 import { all } from './all.ts';
 import { loggedIn } from './loggedIn.ts';
 import { admin } from './admin.ts';
-
-const roles = {
-  ADMIN: Roles.adminRole,
-  LOGGEDIN: Roles.loggedInRole,
-  ALL: Roles.allRole,
-};
-
-const allRoles = roles;
 
 const actions: Record<string, string> = [
   'impersonate',
@@ -129,18 +121,33 @@ const actions: Record<string, string> = [
   return newValue;
 }, {});
 
+let allRoles: Record<string, any> = {};
+
 const configureRoles = ({
   additionalRoles,
   additionalActions,
 }: {
   additionalRoles?: Record<string, any>;
   additionalActions?: string[];
-}) => {
+}): RolesInterface => {
+  const roles = createRoles();
+
+  roles.adminRole = roles.addRole(new Role('admin'));
+  roles.loggedInRole = roles.addRole(new Role('__loggedIn__'));
+  roles.allRole = roles.addRole(new Role('__all__'));
+
   additionalActions?.forEach((action) => {
     actions[action] = action;
   });
+
+  allRoles = {
+    ADMIN: roles.adminRole,
+    LOGGEDIN: roles.loggedInRole,
+    ALL: roles.allRole,
+  };
+
   Object.entries(additionalRoles || {}).forEach(([key, val]: [string, any]) => {
-    allRoles[key] = new Role(key);
+    allRoles[key] = roles.addRole(new Role(key));
     val(allRoles[key], actions);
   });
 
@@ -148,11 +155,11 @@ const configureRoles = ({
   loggedIn(allRoles.LOGGEDIN, actions);
   admin(allRoles.ADMIN, actions);
 
-  return allRoles;
+  return roles;
 };
 
-const getPublicRoles = (): string[] => {
-  return Object.values(allRoles)
+const getPublicRoles = (roles: RolesInterface): string[] => {
+  return Object.values(roles.roles)
     .map((role) => role?.name)
     .filter(Boolean)
     .filter((name: string) => !name.startsWith('__')) as string[];

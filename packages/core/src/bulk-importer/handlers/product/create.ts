@@ -9,9 +9,9 @@ import { ProductType } from '@unchainedshop/core-products';
 
 export const ProductCreateSpecificationSchema = z.object({
   type: z.enum(ProductType),
-  sequence: z.number(),
+  sequence: z.optional(z.number()),
   status: z.nullable(z.optional(z.string())), // or null!
-  published: z.nullable(z.optional(z.string())), // or null!
+  published: z.nullish(z.iso.datetime()), // or null!
   tags: z.optional(z.array(z.string())),
   commerce: z.optional(
     z.object({
@@ -21,8 +21,8 @@ export const ProductCreateSpecificationSchema = z.object({
           maxQuantity: z.optional(z.number()),
           isTaxable: z.optional(z.boolean()),
           isNetPrice: z.optional(z.boolean()),
-          currencyCode: z.string(),
-          countryCode: z.string(),
+          currencyCode: z.string().check(z.minLength(1, 'currencyCode is required')),
+          countryCode: z.string().check(z.minLength(1, 'countryCode is required')),
         }),
       ),
     }),
@@ -91,6 +91,7 @@ const transformSpecification = (specification: z.infer<typeof ProductCreateSpeci
     content, // eslint-disable-line
     supply,
     warehousing,
+    sequence,
     ...productData
   } = specification;
 
@@ -99,6 +100,7 @@ const transformSpecification = (specification: z.infer<typeof ProductCreateSpeci
 
   return {
     ...productData,
+    ...(sequence != null && { sequence }),
     published: productData.published ? new Date(productData.published) : undefined,
     tags,
     warehousing,

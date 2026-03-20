@@ -8,8 +8,9 @@ import { getPublicRoles } from '../../../roles/index.ts';
 export default async function setRoles(
   root: never,
   params: { roles: string[]; userId: string },
-  { modules, userId }: Context,
+  context: Context,
 ) {
+  const { modules, userId } = context;
   const foreignUserId = params.userId;
 
   log(`mutation setRoles ${foreignUserId}`, { userId });
@@ -18,7 +19,7 @@ export default async function setRoles(
   if (!(await modules.users.userExists({ userId: foreignUserId })))
     throw new UserNotFoundError({ userId: foreignUserId });
 
-  const publicRoles = getPublicRoles();
+  const publicRoles = getPublicRoles(context.roles!);
   const invalidRoles = params.roles.filter((r) => !publicRoles.includes(r));
   if (invalidRoles.length) {
     throw new Error(`Invalid role names: ${invalidRoles.join(', ')}`);

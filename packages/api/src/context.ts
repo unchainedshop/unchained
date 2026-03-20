@@ -1,4 +1,5 @@
 import type { UnchainedCore } from '@unchainedshop/core';
+import type { RolesInterface } from '@unchainedshop/roles';
 import instantiateLoaders, { type UnchainedLoaders } from './loaders/index.ts';
 import { getLocaleContext, type UnchainedLocaleContext } from './locale-context.ts';
 import type { UnchainedServerOptions } from './api-index.ts';
@@ -48,7 +49,7 @@ export interface UnchainedHTTPServerContext {
 
 export type Context = UnchainedCore & {
   version?: string;
-  roles?: any;
+  roles?: RolesInterface;
   adminUiConfig?: AdminUiConfig;
   loaders: UnchainedLoaders;
 } & UnchainedUserContext &

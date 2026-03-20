@@ -1,6 +1,6 @@
 import { describe, it, beforeEach, mock } from 'node:test';
 import assert from 'node:assert';
-import { Roles, Role } from '@unchainedshop/roles';
+import { createRoles, Role } from '@unchainedshop/roles';
 import { registerEvents } from '@unchainedshop/events';
 import {
   checkAction,
@@ -13,13 +13,13 @@ import {
 registerEvents(['ACL_DENIED', 'ACL_GRANTED_SENSITIVE']);
 
 describe('acl', () => {
+  let roles;
+
   beforeEach(() => {
-    Roles.roles = {};
-    Roles.actions = [];
-    Roles.helpers = [];
-    Roles.adminRole = new Role('admin') as any;
-    Roles.loggedInRole = new Role('__loggedIn__') as any;
-    Roles.allRole = new Role('__all__') as any;
+    roles = createRoles();
+    roles.adminRole = roles.addRole(new Role('admin'));
+    roles.loggedInRole = roles.addRole(new Role('__loggedIn__'));
+    roles.allRole = roles.addRole(new Role('__all__'));
   });
 
   describe('ensureActionExists', () => {
@@ -54,13 +54,13 @@ describe('acl', () => {
 
   describe('checkAction', () => {
     it('should not throw when user has permission', async () => {
-      Roles.adminRole!.allow('testAction', () => true);
-      const context = { userId: 'user1', user: { roles: ['admin'] } };
+      roles.adminRole!.allow('testAction', () => true);
+      const context = { userId: 'user1', user: { roles: ['admin'] }, roles };
       await assert.doesNotReject(() => checkAction(context, 'testAction'));
     });
 
     it('should throw NoPermissionError when user lacks permission', async () => {
-      const context = { userId: 'user1', user: { roles: ['admin'] } };
+      const context = { userId: 'user1', user: { roles: ['admin'] }, roles };
       await assert.rejects(
         () => checkAction(context, 'nonExistentAction'),
         (err: any) => {
@@ -70,7 +70,7 @@ describe('acl', () => {
     });
 
     it('should include userId and action in error', async () => {
-      const context = { userId: 'user1', user: { roles: [] } };
+      const context = { userId: 'user1', user: { roles: [] }, roles };
       await assert.rejects(
         () => checkAction(context, 'testAction', [], { key: 'myKey' }),
         (err: any) => {
@@ -87,7 +87,7 @@ describe('acl', () => {
 
   describe('checkResolver', () => {
     it('should return a decorator that wraps functions', () => {
-      Roles.adminRole!.allow('testAction', () => true);
+      roles.adminRole!.allow('testAction', () => true);
       const decorator = checkResolver('testAction');
       const wrappedFn = decorator(async () => 'result', 'testFn');
       assert.strictEqual(typeof wrappedFn, 'function');
@@ -103,11 +103,11 @@ describe('acl', () => {
     });
 
     it('wrapped function should call underlying fn when permitted', async () => {
-      Roles.adminRole!.allow('testAction', () => true);
+      roles.adminRole!.allow('testAction', () => true);
       const decorator = checkResolver('testAction');
       const fn = mock.fn(async () => 'result');
       const wrapped = decorator(fn, 'testFn');
-      const context = { userId: 'user1', user: { roles: ['admin'] } };
+      const context = { userId: 'user1', user: { roles: ['admin'] }, roles };
       const result = await wrapped('root', { id: 1 }, context, { fieldName: 'test' });
       assert.strictEqual(result, 'result');
       assert.strictEqual(fn.mock.calls.length, 1);
@@ -117,7 +117,7 @@ describe('acl', () => {
       const decorator = checkResolver('testAction');
       const fn = mock.fn(async () => 'result');
       const wrapped = decorator(fn, 'testFn');
-      const context = { userId: 'user1', user: { roles: [] } };
+      const context = { userId: 'user1', user: { roles: [] }, roles };
       await assert.rejects(
         () => wrapped('root', {}, context, {}),
         (err: any) => {
@@ -128,7 +128,7 @@ describe('acl', () => {
     });
 
     it('wrapped function should pass correct args (root, params, context, info)', async () => {
-      Roles.adminRole!.allow('testAction', () => true);
+      roles.adminRole!.allow('testAction', () => true);
       const decorator = checkResolver('testAction');
       const fn = mock.fn(async (_root, _params, _context, _info) => ({
         root: _root,
@@ -136,7 +136,7 @@ describe('acl', () => {
         info: _info,
       }));
       const wrapped = decorator(fn, 'testFn');
-      const context = { userId: 'user1', user: { roles: ['admin'] } };
+      const context = { userId: 'user1', user: { roles: ['admin'] }, roles };
       const info = { fieldName: 'test' };
       const result = await wrapped('myRoot', { id: 42 }, context, info);
       assert.deepStrictEqual(result, { root: 'myRoot', params: { id: 42 }, info });
@@ -145,24 +145,24 @@ describe('acl', () => {
 
   describe('checkTypeResolver', () => {
     it('should resolve object property when permitted', async () => {
-      Roles.adminRole!.allow('testAction', () => true);
+      roles.adminRole!.allow('testAction', () => true);
       const resolver = checkTypeResolver('testAction', 'name');
-      const context = { userId: 'user1', user: { roles: ['admin'] } };
+      const context = { userId: 'user1', user: { roles: ['admin'] }, roles };
       const result = await resolver({ name: 'Alice' }, {}, context);
       assert.strictEqual(result, 'Alice');
     });
 
     it('should call function property when permitted', async () => {
-      Roles.adminRole!.allow('testAction', () => true);
+      roles.adminRole!.allow('testAction', () => true);
       const resolver = checkTypeResolver('testAction', 'getName');
-      const context = { userId: 'user1', user: { roles: ['admin'] } };
+      const context = { userId: 'user1', user: { roles: ['admin'] }, roles };
       const result = await resolver({ getName: () => 'Alice' }, {}, context);
       assert.strictEqual(result, 'Alice');
     });
 
     it('should throw when not permitted', async () => {
       const resolver = checkTypeResolver('testAction', 'name');
-      const context = { userId: 'user1', user: { roles: [] } };
+      const context = { userId: 'user1', user: { roles: [] }, roles };
       await assert.rejects(
         () => resolver({ name: 'Alice' }, {}, context),
         (err: any) => {

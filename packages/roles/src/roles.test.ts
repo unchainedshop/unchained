@@ -1,23 +1,18 @@
 import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert';
 import { isFunction, permissions, has } from './roles-index.ts';
-import { Role, Roles } from './roles.ts';
+import { Role, createRoles, type RolesInterface } from './roles.ts';
 
 describe('Role', () => {
-  beforeEach(() => {
-    Roles.roles = {};
-    Roles.actions = [];
-    Roles.helpers = [];
-  });
-
   describe('constructor', () => {
     it('should create a new role with the given name', () => {
       assert.strictEqual(new Role('admin').name, 'admin');
     });
 
-    it('should throw an error if a role with the same name already exists', () => {
-      new Role('admin');
-      assert.throws(() => new Role('admin'), /"admin" role is already defined/);
+    it('should initialize empty allowRules and helpers', () => {
+      const role = new Role('admin');
+      assert.deepStrictEqual(role.allowRules, {});
+      assert.deepStrictEqual(role.helpers, {});
     });
   });
 
@@ -26,12 +21,6 @@ describe('Role', () => {
       const role = new Role('admin');
       role.helper('checkPermission', () => true);
       assert.strictEqual(typeof role.helpers.checkPermission[0], 'function');
-    });
-
-    it('should add the helper to the list of helpers if it does not exist', () => {
-      const role = new Role('admin');
-      role.helper('checkPermission', () => true);
-      assert.deepStrictEqual(Roles.helpers, ['checkPermission']);
     });
 
     it('should convert a non-function value to a function that returns that value', () => {
@@ -49,12 +38,6 @@ describe('Role', () => {
       assert.strictEqual(typeof role.allowRules.createUser[0], 'function');
     });
 
-    it('should add the action to the list of actions if it does not exist', () => {
-      const role = new Role('admin');
-      role.allow('createUser', () => true);
-      assert.deepStrictEqual(Roles.actions, ['createUser']);
-    });
-
     it('should throw an error if the action does not exist', () => {
       const role = new Role('admin');
       assert.throws(() => role.allow(null, () => true), /Action doesn't exist/);
@@ -69,50 +52,19 @@ describe('Role', () => {
   });
 
   describe('Role utilities', () => {
-    const testRole = new Role('test_role');
-    const actionName = 'view_secret';
-
     it('should register an action rule', () => {
+      const testRole = new Role('test_role');
+      const actionName = 'view_secret';
       const allowFn = () => true;
       testRole.allow(actionName, allowFn);
       assert.strictEqual(typeof testRole.allowRules[actionName][0], 'function');
     });
 
     it('should register a helper', () => {
+      const testRole = new Role('test_role');
       const helperFn = () => true;
       testRole.helper('test_helper', helperFn);
       assert.strictEqual(typeof testRole.helpers.test_helper[0], 'function');
-    });
-  });
-
-  describe('Role Helper Registration', () => {
-    it('should add a helper', () => {
-      Roles.registerHelper('test_helper');
-      assert.deepStrictEqual(Roles.helpers, ['test_helper']);
-    });
-
-    it('should add a helper attaching it to adminRole', () => {
-      Roles.registerHelper('test_admin_helper');
-      assert(Roles.helpers.includes('test_admin_helper'));
-    });
-
-    it('should skip adding helper if it already exists', () => {
-      Roles.registerHelper('test_helper');
-      Roles.registerHelper('test_admin_helper');
-      assert(Roles.helpers.includes('test_helper'));
-      assert(Roles.helpers.includes('test_admin_helper'));
-    });
-  });
-
-  describe('Action registration', () => {
-    it('should add an action', () => {
-      Roles.registerAction('test_action');
-      assert.deepStrictEqual(Roles.actions, ['test_action']);
-    });
-
-    it('should skip adding action if it already exists', () => {
-      Roles.registerAction('test_action');
-      assert.deepStrictEqual(Roles.actions, ['test_action']);
     });
   });
 
@@ -120,46 +72,68 @@ describe('Role', () => {
     it('should construct a new role', () => {
       assert.equal(new Role('test_role') instanceof Role, true);
     });
+  });
+});
 
-    it('should throw an error if given a role with similar name', () => {
-      new Role('test_role');
-      assert.throws(() => new Role('test_role'));
+describe('createRoles', () => {
+  let roles: RolesInterface;
+
+  beforeEach(() => {
+    roles = createRoles();
+  });
+
+  describe('addRole', () => {
+    it('should add a role to roles.roles', () => {
+      const role = roles.addRole(new Role('admin'));
+      assert.strictEqual(roles.roles['admin'], role);
+    });
+
+    it('should throw an error if a role with the same name already exists', () => {
+      roles.addRole(new Role('admin'));
+      assert.throws(() => roles.addRole(new Role('admin')), /"admin" role is already defined/);
     });
   });
 
-  describe('isFunction', () => {
-    it('should return true given a function', () => {
-      assert.strictEqual(
-        isFunction(() => ({})),
-        true,
-      );
+  describe('registerAction', () => {
+    it('should add an action', () => {
+      roles.registerAction('test_action');
+      assert.deepStrictEqual(roles.actions, ['test_action']);
     });
 
-    it('should return false given an improper function', () => {
-      assert.strictEqual(isFunction('false' as any), false);
+    it('should skip adding action if it already exists', () => {
+      roles.registerAction('test_action');
+      roles.registerAction('test_action');
+      assert.deepStrictEqual(roles.actions, ['test_action']);
     });
   });
 
-  describe('has', () => {
-    it('should return true for existent key', () => {
-      const obj = {
-        foo: 'bar',
-      };
-      assert.strictEqual(has(obj, 'foo'), true);
+  describe('registerHelper', () => {
+    it('should add a helper', () => {
+      roles.registerHelper('test_helper');
+      assert.deepStrictEqual(roles.helpers, ['test_helper']);
     });
 
-    it('should return true for existent nested key', () => {
-      const obj = {
-        foo: { bar: 'baz' },
-      };
-      assert.strictEqual(has(obj, 'foo.bar'), true);
+    it('should skip adding helper if it already exists', () => {
+      roles.registerHelper('test_helper');
+      roles.registerHelper('test_helper');
+      assert.deepStrictEqual(roles.helpers, ['test_helper']);
+    });
+  });
+
+  describe('getUserRoles', () => {
+    it('should return the correct roles for a logged-in user', () => {
+      const result = roles.getUserRoles('user1', ['admin'], true);
+      assert.deepStrictEqual(result, ['admin', '__all__', '__loggedIn__']);
     });
 
-    it('should return false for non existent', () => {
-      const obj = {
-        foo: 'bar',
-      };
-      assert.strictEqual(has(obj, 'baz'), false);
+    it('should return the correct roles for a logged-out user', () => {
+      const result = roles.getUserRoles(null as any, ['admin'], true);
+      assert.deepStrictEqual(result, ['admin', '__all__', '__notLoggedIn__']);
+    });
+
+    it('should return the correct roles when includeSpecial is false', () => {
+      const result = roles.getUserRoles('user1', ['admin'], false);
+      assert.deepStrictEqual(result, ['admin']);
     });
   });
 });
@@ -235,61 +209,38 @@ describe('permissions', () => {
   });
 });
 
-describe('registerAction', () => {
-  it('should add a new action to the list of actions if it does not already exist', () => {
-    const action = 'createUser';
-    Roles.registerAction(action);
-    assert(Roles.actions.includes(action));
+describe('isFunction', () => {
+  it('should return true given a function', () => {
+    assert.strictEqual(
+      isFunction(() => ({})),
+      true,
+    );
   });
 
-  it('should not add the same action multiple times', () => {
-    const action = 'createUser';
-    Roles.registerAction(action);
-    Roles.registerAction(action);
-    assert.deepStrictEqual(Roles.actions, [action]);
+  it('should return false given an improper function', () => {
+    assert.strictEqual(isFunction('false' as any), false);
   });
 });
 
-describe('registerHelper', () => {
-  it('should add a new helper to the list of helpers if it does not already exist', () => {
-    const helper = 'checkAdmin';
-    Roles.registerHelper(helper);
-    assert(Roles.helpers.includes(helper));
+describe('has', () => {
+  it('should return true for existent key', () => {
+    const obj = {
+      foo: 'bar',
+    };
+    assert.strictEqual(has(obj, 'foo'), true);
   });
 
-  it('should not add the same helper multiple times', () => {
-    const helper = 'checkAdmin';
-    Roles.registerHelper(helper);
-    Roles.registerHelper(helper);
-    assert.deepStrictEqual(Roles.helpers, [helper]);
-  });
-});
-
-describe('getUserRoles', () => {
-  it('should return the correct roles for a logged-in user', () => {
-    const userId = 'user1';
-    const roles = ['admin'];
-    const includeSpecial = true;
-    const expected = ['admin', '__all__', '__loggedIn__'];
-    const result = Roles.getUserRoles(userId, roles, includeSpecial);
-    assert.deepStrictEqual(result, expected);
+  it('should return true for existent nested key', () => {
+    const obj = {
+      foo: { bar: 'baz' },
+    };
+    assert.strictEqual(has(obj, 'foo.bar'), true);
   });
 
-  it('should return the correct roles for a logged-out user', () => {
-    const userId = null;
-    const roles = ['admin'];
-    const includeSpecial = true;
-    const expected = ['admin', '__all__', '__notLoggedIn__'];
-    const result = Roles.getUserRoles(userId as any, roles, includeSpecial);
-    assert.deepStrictEqual(result, expected);
-  });
-
-  it('should return the correct roles when includeSpecial is false', () => {
-    const userId = 'user1';
-    const roles = ['admin'];
-    const includeSpecial = false;
-    const expected = ['admin'];
-    const result = Roles.getUserRoles(userId, roles, includeSpecial);
-    assert.deepStrictEqual(result, expected);
+  it('should return false for non existent', () => {
+    const obj = {
+      foo: 'bar',
+    };
+    assert.strictEqual(has(obj, 'baz'), false);
   });
 });

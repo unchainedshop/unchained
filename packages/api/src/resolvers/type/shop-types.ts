@@ -26,6 +26,6 @@ export const Shop: ShopHelperTypes = {
 
   userRoles: async (_root, _params, context) => {
     await checkAction(context, (actions as any).manageUsers);
-    return getPublicRoles();
+    return getPublicRoles(context.roles!);
   },
 };
