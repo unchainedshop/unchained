@@ -243,6 +243,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.manageBookmarks, isOwnedBookmark);
   role.allow(actions.bookmarkProduct, () => true);
   role.allow(actions.voteProductReview, () => true);
+  role.allow(actions.changePassword, () => true);
   role.allow(actions.registerPaymentCredentials, () => true);
   role.allow(actions.managePaymentCredentials, isOwnedPaymentCredential);
   role.allow(actions.confirmMediaUpload, () => true);

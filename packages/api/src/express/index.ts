@@ -12,7 +12,7 @@ import type { UnchainedCore } from '@unchainedshop/core';
 import { emit } from '@unchainedshop/events';
 import type { User } from '@unchainedshop/core-users';
 
-import { getCurrentContextResolver, type LoginFn, type LogoutFn } from '../context.ts';
+import { getCurrentContextResolver, IN_LOGIN_RESPONSE, type LoginFn, type LogoutFn } from '../context.ts';
 import createBulkImportMiddleware from './createBulkImportMiddleware.ts';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.ts';
 import createTempUploadMiddleware from './createTempUploadMiddleware.ts';
@@ -103,7 +103,7 @@ const addContext = async function middlewareWithContext(
 
       await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, tokenObject);
 
-      (user as any)._inLoginMethodResponse = true;
+      (user as any)[IN_LOGIN_RESPONSE] = true;
       return { user, ...tokenObject };
     };
 

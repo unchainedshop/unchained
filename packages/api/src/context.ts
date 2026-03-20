@@ -6,6 +6,8 @@ import type { User } from '@unchainedshop/core-users';
 
 const { npm_package_version, UNCHAINED_API_VERSION } = process.env;
 
+export const IN_LOGIN_RESPONSE = Symbol('inLoginMethodResponse');
+
 export type LoginFn = (
   user: User,
   options?: {

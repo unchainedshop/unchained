@@ -1,6 +1,7 @@
 import { createLogger } from '@unchainedshop/logger';
 import { type Context } from '@unchainedshop/api';
 import { OrderStatus } from '@unchainedshop/core-orders';
+import { timingSafeStringEqual } from '@unchainedshop/utils';
 import { type CryptopayModule } from './module.ts';
 import { type ProductPriceRate } from '@unchainedshop/core-products';
 
@@ -41,7 +42,7 @@ export default async function handleWebhook(
 ) {
   const { modules, services } = context;
 
-  if (secret !== CRYPTOPAY_SECRET) {
+  if (!CRYPTOPAY_SECRET || !(await timingSafeStringEqual(secret, CRYPTOPAY_SECRET))) {
     logger.warn(`webhook called with invalid secret`);
     throw new Error('Secret invalid');
   }

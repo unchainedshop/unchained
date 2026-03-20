@@ -1,5 +1,6 @@
 import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
+import { Roles } from '@unchainedshop/roles';
 import { InvalidIdError, UserNotFoundError } from '../../../errors.ts';
 
 // Note: This resolver is protected by the 'manageUsers' ACL action (see mutations/index.ts)
@@ -16,6 +17,11 @@ export default async function setRoles(
   if (!foreignUserId) throw new InvalidIdError({ foreignUserId });
   if (!(await modules.users.userExists({ userId: foreignUserId })))
     throw new UserNotFoundError({ userId: foreignUserId });
+
+  const invalidRoles = params.roles.filter((role) => !Roles.roles[role]);
+  if (invalidRoles.length > 0) {
+    throw new Error(`Invalid role names: ${invalidRoles.join(', ')}`);
+  }
 
   return modules.users.updateRoles(foreignUserId, params.roles);
 }

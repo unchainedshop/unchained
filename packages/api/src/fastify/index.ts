@@ -1,7 +1,7 @@
 // TODO: Consider creating shared handler abstractions with express adapter
 // to reduce code duplication for bulk import, file upload, webhooks, and chat handlers.
 // See packages/api/src/express/index.ts for the parallel implementation.
-import { getCurrentContextResolver, type LoginFn, type LogoutFn } from '../context.ts';
+import { getCurrentContextResolver, IN_LOGIN_RESPONSE, type LoginFn, type LogoutFn } from '../context.ts';
 import bulkImportHandler from './bulkImportHandler.ts';
 import ercMetadataHandler from './ercMetadataHandler.ts';
 import MongoStore from '../mongo-store.ts';
@@ -72,7 +72,7 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
     };
     await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, tokenObject);
 
-    (user as any)._inLoginMethodResponse = true;
+    (user as any)[IN_LOGIN_RESPONSE] = true;
     return { user, ...tokenObject };
   };
 
