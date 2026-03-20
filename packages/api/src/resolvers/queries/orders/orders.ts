@@ -11,9 +11,6 @@ export default async function orders(
   const { limit, offset, paymentProviderIds, deliveryProviderIds, ...restParams } = params;
   log(`query orders: ${limit} ${offset}  ${restParams?.queryString || ''}`, { userId });
 
-  const promises: Promise<any>[] = [];
-
-  await Promise.all(promises);
   const [orderPayments, orderDeliveries] = await Promise.all([
     paymentProviderIds?.length
       ? modules.orders.payments.findOrderPaymentsByProviderIds({ paymentProviderIds })
@@ -32,6 +29,8 @@ export default async function orders(
 
   return modules.orders.findOrders({
     ...restParams,
+    limit,
+    offset,
     paymentIds,
     deliveryIds,
   });

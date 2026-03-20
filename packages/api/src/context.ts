@@ -4,6 +4,8 @@ import { getLocaleContext, type UnchainedLocaleContext } from './locale-context.
 import type { UnchainedServerOptions } from './api-index.ts';
 import type { User } from '@unchainedshop/core-users';
 
+export const IN_LOGIN_RESPONSE = Symbol('inLoginMethodResponse');
+
 const { npm_package_version, UNCHAINED_API_VERSION } = process.env;
 
 export type LoginFn = (

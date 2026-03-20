@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-files",
   "description": "File management module for the Unchained Engine",
-  "version": "4.7.2",
+  "version": "5.0.0-alpha.1",
   "main": "lib/files-index.js",
   "types": "lib/files-index.d.ts",
   "type": "module",
@@ -35,9 +35,9 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^4.6.0",
-    "@unchainedshop/logger": "^4.6.0",
-    "@unchainedshop/utils": "^4.6.0"
+    "@unchainedshop/events": "^5.0.0-alpha.1",
+    "@unchainedshop/logger": "^5.0.0-alpha.1",
+    "@unchainedshop/utils": "^5.0.0-alpha.1"
   },
   "devDependencies": {
     "@types/node": "^25.0.0",

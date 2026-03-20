@@ -1,21 +1,30 @@
 export const permissions = async (userRoles: any, allRoles: any) => {
-  const actions = userRoles?.flatMap((role) => {
-    const foundRole: any = Object.values(allRoles).find((r: any) => r.name === role);
-    if (!foundRole) return [];
-    return Object.entries(foundRole.allowRules || {}).flatMap(([roleName, funcs]: any) => {
-      return funcs.map(async (f) => {
-        try {
-          // return permissions that are by default activated for that role,
-          // accidentally don't check context
-          const r = await f(null, null, null);
-          if (r) return roleName;
-          return null;
-        } catch {
-          return null;
-        }
-      });
-    });
-  });
+  const roleMap = new Map<string, any>();
+  for (const r of Object.values(allRoles) as any[]) {
+    roleMap.set(r.name, r);
+  }
+
+  const actions: Promise<string | null>[] = [];
+  for (const role of userRoles || []) {
+    const foundRole = roleMap.get(role);
+    if (!foundRole) continue;
+    for (const [roleName, funcs] of Object.entries(foundRole.allowRules || {})) {
+      for (const f of funcs as any[]) {
+        actions.push(
+          (async () => {
+            try {
+              const r = await f(null, null, null);
+              if (r) return roleName;
+              return null;
+            } catch {
+              return null;
+            }
+          })(),
+        );
+      }
+    }
+  }
+
   const resolvedActions = await Promise.all(actions);
   return [...new Set(resolvedActions)].filter(Boolean).toSorted((a: any, b: any) => a.localeCompare(b));
 };

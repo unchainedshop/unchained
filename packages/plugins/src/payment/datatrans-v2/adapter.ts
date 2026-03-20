@@ -70,28 +70,37 @@ const getMarketplaceSplits = async ({
 
   const { amount: total } = pricing.total({ useNetPrice: false });
 
-  return Promise.all(
-    config
-      .filter((item) => item.key === 'marketplaceSplit')
-      .map((item) => {
-        const [subMerchantId, staticDiscountId, sharePercentage] =
-          item.value || ''.split(';').map((f) => f.trim());
+  const roundedTotal = Math.round(total);
 
-        const { amount: discountSum } = pricingForOrderPayment.total({
-          category: PaymentPricingRowCategory.Discount,
-          discountId: staticDiscountId,
-        });
-        const shareFactor = sharePercentage ? parseInt(sharePercentage, 10) / 100 : 1;
-        const amount = Math.round(total * shareFactor);
-        const commission = Math.round(discountSum * -1 * shareFactor);
+  const splits = config
+    .filter((item) => item.key === 'marketplaceSplit')
+    .map((item) => {
+      const [subMerchantId, staticDiscountId, sharePercentage] = (item.value || '')
+        .split(';')
+        .map((f) => f.trim());
 
-        return {
-          subMerchantId,
-          amount,
-          commission,
-        };
-      }),
-  );
+      const { amount: discountSum } = pricingForOrderPayment.total({
+        category: PaymentPricingRowCategory.Discount,
+        discountId: staticDiscountId,
+      });
+      const shareFactor = sharePercentage ? parseInt(sharePercentage, 10) / 100 : 1;
+      const amount = Math.round(total * shareFactor);
+      const commission = Math.round(discountSum * -1 * shareFactor);
+
+      return {
+        subMerchantId,
+        amount,
+        commission,
+      };
+    });
+
+  // Adjust the last split so the sum of all split amounts equals the rounded total
+  if (splits.length > 0) {
+    const splitsSum = splits.reduce((sum, s) => sum + s.amount, 0);
+    splits[splits.length - 1].amount += roundedTotal - splitsSum;
+  }
+
+  return splits;
 };
 
 export const Datatrans: IPaymentAdapter = {

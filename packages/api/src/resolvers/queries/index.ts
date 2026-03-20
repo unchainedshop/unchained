@@ -71,6 +71,7 @@ import workQueueCount from './worker/workQueueCount.ts';
 import validateResetPasswordToken from './users/validateResetPasswordToken.ts';
 import validateVerifyEmailToken from './users/validateVerifyEmailToken.ts';
 import eventStatistics from './events/eventStatistics.ts';
+import registeredEventTypes from './events/registeredEventTypes.ts';
 import orderStatistics from './orders/orderStatistics.ts';
 import impersonator from './users/impersonator.ts';
 
@@ -145,6 +146,7 @@ export default {
   validateResetPasswordToken: acl(actions.resetPassword)(validateResetPasswordToken),
   validateVerifyEmailToken: acl(actions.verifyEmail)(validateVerifyEmailToken),
   workStatistics: acl(actions.viewStatistics)(workStatistics),
+  registeredEventTypes: acl(actions.viewEvents)(registeredEventTypes),
   eventStatistics: acl(actions.viewStatistics)(eventStatistics),
   orderStatistics: acl(actions.viewStatistics)(orderStatistics),
 };

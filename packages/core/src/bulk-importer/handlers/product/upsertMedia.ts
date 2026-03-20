@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod/v4-mini';
 import type { ProductMedia } from '@unchainedshop/core-products';
 import type { Modules } from '../../../modules.ts';
 import type { Services } from '../../../services/index.ts';
@@ -6,19 +6,19 @@ import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.ts';
 import upsertAsset, { AssetSchema } from '../../upsertAsset.ts';
 
 export const MediaSchema = z.object({
-  _id: z.string().optional(),
+  _id: z.optional(z.string()),
   asset: AssetSchema,
-  content: z
-    .record(
+  content: z.optional(
+    z.record(
       z.string(), // locale
       z.object({
-        title: z.string().optional(),
-        subtitle: z.string().optional(),
+        title: z.optional(z.string()),
+        subtitle: z.optional(z.string()),
       }),
-    )
-    .optional(),
-  tags: z.array(z.string()).optional(),
-  sortKey: z.number().optional(),
+    ),
+  ),
+  tags: z.optional(z.array(z.string())),
+  sortKey: z.optional(z.number()),
 });
 
 const upsertProductMedia = async (productMedia: ProductMedia, { modules }: { modules: Modules }) => {

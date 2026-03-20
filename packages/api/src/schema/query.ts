@@ -502,6 +502,11 @@ export default [
       validateVerifyEmailToken(token: String!): Boolean!
 
       """
+      Get all registered event types
+      """
+      registeredEventTypes: [String!]!
+
+      """
       Returns aggregated report of all the events that occurred in the system
       """
       eventStatistics(types: [String!], dateRange: DateFilterInput): [EventStatistics!]!

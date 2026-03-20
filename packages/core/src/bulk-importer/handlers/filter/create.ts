@@ -1,12 +1,12 @@
-import { z } from 'zod';
+import { z } from 'zod/v4-mini';
 import type { Modules } from '../../../modules.ts';
 import { FilterType } from '@unchainedshop/core-filters';
 
 export const LocalizedContentSchema = z.record(
   z.string(), // locale
   z.object({
-    title: z.string().optional(),
-    subtitle: z.string().optional(),
+    title: z.optional(z.string()),
+    subtitle: z.optional(z.string()),
   }),
 );
 
@@ -15,16 +15,16 @@ export const FilterCreatePayloadSchema = z.object({
   specification: z.object({
     type: z.enum(FilterType),
     key: z.string(),
-    isActive: z.boolean().optional(),
-    options: z
-      .array(
+    isActive: z.optional(z.boolean()),
+    options: z.optional(
+      z.array(
         z.object({
           value: z.string(),
-          content: LocalizedContentSchema.optional(),
+          content: z.optional(LocalizedContentSchema),
         }),
-      )
-      .optional(),
-    meta: z.record(z.any(), z.any()).optional(),
+      ),
+    ),
+    meta: z.optional(z.record(z.any(), z.any())),
     content: LocalizedContentSchema,
   }),
 });

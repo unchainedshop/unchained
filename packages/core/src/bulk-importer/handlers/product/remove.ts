@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod/v4-mini';
 import type { Modules } from '../../../modules.ts';
 import type { Services } from '../../../services/index.ts';
 

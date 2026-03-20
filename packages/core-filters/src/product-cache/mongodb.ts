@@ -28,7 +28,10 @@ const updateIfHashChanged = async (Collection, selector, doc) => {
   return _id;
 };
 
-const memoizeCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 7000 : 1);
+const defaultCacheTtlMs = process.env.NODE_ENV === 'production' ? 60000 : 1;
+const memoizeCache = new ExpiryMap(
+  parseInt(process.env.UNCHAINED_FILTER_CACHE_TTL_MS || String(defaultCacheTtlMs), 10),
+);
 
 export default async function mongodbCache(db: mongodb.Db) {
   const { FilterProductIdCache } = await FiltersCollection(db);

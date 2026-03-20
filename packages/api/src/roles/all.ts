@@ -1,8 +1,9 @@
-import type { Context } from '../context.ts';
+import { timingSafeStringEqual } from '@unchainedshop/utils';
+import { type Context, IN_LOGIN_RESPONSE } from '../context.ts';
 
 export const all = (role, actions) => {
   const isInLoginMutationResponse = (root) => {
-    if (root && root._inLoginMethodResponse) {
+    if (root && root[IN_LOGIN_RESPONSE]) {
       return true;
     }
     return false;
@@ -26,7 +27,7 @@ export const all = (role, actions) => {
 
     const accessKeyHeader = context.getHeader('x-token-accesskey');
     const accessKey = await context.modules.warehousing.buildAccessKeyForToken(tokenId);
-    if (accessKeyHeader && accessKeyHeader === accessKey) return true;
+    if (accessKeyHeader && accessKey && timingSafeStringEqual(accessKeyHeader, accessKey)) return true;
 
     return false;
   };
@@ -165,6 +166,6 @@ export const all = (role, actions) => {
   role.allow(actions.createUser, () => true);
   role.allow(actions.forgotPassword, () => true);
   role.allow(actions.resetPassword, () => true);
-  role.allow(actions.changePassword, () => true);
+  role.allow(actions.changePassword, () => false);
   role.allow(actions.heartbeat, () => true);
 };

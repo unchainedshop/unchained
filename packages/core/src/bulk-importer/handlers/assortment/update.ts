@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod/v4-mini';
 import upsertAssortmentProducts, { AssortmentProductSchema } from './upsertAssortmentProducts.ts';
 import upsertAssortmentChildren, { AssortmentLinkSchema } from './upsertAssortmentChildren.ts';
 import upsertAssortmentFilters, { AssortmentFilterSchema } from './upsertAssortmentFilters.ts';
@@ -10,29 +10,29 @@ import type { Services } from '../../../services/index.ts';
 
 export const AssortmentUpdatePayloadSchema = z.object({
   _id: z.string(),
-  specification: z
-    .object({
-      isActive: z.boolean().optional(),
-      isRoot: z.boolean().optional(),
-      sequence: z.number().optional(),
-      tags: z.array(z.string()).optional(),
-      meta: z.record(z.any(), z.any()).optional(),
-      content: z
-        .record(
+  specification: z.optional(
+    z.object({
+      isActive: z.optional(z.boolean()),
+      isRoot: z.optional(z.boolean()),
+      sequence: z.optional(z.number()),
+      tags: z.optional(z.array(z.string())),
+      meta: z.optional(z.record(z.any(), z.any())),
+      content: z.optional(
+        z.record(
           z.string(), // locale
           z.object({
-            title: z.string().optional(),
-            subtitle: z.string().optional(),
-            slug: z.string().optional(),
+            title: z.optional(z.string()),
+            subtitle: z.optional(z.string()),
+            slug: z.optional(z.string()),
           }),
-        )
-        .optional(),
-    })
-    .optional(),
-  media: z.array(MediaSchema).optional(),
-  products: z.array(AssortmentProductSchema).optional(),
-  children: z.array(AssortmentLinkSchema).optional(),
-  filters: z.array(AssortmentFilterSchema).optional(),
+        ),
+      ),
+    }),
+  ),
+  media: z.optional(z.array(MediaSchema)),
+  products: z.optional(z.array(AssortmentProductSchema)),
+  children: z.optional(z.array(AssortmentLinkSchema)),
+  filters: z.optional(z.array(AssortmentFilterSchema)),
 });
 
 export default async function updateAssortment(
