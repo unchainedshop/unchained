@@ -14,6 +14,6 @@ export default async function secureFields(
   };
   const { fetchDatatrans }: { fetchDatatrans: FetchDatatransFn } = this;
   const result = await fetchDatatrans('/v1/transactions/secureFields', reqBody);
-  const json = await result.json();
+  const json = (await result.json()) as SecureFieldsResponse;
   return json;
 }

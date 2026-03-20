@@ -1,7 +1,5 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { sha256 } from '@unchainedshop/utils';
-import pMemoize from 'p-memoize';
-import ExpiryMap from 'expiry-map';
+import { sha256, memoizeWithTTL } from '@unchainedshop/utils';
 import { FiltersCollection } from '../db/FiltersCollection.ts';
 
 const updateIfHashChanged = async (Collection, selector, doc) => {
@@ -29,14 +27,12 @@ const updateIfHashChanged = async (Collection, selector, doc) => {
 };
 
 const defaultCacheTtlMs = process.env.NODE_ENV === 'production' ? 60000 : 1;
-const memoizeCache = new ExpiryMap(
-  parseInt(process.env.UNCHAINED_FILTER_CACHE_TTL_MS || String(defaultCacheTtlMs), 10),
-);
+const cacheTtlMs = parseInt(process.env.UNCHAINED_FILTER_CACHE_TTL_MS || String(defaultCacheTtlMs), 10);
 
 export default async function mongodbCache(db: mongodb.Db) {
   const { FilterProductIdCache } = await FiltersCollection(db);
 
-  const getCachedProductIdsFromMemoryCache = pMemoize(
+  const getCachedProductIdsFromMemoryCache = memoizeWithTTL(
     async function getCachedProductIdsFromDatabase(filterId) {
       const filterProductIdCache = await FilterProductIdCache.find(
         {
@@ -56,9 +52,7 @@ export default async function mongodbCache(db: mongodb.Db) {
       );
       return [allProductIds, productIdsMap] as [string[], Record<string, string[]>];
     },
-    {
-      cache: memoizeCache,
-    },
+    cacheTtlMs,
   );
 
   return {

@@ -27,7 +27,8 @@ export const all = (role, actions) => {
 
     const accessKeyHeader = context.getHeader('x-token-accesskey');
     const accessKey = await context.modules.warehousing.buildAccessKeyForToken(tokenId);
-    if (accessKeyHeader && accessKey && timingSafeStringEqual(accessKeyHeader, accessKey)) return true;
+    if (accessKeyHeader && accessKey && (await timingSafeStringEqual(accessKeyHeader, accessKey)))
+      return true;
 
     return false;
   };

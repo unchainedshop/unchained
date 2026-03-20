@@ -20,7 +20,6 @@ import seedEnrollment from './seeds/enrollments.js';
 import seedWorkQueue from './seeds/work.js';
 import seedEvents from './seeds/events.js';
 import seedTokens from './seeds/tokens.js';
-import { GraphQLClient } from 'graphql-request';
 
 // eslint-disable-next-line
 // @ts-expect-error
@@ -79,21 +78,30 @@ export const createAnonymousGraphqlFetch = () => {
 
 export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
   const port = getServerPort();
-  const client = new GraphQLClient(`http://localhost:${port}/graphql`, {
-    errorPolicy: 'all',
-  });
+  const url = `http://localhost:${port}/graphql`;
 
-  return async ({ query, headers, ...options }) =>
-    client.rawRequest({
-      query,
-      requestHeaders: token
-        ? {
-            authorization: token,
-            ...(headers || {}),
-          }
-        : headers,
-      ...options,
+  return async ({ query, variables, headers, ...options }) => {
+    const requestHeaders = {
+      'Content-Type': 'application/json',
+      ...(token ? { authorization: token } : {}),
+      ...(headers || {}),
+    };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: requestHeaders,
+      body: JSON.stringify({ query, variables, ...options }),
     });
+
+    const data = await response.json();
+    return {
+      data: data.data,
+      errors: data.errors,
+      extensions: data.extensions,
+      headers: response.headers,
+      status: response.status,
+    };
+  };
 };
 
 export const putFile = async (file, { url, type }) => {

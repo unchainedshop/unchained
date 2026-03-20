@@ -1,7 +1,6 @@
 import { type ModuleInput, generateDbObjectId } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
-import pMemoize from 'p-memoize';
-import ExpiryMap from 'expiry-map';
+import { memoizeWithTTL } from '@unchainedshop/utils';
 import { server as webauthnServer } from '@passwordless-id/webauthn';
 import type {
   RegistrationJSON,
@@ -80,9 +79,7 @@ async function fetchMDSEntriesImpl(): Promise<Map<string, MDSEntry>> {
   return cache;
 }
 
-// Memoize MDS fetch with 24-hour expiration using expiry-map
-const mdsCache = new ExpiryMap(ONE_DAY_MS);
-const fetchMDSEntries = pMemoize(fetchMDSEntriesImpl, { cache: mdsCache });
+const fetchMDSEntries = memoizeWithTTL(fetchMDSEntriesImpl, ONE_DAY_MS);
 
 export function toArrayBuffer(buffer: Buffer): ArrayBuffer {
   return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;

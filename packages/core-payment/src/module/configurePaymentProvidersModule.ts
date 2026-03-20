@@ -6,8 +6,7 @@ import {
   escapeRegexString,
 } from '@unchainedshop/mongodb';
 import type { PaymentProvider, PaymentProviderType } from '../db/PaymentProvidersCollection.ts';
-import pMemoize from 'p-memoize';
-import ExpiryMap from 'expiry-map';
+import { memoizeWithTTL } from '@unchainedshop/utils';
 
 export interface PaymentInterface {
   _id: string;
@@ -21,7 +20,7 @@ const PAYMENT_PROVIDER_EVENTS: string[] = [
   'PAYMENT_PROVIDER_REMOVE',
 ];
 
-const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
+const allProvidersTtlMs = process.env.NODE_ENV === 'production' ? 60000 : 1;
 
 export interface PaymentProviderQuery {
   paymentProviderIds?: string[];
@@ -59,6 +58,10 @@ export const configurePaymentProvidersModule = (
 ) => {
   registerEvents(PAYMENT_PROVIDER_EVENTS);
 
+  const allProviders = memoizeWithTTL(async function () {
+    return PaymentProviders.find({ deleted: null }, { sort: { created: 1 } }).toArray();
+  }, allProvidersTtlMs);
+
   return {
     // Queries
     count: async (query: PaymentProviderQuery = {}): Promise<number> => {
@@ -89,14 +92,7 @@ export const configurePaymentProvidersModule = (
       return providers.toArray();
     },
 
-    allProviders: pMemoize(
-      async function () {
-        return PaymentProviders.find({ deleted: null }, { sort: { created: 1 } }).toArray();
-      },
-      {
-        cache: allProvidersCache,
-      },
-    ),
+    allProviders,
 
     providerExists: async ({ paymentProviderId }: { paymentProviderId: string }): Promise<boolean> => {
       const providerCount = await PaymentProviders.countDocuments(
@@ -120,7 +116,7 @@ export const configurePaymentProvidersModule = (
         generateDbFilterById(paymentProviderId),
         {},
       )) as PaymentProvider;
-      allProvidersCache.clear();
+      allProviders.clear();
       await emit('PAYMENT_PROVIDER_CREATE', { paymentProvider });
       return paymentProvider;
     },
@@ -137,7 +133,7 @@ export const configurePaymentProvidersModule = (
         { returnDocument: 'after' },
       );
       if (!paymentProvider) return null;
-      allProvidersCache.clear();
+      allProviders.clear();
       await emit('PAYMENT_PROVIDER_UPDATE', { paymentProvider });
       return paymentProvider;
     },
@@ -153,7 +149,7 @@ export const configurePaymentProvidersModule = (
         { returnDocument: 'after' },
       );
       if (!paymentProvider) return null;
-      allProvidersCache.clear();
+      allProviders.clear();
       await emit('PAYMENT_PROVIDER_REMOVE', { paymentProvider });
       return paymentProvider;
     },

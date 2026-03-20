@@ -66,12 +66,10 @@
     "@scure/bip32": ">= 2",
     "@scure/btc-signer": ">= 2",
     "mime": ">= 4 < 5",
-    "expiry-map": "2.x",
     "express": ">= 5 < 6",
     "fastify": ">= 5.2 < 6",
     "minio": "8.x",
     "nodemailer": ">= 6.9 < 9",
-    "p-memoize": "8.x",
     "stripe": ">= 19 < 21",
     "web-push": ">= 3.6 <4",
     "xml-js": ">= 1.6 < 2"
@@ -89,9 +87,6 @@
     "@scure/btc-signer": {
       "optional": true
     },
-    "expiry-map": {
-      "optional": true
-    },
     "express": {
       "optional": true
     },
@@ -102,9 +97,6 @@
       "optional": true
     },
     "nodemailer": {
-      "optional": true
-    },
-    "p-memoize": {
       "optional": true
     },
     "stripe": {
@@ -123,12 +115,10 @@
     "@scure/btc-signer": "^2.0.0",
     "@types/express": "^5.0.3",
     "@types/node": "^25.0.0",
-    "expiry-map": "^2.0.0",
     "express": "^5.1.0",
     "fastify": "^5.4.0",
     "minio": "^8.0.5",
     "nodemailer": "^8.0.1",
-    "p-memoize": "^8.0.0",
     "stripe": "^20.0.0",
     "typescript": "^5.8.3",
     "web-push": "^3.6.7",

@@ -1,7 +1,5 @@
-import { resolveBestSupported, resolveBestCurrency } from '@unchainedshop/utils';
+import { resolveBestSupported, resolveBestCurrency, memoizeWithTTL } from '@unchainedshop/utils';
 import type { UnchainedCore } from '@unchainedshop/core';
-import pMemoize from 'p-memoize';
-import ExpiryMap from 'expiry-map';
 import type { UnchainedHTTPServerContext } from './context.ts';
 import { createLogger } from '@unchainedshop/logger';
 const logger = createLogger('unchained:api');
@@ -12,8 +10,6 @@ export interface UnchainedLocaleContext {
   currencyCode: string;
 }
 export type GetHeaderFn = (key: string) => string | string[];
-
-const memoizeCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 1000 * 60 : 1); // Cached values expire after 10 seconds
 
 const uncachedResolveDefaultContext = async (
   { acceptLang, acceptCountry },
@@ -50,13 +46,16 @@ const uncachedResolveDefaultContext = async (
   return newContext;
 };
 
-export const resolveDefaultContext = pMemoize(uncachedResolveDefaultContext, {
-  cache: memoizeCache,
-  cacheKey: (args) => {
-    const [{ acceptLang, acceptCountry }] = args;
-    return `${acceptLang}-${acceptCountry}`;
+export const resolveDefaultContext = memoizeWithTTL(
+  uncachedResolveDefaultContext,
+  process.env.NODE_ENV === 'production' ? 1000 * 60 : 1,
+  {
+    cacheKey: (args) => {
+      const [{ acceptLang, acceptCountry }] = args;
+      return `${acceptLang}-${acceptCountry}`;
+    },
   },
-});
+);
 
 export const getLocaleContext = async (
   {

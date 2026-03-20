@@ -2,12 +2,15 @@ import { type IWorkerAdapter, WorkerAdapter, WorkerDirector, schedule } from '@u
 import type { ProductPriceRate } from '@unchainedshop/core-products';
 import { resolveBestCurrency } from '@unchainedshop/utils';
 
-const getExchangeRates = async (base): Promise<{ currency: string; rates: Record<string, string> }> => {
-  return fetch(`https://api.coinbase.com/v2/exchange-rates?currency=${base}`, {
-    method: 'GET',
-  })
-    .then((res) => res.json())
-    .then((r) => r?.data);
+interface CoinbaseExchangeRates {
+  currency: string;
+  rates: Record<string, string>;
+}
+
+const getExchangeRates = async (base): Promise<CoinbaseExchangeRates> => {
+  const res = await fetch(`https://api.coinbase.com/v2/exchange-rates?currency=${base}`);
+  const { data } = (await res.json()) as { data: CoinbaseExchangeRates };
+  return data;
 };
 
 const everyMinute = schedule.parse.cron('* * * * *');

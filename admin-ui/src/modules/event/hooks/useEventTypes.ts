@@ -8,7 +8,7 @@ const RegisteredEventTypesQuery = gql`
 `;
 
 const useEventTypes = () => {
-  const { data, loading, error } = useQuery(RegisteredEventTypesQuery);
+  const { data, loading, error } = useQuery<{ registeredEventTypes: string[] }>(RegisteredEventTypesQuery);
 
   const eventsType = (data?.registeredEventTypes || []).map((value: string) => ({
     value,

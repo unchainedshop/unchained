@@ -38,9 +38,7 @@
     "@unchainedshop/events": "^5.0.0-alpha.1",
     "@unchainedshop/logger": "^5.0.0-alpha.1",
     "@unchainedshop/mongodb": "^5.0.0-alpha.1",
-    "@unchainedshop/utils": "^5.0.0-alpha.1",
-    "expiry-map": "^2.0.0",
-    "p-memoize": "^8.0.0"
+    "@unchainedshop/utils": "^5.0.0-alpha.1"
   },
   "devDependencies": {
     "@types/node": "^25.0.0",

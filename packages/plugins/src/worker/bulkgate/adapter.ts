@@ -63,7 +63,19 @@ export const BulkGateWorker: IWorkerAdapter<
         body: JSON.stringify(requestBody),
       });
 
-      const responseData = await response.json();
+      const responseData = (await response.json()) as {
+        error?: string;
+        type?: string;
+        code?: string;
+        detail?: string;
+        data?: {
+          sms_id?: string;
+          price?: number;
+          credit?: number;
+          number?: string;
+          status?: string;
+        };
+      };
 
       // Check if we have an error response
       if (responseData.error || responseData.type) {

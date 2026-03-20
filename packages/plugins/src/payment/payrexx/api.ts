@@ -11,7 +11,7 @@ export async function payrexxWebhookHandler(
     const { modules, services } = context;
 
     // Parse JSON body
-    const body: Record<string, any> = await request.json();
+    const body = (await request.json()) as Record<string, any>;
     const { transaction } = body;
 
     if (!transaction) {

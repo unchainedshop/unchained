@@ -43,7 +43,7 @@ export const SmsWorkerPlugin: IWorkerAdapter<
         }),
       });
 
-      const data = await response.json();
+      const data = (await response.json()) as { sid?: string; message?: string };
 
       if (!response.ok) {
         return {

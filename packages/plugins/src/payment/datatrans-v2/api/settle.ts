@@ -8,6 +8,6 @@ export default async function settle({
   const { fetchDatatrans }: { fetchDatatrans: FetchDatatransFn } = this;
   const result = await fetchDatatrans(`/v1/transactions/${transactionId}/settle`, reqBody);
   if (result.status === 204) return true;
-  const json = await result.json();
+  const json = (await result.json()) as SettleResponse;
   return json;
 }

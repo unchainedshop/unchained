@@ -41,9 +41,7 @@
     "@unchainedshop/mongodb": "^5.0.0-alpha.1",
     "@unchainedshop/roles": "^5.0.0-alpha.1",
     "@unchainedshop/utils": "^5.0.0-alpha.1",
-    "bcryptjs": "^3.0.2",
-    "expiry-map": "^2.0.0",
-    "p-memoize": "^8.0.0"
+    "bcryptjs": "^3.0.2"
   },
   "peerDependencies": {
     "@noble/curves": "^2.0.0",

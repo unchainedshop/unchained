@@ -10,7 +10,7 @@ export async function cryptopayWebhookHandler(
 ): Promise<Response> {
   try {
     // Parse JSON body
-    const body = await request.json();
+    const body = (await request.json()) as Parameters<typeof handleWebhook>[0];
 
     await handleWebhook(body, context as any);
 

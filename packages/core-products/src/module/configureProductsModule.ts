@@ -385,7 +385,10 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
       sequence,
       ...productData
     }: Omit<Product, '_id' | 'created' | 'updated' | 'deleted' | 'slugs' | 'sequence'> &
-      Pick<Partial<Product>, '_id' | 'created' | 'updated' | 'deleted' | 'sequence'>): Promise<Product> => {
+      Pick<
+        Partial<Product>,
+        '_id' | 'created' | 'updated' | 'deleted' | 'sequence'
+      >): Promise<Product> => {
       if (productData._id) {
         await deleteProductPermanently(
           {

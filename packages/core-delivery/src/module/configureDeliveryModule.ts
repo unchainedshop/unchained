@@ -12,8 +12,7 @@ import {
   type DeliveryProviderType,
 } from '../db/DeliveryProvidersCollection.ts';
 import { deliverySettings, type DeliverySettingsOptions } from '../delivery-settings.ts';
-import pMemoize from 'p-memoize';
-import ExpiryMap from 'expiry-map';
+import { memoizeWithTTL } from '@unchainedshop/utils';
 
 const DELIVERY_PROVIDER_EVENTS: string[] = [
   'DELIVERY_PROVIDER_CREATE',
@@ -58,7 +57,7 @@ export const buildFindSelector = ({
   return selector;
 };
 
-const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
+const allProvidersTtlMs = process.env.NODE_ENV === 'production' ? 60000 : 1;
 
 export const configureDeliveryModule = async ({
   db,
@@ -69,6 +68,10 @@ export const configureDeliveryModule = async ({
   deliverySettings.configureSettings(deliveryOptions);
 
   const DeliveryProviders = await DeliveryProvidersCollection(db);
+
+  const allProviders = memoizeWithTTL(async function () {
+    return DeliveryProviders.find({ deleted: null }, { sort: { created: 1 } }).toArray();
+  }, allProvidersTtlMs);
 
   return {
     // Queries
@@ -100,14 +103,7 @@ export const configureDeliveryModule = async ({
       return providers.toArray();
     },
 
-    allProviders: pMemoize(
-      async function () {
-        return DeliveryProviders.find({ deleted: null }, { sort: { created: 1 } }).toArray();
-      },
-      {
-        cache: allProvidersCache,
-      },
-    ),
+    allProviders,
 
     providerExists: async ({ deliveryProviderId }: { deliveryProviderId: string }): Promise<boolean> => {
       const providerCount = await DeliveryProviders.countDocuments(
@@ -130,7 +126,7 @@ export const configureDeliveryModule = async ({
         { _id: deliveryProviderId },
         {},
       )) as DeliveryProvider;
-      allProvidersCache.clear();
+      allProviders.clear();
       await emit('DELIVERY_PROVIDER_CREATE', { deliveryProvider });
       return deliveryProvider;
     },
@@ -147,7 +143,7 @@ export const configureDeliveryModule = async ({
         { returnDocument: 'after' },
       );
       if (!deliveryProvider) return null;
-      allProvidersCache.clear();
+      allProviders.clear();
       await emit('DELIVERY_PROVIDER_UPDATE', { deliveryProvider });
       return deliveryProvider;
     },
@@ -163,7 +159,7 @@ export const configureDeliveryModule = async ({
         { returnDocument: 'after' },
       );
       if (!deliveryProvider) return null;
-      allProvidersCache.clear();
+      allProviders.clear();
       await emit('DELIVERY_PROVIDER_REMOVE', { deliveryProvider });
       return deliveryProvider;
     },

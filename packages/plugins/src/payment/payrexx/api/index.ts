@@ -56,7 +56,7 @@ const createPayrexxAPI = (instance: string, secret: string) => {
     async getGateway(id): Promise<GatewayObject | null> {
       const result = await fetchPayrexx(`Gateway/${id}`, 'GET');
       if (!result.ok) throw new Error(await result.text());
-      const { status, data } = await result.json();
+      const { status, data } = (await result.json()) as { status: string; data: GatewayObject[] };
       if (status !== 'success') return null;
       return data?.[0];
     },
@@ -64,7 +64,7 @@ const createPayrexxAPI = (instance: string, secret: string) => {
     async createGateway(params): Promise<GatewayObject> {
       const result = await fetchPayrexx('Gateway', 'POST', params);
       if (result.ok) {
-        return result.json();
+        return (await result.json()) as GatewayObject;
       }
       throw new Error(await result.text());
     },

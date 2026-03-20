@@ -33,10 +33,10 @@ export default async function init({
 
   const { fetchDatatrans }: { fetchDatatrans: FetchDatatransFn } = this;
   const result = await fetchDatatrans('/v1/transactions', reqBody);
-  const json = await result.json();
+  const json = (await result.json()) as InitResponse;
   const location = result.headers?.get('location');
   return {
     location,
     ...json,
-  };
+  } as InitResponse;
 }

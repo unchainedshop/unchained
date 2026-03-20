@@ -8,6 +8,6 @@ export default async function validate(payload: ValidateRequestPayload): Promise
   };
 
   const result = await fetchDatatrans(`/v1/transactions/validate`, reqBody);
-  const json = await result.json();
+  const json = (await result.json()) as ValidateResponse;
   return json;
 }

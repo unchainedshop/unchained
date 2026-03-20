@@ -30,8 +30,7 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@unchainedshop/logger": "^5.0.0-alpha.1",
-    "hashids": "^2.3.0",
-    "resolve-accept-language": "^3.1.11"
+    "hashids": "^2.3.0"
   },
   "devDependencies": {
     "@types/node": "^25.0.0",

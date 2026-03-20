@@ -42,7 +42,7 @@ export default async function handleWebhook(
 ) {
   const { modules, services } = context;
 
-  if (!CRYPTOPAY_SECRET || !timingSafeStringEqual(secret, CRYPTOPAY_SECRET)) {
+  if (!CRYPTOPAY_SECRET || !(await timingSafeStringEqual(secret, CRYPTOPAY_SECRET))) {
     logger.warn(`webhook called with invalid secret`);
     throw new Error('Secret invalid');
   }

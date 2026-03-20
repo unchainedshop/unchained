@@ -22,7 +22,7 @@ export async function appleIAPWebhookHandler(
     const { modules, services } = context;
 
     // Parse JSON body
-    const responseBody: Record<string, any> = await request.json();
+    const responseBody = (await request.json()) as Record<string, any>;
 
     // Validate shared secret
     if (responseBody.password !== APPLE_IAP_SHARED_SECRET) {

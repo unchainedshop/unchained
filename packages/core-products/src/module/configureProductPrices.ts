@@ -31,8 +31,7 @@ export const normalizeRate = (
   },
   rateRecord: ProductPriceRate,
 ) => {
-  let rate =
-    rateRecord.quoteCurrency === quoteCurrency.isoCode ? rateRecord.rate : 1 / rateRecord.rate;
+  let rate = rateRecord.quoteCurrency === quoteCurrency.isoCode ? rateRecord.rate : 1 / rateRecord.rate;
   const fromDecimals = getDecimals(baseCurrency.decimals);
   const targetDecimals = getDecimals(quoteCurrency.decimals);
   rate = fromDecimals !== targetDecimals ? rate / 10 ** (fromDecimals - targetDecimals) : rate;

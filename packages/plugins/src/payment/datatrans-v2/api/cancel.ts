@@ -8,6 +8,6 @@ export default async function cancel({
   const { fetchDatatrans }: { fetchDatatrans: FetchDatatransFn } = this;
   const result = await fetchDatatrans(`/v1/transactions/${transactionId}/cancel`, reqBody);
   if (result.status === 204) return true;
-  const json = await result.json();
+  const json = (await result.json()) as CancelResponse;
   return json;
 }

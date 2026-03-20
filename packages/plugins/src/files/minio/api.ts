@@ -25,8 +25,10 @@ export async function minioWebhookHandler(request: Request, context: UnchainedCo
       });
     }
 
-    const body = await request.json();
-    const { Records = [], EventName } = body;
+    const { Records = [], EventName } = (await request.json()) as {
+      EventName?: string;
+      Records?: { s3: { object: { key: string; size: number; contentType: string } } }[];
+    };
 
     if (EventName === 's3:ObjectCreated:Put') {
       const [{ s3 }] = Records;
