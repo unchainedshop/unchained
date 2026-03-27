@@ -29,7 +29,7 @@ node --version
   ```
 - Direct download from [nodejs.org](https://nodejs.org/)
 
-#### MongoDB (v6.0 or newer)
+#### MongoDB (v4.4 or newer)
 Unchained uses MongoDB as its primary database, but you do **not** have to install MongoDB!
 
 Unless you set an explicit connection string, Unchained will automatically download an appropriate version and run it locally for you, thanks to [MongoDB Memory Server](https://typegoose.github.io/mongodb-memory-server/).
