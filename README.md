@@ -16,7 +16,7 @@ Unchained Engine is a modular, API-first e-commerce platform built as a monorepo
 ### Prerequisites
 
 - Node.js >=22 (see [.nvmrc](.nvmrc))
-- MongoDB (or use MongoDB Memory Server for development)
+- MongoDB 4.4+ (or use MongoDB Memory Server for development)
 
 ### Create a New Project
 

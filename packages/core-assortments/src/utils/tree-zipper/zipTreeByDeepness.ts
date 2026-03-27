@@ -14,23 +14,33 @@ interface Level {
 }
 
 export const divideTreeByLevels = (array: Tree<string>, level = 0): Level[] => {
-  const currentLevel: string[] = array.reduce((acc, item) => {
-    if (typeof item === 'object') {
-      return acc;
-    }
-    return [...acc, item];
-  }, []) as string[];
+  const result: Level[] = [];
+  const stack: { array: Tree<string>; level: number }[] = [{ array, level }];
 
-  const nextLevels = array.reduce((acc, item) => {
-    if (typeof item === 'object') {
-      return [...acc, ...divideTreeByLevels(item, level + 1)];
-    }
-    return acc;
-  }, []);
+  while (stack.length > 0) {
+    const { array: current, level: currentLevel } = stack.pop()!;
+    const items: string[] = [];
+    const children: Tree<string>[] = [];
 
-  return [currentLevel.length ? { level, items: currentLevel } : null, ...nextLevels].filter(
-    Boolean,
-  ) as Level[];
+    for (const item of current) {
+      if (typeof item === 'object') {
+        children.push(item);
+      } else {
+        items.push(item);
+      }
+    }
+
+    if (items.length) {
+      result.push({ level: currentLevel, items });
+    }
+
+    // Push in reverse so they are popped in original left-to-right order
+    for (let i = children.length - 1; i >= 0; i--) {
+      stack.push({ array: children[i], level: currentLevel + 1 });
+    }
+  }
+
+  return result;
 };
 
 export const concatItemsByLevels = (levelArray: Level[]) => {

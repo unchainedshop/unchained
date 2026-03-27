@@ -54,9 +54,7 @@ export default async function createAssortment(
   } catch (e) {
     if (!createShouldUpsertIfIDExists) throw e;
     logger.debug('entity already exists, falling back to update', specification);
-    await modules.assortments.update(_id, {
-      ...specification,
-    });
+    await modules.assortments.update(_id, { ...specification }, { skipInvalidation: true });
   }
 
   if (!(await modules.assortments.assortmentExists({ assortmentId: _id }))) {

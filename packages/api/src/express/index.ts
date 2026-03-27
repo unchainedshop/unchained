@@ -12,7 +12,12 @@ import type { UnchainedCore } from '@unchainedshop/core';
 import { emit } from '@unchainedshop/events';
 import type { User } from '@unchainedshop/core-users';
 
-import { getCurrentContextResolver, IN_LOGIN_RESPONSE, type LoginFn, type LogoutFn } from '../context.ts';
+import {
+  getCurrentContextResolver,
+  IN_LOGIN_RESPONSE,
+  type LoginFn,
+  type LogoutFn,
+} from '../context.ts';
 import createBulkImportMiddleware from './createBulkImportMiddleware.ts';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.ts';
 import createTempUploadMiddleware from './createTempUploadMiddleware.ts';
