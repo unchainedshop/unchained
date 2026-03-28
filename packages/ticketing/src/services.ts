@@ -15,9 +15,7 @@ async function cancelTicketsForProduct(
     await this.passes.cancelTicket(token._id);
   }
 
-  await this.products.update(productId, {
-    $set: { 'meta.cancelled': true },
-  });
+  await this.products.update(productId, { 'meta.cancelled': true });
 
   return tokensToCancel.length;
 }
