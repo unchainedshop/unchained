@@ -19,7 +19,7 @@ const appleWalletHandler: RouteHandlerMethod = async (
   const resolvedContext = req.unchainedContext;
   const { modules } = resolvedContext;
 
-  const path = req.url;
+  const path = '/' + ((req.params as Record<string, string>)['*'] || '').split('?')[0];
 
   logger.info(`${path} (${JSON.stringify(req.query)})`);
 

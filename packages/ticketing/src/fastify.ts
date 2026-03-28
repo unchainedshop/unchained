@@ -23,6 +23,12 @@ export default (app: FastifyInstance) => {
   });
 
   app.route({
+    url: `${UNCHAINED_PDF_PRINT_HANDLER_PATH}`,
+    method: 'GET',
+    handler: printTicketsHandler,
+  });
+
+  app.route({
     url: `${UNCHAINED_PDF_PRINT_HANDLER_PATH}/*`,
     method: 'GET',
     handler: printTicketsHandler,
