@@ -11,7 +11,7 @@ export default (app: FastifyInstance) => {
   } = process.env;
 
   app.route({
-    url: `${APPLE_WALLET_WEBSERVICE_PATH}*`,
+    url: `${APPLE_WALLET_WEBSERVICE_PATH}/*`,
     method: ['GET', 'POST', 'DELETE'],
     handler: appleWalletHandler,
   });
