@@ -81,9 +81,9 @@ mutation ConfigurePayrexxProvider {
 | `PAYREXX_WEBHOOK_PATH` | `/payment/payrexx` | Webhook endpoint path |
 | `EMAIL_WEBSITE_URL` | - | Base URL for redirects (e.g., `https://shop.example.com`) |
 | `EMAIL_WEBSITE_NAME` | `Unchained` | Shop name shown in payment purpose |
-| `DATATRANS_SUCCESS_PATH` | `/payrexx/success` | Path for successful payment redirect |
-| `DATATRANS_ERROR_PATH` | `/payrexx/error` | Path for failed payment redirect |
-| `DATATRANS_CANCEL_PATH` | `/payrexx/cancel` | Path for cancelled payment redirect |
+| `PAYREXX_SUCCESS_PATH` | `/payrexx/success` | Path for successful payment redirect |
+| `PAYREXX_ERROR_PATH` | `/payrexx/error` | Path for failed payment redirect |
+| `PAYREXX_CANCEL_PATH` | `/payrexx/cancel` | Path for cancelled payment redirect |
 
 ## Provider Configuration
 
@@ -124,9 +124,9 @@ window.location.href = gateway.link;
 ### 3. Handle Redirect
 
 The user is redirected back to your configured paths:
-- **Success**: `EMAIL_WEBSITE_URL + DATATRANS_SUCCESS_PATH`
-- **Error**: `EMAIL_WEBSITE_URL + DATATRANS_ERROR_PATH`
-- **Cancel**: `EMAIL_WEBSITE_URL + DATATRANS_CANCEL_PATH`
+- **Success**: `EMAIL_WEBSITE_URL + PAYREXX_SUCCESS_PATH`
+- **Error**: `EMAIL_WEBSITE_URL + PAYREXX_ERROR_PATH`
+- **Cancel**: `EMAIL_WEBSITE_URL + PAYREXX_CANCEL_PATH`
 
 ### 4. Complete via Webhook
 
