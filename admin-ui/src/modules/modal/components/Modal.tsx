@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { injectIntl, WrappedComponentProps } from 'react-intl';
+import { useIntl } from 'react-intl';
 import ReactDOM from 'react-dom';
 
-interface ModalInnerProps extends WrappedComponentProps<'intl'> {
+interface ModalInnerProps {
   onClose?: () => void;
   children?: React.ReactNode;
   visible?: boolean;
@@ -32,8 +32,8 @@ const Modal = ({
   children,
   visible,
   closeOnOutsideClick = false,
-  intl,
 }) => {
+  const intl = useIntl();
   const [isAnimating, setIsAnimating] = useState(false);
   const [shouldRender, setShouldRender] = useState(visible);
 
@@ -61,7 +61,7 @@ const Modal = ({
   };
 
   return shouldRender ? (
-    <ModalInner intl={intl}>
+    <ModalInner>
       <div className="fixed inset-0 z-50 overflow-y-auto" aria-modal="true">
         <div
           className="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0"
@@ -124,4 +124,4 @@ const Modal = ({
   ) : null;
 };
 
-export default injectIntl(Modal as unknown as (props: ModalInnerProps) => any);
+export default Modal;

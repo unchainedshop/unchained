@@ -76,10 +76,8 @@ const UserDetailPage = ({ userId }) => {
           { id: user?.username },
         )}
       >
-        <UserExport
-          userId={userId}
-        />
-        </PageHeader>
+        <UserExport userId={userId} />
+      </PageHeader>
       <UserSettings user={user} extendedData={extendedData} />
     </div>
   );

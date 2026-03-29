@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/plugins",
   "description": "Official plugin collection for the Unchained Engine with payment, delivery, and pricing adapters",
-  "version": "4.8.5",
+  "version": "4.8.9",
   "main": "lib/plugins-index.js",
   "types": "lib/plugins-index.d.ts",
   "exports": {
@@ -63,7 +63,7 @@
     "minio": "8.x",
     "nodemailer": ">= 6.9 < 9",
     "p-memoize": "8.x",
-    "stripe": ">= 19 < 21",
+    "stripe": ">= 19 < 22",
     "web-push": ">= 3.6 <4",
     "xml-js": ">= 1.6 < 2"
   },
@@ -124,7 +124,7 @@
     "minio": "^8.0.5",
     "nodemailer": "^8.0.2",
     "p-memoize": "^8.0.0",
-    "stripe": "^20.0.0",
+    "stripe": "^21.0.1",
     "typescript": "^5.8.3",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"

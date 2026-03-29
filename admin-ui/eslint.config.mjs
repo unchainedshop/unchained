@@ -1,7 +1,6 @@
 import eslint from '@eslint/js';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
-import reactPlugin from 'eslint-plugin-react';
 import prettierPlugin from 'eslint-plugin-prettier';
 import cypressPlugin from 'eslint-plugin-cypress';
 import formatjsPlugin from 'eslint-plugin-formatjs';
@@ -64,22 +63,12 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tseslint,
-      react: reactPlugin,
       prettier: prettierPlugin,
       cypress: cypressPlugin,
       formatjs: formatjsPlugin,
       '@next/next': nextPlugin,
     },
-    settings: {
-      react: {
-        version: 'detect',
-      },
-      'import/resolver': {
-        node: {
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
-        },
-      },
-    },
+    settings: {},
     rules: {
       // Prettier
       'prettier/prettier': [
@@ -102,10 +91,6 @@ export default [
       '@typescript-eslint/no-this-alias': 'off',
       '@typescript-eslint/no-unsafe-function-type': 'off',
       '@typescript-eslint/no-require-imports': 'off',
-
-      // React
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
 
       // Next.js
       ...nextPlugin.configs.recommended.rules,

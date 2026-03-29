@@ -40,7 +40,7 @@ export const useChatManager = () => {
     }),
     messages: chatHistory,
     onError: (error) => {
-      let errorContent = '';
+      let errorContent: string;
       const chatUrl = process.env.NEXT_PUBLIC_CHAT_URL || '/chat';
 
       if (
