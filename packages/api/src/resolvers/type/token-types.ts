@@ -13,8 +13,8 @@ export const Token = {
     return loaders.userLoader.load({ userId: token.userId });
   },
 
-  status: async (token: TokenSurrogate, params: never, { services }: Context) => {
-    return services.warehousing.resolveTokenStatus({ token });
+  status: async (token: TokenSurrogate, params: never, { loaders }: Context) => {
+    return loaders.tokenExportStatusLoader.load({ token });
   },
 
   ercMetadata: async (
@@ -32,8 +32,9 @@ export const Token = {
     });
   },
 
-  isInvalidateable: async (token: TokenSurrogate, _params: never, { services }: Context) => {
-    return services.warehousing.isTokenInvalidateable({ token });
+  isInvalidateable: async (token: TokenSurrogate, _params: never, { loaders, services }: Context) => {
+    const product = await loaders.productLoader.load({ productId: token.productId });
+    return services.warehousing.isTokenInvalidateable({ token, product });
   },
 
   accessKey: async (token: TokenSurrogate, params: never, requestContext: Context) => {
@@ -41,6 +42,6 @@ export const Token = {
     await checkAction(requestContext, actions.updateToken, [undefined, { tokenId: token._id }]);
     // This generates a hash that is stable until ownership is changed and allows accessing token
     // data and operations
-    return modules.warehousing.buildAccessKeyForToken(token._id);
+    return modules.warehousing.buildAccessKeyFromToken(token);
   },
 };

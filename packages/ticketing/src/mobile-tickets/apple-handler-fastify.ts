@@ -44,7 +44,7 @@ const appleWalletHandler: RouteHandlerMethod = async (
       }
 
       const { hash } = req.query as Record<string, string>;
-      const correctHash = await modules.warehousing.buildAccessKeyForToken(tokenId);
+      const correctHash = await modules.warehousing.buildAccessKeyFromToken(token);
       if (!hash || hash !== correctHash) {
         logger.error('Token hash invalid for current owner', { tokenId });
         reply.status(403);

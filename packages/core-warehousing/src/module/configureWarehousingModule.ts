@@ -217,10 +217,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
       return token;
     },
 
-    buildAccessKeyForToken: async (tokenId: string): Promise<string | null> => {
-      const token = await TokenSurrogates.findOne(generateDbFilterById(tokenId));
-      if (!token) return null;
-
+    buildAccessKeyFromToken: async (token: TokenSurrogate): Promise<string> => {
       const payload = [
         token._id,
         token.walletAddress || token.userId,

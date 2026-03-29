@@ -28,6 +28,7 @@ import paymentProviderLoader from './paymentProviderLoader.ts';
 import warehousingProviderLoader from './warehousingProviderLoader.ts';
 import orderLoader from './orderLoader.ts';
 import quotationLoader from './quotationLoader.ts';
+import tokenExportStatusLoader from './tokenExportStatusLoader.ts';
 
 const loaders = (unchainedAPI: UnchainedCore) => {
   return {
@@ -72,6 +73,8 @@ const loaders = (unchainedAPI: UnchainedCore) => {
     orderLoader: orderLoader(unchainedAPI),
 
     quotationLoader: quotationLoader(unchainedAPI),
+
+    tokenExportStatusLoader: tokenExportStatusLoader(unchainedAPI),
   };
 };
 

@@ -34,7 +34,7 @@ const googleWalletHandler: RouteHandlerMethod = async (
         reply.status(404);
         return reply.send('Token not found');
       }
-      const correctHash = await modules.warehousing.buildAccessKeyForToken(tokenId);
+      const correctHash = await modules.warehousing.buildAccessKeyFromToken(token);
       if (!hash || hash !== correctHash) {
         logger.error('Token hash invalid for current owner', { tokenId });
         reply.status(403);
