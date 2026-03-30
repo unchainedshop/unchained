@@ -15,5 +15,12 @@ describe('Delivery', () => {
         deleted: null,
       });
     });
+
+    it('Return correct filter object when passed DOWNLOAD type', () => {
+      assert.deepStrictEqual(buildFindSelector({ type: DeliveryProviderType.DOWNLOAD }), {
+        type: 'DOWNLOAD',
+        deleted: null,
+      });
+    });
   });
 });

@@ -9,6 +9,8 @@ export const DeliveryProvider = {
     switch (provider?.type) {
       case DeliveryProviderType.PICKUP:
         return 'DeliveryProviderPickUp';
+      case DeliveryProviderType.DOWNLOAD:
+        return 'DeliveryProviderDownload';
       default:
         return 'DeliveryProviderShipping';
     }
