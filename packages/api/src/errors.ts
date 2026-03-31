@@ -241,14 +241,24 @@ export const CyclicProductBundlingNotSupportedError = createError(
   'Cyclic bundling detected, make sure bundled product is not the same as the bundle product itself',
 );
 
+export const EmailFormatInvalidError = createError(
+  'EmailFormatInvalid',
+  'Email address format is invalid',
+);
+
 export const EmailAlreadyExistsError = createError(
   'EmailAlreadyExists',
-  'Email already exists or is invalid',
+  'Email address already exists',
+);
+
+export const UsernameTooShortError = createError(
+  'UsernameTooShort',
+  'Username must be at least 3 characters',
 );
 
 export const UsernameAlreadyExistsError = createError(
   'UsernameAlreadyExists',
-  'Username already exists or is invalid',
+  'Username already exists',
 );
 
 export const UsernameOrEmailRequiredError = createError(

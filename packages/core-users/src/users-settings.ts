@@ -15,20 +15,25 @@ export const UserAccountAction = {
 } as const;
 
 export type UserAccountAction = (typeof UserAccountAction)[keyof typeof UserAccountAction];
+export type ValidationResult = { valid: true } | { valid: false; reason: string };
+
 export interface UserSettings {
   mergeUserCartsOnLogin: boolean;
   autoMessagingAfterUserCreation: boolean;
   earliestValidTokenDate: (
     type: typeof UserAccountAction.VERIFY_EMAIL | typeof UserAccountAction.RESET_PASSWORD,
   ) => Date;
-  validateEmail: (email: string) => Promise<boolean>;
-  validateUsername: (username: string) => Promise<boolean>;
+  validateEmail: (email: string) => Promise<ValidationResult>;
+  validateUsername: (username: string) => Promise<ValidationResult>;
   validateNewUser: (user: UserRegistrationData) => Promise<UserRegistrationData>;
   validatePassword: (password: string) => Promise<boolean>;
   configureSettings: (options: UserSettingsOptions, db: mongodb.Db) => void;
 }
 
-export type UserSettingsOptions = Omit<Partial<UserSettings>, 'configureSettings'>;
+export type UserSettingsOptions = Omit<Partial<UserSettings>, 'configureSettings' | 'validateEmail' | 'validateUsername'> & {
+  validateEmail?: (email: string) => Promise<ValidationResult>;
+  validateUsername?: (username: string) => Promise<ValidationResult>;
+};
 
 const defaultAutoMessagingAfterUserCreation = true;
 const defaultMergeUserCartsOnLogin = true;
@@ -56,8 +61,8 @@ export const userSettings: UserSettings = {
   mergeUserCartsOnLogin: defaultMergeUserCartsOnLogin,
   earliestValidTokenDate: defaultEarliestValidTokenDate,
   validateNewUser: defaultValidateNewUser,
-  validateEmail: () => Promise.resolve(true),
-  validateUsername: () => Promise.resolve(true),
+  validateEmail: () => Promise.resolve({ valid: true } as ValidationResult),
+  validateUsername: () => Promise.resolve({ valid: true } as ValidationResult),
   validatePassword: () => Promise.resolve(true),
 
   configureSettings: (
@@ -72,21 +77,21 @@ export const userSettings: UserSettings = {
     },
     db: mongodb.Db,
   ) => {
-    const defaultValidateEmail = async (rawEmail: string) => {
-      if (!rawEmail?.includes?.('@')) return false;
+    const defaultValidateEmail = async (rawEmail: string): Promise<ValidationResult> => {
+      if (!rawEmail?.includes?.('@')) return { valid: false, reason: 'EMAIL_FORMAT_INVALID' };
       const emailAlreadyExists = await db
         .collection('users')
         .countDocuments({ 'emails.address': insensitiveTrimmedRegexOperator(rawEmail) }, { limit: 1 });
-      if (emailAlreadyExists) return false;
-      return true;
+      if (emailAlreadyExists) return { valid: false, reason: 'EMAIL_ALREADY_EXISTS' };
+      return { valid: true };
     };
-    const defaultValidateUsername = async (rawUsername: string) => {
-      if (rawUsername?.length < 3) return false;
+    const defaultValidateUsername = async (rawUsername: string): Promise<ValidationResult> => {
+      if (rawUsername?.length < 3) return { valid: false, reason: 'USERNAME_TOO_SHORT' };
       const usernameAlreadyExists = await db
         .collection('users')
         .countDocuments({ username: insensitiveTrimmedRegexOperator(rawUsername) }, { limit: 1 });
-      if (usernameAlreadyExists) return false;
-      return true;
+      if (usernameAlreadyExists) return { valid: false, reason: 'USERNAME_ALREADY_EXISTS' };
+      return { valid: true };
     };
 
     userSettings.mergeUserCartsOnLogin = mergeUserCartsOnLogin ?? defaultMergeUserCartsOnLogin;

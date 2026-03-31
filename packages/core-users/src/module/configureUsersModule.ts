@@ -324,8 +324,9 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       const services: Record<string, any> = {};
 
       if (email) {
-        if (!(await userSettings.validateEmail(email))) {
-          throw new Error(`E-Mail address ${email} is invalid`, { cause: 'EMAIL_INVALID' });
+        const emailResult = await userSettings.validateEmail(email);
+        if (!emailResult.valid) {
+          throw new Error(`E-Mail address ${email} is invalid`, { cause: emailResult.reason });
         }
       }
 
@@ -353,8 +354,9 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       };
 
       if (username) {
-        if (!(await userSettings.validateUsername(username))) {
-          throw new Error(`Username ${username} is invalid`, { cause: 'USERNAME_INVALID' });
+        const usernameResult = await userSettings.validateUsername(username);
+        if (!usernameResult.valid) {
+          throw new Error(`Username ${username} is invalid`, { cause: usernameResult.reason });
         }
         doc.username = username;
       }
@@ -411,8 +413,9 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     async addEmail(userId: string, address: string): Promise<void> {
-      if (!(await userSettings.validateEmail(address))) {
-        throw new Error(`E-Mail address ${address} is invalid`, { cause: 'EMAIL_INVALID' });
+      const emailResult = await userSettings.validateEmail(address);
+      if (!emailResult.valid) {
+        throw new Error(`E-Mail address ${address} is invalid`, { cause: emailResult.reason });
       }
       await this.updateUser(
         { _id: userId, 'emails.address': { $not: insensitiveTrimmedRegexOperator(address) } },
@@ -686,8 +689,9 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     async setUsername(userId: string, username: string) {
-      if (!(await userSettings.validateUsername(username))) {
-        throw new Error(`Username ${username} is invalid`, { cause: 'USERNAME_INVALID' });
+      const usernameResult = await userSettings.validateUsername(username);
+      if (!usernameResult.valid) {
+        throw new Error(`Username ${username} is invalid`, { cause: usernameResult.reason });
       }
       const user = await Users.findOneAndUpdate(
         { _id: userId },

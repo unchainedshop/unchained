@@ -50,7 +50,7 @@ try {
          *   return false;
          * }
          */
-        validateEmail: async () => true,
+        validateEmail: async () => ({ valid: true as const }),
       },
     },
     adminUiConfig: {
