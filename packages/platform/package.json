@@ -1,10 +1,13 @@
 {
   "name": "@unchainedshop/platform",
   "description": "Complete e-commerce platform bundle for the Unchained Engine",
-  "version": "4.8.9",
+  "version": "4.8.10",
   "main": "lib/platform-index.js",
   "types": "lib/platform-index.d.ts",
   "type": "module",
+  "bin": {
+    "unchained": "./bin/unchained.js"
+  },
   "scripts": {
     "clean": "tsc -b --clean",
     "build": "tsc -b",
