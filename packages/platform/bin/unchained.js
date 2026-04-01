@@ -1,7 +1,15 @@
 #!/usr/bin/env node
 
 import { execFileSync } from 'node:child_process';
-import { cpSync, existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  cpSync,
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { join, relative } from 'node:path';
 import { tmpdir } from 'node:os';
 import { createRequire } from 'node:module';
@@ -53,7 +61,17 @@ console.log(`Cloning docs from ${ref} using sparse-checkout ...`);
 try {
   execFileSync(
     'git',
-    ['clone', '--filter=blob:none', '--no-checkout', '--depth', '1', '--branch', ref, GITHUB_REPO, tempDir],
+    [
+      'clone',
+      '--filter=blob:none',
+      '--no-checkout',
+      '--depth',
+      '1',
+      '--branch',
+      ref,
+      GITHUB_REPO,
+      tempDir,
+    ],
     { stdio: 'inherit' },
   );
   execFileSync('git', ['-C', tempDir, 'sparse-checkout', 'set', DOCS_SUBPATH], {
