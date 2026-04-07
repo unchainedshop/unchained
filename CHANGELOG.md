@@ -1,4 +1,35 @@
-# Unchained Engine v4.7 (unreleased)
+# Unchained Engine v4.8
+
+## Minor
+- **Breaking:** `modules.warehousing.buildAccessKeyForToken(tokenId)` renamed to `modules.warehousing.buildAccessKeyFromToken(token)`. The function now takes the full `TokenSurrogate` object and returns `Promise<string>` (no longer nullable). This removes an N+1 lookup pattern in token GraphQL resolvers.
+- **Breaking (Payrexx plugin):** environment variables `DATATRANS_SUCCESS_PATH`, `DATATRANS_ERROR_PATH`, `DATATRANS_CANCEL_PATH` renamed to `PAYREXX_SUCCESS_PATH`, `PAYREXX_ERROR_PATH`, `PAYREXX_CANCEL_PATH`.
+- **Breaking (Stripe plugin):** Stripe API pinned to `2026-03-25.dahlia`; peer dependency widened to `stripe >= 19 < 22`. Upgrade `stripe` to v21 if you depend on this plugin.
+- **Breaking (api context):** the internal `_inLoginMethodResponse` marker on `user` is now the exported symbol `IN_LOGIN_RESPONSE` from `@unchainedshop/api`. Custom express/fastify middlewares that read this flag must import the symbol.
+- **Breaking (Fastify adapter):** session registration now uses `rolling: false` and `saveUninitialized: false`, and login/logout flows explicitly call `await req.session.save()`. Custom Fastify session integrations may need the same treatment.
+- **Breaking (Roles):** `Mutation.setRoles` now throws when an unknown role name is supplied (previously accepted silently).
+- New `Query.registeredEventTypes: [String!]!` for introspecting events registered via `@unchainedshop/events`.
+- New DataLoader `tokenExportStatusLoader` exposed on the GraphQL context; token type resolvers use it to batch status lookups.
+- `services.warehousing.isTokenInvalidateable({ token, product? })` now accepts an optional `product` to skip the redundant lookup in hot paths.
+- `Mutation.changePassword` is now allowed for any logged-in user with the correct current password (was previously admin-only).
+- Schedule parser rewritten to a field-advancing algorithm — same `schedule.parse.cron(...)` / `schedule.parse.text(...)` API, dramatically faster for daily and hourly cadences.
+- ESLint upgraded to v10 across the workspace; Stripe SDK updated alongside.
+- Permission resolution refactored for performance (Map-based lookup, early exit).
+
+## Patch
+- Tokens GraphQL resolver fixed to remove N+1 query pattern.
+- Datatrans v2 merchant split rounding fixed (sum now exactly matches order total).
+- PayPal Checkout error wrapping now preserves the original `cause`.
+- Cryptopay webhook secret check uses timing-safe comparison.
+- Apple Wallet (`apple-handler-express`) switched from `res.writeHead` to `res.status` / `res.setHeader` for Express 5 compatibility.
+- Apple Wallet PKPass update fix.
+- Fastify Apple Wallet wildcard route corrected (`*` → `/*`).
+- New Fastify route for the PDF print handler.
+- Bulk importer error messages now include Zod validation issue summaries.
+- Bulk import: sequence is now correctly required.
+- Worker module log output redacts work payload (logs structured fields only).
+- Explicit Fastify session `save()` after login/impersonation.
+- `initDb` in `@unchainedshop/mongodb` now ensures the connection lifecycle.
+- Linting cleanup of `packages/platform/bin/unchained.js`.
 
 # Unchained Engine v4.6
 
