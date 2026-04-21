@@ -58,26 +58,11 @@ export const TokenSurrogateCollection = async (db: mongodb.Db) => {
   }
 
   await buildDbIndexes<TokenSurrogate>(TokenSurrogates, [
-    {
-      index: {
-        tokenSerialNumber: 1,
-      },
-    },
-    {
-      index: {
-        userId: 1,
-      },
-    },
-    {
-      index: {
-        productId: 1,
-      },
-    },
-    {
-      index: {
-        orderPositionId: 1,
-      },
-    },
+    { index: { tokenSerialNumber: 1 } },
+    { index: { userId: 1 } },
+    { index: { orderPositionId: 1 } },
+    { index: { walletAddress: 1 }, options: { sparse: true } },
+    { index: { productId: 1, 'meta.cancelled': 1 } as any, options: { sparse: true } },
   ]);
 
   return TokenSurrogates;

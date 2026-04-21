@@ -29,8 +29,10 @@ export const ProductMediaCollection = async (db: mongodb.Db) => {
     { index: { productId: 1, tags: 1, sortKey: 1 } },
   ]);
 
-  // ProductMediaTexts indexes
-  await buildDbIndexes(ProductMediaTexts, [{ index: { productMediaId: 1 } }, { index: { locale: 1 } }]);
+  await buildDbIndexes(ProductMediaTexts, [
+    { index: { productMediaId: 1 } },
+    { index: { locale: 1, productMediaId: 1 } },
+  ]);
 
   return {
     ProductMedias,

@@ -85,12 +85,10 @@ export const OrdersCollection = async (db: mongodb.Db) => {
     ]);
   }
 
-  // Order Indexes
   await buildDbIndexes<Order>(Orders, [
-    { index: { deleted: 1 } },
-    { index: { userId: 1 } },
-    { index: { status: 1 } },
-    { index: { orderNumber: 1 } },
+    { index: { deleted: 1, userId: 1, status: 1 } },
+    { index: { status: 1, updated: 1 } },
+    { index: { orderNumber: 1 }, options: { sparse: true } },
   ]);
 
   return Orders;

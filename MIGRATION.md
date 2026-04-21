@@ -4,6 +4,73 @@
 
 ---
 
+## v4.8.x Index Refactor (Ops Migration)
+
+This release refactors MongoDB indexes across every collection: compound indexes replace several singletons, new indexes cover previously unindexed hot paths, and a few unused indexes are removed. All *new* indexes are built automatically on boot via `buildDbIndexes`. However, **MongoDB does not drop removed indexes automatically** — they remain on existing production databases until explicitly dropped, consuming RAM and slowing writes.
+
+Run the following `mongosh` script once per environment after deploying:
+
+```js
+// Old singletons now covered by compound indexes — safe to drop.
+const toDrop = {
+  orders:              ['deleted_1', 'userId_1', 'status_1'],
+  order_positions:     ['productId_1_1'], // if exists under that exact name
+  order_discounts:     ['trigger_1'],
+  quotations:          ['userId_1', 'productId_1', 'status_1'],
+  enrollments:         ['userId_1', 'productId_1', 'status_1'],
+  products:            ['deleted_1', 'sequence_1', 'status_1'],
+  product_texts:       ['locale_1'],
+  product_variation_texts: ['locale_1'],
+  product_media_texts: ['locale_1'],
+  assortments:         ['deleted_1', 'isActive_1', 'isRoot_1', 'sequence_1'],
+  assortment_texts:    ['locale_1'],
+  assortment_media_texts: ['locale_1'],
+  work_queue:          ['started_-1', 'scheduled_1', 'priority_-1', 'type_1'],
+  payment_credentials: ['userId_1'],
+  'payment-providers':      ['type_1', 'created_1', 'deleted_1'],
+  'delivery-providers':     ['type_1', 'created_1', 'deleted_1'],
+  'warehousing-providers':  ['type_1', 'created_1', 'deleted_1'],
+  filter_productId_cache: ['filterId_1'],
+};
+
+for (const [coll, names] of Object.entries(toDrop)) {
+  const existing = new Set(db.getCollection(coll).getIndexes().map(i => i.name));
+  for (const name of names) {
+    if (existing.has(name)) {
+      print(`Dropping ${coll}.${name}`);
+      db.getCollection(coll).dropIndex(name);
+    }
+  }
+}
+```
+
+Run `db.<collection>.getIndexes()` to verify the actual index names in your deployment — MongoDB's auto-generated names follow the `field_direction` pattern (e.g. `userId_1`, `started_-1`), but partial indexes or custom names may differ. If a listed index doesn't exist, `dropIndex` will throw; the script above guards with a name-set check. Skipping this step is safe — the old indexes will simply continue to consume resources until you clean them up.
+
+### Breaking: cryptopay plugin is now async
+
+If you wire the cryptopay plugin directly, `configureCryptopayModule` is now `async`:
+
+```diff
+- const { cryptopay } = cryptopayPlugin.cryptopay.configure({ db });
++ const { cryptopay } = await cryptopayPlugin.cryptopay.configure({ db });
+```
+
+And `CryptopayTransactionsCollection(db)` is now `async` as well — it builds indexes on startup. Users loading the plugin via the standard `connectDefaultPluginsTo*` helpers don't need to change anything.
+
+### Breaking: WebAuthn credential requests now carry `created`
+
+New inserts into `accounts_webauthn_credentials_creation_requests` include a `created: Date` field used by a 15-minute TTL. Pre-existing records without this field will not auto-expire. Optionally clean them up once with:
+
+```js
+db.accounts_webauthn_credentials_creation_requests.deleteMany({ created: { $exists: false } });
+```
+
+### New environment variable
+
+- `EVENTS_TTL_SECONDS` (default `172800` = 2 days): retention for the `events` collection. Previously hardcoded.
+
+---
+
 ## v3 → v4
 
 ### Environment Variables

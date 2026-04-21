@@ -2,7 +2,7 @@ import { isDocumentDBCompatModeEnabled, mongodb } from '@unchainedshop/mongodb';
 import { buildDbIndexes } from '@unchainedshop/mongodb';
 import type { TimestampFields } from '@unchainedshop/mongodb';
 
-const TWO_DAYS_SEC = 172800;
+const EVENTS_TTL_SECONDS = Number(process.env.EVENTS_TTL_SECONDS) || 172800;
 
 export type Event = {
   _id: string;
@@ -32,7 +32,7 @@ export const EventsCollection = async (db: mongodb.Db) => {
   await buildDbIndexes(Events, [
     {
       index: { created: -1 },
-      options: { expireAfterSeconds: TWO_DAYS_SEC, name: 'created' },
+      options: { expireAfterSeconds: EVENTS_TTL_SECONDS, name: 'created' },
     },
     { index: { type: 1 }, options: { name: 'type' } },
   ]);

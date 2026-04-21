@@ -174,6 +174,30 @@ export const UsersCollection = async (db: mongodb.Db) => {
         sparse: true,
       },
     },
+    {
+      index: {
+        'services.web3.verified': 1,
+      } as any,
+      options: {
+        sparse: true,
+      },
+    },
+    {
+      index: {
+        tags: 1,
+      } as any,
+      options: {
+        sparse: true,
+      },
+    },
+    {
+      index: {
+        'lastLogin.timestamp': 1,
+      } as any,
+      options: {
+        sparse: true,
+      },
+    },
   ]);
 
   return Users;

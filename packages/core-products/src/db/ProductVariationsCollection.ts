@@ -38,7 +38,7 @@ export const ProductVariationsCollection = async (db: mongodb.Db) => {
 
   await buildDbIndexes(ProductVariationTexts, [
     { index: { productVariationId: 1 } },
-    { index: { locale: 1 } },
+    { index: { locale: 1, productVariationId: 1 } },
   ]);
 
   return {

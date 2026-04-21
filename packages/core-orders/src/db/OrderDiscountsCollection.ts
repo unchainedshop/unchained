@@ -15,10 +15,9 @@ export type OrderDiscount = {
 export const OrderDiscountsCollection = async (db: mongodb.Db) => {
   const OrderDiscounts = db.collection<OrderDiscount>('order_discounts');
 
-  // Order Indexes
   await buildDbIndexes<OrderDiscount>(OrderDiscounts, [
     { index: { orderId: 1 } },
-    { index: { trigger: 1 } },
+    { index: { code: 1 }, options: { sparse: true } },
   ]);
 
   return OrderDiscounts;

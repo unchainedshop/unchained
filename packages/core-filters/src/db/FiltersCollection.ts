@@ -42,8 +42,6 @@ export const FiltersCollection = async (db: mongodb.Db) => {
   const Filters = db.collection<Filter>('filters');
   const FilterTexts = db.collection<FilterText>('filter_texts');
   const FilterProductIdCache = db.collection<FilterProductIdCacheRecord>('filter_productId_cache');
-  // Filter Indexes
-
   if (!isDocumentDBCompatModeEnabled()) {
     await buildDbIndexes(Filters, [
       {
@@ -78,8 +76,10 @@ export const FiltersCollection = async (db: mongodb.Db) => {
     },
   ]);
 
-  // FilterProductIdCache Indexes
-  await buildDbIndexes(FilterProductIdCache, [{ index: { productIds: 1 } }, { index: { filterId: 1 } }]);
+  await buildDbIndexes(FilterProductIdCache, [
+    { index: { productIds: 1 } },
+    { index: { filterId: 1, filterOptionValue: 1 } },
+  ]);
 
   return {
     Filters,

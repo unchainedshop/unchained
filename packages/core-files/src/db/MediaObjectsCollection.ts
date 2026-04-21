@@ -20,6 +20,7 @@ export const MediaObjectsCollection = async (db: mongodb.Db) => {
 
   await buildDbIndexes<File>(MediaObjects, [
     { index: { url: 1 } },
+    { index: { path: 1 } },
     { index: { expires: 1 }, options: { expireAfterSeconds: 0 } },
     { index: { created: -1 } },
   ]);

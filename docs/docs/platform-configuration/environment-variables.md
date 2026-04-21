@@ -72,6 +72,12 @@ This document provides a comprehensive list of all environment variables used by
 | `UNCHAINED_DISABLE_PROVIDER_INVALIDATION` | - | Disable provider invalidation on startup (set to any truthy value) |
 | `UNCHAINED_ASSIGN_CART_FOR_USERS` | - | Automatically assign carts for users on startup (set to any truthy value) |
 
+## Events Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `EVENTS_TTL_SECONDS` | `172800` (2 days) | Retention period in seconds for records in the `events` collection (TTL index) |
+
 ## Notes
 
 - Environment variables marked as "Required" must be set for the application to start properly

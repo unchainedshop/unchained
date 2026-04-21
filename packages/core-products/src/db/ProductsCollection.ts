@@ -164,20 +164,15 @@ export const ProductsCollection = async (db: mongodb.Db) => {
     ]);
   }
 
-  // Product Indexes
   await buildDbIndexes(Products, [
-    { index: { deleted: 1 } },
-    { index: { sequence: 1 } },
+    { index: { deleted: 1, status: 1, sequence: 1 } },
     { index: { slugs: 1 } },
-    { index: { status: 1 } },
     { index: { tags: 1 } },
-    { index: { 'warehousing.sku': 1 } },
+    { index: { 'warehousing.sku': 1 }, options: { sparse: true } },
   ]);
 
-  // ProductTexts indexes
   await buildDbIndexes(ProductTexts, [
     { index: { productId: 1 } },
-    { index: { locale: 1 } },
     { index: { slug: 1 } },
     { index: { locale: 1, productId: 1 } },
   ]);

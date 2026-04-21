@@ -30,8 +30,11 @@ export type OrderPaymentDiscount = Omit<Price, '_id'> & {
 export const OrderPaymentsCollection = async (db: mongodb.Db) => {
   const OrderPayments = db.collection<OrderPayment>('order_payments');
 
-  // Order Indexes
-  await buildDbIndexes<OrderPayment>(OrderPayments, [{ index: { orderId: 1 } }]);
+  await buildDbIndexes<OrderPayment>(OrderPayments, [
+    { index: { orderId: 1 } },
+    { index: { paymentProviderId: 1 } },
+    { index: { transactionId: 1 }, options: { sparse: true } },
+  ]);
 
   return OrderPayments;
 };

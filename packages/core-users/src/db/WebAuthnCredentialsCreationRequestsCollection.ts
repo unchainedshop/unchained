@@ -5,6 +5,7 @@ export interface WebAuthnCredentialsCreationRequest {
   username: string;
   origin: string;
   factor: 'first' | 'second' | 'either';
+  created?: Date;
 }
 
 type Collection = WebAuthnCredentialsCreationRequest & { _id: string };
@@ -15,11 +16,8 @@ export const WebAuthnCredentialsCreationRequestsCollection = async (db: mongodb.
   );
 
   await buildDbIndexes<Collection>(WebAuthnCredentialsCreationRequests, [
-    {
-      index: {
-        username: 1,
-      },
-    },
+    { index: { username: 1 } },
+    { index: { created: 1 }, options: { expireAfterSeconds: 15 * 60 } },
   ]);
 
   return WebAuthnCredentialsCreationRequests;

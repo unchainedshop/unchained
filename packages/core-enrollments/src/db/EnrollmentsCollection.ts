@@ -94,11 +94,10 @@ export const EnrollmentsCollection = async (db: mongodb.Db) => {
     ]);
   }
 
-  // Enrollment Indexes
   await buildDbIndexes<Enrollment>(Enrollments, [
-    { index: { userId: 1 } },
-    { index: { productId: 1 } },
-    { index: { status: 1 } },
+    { index: { 'periods.orderId': 1 } as any },
+    { index: { userId: 1, status: 1 } },
+    { index: { productId: 1, status: 1 } },
     { index: { enrollmentNumber: 1 } },
   ]);
 

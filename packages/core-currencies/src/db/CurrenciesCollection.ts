@@ -40,11 +40,8 @@ export const CurrenciesCollection = async (db: mongodb.Db) => {
 
   await buildDbIndexes<Currency>(Currencies, [
     { index: { isoCode: 1 }, options: { unique: true } },
-    {
-      index: {
-        deleted: 1,
-      },
-    },
+    { index: { deleted: 1 } },
+    { index: { contractAddress: 1 }, options: { sparse: true } },
   ]);
 
   return Currencies;

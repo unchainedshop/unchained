@@ -58,12 +58,12 @@ export const WorkQueueCollection = async (db: mongodb.Db) => {
       index: { created: -1 },
       options: { expireAfterSeconds: 30 * ONE_DAY_IN_SECONDS },
     },
-    { index: { started: -1 } },
-    { index: { finished: 1 } },
-    { index: { scheduled: 1 } },
-    { index: { priority: -1 } },
+    // `status` is derived from started/finished/deleted via WORK_STATUS_FILTER_MAP — index the stored fields, not status.
+    { index: { scheduled: 1, type: 1 } },
     { index: { type: 1 } },
     { index: { originalWorkId: 1 } },
+    { index: { started: 1 }, options: { sparse: true } },
+    { index: { finished: 1 }, options: { sparse: true } },
   ]);
 
   return WorkQueue;

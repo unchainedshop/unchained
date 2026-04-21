@@ -73,11 +73,9 @@ export const QuotationsCollection = async (db: mongodb.Db) => {
     ]);
   }
 
-  // Quotation Indexes
   await buildDbIndexes<Quotation>(Quotations, [
-    { index: { userId: 1 } },
-    { index: { productId: 1 } },
-    { index: { status: 1 } },
+    { index: { userId: 1, status: 1 } },
+    { index: { productId: 1, status: 1 } },
   ]);
 
   return Quotations;
