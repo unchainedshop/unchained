@@ -14,7 +14,6 @@ import {
   type Contact,
   generateDbObjectId,
   type ModuleInput,
-  assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection.ts';
 import { enrollmentsSettings, type EnrollmentsSettingsOptions } from '../enrollments-settings.ts';
@@ -40,7 +39,6 @@ export const buildFindSelector = ({ queryString, status, userId }: EnrollmentQue
   if (userId) selector.userId = userId;
 
   if (queryString) {
-    assertDocumentDBCompatMode();
     selector.$text = { $search: queryString };
   }
   return selector;

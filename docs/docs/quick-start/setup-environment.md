@@ -38,11 +38,10 @@ Unless you set an explicit connection string, Unchained will automatically downl
 2. Create a new cluster
 3. Get your connection string and set it via `MONGO_URL` environment variable
 
-**Alternative: PostgreSQL via FerretDB**
+**Alternative: PostgreSQL via FerretDB 2.x**
 1. Set up PostgreSQL
-2. Start the FerretDB Docker container
+2. Start the FerretDB 2.x Docker container (1.x is not supported — text indexes are required)
 3. Get your connection string and set it via the `MONGO_URL` environment variable
-4. Set the `UNCHAINED_DOCUMENTDB_COMPAT_MODE` environment variable to `1`
 
 ## Next Steps
 

@@ -4,6 +4,21 @@
 
 ---
 
+## v4.8.x DocumentDB Compatibility Mode Removed
+
+`UNCHAINED_DOCUMENTDB_COMPAT_MODE` is no longer read. The helpers `isDocumentDBCompatModeEnabled` and `assertDocumentDBCompatMode` have been deleted from `@unchainedshop/mongodb`. Text indexes are now created unconditionally on every collection and `$text` queries run unconditionally. **If you still target AWS DocumentDB ≤4.0 or FerretDB 1.x, do not upgrade** — those runtimes do not support text indexes and startup will fail. Supported text-search targets now:
+
+| Runtime | Text indexes | Since |
+|---|---|---|
+| MongoDB 4.4+ | ✅ | 2.6 |
+| AWS DocumentDB 5.0+ | ✅ | Feb 2024 |
+| AWS DocumentDB 8.0 | ✅ (Text Index V2) | 2026 |
+| FerretDB 2.x | ✅ | 2.0 GA |
+| AWS DocumentDB ≤4.0 | ❌ | not supported |
+| FerretDB 1.x | ❌ | not supported |
+
+Remove `UNCHAINED_DOCUMENTDB_COMPAT_MODE` from your deployment env. Any downstream code importing `isDocumentDBCompatModeEnabled` or `assertDocumentDBCompatMode` from `@unchainedshop/mongodb` must be deleted — there is no replacement.
+
 ## v4.8.x Index Refactor (Ops Migration)
 
 This release refactors MongoDB indexes across every collection: compound indexes replace several singletons, new indexes cover previously unindexed hot paths, and a few unused indexes are removed. All *new* indexes are built automatically on boot via `buildDbIndexes`. However, **MongoDB does not drop removed indexes automatically** — they remain on existing production databases until explicitly dropped, consuming RAM and slowing writes.
@@ -75,7 +90,6 @@ db.accounts_webauthn_credentials_creation_requests.deleteMany({ created: { $exis
 
 ### Environment Variables
 
-- Add `UNCHAINED_DOCUMENTDB_COMPAT_MODE` for FerretDB/AWS/Azure DocumentDB compatibility
 - **Breaking:** `UNCHAINED_TOKEN_SECRET` now requires a minimum of 32 characters. Update your secret if it was shorter in previous versions
 
 ### Peer Dependencies

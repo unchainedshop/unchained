@@ -4,7 +4,6 @@ import {
   buildSortOptions,
   generateDbObjectId,
   type ModuleInput,
-  assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import { getRegisteredEvents } from '@unchainedshop/events';
 import { SortDirection, type SortOption, type DateFilterInput } from '@unchainedshop/utils';
@@ -29,7 +28,6 @@ export const buildFindSelector = ({ types, queryString, created }: EventQuery) =
 
   if (types && Array.isArray(types)) selector.type = { $in: types };
   if (queryString) {
-    assertDocumentDBCompatMode();
     selector.$text = { $search: queryString };
   }
   if (created) {

@@ -5,7 +5,6 @@ import {
   type Contact,
   type LogFields,
   type TimestampFields,
-  isDocumentDBCompatModeEnabled,
 } from '@unchainedshop/mongodb';
 import type { DateFilterInput } from '@unchainedshop/utils';
 
@@ -59,31 +58,29 @@ export interface OrderQuery {
 export const OrdersCollection = async (db: mongodb.Db) => {
   const Orders = db.collection<Order>('orders');
 
-  if (!isDocumentDBCompatModeEnabled()) {
-    await buildDbIndexes<Order>(Orders, [
-      {
-        index: {
-          _id: 'text',
-          userId: 'text',
-          orderNumber: 'text',
-          status: 'text',
-          'contact.emailAddress': 'text',
-          'contact.telNumber': 'text',
-        } as any,
-        options: {
-          weights: {
-            _id: 8,
-            userId: 3,
-            orderNumber: 6,
-            'contact.telNumber': 5,
-            'contact.emailAddress': 4,
-            status: 1,
-          },
-          name: 'order_fulltext_search',
+  await buildDbIndexes<Order>(Orders, [
+    {
+      index: {
+        _id: 'text',
+        userId: 'text',
+        orderNumber: 'text',
+        status: 'text',
+        'contact.emailAddress': 'text',
+        'contact.telNumber': 'text',
+      } as any,
+      options: {
+        weights: {
+          _id: 8,
+          userId: 3,
+          orderNumber: 6,
+          'contact.telNumber': 5,
+          'contact.emailAddress': 4,
+          status: 1,
         },
+        name: 'order_fulltext_search',
       },
-    ]);
-  }
+    },
+  ]);
 
   await buildDbIndexes<Order>(Orders, [
     { index: { deleted: 1, userId: 1, status: 1 } },

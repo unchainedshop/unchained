@@ -53,13 +53,6 @@ await stopDb(db);
 | `findLocalizedText` | Find localized text by locale with fallback |
 | `insensitiveTrimmedRegexOperator` | Create case-insensitive trimmed regex for text search |
 
-### DocumentDB Compatibility
-
-| Export | Description |
-|--------|-------------|
-| `isDocumentDBCompatModeEnabled` | Check if AWS DocumentDB compatibility mode is enabled |
-| `assertDocumentDBCompatMode` | Throw error if DocumentDB compat mode is enabled (for unsupported operations) |
-
 ### Re-exports
 
 | Export | Description |
@@ -77,12 +70,6 @@ await stopDb(db);
 | `Migration` | Interface for database migrations |
 | `MigrationRepository` | Interface for managing migrations |
 | `ModuleInput` | Interface for core module initialization input |
-
-## Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `UNCHAINED_DOCUMENTDB_COMPAT_MODE` | Enable AWS DocumentDB compatibility mode |
 
 ## Best Practices
 
@@ -159,31 +146,7 @@ For full-text search, create compound text indexes:
 }
 ```
 
-**Important:** Text indexes are not supported in DocumentDB compatibility mode. Use `isDocumentDBCompatModeEnabled()` to conditionally create them.
-
-### DocumentDB Compatibility
-
-When running on AWS DocumentDB, some MongoDB features are not supported:
-
-| Feature | Alternative |
-|---------|-------------|
-| Text indexes | Use application-level search or external search service |
-| `$text` queries | Use regex queries (less performant) |
-| Some aggregation operators | Check DocumentDB documentation |
-
-Use the compatibility helpers:
-
-```typescript
-import { isDocumentDBCompatModeEnabled, assertDocumentDBCompatMode } from '@unchainedshop/mongodb';
-
-// Check before using unsupported features
-if (!isDocumentDBCompatModeEnabled()) {
-  // Create text index
-}
-
-// Throw error if DocumentDB mode is enabled
-assertDocumentDBCompatMode(); // Throws if in compat mode
-```
+**Note:** Text indexes are supported natively on MongoDB 4.4+, AWS DocumentDB 5.0+, and FerretDB 2.x. If you target AWS DocumentDB ≤4.0 or FerretDB 1.x, use an external search service instead (Elasticsearch, Algolia, Meilisearch).
 
 ## License
 

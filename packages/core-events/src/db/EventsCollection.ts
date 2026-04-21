@@ -1,4 +1,4 @@
-import { isDocumentDBCompatModeEnabled, mongodb } from '@unchainedshop/mongodb';
+import { mongodb } from '@unchainedshop/mongodb';
 import { buildDbIndexes } from '@unchainedshop/mongodb';
 import type { TimestampFields } from '@unchainedshop/mongodb';
 
@@ -14,20 +14,18 @@ export type Event = {
 export const EventsCollection = async (db: mongodb.Db) => {
   const Events = db.collection<Event>('events');
 
-  if (!isDocumentDBCompatModeEnabled()) {
-    await buildDbIndexes(Events, [
-      {
-        index: { _id: 'text', type: 'text' },
-        options: {
-          weights: {
-            _id: 8,
-            type: 4,
-          },
-          name: 'events_fulltext_search',
+  await buildDbIndexes(Events, [
+    {
+      index: { _id: 'text', type: 'text' },
+      options: {
+        weights: {
+          _id: 8,
+          type: 4,
         },
+        name: 'events_fulltext_search',
       },
-    ]);
-  }
+    },
+  ]);
 
   await buildDbIndexes(Events, [
     {

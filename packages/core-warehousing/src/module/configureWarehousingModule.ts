@@ -5,7 +5,6 @@ import {
   escapeRegexString,
   type mongodb,
   type ModuleInput,
-  assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import {
   type WarehousingProvider,
@@ -65,7 +64,6 @@ export const buildFindSelector = ({
 export const buildTokenFindSelector = ({ queryString, walletAddressExists, ...rest }: TokenQuery) => {
   const selector: mongodb.Filter<TokenSurrogate> = { ...(rest || {}) };
   if (queryString) {
-    assertDocumentDBCompatMode();
     (selector as any).$text = { $search: queryString };
   }
   if (walletAddressExists !== undefined) {

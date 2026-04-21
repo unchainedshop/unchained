@@ -1,9 +1,4 @@
-import {
-  buildDbIndexes,
-  isDocumentDBCompatModeEnabled,
-  mongodb,
-  type TimestampFields,
-} from '@unchainedshop/mongodb';
+import { buildDbIndexes, mongodb, type TimestampFields } from '@unchainedshop/mongodb';
 
 export type AssortmentProductIdCacheRecord = {
   _id: string;
@@ -82,16 +77,14 @@ export const AssortmentsCollection = async (db: mongodb.Db) => {
     'assortment_productId_cache',
   );
 
-  if (!isDocumentDBCompatModeEnabled()) {
-    await buildDbIndexes(Assortments, [
-      {
-        index: { slugs: 'text' },
-        options: {
-          name: 'assortments_fulltext_search',
-        },
+  await buildDbIndexes(Assortments, [
+    {
+      index: { slugs: 'text' },
+      options: {
+        name: 'assortments_fulltext_search',
       },
-    ]);
-  }
+    },
+  ]);
 
   await buildDbIndexes(Assortments, [
     { index: { deleted: 1, isActive: 1, isRoot: 1, sequence: 1 } },
@@ -99,20 +92,18 @@ export const AssortmentsCollection = async (db: mongodb.Db) => {
     { index: { tags: 1 } },
   ]);
 
-  if (!isDocumentDBCompatModeEnabled()) {
-    await buildDbIndexes(AssortmentTexts, [
-      {
-        index: { title: 'text', subtitle: 'text' },
-        options: {
-          weights: {
-            title: 8,
-            subtitle: 6,
-          },
-          name: 'assortments_texts_fulltext_search',
+  await buildDbIndexes(AssortmentTexts, [
+    {
+      index: { title: 'text', subtitle: 'text' },
+      options: {
+        weights: {
+          title: 8,
+          subtitle: 6,
         },
+        name: 'assortments_texts_fulltext_search',
       },
-    ]);
-  }
+    },
+  ]);
 
   await buildDbIndexes(AssortmentTexts, [
     { index: { assortmentId: 1 } },

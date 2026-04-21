@@ -166,21 +166,11 @@ searchProducts(queryString: "shoes -sandals")
 MongoDB applies stemming based on language:
 - "running" matches "run", "runs", "runner"
 
-## DocumentDB Compatibility
-
-Local Search is automatically disabled when `UNCHAINED_DOCUMENTDB_COMPAT_MODE` is set:
-
-```bash
-UNCHAINED_DOCUMENTDB_COMPAT_MODE=true
-```
-
-In this case, implement an alternative search adapter using a service like:
-- Elasticsearch
-- Algolia
-- Meilisearch
-- OpenSearch
-
 ## Custom Search Adapter
+
+For richer search behavior (typo-tolerance, faceting, vector similarity), implement an alternative adapter using a service like Elasticsearch, Algolia, Meilisearch, or OpenSearch.
+
+
 
 For external search services:
 

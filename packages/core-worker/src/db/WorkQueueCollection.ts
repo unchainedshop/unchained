@@ -1,4 +1,4 @@
-import { isDocumentDBCompatModeEnabled, type TimestampFields } from '@unchainedshop/mongodb';
+import { type TimestampFields } from '@unchainedshop/mongodb';
 import { type mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 
 const ONE_DAY_IN_SECONDS = 86400;
@@ -35,23 +35,21 @@ export type Work = {
 export const WorkQueueCollection = async (db: mongodb.Db) => {
   const WorkQueue = db.collection<Work>('work_queue');
 
-  if (!isDocumentDBCompatModeEnabled()) {
-    await buildDbIndexes<Work>(WorkQueue, [
-      {
-        index: { originalWorkId: 'text', _id: 'text', worker: 'text', input: 'text', type: 'text' },
-        options: {
-          weights: {
-            _id: 8,
-            originalWorkId: 6,
-            type: 5,
-            worker: 4,
-            input: 2,
-          },
-          name: 'workqueue_fulltext_search',
+  await buildDbIndexes<Work>(WorkQueue, [
+    {
+      index: { originalWorkId: 'text', _id: 'text', worker: 'text', input: 'text', type: 'text' },
+      options: {
+        weights: {
+          _id: 8,
+          originalWorkId: 6,
+          type: 5,
+          worker: 4,
+          input: 2,
         },
+        name: 'workqueue_fulltext_search',
       },
-    ]);
-  }
+    },
+  ]);
 
   await buildDbIndexes<Work>(WorkQueue, [
     {

@@ -9,7 +9,6 @@ This document provides a comprehensive list of all environment variables used by
 | `NODE_ENV` | - | Node environment (development, test, production). Affects caching, logging, and other behaviors |
 | `PORT` | - | Base port number used by the application. MongoDB memory server uses PORT+1 |
 | `MONGO_URL` | - | MongoDB connection URL. If not set, uses mongodb-memory-server in development/test |
-| `UNCHAINED_DOCUMENTDB_COMPAT_MODE` | - | Enable AWS DocumentDB compatibility mode (set to any truthy value to enable) |
 | `UNCHAINED_API_VERSION` | `packageJson.version` | API version returned in GraphQL context, defaults to package.json version |
 | `UNCHAINED_LANG` | `de` | Default language code |
 | `UNCHAINED_COUNTRY` | `CH` | Default country code |

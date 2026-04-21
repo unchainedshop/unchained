@@ -1,9 +1,4 @@
-import {
-  mongodb,
-  buildDbIndexes,
-  type TimestampFields,
-  isDocumentDBCompatModeEnabled,
-} from '@unchainedshop/mongodb';
+import { mongodb, buildDbIndexes, type TimestampFields } from '@unchainedshop/mongodb';
 import type { Price } from '@unchainedshop/utils';
 
 export const ProductStatus = {
@@ -139,30 +134,28 @@ export const ProductsCollection = async (db: mongodb.Db) => {
   const Products = db.collection<Product>('products');
   const ProductTexts = db.collection<ProductText>('product_texts');
 
-  if (!isDocumentDBCompatModeEnabled()) {
-    await buildDbIndexes(Products, [
-      {
-        index: { 'warehousing.sku': 'text', slugs: 'text' },
-        options: {
-          name: 'products_fulltext_search',
-        },
+  await buildDbIndexes(Products, [
+    {
+      index: { 'warehousing.sku': 'text', slugs: 'text' },
+      options: {
+        name: 'products_fulltext_search',
       },
-    ]);
-    await buildDbIndexes(ProductTexts, [
-      {
-        index: { title: 'text', subtitle: 'text', vendor: 'text', brand: 'text' },
-        options: {
-          weights: {
-            title: 8,
-            subtitle: 6,
-            vendor: 5,
-            brand: 4,
-          },
-          name: 'product_texts_fulltext_search',
+    },
+  ]);
+  await buildDbIndexes(ProductTexts, [
+    {
+      index: { title: 'text', subtitle: 'text', vendor: 'text', brand: 'text' },
+      options: {
+        weights: {
+          title: 8,
+          subtitle: 6,
+          vendor: 5,
+          brand: 4,
         },
+        name: 'product_texts_fulltext_search',
       },
-    ]);
-  }
+    },
+  ]);
 
   await buildDbIndexes(Products, [
     { index: { deleted: 1, status: 1, sequence: 1 } },
