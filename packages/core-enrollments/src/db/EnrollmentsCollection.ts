@@ -96,6 +96,7 @@ export const EnrollmentsCollection = async (db: mongodb.Db) => {
     { index: { 'periods.orderId': 1 } as any },
     { index: { userId: 1, status: 1 } },
     { index: { productId: 1, status: 1 } },
+    { index: { status: 1 } },
     { index: { enrollmentNumber: 1 } },
   ]);
 

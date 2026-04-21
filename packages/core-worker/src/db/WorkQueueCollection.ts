@@ -62,6 +62,7 @@ export const WorkQueueCollection = async (db: mongodb.Db) => {
     { index: { originalWorkId: 1 } },
     { index: { started: 1 }, options: { sparse: true } },
     { index: { finished: 1 }, options: { sparse: true } },
+    { index: { priority: -1 } },
   ]);
 
   return WorkQueue;
