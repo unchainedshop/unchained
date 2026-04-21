@@ -68,6 +68,14 @@ export const configureOrderPaymentsModule = ({
       return OrderPayments.findOne(buildFindOrderPaymentByIdSelector(orderPaymentId), options);
     },
 
+    findOrderPayments: async (
+      { orderPaymentIds }: { orderPaymentIds: string[] },
+      options?: mongodb.FindOptions,
+    ): Promise<OrderPayment[]> => {
+      if (!orderPaymentIds?.length) return [];
+      return OrderPayments.find({ _id: { $in: orderPaymentIds } }, options).toArray();
+    },
+
     findOrderPaymentsByProviderIds: async (
       {
         paymentProviderIds,

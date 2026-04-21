@@ -35,43 +35,26 @@ export const Order = {
     return loaders.countryLoader.load({ isoCode: order.countryCode });
   },
 
-  async discounts(order: OrderType, _, { modules }: Context): Promise<OrderDiscount[]> {
-    return modules.orders.discounts.findOrderDiscounts({ orderId: order._id });
+  async discounts(order: OrderType, _, { loaders }: Context): Promise<OrderDiscount[]> {
+    return loaders.orderDiscountsLoader.load({ orderId: order._id });
   },
 
-  async delivery(order: OrderType, _, { modules }: Context): Promise<OrderDelivery | null> {
-    const orderDelivery =
-      order.deliveryId &&
-      (await modules.orders.deliveries.findDelivery({
-        orderDeliveryId: order.deliveryId,
-      }));
-
-    if (!orderDelivery) return null;
-    return orderDelivery;
+  async delivery(order: OrderType, _, { loaders }: Context): Promise<OrderDelivery | null> {
+    if (!order.deliveryId) return null;
+    return loaders.orderDeliveryLoader.load({ orderDeliveryId: order.deliveryId });
   },
 
-  async enrollment(order: OrderType, _, { modules }: Context): Promise<Enrollment | null> {
-    const enrollment = await modules.enrollments.findEnrollment({
-      orderId: order._id,
-    });
-    if (!enrollment) return null;
-    return enrollment;
+  async enrollment(order: OrderType, _, { loaders }: Context): Promise<Enrollment | null> {
+    return loaders.enrollmentByOrderLoader.load({ orderId: order._id });
   },
 
-  async items(order: OrderType, _, { modules }: Context): Promise<OrderPosition[]> {
-    return modules.orders.positions.findOrderPositions({
-      orderId: order._id,
-    });
+  async items(order: OrderType, _, { loaders }: Context): Promise<OrderPosition[]> {
+    return loaders.orderPositionsLoader.load({ orderId: order._id });
   },
 
-  async payment(order: OrderType, _, { modules }: Context): Promise<OrderPayment | null> {
-    const payment =
-      order.paymentId &&
-      (await modules.orders.payments.findOrderPayment({
-        orderPaymentId: order.paymentId,
-      }));
-    if (!payment) return null;
-    return payment;
+  async payment(order: OrderType, _, { loaders }: Context): Promise<OrderPayment | null> {
+    if (!order.paymentId) return null;
+    return loaders.orderPaymentLoader.load({ orderPaymentId: order.paymentId });
   },
 
   status(order: OrderType): string {

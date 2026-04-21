@@ -1,9 +1,4 @@
-import {
-  mongodb,
-  buildDbIndexes,
-  type TimestampFields,
-  type LogFields,
-} from '@unchainedshop/mongodb';
+import { mongodb, buildDbIndexes, type TimestampFields, type LogFields } from '@unchainedshop/mongodb';
 
 // NOTE: Renamed from FULLFILLED to FULFILLED in v5.0.0
 // Migration for status: db.quotations.updateMany({ status: 'FULLFILLED' }, { $set: { status: 'FULFILLED' } })

@@ -153,6 +153,17 @@ export const configureEnrollmentsModule = async ({
       return Enrollments.findOne({ 'periods.orderId': params.orderId, deleted: null }, options);
     },
 
+    findEnrollmentsByOrderIds: async (
+      { orderIds }: { orderIds: string[] },
+      options?: mongodb.FindOptions,
+    ): Promise<Enrollment[]> => {
+      if (!orderIds?.length) return [];
+      return Enrollments.find(
+        { 'periods.orderId': { $in: orderIds }, deleted: null },
+        options,
+      ).toArray();
+    },
+
     findEnrollments: async ({
       limit,
       offset,

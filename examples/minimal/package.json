@@ -2,7 +2,7 @@
   "name": "@unchainedshop/example-minimal",
   "description": "Minimal Example for Unchained Engine",
   "private": true,
-  "version": "4.8.10",
+  "version": "4.8.11",
   "license": "EUPL-1.2",
   "type": "module",
   "homepage": "https://unchained.shop",
@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
-    "@fastify/multipart": "^9.0.3",
+    "@fastify/multipart": "^10.0.0",
     "@fastify/session": "^11.1.0",
     "@unchainedshop/platform": "^4.6.0",
     "@unchainedshop/plugins": "^4.6.0",

@@ -24,9 +24,14 @@ export const configureOrderDiscountsModule = ({
       return OrderDiscounts.findOne(buildFindOrderDiscountByIdSelector(discountId), options);
     },
 
-    findOrderDiscounts: async ({ orderId }: { orderId: string }): Promise<OrderDiscount[]> => {
-      const discounts = OrderDiscounts.find({ orderId });
-      return discounts.toArray();
+    findOrderDiscounts: async (
+      query: { orderId: string } | { orderIds: string[] },
+    ): Promise<OrderDiscount[]> => {
+      if ('orderIds' in query) {
+        if (!query.orderIds?.length) return [];
+        return OrderDiscounts.find({ orderId: { $in: query.orderIds } }).toArray();
+      }
+      return OrderDiscounts.find({ orderId: query.orderId }).toArray();
     },
 
     create: async (
