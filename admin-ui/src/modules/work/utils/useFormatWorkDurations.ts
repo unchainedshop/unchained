@@ -21,8 +21,8 @@ const useFormatWorkDurations = () => {
     const { started, finished } = durations;
     const now = new Date().getTime();
     if (!started) return null;
-    let durationInMS = null;
-    if (started && !finished) {
+    let durationInMS: number;
+    if (!finished) {
       durationInMS = now - new Date(started).getTime();
     } else {
       durationInMS = new Date(finished).getTime() - new Date(started).getTime();

@@ -372,7 +372,7 @@ const Layout = ({
                 <ArrowRightEndOnRectangleIcon className="h-5 w-5" />
               </button>
               <Link
-                href="https://docs.unchained.shop/src/docs/admin-ui/overview"
+                href="https://docs.unchained.shop/admin-ui/overview"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800"
@@ -500,7 +500,7 @@ const Layout = ({
                 </button>
                 <LanguageToggle narrowNav={narrowNav} />
                 <Link
-                  href="https://docs.unchained.shop/src/docs/admin-ui/overview"
+                  href="https://docs.unchained.shop/admin-ui/overview"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400"
@@ -544,7 +544,7 @@ const Layout = ({
                 <div className="ml-2 flex items-center space-x-2">
                   <LanguageToggle narrowNav={narrowNav} />
                   <Link
-                    href="https://docs.unchained.shop/src/docs/admin-ui/overview"
+                    href="https://docs.unchained.shop/admin-ui/overview"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800"
@@ -611,7 +611,7 @@ const Layout = ({
           <div className="flex flex-wrap justify-center items-center gap-2 pr-4">
             <LanguageToggle narrowNav={false} />
             <Link
-              href="https://docs.unchained.shop/src/docs/admin-ui/overview"
+              href="https://docs.unchained.shop/admin-ui/overview"
               target="_blank"
               rel="noopener noreferrer"
               className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800"

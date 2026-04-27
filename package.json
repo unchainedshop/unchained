@@ -64,7 +64,7 @@
   ],
   "scripts": {
     "typedoc": "typedoc --entryPointStrategy packages ./packages/* --out ./typedocs && rm -Rf ./docs/static/types && mv ./typedocs ./docs/static/types",
-    "lint": "eslint --fix --ext=js --ext=ts .",
+    "lint": "eslint --fix .",
     "test": "node --no-warnings --env-file .env.tests --env-file-if-exists=.env --test-isolation=none --test-force-exit --test-global-setup=tests/helpers.js --test --test-concurrency=1 'packages/**/*.test.ts' 'tests/*.test.*'",
     "test:coverage": "node --no-warnings --env-file .env.tests --env-file-if-exists=.env --test-isolation=none --test-force-exit --test-global-setup=tests/helpers.js --test --test-concurrency=1 --experimental-test-coverage 'packages/**/*.test.ts' 'tests/*.test.*'",
     "test:run:unit": "node --test 'packages/**/*.test.ts'",
@@ -80,9 +80,9 @@
     "build:admin-ui": "cd admin-ui && npm run build"
   },
   "devDependencies": {
-    "@eslint/js": "^9.26.0",
+    "@eslint/js": "^10.0.0",
     "@types/node": "^25.0.2",
-    "eslint": "^9.39.2",
+    "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^17.0.0",
