@@ -88,6 +88,7 @@
     "prettier": "^3.7.4",
     "react": "19.2",
     "react-dom": "19.2",
+    "react-is": "19.2",
     "react-intl": "^10.1.1",
     "react-markdown": "^10.1.0",
     "react-select": "^5.10.2",

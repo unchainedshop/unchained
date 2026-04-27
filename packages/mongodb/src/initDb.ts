@@ -53,10 +53,10 @@ export const startDb = async (options?: { forceInMemory?: boolean; port?: number
         `MongoDB database files in .db are incompatible with the current MongoDB version. ` +
           `This usually happens after a MongoDB upgrade. ` +
           `To fix this, remove the .db directory: rm -rf ${process.cwd()}/.db`,
-        { cause: error },
+        { cause: e },
       );
     }
-    throw error;
+    throw e;
   }
 
   throw new Error(

@@ -158,9 +158,8 @@ export async function createAuthContext(
   const authResult = token ? await verifyToken(token) : {};
 
   // OWASP: Verify fingerprint if present in token
-  let fingerprintValid = true;
   if (authResult.fingerprintHash && fingerprintCookie) {
-    fingerprintValid = verifyFingerprint(fingerprintCookie, authResult.fingerprintHash);
+    const fingerprintValid = verifyFingerprint(fingerprintCookie, authResult.fingerprintHash);
     if (!fingerprintValid) {
       logger.warn('Token sidejacking detected: fingerprint mismatch', {
         userId: authResult.userId,
@@ -175,7 +174,6 @@ export async function createAuthContext(
     logger.warn('Token sidejacking detected: fingerprint cookie missing', {
       userId: authResult.userId,
     });
-    fingerprintValid = false;
     authResult.userId = undefined;
     authResult.tokenVersion = undefined;
     authResult.impersonatorId = undefined;

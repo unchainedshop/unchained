@@ -54,7 +54,7 @@ export default function createBulkExporterFactory(bulkExporterOptions?: BulkExpo
             exportHandler.payloadSchema.parse(payload);
           }
         } catch (e) {
-          throw new Error(`${type}: ${(e as Error).message}`);
+          throw new Error(`${type}: ${(e as Error).message}`, { cause: e });
         }
       },
 
