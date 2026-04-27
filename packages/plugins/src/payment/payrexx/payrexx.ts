@@ -1,15 +1,15 @@
 const getRedirects = () => {
   const {
     EMAIL_WEBSITE_URL,
-    DATATRANS_SUCCESS_PATH = '/payrexx/success',
-    DATATRANS_ERROR_PATH = '/payrexx/error',
-    DATATRANS_CANCEL_PATH = '/payrexx/cancel',
+    PAYREXX_SUCCESS_PATH = '/payrexx/success',
+    PAYREXX_ERROR_PATH = '/payrexx/error',
+    PAYREXX_CANCEL_PATH = '/payrexx/cancel',
   } = process.env;
 
   return {
-    successRedirectUrl: `${EMAIL_WEBSITE_URL}${DATATRANS_SUCCESS_PATH}`,
-    failedRedirectUrl: `${EMAIL_WEBSITE_URL}${DATATRANS_ERROR_PATH}`,
-    cancelRedirectUrl: `${EMAIL_WEBSITE_URL}${DATATRANS_CANCEL_PATH}`,
+    successRedirectUrl: `${EMAIL_WEBSITE_URL}${PAYREXX_SUCCESS_PATH}`,
+    failedRedirectUrl: `${EMAIL_WEBSITE_URL}${PAYREXX_ERROR_PATH}`,
+    cancelRedirectUrl: `${EMAIL_WEBSITE_URL}${PAYREXX_CANCEL_PATH}`,
   };
 };
 
