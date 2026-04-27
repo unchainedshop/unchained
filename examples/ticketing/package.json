@@ -2,7 +2,7 @@
   "name": "@unchainedshop/example-ticketing",
   "description": "Kitchensink for Unchained Engine",
   "private": true,
-  "version": "5.0.0-alpha.1",
+  "version": "5.0.0-alpha.2",
   "license": "EUPL-1.2",
   "type": "module",
   "homepage": "https://unchained.shop",

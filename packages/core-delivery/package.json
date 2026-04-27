@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-delivery",
   "description": "Delivery provider management module for the Unchained Engine",
-  "version": "5.0.0-alpha.1",
+  "version": "5.0.0-alpha.2",
   "main": "lib/delivery-index.js",
   "types": "lib/delivery-index.d.ts",
   "type": "module",
