@@ -2,7 +2,6 @@ import {
   mongodb,
   type TimestampFields,
   type ModuleInput,
-  assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import { generateDbFilterById, buildSortOptions, generateDbObjectId } from '@unchainedshop/mongodb';
@@ -37,7 +36,6 @@ export const buildFindSelector = ({
     selector.isoCode = { $in: isoCodes };
   }
   if (queryString) {
-    assertDocumentDBCompatMode();
     selector.$text = { $search: queryString };
   }
   return selector;

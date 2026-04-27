@@ -1,5 +1,5 @@
 import type { OrderQuery, Order } from '../db/OrdersCollection.ts';
-import { assertDocumentDBCompatMode, mongodb } from '@unchainedshop/mongodb';
+import { mongodb } from '@unchainedshop/mongodb';
 
 export const buildFindSelector = ({
   includeCarts,
@@ -42,7 +42,6 @@ export const buildFindSelector = ({
     selector.status = { $ne: null };
   }
   if (queryString) {
-    assertDocumentDBCompatMode();
     (selector as any).$text = { $search: queryString };
   }
 

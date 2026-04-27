@@ -14,7 +14,6 @@ This document provides a comprehensive list of all environment variables used by
 | `NODE_ENV` | - | Node environment (development, test, production). Affects caching, logging, and other behaviors |
 | `PORT` | - | Base port number used by the application. MongoDB memory server uses PORT+1 |
 | `MONGO_URL` | - | MongoDB connection URL. If not set, uses mongodb-memory-server in development/test |
-| `UNCHAINED_DOCUMENTDB_COMPAT_MODE` | - | Enable AWS DocumentDB compatibility mode (set to any truthy value to enable) |
 | `UNCHAINED_API_VERSION` | `packageJson.version` | API version returned in GraphQL context, defaults to package.json version |
 | `UNCHAINED_LANG` | `de` | Default language code |
 | `UNCHAINED_COUNTRY` | `CH` | Default country code |
@@ -75,6 +74,12 @@ This document provides a comprehensive list of all environment variables used by
 | `UNCHAINED_DISABLE_WORKER` | - | Disable worker system entirely (set to any truthy value) |
 | `UNCHAINED_DISABLE_PROVIDER_INVALIDATION` | - | Disable provider invalidation on startup (set to any truthy value) |
 | `UNCHAINED_ASSIGN_CART_FOR_USERS` | - | Automatically assign carts for users on startup (set to any truthy value) |
+
+## Events Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `EVENTS_TTL_SECONDS` | `172800` (2 days) | Retention period in seconds for records in the `events` collection (TTL index) |
 
 ## Notes
 

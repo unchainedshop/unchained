@@ -27,7 +27,7 @@ import '@unchainedshop/plugins/filters/local-search';
 ## Requirements
 
 - MongoDB text indexes on product and assortment text collections
-- **Not compatible with AWS DocumentDB** (automatically disabled in DocumentDB compat mode)
+- Supported runtimes: MongoDB 4.4+, AWS DocumentDB 5.0+, AWS DocumentDB 8.0, FerretDB 2.x. AWS DocumentDB ≤4.0 and FerretDB 1.x are not supported.
 
 ## Behavior
 
@@ -165,20 +165,6 @@ searchProducts(queryString: "shoes -sandals")
 
 MongoDB applies stemming based on language:
 - "running" matches "run", "runs", "runner"
-
-## DocumentDB Compatibility
-
-Local Search is automatically disabled when `UNCHAINED_DOCUMENTDB_COMPAT_MODE` is set:
-
-```bash
-UNCHAINED_DOCUMENTDB_COMPAT_MODE=true
-```
-
-In this case, implement an alternative search adapter using a service like:
-- Elasticsearch
-- Algolia
-- Meilisearch
-- OpenSearch
 
 ## Custom Search Adapter
 

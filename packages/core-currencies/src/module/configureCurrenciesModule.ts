@@ -4,7 +4,6 @@ import {
   buildSortOptions,
   generateDbObjectId,
   type ModuleInput,
-  assertDocumentDBCompatMode,
   mongodb,
 } from '@unchainedshop/mongodb';
 import { SortDirection, type SortOption } from '@unchainedshop/utils';
@@ -27,7 +26,6 @@ export const buildFindSelector = ({
     selector.isoCode = { $in: isoCodes };
   }
   if (queryString) {
-    assertDocumentDBCompatMode();
     selector.$text = { $search: queryString };
   }
   return selector;

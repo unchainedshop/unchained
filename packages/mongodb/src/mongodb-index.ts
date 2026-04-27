@@ -17,7 +17,6 @@ export {
   insensitiveTrimmedRegexOperator,
   escapeRegexString,
 } from './insensitive-trimmed-regex-operator.ts';
-export * from './documentdb-compat-mode.ts';
 
 export { mongodb };
 

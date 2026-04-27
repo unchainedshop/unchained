@@ -7,7 +7,6 @@ import {
   mongodb,
   generateDbObjectId,
   type ModuleInput,
-  assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import { QuotationsCollection } from '../db/QuotationsCollection.ts';
 import { quotationsSettings, type QuotationsSettingsOptions } from '../quotations-settings.ts';
@@ -38,7 +37,6 @@ export const buildFindSelector = ({ userId, queryString, quotationIds }: Quotati
     selector._id = { $in: quotationIds };
   }
   if (queryString) {
-    assertDocumentDBCompatMode();
     (selector as any).$text = { $search: queryString };
   }
 

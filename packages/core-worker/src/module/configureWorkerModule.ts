@@ -6,7 +6,6 @@ import {
   type mongodb,
   generateDbObjectId,
   type ModuleInput,
-  assertDocumentDBCompatMode,
 } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
@@ -133,7 +132,6 @@ export const buildQuerySelector = ({
     query = generateDbFilterById(workId, query);
   }
   if (queryString) {
-    assertDocumentDBCompatMode();
     (query as any).$text = { $search: queryString };
   }
 
