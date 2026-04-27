@@ -25,7 +25,7 @@ export interface PushSubscription {
 
 export interface Web3Address {
   address: string;
-  nonce?: number;
+  nonce?: string;
   verified: boolean;
 }
 export interface WebAuthnCredentials {
