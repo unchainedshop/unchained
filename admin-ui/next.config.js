@@ -1,5 +1,7 @@
 // @ts-check
 
+const path = require('node:path');
+
 /**
  * @type {import('next').NextConfig}
  **/
@@ -9,6 +11,9 @@ module.exports = {
   basePath: '',
   trailingSlash: true,
   assetPrefix: '',
+  turbopack: {
+    root: path.resolve(__dirname, '..'),
+  },
   typescript: {
     tsconfigPath: './tsconfig.json',
   },
