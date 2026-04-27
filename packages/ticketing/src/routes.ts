@@ -79,7 +79,7 @@ export async function googleWalletHandler(
 
     const url = new URL(request.url);
     const hash = url.searchParams.get('hash');
-    const correctHash = await modules.warehousing.buildAccessKeyForToken(tokenId);
+    const correctHash = await modules.warehousing.buildAccessKeyFromToken(token);
 
     if (!hash || hash !== correctHash) {
       return new Response(JSON.stringify({ error: 'Token hash invalid for current owner' }), {
@@ -135,7 +135,7 @@ export async function appleWalletHandler(
       }
 
       const hash = url.searchParams.get('hash');
-      const correctHash = await modules.warehousing.buildAccessKeyForToken(tokenId);
+      const correctHash = await modules.warehousing.buildAccessKeyFromToken(token);
 
       if (!hash || hash !== correctHash) {
         return new Response(JSON.stringify({ error: 'Token hash invalid for current owner' }), {
