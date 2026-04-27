@@ -62,7 +62,7 @@
   "peerDependencies": {
     "@ai-sdk/mcp": "^1",
     "@fastify/cookie": ">= 11 < 12",
-    "@fastify/multipart": ">= 9 < 10",
+    "@fastify/multipart": ">= 10 < 11",
     "@fastify/static": ">= 9 < 10",
     "@modelcontextprotocol/sdk": ">= 1 < 2",
     "ai": ">= 6 < 7",
@@ -123,7 +123,7 @@
   "devDependencies": {
     "@ai-sdk/mcp": "^1.0.5",
     "@fastify/cookie": "^11.0.2",
-    "@fastify/multipart": "^9.0.3",
+    "@fastify/multipart": "^10.0.0",
     "@fastify/static": "^9.0.0",
     "@modelcontextprotocol/sdk": "^1.15.1",
     "@types/cookie-parser": "^1.4.8",

@@ -37,7 +37,7 @@
     "@ai-sdk/openai": "^3.0.7",
     "@ai-sdk/openai-compatible": "^2.0.4",
     "@fastify/cookie": "^11.0.2",
-    "@fastify/multipart": "^9.0.3",
+    "@fastify/multipart": "^10.0.0",
     "@fastify/session": "^11.1.0",
     "@scure/bip32": "^2.0.0",
     "@scure/btc-signer": "^2.0.0",
@@ -52,7 +52,7 @@
     "graphql": "^16.11.0",
     "graphql-yoga": "^5.15.1",
     "nodemailer": "^8.0.1",
-    "stripe": "^20.0.0",
+    "stripe": "^22.1.0",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"
   },
