@@ -44,7 +44,7 @@
     "@unchainedshop/mongodb": "^5.0.0-alpha.1"
   },
   "peerDependencies": {
-    "@parse/node-apn": "^7.0.1",
+    "@parse/node-apn": "^8.1.0",
     "express": "5.x",
     "fastify": ">= 5.2 < 6"
   },
@@ -60,7 +60,7 @@
     }
   },
   "devDependencies": {
-    "@parse/node-apn": "^7.0.1",
+    "@parse/node-apn": "^8.1.0",
     "@types/express": "^5.0.3",
     "@types/node": "^25.0.0",
     "express": "^5.1.0",
