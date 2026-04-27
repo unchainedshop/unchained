@@ -1,9 +1,4 @@
-import {
-  mongodb,
-  buildDbIndexes,
-  type TimestampFields,
-  isDocumentDBCompatModeEnabled,
-} from '@unchainedshop/mongodb';
+import { mongodb, buildDbIndexes, type TimestampFields } from '@unchainedshop/mongodb';
 
 export type Currency = {
   _id: string;
@@ -23,28 +18,23 @@ export interface CurrencyQuery {
 export const CurrenciesCollection = async (db: mongodb.Db) => {
   const Currencies = db.collection<Currency>('currencies');
 
-  if (!isDocumentDBCompatModeEnabled()) {
-    await buildDbIndexes<Currency>(Currencies, [
-      {
-        index: { isoCode: 'text', _id: 'text' },
-        options: {
-          weights: {
-            _id: 8,
-            isoCode: 6,
-          },
-          name: 'currencies_fulltext_search',
+  await buildDbIndexes<Currency>(Currencies, [
+    {
+      index: { isoCode: 'text', _id: 'text' },
+      options: {
+        weights: {
+          _id: 8,
+          isoCode: 6,
         },
+        name: 'currencies_fulltext_search',
       },
-    ]);
-  }
+    },
+  ]);
 
   await buildDbIndexes<Currency>(Currencies, [
     { index: { isoCode: 1 }, options: { unique: true } },
-    {
-      index: {
-        deleted: 1,
-      },
-    },
+    { index: { deleted: 1 } },
+    { index: { contractAddress: 1 }, options: { sparse: true } },
   ]);
 
   return Currencies;

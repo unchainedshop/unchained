@@ -1,9 +1,4 @@
-import {
-  mongodb,
-  buildDbIndexes,
-  type TimestampFields,
-  isDocumentDBCompatModeEnabled,
-} from '@unchainedshop/mongodb';
+import { mongodb, buildDbIndexes, type TimestampFields } from '@unchainedshop/mongodb';
 
 export const FilterType = {
   SWITCH: 'SWITCH',
@@ -42,23 +37,19 @@ export const FiltersCollection = async (db: mongodb.Db) => {
   const Filters = db.collection<Filter>('filters');
   const FilterTexts = db.collection<FilterText>('filter_texts');
   const FilterProductIdCache = db.collection<FilterProductIdCacheRecord>('filter_productId_cache');
-  // Filter Indexes
-
-  if (!isDocumentDBCompatModeEnabled()) {
-    await buildDbIndexes(Filters, [
-      {
-        index: { _id: 'text', key: 'text', options: 'text' },
-        options: {
-          weights: {
-            _id: 8,
-            key: 6,
-            options: 5,
-          },
-          name: 'filters_fulltext_search',
+  await buildDbIndexes(Filters, [
+    {
+      index: { _id: 'text', key: 'text', options: 'text' },
+      options: {
+        weights: {
+          _id: 8,
+          key: 6,
+          options: 5,
         },
+        name: 'filters_fulltext_search',
       },
-    ]);
-  }
+    },
+  ]);
 
   await buildDbIndexes(Filters, [
     { index: { isActive: 1 } },
@@ -78,8 +69,10 @@ export const FiltersCollection = async (db: mongodb.Db) => {
     },
   ]);
 
-  // FilterProductIdCache Indexes
-  await buildDbIndexes(FilterProductIdCache, [{ index: { productIds: 1 } }, { index: { filterId: 1 } }]);
+  await buildDbIndexes(FilterProductIdCache, [
+    { index: { productIds: 1 } },
+    { index: { filterId: 1, filterOptionValue: 1 } },
+  ]);
 
   return {
     Filters,

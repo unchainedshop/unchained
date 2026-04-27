@@ -1,9 +1,4 @@
-import {
-  buildDbIndexes,
-  isDocumentDBCompatModeEnabled,
-  mongodb,
-  type TimestampFields,
-} from '@unchainedshop/mongodb';
+import { buildDbIndexes, mongodb, type TimestampFields } from '@unchainedshop/mongodb';
 
 export type AssortmentProductIdCacheRecord = {
   _id: string;
@@ -82,51 +77,36 @@ export const AssortmentsCollection = async (db: mongodb.Db) => {
     'assortment_productId_cache',
   );
 
-  // Assortment Indexes
-
-  if (!isDocumentDBCompatModeEnabled()) {
-    // Text indexes are not supported in DocumentDB
-    // Assortments full-text search index
-    // Note: This index is only created if not in DocumentDB compatibility mode
-    await buildDbIndexes(Assortments, [
-      {
-        index: { slugs: 'text' },
-        options: {
-          name: 'assortments_fulltext_search',
-        },
+  await buildDbIndexes(Assortments, [
+    {
+      index: { slugs: 'text' },
+      options: {
+        name: 'assortments_fulltext_search',
       },
-    ]);
-  }
+    },
+  ]);
 
   await buildDbIndexes(Assortments, [
-    { index: { deleted: 1 } },
-    { index: { isActive: 1 } },
-    { index: { isRoot: 1 } },
-    { index: { sequence: 1 } },
+    { index: { deleted: 1, isActive: 1, isRoot: 1, sequence: 1 } },
     { index: { slugs: 1 } },
     { index: { tags: 1 } },
   ]);
 
-  // AssortmentTexts indexes
-
-  if (!isDocumentDBCompatModeEnabled()) {
-    await buildDbIndexes(AssortmentTexts, [
-      {
-        index: { title: 'text', subtitle: 'text' },
-        options: {
-          weights: {
-            title: 8,
-            subtitle: 6,
-          },
-          name: 'assortments_texts_fulltext_search',
+  await buildDbIndexes(AssortmentTexts, [
+    {
+      index: { title: 'text', subtitle: 'text' },
+      options: {
+        weights: {
+          title: 8,
+          subtitle: 6,
         },
+        name: 'assortments_texts_fulltext_search',
       },
-    ]);
-  }
+    },
+  ]);
 
   await buildDbIndexes(AssortmentTexts, [
     { index: { assortmentId: 1 } },
-    { index: { locale: 1 } },
     { index: { slug: 1 } },
     { index: { locale: 1, assortmentId: 1 } },
   ]);

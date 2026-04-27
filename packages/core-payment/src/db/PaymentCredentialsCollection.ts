@@ -13,8 +13,8 @@ export const PaymentCredentialsCollection = async (db: mongodb.Db) => {
   const PaymentCredentialsCol = db.collection<PaymentCredentials>('payment_credentials');
 
   await buildDbIndexes<PaymentCredentials>(PaymentCredentialsCol, [
+    { index: { userId: 1, paymentProviderId: 1 } },
     { index: { paymentProviderId: 1 } },
-    { index: { userId: 1 } },
   ]);
 
   return PaymentCredentialsCol;

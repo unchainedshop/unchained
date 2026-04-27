@@ -29,10 +29,9 @@ export const AssortmentMediaCollection = async (db: mongodb.Db) => {
     { index: { assortmentId: 1, tags: 1, sortKey: 1 } },
   ]);
 
-  // AssortmentTexts indexes
   await buildDbIndexes(AssortmentMediaTexts, [
     { index: { assortmentMediaId: 1 } },
-    { index: { locale: 1 } },
+    { index: { locale: 1, assortmentMediaId: 1 } },
   ]);
 
   return {

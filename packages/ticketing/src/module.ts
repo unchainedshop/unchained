@@ -17,10 +17,6 @@ const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
   const MediaObjects = await MediaObjectsCollection(db);
   const TokenSurrogates = await TokenSurrogateCollection(db);
 
-  await buildDbIndexes(TokenSurrogates as any, [
-    { index: { 'meta.cancelled': 1 }, options: { sparse: true } },
-  ]);
-
   await buildDbIndexes(MediaObjects as any, [
     { index: { path: 1, 'meta.passTypeIdentifier': 1, 'meta.serialNumber': 1 } },
     {

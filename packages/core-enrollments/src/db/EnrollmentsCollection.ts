@@ -1,4 +1,4 @@
-import { mongodb, buildDbIndexes, isDocumentDBCompatModeEnabled } from '@unchainedshop/mongodb';
+import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 import {
   type TimestampFields,
   type LogFields,
@@ -68,36 +68,34 @@ export type Enrollment = {
 export const EnrollmentsCollection = async (db: mongodb.Db) => {
   const Enrollments = db.collection<Enrollment>('enrollments');
 
-  if (!isDocumentDBCompatModeEnabled()) {
-    await buildDbIndexes<Enrollment>(Enrollments, [
-      {
-        index: {
-          _id: 'text',
-          userId: 'text',
-          enrollmentNumber: 'text',
-          status: 'text',
-          'contact.telNumber': 'text',
-          'contact.emailAddress': 'text',
-        } as any,
-        options: {
-          weights: {
-            _id: 8,
-            userId: 3,
-            enrollmentNumber: 6,
-            'contact.telNumber': 5,
-            'contact.emailAddress': 4,
-            status: 1,
-          },
-          name: 'enrollment_fulltext_search',
-        },
-      },
-    ]);
-  }
-
-  // Enrollment Indexes
   await buildDbIndexes<Enrollment>(Enrollments, [
-    { index: { userId: 1 } },
-    { index: { productId: 1 } },
+    {
+      index: {
+        _id: 'text',
+        userId: 'text',
+        enrollmentNumber: 'text',
+        status: 'text',
+        'contact.telNumber': 'text',
+        'contact.emailAddress': 'text',
+      } as any,
+      options: {
+        weights: {
+          _id: 8,
+          userId: 3,
+          enrollmentNumber: 6,
+          'contact.telNumber': 5,
+          'contact.emailAddress': 4,
+          status: 1,
+        },
+        name: 'enrollment_fulltext_search',
+      },
+    },
+  ]);
+
+  await buildDbIndexes<Enrollment>(Enrollments, [
+    { index: { 'periods.orderId': 1 } as any },
+    { index: { userId: 1, status: 1 } },
+    { index: { productId: 1, status: 1 } },
     { index: { status: 1 } },
     { index: { enrollmentNumber: 1 } },
   ]);

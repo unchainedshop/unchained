@@ -22,10 +22,9 @@ export type OrderPositionDiscount = Omit<Price, '_id'> & {
 export const OrderPositionsCollection = async (db: mongodb.Db) => {
   const OrderPositions = db.collection<OrderPosition>('order_positions');
 
-  // Order Indexes
   await buildDbIndexes<OrderPosition>(OrderPositions, [
+    { index: { orderId: 1, quantity: 1 } },
     { index: { productId: 1 } },
-    { index: { orderId: 1 } },
   ]);
 
   return OrderPositions;

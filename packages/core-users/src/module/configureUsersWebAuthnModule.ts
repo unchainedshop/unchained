@@ -165,6 +165,7 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<Record<st
         origin,
         factor: 'either',
         username,
+        created: new Date(),
       });
 
       return {
@@ -207,6 +208,7 @@ export const configureUsersWebAuthnModule = async ({ db }: ModuleInput<Record<st
         origin,
         factor: 'either',
         username,
+        created: new Date(),
       });
 
       return {
