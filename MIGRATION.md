@@ -4,6 +4,93 @@
 
 ---
 
+## v4.8.x DocumentDB Compatibility Mode Removed
+
+`UNCHAINED_DOCUMENTDB_COMPAT_MODE` is no longer read. The helpers `isDocumentDBCompatModeEnabled` and `assertDocumentDBCompatMode` have been deleted from `@unchainedshop/mongodb`. Text indexes are now created unconditionally on every collection and `$text` queries run unconditionally. **If you still target AWS DocumentDB ≤4.0 or FerretDB 1.x, do not upgrade** — those runtimes do not support text indexes and startup will fail. Supported text-search targets now:
+
+| Runtime | Text indexes | Since |
+|---|---|---|
+| MongoDB 4.4+ | ✅ | 2.6 |
+| AWS DocumentDB 5.0+ | ✅ | Feb 2024 |
+| AWS DocumentDB 8.0 | ✅ (Text Index V2) | 2026 |
+| FerretDB 2.x | ✅ | 2.0 GA |
+| AWS DocumentDB ≤4.0 | ❌ | not supported |
+| FerretDB 1.x | ❌ | not supported |
+
+Remove `UNCHAINED_DOCUMENTDB_COMPAT_MODE` from your deployment env. Any downstream code importing `isDocumentDBCompatModeEnabled` or `assertDocumentDBCompatMode` from `@unchainedshop/mongodb` must be deleted — there is no replacement.
+
+## v4.8.x Index Refactor (Ops Migration)
+
+This release refactors MongoDB indexes across every collection: compound indexes replace several singletons, new indexes cover previously unindexed hot paths, and a few unused indexes are removed. All *new* indexes are built automatically on boot via `buildDbIndexes`. However, **MongoDB does not drop removed indexes automatically** — they remain on existing production databases until explicitly dropped, consuming RAM and slowing writes.
+
+Run the following `mongosh` script once per environment after deploying:
+
+```js
+// Old singletons now covered by compound indexes — safe to drop.
+const toDrop = {
+  orders:              ['deleted_1', 'userId_1', 'status_1'],
+  order_positions:     ['productId_1_1'], // if exists under that exact name
+  order_discounts:     ['trigger_1'],
+  quotations:          ['userId_1', 'productId_1', 'status_1'],
+  enrollments:         ['userId_1', 'productId_1', 'status_1'],
+  products:            ['deleted_1', 'sequence_1', 'status_1'],
+  product_texts:       ['locale_1'],
+  product_variation_texts: ['locale_1'],
+  product_media_texts: ['locale_1'],
+  assortments:         ['deleted_1', 'isActive_1', 'isRoot_1', 'sequence_1'],
+  assortment_texts:    ['locale_1'],
+  assortment_media_texts: ['locale_1'],
+  work_queue:          ['started_-1', 'scheduled_1', 'priority_-1', 'type_1'],
+  payment_credentials: ['userId_1'],
+  'payment-providers':      ['type_1', 'created_1', 'deleted_1'],
+  'delivery-providers':     ['type_1', 'created_1', 'deleted_1'],
+  'warehousing-providers':  ['type_1', 'created_1', 'deleted_1'],
+  filter_productId_cache: ['filterId_1'],
+};
+
+for (const [coll, names] of Object.entries(toDrop)) {
+  const existing = new Set(db.getCollection(coll).getIndexes().map(i => i.name));
+  for (const name of names) {
+    if (existing.has(name)) {
+      print(`Dropping ${coll}.${name}`);
+      db.getCollection(coll).dropIndex(name);
+    }
+  }
+}
+```
+
+Run `db.<collection>.getIndexes()` to verify the actual index names in your deployment — MongoDB's auto-generated names follow the `field_direction` pattern (e.g. `userId_1`, `started_-1`), but partial indexes or custom names may differ. If a listed index doesn't exist, `dropIndex` will throw; the script above guards with a name-set check. Skipping this step is safe — the old indexes will simply continue to consume resources until you clean them up.
+
+### Breaking: cryptopay plugin is now async
+
+If you wire the cryptopay plugin directly, `configureCryptopayModule` is now `async`:
+
+```typescript
+// ❌ Before
+const cryptopay = configureCryptopayModule({ db });
+
+// ✅ After
+const cryptopay = await configureCryptopayModule({ db });
+```
+
+### Breaking: warehousing.buildAccessKeyForToken renamed
+
+`modules.warehousing.buildAccessKeyForToken(tokenId: string)` is now `modules.warehousing.buildAccessKeyFromToken(token: TokenSurrogate)` and returns `Promise<string>` (no longer nullable). Callers must pass the full token object.
+
+### Breaking: Payrexx env vars renamed
+
+`DATATRANS_SUCCESS_PATH`, `DATATRANS_ERROR_PATH`, `DATATRANS_CANCEL_PATH` → `PAYREXX_SUCCESS_PATH`, `PAYREXX_ERROR_PATH`, `PAYREXX_CANCEL_PATH`.
+
+### Breaking: Stripe API + SDK version
+
+Stripe SDK peer range widened from `>=19 <21` to `>=19 <23`. The plugin now uses Stripe API version `2026-03-25.dahlia`. Upgrade your installed `stripe` package to v22 to match the devDependency.
+
+### Breaking: Web3Address.nonce scalar
+
+`Web3Address.nonce` GraphQL scalar changed from `Int` to `String`. Update any client codegen and forms.
+
+---
+
 ## v4 → v5 (Breaking Changes)
 
 ### Plugin System Modernization
