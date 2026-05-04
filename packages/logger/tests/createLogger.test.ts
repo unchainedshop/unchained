@@ -1,6 +1,6 @@
 import { describe, it, beforeEach, afterEach, mock } from 'node:test';
 import assert from 'node:assert';
-import { createLogger, resetLoggerInitialization } from '../src/createLogger.ts';
+import { createLogger, resetLoggerInitialization, setLogContextProvider } from '../src/createLogger.ts';
 
 describe('createLogger', () => {
   const originalEnv = process.env;
@@ -736,6 +736,127 @@ describe('createLogger', () => {
       assert.strictEqual(keys.includes('__proto__'), false);
       assert.strictEqual(keys.includes('constructor'), false);
       assert.strictEqual(keys.includes('prototype'), false);
+    });
+  });
+
+  describe('Log context provider', () => {
+    it('should merge provider fields into JSON log records', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      setLogContextProvider(() => ({ trace_id: 'abc', span_id: 'def' }));
+      const logger = createLogger('ctx-merge');
+
+      consoleOutput = [];
+      logger.info('hello');
+
+      const parsed = JSON.parse(consoleOutput[consoleOutput.length - 1]);
+      assert.strictEqual(parsed.trace_id, 'abc');
+      assert.strictEqual(parsed.span_id, 'def');
+      assert.strictEqual(parsed.message, 'hello');
+    });
+
+    it('should not invoke provider in unchained (pretty) format', () => {
+      let calls = 0;
+      setLogContextProvider(() => {
+        calls += 1;
+        return { trace_id: 'x' };
+      });
+      const logger = createLogger('ctx-pretty');
+
+      logger.info('hello');
+
+      assert.strictEqual(calls, 0);
+    });
+
+    it('should let provider keys win over user-supplied args', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      setLogContextProvider(() => ({ trace_id: 'real' }));
+      const logger = createLogger('ctx-overwrite');
+
+      consoleOutput = [];
+      logger.info('hello', { trace_id: 'fake', other: 'kept' });
+
+      const parsed = JSON.parse(consoleOutput[consoleOutput.length - 1]);
+      assert.strictEqual(parsed.trace_id, 'real');
+      assert.strictEqual(parsed.other, 'kept');
+    });
+
+    it('should skip merge when provider returns undefined', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      setLogContextProvider(() => undefined);
+      const logger = createLogger('ctx-undefined');
+
+      consoleOutput = [];
+      logger.info('hello');
+
+      const parsed = JSON.parse(consoleOutput[consoleOutput.length - 1]);
+      assert.strictEqual(parsed.message, 'hello');
+      assert.ok(!('trace_id' in parsed));
+    });
+
+    it('should swallow provider exceptions and still emit the log', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      setLogContextProvider(() => {
+        throw new Error('boom');
+      });
+      const logger = createLogger('ctx-throws');
+
+      consoleOutput = [];
+      assert.doesNotThrow(() => logger.info('hello'));
+
+      const parsed = JSON.parse(consoleOutput[consoleOutput.length - 1]);
+      assert.strictEqual(parsed.message, 'hello');
+    });
+
+    it('should filter prototype-pollution keys from provider output', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      setLogContextProvider(() =>
+        JSON.parse(
+          '{"__proto__": {"polluted": 1}, "constructor": {"x": 1}, "prototype": {"y": 1}, "trace_id": "ok"}',
+        ),
+      );
+      const logger = createLogger('ctx-proto');
+
+      consoleOutput = [];
+      logger.info('hello');
+
+      const parsed = JSON.parse(consoleOutput[consoleOutput.length - 1]);
+      assert.strictEqual(parsed.trace_id, 'ok');
+      const keys = Object.keys(parsed);
+      assert.strictEqual(keys.includes('__proto__'), false);
+      assert.strictEqual(keys.includes('constructor'), false);
+      assert.strictEqual(keys.includes('prototype'), false);
+      assert.strictEqual('polluted' in Object.prototype, false);
+    });
+
+    it('should clear the provider when set to undefined', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      setLogContextProvider(() => ({ trace_id: 'first' }));
+      setLogContextProvider(undefined);
+      const logger = createLogger('ctx-clear');
+
+      consoleOutput = [];
+      logger.info('hello');
+
+      const parsed = JSON.parse(consoleOutput[consoleOutput.length - 1]);
+      assert.ok(!('trace_id' in parsed));
+    });
+
+    it('should allow dynamic per-call values', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      const ids = ['t1', 't2', 't3'];
+      let i = 0;
+      setLogContextProvider(() => ({ trace_id: ids[i++] }));
+      const logger = createLogger('ctx-dynamic');
+
+      consoleOutput = [];
+      logger.info('a');
+      logger.info('b');
+      logger.info('c');
+
+      const parsed = consoleOutput.map((line) => JSON.parse(line));
+      assert.strictEqual(parsed[0].trace_id, 't1');
+      assert.strictEqual(parsed[1].trace_id, 't2');
+      assert.strictEqual(parsed[2].trace_id, 't3');
     });
   });
 

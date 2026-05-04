@@ -159,11 +159,35 @@ const bigintReplacer = (_key: string, value: any): any => {
 };
 
 /**
+ * A function whose return value is merged into every JSON-formatted log record.
+ * Integrators register one to inject request-scoped fields such as `trace_id` and
+ * `span_id` from an OpenTelemetry active span.
+ */
+export type LogContextProvider = () => Record<string, unknown> | undefined;
+
+let logContextProvider: LogContextProvider | undefined;
+
+/**
+ * Registers a context provider whose returned fields are merged into JSON log
+ * records. The provider runs once per emitted log line and only when
+ * `UNCHAINED_LOG_FORMAT=json`. Pass `undefined` to unregister.
+ *
+ * Provider-supplied keys win over user-supplied args, so trace context is not
+ * overridable by accidental log payload keys.
+ *
+ * Errors thrown by the provider are swallowed — telemetry must never break logs.
+ */
+export const setLogContextProvider = (provider: LogContextProvider | undefined): void => {
+  logContextProvider = provider;
+};
+
+/**
  * Resets all internal caches. Used for testing to ensure a clean state.
  */
 export const resetLoggerInitialization = (): void => {
   regexCache.clear();
   debugPatternCache.clear();
+  logContextProvider = undefined;
 };
 
 /**
@@ -224,6 +248,22 @@ export const createLogger = (moduleName: string): Logger => {
           // Skip prototype pollution vectors
           if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
           logObject[key] = args[0][key];
+        }
+      }
+
+      // Merge log context provider output (e.g. trace_id/span_id from active span).
+      // Provider keys are written last so they win over user-supplied args.
+      if (logContextProvider) {
+        try {
+          const extra = logContextProvider();
+          if (extra) {
+            for (const key in extra) {
+              if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+              logObject[key] = extra[key];
+            }
+          }
+        } catch {
+          // Telemetry must never break logging
         }
       }
 
