@@ -94,7 +94,7 @@ const gridfsHandler = async (
     if (req.method === 'GET') {
       const { s: signature, e: expiryTimestamp } = req.query;
       const fileDocument = await modules.files.findFile({
-        url: `${GRIDFS_PUT_SERVER_PATH}/${directoryName}/${fileName}`,
+        url: `${GRIDFS_PUT_SERVER_PATH}/${directoryName}/${encodeURIComponent(fileName)}`,
       });
       if (fileDocument?.meta?.isPrivate) {
         const expiry = parseInt(expiryTimestamp as string, 10);
