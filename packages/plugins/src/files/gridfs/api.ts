@@ -139,7 +139,7 @@ export const gridfsRouteHandler = async (
       const expiryTimestamp = url.searchParams.get('e');
 
       const fileDocument = await modules.files.findFile({
-        url: `${GRIDFS_PUT_SERVER_PATH}/${directoryName}/${fileName}`,
+        url: `${GRIDFS_PUT_SERVER_PATH}/${directoryName}/${encodeURIComponent(fileName)}`,
       });
 
       if (!fileDocument) {
