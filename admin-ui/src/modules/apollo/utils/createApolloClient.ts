@@ -5,6 +5,19 @@ import { ErrorLink } from '@apollo/client/link/error';
 import apolloCache from './apolloCache';
 import { CombinedGraphQLErrors } from '@apollo/client';
 
+declare module '@apollo/client' {
+  interface TypeOverrides {
+    signatureStyle: 'classic';
+  }
+  namespace ApolloClient {
+    namespace DeclareDefaultOptions {
+      interface WatchQuery {
+        errorPolicy: 'all';
+      }
+    }
+  }
+}
+
 const allowedHeaders = [
   'accept-language',
   'pragma',

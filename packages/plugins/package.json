@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/plugins",
   "description": "Official plugin collection for the Unchained Engine with payment, delivery, and pricing adapters",
-  "version": "4.8.11",
+  "version": "4.8.12",
   "main": "lib/plugins-index.js",
   "types": "lib/plugins-index.d.ts",
   "exports": {
@@ -37,18 +37,18 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/api": "^4.6.0",
-    "@unchainedshop/core-delivery": "^4.6.0",
-    "@unchainedshop/core-enrollments": "^4.6.0",
-    "@unchainedshop/core-orders": "^4.6.0",
-    "@unchainedshop/core-payment": "^4.6.0",
-    "@unchainedshop/core-products": "^4.6.0",
-    "@unchainedshop/core-warehousing": "^4.6.0",
-    "@unchainedshop/core-worker": "^4.6.0",
-    "@unchainedshop/events": "^4.6.0",
-    "@unchainedshop/file-upload": "^4.6.0",
-    "@unchainedshop/logger": "^4.6.0",
-    "@unchainedshop/utils": "^4.6.0"
+    "@unchainedshop/api": "^4.8.12",
+    "@unchainedshop/core-delivery": "^4.8.12",
+    "@unchainedshop/core-enrollments": "^4.8.12",
+    "@unchainedshop/core-orders": "^4.8.12",
+    "@unchainedshop/core-payment": "^4.8.12",
+    "@unchainedshop/core-products": "^4.8.12",
+    "@unchainedshop/core-warehousing": "^4.8.12",
+    "@unchainedshop/core-worker": "^4.8.12",
+    "@unchainedshop/events": "^4.8.12",
+    "@unchainedshop/file-upload": "^4.8.12",
+    "@unchainedshop/logger": "^4.8.12",
+    "@unchainedshop/utils": "^4.8.12"
   },
   "peerDependencies": {
     "@aws-sdk/client-eventbridge": ">= 3.714 < 4",

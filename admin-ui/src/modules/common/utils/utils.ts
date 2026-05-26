@@ -1,7 +1,7 @@
 import { ISortOptionInput } from '../../../gql/types';
 
 const useFormatPrice = () => {
-  const formatPrice = (price: { currencyCode: string; amount: number }) => {
+  const formatPrice = (price: { currencyCode?: string; amount?: number }) => {
     if (!price?.currencyCode) return 'n/a';
     if (price?.amount === undefined || price?.amount === null) return '';
     const { amount, currencyCode } = price || {};

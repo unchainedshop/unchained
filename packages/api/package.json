@@ -116,11 +116,11 @@
     }
   },
   "dependencies": {
-    "@unchainedshop/core": "^4.6.0",
-    "@unchainedshop/events": "^4.6.0",
-    "@unchainedshop/logger": "^4.6.0",
-    "@unchainedshop/roles": "^4.6.0",
-    "@unchainedshop/utils": "^4.6.0",
+    "@unchainedshop/core": "^4.8.12",
+    "@unchainedshop/events": "^4.8.12",
+    "@unchainedshop/logger": "^4.8.12",
+    "@unchainedshop/roles": "^4.8.12",
+    "@unchainedshop/utils": "^4.8.12",
     "dataloader": "^2.2.3",
     "expiry-map": "^2.0.0",
     "graphql-scalars": "^1.24.2",

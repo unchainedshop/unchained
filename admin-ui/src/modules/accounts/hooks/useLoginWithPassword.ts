@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql, ErrorLike } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
 import {
   ILoginWithPasswordMutation,
@@ -32,7 +32,13 @@ const useLoginWithPassword = () => {
     errorPolicy: 'all',
   });
 
-  const logInWithPassword = async ({ usernameOrEmail, password }) => {
+  const logInWithPassword = async ({
+    usernameOrEmail,
+    password,
+  }): Promise<{
+    data?: ILoginWithPasswordMutation;
+    error?: ErrorLike;
+  }> => {
     const variables = {
       username: null,
       email: null,
