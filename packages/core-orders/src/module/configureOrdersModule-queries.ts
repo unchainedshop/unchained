@@ -35,6 +35,36 @@ export interface DateRange {
 
 export type StatisticsDateField = 'created' | 'ordered' | 'rejected' | 'confirmed' | 'fulfilled';
 
+function buildCartSelector({
+  countryCode,
+  orderNumber,
+  userId,
+  userIds,
+}: {
+  countryCode?: string;
+  orderNumber?: string;
+  userId?: string;
+  userIds?: string[];
+}): mongodb.Filter<Order> {
+  const selector: mongodb.Filter<Order> = {
+    status: { $eq: null },
+  };
+
+  if (userIds) {
+    selector.userId = { $in: userIds };
+  } else if (userId) {
+    selector.userId = userId;
+  }
+  if (countryCode) {
+    selector.countryCode = countryCode;
+  }
+  if (orderNumber) {
+    selector.orderNumber = orderNumber;
+  }
+
+  return selector;
+}
+
 function buildDateMatch(dateField: string, dateRange?: DateRange) {
   if (!dateRange?.start && !dateRange?.end) return { [dateField]: { $exists: true } };
 
@@ -70,22 +100,36 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       orderNumber?: string;
       userId: string;
     }) => {
-      const selector: mongodb.Filter<Order> = {
-        countryCode,
-        status: { $eq: null },
-        userId,
-      };
-
-      if (orderNumber) {
-        selector.orderNumber = orderNumber;
-      }
-
+      const selector = buildCartSelector({ countryCode, orderNumber, userId });
       const options: mongodb.FindOptions = {
         sort: {
           updated: -1,
         },
       };
       return Orders.findOne(selector, options);
+    },
+
+    // Batched variant of `cart`, used by the API cartLoader. Returns the open
+    // carts (status === null) for the given users, most recently updated first.
+    findCarts: async (
+      {
+        countryCode,
+        orderNumber,
+        userId,
+        userIds,
+      }: {
+        countryCode?: string;
+        orderNumber?: string;
+        userId?: string;
+        userIds?: string[];
+      },
+      options?: mongodb.FindOptions,
+    ): Promise<Order[]> => {
+      const selector = buildCartSelector({ countryCode, orderNumber, userId, userIds });
+      return Orders.find(selector, {
+        sort: { updated: -1 },
+        ...options,
+      }).toArray();
     },
 
     count: async (query: OrderQuery): Promise<number> => {
