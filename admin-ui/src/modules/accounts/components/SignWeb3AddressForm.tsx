@@ -1,8 +1,8 @@
 import { FormattedMessage, useIntl } from 'react-intl';
-import CopyableText from '../../common/components/CopyableText';
+import CopyableText from '@/components/ui/CopyableText';
 import Form from '../../forms/components/Form';
-import SubmitButton from '../../forms/components/SubmitButton';
-import MarkdownTextAreaField from '../../forms/components/MarkdownTextAreaField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import MarkdownTextAreaField from '@/components/ui/form/MarkdownTextAreaField';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import useVerifyWeb3Address from '../hooks/useVerifyWeb3Address';
 

@@ -2,12 +2,12 @@ import { useIntl } from 'react-intl';
 import { IRoleAction } from '../../../gql/types';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import Form from '../../forms/components/Form';
-import TextField from '../../forms/components/TextField';
-import SubmitButton from '../../forms/components/SubmitButton';
+import TextField from '@/components/ui/form/TextField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
 import useAuth from '../../Auth/useAuth';
 import { useMemo } from 'react';
 import useScaffoldVariationProduct from '../hooks/useScaffoldVariationProduct';
-import SelectField from '../../forms/components/SelectField';
+import SelectField from '@/components/ui/form/SelectField';
 import { IProductType } from '../../../gql/types';
 import useApp from '../../common/hooks/useApp';
 

@@ -4,9 +4,9 @@ import { IProductType, IRoleAction } from '../../../gql/types';
 import { useIntl } from 'react-intl';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import Form from '../../forms/components/Form';
-import TextField from '../../forms/components/TextField';
-import SubmitButton from '../../forms/components/SubmitButton';
-import SelectField from '../../forms/components/SelectField';
+import TextField from '@/components/ui/form/TextField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import SelectField from '@/components/ui/form/SelectField';
 import useAuth from '../../Auth/useAuth';
 import useScaffoldBundleItem from '../hooks/useScaffoldBundleItem';
 

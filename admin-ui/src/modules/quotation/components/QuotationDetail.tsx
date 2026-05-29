@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl';
 import { PaperAirplaneIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import StatusProgress from '../../common/components/StatusProgress';
 import useQuotationStatusTypes from '../hooks/useQuotationStatusTypes';
-import Button from '../../common/components/Button';
+import Button from '@/components/ui/Button';
 import useModal from '../../modal/hooks/useModal';
 
 import useVerifyQuotation from '../hooks/useVerifyQuotation';
@@ -14,8 +14,8 @@ import useRejectQuotation from '../hooks/useRejectQuotation';
 import generateUniqueId from '../../common/utils/getUniqueId';
 import QuotationConfigurationForm from './QuotationConfigurationForm';
 import useMakeQuotationProposal from '../hooks/useMakeQuotationProposal';
-import JSONView from '../../common/components/JSONView';
-import ImageWithFallback from '../../common/components/ImageWithFallback';
+import JSONView from '@/components/ui/JSONView';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 const QuotationDetail = ({ quotation }) => {
   const { formatMessage } = useIntl();

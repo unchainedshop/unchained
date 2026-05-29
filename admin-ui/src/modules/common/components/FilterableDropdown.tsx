@@ -1,7 +1,7 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 
-import FieldWrapper from '../../forms/components/FieldWrapper';
-import { TextFieldProps } from '../../forms/components/TextField';
+import FieldWrapper from '@/components/ui/form/FieldWrapper';
+import { TextFieldProps } from '@/components/ui/form/TextField';
 import useField from '../../forms/hooks/useField';
 import deBounce from '../utils/deBounce';
 import UnchainedSelect from './UnchainedSelect';
@@ -31,10 +31,7 @@ const FilterableDropdown = ({
     <div className="relative flex flex-col items-center">
       <div className="w-full">
         <div
-          className={classNames(
-            'my-2 flex items-center rounded-sm',
-            props.className,
-          )}
+          className={clsx('my-2 flex items-center rounded-sm', props.className)}
         >
           <div className="w-full">
             <FieldWrapper {...field}>

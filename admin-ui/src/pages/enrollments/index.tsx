@@ -1,11 +1,11 @@
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import ListHeader from '../../modules/common/components/ListHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import ListHeader from '@/components/ui/ListHeader';
 import InfiniteScroll from '../../modules/common/components/InfiniteScroll';
-import Loading from '../../modules/common/components/Loading';
-import PageHeader from '../../modules/common/components/PageHeader';
+import Loading from '@/components/ui/Loading';
+import PageHeader from '@/components/ui/PageHeader';
 import { DefaultLimit } from '../../modules/common/data/miscellaneous';
 import EnrollmentList from '../../modules/enrollment/components/EnrollmentList';
 import useEnrollments from '../../modules/enrollment/hooks/useEnrollments';
@@ -18,7 +18,7 @@ import useEnrollmentStatusTypes from '../../modules/enrollment/hooks/useEnrollme
 import StatusFilter from '../../modules/common/components/StatusFilter';
 import SearchWithTags from '../../modules/common/components/SearchWithTags';
 import EnrollmentDetailPage from './EnrollmentDetailPage';
-import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import LocaleWrapper from '../../modules/common/components/LocaleWrapper';
 import useApp from '../../modules/common/hooks/useApp';
 

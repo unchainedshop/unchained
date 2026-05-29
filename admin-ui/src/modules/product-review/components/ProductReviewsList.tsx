@@ -1,5 +1,5 @@
 import { useIntl } from 'react-intl';
-import NoData from '../../common/components/NoData';
+import NoData from '@/components/ui/NoData';
 import ProductReviewsItem from './ProductReviewsItem';
 
 const ProductReviewsList = ({

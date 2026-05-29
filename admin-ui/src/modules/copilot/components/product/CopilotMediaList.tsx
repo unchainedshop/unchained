@@ -1,6 +1,6 @@
 import React from 'react';
 import { useIntl } from 'react-intl';
-import ImageWithFallback from '../../../common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import useFormatDateTime from '../../../common/utils/useFormatDateTime';
 
 interface CopilotMediaListProps {

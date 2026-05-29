@@ -7,14 +7,14 @@ import useLanguages from '../../modules/language/hooks/useLanguages';
 import LanguageList from '../../modules/language/components/LanguageList';
 import useRemoveLanguage from '../../modules/language/hooks/useRemoveLanguage';
 import { DefaultLimit } from '../../modules/common/data/miscellaneous';
-import PageHeader from '../../modules/common/components/PageHeader';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import ListHeader from '../../modules/common/components/ListHeader';
-import Toggle from '../../modules/common/components/Toggle';
+import PageHeader from '@/components/ui/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import ListHeader from '@/components/ui/ListHeader';
+import Toggle from '@/components/ui/Toggle';
 import InfiniteScroll from '../../modules/common/components/InfiniteScroll';
 import useModal from '../../modules/modal/hooks/useModal';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
-import Loading from '../../modules/common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import useAuth from '../../modules/Auth/useAuth';
 import {
   convertSortFieldsToQueryFormat,
@@ -22,9 +22,9 @@ import {
 } from '../../modules/common/utils/utils';
 import SearchWithTags from '../../modules/common/components/SearchWithTags';
 import LanguageDetailPage from './LanguageDetailPage';
-import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
-import InfoTextBanner from '../../modules/common/components/InfoTextBanner';
+import InfoTextBanner from '@/components/ui/InfoTextBanner';
 
 const Languages = () => {
   const { formatMessage } = useIntl();

@@ -1,7 +1,7 @@
 import useSetUserTags from '../hooks/useSetUserTags';
 import { IRoleAction } from '../../../gql/types';
 
-import TagList from '../../common/components/TagList';
+import TagList from '@/components/ui/Tag/TagList';
 import useAuth from '../../Auth/useAuth';
 import useApp from '../../common/hooks/useApp';
 

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import TableActionsMenu from '../../common/components/TableActionsMenu';
 
 import Form from '../../forms/components/Form';
-import TextField from '../../forms/components/TextField';
+import TextField from '@/components/ui/form/TextField';
 import useForm from '../../forms/hooks/useForm';
 import useUpdateProductVariationTexts from '../hooks/useUpdateProductVariationTexts';
 import useApp from '../../common/hooks/useApp';

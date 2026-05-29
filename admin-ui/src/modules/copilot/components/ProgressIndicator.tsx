@@ -1,5 +1,5 @@
 import React from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 interface ProgressIndicatorProps {
   progress: number;
@@ -39,17 +39,17 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   };
 
   return (
-    <div className={classNames('flex items-center gap-3', className)}>
+    <div className={clsx('flex items-center gap-3', className)}>
       <div className="flex-1">
         <div
-          className={classNames(
+          className={clsx(
             'w-full rounded-full overflow-hidden',
             sizeClasses[size],
             getProgressColorBg(progress),
           )}
         >
           <div
-            className={classNames(
+            className={clsx(
               'h-full transition-all duration-500 ease-out rounded-full',
               getProgressColor(progress),
             )}
@@ -59,7 +59,7 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
       </div>
       {showPercentage && (
         <span
-          className={classNames(
+          className={clsx(
             'font-medium tabular-nums',
             textSizeClasses[size],
             progress === 100

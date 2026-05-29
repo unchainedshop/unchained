@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router';
 import { FormattedMessage, useIntl } from 'react-intl';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
 import FormWrapper from '../../modules/common/components/FormWrapper';
-import PageHeader from '../../modules/common/components/PageHeader';
+import PageHeader from '@/components/ui/PageHeader';
 import generateUniqueId from '../../modules/common/utils/getUniqueId';
 import {
   OnSubmitSuccessType,

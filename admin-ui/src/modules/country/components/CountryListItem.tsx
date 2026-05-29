@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import Table from '../../common/components/Table';
 import TableActionsMenu from '../../common/components/TableActionsMenu';
 

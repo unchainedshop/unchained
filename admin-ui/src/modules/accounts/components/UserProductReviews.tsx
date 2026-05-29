@@ -1,6 +1,6 @@
 import useUserProductReviews from '../../product-review/hooks/useUserProductReviews';
 import ProductReviewsList from '../../product-review/components/ProductReviewsList';
-import Button from '../../common/components/Button';
+import Button from '@/components/ui/Button';
 import { useIntl } from 'react-intl';
 
 const UserProductReviews = ({ _id }) => {

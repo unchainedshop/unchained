@@ -1,7 +1,7 @@
 import { useIntl } from 'react-intl';
 import Table from '../../common/components/Table';
 import OrderListItem from './OrderListItem';
-import Loading from '../../common/components/Loading';
+import Loading from '@/components/ui/Loading';
 
 const OrderList = ({ orders, showUser, loading, sortable }) => {
   const { formatMessage } = useIntl();

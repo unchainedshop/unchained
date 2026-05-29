@@ -2,9 +2,9 @@ import { useIntl } from 'react-intl';
 import { Fragment } from 'react';
 
 import Table from '../../common/components/Table';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import { useFormatPrice } from '../../common/utils/utils';
-import NoData from '../../common/components/NoData';
+import NoData from '@/components/ui/NoData';
 
 const triggerColor = {
   SYSTEM: 'teal',

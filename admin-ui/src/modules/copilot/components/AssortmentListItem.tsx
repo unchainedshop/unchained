@@ -1,9 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { useIntl } from 'react-intl';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { FolderIcon, CalendarIcon } from '@heroicons/react/24/outline';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import generateUniqueId from '../../common/utils/getUniqueId';
 
 interface AssortmentListItemProps {
@@ -63,7 +63,7 @@ const AssortmentListItem: React.FC<AssortmentListItemProps> = ({
 
   return (
     <div
-      className={classNames(
+      className={clsx(
         'bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-shadow',
         className,
       )}

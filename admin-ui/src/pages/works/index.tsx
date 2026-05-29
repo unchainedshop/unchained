@@ -3,8 +3,8 @@ import { IRoleAction } from '../../gql/types';
 
 import { useRouter } from 'next/router';
 
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import PageHeader from '../../modules/common/components/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import PageHeader from '@/components/ui/PageHeader';
 import useAuth from '../../modules/Auth/useAuth';
 import WorkDetailPage from './WorkDetailPage';
 import WorkQueueListView from './WorkQueueListView';

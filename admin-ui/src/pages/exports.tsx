@@ -1,14 +1,14 @@
 import useRecentExports from '../modules/work/hooks/useRecentExports';
-import PageHeader from '../modules/common/components/PageHeader';
-import BreadCrumbs from '../modules/common/components/BreadCrumbs';
+import PageHeader from '@/components/ui/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
 import { useIntl } from 'react-intl';
 import Table from '../modules/common/components/Table';
 import Link from 'next/link';
 import useFormatDateTime from '../modules/common/utils/useFormatDateTime';
 import { convertSortFieldsToQueryFormat } from '../modules/common/utils/utils';
 import { useRouter } from 'next/router';
-import Accordion from '../modules/common/components/Accordion';
-import Button from '../modules/common/components/Button';
+import Accordion from '@/components/ui/Accordion/Accordion';
+import Button from '@/components/ui/Button';
 
 const RecentExports = () => {
   const { formatMessage } = useIntl();

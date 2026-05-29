@@ -2,9 +2,9 @@ import { useIntl } from 'react-intl';
 import { IRoleAction } from '../../../gql/types';
 
 import { PlusIcon } from '@heroicons/react/24/outline';
-import Loading from '../../common/components/Loading';
-import NoData from '../../common/components/NoData';
-import Button from '../../common/components/Button';
+import Loading from '@/components/ui/Loading';
+import NoData from '@/components/ui/NoData';
+import Button from '@/components/ui/Button';
 import { OnSubmitType } from '../../forms/hooks/useForm';
 import useCreateProductVariation from '../hooks/useCreateProductVariation';
 import useProductVariations from '../hooks/useProductVariations';
@@ -13,10 +13,10 @@ import useAuth from '../../Auth/useAuth';
 import useModal from '../../modal/hooks/useModal';
 import useForm from '../../forms/hooks/useForm';
 import Form from '../../forms/components/Form';
-import FieldWithHelp from '../../forms/components/FieldWithHelp';
-import SelectField from '../../forms/components/SelectField';
-import SubmitButton from '../../forms/components/SubmitButton';
-import HelpText from '../../common/components/HelpText';
+import FieldWithHelp from '@/components/ui/form/FieldWithHelp';
+import SelectField from '@/components/ui/form/SelectField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import HelpText from '@/components/ui/HelpText';
 import convertArrayOfObjectToObject from '../../common/convertArrayOfObjectToObject';
 
 import ProductVariationsList from './ProductVariationsList';

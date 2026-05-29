@@ -7,7 +7,7 @@ import {
 
 import { toast } from 'react-toastify';
 import SelectOptions from '../../common/components/SelectOptions';
-import Tab from '../../common/components/Tab';
+import Tab from '@/components/ui/Tab';
 import FilterTextForm from './FilterTextForm';
 import FilterOptions from './FilterOptions';
 import FilterSummary from './FilterSummary';

@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { useIntl } from 'react-intl';
 import FormWrapper from '../../common/components/FormWrapper';
-import EmailField from '../../forms/components/EmailField';
+import EmailField from '@/components/ui/form/EmailField';
 import Form from '../../forms/components/Form';
-import FormErrors from '../../forms/components/FormErrors';
-import SubmitButton from '../../forms/components/SubmitButton';
+import FormErrors from '@/components/ui/form/FormErrors';
+import SubmitButton from '@/components/ui/form/SubmitButton';
 import useForm, {
   OnSubmitSuccessType,
   OnSubmitType,

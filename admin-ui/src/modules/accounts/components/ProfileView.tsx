@@ -2,22 +2,22 @@ import React, { useEffect, useRef, useState } from 'react';
 import { IRoleAction } from '../../../gql/types';
 
 import { useIntl } from 'react-intl';
-import DatePickerField from '../../forms/components/DatePickerField';
+import DatePickerField from '@/components/ui/form/DatePickerField';
 import Form from '../../forms/components/Form';
-import SelectField from '../../forms/components/SelectField';
-import TextField from '../../forms/components/TextField';
+import SelectField from '@/components/ui/form/SelectField';
+import TextField from '@/components/ui/form/TextField';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import useUpdateUserAvatar from '../hooks/useUpdateUserAvatar';
 import useUpdateUserProfile from '../hooks/useUpdateUserProfile';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
-import SaveAndCancelButtons from '../../common/components/SaveAndCancelButtons';
+import SaveAndCancelButtons from '@/components/ui/SaveAndCancelButtons';
 import AddressFields from './AddressFields';
 import { UserCircleIcon } from '@heroicons/react/24/outline';
 
 import useAuth from '../../Auth/useAuth';
 import FormWrapper from '../../common/components/FormWrapper';
 import useCurrentUser from '../hooks/useCurrentUser';
-import ImageWithFallback from '../../common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { validateBirthdate } from '../../forms/lib/validators';
 
 const ProfileView = ({ profile, avatar, _id }) => {

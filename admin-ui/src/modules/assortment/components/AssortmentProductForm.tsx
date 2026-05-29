@@ -4,12 +4,12 @@ import { IRoleAction } from '../../../gql/types';
 import { useIntl } from 'react-intl';
 
 import Form from '../../forms/components/Form';
-import SubmitButton from '../../forms/components/SubmitButton';
+import SubmitButton from '@/components/ui/form/SubmitButton';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 
 import useAddAssortmentProduct from '../hooks/useAddAssortmentProduct';
 import FilterableDropdown from '../../common/components/FilterableDropdown';
-import TagInputField from '../../forms/components/TagInputField';
+import TagInputField from '@/components/ui/form/TagInputField';
 import useAuth from '../../Auth/useAuth';
 import FormWrapper from '../../common/components/FormWrapper';
 import useProducts from '../../product/hooks/useProducts';

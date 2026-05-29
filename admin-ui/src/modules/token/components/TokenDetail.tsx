@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import generateUniqueId from '../../common/utils/getUniqueId';
-import ImageWithFallback from '../../common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import defaultNextImageLoader from '../../common/utils/defaultNextImageLoader';
 import { useIntl } from 'react-intl';
 import { TOKEN_STATUSES } from '../../common/data/miscellaneous';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
-import DetailHeader from '../../common/components/DetailHeader';
+import DetailHeader from '@/components/ui/DetailHeader';
 import shortenAddress from '../../common/utils/shortAddress';
 import { useFormatPrice } from '../../common/utils/utils';
 

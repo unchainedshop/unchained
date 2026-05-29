@@ -1,11 +1,11 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import SearchField from '../../common/components/SearchField';
+import SearchField from '@/components/ui/SearchField';
 import OrderList from '../../order/components/OrderList';
 
 import useUserOrders from '../../order/hooks/useUserOrders';
 import { convertSortFieldsToQueryFormat } from '../../common/utils/utils';
-import Toggle from '../../common/components/Toggle';
+import Toggle from '@/components/ui/Toggle';
 import { useIntl } from 'react-intl';
 
 const UserOrders = ({ _id: userId }) => {

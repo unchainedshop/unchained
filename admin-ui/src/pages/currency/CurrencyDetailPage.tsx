@@ -9,12 +9,13 @@ import CurrencyForm from '../../modules/currency/components/CurrencyForm';
 import useCurrency from '../../modules/currency/hooks/useCurrency';
 import useRemoveCurrency from '../../modules/currency/hooks/useRemoveCurrency';
 import useUpdateCurrency from '../../modules/currency/hooks/useUpdateCurrency';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import PageHeader from '../../modules/common/components/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import PageHeader from '@/components/ui/PageHeader';
 import useModal from '../../modules/modal/hooks/useModal';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
-import HeaderDeleteButton from '../../modules/common/components/HeaderDeleteButton';
-import Loading from '../../modules/common/components/Loading';
+import Button from '@/components/ui/Button';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import Loading from '@/components/ui/Loading';
 import { normalizeCurrencyISOCode } from '../../modules/common/utils/utils';
 import useAuth from '../../modules/Auth/useAuth';
 
@@ -75,7 +76,12 @@ const CurrencyDetailPage = ({ currencyId }) => {
           headerText={normalizeCurrencyISOCode(locale, currency?.isoCode)}
         />
         {hasRole(IRoleAction.ManageCurrencies) && (
-          <HeaderDeleteButton onClick={onDelete} />
+          <Button
+            variant="danger"
+            icon={<XMarkIcon className="h-5 w-5" />}
+            text="Delete"
+            onClick={onDelete}
+          />
         )}
       </div>
       {loading ? (

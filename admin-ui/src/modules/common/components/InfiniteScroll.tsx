@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
-import Loading from './Loading';
+import Loading from '@/components/ui/Loading';
 
 interface InfiniteScrollProps {
   loading: boolean;

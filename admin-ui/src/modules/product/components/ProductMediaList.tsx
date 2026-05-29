@@ -3,7 +3,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import NoData from '../../common/components/NoData';
+import NoData from '@/components/ui/NoData';
 
 import ProductMediaListItem from './ProductMediaListItem';
 import { IProductMedia } from '../../../gql/types';

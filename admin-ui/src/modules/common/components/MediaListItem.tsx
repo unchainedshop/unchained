@@ -4,15 +4,16 @@ import { useIntl } from 'react-intl';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import Form from '../../forms/components/Form';
-import TextField from '../../forms/components/TextField';
+import TextField from '@/components/ui/form/TextField';
 import useForm from '../../forms/hooks/useForm';
 import useDisplayImageInModal from '../utils/useDisplayImageInModal';
-import DeleteButton from './DeleteButton';
-import EditIcon from './EditIcon';
-import SaveAndCancelButtons from './SaveAndCancelButtons';
-import FormErrors from '../../forms/components/FormErrors';
-import DraggableIcon from './DraggableIcon';
-import ImageWithFallback from './ImageWithFallback';
+import Button from '@/components/ui/Button';
+import { TrashIcon } from '@heroicons/react/20/solid';
+import { PencilSquareIcon } from '@heroicons/react/20/solid';
+import SaveAndCancelButtons from '@/components/ui/SaveAndCancelButtons';
+import FormErrors from '@/components/ui/form/FormErrors';
+import DraggableIcon from '@/components/ui/DraggableIcon';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 const MediaListItem = ({
   media,
@@ -155,16 +156,16 @@ const MediaListItem = ({
         }}
       >
         {!isEdit && onEdit && (
-          <button
-            id="edit"
-            type="button"
+          <Button
+            variant="ghost"
+            size="xs"
+            rounded="full"
+            icon={<PencilSquareIcon className="h-5 w-5" />}
             onClick={(e) => {
               e.stopPropagation();
               onEdit(!isEdit);
             }}
-          >
-            <EditIcon />
-          </button>
+          />
         )}
         <button
           type="button"
@@ -175,7 +176,11 @@ const MediaListItem = ({
           <DraggableIcon />
         </button>
         {onDelete && (
-          <DeleteButton
+          <Button
+            variant="danger"
+            size="xs"
+            rounded="full"
+            icon={<TrashIcon className="h-5 w-5" />}
             onClick={async (e) => {
               e.stopPropagation();
               onDelete(media._id);

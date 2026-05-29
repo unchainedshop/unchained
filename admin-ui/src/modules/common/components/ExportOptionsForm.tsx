@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import Form from '../../forms/components/Form';
-import CheckboxField from '../../forms/components/CheckboxField';
+import CheckboxField from '@/components/ui/form/CheckboxField';
 import useForm from '../../forms/hooks/useForm';
-import SubmitButton from '../../forms/components/SubmitButton';
+import SubmitButton from '@/components/ui/form/SubmitButton';
 import { useIntl } from 'react-intl';
 
 export type ExportOption = {

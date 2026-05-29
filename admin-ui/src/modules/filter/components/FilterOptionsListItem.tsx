@@ -1,13 +1,13 @@
 import { useIntl } from 'react-intl';
 import { useState } from 'react';
 
-import TextField from '../../forms/components/TextField';
+import TextField from '@/components/ui/form/TextField';
 import Form from '../../forms/components/Form';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import useUpdateFilterTexts from '../hooks/useUpdateFilterTexts';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import TableActionsMenu from '../../common/components/TableActionsMenu';
-import Button from '../../common/components/Button';
+import Button from '@/components/ui/Button';
 import useApp from '../../common/hooks/useApp';
 
 const FilterOptionsListItem = ({ filterId, option, onDelete }) => {

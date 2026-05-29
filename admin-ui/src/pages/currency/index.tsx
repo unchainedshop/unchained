@@ -8,14 +8,14 @@ import { DefaultLimit } from '../../modules/common/data/miscellaneous';
 import CurrencyList from '../../modules/currency/components/CurrencyList';
 import useCurrencies from '../../modules/currency/hooks/useCurrencies';
 import useRemoveCurrency from '../../modules/currency/hooks/useRemoveCurrency';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import PageHeader from '../../modules/common/components/PageHeader';
-import ListHeader from '../../modules/common/components/ListHeader';
-import Toggle from '../../modules/common/components/Toggle';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import PageHeader from '@/components/ui/PageHeader';
+import ListHeader from '@/components/ui/ListHeader';
+import Toggle from '@/components/ui/Toggle';
 import InfiniteScroll from '../../modules/common/components/InfiniteScroll';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
 import useModal from '../../modules/modal/hooks/useModal';
-import Loading from '../../modules/common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import useAuth from '../../modules/Auth/useAuth';
 import {
   convertSortFieldsToQueryFormat,
@@ -23,8 +23,8 @@ import {
 } from '../../modules/common/utils/utils';
 import SearchWithTags from '../../modules/common/components/SearchWithTags';
 import CurrencyDetailPage from './CurrencyDetailPage';
-import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
-import InfoTextBanner from '../../modules/common/components/InfoTextBanner';
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
+import InfoTextBanner from '@/components/ui/InfoTextBanner';
 
 const Currencies = () => {
   const { formatMessage } = useIntl();

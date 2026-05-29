@@ -18,7 +18,7 @@ import useAssortmentFilters from '../hooks/useAssortmentFilters';
 import useRemoveAssortmentFilter from '../hooks/useRemoveAssortmentFilter';
 import AssortmentFiltersList from './AssortmentFiltersList';
 import AssortmentFiltersForm from './AssortmentFiltersForm';
-import Loading from '../../common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import useReorderAssortmentFilters from '../hooks/useReorderAssortmentFilters';
 import SelfDocumentingView from '../../common/components/SelfDocumentingView';
 import useAuth from '../../Auth/useAuth';

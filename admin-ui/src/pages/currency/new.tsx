@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router';
 import { useIntl } from 'react-intl';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
 import FormWrapper from '../../modules/common/components/FormWrapper';
-import PageHeader from '../../modules/common/components/PageHeader';
+import PageHeader from '@/components/ui/PageHeader';
 import CurrencyForm from '../../modules/currency/components/CurrencyForm';
 import useCreateCurrency from '../../modules/currency/hooks/useCreateCurrency';
 

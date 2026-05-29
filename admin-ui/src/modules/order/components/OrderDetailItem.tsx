@@ -2,7 +2,7 @@ import { useIntl } from 'react-intl';
 import Link from 'next/link';
 import { useFormatPrice } from '../../common/utils/utils';
 import generateUniqueId from '../../common/utils/getUniqueId';
-import ImageWithFallback from '../../common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 const OrderDetailItem = ({ item }) => {
   const { formatMessage } = useIntl();

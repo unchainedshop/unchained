@@ -4,9 +4,9 @@ import { IRoleAction } from '../../../gql/types';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import Form from '../../forms/components/Form';
-import SubmitButton from '../../forms/components/SubmitButton';
+import SubmitButton from '@/components/ui/form/SubmitButton';
 
-import TextField from '../../forms/components/TextField';
+import TextField from '@/components/ui/form/TextField';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import useTranslatedProductTexts from '../hooks/useTranslatedProductTexts';
 import useUpdateProductTexts from '../hooks/useUpdateProductTexts';
@@ -14,9 +14,9 @@ import useAuth from '../../Auth/useAuth';
 import FormWrapper from '../../common/components/FormWrapper';
 import SelfDocumentingView from '../../common/components/SelfDocumentingView';
 
-import MarkdownTextAreaField from '../../forms/components/MarkdownTextAreaField';
-import TagInputField from '../../forms/components/TagInputField';
-import HelpText from '../../common/components/HelpText';
+import MarkdownTextAreaField from '@/components/ui/form/MarkdownTextAreaField';
+import TagInputField from '@/components/ui/form/TagInputField';
+import HelpText from '@/components/ui/HelpText';
 import useApp from '../../common/hooks/useApp';
 import useShopInfo from '../../common/hooks/useShopInfo';
 

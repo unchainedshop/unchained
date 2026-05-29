@@ -2,7 +2,7 @@ import React from 'react';
 import { useIntl } from 'react-intl';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import Link from 'next/link';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import { WORK_STATUSES } from '../../common/data/miscellaneous';
 import CopyableId from './shared/CopyableId';
 

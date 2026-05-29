@@ -1,4 +1,4 @@
-import ImageWithFallback from '../../common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { IProductMediaFragment } from '../../../gql/types';
 
 interface ProductImageGalleryProps {

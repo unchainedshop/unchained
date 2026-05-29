@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import { useIntl } from 'react-intl';
 
-import Badge from '../../common/components/Badge';
-import ImageWithFallback from '../../common/components/ImageWithFallback';
-import Loading from '../../common/components/Loading';
+import Badge from '@/components/ui/Badge';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import Loading from '@/components/ui/Loading';
 
-import NoData from '../../common/components/NoData';
+import NoData from '@/components/ui/NoData';
 import defaultNextImageLoader from '../../common/utils/defaultNextImageLoader';
 import generateUniqueId from '../../common/utils/getUniqueId';
 import shortenAddress from '../../common/utils/shortAddress';

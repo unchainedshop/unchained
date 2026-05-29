@@ -2,8 +2,8 @@ import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 
 import useCurrentUser from '../../modules/accounts/hooks/useCurrentUser';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import PageHeader from '../../modules/common/components/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import PageHeader from '@/components/ui/PageHeader';
 
 import UserSettings from '../../modules/accounts/components/UserSettings';
 import useDeleteUser from '../../modules/accounts/hooks/useDeleteUser';

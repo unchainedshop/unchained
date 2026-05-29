@@ -4,14 +4,14 @@ import { IRoleAction } from '../../../gql/types';
 import { toast } from 'react-toastify';
 import useAuth from '../../Auth/useAuth';
 import Form from '../../forms/components/Form';
-import FormErrors from '../../forms/components/FormErrors';
-import PasswordField from '../../forms/components/PasswordField';
-import SubmitButton from '../../forms/components/SubmitButton';
+import FormErrors from '@/components/ui/form/FormErrors';
+import PasswordField from '@/components/ui/form/PasswordField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
 import useSendEnrollmentEmail from '../../enrollment/hooks/useSendEnrollmentEmail';
 
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import useSetPassword from '../hooks/useSetPassword';
-import Button from '../../common/components/Button';
+import Button from '@/components/ui/Button';
 import { CombinedGraphQLErrors } from '@apollo/client';
 
 const SetPassword = ({ userId, isInitialPassword, primaryEmail }) => {

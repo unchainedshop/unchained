@@ -3,7 +3,7 @@ import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { useIntl } from 'react-intl';
 
-function classNames(...classes) {
+function clsx(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
@@ -131,7 +131,7 @@ const SelectOptions = ({
             <Listbox.Button
               onMouseEnter={() => setIsHover(true)}
               onMouseLeave={() => setIsHover(false)}
-              className={classNames(
+              className={clsx(
                 'inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 h-[38px]',
                 colorConfig.button,
                 colorConfig.hover,
@@ -142,7 +142,7 @@ const SelectOptions = ({
               <CheckIcon className="h-4 w-4" aria-hidden="true" />
               <span>{select?.selectedTitle || select.title}</span>
               <ChevronDownIcon
-                className={classNames(
+                className={clsx(
                   'h-4 w-4 -mr-1 transition-transform duration-200',
                   open && 'rotate-180',
                 )}
@@ -162,7 +162,7 @@ const SelectOptions = ({
                   <Listbox.Option
                     key={option.title}
                     className={() =>
-                      classNames(
+                      clsx(
                         'group',
                         option?.disable && 'cursor-not-allowed',
                         'relative cursor-default select-none p-3 text-sm',
@@ -179,7 +179,7 @@ const SelectOptions = ({
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
                             <span
-                              className={classNames(
+                              className={clsx(
                                 'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium',
                                 getOptionClasses(option),
                               )}
@@ -195,7 +195,7 @@ const SelectOptions = ({
                           </div>
                           {option?.description && (
                             <div
-                              className={classNames(
+                              className={clsx(
                                 'mt-2 ms-1 text-sm text-slate-600 dark:text-slate-400',
                               )}
                             >

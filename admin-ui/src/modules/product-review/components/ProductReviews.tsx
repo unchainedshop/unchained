@@ -4,7 +4,7 @@ import ProductReviewsItem from './ProductReviewsItem';
 import ProductReviewsReport from './ProductReviewsReport';
 import ProductReviewForm from './ProductReviewForm';
 import useCreateProductReview from '../hooks/useCreateProductReview';
-import Button from '../../common/components/Button';
+import Button from '@/components/ui/Button';
 
 const ProductReviews = ({ productId }) => {
   const { productReviews, loadMore, reviewsCount } =

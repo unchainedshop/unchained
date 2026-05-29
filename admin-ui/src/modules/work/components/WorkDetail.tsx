@@ -2,12 +2,12 @@ import { useIntl } from 'react-intl';
 import Link from 'next/link';
 
 import { useEffect, useState } from 'react';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import { WORK_STATUSES, getShadowStyle } from '../../common/data/miscellaneous';
-import JSONView from '../../common/components/JSONView';
+import JSONView from '@/components/ui/JSONView';
 import useFormatWorkDurations from '../utils/useFormatWorkDurations';
-import Tooltip from '../../common/components/ToolTip';
+import Tooltip from '@/components/ui/ToolTip';
 import RetryStatistics from './RetryStatistics';
 
 const WorkDetail = ({ work }) => {

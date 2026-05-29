@@ -4,16 +4,17 @@ import { IRoleAction } from '../../gql/types';
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import PageHeader from '../../modules/common/components/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import PageHeader from '@/components/ui/PageHeader';
 import usePaymentProvider from '../../modules/payment-providers/hooks/usePaymentProvider';
 import useRemovePaymentProvider from '../../modules/payment-providers/hooks/useRemovePaymentProvider';
 import useUpdatePaymentProvider from '../../modules/payment-providers/hooks/useUpdatePaymentProvider';
-import Loading from '../../modules/common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
 import useModal from '../../modules/modal/hooks/useModal';
 import ProviderDetail from '../../modules/common/components/ProviderDetail';
-import HeaderDeleteButton from '../../modules/common/components/HeaderDeleteButton';
+import Button from '@/components/ui/Button';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { getInterfaceLabel } from '../../modules/common/utils/utils';
 import useAuth from '../../modules/Auth/useAuth';
 
@@ -92,7 +93,12 @@ const PaymentProviderDetailPage = ({ paymentProviderId }) => {
           )}
         />
         {hasRole(IRoleAction.ManagePaymentProviders) && (
-          <HeaderDeleteButton onClick={handleOnClick} />
+          <Button
+            variant="danger"
+            icon={<XMarkIcon className="h-5 w-5" />}
+            text="Delete"
+            onClick={handleOnClick}
+          />
         )}
       </div>
       {loading ? (

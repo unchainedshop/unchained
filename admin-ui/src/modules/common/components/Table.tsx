@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 import Cell from './TableCell';
 import Row from './TableRow';
-import NoData from './NoData';
+import NoData from '@/components/ui/NoData';
 
 const buildRows = (props) => {
   const header = [];
@@ -39,7 +39,7 @@ const Table = ({ className = '', ...props }) => {
 
   return rowsWithSort.header.length || rowsWithSort.body.length ? (
     <table
-      className={classNames(
+      className={clsx(
         'overflow-hidden my-3 flex w-full flex-row flex-nowrap divide-y divide-slate-200 dark:divide-slate-600  shadow-sm sm:rounded-lg sm:bg-white dark:bg-slate-950',
         className,
       )}

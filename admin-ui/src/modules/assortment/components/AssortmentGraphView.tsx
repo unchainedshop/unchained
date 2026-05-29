@@ -1,4 +1,4 @@
-import Loading from '../../common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import AssortmentGraph from './AssortmentGraph';
 import useAssortmentChildren from '../hooks/useAssortmentChildren';
 import useApp from '../../common/hooks/useApp';

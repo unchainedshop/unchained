@@ -1,5 +1,5 @@
 import React from 'react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { Squares2X2Icon, ListBulletIcon } from '@heroicons/react/24/outline';
 import useLocalStorage from '../../common/hooks/useLocalStorage';
 
@@ -19,12 +19,12 @@ const ListViewWrapper: React.FC<ListViewWrapperProps> = ({
   const [viewMode, setViewMode] = useLocalStorage(storageKey, 'list');
 
   return (
-    <div className={classNames('space-y-4', className)}>
+    <div className={clsx('space-y-4', className)}>
       <div className="flex justify-end">
         <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
           <button
             onClick={() => setViewMode('grid')}
-            className={classNames(
+            className={clsx(
               'p-2 rounded-md transition-colors',
               viewMode === 'grid'
                 ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm'
@@ -35,7 +35,7 @@ const ListViewWrapper: React.FC<ListViewWrapperProps> = ({
           </button>
           <button
             onClick={() => setViewMode('list')}
-            className={classNames(
+            className={clsx(
               'p-2 rounded-md transition-colors',
               viewMode === 'list'
                 ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm'

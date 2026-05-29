@@ -1,6 +1,6 @@
 import React from 'react';
 import { useIntl } from 'react-intl';
-import Button from '../../common/components/Button';
+import Button from '@/components/ui/Button';
 
 interface ImportResult {
   success: number;

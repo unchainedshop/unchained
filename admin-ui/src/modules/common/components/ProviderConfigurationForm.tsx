@@ -1,10 +1,10 @@
 import { useIntl } from 'react-intl';
 
-import JSONAreaField from '../../forms/components/JSONAreaField';
-import SubmitButton from '../../forms/components/SubmitButton';
+import JSONAreaField from '@/components/ui/form/JSONAreaField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
 import useForm from '../../forms/hooks/useForm';
 import Form from '../../forms/components/Form';
-import FormErrors from '../../forms/components/FormErrors';
+import FormErrors from '@/components/ui/form/FormErrors';
 
 const ProviderConfigurationForm = ({
   onSubmit,

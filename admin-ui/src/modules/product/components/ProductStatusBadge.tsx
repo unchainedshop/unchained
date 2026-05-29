@@ -1,6 +1,6 @@
 import React from 'react';
 import { useIntl } from 'react-intl';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 type ProductStatusBadgeProps = {
   status: 'DRAFT' | 'ACTIVE' | 'DELETED';
 };

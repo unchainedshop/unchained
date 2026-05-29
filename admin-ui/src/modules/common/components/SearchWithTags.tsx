@@ -1,9 +1,9 @@
 import React from 'react';
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
-import SearchField from './SearchField';
-import TagInput from './TagInput';
-import Badge from './Badge';
+import SearchField from '@/components/ui/SearchField';
+import TagInput from '@/components/ui/Tag/TagInput';
+import Badge from '@/components/ui/Badge';
 import { normalizeQuery } from '../utils/utils';
 import { isTruthy } from '../utils/normalizeFilterKeys';
 

@@ -1,4 +1,4 @@
-import Loading from '../../common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import InfiniteScroll from '../../common/components/InfiniteScroll';
 import { convertSortFieldsToQueryFormat } from '../../common/utils/utils';
 import useAssortments from '../hooks/useAssortments';

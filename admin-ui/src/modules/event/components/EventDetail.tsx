@@ -1,9 +1,9 @@
 import { useIntl } from 'react-intl';
-import Accordion from '../../common/components/Accordion';
-import AccordionHeader from '../../common/components/AccordionHeader';
-import Badge from '../../common/components/Badge';
-import JSONView from '../../common/components/JSONView';
-import NoData from '../../common/components/NoData';
+import Accordion from '@/components/ui/Accordion/Accordion';
+import AccordionHeader from '@/components/ui/Accordion/AccordionHeader';
+import Badge from '@/components/ui/Badge';
+import JSONView from '@/components/ui/JSONView';
+import NoData from '@/components/ui/NoData';
 
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useIntl } from 'react-intl';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import { ORDER_STATUSES } from '../../common/data/miscellaneous';
 
 type OrderStatus =

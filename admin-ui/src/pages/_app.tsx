@@ -14,12 +14,12 @@ import ThemeWrapper from '../modules/common/components/ThemeWrapper';
 import * as matomo from '../modules/common/utils/matomo';
 import ThemeToggle from '../modules/common/components/ThemeToggle';
 import UnchainedContextWrapper from '../modules/UnchainedContext/UnchainedContextWrapper';
-import ErrorBoundary from '../modules/common/components/ErrorBoundary';
+import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import Head from 'next/head';
 import Script from 'next/script';
 import AuthWrapper from '../modules/Auth/AuthWrapper';
 import { ChatProvider } from '../modules/copilot/ChatContext';
-import ImageWithFallback from '../modules/common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { AppContextWrapper } from '../modules/common/components/AppContext';
 
 const handleRouteChange = (url) => {

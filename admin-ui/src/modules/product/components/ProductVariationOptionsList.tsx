@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
-import NoData from '../../common/components/NoData';
+import NoData from '@/components/ui/NoData';
 import { OnSubmitType } from '../../forms/hooks/useForm';
 import DangerMessage from '../../modal/components/DangerMessage';
 import useModal from '../../modal/hooks/useModal';

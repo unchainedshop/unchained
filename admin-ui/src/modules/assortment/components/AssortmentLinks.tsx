@@ -12,7 +12,7 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import Loading from '../../common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import DangerMessage from '../../modal/components/DangerMessage';
 import useModal from '../../modal/hooks/useModal';
 import useAssortmentLinks from '../hooks/useAssortmentLinks';

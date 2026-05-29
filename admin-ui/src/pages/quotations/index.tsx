@@ -1,18 +1,18 @@
 import { useIntl } from 'react-intl';
 
 import { useRouter } from 'next/router';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import ListHeader from '../../modules/common/components/ListHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import ListHeader from '@/components/ui/ListHeader';
 import InfiniteScroll from '../../modules/common/components/InfiniteScroll';
-import Loading from '../../modules/common/components/Loading';
-import PageHeader from '../../modules/common/components/PageHeader';
+import Loading from '@/components/ui/Loading';
+import PageHeader from '@/components/ui/PageHeader';
 import { DefaultLimit } from '../../modules/common/data/miscellaneous';
 import QuotationList from '../../modules/quotation/components/QuotationList';
 import useQuotations from '../../modules/quotation/hooks/useQuotations';
 import { convertSortFieldsToQueryFormat } from '../../modules/common/utils/utils';
 import SearchWithTags from '../../modules/common/components/SearchWithTags';
 import QuotationDetailPage from './QuotationDetailPage';
-import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
 
 const Quotations = () => {
   const { formatMessage } = useIntl();

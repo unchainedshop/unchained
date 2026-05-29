@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import Button from '../../common/components/Button';
+import Button from '@/components/ui/Button';
 import { useIntl } from 'react-intl';
 import { useAssortmentExport } from '../hooks/useAssortmentExport';
 import useAssortmentsCount from '../hooks/useAssortmentsCount';

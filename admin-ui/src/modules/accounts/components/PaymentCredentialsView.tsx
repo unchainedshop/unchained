@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl';
-import Badge from '../../common/components/Badge';
-import NoData from '../../common/components/NoData';
+import Badge from '@/components/ui/Badge';
+import NoData from '@/components/ui/NoData';
 
 const PaymentCredentialsView = ({ paymentCredentials }) => {
   const { formatMessage } = useIntl();

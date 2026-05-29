@@ -1,8 +1,8 @@
 import { useIntl } from 'react-intl';
 import Form from '../../forms/components/Form';
-import FormErrors from '../../forms/components/FormErrors';
-import PasswordField from '../../forms/components/PasswordField';
-import SubmitButton from '../../forms/components/SubmitButton';
+import FormErrors from '@/components/ui/form/FormErrors';
+import PasswordField from '@/components/ui/form/PasswordField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
 import useForm, {
   OnSubmitSuccessType,
   OnSubmitType,

@@ -2,12 +2,12 @@ import { useIntl } from 'react-intl';
 import { IRoleAction } from '../../../gql/types';
 
 import useAuth from '../../Auth/useAuth';
-import Toggle from '../../common/components/Toggle';
+import Toggle from '@/components/ui/Toggle';
 import Form from '../../forms/components/Form';
-import FormErrors from '../../forms/components/FormErrors';
-import SubmitButton from '../../forms/components/SubmitButton';
-import TagInputField from '../../forms/components/TagInputField';
-import TextField from '../../forms/components/TextField';
+import FormErrors from '@/components/ui/form/FormErrors';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import TagInputField from '@/components/ui/form/TagInputField';
+import TextField from '@/components/ui/form/TextField';
 import useForm from '../../forms/hooks/useForm';
 import useApp from '../../common/hooks/useApp';
 

@@ -3,9 +3,9 @@ import { IRoleAction } from '../../../gql/types';
 
 import useAuth from '../../Auth/useAuth';
 import Form from '../../forms/components/Form';
-import FieldWithHelp from '../../forms/components/FieldWithHelp';
-import SubmitButton from '../../forms/components/SubmitButton';
-import TextField from '../../forms/components/TextField';
+import FieldWithHelp from '@/components/ui/form/FieldWithHelp';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import TextField from '@/components/ui/form/TextField';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 
 const ProductVariationOptionForm = ({

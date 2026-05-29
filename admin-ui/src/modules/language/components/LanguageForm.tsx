@@ -2,10 +2,10 @@ import { useIntl } from 'react-intl';
 import { IRoleAction } from '../../../gql/types';
 
 import useAuth from '../../Auth/useAuth';
-import Toggle from '../../common/components/Toggle';
+import Toggle from '@/components/ui/Toggle';
 import Form from '../../forms/components/Form';
-import SubmitButton from '../../forms/components/SubmitButton';
-import TextField from '../../forms/components/TextField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import TextField from '@/components/ui/form/TextField';
 import useForm from '../../forms/hooks/useForm';
 import { validateLanguage } from '../../forms/lib/validators';
 

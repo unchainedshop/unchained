@@ -3,7 +3,7 @@ import useFormatDateTime from '../../../common/utils/useFormatDateTime';
 import { useFormatPrice } from '../../../common/utils/utils';
 import { OrderStatusBadge } from '../../../order/components/OrderStatusBadge';
 import Link from 'next/link';
-import Badge from '../../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import {
   DELIVERY_STATUSES,
   PAYMENT_STATUSES,

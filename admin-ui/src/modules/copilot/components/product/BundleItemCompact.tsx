@@ -1,5 +1,5 @@
 import { useIntl } from 'react-intl';
-import ImageWithFallback from '../../../common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { useFormatPrice } from '../../../common/utils/utils';
 import Link from 'next/link';
 import generateUniqueId from '../../../common/utils/getUniqueId';

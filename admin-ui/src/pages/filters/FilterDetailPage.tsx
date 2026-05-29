@@ -5,10 +5,11 @@ import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 
 import useAuth from '../../modules/Auth/useAuth';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import HeaderDeleteButton from '../../modules/common/components/HeaderDeleteButton';
-import Loading from '../../modules/common/components/Loading';
-import PageHeader from '../../modules/common/components/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import Button from '@/components/ui/Button';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import Loading from '@/components/ui/Loading';
+import PageHeader from '@/components/ui/PageHeader';
 import FilterDetail from '../../modules/filter/components/FilterDetail';
 import useFilter from '../../modules/filter/hooks/useFilter';
 import useRemoveFilter from '../../modules/filter/hooks/useRemoveFilter';
@@ -77,7 +78,12 @@ const FilterDetailPage = ({ filterId }) => {
           )}
         />
         {hasRole(IRoleAction.ManageFilters) && (
-          <HeaderDeleteButton onClick={onRemoveFilter} />
+          <Button
+            variant="danger"
+            icon={<XMarkIcon className="h-5 w-5" />}
+            text="Delete"
+            onClick={onRemoveFilter}
+          />
         )}
       </div>
 

@@ -1,7 +1,7 @@
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
-import Loading from '../../common/components/Loading';
-import NoData from '../../common/components/NoData';
+import Loading from '@/components/ui/Loading';
+import NoData from '@/components/ui/NoData';
 import DangerMessage from '../../modal/components/DangerMessage';
 import useModal from '../../modal/hooks/useModal';
 import useProductBundleItems from '../hooks/useProductBundleItems';

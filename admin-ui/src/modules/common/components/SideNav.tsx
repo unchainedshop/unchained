@@ -4,13 +4,13 @@ import {
   DisclosurePanel,
 } from '@headlessui/react';
 
-import classNames from 'classnames';
+import clsx from 'clsx';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
 import useAuth from '../../Auth/useAuth';
-import Badge from './Badge';
+import Badge from '@/components/ui/Badge';
 
 const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
   const router = useRouter();
@@ -44,7 +44,7 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
     ) ? (
       <div key={item.name} className="relative group" ref={dropdownRef}>
         <button
-          className={classNames(
+          className={clsx(
             'flex w-full justify-center items-center p-2 rounded-md transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800',
             isChildActive
               ? 'text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-800'
@@ -55,7 +55,7 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
         >
           {item?.icon && (
             <item.icon
-              className={classNames(
+              className={clsx(
                 'h-6 w-6',
                 isChildActive
                   ? 'text-slate-900 dark:text-slate-100'
@@ -82,7 +82,7 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
                   <Link
                     key={subItem.name}
                     href={subItem.href}
-                    className={classNames(
+                    className={clsx(
                       'block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-hidden focus:ring-2 focus:ring-slate-800',
                       {
                         'bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-100':
@@ -111,7 +111,7 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
       {({ open }) => (
         <>
           <DisclosureButton
-            className={classNames(
+            className={clsx(
               'group flex w-full cursor-pointer hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-700 dark:text-slate-400 items-center rounded-md py-2 pl-2 pr-4 text-left text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-slate-800',
             )}
             onMouseEnter={() => setIsHovered(true)}
@@ -127,7 +127,7 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
               {item.name}
             </span>
             <ChevronDownIcon
-              className={classNames(
+              className={clsx(
                 'h-5 w-5 transition-all duration-200 ease-out',
                 isHovered || open
                   ? 'opacity-100 text-slate-600 dark:text-slate-300'
@@ -143,7 +143,7 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
                 <Link
                   key={subItem.name}
                   href={subItem.href}
-                  className={classNames(
+                  className={clsx(
                     'group flex w-full items-center rounded-md py-2 pl-5 pr-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-slate-800',
                     {
                       ' dark:bg-slate-800 text-slate-900 dark:text-slate-300 dark:hover:text-white bg-slate-50 hover:bg-slate-100':
@@ -177,7 +177,7 @@ const SideNav = ({ navigation, onClick = null, narrowView = false }) => {
             <div key={item.name} onClick={onClick}>
               <Link
                 href={item?.href || '#'}
-                className={classNames(
+                className={clsx(
                   'group flex w-full items-center rounded-md py-2 text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-slate-800',
                   router.asPath === item.href || router.pathname === item.href
                     ? 'text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-800'
@@ -192,7 +192,7 @@ const SideNav = ({ navigation, onClick = null, narrowView = false }) => {
                 <>
                   {item?.icon && (
                     <item.icon
-                      className={classNames('h-6 w-6 shrink-0', {
+                      className={clsx('h-6 w-6 shrink-0', {
                         'text-slate-900 dark:text-slate-100':
                           router.asPath === item.href ||
                           router.pathname === item.href,

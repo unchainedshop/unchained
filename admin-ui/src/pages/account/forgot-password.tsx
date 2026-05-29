@@ -2,7 +2,7 @@ import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 import ForgotPasswordForm from '../../modules/accounts/components/ForgotPasswordForm';
 import useForgotPassword from '../../modules/accounts/hooks/useForgotPassword';
-import ImageWithFallback from '../../modules/common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import {
   OnSubmitSuccessType,
   OnSubmitType,

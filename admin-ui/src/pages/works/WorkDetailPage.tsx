@@ -6,12 +6,13 @@ import WorkDetail from '../../modules/work/components/WorkDetail';
 import useWork from '../../modules/work/hooks/useWork';
 import useRemoveWork from '../../modules/work/hooks/useRemoveWork';
 import useAddWork from '../../modules/work/hooks/useAddWork';
-import Loading from '../../modules/common/components/Loading';
-import PageHeader from '../../modules/common/components/PageHeader';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
+import Loading from '@/components/ui/Loading';
+import PageHeader from '@/components/ui/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
 import useModal from '../../modules/modal/hooks/useModal';
-import HeaderDeleteButton from '../../modules/common/components/HeaderDeleteButton';
+import Button from '@/components/ui/Button';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { useCallback } from 'react';
 
@@ -130,7 +131,12 @@ const WorkDetailPage = ({ workerId }) => {
           </button>
         ) : null}
         {work && isDeletable(work?.status) ? (
-          <HeaderDeleteButton onClick={handleOnClick} />
+          <Button
+            variant="danger"
+            icon={<XMarkIcon className="h-5 w-5" />}
+            text="Delete"
+            onClick={handleOnClick}
+          />
         ) : null}
       </div>
       {!work ? <Loading /> : <WorkDetail work={work} />}

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 
-import Badge from './Badge';
+import Badge from '@/components/ui/Badge';
 
 const MultipleSelect = ({ tagList: tags, onChange, options, label }) => {
   const { formatMessage } = useIntl();

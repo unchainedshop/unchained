@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import React from 'react';
 
 const TableRow = ({
@@ -13,7 +13,7 @@ const TableRow = ({
   const cells = React.Children.map(children, clone);
   return (
     <tr
-      className={classNames(
+      className={clsx(
         'grid grid-cols-1 auto-rows-fr border border-slate-100 dark:border-slate-700 sm:border-0 rounded-md sm:mb-0 sm:table-row sm:rounded-none bg-white dark:bg-slate-800 sm:bg-inherit dark:sm:bg-inherit',
         className,
       )}

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { IRoleAction } from '../../../gql/types';
 
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 import Form from '../../forms/components/Form';
-import FormErrors from '../../forms/components/FormErrors';
-import TextField from '../../forms/components/TextField';
+import FormErrors from '@/components/ui/form/FormErrors';
+import TextField from '@/components/ui/form/TextField';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import useSetUserName from '../hooks/useSetUsername';
 import useAuth from '../../Auth/useAuth';
@@ -74,7 +74,7 @@ const UserNameView = ({ _id: userId, username }) => {
                   data-id="cancel_update"
                   onClick={() => setIsEdit(!isEdit)}
                   type="button"
-                  className={classNames(
+                  className={clsx(
                     isEdit ? '' : 'focus:ring-slate-800',
                     'inline-flex items-center rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 shadow-xs hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2',
                   )}

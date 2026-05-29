@@ -4,7 +4,7 @@ import { IRoleAction } from '../../../gql/types';
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 import useAuth from '../../Auth/useAuth';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import Table from '../../common/components/Table';
 import TableActionsMenu from '../../common/components/TableActionsMenu';
 

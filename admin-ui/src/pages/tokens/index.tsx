@@ -1,15 +1,15 @@
 import { useIntl } from 'react-intl';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import PageHeader from '../../modules/common/components/PageHeader';
-import Loading from '../../modules/common/components/Loading';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import PageHeader from '@/components/ui/PageHeader';
+import Loading from '@/components/ui/Loading';
 import useTokens from '../../modules/token/hooks/useTokens';
 import TokenList from '../../modules/token/components/TokenList';
-import NoData from '../../modules/common/components/NoData';
+import NoData from '@/components/ui/NoData';
 import { useRouter } from 'next/router';
-import ListHeader from '../../modules/common/components/ListHeader';
+import ListHeader from '@/components/ui/ListHeader';
 import SearchWithTags from '../../modules/common/components/SearchWithTags';
 import TokenDetailPage from './TokenDetailPage';
-import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
 
 const TokensPage = () => {
   const { formatMessage } = useIntl();

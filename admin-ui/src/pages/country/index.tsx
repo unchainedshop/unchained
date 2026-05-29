@@ -3,12 +3,12 @@ import { IRoleAction } from '../../gql/types';
 
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import ListHeader from '../../modules/common/components/ListHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import ListHeader from '@/components/ui/ListHeader';
 import InfiniteScroll from '../../modules/common/components/InfiniteScroll';
-import Loading from '../../modules/common/components/Loading';
-import PageHeader from '../../modules/common/components/PageHeader';
-import Toggle from '../../modules/common/components/Toggle';
+import Loading from '@/components/ui/Loading';
+import PageHeader from '@/components/ui/PageHeader';
+import Toggle from '@/components/ui/Toggle';
 
 import { DefaultLimit } from '../../modules/common/data/miscellaneous';
 import CountryList from '../../modules/country/components/CountryList';
@@ -25,8 +25,8 @@ import {
 } from '../../modules/common/utils/utils';
 import SearchWithTags from '../../modules/common/components/SearchWithTags';
 import CountryDetailPage from './CountryDetailPage';
-import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
-import InfoTextBanner from '../../modules/common/components/InfoTextBanner';
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
+import InfoTextBanner from '@/components/ui/InfoTextBanner';
 
 const Country = () => {
   const { formatMessage } = useIntl();

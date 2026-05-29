@@ -5,11 +5,11 @@ import { InboxIcon } from '@heroicons/react/24/outline';
 
 import useEnrollmentStatusTypes from '../hooks/useEnrollmentStatusTypes';
 import StatusProgress from '../../common/components/StatusProgress';
-import Accordion from '../../common/components/Accordion';
+import Accordion from '@/components/ui/Accordion/Accordion';
 import { getInterfaceLabel } from '../../common/utils/utils';
 import defaultNextImageLoader from '../../common/utils/defaultNextImageLoader';
 import SubscriptionList from './SubscriptionList';
-import Button from '../../common/components/Button';
+import Button from '@/components/ui/Button';
 import useActivateEnrollment from '../hooks/useActivateEnrollment';
 import useModal from '../../modal/hooks/useModal';
 import AlertMessage from '../../modal/components/AlertMessage';
@@ -17,8 +17,8 @@ import useTerminateEnrollment from '../hooks/useTerminateEnrollment';
 import useSendEnrollmentEmail from '../hooks/useSendEnrollmentEmail';
 import DangerMessage from '../../modal/components/DangerMessage';
 import EnrollmentDetailHeader from './EnrollmentDetailHeader';
-import JSONView from '../../common/components/JSONView';
-import ImageWithFallback from '../../common/components/ImageWithFallback';
+import JSONView from '@/components/ui/JSONView';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { IEnrollment } from '../../../gql/types';
 
 const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {

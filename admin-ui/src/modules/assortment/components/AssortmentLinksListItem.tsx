@@ -2,8 +2,8 @@ import { useSortable } from '@dnd-kit/sortable';
 import { IRoleAction } from '../../../gql/types';
 
 import { CSS } from '@dnd-kit/utilities';
-import Badge from '../../common/components/Badge';
-import DraggableIcon from '../../common/components/DraggableIcon';
+import Badge from '@/components/ui/Badge';
+import DraggableIcon from '@/components/ui/DraggableIcon';
 import TableActionsMenu from '../../common/components/TableActionsMenu';
 import generateUniqueId from '../../common/utils/getUniqueId';
 import useAuth from '../../Auth/useAuth';

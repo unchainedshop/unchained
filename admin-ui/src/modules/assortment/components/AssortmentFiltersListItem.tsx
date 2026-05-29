@@ -4,8 +4,8 @@ import { IRoleAction } from '../../../gql/types';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-import Badge from '../../common/components/Badge';
-import DraggableIcon from '../../common/components/DraggableIcon';
+import Badge from '@/components/ui/Badge';
+import DraggableIcon from '@/components/ui/DraggableIcon';
 import TableActionsMenu from '../../common/components/TableActionsMenu';
 import useAuth from '../../Auth/useAuth';
 import Link from 'next/link';

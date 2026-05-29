@@ -1,8 +1,8 @@
 import { useIntl } from 'react-intl';
 import Link from 'next/link';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
-import Badge from '../../common/components/Badge';
-import ImageWithFallback from '../../common/components/ImageWithFallback';
+import Badge from '@/components/ui/Badge';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import CopyableId from './shared/CopyableId';
 
 export const CopilotUserListItem = ({ user }) => {

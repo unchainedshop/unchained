@@ -3,9 +3,9 @@ import { IRoleAction } from '../../gql/types';
 
 import { toast } from 'react-toastify';
 
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import Loading from '../../modules/common/components/Loading';
-import PageHeader from '../../modules/common/components/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import Loading from '@/components/ui/Loading';
+import PageHeader from '@/components/ui/PageHeader';
 import useFormatDateTime from '../../modules/common/utils/useFormatDateTime';
 import ProductDetail from '../../modules/product/components/ProductDetail';
 import ProductImageGallery from '../../modules/product/components/ProductImageGallery';
@@ -14,7 +14,7 @@ import SelectOptions from '../../modules/common/components/SelectOptions';
 import usePublishProduct from '../../modules/product/hooks/usePublishProduct';
 import useUnPublishProduct from '../../modules/product/hooks/useUnPublishProduct';
 import useUpdateProduct from '../../modules/product/hooks/useUpdateProduct';
-import HeaderDeleteButton from '../../modules/common/components/HeaderDeleteButton';
+import Button from '@/components/ui/Button';
 import useRemoveProduct from '../../modules/product/hooks/useRemoveProduct';
 import useModal from '../../modules/modal/hooks/useModal';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
@@ -318,7 +318,12 @@ const ProductDetailPage = ({ slug }) => {
               />
             </div>
             {status === 'DRAFT' && hasRole(IRoleAction.ManageProducts) && (
-              <HeaderDeleteButton onClick={handleDeleteProduct} />
+              <Button
+                variant="danger"
+                icon={<XMarkIcon className="h-5 w-5" />}
+                text="Delete"
+                onClick={handleDeleteProduct}
+              />
             )}
           </div>
         </div>

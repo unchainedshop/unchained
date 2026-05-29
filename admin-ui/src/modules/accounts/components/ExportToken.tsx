@@ -1,5 +1,5 @@
 import { LinkIcon } from '@heroicons/react/24/outline';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useState } from 'react';
 import { useIntl } from 'react-intl';
 import useExportToken from '../../product/hooks/useExportToken';
@@ -36,7 +36,7 @@ const ExportToken = ({ tokenId, tokenStatus, addresses = [] }) => {
           type="button"
           onClick={() => setShowModal(true)}
           disabled={tokenStatus === 'EXPORTING'}
-          className={classNames(
+          className={clsx(
             ' text-center   inline-flex truncate rounded-md border border-transparent bg-slate-950 px-5 py-1 text-base font-medium text-white shadow-xs hover:bg-slate-950 focus:outline-hidden focus:ring-2 focus:ring-slate-900 focus:ring-offset-2',
             { 'bg-slate-400 hover:bg-slate-500': tokenStatus === 'EXPORTING' },
           )}

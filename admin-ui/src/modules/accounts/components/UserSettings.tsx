@@ -15,8 +15,8 @@ import { IRoleAction } from '../../../gql/types';
 
 import DisplayExtendedFields from '../../common/components/DisplayExtendedFields';
 import DisplayUserLastLogs from '../../common/components/DisplayUserLastLogs';
-import Loading from '../../common/components/Loading';
-import Tab from '../../common/components/Tab';
+import Loading from '@/components/ui/Loading';
+import Tab from '@/components/ui/Tab';
 import UserProductReviews from './UserProductReviews';
 import AccountView from './AccountView';
 import PaymentCredentialsView from './PaymentCredentialsView';

@@ -4,7 +4,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import NoData from '../../common/components/NoData';
+import NoData from '@/components/ui/NoData';
 import AssortmentMediaListItem from './AssortmentMediaListItem';
 import { IAssortmentMedia } from '../../../gql/types';
 import useApp from '../../common/hooks/useApp';

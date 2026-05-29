@@ -4,7 +4,7 @@ import { IRoleAction } from '../../../gql/types';
 import { useRouter } from 'next/router';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { useIntl } from 'react-intl';
-import Button from './Button';
+import Button from '@/components/ui/Button';
 import useAuth from '../../Auth/useAuth';
 
 const DashboardShortcutCard = () => {

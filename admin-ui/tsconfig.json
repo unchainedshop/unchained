@@ -3,7 +3,10 @@
     "typeRoots": [
       "src/gql/types"
     ],
-    // "baseUrl": ".",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "target": "ESNext",
     "lib": [
       "dom",

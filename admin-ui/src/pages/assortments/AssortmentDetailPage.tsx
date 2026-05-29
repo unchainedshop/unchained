@@ -3,14 +3,15 @@ import { IRoleAction } from '../../gql/types';
 
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import Loading from '../../modules/common/components/Loading';
-import PageHeader from '../../modules/common/components/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import Loading from '@/components/ui/Loading';
+import PageHeader from '@/components/ui/PageHeader';
 import AssortmentDetail from '../../modules/assortment/components/AssortmentDetail';
 import useAssortment from '../../modules/assortment/hooks/useAssortment';
 import useFormatDateTime from '../../modules/common/utils/useFormatDateTime';
 import SelectOptions from '../../modules/common/components/SelectOptions';
-import HeaderDeleteButton from '../../modules/common/components/HeaderDeleteButton';
+import Button from '@/components/ui/Button';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import useUpdateAssortment from '../../modules/assortment/hooks/useUpdateAssortment';
 import useRemoveAssortment from '../../modules/assortment/hooks/useRemoveAssortment';
 import useAuth from '../../modules/Auth/useAuth';
@@ -251,7 +252,12 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
               />
             </div>
             {hasRole(IRoleAction.ManageAssortments) && (
-              <HeaderDeleteButton onClick={handleDeleteAssortment} />
+              <Button
+                variant="danger"
+                icon={<XMarkIcon className="h-5 w-5" />}
+                text="Delete"
+                onClick={handleDeleteAssortment}
+              />
             )}
           </div>
         </div>

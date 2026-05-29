@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
 import { PencilIcon, TrashIcon } from '@heroicons/react/20/solid';
-import Portal from './Portal';
+import Portal from '@/components/ui/Portal/Portal';
 
 export interface TableActionsMenuProps {
   onEdit?: () => void;

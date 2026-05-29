@@ -2,7 +2,7 @@ import React from 'react';
 import { IRoleAction } from '../../../gql/types';
 
 import { useIntl } from 'react-intl';
-import Button from '../../common/components/Button';
+import Button from '@/components/ui/Button';
 import useAuth from '../../Auth/useAuth';
 import useModal from '../../modal/hooks/useModal';
 import { useCSVImport } from '../../common/hooks/useCSVImport';

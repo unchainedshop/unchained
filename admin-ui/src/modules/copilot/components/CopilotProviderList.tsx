@@ -1,7 +1,7 @@
 import { CreditCardIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import React from 'react';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import { useIntl } from 'react-intl';
 import CopyableId from './shared/CopyableId';
 import ConfigurationDisplay from './shared/ConfigurationDisplay';

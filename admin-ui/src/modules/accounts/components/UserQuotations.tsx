@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
-import Loading from '../../common/components/Loading';
-import SearchField from '../../common/components/SearchField';
+import Loading from '@/components/ui/Loading';
+import SearchField from '@/components/ui/SearchField';
 import QuotationList from '../../quotation/components/QuotationList';
 import useUserQuotations from '../../quotation/hooks/useUserQuotations';
 

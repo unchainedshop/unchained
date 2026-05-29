@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import ImageWithFallback from '../../../common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 const renderImage = (data: any) => {
   const { imageUrl, media, file } = data || {};

@@ -2,21 +2,22 @@ import { useIntl } from 'react-intl';
 import { IRoleAction } from '../../../gql/types';
 
 import { toast } from 'react-toastify';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import Form from '../../forms/components/Form';
-import SubmitButton from '../../forms/components/SubmitButton';
-import TextField from '../../forms/components/TextField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import TextField from '@/components/ui/form/TextField';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import useAddEmail from '../hooks/useAddEmail';
 import useRemoveEmail from '../hooks/useRemoveEmail';
 import useSendVerificationEmail from '../hooks/useSendVerificationEmail';
 import useModal from '../../modal/hooks/useModal';
 import DangerMessage from '../../modal/components/DangerMessage';
-import ActiveInActive from '../../common/components/ActiveInActive';
-import DeleteButton from '../../common/components/DeleteButton';
+import ActiveInActive from '@/components/ui/ActiveInActive';
+import Button from '@/components/ui/Button';
+import { TrashIcon } from '@heroicons/react/20/solid';
 import useAuth from '../../Auth/useAuth';
 import { CombinedGraphQLErrors } from '@apollo/client';
-import FormErrors from '../../forms/components/FormErrors';
+import FormErrors from '@/components/ui/form/FormErrors';
 
 const EmailAddresses = ({
   emails,
@@ -112,7 +113,7 @@ const EmailAddresses = ({
   });
   return (
     <div
-      className={classNames(
+      className={clsx(
         'rounded-md shadow-sm px-4 py-5 sm:p-6 bg-white dark:bg-slate-800',
         emailBodyContainer,
       )}
@@ -156,8 +157,12 @@ const EmailAddresses = ({
                   )}
 
                 {hasRole(IRoleAction.UpdateUser) && (
-                  <DeleteButton
-                    className="ml-2 inline-flex items-center rounded-full hover:bg-rose-50"
+                  <Button
+                    variant="danger"
+                    size="xs"
+                    rounded="full"
+                    icon={<TrashIcon className="h-5 w-5" />}
+                    className="ml-2"
                     onClick={() =>
                       onRemoveEmail({
                         email: address,

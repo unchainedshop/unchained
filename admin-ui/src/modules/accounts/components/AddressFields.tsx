@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl';
-import SaveAndCancelButtons from '../../common/components/SaveAndCancelButtons';
-import TextField from '../../forms/components/TextField';
+import SaveAndCancelButtons from '@/components/ui/SaveAndCancelButtons';
+import TextField from '@/components/ui/form/TextField';
 
 const AddressFields = ({ isEdit, address, setIsEdit }) => {
   const { formatMessage } = useIntl();

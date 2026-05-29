@@ -3,11 +3,11 @@ import { useRouter } from 'next/router';
 import { useMemo, useCallback, useState } from 'react';
 
 import InfiniteScroll from '../../modules/common/components/InfiniteScroll';
-import Loading from '../../modules/common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import WorkFilter from '../../modules/work/components/WorkFilter';
 import WorkList from '../../modules/work/components/WorkList';
 import MessagesList from '../../modules/work/components/MessagesList';
-import Tab from '../../modules/common/components/Tab';
+import Tab from '@/components/ui/Tab';
 import SearchWithTags from '../../modules/common/components/SearchWithTags';
 import useWorkQueue from '../../modules/work/hooks/useWorkQueue';
 import { DefaultLimit } from '../../modules/common/data/miscellaneous';

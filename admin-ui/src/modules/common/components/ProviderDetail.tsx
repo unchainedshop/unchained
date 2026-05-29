@@ -5,8 +5,8 @@ import { getInterfaceLabel } from '../utils/utils';
 import useFormatDateTime from '../utils/useFormatDateTime';
 import { PROVIDER_TYPE_CLASSES } from '../data/miscellaneous';
 import ProviderConfigurationForm from './ProviderConfigurationForm';
-import ActiveInActive from './ActiveInActive';
-import Badge from './Badge';
+import ActiveInActive from '@/components/ui/ActiveInActive';
+import Badge from '@/components/ui/Badge';
 const ProviderDetail = ({
   provider,
   onSubmit,
