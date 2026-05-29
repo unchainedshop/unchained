@@ -16,7 +16,7 @@ export const OrderDiscountsCollection = async (db: mongodb.Db) => {
   const OrderDiscounts = db.collection<OrderDiscount>('order_discounts');
 
   await buildDbIndexes<OrderDiscount>(OrderDiscounts, [
-    { index: { orderId: 1 } },
+    { index: { orderId: 1, created: 1 } },
     { index: { code: 1 }, options: { sparse: true } },
   ]);
 

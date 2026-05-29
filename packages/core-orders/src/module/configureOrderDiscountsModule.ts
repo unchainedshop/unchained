@@ -29,9 +29,12 @@ export const configureOrderDiscountsModule = ({
     ): Promise<OrderDiscount[]> => {
       if ('orderIds' in query) {
         if (!query.orderIds?.length) return [];
-        return OrderDiscounts.find({ orderId: { $in: query.orderIds } }).toArray();
+        return OrderDiscounts.find(
+          { orderId: { $in: query.orderIds } },
+          { sort: { created: 1 } },
+        ).toArray();
       }
-      return OrderDiscounts.find({ orderId: query.orderId }).toArray();
+      return OrderDiscounts.find({ orderId: query.orderId }, { sort: { created: 1 } }).toArray();
     },
 
     create: async (
