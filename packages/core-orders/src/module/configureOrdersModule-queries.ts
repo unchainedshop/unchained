@@ -88,6 +88,19 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       return Orders.findOne(selector, options);
     },
 
+    // Batched lookup of open carts (status === null) for the given users, most
+    // recently updated first. Backs the API cartLoader; per-key country/order
+    // matching is applied in the loader to mirror `cart`'s selection.
+    findCarts: async (
+      { userIds }: { userIds: string[] },
+      options?: mongodb.FindOptions,
+    ): Promise<Order[]> => {
+      return Orders.find(
+        { status: { $eq: null }, userId: { $in: userIds } },
+        { sort: { updated: -1 }, ...options },
+      ).toArray();
+    },
+
     count: async (query: OrderQuery): Promise<number> => {
       const orderCount = await Orders.countDocuments(buildFindSelector(query));
       return orderCount;

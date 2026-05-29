@@ -27,6 +27,7 @@ import deliveryProviderLoader from './deliveryProviderLoader.ts';
 import paymentProviderLoader from './paymentProviderLoader.ts';
 import warehousingProviderLoader from './warehousingProviderLoader.ts';
 import orderLoader from './orderLoader.ts';
+import cartLoader from './cartLoader.ts';
 import orderPaymentLoader from './orderPaymentLoader.ts';
 import orderDeliveryLoader from './orderDeliveryLoader.ts';
 import orderPositionsLoader from './orderPositionsLoader.ts';
@@ -76,6 +77,7 @@ const loaders = (unchainedAPI: UnchainedCore) => {
     warehousingProviderLoader: warehousingProviderLoader(unchainedAPI),
 
     orderLoader: orderLoader(unchainedAPI),
+    cartLoader: cartLoader(unchainedAPI),
     orderPaymentLoader: orderPaymentLoader(unchainedAPI),
     orderDeliveryLoader: orderDeliveryLoader(unchainedAPI),
     orderPositionsLoader: orderPositionsLoader(unchainedAPI),
