@@ -3,7 +3,7 @@ import { useIntl } from 'react-intl';
 
 import { PaperAirplaneIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import StatusProgress from '../../common/components/StatusProgress';
-import useQuotationStatusTypes from '../hooks/useQuotationStatusTypes';
+import useStatusTypes from '../../common/hooks/useStatusTypes';
 import Button from '@/components/ui/Button';
 import useModal from '../../modal/hooks/useModal';
 
@@ -21,7 +21,8 @@ const QuotationDetail = ({ quotation }) => {
   const { formatMessage } = useIntl();
   const { setModal } = useModal();
 
-  const { quotationStatusTypes } = useQuotationStatusTypes();
+  const { statusTypes: quotationStatusTypes } =
+    useStatusTypes('QuotationStatus');
   const { VerifyQuotation } = useVerifyQuotation();
   const { rejectQuotation } = useRejectQuotation();
   const { makeQuotationProposal } = useMakeQuotationProposal();

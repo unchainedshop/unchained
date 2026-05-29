@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { InboxIcon } from '@heroicons/react/24/outline';
 
-import useEnrollmentStatusTypes from '../hooks/useEnrollmentStatusTypes';
+import useStatusTypes from '../../common/hooks/useStatusTypes';
 import StatusProgress from '../../common/components/StatusProgress';
 import Accordion from '@/components/ui/Accordion/Accordion';
 import { getInterfaceLabel } from '../../common/utils/utils';
@@ -25,7 +25,8 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
   const { formatMessage } = useIntl();
   const { setModal } = useModal();
 
-  const { enrollmentStatusTypes } = useEnrollmentStatusTypes();
+  const { statusTypes: enrollmentStatusTypes } =
+    useStatusTypes('EnrollmentStatus');
   const { activateEnrollment } = useActivateEnrollment();
   const { terminateEnrollment } = useTerminateEnrollment();
   const { sendEnrollmentEmail } = useSendEnrollmentEmail();

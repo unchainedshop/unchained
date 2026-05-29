@@ -14,7 +14,7 @@ import {
   normalizeQuery,
 } from '../../modules/common/utils/utils';
 
-import useEnrollmentStatusTypes from '../../modules/enrollment/hooks/useEnrollmentStatusTypes';
+import useStatusTypes from '../../modules/common/hooks/useStatusTypes';
 import StatusFilter from '../../modules/common/components/StatusFilter';
 import SearchWithTags from '../../modules/common/components/SearchWithTags';
 import EnrollmentDetailPage from './EnrollmentDetailPage';
@@ -57,7 +57,8 @@ const EnrollmentListView = () => {
       forceLocale: selectedLocale,
     });
 
-  const { enrollmentStatusTypes } = useEnrollmentStatusTypes();
+  const { statusTypes: enrollmentStatusTypes } =
+    useStatusTypes('EnrollmentStatus');
 
   const ENROLLMENT_STATUS =
     enrollmentStatusTypes?.map(({ value }) => value) || [];

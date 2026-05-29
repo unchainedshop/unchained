@@ -10,7 +10,7 @@ import OrderDetailPayment from './OrderDetailPayment';
 import OrderDetailDelivery from './OrderDetailDelivery';
 import OrderDetailAddresses from './OrderDetailAddresses';
 import DiscountList from './DiscountList';
-import useOrderStatusTypes from '../hooks/useOrderStatusTypes';
+import useStatusTypes from '../../common/hooks/useStatusTypes';
 
 import useConfirmOrder from '../hooks/useConfirmOrder';
 import useModal from '../../modal/hooks/useModal';
@@ -32,7 +32,7 @@ const OrderDetail = ({ order }) => {
   const { rejectOrder } = useRejectOrder();
   const { hasRole } = useAuth();
 
-  const { orderStatusType } = useOrderStatusTypes();
+  const { statusTypes: orderStatusType } = useStatusTypes('OrderStatus');
 
   if (!order) return null;
 
