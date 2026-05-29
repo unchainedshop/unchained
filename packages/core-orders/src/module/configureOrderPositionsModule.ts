@@ -51,12 +51,18 @@ export const configureOrderPositionsModule = ({
     ): Promise<OrderPosition[]> => {
       if ('orderIds' in query) {
         if (!query.orderIds?.length) return [];
-        return OrderPositions.find({
-          orderId: { $in: query.orderIds },
-          quantity: { $gt: 0 },
-        }).toArray();
+        return OrderPositions.find(
+          {
+            orderId: { $in: query.orderIds },
+            quantity: { $gt: 0 },
+          },
+          { sort: { created: 1 } },
+        ).toArray();
       }
-      return OrderPositions.find({ orderId: query.orderId, quantity: { $gt: 0 } }).toArray();
+      return OrderPositions.find(
+        { orderId: query.orderId, quantity: { $gt: 0 } },
+        { sort: { created: 1 } },
+      ).toArray();
     },
 
     delete: async (orderPositionId: string) => {
