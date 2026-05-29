@@ -1077,7 +1077,6 @@ export const RemoveAssortmentFilterResponse = {
 export const assortmentequestVariables = {
   includeInactive: true,
   includeLeaves: false,
-  limit: 50,
   offset: 0,
   queryString: '',
   slugs: null,

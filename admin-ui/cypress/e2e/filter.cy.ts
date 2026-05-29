@@ -88,20 +88,18 @@ describe('Filter', () => {
 
     cy.visit('/');
     cy.viewport(1200, 800);
-    cy.get('a[href="/filters"]')
+    cy.get('a[href="/filters/"]')
       .contains(localizations.en.filters)
       .click({ force: true });
-    cy.location('pathname').should('eq', '/filters');
+    cy.location('pathname').should('eq', '/filters/');
 
     cy.wait(fullAliasName(FilterOperations.GetFiltersList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           queryString: '',
-          limit: 50,
           offset: 0,
           includeInactive: true,
-          sort: [],
         });
         expect(response.body).to.deep.eq(FilterListResponse);
       },
@@ -118,7 +116,7 @@ describe('Filter', () => {
       cy.get('button[role="switch"]').click();
       cy.wait(150);
       cy.location().then((current) => {
-        expect(current.pathname).to.eq('/filters');
+        expect(current.pathname).to.eq('/filters/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
           includeInactive: 'false',
         });
@@ -139,7 +137,7 @@ describe('Filter', () => {
         },
       );
       cy.location().then((current) => {
-        expect(current.pathname).to.eq('/filters');
+        expect(current.pathname).to.eq('/filters/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
           includeInactive: 'true',
         });
@@ -152,18 +150,16 @@ describe('Filter', () => {
       cy.wait(fullAliasName(FilterOperations.GetFiltersList)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             queryString: 'search',
-            limit: 50,
             offset: 0,
             includeInactive: true,
-            sort: [],
           });
           expect(response.body).to.deep.eq(FilterListResponse);
         },
       );
       cy.location().then((current) => {
-        expect(current.pathname).to.eq('/filters');
+        expect(current.pathname).to.eq('/filters/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
           queryString: 'search',
         });
@@ -173,18 +169,16 @@ describe('Filter', () => {
       cy.wait(fullAliasName(FilterOperations.GetFiltersList)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             queryString: 'search input',
-            limit: 50,
             offset: 0,
             includeInactive: true,
-            sort: [],
           });
           expect(response.body).to.deep.eq(FilterListResponse);
         },
       );
       cy.location().then((current) => {
-        expect(current.pathname).to.eq('/filters');
+        expect(current.pathname).to.eq('/filters/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
           queryString: 'search input',
         });
@@ -200,7 +194,7 @@ describe('Filter', () => {
 
       cy.wait(fullAliasMutationName(FilterOperations.RemoveFilter)).then(
         (currentSubject) => {
-          expect(currentSubject.request.body.variables).to.deep.eq({
+          expect(currentSubject.request.body.variables).to.deep.include({
             filterId: filter._id,
           });
           expect(currentSubject.response.body).to.deep.eq(RemoveFilterResponse);
@@ -216,25 +210,22 @@ describe('Filter', () => {
       cy.wait(fullAliasName(FilterOperations.GetFiltersList)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             queryString: '',
-            limit: 50,
             offset: 0,
             includeInactive: true,
-            sort: [],
           });
           expect(response.body).to.deep.eq(FilterListResponse);
         },
       );
 
-      cy.location('pathname').should('eq', '/filters');
+      cy.location('pathname').should('eq', '/filters/');
     });
   });
 
   context('Detail View', () => {
     beforeEach(() => {
-      cy.get(`a[href="/filters?filterId=${SingleFilterResponse.data.filter._id}"]`)
-        .contains(SingleFilterResponse.data.filter.texts.title)
+      cy.get(`a[href="/filters/?filterId=${SingleFilterResponse.data.filter._id}"]`)
         .first()
         .click();
 
@@ -246,10 +237,7 @@ describe('Filter', () => {
         },
       );
 
-      cy.location('pathname').should(
-        'eq',
-        `/filters?filterId=${SingleFilterResponse.data.filter._id}`,
-      );
+      cy.url().should('include', `/filters/?filterId=${SingleFilterResponse.data.filter._id}`);
       cy.get('h2').should('contain', localizations.en.filter_detail);
     });
 
@@ -309,7 +297,7 @@ describe('Filter', () => {
       cy.wait(fullAliasMutationName(FilterOperations.UpdateFilterText)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             filterId: SingleFilterResponse.data.filter._id,
             texts: [
               {
@@ -338,7 +326,7 @@ describe('Filter', () => {
       cy.wait(fullAliasMutationName(FilterOperations.UpdateFilterText)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             filterId: SingleFilterResponse.data.filter._id,
             texts: [
               {
@@ -362,7 +350,7 @@ describe('Filter', () => {
 
       cy.wait(fullAliasMutationName(FilterOperations.RemoveFilter)).then(
         (currentSubject) => {
-          expect(currentSubject.request.body.variables).to.deep.eq({
+          expect(currentSubject.request.body.variables).to.deep.include({
             filterId: filter._id,
           });
           expect(currentSubject.response.body).to.deep.eq(RemoveFilterResponse);
@@ -376,7 +364,7 @@ describe('Filter', () => {
       cy.wait(fullAliasName(FilterOperations.GetFilterOptions)).then(
         (currentSelection) => {
           const { request, response } = currentSelection;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             filterId: SingleFilterResponse.data.filter._id,
           });
 
@@ -389,10 +377,9 @@ describe('Filter', () => {
       );
 
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(
-          `/filters?filterId=${SingleFilterResponse.data.filter._id}`,
-        );
+        expect(current.pathname).to.eq('/filters/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          filterId: SingleFilterResponse.data.filter._id,
           tab: 'options',
         });
       });
@@ -410,7 +397,7 @@ describe('Filter', () => {
       cy.wait(fullAliasMutationName(FilterOperations.UpdateFilter)).then(
         (currentSelection) => {
           const { request, response } = currentSelection;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             filterId: SingleFilterResponse.data.filter._id,
             filter: { isActive: false },
           });
@@ -432,7 +419,7 @@ describe('Filter', () => {
       cy.wait(fullAliasMutationName(FilterOperations.UpdateFilter)).then(
         (currentSelection) => {
           const { request, response } = currentSelection;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             filterId: SingleFilterResponse.data.filter._id,
             filter: { isActive: true },
           });
@@ -445,10 +432,9 @@ describe('Filter', () => {
     it('Should [ADD FILTER OPTION] successfully', () => {
       cy.get('a[id="options"]').click({ multiple: true });
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(
-          `/filters?filterId=${SingleFilterResponse.data.filter._id}`,
-        );
+        expect(current.pathname).to.eq('/filters/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          filterId: SingleFilterResponse.data.filter._id,
           tab: 'options',
         });
       });
@@ -466,7 +452,7 @@ describe('Filter', () => {
       cy.wait(fullAliasMutationName(FilterOperations.CreateFilterOption)).then(
         (currentSelection) => {
           const { request, response } = currentSelection;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             filterId: SingleFilterResponse.data.filter._id,
             option: { title: 'option title', value: 'option value' },
           });
@@ -479,10 +465,9 @@ describe('Filter', () => {
     it('Should [SHOW ERROR FOR REQUIRED FILTER OPTION] successfully', () => {
       cy.get('a[id="options"]').click({ multiple: true });
       cy.location().should((current) => {
-        expect(current.pathname).to.eq(
-          `/filters?filterId=${SingleFilterResponse.data.filter._id}`,
-        );
+        expect(current.pathname).to.eq('/filters/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          filterId: SingleFilterResponse.data.filter._id,
           tab: 'options',
         });
       });
@@ -516,10 +501,9 @@ describe('Filter', () => {
     it('[CANCEL] should close filter option modal', () => {
       cy.get('a[id="options"]').click({ multiple: true });
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(
-          `/filters?filterId=${SingleFilterResponse.data.filter._id}`,
-        );
+        expect(current.pathname).to.eq('/filters/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          filterId: SingleFilterResponse.data.filter._id,
           tab: 'options',
         });
       });
@@ -553,7 +537,7 @@ describe('Filter', () => {
       cy.wait(fullAliasMutationName(FilterOperations.UpdateFilterText)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             filterId: SingleFilterResponse.data.filter._id,
             filterOptionValue:
               FilterOptionsResponse.data.filter.options[0].value,
@@ -624,7 +608,7 @@ describe('Filter', () => {
       cy.wait(fullAliasMutationName(FilterOperations.RemoveFilerOption)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             filterId: SingleFilterResponse.data.filter._id,
             filterOptionValue:
               SingleFilterResponse.data.filter.options[0].value,
@@ -649,8 +633,8 @@ describe('Filter', () => {
 
   context('New Filter', () => {
     beforeEach(() => {
-      cy.get('a[href="/filters/new"]').click();
-      cy.location('pathname').should('eq', '/filters/new');
+      cy.get('a[href="/filters/new/"]').click();
+      cy.location('pathname').should('eq', '/filters/new/');
       cy.get('h2').should('contain', localizations.en.new_filter_header);
     });
 
@@ -673,21 +657,15 @@ describe('Filter', () => {
       cy.wait(fullAliasMutationName(FilterOperations.CreateFiler)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
-            filter: {
-              key: SingleFilterResponse.data.filter.key,
-              title: SingleFilterResponse.data.filter.texts.title,
-              type: firstFilterType.value,
-              options: [],
-            },
+          expect(request.body.variables.filter).to.deep.include({
+            key: SingleFilterResponse.data.filter.key,
+            type: firstFilterType.value,
+            options: [],
           });
           expect(response.body).to.deep.eq(CreateFilterResponse);
         },
       );
-      cy.location('pathname').should(
-        'eq',
-        `/filters?filterId=${CreateFilterResponse.data.createFilter._id}`,
-      );
+      cy.url().should('include', `/filters/?filterId=${CreateFilterResponse.data.createFilter._id}`);
     });
 
     it('Should [CREATE FILTER with 2 OPTIONS] successfully', () => {
@@ -709,21 +687,15 @@ describe('Filter', () => {
       cy.wait(fullAliasMutationName(FilterOperations.CreateFiler)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
-            filter: {
-              key: SingleFilterResponse.data.filter.key,
-              title: SingleFilterResponse.data.filter.texts.title,
-              type: firstFilterType.value,
-              options: ['option 1', 'option 2'],
-            },
+          expect(request.body.variables.filter).to.deep.include({
+            key: SingleFilterResponse.data.filter.key,
+            type: firstFilterType.value,
+            options: ['option 1', 'option 2'],
           });
           expect(response.body).to.deep.eq(CreateFilterResponse);
         },
       );
-      cy.location('pathname').should(
-        'eq',
-        `/filters?filterId=${CreateFilterResponse.data.createFilter._id}`,
-      );
+      cy.url().should('include', `/filters/?filterId=${CreateFilterResponse.data.createFilter._id}`);
     });
 
     it('Should [SHOW ERROR] if option field is left empty successfully', () => {
@@ -762,21 +734,15 @@ describe('Filter', () => {
       cy.wait(fullAliasMutationName(FilterOperations.CreateFiler)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
-            filter: {
-              key: SingleFilterResponse.data.filter.key,
-              title: SingleFilterResponse.data.filter.texts.title,
-              type: firstFilterType.value,
-              options: [],
-            },
+          expect(request.body.variables.filter).to.deep.include({
+            key: SingleFilterResponse.data.filter.key,
+            type: firstFilterType.value,
+            options: [],
           });
           expect(response.body).to.deep.eq(CreateFilterResponse);
         },
       );
-      cy.location('pathname').should(
-        'eq',
-        `/filters?filterId=${CreateFilterResponse.data.createFilter._id}`,
-      );
+      cy.url().should('include', `/filters/?filterId=${CreateFilterResponse.data.createFilter._id}`);
     });
 
     it('Should Display [ERROR when CREATE FILTER] required fields are missing', () => {

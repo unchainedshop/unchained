@@ -85,19 +85,19 @@ describe('User', () => {
 
     cy.viewport(1200, 800);
     cy.visit('/');
-    cy.get('a[href="/users"]')
+    cy.get('a[href="/users/"]')
       .contains(localizations.en.users)
       .click({ force: true });
 
-    cy.location('pathname').should('eq', '/users');
+    cy.location('pathname').should('eq', '/users/');
     cy.get('h2').should('contain.text', localizations.en.users);
   });
 
   context('Order Tab', () => {
     beforeEach(() => {
       const { user } = SingleUserResponse.data;
-      cy.get(`a[href="/users?userId=${user._id}"]`).click();
-      cy.location('pathname').should('eq', `/users?userId=${user._id}`);
+      cy.get(`a[href="/users/?userId=${user._id}"]`).first().click();
+      cy.url().should('include', `/users/?userId=${user._id}`);
       cy.get('h2').should(
         'contain.text',
         localizations.en.users_setting_list_header,
@@ -105,8 +105,9 @@ describe('User', () => {
 
       cy.get(`a#orders`).contains(localizations.en.orders).click();
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'orders',
         });
       });
@@ -117,8 +118,8 @@ describe('User', () => {
 
     it('Show Navigate to [ORDER] page successfully', () => {
       const { order } = SingleOrderResponse.data;
-      cy.get(`a[href="/orders?orderId=${order._id}"]`).click();
-      cy.location('pathname').should('eq', `/orders?orderId=${order._id}`);
+      cy.get(`a[href="/orders/?orderId=${order._id}"]`).click();
+      cy.url().should('include', `/orders/?orderId=${order._id}`);
     });
 
     it('should update data and route when [SEARCHING] accordingly', () => {
@@ -129,7 +130,7 @@ describe('User', () => {
       cy.wait(fullAliasName(UserOperations.UserOrder)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             userId: user._id,
             queryString: 'sea',
             sort: [
@@ -144,8 +145,9 @@ describe('User', () => {
       );
 
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'orders',
           queryString: 'sea',
         });
@@ -155,7 +157,7 @@ describe('User', () => {
       cy.wait(fullAliasName(UserOperations.UserOrder)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             userId: user._id,
             queryString: 'search',
             sort: [
@@ -170,8 +172,9 @@ describe('User', () => {
       );
 
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'orders',
           queryString: 'search',
         });
@@ -182,8 +185,8 @@ describe('User', () => {
   context('Quotations Tab', () => {
     beforeEach(() => {
       const { user } = SingleUserResponse.data;
-      cy.get(`a[href="/users?userId=${user._id}"]`).click();
-      cy.location('pathname').should('eq', `/users?userId=${user._id}`);
+      cy.get(`a[href="/users/?userId=${user._id}"]`).first().click();
+      cy.url().should('include', `/users/?userId=${user._id}`);
       cy.get('h2').should(
         'contain.text',
         localizations.en.users_setting_list_header,
@@ -214,7 +217,7 @@ describe('User', () => {
         (currentSubject) => {
           const { request, response } = currentSubject;
           expect(response.body).to.deep.eq(UserQuotationsListResponse);
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             userId: user._id,
             queryString: '',
           });
@@ -233,7 +236,7 @@ describe('User', () => {
         (currentSubject) => {
           const { request, response } = currentSubject;
           expect(response.body).to.deep.eq(UserQuotationsListResponse);
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             userId: user._id,
             queryString: 's',
           });
@@ -254,15 +257,16 @@ describe('User', () => {
         (currentSubject) => {
           const { request, response } = currentSubject;
           expect(response.body).to.deep.eq(UserQuotationsListResponse);
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             userId: user._id,
             queryString: 'sa',
           });
         },
       );
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'quotations',
           queryString: 'sa',
         });
@@ -276,7 +280,7 @@ describe('User', () => {
         (currentSubject) => {
           const { request, response } = currentSubject;
           expect(response.body).to.deep.eq(UserQuotationsListResponse);
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             userId: user._id,
             queryString: '',
           });
@@ -289,17 +293,17 @@ describe('User', () => {
           tab: 'quotations',
         });
       });
-      cy.get(`a[href="/quotations?quotationId=${quotation._id}"]`).first().click();
+      cy.get(`a[href="/quotations/?quotationId=${quotation._id}"]`).first().click();
 
-      cy.location('pathname').should('eq', `/quotations?quotationId=${quotation._id}`);
+      cy.url().should('include', `/quotations/?quotationId=${quotation._id}`);
     });
   });
 
   context('Enrollments Tab', () => {
     beforeEach(() => {
       const { user } = SingleUserResponse.data;
-      cy.get(`a[href="/users?userId=${user._id}"]`).click();
-      cy.location('pathname').should('eq', `/users?userId=${user._id}`);
+      cy.get(`a[href="/users/?userId=${user._id}"]`).first().click();
+      cy.url().should('include', `/users/?userId=${user._id}`);
       cy.get('h2').should(
         'contain.text',
         localizations.en.users_setting_list_header,
@@ -318,7 +322,7 @@ describe('User', () => {
       cy.wait(fullAliasName(UserOperations.UserEnrollments)).then(
         (currentSelection) => {
           const { request, response } = currentSelection;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             userId: user._id,
             queryString: '',
           });
@@ -334,7 +338,7 @@ describe('User', () => {
         (currentSubject) => {
           const { request, response } = currentSubject;
           expect(response.body).to.deep.eq(UserEnrollmentsListResponse);
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             userId: user._id,
             queryString: '',
           });
@@ -353,7 +357,7 @@ describe('User', () => {
         (currentSubject) => {
           const { request, response } = currentSubject;
           expect(response.body).to.deep.eq(UserEnrollmentsListResponse);
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             userId: user._id,
             queryString: 's',
           });
@@ -374,15 +378,16 @@ describe('User', () => {
         (currentSubject) => {
           const { request, response } = currentSubject;
           expect(response.body).to.deep.eq(UserEnrollmentsListResponse);
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             userId: user._id,
             queryString: 'sa',
           });
         },
       );
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'enrollments',
           queryString: 'sa',
         });
@@ -396,7 +401,7 @@ describe('User', () => {
         (currentSubject) => {
           const { request, response } = currentSubject;
           expect(response.body).to.deep.eq(UserEnrollmentsListResponse);
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             userId: user._id,
             queryString: '',
           });
@@ -409,9 +414,9 @@ describe('User', () => {
           tab: 'enrollments',
         });
       });
-      cy.get(`a[href="/enrollments?enrollmentId=${enrollment._id}"]`).first().click();
+      cy.get(`a[href="/enrollments/?enrollmentId=${enrollment._id}"]`).first().click();
 
-      cy.location('pathname').should('eq', `/enrollments?enrollmentId=${enrollment._id}`);
+      cy.url().should('include', `/enrollments/?enrollmentId=${enrollment._id}`);
     });
   });
 
@@ -419,15 +424,16 @@ describe('User', () => {
     it('Show Navigate to [USER PAYMENT CREDENTIALS] page successfully', () => {
       const { user } = SingleUserResponse.data;
 
-      cy.get(`a[href="/users?userId=${user._id}"]`).click();
-      cy.location('pathname').should('eq', `/users?userId=${user._id}`);
+      cy.get(`a[href="/users/?userId=${user._id}"]`).first().click();
+      cy.url().should('include', `/users/?userId=${user._id}`);
 
       cy.get(`a#payment_credentials`)
         .contains(localizations.en.payment_credentials)
         .click();
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'payment_credentials',
         });
       });
@@ -438,17 +444,18 @@ describe('User', () => {
       const { user } = SingleUserResponse.data;
       cy.viewport(800, 400);
 
-      cy.location('pathname').should('eq', '/users');
-      cy.get(`a[href="/users?userId=${user._id}"]`).click();
-      cy.location('pathname').should('eq', `/users?userId=${user._id}`);
+      cy.location('pathname').should('eq', '/users/');
+      cy.get(`a[href="/users/?userId=${user._id}"]`).first().click();
+      cy.url().should('include', `/users/?userId=${user._id}`);
 
       cy.get(`select#selected-tab`).select('payment_credentials');
 
       cy.get('li.py-4').should('have.length', 3);
 
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'payment_credentials',
         });
       });

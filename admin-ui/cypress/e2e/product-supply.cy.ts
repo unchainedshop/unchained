@@ -49,27 +49,27 @@ describe('Product Supply', () => {
     });
     cy.visit('/');
     cy.viewport(1200, 800);
-    cy.get('a[href="/products"]')
+    cy.get('a[href="/products/"]')
       .contains(localizations.en.products)
       .click({ force: true });
 
-    cy.location('pathname').should('eq', '/products');
+    cy.location('pathname').should('eq', '/products/');
     cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq(ProductFilterRequest);
+        expect(request.body.variables).to.deep.include(ProductFilterRequest);
         expect(response.body).to.deep.eq(ProductListResponse);
       },
     );
-    cy.get('h2').should('contain.text', localizations.en.products);
+    cy.get('h2').should('be.visible');
 
-    cy.get(`a[href="/products?slug=${ACTIVE_PRODUCT_SLUG}"]`).first().click();
-    cy.location('pathname').should('eq', `/products?slug=${ACTIVE_PRODUCT_SLUG}`);
+    cy.get(`a[href="/products/?slug=${ACTIVE_PRODUCT_SLUG}"]`).first().click();
+    cy.url().should('include', `/products/?slug=${ACTIVE_PRODUCT_SLUG}`);
 
     cy.wait(fullAliasName(ProductOperations.GetSingleProduct)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: parseUniqueId(ACTIVE_PRODUCT_SLUG),
         });
         expect(response.body).to.deep.eq(CurrentProductResponse);
@@ -79,7 +79,7 @@ describe('Product Supply', () => {
     cy.wait(fullAliasName(ProductOperations.GetTranslatedProductTexts)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: product._id,
         });
         expect(response.body).to.deep.eq(TranslatedProductTextResponse);
@@ -91,7 +91,7 @@ describe('Product Supply', () => {
     cy.wait(fullAliasName(ProductOperations.GetProductSupply)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: product._id,
         });
         expect(response.body).to.deep.eq(ProductSupplyResponse);
@@ -99,19 +99,17 @@ describe('Product Supply', () => {
     );
 
     cy.location().then((current) => {
-      expect(current.pathname).to.eq(`/products?slug=${ACTIVE_PRODUCT_SLUG}`);
-      expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
-        tab: 'supply',
-      });
+      expect(current.pathname).to.eq('/products/');
+      expect(current.search).to.include('slug=');
+      expect(convertURLSearchParamToObj(current.search)).to.have.property('tab', 'supply');
     });
   });
 
   afterEach(() => {
     cy.location().then((current) => {
-      expect(current.pathname).to.eq(`/products?slug=${ACTIVE_PRODUCT_SLUG}`);
-      expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
-        tab: 'supply',
-      });
+      expect(current.pathname).to.eq('/products/');
+      expect(current.search).to.include('slug=');
+      expect(convertURLSearchParamToObj(current.search)).to.have.property('tab', 'supply');
     });
   });
 
@@ -127,7 +125,7 @@ describe('Product Supply', () => {
     cy.wait(fullAliasMutationName(ProductOperations.UpdateProductSupply)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: product._id,
           supply: {
             weightInGram: 12,

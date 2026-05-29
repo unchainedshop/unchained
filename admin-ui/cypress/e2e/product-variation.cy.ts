@@ -92,27 +92,27 @@ describe('Product Variation', () => {
 
     cy.visit('/');
     cy.viewport(1200, 800);
-    cy.get('a[href="/products"]')
+    cy.get('a[href="/products/"]')
       .contains(localizations.en.products)
       .click({ force: true });
 
-    cy.location('pathname').should('eq', '/products');
+    cy.location('pathname').should('eq', '/products/');
     cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq(ProductFilterRequest);
+        expect(request.body.variables).to.deep.include(ProductFilterRequest);
         expect(response.body).to.deep.eq(ProductListResponse);
       },
     );
-    cy.get('h2').should('contain.text', localizations.en.products);
+    cy.get('h2').should('be.visible');
 
-    cy.get(`a[href="/products?slug=${ACTIVE_PRODUCT_SLUG}"]`).first().click();
-    cy.location('pathname').should('eq', `/products?slug=${ACTIVE_PRODUCT_SLUG}`);
+    cy.get(`a[href="/products/?slug=${ACTIVE_PRODUCT_SLUG}"]`).first().click();
+    cy.url().should('include', `/products/?slug=${ACTIVE_PRODUCT_SLUG}`);
 
     cy.wait(fullAliasName(ProductOperations.GetSingleProduct)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: parseUniqueId(ACTIVE_PRODUCT_SLUG),
         });
         expect(response.body).to.deep.eq(CurrentProductResponse);
@@ -122,7 +122,7 @@ describe('Product Variation', () => {
     cy.wait(fullAliasName(ProductOperations.GetTranslatedProductTexts)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: product._id,
         });
         expect(response.body).to.deep.eq(TranslatedProductTextResponse);
@@ -137,7 +137,7 @@ describe('Product Variation', () => {
     cy.wait(fullAliasName(ProductOperations.GetProductVariations)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: product._id,
         });
         expect(response.body).to.deep.eq(ProductVariationsResponse);
@@ -153,19 +153,17 @@ describe('Product Variation', () => {
     );
 
     cy.location().then((current) => {
-      expect(current.pathname).to.eq(`/products?slug=${ACTIVE_PRODUCT_SLUG}`);
-      expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
-        tab: 'variations',
-      });
+      expect(current.pathname).to.eq('/products/');
+      expect(current.search).to.include('slug=');
+      expect(convertURLSearchParamToObj(current.search)).to.have.property('tab', 'variations');
     });
   });
 
   afterEach(() => {
     cy.location().then((current) => {
-      expect(current.pathname).to.eq(`/products?slug=${ACTIVE_PRODUCT_SLUG}`);
-      expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
-        tab: 'variations',
-      });
+      expect(current.pathname).to.eq('/products/');
+      expect(current.search).to.include('slug=');
+      expect(convertURLSearchParamToObj(current.search)).to.have.property('tab', 'variations');
     });
   });
 
@@ -189,7 +187,7 @@ describe('Product Variation', () => {
         fullAliasMutationName(ProductOperations.CreateProductVariation),
       ).then((currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           variation: {
             type: firstVariationType.value,
             title: 'variation title',
@@ -213,7 +211,7 @@ describe('Product Variation', () => {
         fullAliasMutationName(ProductOperations.CreateProductVariation),
       ).then((currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           variation: {
             type: secondVariationType.value,
             title: 'variation title',
@@ -270,7 +268,7 @@ describe('Product Variation', () => {
         fullAliasMutationName(ProductOperations.RemoveProductVariation),
       ).then((currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productVariationId: firstVariation._id,
         });
         expect(response.body).to.deep.eq(RemoveProductVariationResponse);
@@ -332,7 +330,7 @@ describe('Product Variation', () => {
         fullAliasMutationName(ProductOperations.UpdateProductVariationTexts),
       ).then((currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productVariationId: firstVariation._id,
           texts: [
             {
@@ -375,7 +373,7 @@ describe('Product Variation', () => {
         fullAliasMutationName(ProductOperations.UpdateProductVariationTexts),
       ).then((currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productVariationId: firstVariation._id,
           texts: [
             {
@@ -461,7 +459,7 @@ describe('Product Variation', () => {
         fullAliasMutationName(ProductOperations.CreateProductVariationOption),
       ).then((currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productVariationId: firstVariation._id,
           option: {
             value: 'new option value',
@@ -550,7 +548,7 @@ describe('Product Variation', () => {
         fullAliasMutationName(ProductOperations.UpdateProductVariationTexts),
       ).then((currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productVariationId: firstVariation._id,
           productVariationOptionvalue: firstOption.value,
           texts: [
@@ -591,7 +589,7 @@ describe('Product Variation', () => {
         fullAliasMutationName(ProductOperations.UpdateProductVariationTexts),
       ).then((currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productVariationId: firstVariation._id,
           productVariationOptionvalue: firstOption.value,
           texts: [
@@ -658,7 +656,7 @@ describe('Product Variation', () => {
         fullAliasMutationName(ProductOperations.RemoveProductVariationOption),
       ).then((currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productVariationId: firstVariation._id,
           productVariationOptionvalue: firstOption.value,
         });

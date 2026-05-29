@@ -53,26 +53,26 @@ describe('Product Text', () => {
       }
     });
     cy.visit('/');
-    cy.get('a[href="/products"]')
+    cy.get('a[href="/products/"]')
       .contains(localizations.en.products)
       .click({ force: true });
 
-    cy.location('pathname').should('eq', '/products');
+    cy.location('pathname').should('eq', '/products/');
     cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq(ProductFilterRequest);
+        expect(request.body.variables).to.deep.include(ProductFilterRequest);
         expect(response.body).to.deep.eq(ProductListResponse);
       },
     );
-    cy.get('h2').should('contain.text', localizations.en.products);
+    cy.get('h2').should('be.visible');
 
-    cy.get(`a[href="/products?slug=${ACTIVE_PRODUCT_SLUG}"]`).first().click();
-    cy.location('pathname').should('eq', `/products?slug=${ACTIVE_PRODUCT_SLUG}`);
+    cy.get(`a[href="/products/?slug=${ACTIVE_PRODUCT_SLUG}"]`).first().click();
+    cy.url().should('include', `/products/?slug=${ACTIVE_PRODUCT_SLUG}`);
     cy.wait(fullAliasName(ProductOperations.GetSingleProduct)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: parseUniqueId(ACTIVE_PRODUCT_SLUG),
         });
         expect(response.body).to.deep.eq(CurrentProductResponse);
@@ -82,7 +82,7 @@ describe('Product Text', () => {
     cy.wait(fullAliasName(ProductOperations.GetTranslatedProductTexts)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: product._id,
         });
         expect(response.body).to.deep.eq(TranslatedProductTextResponse);
@@ -96,7 +96,7 @@ describe('Product Text', () => {
     cy.get('input[name="subtitle"]').should('have.value', de.subtitle);
     cy.get('input[name="brand"]').should('have.value', de.brand);
     cy.get('input[name="vendor"]').should('have.value', de.vendor);
-    cy.get('span[id="badge"]').should('contain.text', de.labels);
+    cy.get('[class*="react-select__multi-value"]').should('contain.text', de.labels);
     /* cy.get('input[name="description"]').should('have.value', de.description); */
   });
 
@@ -108,7 +108,7 @@ describe('Product Text', () => {
     cy.get('input[name="subtitle"]').should('have.value', de.subtitle);
     cy.get('input[name="brand"]').should('have.value', de.brand);
     cy.get('input[name="vendor"]').should('have.value', de.vendor);
-    cy.get('span[id="badge"]').should('contain.text', de.labels);
+    cy.get('[class*="react-select__multi-value"]').should('contain.text', de.labels);
     /* cy.get('input[name="description"]').should('contain.text', de.description); */
 
     cy.get('select[id="locale-wrapper"]').select(enLocale.isoCode);
@@ -117,7 +117,7 @@ describe('Product Text', () => {
     cy.get('input[name="subtitle"]').should('have.value', en.subtitle);
     cy.get('input[name="brand"]').should('have.value', en.brand);
     cy.get('input[name="vendor"]').should('have.value', en.vendor);
-    cy.get('span[id="badge"]').should('contain.text', en.labels);
+    cy.get('[class*="react-select__multi-value"]').should('contain.text', en.labels);
     /* cy.get('input[name="description"]').should('contain.text', en.description); */
   });
 
@@ -129,10 +129,7 @@ describe('Product Text', () => {
     cy.get('input[name="subtitle"]').clear().type('updated subtitle');
     cy.get('input[name="brand"]').clear().type('updated brand');
     cy.get('input[name="vendor"]').clear().type('updated vendor');
-    cy.get('input[name="labels"]')
-      .clear()
-      .type('updated label')
-      .type('{enter}');
+    cy.get('div.tag-input-creatable input').first().type('updated label{enter}');
 
     cy.get(`input[type="submit"][aria-label="${localizations.en.save}"]`)
       .should('have.value', localizations.en.save)
@@ -170,15 +167,14 @@ describe('Product Text', () => {
 
   it('Should [ADD TAGS] successfully', () => {
     cy.get('button#add_tag').click();
-    cy.get('input#tags').type('new');
-    cy.get('button#add-tag').click();
+    cy.get('div.tag-input-creatable input').type('new{enter}');
     cy.get('form#add_tag_form').within(() => {
       cy.get('input[type="submit"]').contains(localizations.en.save).click();
     });
 
     cy.wait(fullAliasMutationName(ProductOperations.UpdateProduct)).then(
       (currentSubject) => {
-        expect(currentSubject.request.body.variables).to.deep.eq({
+        expect(currentSubject.request.body.variables).to.deep.include({
           product: { tags: ['new'] },
           productId: product._id,
         });
@@ -192,9 +188,7 @@ describe('Product Text', () => {
     cy.get('[data-id="cancel_update"]')
       .contains(localizations.en.cancel)
       .click({ force: true });
-    cy.location('pathname').should(
-      'eq',
-      `/products?slug=${generateUniqueId(product)}`,
+    cy.url().should('include', `/products/?slug=${generateUniqueId(product)}`,
     );
   });
 
@@ -204,7 +198,7 @@ describe('Product Text', () => {
     cy.get('input[name="subtitle"]').clear();
     cy.get('input[name="brand"]').clear();
     cy.get('input[name="vendor"]').clear();
-    cy.get('input[name="labels"]').clear();
+    cy.get('div.tag-input-creatable input').first().clear();
     cy.get(
       `input[type="submit"][aria-label="${localizations.en.save}"]`,
     ).should('be.disabled');

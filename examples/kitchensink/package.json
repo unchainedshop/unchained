@@ -48,10 +48,13 @@
     "@unchainedshop/platform": "^5.0.0-alpha.1",
     "@unchainedshop/plugins": "^5.0.0-alpha.1",
     "@unchainedshop/ticketing": "^5.0.0-alpha.1",
+    "expiry-map": "^2.0.0",
     "fastify": "^5.4.0",
     "graphql": "^16.11.0",
     "graphql-yoga": "^5.15.1",
     "nodemailer": "^8.0.1",
+    "p-memoize": "^8.0.0",
+    "resolve-accept-language": "^3.2.2",
     "stripe": "^22.1.0",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"

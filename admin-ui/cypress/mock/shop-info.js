@@ -23,6 +23,10 @@ export const ShopInfoResponse = {
       },
       __typename: 'Shop',
       adminUiConfig: {
+        singleSignOnURL: null,
+        productTags: ['product-tag1', 'product-tag2', 'product-tag3'],
+        assortmentTags: ['new', 'old'],
+        userTags: ['new', 'old'],
         externalLinks: [],
         customProperties: [
           {
@@ -43,7 +47,7 @@ export const ShopInfoResponse = {
   },
 };
 
-const SystemRolesResponseAdmin = {
+export const SystemRolesResponse = {
   data: {
     shopInfo: {
       _id: 'root',
@@ -52,6 +56,8 @@ const SystemRolesResponseAdmin = {
     },
   },
 };
+
+const SystemRolesResponseAdmin = SystemRolesResponse;
 
 export const ShopInfoOperations = {
   ShopInfo: 'ShopInfo',

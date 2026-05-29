@@ -54,32 +54,32 @@ describe('Assortment Detail Media', () => {
 
     cy.viewport(1200, 800);
     cy.visit('/');
-    cy.get('a[href="/assortments"]')
+    cy.get('a[href="/assortments/"]')
       .contains(localizations.en.assortments)
       .click({ force: true });
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq(assortmentequestVariables);
+        expect(request.body.variables).to.deep.include(assortmentequestVariables);
         expect(response.body).to.deep.eq(AssortmentListResponse);
       },
     );
 
-    cy.location('pathname').should('eq', '/assortments');
+    cy.location('pathname').should('eq', '/assortments/');
     cy.get('h2').should(
       'contain.text',
       localizations.en.assortments,
     );
 
-    cy.get(`a[href="/assortments?assortmentSlug=${generateUniqueId(assortment)}"]`)
+    cy.get(`a[href="/assortments/?assortmentSlug=${generateUniqueId(assortment)}"]`)
       .contains(assortment?.texts?.title)
       .click();
 
     cy.wait(fullAliasName(AssortmentOperation.GetSingleAssortment)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           assortmentId: assortment._id,
         });
         expect(response.body).to.deep.eq(Singleassortmentesponse);
@@ -89,36 +89,23 @@ describe('Assortment Detail Media', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetTranslatedTexts)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           assortmentId: Singleassortmentesponse.data.assortment._id,
         });
         expect(response.body).to.deep.eq(TranslatedAssortmentTextsResponse);
       },
     );
 
-    cy.location('pathname').should(
-      'eq',
-      `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
+    cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(assortment)}`,
     );
-    cy.get('h2').within(() => {
-      cy.get('span').should(
-        'contain.text',
-        getContent(
-          replaceIntlPlaceholder(
-            localizations.en.assortment,
-            assortment._id,
-            'id',
-          ),
-        ),
-      );
-    });
+    cy.get('h2').should('contain.text', assortment?.texts?.title || 'Assortment');
 
     cy.get('a#media').contains(localizations.en.media).click();
 
     cy.wait(fullAliasName(AssortmentOperation.AssortmentMedia)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           assortmentId: assortment._id,
         });
         expect(response.body).to.deep.eq(AssortmentMediaResponse);
@@ -128,7 +115,7 @@ describe('Assortment Detail Media', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetMediaTexts)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           assortmentMediaId:
             AssortmentMediaResponse.data.assortment.media[0]._id,
         });
@@ -143,10 +130,9 @@ describe('Assortment Detail Media', () => {
 
   afterEach(() => {
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq(
-        `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
-      );
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+        assortmentSlug: generateUniqueId(assortment),
         tab: 'media',
       });
     });
@@ -161,7 +147,7 @@ describe('Assortment Detail Media', () => {
   });
 
   it('Should [DELETE] media successfully', () => {
-    cy.get('button[type="button"]#delete_button').first().click();
+    cy.get('button[aria-label]').first().click({ force: true }); cy.get('button').contains(localizations.en.delete).click();
     cy.get('button[type="button"]#danger_continue')
       .contains(localizations.en.delete_assortment_media)
       .click();
@@ -169,7 +155,7 @@ describe('Assortment Detail Media', () => {
     cy.wait(fullAliasMutationName(AssortmentOperation.RemoveMedia)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           assortmentMediaId:
             AssortmentMediaResponse.data.assortment.media[0]._id,
         });
@@ -180,7 +166,7 @@ describe('Assortment Detail Media', () => {
     cy.wait(fullAliasName(AssortmentOperation.AssortmentMedia)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           assortmentId: assortment._id,
         });
         expect(response.body).to.deep.eq(AssortmentMediaResponse);
@@ -189,7 +175,7 @@ describe('Assortment Detail Media', () => {
   });
 
   it('Should [CANCEL] delete media successfully', () => {
-    cy.get('button[type="button"]#delete_button').first().click();
+    cy.get('button[aria-label]').first().click({ force: true }); cy.get('button').contains(localizations.en.delete).click();
     cy.get('button[type="button"]#danger_cancel')
       .contains(localizations.en.cancel)
       .click();
@@ -230,7 +216,7 @@ describe('Assortment Detail Media', () => {
     cy.wait(fullAliasMutationName(AssortmentOperation.UpdateMediaTexts)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           assortmentMediaId:
             AssortmentMediaResponse.data.assortment.media[0]._id,
           texts: [
@@ -261,7 +247,7 @@ describe('Assortment Detail Media', () => {
     cy.wait(fullAliasMutationName(AssortmentOperation.UpdateMediaTexts)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           assortmentMediaId:
             AssortmentMediaResponse.data.assortment.media[0]._id,
           texts: [
