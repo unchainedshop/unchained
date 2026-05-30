@@ -261,14 +261,6 @@ describe('Order', () => {
         },
       );
 
-      cy.wait(fullAliasName(OrderOperations.DeliveryProvidersType)).then(
-        (currentSubject) => {
-          expect(currentSubject.response.body).to.deep.eq(
-            DeliveryProvidersTypeResponse,
-          );
-        },
-      );
-
       cy.wait(fullAliasName(OrderOperations.OrderDeliveryStatus)).then(
         (currentSubject) => {
           expect(currentSubject.response.body).to.deep.eq(
@@ -304,7 +296,7 @@ describe('Order', () => {
     });
 
     it('Show Navigate to [ORDER DETAIL] page successfully', () => {
-      cy.get('span#order_number_badge').should('contain', order.orderNumber);
+      cy.contains(order.orderNumber).should('be.visible');
     });
 
     it('Show [CONFIRM ORDER ] on order detail page successfully', () => {

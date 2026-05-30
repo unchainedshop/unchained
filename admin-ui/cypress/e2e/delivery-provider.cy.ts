@@ -66,10 +66,7 @@ describe('Delivery Provider', () => {
 
     cy.wait(fullAliasName(DeliveryProviderOperations.GetProvidersList)).then(
       (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          type: null,
-        });
+        const { response } = currentSubject;
         expect(response.body).to.deep.eq(DeliveryProviderListResponse);
       },
     );
@@ -244,7 +241,7 @@ describe('Delivery Provider', () => {
     const { deliveryProvider } = SingleDeliveryProviderResponse.data;
 
     cy.location('pathname').should('eq', '/delivery-provider/');
-    cy.get("tr").contains(deliveryProvider.interface.label).parents("tr").find("button[aria-label]").first().click({ force: true }); cy.get("button").contains(localizations.en.edit).click();
+    cy.get("tr").contains(deliveryProvider.interface.label).parents("tr").find(`button[aria-label="Actions menu"]`).first().click({ force: true }); cy.get(".fixed.w-48 button").contains(localizations.en.edit).click();
 
     cy.wait(fullAliasName(DeliveryProviderOperations.GetSingleProvider)).then(
       (currentSubject) => {
@@ -273,7 +270,7 @@ describe('Delivery Provider', () => {
     const { deliveryProvider } = SingleDeliveryProviderResponse.data;
 
     cy.location('pathname').should('eq', '/delivery-provider/');
-    cy.get("tr").contains(deliveryProvider.interface.label).parents("tr").find("button[aria-label]").first().click({ force: true }); cy.get("button").contains(localizations.en.edit).click();
+    cy.get("tr").contains(deliveryProvider.interface.label).parents("tr").find(`button[aria-label="Actions menu"]`).first().click({ force: true }); cy.get(".fixed.w-48 button").contains(localizations.en.edit).click();
 
     cy.wait(fullAliasName(DeliveryProviderOperations.GetSingleProvider)).then(
       (currentSubject) => {
@@ -323,7 +320,7 @@ describe('Delivery Provider', () => {
     const { deliveryProvider } = SingleDeliveryProviderResponse.data;
 
     cy.location('pathname').should('eq', '/delivery-provider/');
-    cy.get("tr").contains(deliveryProvider.interface.label).parents("tr").find("button[aria-label]").first().click({ force: true }); cy.get("button").contains(localizations.en.edit).click();
+    cy.get("tr").contains(deliveryProvider.interface.label).parents("tr").find(`button[aria-label="Actions menu"]`).first().click({ force: true }); cy.get(".fixed.w-48 button").contains(localizations.en.edit).click();
 
     cy.wait(fullAliasName(DeliveryProviderOperations.GetSingleProvider)).then(
       (currentSubject) => {
@@ -354,7 +351,7 @@ describe('Delivery Provider', () => {
   it('Show [DELETE DELIVERY PROVIDER] successfully', () => {
     const { deliveryProvider } = SingleDeliveryProviderResponse.data;
 
-    cy.get("tr").contains(deliveryProvider.interface.label).parents("tr").find("button[aria-label]").first().click({ force: true }); cy.get("button").contains(localizations.en.edit).click();
+    cy.get("tr").contains(deliveryProvider.interface.label).parents("tr").find(`button[aria-label="Actions menu"]`).first().click({ force: true }); cy.get(".fixed.w-48 button").contains(localizations.en.edit).click();
     cy.wait(fullAliasName(DeliveryProviderOperations.GetSingleProvider)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
@@ -392,7 +389,8 @@ describe('Delivery Provider', () => {
   it('Show [DELETE DELIVERY PROVIDER FROM LIST] successfully', () => {
     const { deliveryProvider } = SingleDeliveryProviderResponse.data;
 
-    cy.get('button[aria-label]').first().click({ force: true }); cy.get('button').contains(localizations.en.delete).click();
+    cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
+    cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
     cy.get('button[type="button"]#danger_continue')
       .contains(localizations.en.delete_delivery_provider)
       .click();

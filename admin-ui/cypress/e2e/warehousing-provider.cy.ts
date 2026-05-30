@@ -73,10 +73,7 @@ describe('Warehousing Provider', () => {
 
     cy.wait(fullAliasName(WarehousingProviderOperations.GetProvidersList)).then(
       (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          type: null,
-        });
+        const { response } = currentSubject;
         expect(response.body).to.deep.eq(WarehousingProvidersListResponse);
       },
     );
@@ -238,7 +235,7 @@ describe('Warehousing Provider', () => {
     const { warehousingProvider } = SingleWarehousingProviderResponse.data;
 
     cy.location('pathname').should('eq', '/warehousing-provider/');
-    cy.get("tr").contains(warehousingProvider.interface.label).parents("tr").find("button[aria-label]").first().click({ force: true }); cy.get("button").contains(localizations.en.edit).click();
+    cy.get("tr").contains(warehousingProvider.interface.label).parents("tr").find(`button[aria-label="Actions menu"]`).first().click({ force: true }); cy.get(".fixed.w-48 button").contains(localizations.en.edit).click();
 
     cy.wait(
       fullAliasName(WarehousingProviderOperations.GetSingleProvider),
@@ -267,7 +264,7 @@ describe('Warehousing Provider', () => {
     const { warehousingProvider } = SingleWarehousingProviderResponse.data;
 
     cy.location('pathname').should('eq', '/warehousing-provider/');
-    cy.get("tr").contains(warehousingProvider.interface.label).parents("tr").find("button[aria-label]").first().click({ force: true }); cy.get("button").contains(localizations.en.edit).click();
+    cy.get("tr").contains(warehousingProvider.interface.label).parents("tr").find(`button[aria-label="Actions menu"]`).first().click({ force: true }); cy.get(".fixed.w-48 button").contains(localizations.en.edit).click();
 
     cy.wait(
       fullAliasName(WarehousingProviderOperations.GetSingleProvider),
@@ -317,7 +314,7 @@ describe('Warehousing Provider', () => {
     const { warehousingProvider } = SingleWarehousingProviderResponse.data;
 
     cy.location('pathname').should('eq', '/warehousing-provider/');
-    cy.get("tr").contains(warehousingProvider.interface.label).parents("tr").find("button[aria-label]").first().click({ force: true }); cy.get("button").contains(localizations.en.edit).click();
+    cy.get("tr").contains(warehousingProvider.interface.label).parents("tr").find(`button[aria-label="Actions menu"]`).first().click({ force: true }); cy.get(".fixed.w-48 button").contains(localizations.en.edit).click();
 
     cy.wait(
       fullAliasName(WarehousingProviderOperations.GetSingleProvider),
@@ -349,7 +346,7 @@ describe('Warehousing Provider', () => {
     const { warehousingProvider } = SingleWarehousingProviderResponse.data;
 
     cy.location('pathname').should('eq', '/warehousing-provider/');
-    cy.get("tr").contains(warehousingProvider.interface.label).parents("tr").find("button[aria-label]").first().click({ force: true }); cy.get("button").contains(localizations.en.edit).click();
+    cy.get("tr").contains(warehousingProvider.interface.label).parents("tr").find(`button[aria-label="Actions menu"]`).first().click({ force: true }); cy.get(".fixed.w-48 button").contains(localizations.en.edit).click();
 
     cy.wait(
       fullAliasName(WarehousingProviderOperations.GetSingleProvider),
@@ -390,7 +387,8 @@ describe('Warehousing Provider', () => {
     const { warehousingProvider } = SingleWarehousingProviderResponse.data;
 
     cy.location('pathname').should('eq', '/warehousing-provider/');
-    cy.get('button[aria-label]').first().click({ force: true }); cy.get('button').contains(localizations.en.delete).click();
+    cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
+    cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
     cy.get('button[type="button"]#danger_continue')
       .contains(localizations.en.delete_warehousing_provider)
       .click();

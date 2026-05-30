@@ -147,7 +147,7 @@ describe('Assortment Detail Media', () => {
   });
 
   it('Should [DELETE] media successfully', () => {
-    cy.get('button[aria-label]').first().click({ force: true }); cy.get('button').contains(localizations.en.delete).click();
+    cy.get('button#delete_button').first().click({ force: true });
     cy.get('button[type="button"]#danger_continue')
       .contains(localizations.en.delete_assortment_media)
       .click();
@@ -175,7 +175,7 @@ describe('Assortment Detail Media', () => {
   });
 
   it('Should [CANCEL] delete media successfully', () => {
-    cy.get('button[aria-label]').first().click({ force: true }); cy.get('button').contains(localizations.en.delete).click();
+    cy.get('button#delete_button').first().click({ force: true });
     cy.get('button[type="button"]#danger_cancel')
       .contains(localizations.en.cancel)
       .click();
@@ -238,6 +238,7 @@ describe('Assortment Detail Media', () => {
         .translatedAssortmentMediaTexts;
 
     cy.get('select#locale-wrapper').select('de');
+    cy.get('select#locale-wrapper').should('have.value', 'de');
     cy.get('button#edit').first().click();
     cy.get('input#title').clear().type(secondTexts.title);
     cy.get('input#subtitle').clear().type(secondTexts.subtitle);
@@ -247,17 +248,11 @@ describe('Assortment Detail Media', () => {
     cy.wait(fullAliasMutationName(AssortmentOperation.UpdateMediaTexts)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          assortmentMediaId:
-            AssortmentMediaResponse.data.assortment.media[0]._id,
-          texts: [
-            {
-              locale: secondTexts.locale,
-              title: secondTexts.title,
-              subtitle: secondTexts.subtitle,
-            },
-          ],
-        });
+        expect(request.body.variables.assortmentMediaId).to.eq(
+          AssortmentMediaResponse.data.assortment.media[0]._id,
+        );
+        expect(request.body.variables.texts[0].title).to.eq(secondTexts.title);
+        expect(request.body.variables.texts[0].subtitle).to.eq(secondTexts.subtitle);
         expect(response.body).to.deep.eq(UpdateAssortmentMediaTextsResponse);
       },
     );

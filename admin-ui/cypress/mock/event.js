@@ -153,53 +153,22 @@ export const SingleEventResponse = {
 
 export const EventsTypeResponse = {
   data: {
-    eventTypes: {
-      options: [
-        {
-          value: 'UNKNOWN',
-          label: 'UNKNOWN',
-          __typename: '__EnumValue',
-        },
-        {
-          value: 'PAGE_VIEW',
-          label: 'PAGE_VIEW',
-          __typename: '__EnumValue',
-        },
-        {
-          value: 'ASSORTMENT_CREATE',
-          label: 'ASSORTMENT_CREATE',
-          __typename: '__EnumValue',
-        },
-        {
-          value: 'ASSORTMENT_REMOVE',
-          label: 'ASSORTMENT_REMOVE',
-          __typename: '__EnumValue',
-        },
-        {
-          value: 'ASSORTMENT_SET_BASE',
-          label: 'ASSORTMENT_SET_BASE',
-          __typename: '__EnumValue',
-        },
-        {
-          value: 'ASSORTMENT_UPDATE',
-          label: 'ASSORTMENT_UPDATE',
-          __typename: '__EnumValue',
-        },
-        {
-          value: 'ASSORTMENT_ADD_FILTER',
-          label: 'ASSORTMENT_ADD_FILTER',
-          __typename: '__EnumValue',
-        },
-      ],
-      __typename: '__Type',
-    },
+    registeredEventTypes: [
+      'UNKNOWN',
+      'PAGE_VIEW',
+      'ASSORTMENT_CREATE',
+      'ASSORTMENT_REMOVE',
+      'ASSORTMENT_SET_BASE',
+      'ASSORTMENT_UPDATE',
+      'ASSORTMENT_ADD_FILTER',
+    ],
   },
 };
 
 export const EventOperations = {
   GetEventList: 'Events',
   GetSingleEvent: 'Event',
-  GetEventTypes: 'EventsType',
+  GetEventTypes: 'RegisteredEventTypes',
 };
 
 const EventMocks = {

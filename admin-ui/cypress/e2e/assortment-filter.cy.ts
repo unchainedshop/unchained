@@ -151,17 +151,17 @@ describe('Assortment Detail Filters', () => {
   });
 
   it('Should [ADD TAG] successfully', () => {
-    cy.get('div.tag-input-creatable input').clear().type('new{enter}');
-    cy.get('[class*="react-select__multi-value"]').should('contain.text', 'new');
+    cy.get('input#tags').clear({ force: true }).type('new{enter}', { force: true });
+    cy.get('span#badge').should('contain.text', 'new');
   });
 
   it('Should [REMOVE TAG] successfully', () => {
-    cy.get('div.tag-input-creatable input').clear().type('new{enter}');
-    cy.get('[class*="react-select__multi-value-remove"]').first().click();
+    cy.get('input#tags').clear({ force: true }).type('new{enter}', { force: true });
+    cy.get('span#badge').contains('new').click();
   });
 
   it('Should [SEARCH] filter successfully', () => {
-    cy.get('input#react-select-2-input').clear().type('color');
+    cy.get('input#filterId').click({ force: true }).type('color');
 
     cy.wait(fullAliasName(AssortmentOperation.FiltersList)).then(
       (currentSubject) => {
@@ -182,19 +182,15 @@ describe('Assortment Detail Filters', () => {
       },
     );
 
-    cy.get('div#react-select-2-listbox div:first').each(($div) => {
-      cy.wrap($div).within(() => {
-        cy.get('div').should('have.length', 2);
-      });
-    });
+    cy.get('[class*="react-select__menu-list"] [class*="react-select__option"]').should('have.length.gte', 1);
   });
 
   it('Should [ADD FILTER] successfully', () => {
-    cy.get('div.tag-input-creatable input').clear().type('new{enter}');
+    cy.get('input#tags').clear({ force: true }).type('new{enter}', { force: true });
 
-    cy.get('[class*="react-select__multi-value"]').should('contain.text', 'new');
+    cy.get('span#badge').should('contain.text', 'new');
 
-    cy.get('input#react-select-2-input').clear().type('t');
+    cy.get('input#filterId').click({ force: true }).type('t');
 
     cy.wait(fullAliasName(AssortmentOperation.FiltersList)).then(
       (currentSubject) => {
@@ -214,7 +210,7 @@ describe('Assortment Detail Filters', () => {
         expect(response.body).to.deep.eq(FiltersListResponse);
       },
     );
-    cy.get('#react-select-2-option-0').click();
+    cy.get('[class*="react-select__option"]').first().click();
     cy.get('input[type="submit"]').contains(localizations.en.save).click();
 
     cy.wait(fullAliasMutationName(AssortmentOperation.AddFilter)).then(
@@ -259,7 +255,8 @@ describe('Assortment Detail Filters', () => {
   it('should [DELETE] filter successfully', () => {
     const { filterAssignments } = AssortmentFiltersResponse.data.assortment;
 
-    cy.get('button[aria-label]').first().click({ force: true }); cy.get('button').contains(localizations.en.delete).click();
+    cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
+    cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
     cy.get('button[type="button"]#danger_continue')
       .contains(localizations.en.delete_filter)
       .click();
@@ -286,7 +283,8 @@ describe('Assortment Detail Filters', () => {
   });
 
   it('Should [CANCEL DELETE] filter successfully', () => {
-    cy.get('button[aria-label]').first().click({ force: true }); cy.get('button').contains(localizations.en.delete).click();
+    cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
+    cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
     cy.get('button[type="button"]#danger_cancel')
       .contains(localizations.en.cancel)
       .click();

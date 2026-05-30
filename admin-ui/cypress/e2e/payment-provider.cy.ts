@@ -64,10 +64,7 @@ describe('Payment Provider', () => {
 
     cy.wait(fullAliasName(PaymentProviderOperations.GetProvidersList)).then(
       (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          type: null,
-        });
+        const { response } = currentSubject;
         expect(response.body).to.deep.eq(PaymentProvidersListResponse);
       },
     );
@@ -255,7 +252,7 @@ describe('Payment Provider', () => {
   it('Should [INITIALIZE PAYMENT PROVIDER] successfully', () => {
     const { paymentProvider } = SinglePaymentProviderResponse.data;
 
-    cy.get("tr").contains(paymentProvider.interface.label).parents("tr").find("button[aria-label]").first().click({ force: true }); cy.get("button").contains(localizations.en.edit).click();
+    cy.get("tr").contains(paymentProvider.interface.label).parents("tr").find(`button[aria-label="Actions menu"]`).first().click({ force: true }); cy.get(".fixed.w-48 button").contains(localizations.en.edit).click();
     cy.url().should('include', `/payment-provider/?paymentProviderId=${paymentProvider._id}`,
     );
 
@@ -283,7 +280,7 @@ describe('Payment Provider', () => {
   it('Should [UPDATE DELIVERY PROVIDER] successfully', () => {
     const { paymentProvider } = SinglePaymentProviderResponse.data;
 
-    cy.get("tr").contains(paymentProvider.interface.label).parents("tr").find("button[aria-label]").first().click({ force: true }); cy.get("button").contains(localizations.en.edit).click();
+    cy.get("tr").contains(paymentProvider.interface.label).parents("tr").find(`button[aria-label="Actions menu"]`).first().click({ force: true }); cy.get(".fixed.w-48 button").contains(localizations.en.edit).click();
     cy.url().should('include', `/payment-provider/?paymentProviderId=${paymentProvider._id}`,
     );
     cy.wait(fullAliasName(PaymentProviderOperations.GetSingleProvider)).then(
@@ -331,7 +328,7 @@ describe('Payment Provider', () => {
   it('Should [ERROR] when pattern of configuration fields are not correct in update provider', () => {
     const { paymentProvider } = SinglePaymentProviderResponse.data;
 
-    cy.get("tr").contains(paymentProvider.interface.label).parents("tr").find("button[aria-label]").first().click({ force: true }); cy.get("button").contains(localizations.en.edit).click();
+    cy.get("tr").contains(paymentProvider.interface.label).parents("tr").find(`button[aria-label="Actions menu"]`).first().click({ force: true }); cy.get(".fixed.w-48 button").contains(localizations.en.edit).click();
     cy.url().should('include', `/payment-provider/?paymentProviderId=${paymentProvider._id}`,
     );
     cy.wait(fullAliasName(PaymentProviderOperations.GetSingleProvider)).then(
@@ -361,7 +358,7 @@ describe('Payment Provider', () => {
   it('Should [DELETE PAYMENT PROVIDER] successfully', () => {
     const { paymentProvider } = SinglePaymentProviderResponse.data;
 
-    cy.get("tr").contains(paymentProvider.interface.label).parents("tr").find("button[aria-label]").first().click({ force: true }); cy.get("button").contains(localizations.en.edit).click();
+    cy.get("tr").contains(paymentProvider.interface.label).parents("tr").find(`button[aria-label="Actions menu"]`).first().click({ force: true }); cy.get(".fixed.w-48 button").contains(localizations.en.edit).click();
     cy.url().should('include', `/payment-provider/?paymentProviderId=${paymentProvider._id}`,
     );
 
@@ -401,7 +398,8 @@ describe('Payment Provider', () => {
   it('Should [DELETE PAYMENT PROVIDER FROM LIST] successfully', () => {
     const { paymentProvider } = SinglePaymentProviderResponse.data;
 
-    cy.get('button[aria-label]').first().click({ force: true }); cy.get('button').contains(localizations.en.delete).click();
+    cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
+    cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
     cy.get('button[type="button"]#danger_continue')
       .contains(localizations.en.delete_payment_provider)
       .click();

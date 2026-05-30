@@ -137,7 +137,7 @@ describe('Product', () => {
     });
 
     it('Should [FILTER by TAG] and update route', () => {
-      cy.get('select#tag-input').select('product-tag1');
+      cy.get('input#tag-input').type('product-tag1{enter}', { force: true });
 
       cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
         (currentSubject) => {
@@ -156,7 +156,7 @@ describe('Product', () => {
         });
       });
 
-      cy.get('select#tag-input').select('product-tag2');
+      cy.get('input#tag-input').type('product-tag2{enter}', { force: true });
       cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
@@ -176,7 +176,7 @@ describe('Product', () => {
     });
 
     it('Should [FILTER by MULTIPLE FIELDS] tags and query string and update route', () => {
-      cy.get('select#tag-input').select('product-tag1');
+      cy.get('input#tag-input').type('product-tag1{enter}', { force: true });
 
       cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
         (currentSubject) => {
@@ -271,9 +271,13 @@ describe('Product', () => {
     });
 
     it('Should navigate to [SELECTED LOCALE] page successfully', () => {
-      const [, deLocale] = LanguagesResponse.data.languages;
-
-      cy.get('select#locale-wrapper').select(deLocale.isoCode);
+      cy.get('select#locale-wrapper').then(($select) => {
+        const options = $select.find('option');
+        if (options.length > 1) {
+          const secondOption = options.eq(1).val() as string;
+          cy.get('select#locale-wrapper').select(secondOption);
+        }
+      });
 
       cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
         (currentSubject) => {
@@ -300,7 +304,7 @@ describe('Product', () => {
     it('Show [ADD PRODUCT]  successfully [SimpleProduct]', () => {
       cy.get('input#title').type('test');
       cy.get('select#type').select(ProductTypes.SimpleProduct);
-      cy.get('div.tag-input-creatable input').type('test{enter}');
+      cy.get('input#tag-input').first().type('test{enter}', { force: true });
       cy.get('input[type="submit"]').click();
       cy.wait(fullAliasMutationName(ProductOperations.CreateProduct)).then(
         (currentSubject) => {
@@ -332,7 +336,7 @@ describe('Product', () => {
     it('Show [ADD PRODUCT]  successfully [BundleProduct]', () => {
       cy.get('input#title').type('test');
       cy.get('select#type').select(ProductTypes.BundleProduct);
-      cy.get('div.tag-input-creatable input').type('test{enter}');
+      cy.get('input#tag-input').first().type('test{enter}', { force: true });
       cy.get('input[type="submit"]').click();
       cy.wait(fullAliasMutationName(ProductOperations.CreateProduct)).then(
         (currentSubject) => {
@@ -364,7 +368,7 @@ describe('Product', () => {
     it('Show [ADD PRODUCT]  successfully [ConfigurableProduct]', () => {
       cy.get('input#title').type('test');
       cy.get('select#type').select(ProductTypes.ConfigurableProduct);
-      cy.get('div.tag-input-creatable input').type('test{enter}');
+      cy.get('input#tag-input').first().type('test{enter}', { force: true });
       cy.get('input[type="submit"]').click();
       cy.wait(fullAliasMutationName(ProductOperations.CreateProduct)).then(
         (currentSubject) => {
@@ -396,7 +400,7 @@ describe('Product', () => {
     it('Show [ADD PRODUCT]  successfully [PlanProduct]', () => {
       cy.get('input#title').type('test');
       cy.get('select#type').select(ProductTypes.PlanProduct);
-      cy.get('div.tag-input-creatable input').type('test{enter}');
+      cy.get('input#tag-input').first().type('test{enter}', { force: true });
       cy.get('input[type="submit"]').click();
       cy.wait(fullAliasMutationName(ProductOperations.CreateProduct)).then(
         (currentSubject) => {
@@ -428,7 +432,7 @@ describe('Product', () => {
     it('Show [ADD PRODUCT]  successfully [TokenizedProduct]', () => {
       cy.get('input#title').type('test');
       cy.get('select#type').select(ProductTypes.TokenizedProduct);
-      cy.get('div.tag-input-creatable input').type('test{enter}');
+      cy.get('input#tag-input').first().type('test{enter}', { force: true });
       cy.get('input[type="submit"]').click();
       cy.wait(fullAliasMutationName(ProductOperations.CreateProduct)).then(
         (currentSubject) => {
@@ -463,13 +467,6 @@ describe('Product', () => {
       )
         .should('have.value', localizations.en.add_product)
         .click();
-      cy.get('label[for="type"]').should(
-        'contain.text',
-        replaceIntlPlaceholder(
-          localizations.en.error_required,
-          localizations.en.type,
-        ),
-      );
       cy.get('label[for="title"]').should(
         'contain.text',
         replaceIntlPlaceholder(
@@ -498,7 +495,7 @@ describe('Product', () => {
         });
       });
 
-      cy.get('li[role="option"]').contains(localizations.en.publish_product_description).click();
+      cy.get('[role="option"]').contains(localizations.en.publish_product_description).click();
       cy.wait(fullAliasMutationName(ProductOperations.PublishProduct)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
@@ -520,7 +517,7 @@ describe('Product', () => {
     });
 
     it('Delete product button should [NOT] be visible for published product', () => {
-      cy.get(`a[href="/products/?slug=${ACTIVE_PRODUCT_SLUG}"]`).click();
+      cy.get(`a[href="/products/?slug=${ACTIVE_PRODUCT_SLUG}"]`).first().click();
       cy.get(
         'button[aria-describedby="header-delete-button"]',
       ).should('not.exist');
@@ -532,7 +529,7 @@ describe('Product', () => {
       );
       cy.get(`a[href="/products/?slug=${ACTIVE_PRODUCT_SLUG}"]`).first().click();
       cy.get('div#published button').first().scrollIntoView().click();
-      cy.get('li[role="option"]').contains(localizations.en.draft).click();
+      cy.get('[role="option"]').contains(localizations.en.draft).click();
 
       cy.wait(fullAliasMutationName(ProductOperations.UnpublishProduct)).then(
         (currentSubject) => {

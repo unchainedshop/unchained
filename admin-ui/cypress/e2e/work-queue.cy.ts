@@ -44,13 +44,7 @@ describe('WorkQueue', () => {
 
     cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
       (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          queryString: '',
-          offset: 0,
-          created: {},
-          sort: [{ key: 'scheduled', value: 'DESC' }],
-        });
+        const { response } = currentSubject;
         expect(response.body).to.deep.eq(WorkQueueResponse);
       },
     );

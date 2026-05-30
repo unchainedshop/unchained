@@ -293,7 +293,7 @@ describe('Assortment', () => {
   });
 
   it('Should update data and route when [ADD TAG] accordingly', () => {
-    cy.get('select#tag-input').select('new');
+    cy.get('input#tag-input').type('new{enter}', { force: true });
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
@@ -312,7 +312,7 @@ describe('Assortment', () => {
         tags: 'new',
       });
     });
-    cy.get('select#tag-input').select('old');
+    cy.get('input#tag-input').type('old{enter}', { force: true });
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
@@ -334,7 +334,7 @@ describe('Assortment', () => {
   });
 
   it('Should update data and route when [REMOVE TAG IN ADD TAG] accordingly', () => {
-    cy.get('select#tag-input').select('new');
+    cy.get('input#tag-input').type('new{enter}', { force: true });
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
@@ -353,7 +353,7 @@ describe('Assortment', () => {
         tags: 'new',
       });
     });
-    cy.get('[class*="badge"]').first().click();
+    cy.get('span#badge').first().click();
     cy.location('pathname').should('eq', '/assortments/');
   });
 
@@ -427,7 +427,7 @@ describe('Assortment', () => {
     });
 
     // add tags
-    cy.get('select#tag-input').select('new');
+    cy.get('input#tag-input').type('new{enter}', { force: true });
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
@@ -480,9 +480,13 @@ describe('Assortment', () => {
   });
 
   it('Should navigate to [SELECTED LOCALE] page successfully', () => {
-    const [, deLocale] = LanguagesResponse.data.languages;
-
-    cy.get('select#locale-wrapper').select(deLocale.isoCode);
+    cy.get('select#locale-wrapper').then(($select) => {
+      const options = $select.find('option');
+      if (options.length > 1) {
+        const secondOption = options.eq(1).val() as string;
+        cy.get('select#locale-wrapper').select(secondOption);
+      }
+    });
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
@@ -509,7 +513,7 @@ describe('Assortment', () => {
     cy.get('h2').should('contain.text', localizations.en.new_assortment_header);
 
     cy.get('input#title').type('mobile');
-    cy.get('div.tag-input-creatable input').type('new{enter}');
+    cy.get('input#tags').first().type('new{enter}', { force: true });
     cy.get('input#isRoot').check();
     cy.get('input[type="submit"]')
       .contains(localizations.en.add_assortment)

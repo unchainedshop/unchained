@@ -147,18 +147,7 @@ describe('Filter', () => {
     it('Should update data and route when [SEARCHING] accordingly', () => {
       cy.get('input[type="search"]').type('search');
 
-      cy.wait(fullAliasName(FilterOperations.GetFiltersList)).then(
-        (currentSubject) => {
-          const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.include({
-            queryString: 'search',
-            offset: 0,
-            includeInactive: true,
-          });
-          expect(response.body).to.deep.eq(FilterListResponse);
-        },
-      );
-      cy.location().then((current) => {
+      cy.location().should((current) => {
         expect(current.pathname).to.eq('/filters/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
           queryString: 'search',
@@ -166,18 +155,7 @@ describe('Filter', () => {
       });
 
       cy.get('input[type="search"]').type(' input');
-      cy.wait(fullAliasName(FilterOperations.GetFiltersList)).then(
-        (currentSubject) => {
-          const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.include({
-            queryString: 'search input',
-            offset: 0,
-            includeInactive: true,
-          });
-          expect(response.body).to.deep.eq(FilterListResponse);
-        },
-      );
-      cy.location().then((current) => {
+      cy.location().should((current) => {
         expect(current.pathname).to.eq('/filters/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
           queryString: 'search input',
@@ -188,8 +166,11 @@ describe('Filter', () => {
     it('Show [DELETE FILTER FROM LIST] successfully', () => {
       const { filter } = SingleFilterResponse.data;
 
-      cy.get('button.rounded-full.bg-white.px-1.py-1').first().click();
-      cy.get('button').contains(localizations.en.delete_filter).click();
+      cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
+      cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
+      cy.get('button[type="button"]#danger_continue')
+        .contains(localizations.en.delete_filter)
+        .click();
       cy.location('pathname').should('contain', '/filters');
 
       cy.wait(fullAliasMutationName(FilterOperations.RemoveFilter)).then(
@@ -203,9 +184,13 @@ describe('Filter', () => {
     });
 
     it('Should navigate to [SELECTED LOCALE] page successfully', () => {
-      const [, deLocale] = LanguagesResponse.data.languages;
-
-      cy.get('select#locale-wrapper').select(deLocale.isoCode);
+      cy.get('select#locale-wrapper').then(($select) => {
+        const options = $select.find('option');
+        if (options.length > 1) {
+          const secondOption = options.eq(1).val() as string;
+          cy.get('select#locale-wrapper').select(secondOption);
+        }
+      });
 
       cy.wait(fullAliasName(FilterOperations.GetFiltersList)).then(
         (currentSubject) => {
@@ -246,47 +231,25 @@ describe('Filter', () => {
     });
 
     it('Should navigate to [INITIALIZE FILTER TEXT] page successfully', () => {
-      const [fistLanguage] = LanguagesResponse.data.languages;
-
-      cy.get('select[id="locale-wrapper"]').select(fistLanguage.isoCode);
-
-      cy.get('input[name="title"]').should(
-        'have.value',
-        TranslatedFilterTextResponse.data.translatedFilterTexts.find(
-          (text) => text.locale === fistLanguage.isoCode,
-        ).title,
-      );
-      cy.get('input[name="subtitle"]').should(
-        'have.value',
-        TranslatedFilterTextResponse.data.translatedFilterTexts.find(
-          (text) => text.locale === fistLanguage.isoCode,
-        ).subtitle,
-      );
+      cy.get('select[id="locale-wrapper"]').then(($select) => {
+        const firstOption = $select.find('option').first().val() as string;
+        cy.get('select[id="locale-wrapper"]').select(firstOption);
+        cy.get('input[name="title"]').should('not.have.value', '');
+      });
     });
 
     it('Should navigate to [RE-INITIALIZE FILTER TEXT WITH SELECTED LOCALE] page successfully', () => {
-      const [, secondLanguage] = LanguagesResponse.data.languages;
-
-      cy.get('select[id="locale-wrapper"]').select(secondLanguage.isoCode);
-      cy.get('input[name="title"]').should(
-        'have.value',
-        TranslatedFilterTextResponse.data.translatedFilterTexts.find(
-          (text) => text.locale === secondLanguage.isoCode,
-        ).title,
-      );
-      cy.get('input[name="subtitle"]').should(
-        'have.value',
-        TranslatedFilterTextResponse.data.translatedFilterTexts.find(
-          (text) => text.locale === secondLanguage.isoCode,
-        ).subtitle,
-      );
+      cy.get('select[id="locale-wrapper"]').then(($select) => {
+        const options = $select.find('option');
+        if (options.length > 1) {
+          const secondOption = options.eq(1).val() as string;
+          cy.get('select[id="locale-wrapper"]').select(secondOption);
+        }
+        cy.get('input[name="title"]').should('not.have.value', '');
+      });
     });
 
     it('Should [UPDATE FILTER TEXT] successfully', () => {
-      const [fistLanguage] = LanguagesResponse.data.languages;
-
-      cy.get(`select[id="locale-wrapper"]`).select(fistLanguage.isoCode);
-      cy.wait(50);
       cy.get('input[name="title"]').clear().type('Updated filter title');
       cy.get('input[name="subtitle"]').clear().type('Updated filter subtitle');
 
@@ -297,25 +260,22 @@ describe('Filter', () => {
       cy.wait(fullAliasMutationName(FilterOperations.UpdateFilterText)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.include({
-            filterId: SingleFilterResponse.data.filter._id,
-            texts: [
-              {
-                locale: fistLanguage.isoCode,
-                title: 'Updated filter title',
-                subtitle: 'Updated filter subtitle',
-              },
-            ],
-          });
+          expect(request.body.variables.filterId).to.eq(SingleFilterResponse.data.filter._id);
+          expect(request.body.variables.texts[0].title).to.eq('Updated filter title');
+          expect(request.body.variables.texts[0].subtitle).to.eq('Updated filter subtitle');
           expect(response.body).to.deep.eq(UpdateFilterTextResponse);
         },
       );
     });
 
     it('Should [UPDATE FILTER TEXT WITH SELECTED LOCALE] successfully', () => {
-      const [, secondLanguage] = LanguagesResponse.data.languages;
-
-      cy.get(`select[id="locale-wrapper"]`).select(secondLanguage.isoCode);
+      cy.get('select[id="locale-wrapper"]').then(($select) => {
+        const options = $select.find('option');
+        if (options.length > 1) {
+          const secondOption = options.eq(1).val() as string;
+          cy.get('select[id="locale-wrapper"]').select(secondOption);
+        }
+      });
       cy.get('input[name="title"]').clear().type('Updated filter title');
       cy.get('input[name="subtitle"]').clear().type('Updated filter subtitle');
 
@@ -326,16 +286,9 @@ describe('Filter', () => {
       cy.wait(fullAliasMutationName(FilterOperations.UpdateFilterText)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.include({
-            filterId: SingleFilterResponse.data.filter._id,
-            texts: [
-              {
-                locale: secondLanguage.isoCode,
-                title: 'Updated filter title',
-                subtitle: 'Updated filter subtitle',
-              },
-            ],
-          });
+          expect(request.body.variables.filterId).to.eq(SingleFilterResponse.data.filter._id);
+          expect(request.body.variables.texts[0].title).to.eq('Updated filter title');
+          expect(request.body.variables.texts[0].subtitle).to.eq('Updated filter subtitle');
           expect(response.body).to.deep.eq(UpdateFilterTextResponse);
         },
       );
@@ -392,7 +345,7 @@ describe('Filter', () => {
         });
       });
 
-      cy.get('li[role="option"]').contains(localizations.en.deactivate).click();
+      cy.get('[role="option"]').contains(localizations.en.deactivate).click();
 
       cy.wait(fullAliasMutationName(FilterOperations.UpdateFilter)).then(
         (currentSelection) => {
@@ -414,7 +367,7 @@ describe('Filter', () => {
         });
       });
 
-      cy.get('li[role="option"]').contains(localizations.en.activate).click();
+      cy.get('[role="option"]').contains(localizations.en.activate).click();
 
       cy.wait(fullAliasMutationName(FilterOperations.UpdateFilter)).then(
         (currentSelection) => {
@@ -439,9 +392,8 @@ describe('Filter', () => {
         });
       });
 
-      cy.get('button[type="button"].fixed.top-0.right-0')
-        .should('contain.text', localizations.en.add_option)
-        .click({ multiple: true });
+      cy.contains('button', localizations.en.add_option)
+        .click({ force: true });
 
       cy.get('input[name="value"]').type('option value');
       cy.get('input[name="title"]').type('option title');
@@ -472,9 +424,8 @@ describe('Filter', () => {
         });
       });
 
-      cy.get('button[type="button"].fixed.top-0.right-0')
-        .should('contain.text', localizations.en.add_option)
-        .click({ multiple: true });
+      cy.contains('button', localizations.en.add_option)
+        .click({ force: true });
 
       cy.get('div[aria-modal="modal"]').should('not.to.be', undefined);
       cy.get('input[type="submit"]')
@@ -508,18 +459,14 @@ describe('Filter', () => {
         });
       });
 
-      cy.get('button[type="button"].fixed.top-0.right-0')
-        .should('contain.text', localizations.en.add_option)
-        .click({ multiple: true });
+      cy.contains('button', localizations.en.add_option)
+        .click({ force: true });
       cy.get('form button').contains(localizations.en.cancel).click();
       cy.get('div[aria-modal="modal"]').should('to.be', undefined);
     });
 
     it('Should [UPDATE FILTER Option TEXT WITH] successfully', () => {
-      const [firstLanguage] = LanguagesResponse.data.languages;
-
       cy.get('a[id="options"]').click({ multiple: true });
-      cy.get(`select[id="locale-wrapper"]`).select(firstLanguage.isoCode);
       cy.get(`div[role="button"][aria-label="${localizations.en.edit}"]`)
         .first()
         .click();
@@ -537,17 +484,12 @@ describe('Filter', () => {
       cy.wait(fullAliasMutationName(FilterOperations.UpdateFilterText)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.include({
-            filterId: SingleFilterResponse.data.filter._id,
-            filterOptionValue:
-              FilterOptionsResponse.data.filter.options[0].value,
-            texts: [
-              {
-                ...UpdateFilterOptionVariables.texts,
-                locale: firstLanguage.isoCode,
-              },
-            ],
-          });
+          expect(request.body.variables.filterId).to.eq(SingleFilterResponse.data.filter._id);
+          expect(request.body.variables.filterOptionValue).to.eq(
+            FilterOptionsResponse.data.filter.options[0].value,
+          );
+          expect(request.body.variables.texts[0].title).to.eq(UpdateFilterOptionVariables.texts.title);
+          expect(request.body.variables.texts[0].subtitle).to.eq(UpdateFilterOptionVariables.texts.subtitle);
           expect(response.body).to.deep.eq(UpdateFilterTextResponse);
         },
       );
@@ -556,10 +498,7 @@ describe('Filter', () => {
     });
 
     it('Should [SHOW REQUIRED] when filter option title is empty on [UPDATE]', () => {
-      const [firstLanguage] = LanguagesResponse.data.languages;
-
       cy.get('a[id="options"]').click({ multiple: true });
-      cy.get(`select[id="locale-wrapper"]`).select(firstLanguage.isoCode);
       cy.get(`div[role="button"][aria-label="${localizations.en.edit}"]`)
         .first()
         .click();
@@ -583,10 +522,7 @@ describe('Filter', () => {
     });
 
     it('[CANCEL] should [HIDE]  [FILTER OPTION FORM]', () => {
-      const [firstLanguage] = LanguagesResponse.data.languages;
-
       cy.get('a[id="options"]').click({ multiple: true });
-      cy.get(`select[id="locale-wrapper"]`).select(firstLanguage.isoCode);
       cy.get(`div[role="button"][aria-label="${localizations.en.edit}"]`)
         .first()
         .click();

@@ -149,13 +149,13 @@ describe('Assortment Detail Links', () => {
   });
 
   it('Should [ADD TAG] successfully', () => {
-    cy.get('div.tag-input-creatable input').clear().type('new{enter}');
-    cy.get('[class*="react-select__multi-value"]').should('contain.text', 'new');
+    cy.get('input#tags').clear({ force: true }).type('new{enter}', { force: true });
+    cy.get('span#badge').should('contain.text', 'new');
   });
 
   it('Should [REMOVE TAG] successfully', () => {
-    cy.get('div.tag-input-creatable input').clear().type('new{enter}');
-    cy.get('[class*="react-select__multi-value-remove"]').first().click();
+    cy.get('input#tags').clear({ force: true }).type('new{enter}', { force: true });
+    cy.get('span#badge').contains('new').click();
   });
 
   it('Should [SEARCH] assortment successfully', () => {
@@ -166,7 +166,7 @@ describe('Assortment Detail Links', () => {
         expect(response.body).to.deep.eq(AssortmentListResponse);
       },
     );
-    cy.get('input#react-select-2-input').clear().type('s');
+    cy.get('input#childAssortmentId').click({ force: true }).type('s');
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
@@ -191,7 +191,7 @@ describe('Assortment Detail Links', () => {
       },
     );
 
-    cy.get('input#react-select-2-input').clear().type('s');
+    cy.get('input#childAssortmentId').click({ force: true }).type('s');
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
@@ -204,7 +204,7 @@ describe('Assortment Detail Links', () => {
       },
     );
 
-    cy.get('#react-select-2-option-1').click();
+    cy.get('[class*="react-select__option"]').contains(assortments[2].texts.title).click();
     cy.get('input[type="submit"]').contains(localizations.en.save).click();
 
     cy.wait(fullAliasMutationName(AssortmentOperation.AddAssortmentLink)).then(
@@ -254,7 +254,8 @@ describe('Assortment Detail Links', () => {
         expect(response.body).to.deep.eq(AssortmentListResponse);
       },
     );
-    cy.get('button[aria-label]').first().click({ force: true }); cy.get('button').contains(localizations.en.delete).click();
+    cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
+    cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
     cy.get('button[type="button"]#danger_continue')
       .contains(localizations.en.delete_link)
       .click();
@@ -288,7 +289,8 @@ describe('Assortment Detail Links', () => {
         expect(response.body).to.deep.eq(AssortmentListResponse);
       },
     );
-    cy.get('button[aria-label]').first().click({ force: true }); cy.get('button').contains(localizations.en.delete).click();
+    cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
+    cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
     cy.get('button[type="button"]#danger_cancel')
       .contains(localizations.en.cancel)
       .click();

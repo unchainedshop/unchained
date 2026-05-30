@@ -100,7 +100,7 @@ describe('User', () => {
       cy.url().should('include', `/users/?userId=${user._id}`);
       cy.get('h2').should(
         'contain.text',
-        localizations.en.users_setting_list_header,
+        user.username,
       );
 
       cy.get(`a#orders`).contains(localizations.en.orders).click();
@@ -189,7 +189,7 @@ describe('User', () => {
       cy.url().should('include', `/users/?userId=${user._id}`);
       cy.get('h2').should(
         'contain.text',
-        localizations.en.users_setting_list_header,
+        user.username,
       );
       cy.get(`a#quotations`).contains(localizations.en.quotations).click();
       cy.location().then((loc) => {
@@ -306,7 +306,7 @@ describe('User', () => {
       cy.url().should('include', `/users/?userId=${user._id}`);
       cy.get('h2').should(
         'contain.text',
-        localizations.en.users_setting_list_header,
+        user.username,
       );
       cy.get(`a#enrollments`).contains(localizations.en.enrollments).click();
       cy.location().then((loc) => {

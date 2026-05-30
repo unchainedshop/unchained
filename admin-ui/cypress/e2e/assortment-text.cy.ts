@@ -116,7 +116,7 @@ describe('Assortment Detail Texts', () => {
       const { assortment } = Singleassortmentesponse.data;
 
       cy.get('button#add_tag').click();
-      cy.get('div.tag-input-creatable input').type('new{enter}');
+      cy.get('input#tags').type('new{enter}', { force: true });
       cy.get('form#add_tag_form').within(() => {
         cy.get('input[type="submit"]').contains(localizations.en.save).click();
       });
@@ -338,7 +338,7 @@ describe('Assortment Detail Texts', () => {
       cy.get('select#locale-wrapper').select('en');
 
       cy.get('div#leaf button').first().scrollIntoView().click();
-      cy.get('li[role="option"]').contains(localizations.en.make_root).click();
+      cy.get('[role="option"]').contains(localizations.en.make_root).click();
 
       cy.wait(fullAliasMutationName(AssortmentOperation.UpdateAssortment)).then(
         (currentSubject) => {
@@ -395,7 +395,7 @@ describe('Assortment Detail Texts', () => {
       cy.get('select#locale-wrapper').select('en');
 
       cy.get('div#in-active button').first().scrollIntoView().click();
-      cy.get('li[role="option"]').contains(localizations.en.activate).click();
+      cy.get('[role="option"]').contains(localizations.en.activate).click();
 
       cy.wait(fullAliasMutationName(AssortmentOperation.UpdateAssortment)).then(
         (currentSubject) => {

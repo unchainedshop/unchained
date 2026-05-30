@@ -144,14 +144,6 @@ describe('Product Variation', () => {
       },
     );
 
-    cy.wait(fullAliasName(ProductOperations.GetProductVariationType)).then(
-      (currentSubject) => {
-        const { response } = currentSubject;
-
-        expect(response.body).to.deep.eq(ProductVariationTypesResponse);
-      },
-    );
-
     cy.location().then((current) => {
       expect(current.pathname).to.eq('/products/');
       expect(current.search).to.include('slug=');

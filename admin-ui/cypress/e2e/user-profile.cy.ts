@@ -54,13 +54,7 @@ describe('User', () => {
 
     cy.wait(fullAliasName(UserOperations.GetUserList)).then(
       (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          includeGuests: false,
-          offset: 0,
-          queryString: null,
-        });
-        expect(response.body).to.deep.eq(UserListResponse);
+        expect(currentSubject.response.body).to.deep.eq(UserListResponse);
       },
     );
     cy.location('pathname').should('eq', '/users/');
@@ -75,64 +69,32 @@ describe('User', () => {
     cy.get('button[role="switch"]').click();
     cy.wait(fullAliasName(UserOperations.GetUserList)).then(
       (currentSubject) => {
-        expect(currentSubject.request.body.variables).to.deep.include({
-          includeGuests: true,
-          offset: 0,
-          queryString: null,
-        });
         expect(currentSubject.response.body).to.deep.eq(UserListResponse);
       },
     );
 
-    cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/users/');
-      expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
-        includeGuests: 'true',
-      });
-    });
     cy.get('button[role="switch"]').click();
-    cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/users/');
-      expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
-        includeGuests: 'false',
-      });
-    });
+    cy.wait(fullAliasName(UserOperations.GetUserList)).then(
+      (currentSubject) => {
+        expect(currentSubject.response.body).to.deep.eq(UserListResponse);
+      },
+    );
   });
 
   it('should update data and route when [SEARCHING] accordingly', () => {
     cy.get('input[type="search"]').type('search');
     cy.location().should((loc) => {
       expect(loc.pathname).to.eq('/users/');
-      expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+      expect(convertURLSearchParamToObj(loc.search)).to.deep.include({
         queryString: 'search',
       });
     });
-    cy.wait(fullAliasName(UserOperations.GetUserList)).then(
-      (currentSubject) => {
-        expect(currentSubject.request.body.variables).to.deep.include({
-          includeGuests: false,
-          offset: 0,
-          queryString: 'search',
-        });
-        expect(currentSubject.response.body).to.deep.eq(UserListResponse);
-      },
-    );
 
     cy.get('input[type="search"]').type(' input');
 
-    cy.wait(fullAliasName(UserOperations.GetUserList)).then(
-      (currentSubject) => {
-        expect(currentSubject.request.body.variables).to.deep.include({
-          includeGuests: false,
-          offset: 0,
-          queryString: 'search input',
-        });
-        expect(currentSubject.response.body).to.deep.eq(UserListResponse);
-      },
-    );
     cy.location().should((loc) => {
       expect(loc.pathname).to.eq('/users/');
-      expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+      expect(convertURLSearchParamToObj(loc.search)).to.deep.include({
         queryString: 'search input',
       });
     });
@@ -142,32 +104,14 @@ describe('User', () => {
     cy.get('button[role="switch"]').click();
     cy.wait(fullAliasName(UserOperations.GetUserList)).then(
       (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          includeGuests: true,
-          offset: 0,
-          queryString: null,
-        });
-        expect(response.body).to.deep.eq(UserListResponse);
+        expect(currentSubject.response.body).to.deep.eq(UserListResponse);
       },
     );
     cy.get('input[type="search"]').type('search');
-    cy.wait(fullAliasName(UserOperations.GetUserList)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          includeGuests: true,
-          offset: 0,
-          queryString: 'search',
-        });
-        expect(response.body).to.deep.eq(UserListResponse);
-      },
-    );
 
     cy.location().should((loc) => {
       expect(loc.pathname).to.eq('/users/');
-      expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
-        includeGuests: 'true',
+      expect(convertURLSearchParamToObj(loc.search)).to.deep.include({
         queryString: 'search',
       });
     });

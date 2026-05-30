@@ -171,10 +171,10 @@ describe('Languages', () => {
     cy.get('tr')
       .contains(language.isoCode)
       .parents('tr')
-      .find('button[aria-label]')
+      .find('button[aria-label="Actions menu"]')
       .first()
       .click({ force: true });
-    cy.get('button').contains(localizations.en.edit).click();
+    cy.get('.fixed.w-48 button').contains(localizations.en.edit).click();
     cy.url().should('include', `/language/?languageId=${language._id}`);
     cy.wait(fullAliasName(LanguageOperations.GetSingleLanguage)).then(
       (currentSubject) => {
@@ -194,10 +194,10 @@ describe('Languages', () => {
     cy.get('tr')
       .contains(language.isoCode)
       .parents('tr')
-      .find('button[aria-label]')
+      .find('button[aria-label="Actions menu"]')
       .first()
       .click({ force: true });
-    cy.get('button').contains(localizations.en.edit).click();
+    cy.get('.fixed.w-48 button').contains(localizations.en.edit).click();
     cy.url().should('include', `/language/?languageId=${language._id}`);
     cy.get('input[type="submit"]')
       .contains(localizations.en.update_language)
@@ -230,10 +230,10 @@ describe('Languages', () => {
     cy.get('tr')
       .contains(language.isoCode)
       .parents('tr')
-      .find('button[aria-label]')
+      .find('button[aria-label="Actions menu"]')
       .first()
       .click({ force: true });
-    cy.get('button').contains(localizations.en.edit).click();
+    cy.get('.fixed.w-48 button').contains(localizations.en.edit).click();
     cy.url().should('include', `/language/?languageId=${language._id}`);
     cy.get('button[aria-describedby="header-delete-button"]')
       .contains(localizations.en.delete)
@@ -262,10 +262,10 @@ describe('Languages', () => {
     cy.get('tr')
       .contains(language.isoCode)
       .parents('tr')
-      .find('button[aria-label]')
+      .find('button[aria-label="Actions menu"]')
       .first()
       .click({ force: true });
-    cy.get('button').contains(localizations.en.delete).last().click();
+    cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
     cy.get('button#danger_continue')
       .contains(localizations.en.delete_language)
       .click();

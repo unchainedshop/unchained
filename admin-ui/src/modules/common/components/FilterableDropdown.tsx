@@ -40,7 +40,8 @@ const FilterableDropdown = ({
             <FieldWrapper {...field}>
               <UnchainedSelect
                 isDisabled={!!field.disabled}
-                id={field.id}
+                id={field.id || field.name}
+                inputId={field.id || field.name}
                 isLoading={props.isLoading}
                 name={field.name}
                 onBlur={field.onBlur}

@@ -97,7 +97,7 @@ describe('Product Subscription', () => {
     );
 
     cy.get('a#bundled_products')
-      .should('contain.text', localizations.en.bundle)
+      .should('contain.text', localizations.en.bundle_items)
       .click();
 
     cy.wait(fullAliasName(ProductOperations.GetProductBundleItems)).then(
@@ -146,7 +146,7 @@ describe('Product Subscription', () => {
       },
     );
 
-    cy.get('input#react-select-2-input').clear().type('t');
+    cy.get('input#productId').clear({ force: true }).type('t', { force: true });
 
     cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
       (currentSubject) => {
@@ -167,7 +167,7 @@ describe('Product Subscription', () => {
         expect(response.body).to.deep.eq(ProductListResponse);
       },
     );
-    cy.get('#react-select-2-option-1').click();
+    cy.get('[class*="react-select__option"]').eq(1).click();
 
     cy.get('input[name="quantity"]').clear().type('3');
     cy.get('input[type="submit"]')

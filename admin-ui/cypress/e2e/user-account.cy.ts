@@ -320,7 +320,7 @@ describe('User', () => {
 
     it('Should [ADD TAGS] successfully', () => {
       cy.get('button#add_tag').click();
-      cy.get('div.tag-input-creatable input').type('new{enter}');
+      cy.get('input#tags').type('new{enter}', { force: true });
       cy.get('input[type="submit"]')
         .contains(localizations.en.save)
         .click({ force: true });

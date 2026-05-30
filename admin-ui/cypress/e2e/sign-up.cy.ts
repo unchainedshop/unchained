@@ -78,7 +78,7 @@ describe('Sign Up', () => {
       },
     );
 
-    cy.location('pathname').should('eq', '/account/');
+    cy.location('pathname').should('eq', '/');
 
     cy.wait(fullAliasName(UserOperations.CurrentUser)).then(
       (currentSubject) => {

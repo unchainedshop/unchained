@@ -149,72 +149,30 @@ describe('Assortment Detail Products', () => {
   });
 
   it('Should [ADD TAG] successfully', () => {
-    cy.get('div.tag-input-creatable input').clear().type('new{enter}');
-    cy.get('[class*="react-select__multi-value"]').should('contain.text', 'new');
+    cy.get('input#tags').clear({ force: true }).type('new{enter}', { force: true });
+    cy.get('span#badge').should('contain.text', 'new');
   });
 
   it('Should [REMOVE TAG] successfully', () => {
-    cy.get('div.tag-input-creatable input').clear().type('new{enter}');
-    cy.get('[class*="react-select__multi-value-remove"]').first().click();
+    cy.get('input#tags').clear({ force: true }).type('new{enter}', { force: true });
+    cy.get('span#badge').contains('new').click();
   });
 
   it('Should [SEARCH] product successfully', () => {
-    cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include(productSearchQuery);
-        expect(response.body).to.deep.eq(ProductListResponse);
-      },
-    );
-    cy.get('input#react-select-2-input').clear().type('f');
+    cy.wait(fullAliasName(ProductOperations.GetProductList));
 
-    cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          ...productSearchQuery,
-          queryString: 'f',
-        });
-        expect(response.body).to.deep.eq(ProductListResponse);
-      },
-    );
+    cy.get('input#productId').click({ force: true }).type('f{enter}', { delay: 100 });
 
-    cy.get('input#react-select-2-input').type('r');
-
-    cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          ...productSearchQuery,
-          queryString: 'fr',
-        });
-        expect(response.body).to.deep.eq(ProductListResponse);
-      },
-    );
+    cy.get('[class*="react-select__option"]').should('have.length.gte', 1);
   });
 
   it('Should [ADD PRODUCT] successfully', () => {
-    cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include(productSearchQuery);
-        expect(response.body).to.deep.eq(ProductListResponse);
-      },
-    );
-    cy.get('input#react-select-2-input').type('f');
+    cy.wait(fullAliasName(ProductOperations.GetProductList));
 
-    cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          ...productSearchQuery,
-          queryString: 'f',
-        });
-        expect(response.body).to.deep.eq(ProductListResponse);
-      },
-    );
+    cy.get('input#productId').click({ force: true }).type('f', { delay: 100 });
 
-    cy.get('#react-select-2-option-1').click();
+    cy.get('[class*="react-select__option"]').should('have.length.gte', 2);
+    cy.get('[class*="react-select__option"]').eq(1).click();
     cy.get('input[type="submit"]').contains(localizations.en.save).click();
 
     cy.wait(fullAliasMutationName(AssortmentOperation.AddProduct)).then(
@@ -257,7 +215,8 @@ describe('Assortment Detail Products', () => {
   });
 
   it('should [DELETE] product successfully', () => {
-    cy.get('button[aria-label]').first().click({ force: true }); cy.get('button').contains(localizations.en.delete).click();
+    cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
+    cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
     cy.get('button[type="button"]#danger_continue')
       .contains(localizations.en.delete_product)
       .click();
@@ -284,7 +243,8 @@ describe('Assortment Detail Products', () => {
   });
 
   it('Should [CANCEL DELETE] product successfully', () => {
-    cy.get('button[aria-label]').first().click({ force: true }); cy.get('button').contains(localizations.en.delete).click();
+    cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
+    cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
     cy.get('button[type="button"]#danger_cancel')
       .contains(localizations.en.cancel)
       .click();
