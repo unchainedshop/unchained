@@ -156,7 +156,6 @@ describe('WorkQueue', () => {
         cy.wait(fullAliasName(WorkOperations.GetWorkQueue));
 
         cy.get(`input[type="checkbox"][value="ALLOCATED"]`).click();
-        cy.wait(150);
 
         cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
           (currentSubject) => {

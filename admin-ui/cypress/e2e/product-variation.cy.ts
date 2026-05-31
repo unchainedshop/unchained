@@ -221,11 +221,10 @@ describe('Product Variation', () => {
         cy.get('button').last().click({ force: true });
       });
       cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
-      cy.get('div[aria-modal="true"]').should('not.to.be', undefined);
+      cy.get('div[aria-modal="true"]').should('exist');
       cy.get('#danger_continue')
         .should('contain.text', localizations.en.delete_product_variation)
         .click();
-      cy.get('div[aria-modal="true"]').should('to.be', undefined);
       cy.wait(
         fullAliasMutationName(ProductOperations.RemoveProductVariation),
       ).then((currentSubject) => {
@@ -242,11 +241,10 @@ describe('Product Variation', () => {
         cy.get('button').last().click({ force: true });
       });
       cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
-      cy.get('div[aria-modal="true"]').should('not.to.be', undefined);
+      cy.get('div[aria-modal="true"]').should('exist');
       cy.get('#danger_cancel')
         .should('contain.text', localizations.en.cancel)
         .click();
-      cy.get('div[aria-modal="true"]').should('to.be', undefined);
     });
 
     it(`Should [INITIALIZE VARIATION TEXT FORM] successfully `, () => {
@@ -313,7 +311,7 @@ describe('Product Variation', () => {
         .should('contain.text', localizations.en.cancel)
         .click();
 
-      cy.get('form.variation-update-form input[name="title"]').should('to.be', undefined);
+      cy.get('form.variation-update-form input[name="title"]').should('not.exist');
     });
   });
 

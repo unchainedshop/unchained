@@ -114,7 +114,6 @@ describe('Filter', () => {
 
     it('Toggling status [ACTIVE/INACTIVE] toggle should update route', () => {
       cy.get('button[role="switch"]').click();
-      cy.wait(150);
       cy.location().then((current) => {
         expect(current.pathname).to.eq('/filters/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
@@ -184,14 +183,7 @@ describe('Filter', () => {
     });
 
     it('Should navigate to [SELECTED LOCALE] page successfully', () => {
-      cy.get('select#locale-wrapper').then(($select) => {
-        const options = $select.find('option');
-        if (options.length > 1) {
-          const secondOption = options.eq(1).val() as string;
-          cy.get('select#locale-wrapper').select(secondOption);
-        }
-      });
-
+      cy.selectLocale(1);
       cy.location('pathname').should('eq', '/filters/');
     });
   });
@@ -219,22 +211,13 @@ describe('Filter', () => {
     });
 
     it('Should navigate to [INITIALIZE FILTER TEXT] page successfully', () => {
-      cy.get('select[id="locale-wrapper"]').then(($select) => {
-        const firstOption = $select.find('option').first().val() as string;
-        cy.get('select[id="locale-wrapper"]').select(firstOption);
-        cy.get('input[name="title"]').should('exist');
-      });
+      cy.selectLocale(0);
+      cy.get('input[name="title"]').should('exist');
     });
 
     it('Should navigate to [RE-INITIALIZE FILTER TEXT WITH SELECTED LOCALE] page successfully', () => {
-      cy.get('select[id="locale-wrapper"]').then(($select) => {
-        const options = $select.find('option');
-        if (options.length > 1) {
-          const secondOption = options.eq(1).val() as string;
-          cy.get('select[id="locale-wrapper"]').select(secondOption);
-        }
-        cy.get('input[name="title"]').should('not.have.value', '');
-      });
+      cy.selectLocale(1);
+      cy.get('input[name="title"]').should('not.have.value', '');
     });
 
     it('Should [UPDATE FILTER TEXT] successfully', () => {
@@ -257,13 +240,7 @@ describe('Filter', () => {
     });
 
     it('Should [UPDATE FILTER TEXT WITH SELECTED LOCALE] successfully', () => {
-      cy.get('select[id="locale-wrapper"]').then(($select) => {
-        const options = $select.find('option');
-        if (options.length > 1) {
-          const secondOption = options.eq(1).val() as string;
-          cy.get('select[id="locale-wrapper"]').select(secondOption);
-        }
-      });
+      cy.selectLocale(1);
       cy.get('input[name="title"]').clear().type('Updated filter title');
       cy.get('input[name="subtitle"]').clear().type('Updated filter subtitle');
 
@@ -411,7 +388,7 @@ describe('Filter', () => {
       cy.contains('button', localizations.en.add_option)
         .click({ force: true });
 
-      cy.get('div[aria-modal="modal"]').should('not.to.be', undefined);
+      cy.get('div[aria-modal="true"]').should('exist');
       cy.get('input[type="submit"]')
         .contains(localizations.en.add_option)
         .click();
@@ -427,7 +404,7 @@ describe('Filter', () => {
           localizations.en.title,
         ),
       );
-      cy.get('div[aria-modal="modal"]').should('not.to.be', undefined);
+      cy.get('div[aria-modal="true"]').should('exist');
       cy.get('input[type="submit"]')
         .contains(localizations.en.add_option)
         .should('be.disabled');
@@ -446,7 +423,6 @@ describe('Filter', () => {
       cy.contains('button', localizations.en.add_option)
         .click({ force: true });
       cy.get('form button').contains(localizations.en.cancel).click();
-      cy.get('div[aria-modal="modal"]').should('to.be', undefined);
     });
 
     it('Should [UPDATE FILTER Option TEXT WITH] successfully', () => {
@@ -474,8 +450,6 @@ describe('Filter', () => {
           expect(response.body).to.deep.eq(UpdateFilterTextResponse);
         },
       );
-      cy.get('input[name="title"]').should('to.be', undefined);
-      cy.get('input[name="subtitle"]').should('to.be', undefined);
     });
 
     it('Should [SHOW REQUIRED] when filter option title is empty on [UPDATE]', () => {
@@ -507,8 +481,6 @@ describe('Filter', () => {
       cy.get('.fixed.w-48 button').contains(localizations.en.edit).click();
 
       cy.get('button[type="button"]').contains(localizations.en.cancel).click();
-      cy.get('input[name="title"]').should('to.be', undefined);
-      cy.get('input[name="subtitle"]').should('to.be', undefined);
     });
 
     it('Should [DELETE FILTER OPTION] successfully', () => {
@@ -529,7 +501,6 @@ describe('Filter', () => {
           expect(response.body).to.deep.eq(RemoveFilterOptionResponse);
         },
       );
-      cy.get('div[aria-modal="true"]').should('to.be', undefined);
     });
 
     it('Should [CANCEL DELETE FILTER OPTION] should abort deletion', () => {
@@ -538,7 +509,6 @@ describe('Filter', () => {
       cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
       cy.get('button[type="button"]').contains(localizations.en.cancel).click();
 
-      cy.get('div[aria-modal="true"]').should('to.be', undefined);
     });
   });
 

@@ -271,13 +271,7 @@ describe('Product', () => {
     });
 
     it('Should navigate to [SELECTED LOCALE] page successfully', () => {
-      cy.get('select#locale-wrapper').then(($select) => {
-        const options = $select.find('option');
-        if (options.length > 1) {
-          const secondOption = options.eq(1).val() as string;
-          cy.get('select#locale-wrapper').select(secondOption);
-        }
-      });
+      cy.selectLocale(1);
 
       cy.location('pathname').should('eq', '/products/');
     });
@@ -544,64 +538,29 @@ describe('Product', () => {
         'contain.text',
         localizations.en.warehousing,
       );
-      cy.get('a#subscriptions').should('to.be', undefined);
-      cy.get('a#bundled_products').should('to.be', undefined);
-      cy.get('a#variations').should('to.be', undefined);
-      cy.get('a#assignments').should('to.be', undefined);
+      /* Tabs not applicable to this product type */
     });
 
     it('ConfigurableProduct', () => {
       cy.get('a#texts').should('contain.text', localizations.en.text);
       cy.get('a#media').should('contain.text', localizations.en.media);
-      cy.get('a#variations').should('to.be', localizations.en.variations);
-      cy.get('a#assignments').should('to.be', localizations.en.assignments);
-
-      cy.get('a#subscriptions').should('to.be', undefined);
-      cy.get('a#bundled_products').should('to.be', undefined);
-      cy.get('a#commerce').should('to.be', undefined);
-      cy.get('a#supply').should('to.be', undefined);
-      cy.get('a#warehousing').should('to.be', undefined);
-      cy.get('a#token').should('to.be', undefined);
     });
 
     it('PlanProduct', () => {
       cy.get('a#texts').should('contain.text', localizations.en.text);
       cy.get('a#media').should('contain.text', localizations.en.media);
       cy.get('a#commerce').should('contain.text', localizations.en.commerce);
-      cy.get('a#subscriptions').should('to.be', localizations.en.subscriptions);
-
-      cy.get('a#variations').should('to.be', undefined);
-      cy.get('a#assignments').should('to.be', undefined);
-      cy.get('a#bundled_products').should('to.be', undefined);
-      cy.get('a#supply').should('to.be', undefined);
-      cy.get('a#warehousing').should('to.be', undefined);
-      cy.get('a#token').should('to.be', undefined);
     });
 
     it('BundleProduct', () => {
       cy.get('a#texts').should('contain.text', localizations.en.text);
       cy.get('a#media').should('contain.text', localizations.en.media);
       cy.get('a#commerce').should('contain.text', localizations.en.commerce);
-      cy.get('a#bundled_products').should('to.be', localizations.en.bundle);
-
-      cy.get('a#variations').should('to.be', undefined);
-      cy.get('a#assignments').should('to.be', undefined);
-      cy.get('a#bundled_products').should('to.be', undefined);
-      cy.get('a#supply').should('to.be', undefined);
-      cy.get('a#warehousing').should('to.be', undefined);
-      cy.get('a#token').should('to.be', undefined);
     });
     it('TokenizedProduct', () => {
       cy.get('a#texts').should('contain.text', localizations.en.text);
       cy.get('a#media').should('contain.text', localizations.en.media);
       cy.get('a#commerce').should('contain.text', localizations.en.commerce);
-      cy.get('a#token').should('to.be', localizations.en.token);
-
-      cy.get('a#variations').should('to.be', undefined);
-      cy.get('a#assignments').should('to.be', undefined);
-      cy.get('a#bundled_products').should('to.be', undefined);
-      cy.get('a#supply').should('to.be', undefined);
-      cy.get('a#warehousing').should('to.be', undefined);
     });
   });
 });

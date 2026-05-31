@@ -133,7 +133,7 @@ describe('Product Media', () => {
       },
     );
 
-    cy.get('select#locale-wrapper').select('en');
+    cy.selectLocale(0);
   });
 
   it('Should Navigate to [PRODUCT DETAIL MEDIA] tab successfully', () => {

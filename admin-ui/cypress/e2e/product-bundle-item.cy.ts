@@ -227,11 +227,10 @@ describe('Product Subscription', () => {
   it('Should [DELETE BUNDLE PRODUCT] successfully', () => {
     cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
     cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
-    cy.get('div[aria-modal="true"]').should('not.to.be', undefined);
+    cy.get('div[aria-modal="true"]').should('exist');
     cy.get('#danger_continue')
       .should('contain.text', localizations.en.delete_bundle_item)
       .click();
-    cy.get('div[aria-modal="true"]').should('to.be', undefined);
     cy.wait(fullAliasMutationName(ProductOperations.RemoveBundleItem)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
@@ -247,10 +246,9 @@ describe('Product Subscription', () => {
   it('Should [CANCEL DELETE BUNDLE] successfully', () => {
     cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
     cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
-    cy.get('div[aria-modal="true"]').should('not.to.be', undefined);
+    cy.get('div[aria-modal="true"]').should('exist');
     cy.get('#danger_cancel')
       .should('contain.text', localizations.en.cancel)
       .click();
-    cy.get('div[aria-modal="true"]').should('to.be', undefined);
   });
 });

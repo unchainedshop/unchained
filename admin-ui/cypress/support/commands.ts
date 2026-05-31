@@ -89,3 +89,22 @@ beforeEach(() => {
 Cypress.on('uncaught:exception', () => {
   return false;
 });
+
+Cypress.Commands.add('selectLocale', (index: number = 0) => {
+  cy.get('select#locale-wrapper').then(($s) => {
+    const options = $s.find('option');
+    const targetIndex = Math.min(index, options.length - 1);
+    const opt = options.eq(targetIndex).val() as string;
+    if (opt) {
+      cy.get('select#locale-wrapper').select(opt);
+    }
+  });
+});
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      selectLocale(index?: number): Chainable<void>;
+    }
+  }
+}

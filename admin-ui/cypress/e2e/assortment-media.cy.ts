@@ -125,10 +125,7 @@ describe('Assortment Detail Media', () => {
       },
     );
 
-    cy.get('select#locale-wrapper').then(($s) => {
-      const opt = $s.find('option').first().val() as string;
-      cy.get('select#locale-wrapper').select(opt);
-    });
+    cy.selectLocale(0);
   });
 
   afterEach(() => {
@@ -199,7 +196,7 @@ describe('Assortment Detail Media', () => {
       TranslatedAssortmentMediaTextsResponse.data
         .translatedAssortmentMediaTexts;
 
-    cy.get('select#locale-wrapper').then(($s) => { const opt = $s.find('option').eq(1).val() as string; cy.get('select#locale-wrapper').select(opt); });
+    cy.selectLocale(1);
     cy.get('button#edit').first().click();
     cy.get('input#title').should('have.value', secondTexts.title);
     cy.get('input#subtitle').should('have.value', secondTexts.subtitle);
@@ -240,7 +237,7 @@ describe('Assortment Detail Media', () => {
       TranslatedAssortmentMediaTextsResponse.data
         .translatedAssortmentMediaTexts;
 
-    cy.get('select#locale-wrapper').then(($s) => { const opt = $s.find('option').eq(1).val() as string; cy.get('select#locale-wrapper').select(opt); });
+    cy.selectLocale(1);
     cy.get('select#locale-wrapper').should('not.have.value', '');
     cy.get('button#edit').first().click();
     cy.get('input#title').clear().type(secondTexts.title);

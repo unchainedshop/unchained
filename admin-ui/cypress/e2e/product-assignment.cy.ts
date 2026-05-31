@@ -154,7 +154,7 @@ describe('Product Assignment', () => {
       cy.get(
         `button[type=button][aria-label="${localizations.en.delete}"]#delete_button`,
       ).first().click();
-      cy.get('[aria-modal="true"]').should('not.to.be', undefined);
+      cy.get('[aria-modal="true"]').should('exist');
       cy.get('button[type="button"]#danger_continue')
         .should('contain.text', localizations.en.delete_variation_assignment)
         .click();

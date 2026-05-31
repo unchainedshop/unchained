@@ -480,13 +480,7 @@ describe('Assortment', () => {
   });
 
   it('Should navigate to [SELECTED LOCALE] page successfully', () => {
-    cy.get('select#locale-wrapper').then(($select) => {
-      const options = $select.find('option');
-      if (options.length > 1) {
-        const secondOption = options.eq(1).val() as string;
-        cy.get('select#locale-wrapper').select(secondOption);
-      }
-    });
+    cy.selectLocale(1);
 
     cy.location('pathname').should('eq', '/assortments/');
   });

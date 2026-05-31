@@ -98,14 +98,8 @@ describe('Product Text', () => {
   });
 
   it('Should [RE-INITIALIZE PRODUCT TEXT FORM] when locale is changed successfully', () => {
-    cy.get('select[id="locale-wrapper"]').then(($select) => {
-      const options = $select.find('option');
-      if (options.length > 1) {
-        const secondOption = options.eq(1).val() as string;
-        cy.get('select[id="locale-wrapper"]').select(secondOption);
-        cy.get('input[name="title"]').should('not.have.value', '');
-      }
-    });
+    cy.selectLocale(1);
+    cy.get('input[name="title"]').should('not.have.value', '');
   });
 
   it('Should [UPDATE PRODUCT TEXT FORM] successfully', () => {

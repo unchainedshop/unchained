@@ -167,7 +167,6 @@ describe('Order', () => {
   it('should update data and route when [SEARCHING] accordingly', () => {
     cy.location('pathname').should('eq', '/orders/');
     cy.get('input#search').type('search');
-    cy.wait(150);
 
     cy.wait(fullAliasName(OrderOperations.GetOrderList)).then(
       (currentSubject) => {

@@ -98,7 +98,7 @@ describe('Assortment Detail Texts', () => {
       cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(assortment)}`,
       );
       cy.get('h2').should('contain.text', assortment?.texts?.title || 'Assortment');
-      cy.get('select#locale-wrapper').select('en');
+      cy.selectLocale(0);
     });
 
     it('Should Navigate to [ASSORTMENT DETAIL] page successfully', () => {
@@ -189,7 +189,7 @@ describe('Assortment Detail Texts', () => {
       const [, secondText] =
         TranslatedAssortmentTextsResponse.data.translatedAssortmentTexts;
 
-      cy.get('select#locale-wrapper').select('de');
+      cy.selectLocale(1);
       cy.get('input#slug').should('have.value', secondText.slug);
       cy.get('input#title').should('have.value', secondText.title);
       cy.get('input#subtitle').should('have.value', secondText.subtitle);
@@ -242,7 +242,7 @@ describe('Assortment Detail Texts', () => {
       const [, secondText] =
         TranslatedAssortmentTextsResponse.data.translatedAssortmentTexts;
 
-      cy.get('select#locale-wrapper').select('de');
+      cy.selectLocale(1);
       cy.get('input#title').clear().type(secondText.title);
       cy.get('input#subtitle').clear().type(secondText.subtitle);
       cy.get('input[type="submit"]').contains(localizations.en.save).click();
@@ -335,7 +335,7 @@ describe('Assortment Detail Texts', () => {
       cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(assortment)}`,
       );
       cy.get('h2').should('contain.text', assortment?.texts?.title || 'Assortment');
-      cy.get('select#locale-wrapper').select('en');
+      cy.selectLocale(0);
 
       cy.get('div#leaf button').first().scrollIntoView().click();
       cy.get('[role="option"]').contains(localizations.en.make_root).click();
@@ -392,7 +392,7 @@ describe('Assortment Detail Texts', () => {
       cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(assortment)}`,
       );
       cy.get('h2').should('contain.text', assortment?.texts?.title || 'Assortment');
-      cy.get('select#locale-wrapper').select('en');
+      cy.selectLocale(0);
 
       cy.get('div#in-active button').first().scrollIntoView().click();
       cy.get('[role="option"]').contains(localizations.en.activate).click();
