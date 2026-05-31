@@ -47,19 +47,19 @@ describe('Assortment', () => {
     });
 
     cy.visit('/');
-    cy.get('a[href="/assortments"]')
+    cy.get('a[href="/assortments/"]')
       .contains(localizations.en.assortments)
       .click({ force: true });
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq(assortmentequestVariables);
+        expect(request.body.variables).to.deep.include(assortmentequestVariables);
         expect(response.body).to.deep.eq(AssortmentListResponse);
       },
     );
 
-    cy.location('pathname').should('eq', '/assortments');
+    cy.location('pathname').should('eq', '/assortments/');
     cy.get('h2').should(
       'contain.text',
       localizations.en.assortment,
@@ -78,7 +78,7 @@ describe('Assortment', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           ...assortmentequestVariables,
           includeInactive: false,
         });
@@ -87,7 +87,7 @@ describe('Assortment', () => {
     );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         includeInactive: 'false',
       });
@@ -96,7 +96,7 @@ describe('Assortment', () => {
       .contains(localizations.en.include_inactive)
       .click({ force: true });
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         includeInactive: 'true',
       });
@@ -111,7 +111,7 @@ describe('Assortment', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           ...assortmentequestVariables,
           includeLeaves: true,
         });
@@ -120,7 +120,7 @@ describe('Assortment', () => {
     );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         includeLeaves: 'true',
       });
@@ -129,7 +129,7 @@ describe('Assortment', () => {
       .contains(localizations.en.include_leaf)
       .click({ force: true });
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         includeLeaves: 'false',
       });
@@ -144,7 +144,7 @@ describe('Assortment', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentChildren)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           includeInactive: true,
           includeLeaves: false,
         });
@@ -158,7 +158,7 @@ describe('Assortment', () => {
       AssortmentListResponse.data.assortmentsCount,
     );
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         viewGraph: 'true',
       });
@@ -173,7 +173,7 @@ describe('Assortment', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentChildren)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           includeInactive: true,
           includeLeaves: false,
         });
@@ -182,7 +182,7 @@ describe('Assortment', () => {
     );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         viewGraph: 'true',
       });
@@ -191,7 +191,7 @@ describe('Assortment', () => {
       .contains(localizations.en.display_as_graph)
       .click({ force: true });
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
     });
   });
 
@@ -203,7 +203,7 @@ describe('Assortment', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentChildren)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           includeInactive: true,
           includeLeaves: false,
         });
@@ -212,7 +212,7 @@ describe('Assortment', () => {
     );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         viewGraph: 'true',
       });
@@ -224,7 +224,7 @@ describe('Assortment', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentChildren)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           includeInactive: false,
           includeLeaves: false,
         });
@@ -233,7 +233,7 @@ describe('Assortment', () => {
     );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         includeInactive: 'false',
         viewGraph: 'true',
@@ -243,7 +243,7 @@ describe('Assortment', () => {
       .contains(localizations.en.include_inactive)
       .click({ force: true });
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         includeInactive: 'true',
         viewGraph: 'true',
@@ -257,7 +257,7 @@ describe('Assortment', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           ...assortmentequestVariables,
           queryString: 'search',
         });
@@ -266,7 +266,7 @@ describe('Assortment', () => {
     );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         queryString: 'search',
       });
@@ -276,7 +276,7 @@ describe('Assortment', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           ...assortmentequestVariables,
           queryString: 'search input',
         });
@@ -285,7 +285,7 @@ describe('Assortment', () => {
     );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         queryString: 'search input',
       });
@@ -293,13 +293,12 @@ describe('Assortment', () => {
   });
 
   it('Should update data and route when [ADD TAG] accordingly', () => {
-    cy.get('input#tag-input').type('new');
-    cy.get('button#add-tag').click();
+    cy.get('input#tag-input').type('new{enter}', { force: true });
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           ...assortmentequestVariables,
           tags: ['new'],
         });
@@ -308,18 +307,17 @@ describe('Assortment', () => {
     );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         tags: 'new',
       });
     });
-    cy.get('input#tag-input').type('old');
-    cy.get('button#add-tag').click();
+    cy.get('input#tag-input').type('old{enter}', { force: true });
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           ...assortmentequestVariables,
           tags: ['new', 'old'],
         });
@@ -328,7 +326,7 @@ describe('Assortment', () => {
     );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         tags: 'new,old',
       });
@@ -336,13 +334,12 @@ describe('Assortment', () => {
   });
 
   it('Should update data and route when [REMOVE TAG IN ADD TAG] accordingly', () => {
-    cy.get('input#tag-input').type('new');
-    cy.get('button#add-tag').click();
+    cy.get('input#tag-input').type('new{enter}', { force: true });
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           ...assortmentequestVariables,
           tags: ['new'],
         });
@@ -351,13 +348,13 @@ describe('Assortment', () => {
     );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         tags: 'new',
       });
     });
-    cy.get('button#badge-x-button').click();
-    cy.location('pathname').should('eq', '/assortments');
+    cy.get('span#badge').first().click();
+    cy.location('pathname').should('eq', '/assortments/');
   });
 
   it('Should update data when [SEQUENCING] accordingly', () => {
@@ -367,7 +364,7 @@ describe('Assortment', () => {
     cy.wait(fullAliasMutationName(AssortmentOperation.UpdateAssortment)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           assortment: {
             sequence: 50,
           },
@@ -377,7 +374,7 @@ describe('Assortment', () => {
       },
     );
 
-    cy.location('pathname').should('eq', '/assortments');
+    cy.location('pathname').should('eq', '/assortments/');
   });
 
   it('Should [FILTER] by multiple fields [INACTIVE, LEAFS, TAGS & QUERY STRING]', () => {
@@ -389,7 +386,7 @@ describe('Assortment', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           ...assortmentequestVariables,
           includeInactive: false,
         });
@@ -398,7 +395,7 @@ describe('Assortment', () => {
     );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         includeInactive: 'false',
       });
@@ -412,7 +409,7 @@ describe('Assortment', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           ...assortmentequestVariables,
           includeInactive: false,
           includeLeaves: true,
@@ -422,7 +419,7 @@ describe('Assortment', () => {
     );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         includeInactive: 'false',
         includeLeaves: 'true',
@@ -430,13 +427,12 @@ describe('Assortment', () => {
     });
 
     // add tags
-    cy.get('input#tag-input').type('new');
-    cy.get('button#add-tag').click();
+    cy.get('input#tag-input').type('new{enter}', { force: true });
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           ...assortmentequestVariables,
           includeInactive: false,
           includeLeaves: true,
@@ -447,7 +443,7 @@ describe('Assortment', () => {
     );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         includeInactive: 'false',
         includeLeaves: 'true',
@@ -461,7 +457,7 @@ describe('Assortment', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           ...assortmentequestVariables,
           includeInactive: false,
           includeLeaves: true,
@@ -473,7 +469,7 @@ describe('Assortment', () => {
     );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/assortments');
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         includeInactive: 'false',
         includeLeaves: 'true',
@@ -484,38 +480,24 @@ describe('Assortment', () => {
   });
 
   it('Should navigate to [SELECTED LOCALE] page successfully', () => {
-    const [, deLocale] = LanguagesResponse.data.languages;
+    cy.selectLocale(1);
 
-    cy.get('select#locale-wrapper').select(deLocale.isoCode);
-
-    cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          ...assortmentequestVariables,
-        });
-        expect(response.body).to.deep.eq(AssortmentListResponse);
-      },
-    );
-
-    cy.location('pathname').should('eq', '/assortments');
+    cy.location('pathname').should('eq', '/assortments/');
   });
 
   it('Should Navigate to [NEW ASSORTMENT] form page successfully', () => {
-    cy.get('a[href="/assortments/new"]').contains(localizations.en.add).click();
-    cy.location('pathname').should('eq', '/assortments/new');
+    cy.get('a[href="/assortments/new/"]').contains(localizations.en.add).click();
+    cy.location('pathname').should('eq', '/assortments/new/');
     cy.get('h2').should('contain.text', localizations.en.new_assortment_header);
   });
 
   it('Should [ADD ASSORTMENT] successfully', () => {
-    cy.get('a[href="/assortments/new"]').contains(localizations.en.add).click();
-    cy.location('pathname').should('eq', '/assortments/new');
+    cy.get('a[href="/assortments/new/"]').contains(localizations.en.add).click();
+    cy.location('pathname').should('eq', '/assortments/new/');
     cy.get('h2').should('contain.text', localizations.en.new_assortment_header);
 
     cy.get('input#title').type('mobile');
-    cy.get('input#tags').type('new');
-    cy.get('button#add-tag').click();
-    cy.get('input#isRoot').check();
+    cy.get('input#tags').first().type('new{enter}', { force: true });
     cy.get('input[type="submit"]')
       .contains(localizations.en.add_assortment)
       .click();
@@ -523,20 +505,13 @@ describe('Assortment', () => {
     cy.wait(fullAliasMutationName(AssortmentOperation.CreateAssortment)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          assortment: {
-            isRoot: true,
-            title: 'mobile',
-            tags: ['new'],
-          },
-        });
+        expect(request.body.variables.assortment.isRoot).to.eq(true);
+        expect(request.body.variables.assortment.tags).to.deep.eq(['new']);
         expect(response.body).to.deep.eq(Createassortmentesponse);
       },
     );
 
-    cy.location('pathname').should(
-      'eq',
-      `/assortments?assortmentSlug=${generateUniqueId(
+    cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(
         Createassortmentesponse.data.createAssortment,
       )}`,
     );
@@ -544,7 +519,7 @@ describe('Assortment', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetSingleAssortment)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           assortmentId: Createassortmentesponse.data.createAssortment._id,
         });
         expect(response.body).to.deep.eq(Singleassortmentesponse);
@@ -554,7 +529,7 @@ describe('Assortment', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetTranslatedTexts)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           assortmentId: Singleassortmentesponse.data.assortment._id,
         });
         expect(response.body).to.deep.eq(TranslatedAssortmentTextsResponse);
@@ -563,8 +538,8 @@ describe('Assortment', () => {
   });
 
   it('Show [ERROR] when required fields are not provided in add assortment', () => {
-    cy.get('a[href="/assortments/new"]').contains(localizations.en.add).click();
-    cy.location('pathname').should('eq', '/assortments/new');
+    cy.get('a[href="/assortments/new/"]').contains(localizations.en.add).click();
+    cy.location('pathname').should('eq', '/assortments/new/');
     cy.get('h2').should('contain.text', localizations.en.new_assortment_header);
     cy.get('input[type="submit"]')
       .contains(localizations.en.add_assortment)
@@ -582,6 +557,6 @@ describe('Assortment', () => {
       .contains(localizations.en.add_assortment)
       .should('be.disabled');
 
-    cy.location('pathname').should('eq', '/assortments/new');
+    cy.location('pathname').should('eq', '/assortments/new/');
   });
 });

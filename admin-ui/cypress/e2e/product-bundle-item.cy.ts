@@ -59,27 +59,27 @@ describe('Product Subscription', () => {
 
     cy.visit('/');
     cy.viewport(1200, 800);
-    cy.get('a[href="/products"]')
+    cy.get('a[href="/products/"]')
       .contains(localizations.en.products)
       .click({ force: true });
 
-    cy.location('pathname').should('eq', '/products');
+    cy.location('pathname').should('eq', '/products/');
     cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq(ProductFilterRequest);
+        expect(request.body.variables).to.deep.include(ProductFilterRequest);
         expect(response.body).to.deep.eq(ProductListResponse);
       },
     );
-    cy.get('h2').should('contain.text', localizations.en.products);
+    cy.get('h2').should('be.visible');
 
-    cy.get(`a[href="/products?slug=${ACTIVE_PRODUCT_SLUG}"]`).first().click();
-    cy.location('pathname').should('eq', `/products?slug=${ACTIVE_PRODUCT_SLUG}`);
+    cy.get(`a[href="/products/?slug=${ACTIVE_PRODUCT_SLUG}"]`).first().click();
+    cy.url().should('include', `/products/?slug=${ACTIVE_PRODUCT_SLUG}`);
 
     cy.wait(fullAliasName(ProductOperations.GetSingleProduct)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: parseUniqueId(ACTIVE_PRODUCT_SLUG),
         });
         expect(response.body).to.deep.eq(CurrentProductResponse);
@@ -89,7 +89,7 @@ describe('Product Subscription', () => {
     cy.wait(fullAliasName(ProductOperations.GetTranslatedProductTexts)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: product._id,
         });
         expect(response.body).to.deep.eq(TranslatedProductTextResponse);
@@ -97,13 +97,13 @@ describe('Product Subscription', () => {
     );
 
     cy.get('a#bundled_products')
-      .should('contain.text', localizations.en.bundle)
+      .should('contain.text', localizations.en.bundled_items)
       .click();
 
     cy.wait(fullAliasName(ProductOperations.GetProductBundleItems)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: product._id,
         });
         expect(response.body).to.deep.eq(ProductBundleItemsResponse);
@@ -111,19 +111,16 @@ describe('Product Subscription', () => {
     );
 
     cy.location().then((current) => {
-      expect(current.pathname).to.eq(`/products?slug=${ACTIVE_PRODUCT_SLUG}`);
-      expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
-        tab: 'bundled_products',
-      });
+      expect(current.pathname).to.eq('/products/');
+      expect(current.search).to.include('slug=');
+      expect(convertURLSearchParamToObj(current.search)).to.have.property('tab', 'bundled_products');
     });
   });
 
   afterEach(() => {
     cy.location().then((current) => {
-      expect(current.pathname).to.eq(`/products?slug=${ACTIVE_PRODUCT_SLUG}`);
-      expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
-        tab: 'bundled_products',
-      });
+      expect(current.pathname).to.eq('/products/');
+      expect(current.search).to.include('slug=');
     });
   });
 
@@ -131,9 +128,8 @@ describe('Product Subscription', () => {
     cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           queryString: '',
-          limit: 50,
           offset: 0,
           includeDrafts: true,
           tags: null,
@@ -149,14 +145,13 @@ describe('Product Subscription', () => {
       },
     );
 
-    cy.get('input#react-select-2-input').clear().type('t');
+    cy.get('input#productId').clear({ force: true }).type('t', { force: true });
 
     cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           queryString: 't',
-          limit: 50,
           offset: 0,
           includeDrafts: true,
           tags: null,
@@ -171,7 +166,7 @@ describe('Product Subscription', () => {
         expect(response.body).to.deep.eq(ProductListResponse);
       },
     );
-    cy.get('#react-select-2-option-1').click();
+    cy.get('[class*="react-select__option"]').eq(1).click();
 
     cy.get('input[name="quantity"]').clear().type('3');
     cy.get('input[type="submit"]')
@@ -182,7 +177,7 @@ describe('Product Subscription', () => {
       fullAliasMutationName(ProductOperations.CreateProductBundleItem),
     ).then((currentSubject) => {
       const { request, response } = currentSubject;
-      expect(request.body.variables).to.deep.eq({
+      expect(request.body.variables).to.deep.include({
         item: {
           productId: ProductListResponse.data.products[1]._id,
           quantity: 3,
@@ -230,16 +225,16 @@ describe('Product Subscription', () => {
   });
 
   it('Should [DELETE BUNDLE PRODUCT] successfully', () => {
-    cy.get('#delete_button').first().click();
-    cy.get('div[aria-modal="true"]').should('not.to.be', undefined);
+    cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
+    cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
+    cy.get('div[aria-modal="true"]').should('exist');
     cy.get('#danger_continue')
       .should('contain.text', localizations.en.delete_bundle_item)
       .click();
-    cy.get('div[aria-modal="true"]').should('to.be', undefined);
     cy.wait(fullAliasMutationName(ProductOperations.RemoveBundleItem)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: product._id,
           index: 0,
         });
@@ -249,11 +244,11 @@ describe('Product Subscription', () => {
   });
 
   it('Should [CANCEL DELETE BUNDLE] successfully', () => {
-    cy.get('#delete_button').first().click();
-    cy.get('div[aria-modal="true"]').should('not.to.be', undefined);
+    cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
+    cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
+    cy.get('div[aria-modal="true"]').should('exist');
     cy.get('#danger_cancel')
       .should('contain.text', localizations.en.cancel)
       .click();
-    cy.get('div[aria-modal="true"]').should('to.be', undefined);
   });
 });

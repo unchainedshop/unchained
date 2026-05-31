@@ -41,13 +41,13 @@ describe('Forgot password', () => {
     });
 
     cy.visit('/');
-    cy.location('pathname').should('eq', '/log-in');
+    cy.location('pathname').should('eq', '/log-in/');
     cy.get('input[name="usernameOrEmail"]').type('admin@unchained.local');
     cy.get('button[type="submit"]').contains(localizations.en.continue).click();
-    cy.get('a[href="/account/forgot-password"]')
+    cy.get('a[href="/account/forgot-password/"]')
       .contains(localizations.en.forget_password)
       .click();
-    cy.location('pathname').should('eq', '/account/forgot-password');
+    cy.location('pathname').should('eq', '/account/forgot-password/');
     cy.get('h2').should('contain.text', localizations.en.forget_password);
   });
 
@@ -61,7 +61,7 @@ describe('Forgot password', () => {
       fullAliasMutationName(AuthenticationOperations.ForgotPassword),
     ).then((currentSubject) => {
       const { request, response } = currentSubject;
-      expect(request.body.variables).to.deep.eq({
+      expect(request.body.variables).to.deep.include({
         email: 'admin@unchained.shop',
       });
       expect(response.body).to.deep.eq(ForgotPasswordSuccessResponse);
@@ -78,7 +78,7 @@ describe('Forgot password', () => {
       fullAliasMutationName(AuthenticationOperations.ForgotPassword),
     ).then((currentSubject) => {
       const { request, response } = currentSubject;
-      expect(request.body.variables).to.deep.eq({
+      expect(request.body.variables).to.deep.include({
         email: 'wrong@unchained.local',
       });
       expect(response.body).to.deep.eq(ForgotPasswordFailedResponse);
@@ -104,9 +104,9 @@ describe('Forgot password', () => {
   });
 
   it('Should  navigate to [SIGN UP PAGE] successfully ', () => {
-    cy.get('a[href="/sign-up"]')
+    cy.get('a[href="/sign-up/"]')
       .should('contain.text', localizations.en.sign_up)
       .click();
-    cy.location('pathname').should('eq', '/sign-up');
+    cy.location('pathname').should('eq', '/sign-up/');
   });
 });

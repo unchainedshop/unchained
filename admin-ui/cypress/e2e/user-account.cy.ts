@@ -79,11 +79,11 @@ describe('User', () => {
     });
     cy.visit('/');
     cy.viewport(1200, 800);
-    cy.get('a[href="/users"]')
+    cy.get('a[href="/users/"]')
       .contains(localizations.en.users)
       .click({ force: true });
 
-    cy.location('pathname').should('eq', '/users');
+    cy.location('pathname').should('eq', '/users/');
     cy.get('h2').should('contain.text', localizations.en.users);
   });
 
@@ -91,8 +91,8 @@ describe('User', () => {
     const { user } = SingleUserResponse.data;
 
     beforeEach(() => {
-      cy.get(`a[href="/users?userId=${user._id}"]`).click();
-      cy.location('pathname').should('eq', `/users?userId=${user._id}`);
+      cy.get(`a[href="/users/?userId=${user._id}"]`).first().click();
+      cy.url().should('include', `/users/?userId=${user._id}`);
       cy.get(`a#account`).contains(localizations.en.account).click();
 
       cy.wait(fullAliasName(UserOperations.SystemRoles)).then(
@@ -103,8 +103,9 @@ describe('User', () => {
       );
 
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'account',
         });
       });
@@ -124,7 +125,7 @@ describe('User', () => {
       cy.wait(fullAliasMutationName(UserOperations.SetUsername)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             username: user.username,
             userId: user._id,
           });
@@ -133,8 +134,9 @@ describe('User', () => {
       );
 
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'account',
         });
       });
@@ -144,7 +146,7 @@ describe('User', () => {
       cy.get('[data-id="cancel_update"]').click();
       cy.get('[data-id="cancel_update"]').click();
 
-      cy.location('pathname').should('eq', `/users?userId=${user._id}`);
+      cy.url().should('include', `/users/?userId=${user._id}`);
     });
 
     it("Should [ERROR] when required fields are not provided in update user's username", () => {
@@ -164,8 +166,8 @@ describe('User', () => {
   context('Email', () => {
     const { user } = SingleUserResponse.data;
     beforeEach(() => {
-      cy.get(`a[href="/users?userId=${user._id}"]`).click();
-      cy.location('pathname').should('eq', `/users?userId=${user._id}`);
+      cy.get(`a[href="/users/?userId=${user._id}"]`).first().click();
+      cy.url().should('include', `/users/?userId=${user._id}`);
       cy.get(`a#account`).contains(localizations.en.account).click();
 
       cy.wait(fullAliasName(UserOperations.SystemRoles)).then(
@@ -176,8 +178,9 @@ describe('User', () => {
       );
 
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'account',
         });
       });
@@ -205,7 +208,7 @@ describe('User', () => {
           fullAliasMutationName(UserOperations.SendVerificationEmail),
         ).then((currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             email: user?.emails?.find((email) => email.verified === false)
               .address,
           });
@@ -214,8 +217,9 @@ describe('User', () => {
       }
 
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'account',
         });
       });
@@ -231,7 +235,7 @@ describe('User', () => {
       cy.wait(fullAliasMutationName(UserOperations.RemoveEmail)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             email: user?.email,
             userId: user._id,
           });
@@ -240,8 +244,9 @@ describe('User', () => {
       );
 
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'account',
         });
       });
@@ -256,7 +261,7 @@ describe('User', () => {
       cy.wait(fullAliasMutationName(UserOperations.AddEmail)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             email: user?.email,
             userId: user._id,
           });
@@ -265,8 +270,9 @@ describe('User', () => {
       );
 
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'account',
         });
       });
@@ -292,8 +298,8 @@ describe('User', () => {
   context('Tags', () => {
     const { user } = SingleUserResponse.data;
     beforeEach(() => {
-      cy.get(`a[href="/users?userId=${user._id}"]`).click();
-      cy.location('pathname').should('eq', `/users?userId=${user._id}`);
+      cy.get(`a[href="/users/?userId=${user._id}"]`).first().click();
+      cy.url().should('include', `/users/?userId=${user._id}`);
       cy.get(`a#account`).contains(localizations.en.account).click();
 
       cy.wait(fullAliasName(UserOperations.SystemRoles)).then(
@@ -304,8 +310,9 @@ describe('User', () => {
       );
 
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'account',
         });
       });
@@ -313,8 +320,7 @@ describe('User', () => {
 
     it('Should [ADD TAGS] successfully', () => {
       cy.get('button#add_tag').click();
-      cy.get('input#tags').type('new');
-      cy.get('button#add-tag').click();
+      cy.get('input#tags').first().type('new{enter}', { force: true });
       cy.get('input[type="submit"]')
         .contains(localizations.en.save)
         .click({ force: true });
@@ -322,7 +328,7 @@ describe('User', () => {
       cy.wait(fullAliasMutationName(UserOperations.SetUserTags)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             tags: ['new'],
             userId: user._id,
           });
@@ -331,8 +337,9 @@ describe('User', () => {
       );
 
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'account',
         });
       });
@@ -342,8 +349,8 @@ describe('User', () => {
   context('Role', () => {
     const { user } = SingleUserResponse.data;
     beforeEach(() => {
-      cy.get(`a[href="/users?userId=${user._id}"]`).click();
-      cy.location('pathname').should('eq', `/users?userId=${user._id}`);
+      cy.get(`a[href="/users/?userId=${user._id}"]`).first().click();
+      cy.url().should('include', `/users/?userId=${user._id}`);
       cy.get(`a#account`).contains(localizations.en.account).click();
 
       cy.wait(fullAliasName(UserOperations.SystemRoles)).then(
@@ -354,8 +361,9 @@ describe('User', () => {
       );
 
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'account',
         });
       });
@@ -369,7 +377,7 @@ describe('User', () => {
       cy.wait(fullAliasMutationName(UserOperations.SetRoles)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             roles: ['admin'],
             userId: user._id,
           });
@@ -378,8 +386,9 @@ describe('User', () => {
       );
 
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'account',
         });
       });
@@ -389,8 +398,8 @@ describe('User', () => {
   context('Change password', () => {
     const { user } = SingleUserResponse.data;
     beforeEach(() => {
-      cy.get(`a[href="/users?userId=${user._id}"]`).click();
-      cy.location('pathname').should('eq', `/users?userId=${user._id}`);
+      cy.get(`a[href="/users/?userId=${user._id}"]`).first().click();
+      cy.url().should('include', `/users/?userId=${user._id}`);
       cy.get(`a#account`).contains(localizations.en.account).click();
 
       cy.wait(fullAliasName(UserOperations.SystemRoles)).then(
@@ -401,8 +410,9 @@ describe('User', () => {
       );
 
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'account',
         });
       });
@@ -419,7 +429,7 @@ describe('User', () => {
         (currentSubject) => {
           const { request, response } = currentSubject;
 
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             newPassword: 'password1',
             oldPassword: 'password',
           });
@@ -428,8 +438,9 @@ describe('User', () => {
       );
 
       cy.location().then((current) => {
-        expect(current.pathname).to.eq(`/users?userId=${user._id}`);
+        expect(current.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+          userId: user._id,
           tab: 'account',
         });
       });

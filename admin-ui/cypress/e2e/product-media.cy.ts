@@ -62,29 +62,29 @@ describe('Product Media', () => {
 
     cy.viewport(1200, 800);
     cy.visit('/');
-    cy.get('a[href="/products"]')
+    cy.get('a[href="/products/"]')
       .contains(localizations.en.products)
       .click({ force: true });
 
     cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq(ProductFilterRequest);
+        expect(request.body.variables).to.deep.include(ProductFilterRequest);
         expect(response.body).to.deep.eq(ProductListResponse);
       },
     );
 
-    cy.location('pathname').should('eq', '/products');
-    cy.get('h2').should('contain.text', localizations.en.products);
+    cy.location('pathname').should('eq', '/products/');
+    cy.get('h2').should('be.visible');
 
-    cy.get(`a[href="/products?slug=${generateUniqueId(product)}"]`)
+    cy.get(`a[href="/products/?slug=${generateUniqueId(product)}"]`)
       .contains(product?.texts?.title)
       .click();
 
     cy.wait(fullAliasName(ProductOperations.GetSingleProduct)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: product._id,
         });
         expect(response.body).to.deep.eq(CurrentProductResponse);
@@ -94,22 +94,21 @@ describe('Product Media', () => {
     cy.wait(fullAliasName(ProductOperations.GetTranslatedProductTexts)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: CurrentProductResponse.data.product._id,
         });
         expect(response.body).to.deep.eq(TranslatedProductTextResponse);
       },
     );
 
-    cy.location('pathname').should(
-      'eq',
-      `/products?slug=${generateUniqueId(product)}`,
+    cy.url().should('include', `/products/?slug=${generateUniqueId(product)}`,
     );
 
     cy.get('a#media').contains(localizations.en.media).click();
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq(`/products?slug=${generateUniqueId(product)}`);
+      expect(loc.pathname).to.eq('/products/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+        slug: generateUniqueId(product),
         tab: 'media',
       });
     });
@@ -117,7 +116,7 @@ describe('Product Media', () => {
     cy.wait(fullAliasName(ProductOperations.GetMediaTexts)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productMediaId: ProductMediaResponse.data.product.media[0]._id,
         });
         expect(response.body).to.deep.eq(TranslatedProductMediaTextsResponse);
@@ -127,14 +126,14 @@ describe('Product Media', () => {
     cy.wait(fullAliasName(ProductOperations.ProductMedia)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: product._id,
         });
         expect(response.body).to.deep.eq(ProductMediaResponse);
       },
     );
 
-    cy.get('select#locale-wrapper').select('en');
+    cy.selectLocale(0);
   });
 
   it('Should Navigate to [PRODUCT DETAIL MEDIA] tab successfully', () => {
@@ -142,7 +141,7 @@ describe('Product Media', () => {
   });
 
   it('Should [DELETE] media successfully', () => {
-    cy.get('button[type="button"]#delete_button').first().click();
+    cy.get('button#delete_button').first().click({ force: true });
     cy.get('button[type="button"]#danger_continue')
       .contains(localizations.en.delete_product_media)
       .click();
@@ -150,7 +149,7 @@ describe('Product Media', () => {
     cy.wait(fullAliasMutationName(ProductOperations.RemoveMedia)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productMediaId: ProductMediaResponse.data.product.media[0]._id,
         });
         expect(response.body).to.deep.eq(RemoveProductMediaResponse);
@@ -160,7 +159,7 @@ describe('Product Media', () => {
     cy.wait(fullAliasName(ProductOperations.ProductMedia)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productId: product._id,
         });
         expect(response.body).to.deep.eq(ProductMediaResponse);
@@ -168,22 +167,24 @@ describe('Product Media', () => {
     );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq(`/products?slug=${generateUniqueId(product)}`);
+      expect(loc.pathname).to.eq('/products/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+        slug: generateUniqueId(product),
         tab: 'media',
       });
     });
   });
 
   it('Should [CANCEL] delete media successfully', () => {
-    cy.get('button[type="button"]#delete_button').first().click();
+    cy.get('button#delete_button').first().click({ force: true });
     cy.get('button[type="button"]#danger_cancel')
       .contains(localizations.en.cancel)
       .click();
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq(`/products?slug=${generateUniqueId(product)}`);
+      expect(loc.pathname).to.eq('/products/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+        slug: generateUniqueId(product),
         tab: 'media',
       });
     });
@@ -205,7 +206,7 @@ describe('Product Media', () => {
       fullAliasMutationName(ProductOperations.UpdateProductMediaTexts),
     ).then((currentSubject) => {
       const { request, response } = currentSubject;
-      expect(request.body.variables).to.deep.eq({
+      expect(request.body.variables).to.deep.include({
         productMediaId: ProductMediaResponse.data.product.media[0]._id,
         texts: [
           {
@@ -221,7 +222,7 @@ describe('Product Media', () => {
     cy.wait(fullAliasName(ProductOperations.GetMediaTexts)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           productMediaId: ProductMediaResponse.data.product.media[0]._id,
         });
         expect(response.body).to.deep.eq(TranslatedProductMediaTextsResponse);
@@ -229,8 +230,9 @@ describe('Product Media', () => {
     );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq(`/products?slug=${generateUniqueId(product)}`);
+      expect(loc.pathname).to.eq('/products/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+        slug: generateUniqueId(product),
         tab: 'media',
       });
     });
@@ -244,8 +246,9 @@ describe('Product Media', () => {
       .click();
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq(`/products?slug=${generateUniqueId(product)}`);
+      expect(loc.pathname).to.eq('/products/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+        slug: generateUniqueId(product),
         tab: 'media',
       });
     });

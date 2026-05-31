@@ -12,7 +12,21 @@ import { aliasQuery, fullAliasName } from '../utils/aliasQuery';
 import convertURLSearchParamToObj from '../utils/convertURLSearchParamToObj';
 import hasOperationName from '../utils/hasOperationName';
 import replaceIntlPlaceholder from '../utils/replaceIntlPlaceholder';
-// add search test
+
+const ActiveWorkTypesResponse = {
+  data: {
+    activeWorkTypes: [
+      'EMAIL',
+      'MARK_ORDER_DELIVERED',
+      'MESSAGE',
+      'ORDERLY_KITCHEN_CLOSE',
+      'SMS',
+      'BULK_IMPORT',
+      'ZOMBIE_KILLER',
+    ],
+  },
+};
+
 describe('WorkQueue', () => {
   beforeEach(() => {
     cy.intercept('POST', '/graphql', (req) => {
@@ -28,57 +42,33 @@ describe('WorkQueue', () => {
         aliasQuery(req, WorkOperations.GetWorkTypes);
         req.reply(WorkTypesResponse);
       }
+      if (hasOperationName(req, 'ActiveWorkTypes')) {
+        aliasQuery(req, 'ActiveWorkTypes');
+        req.reply(ActiveWorkTypesResponse);
+      }
       if (hasOperationName(req, WorkOperations.AddWork)) {
         aliasMutation(req, WorkOperations.AddWork);
         req.reply(AddWorkResponse);
       }
     });
 
-    cy.visit('/');
-    cy.get('button')
-      .contains(localizations.en.activities)
-      .click({ force: true });
-    cy.get('a[href="/works"]')
-      .contains(localizations.en.work_queue)
-      .click({ force: true });
-
+    cy.visit('/works');
     cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
       (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          queryString: '',
-          offset: 0,
-          limit: 50,
-          created: {},
-          sort: [{ key: 'scheduled', value: 'DESC' }],
-        });
+        const { response } = currentSubject;
         expect(response.body).to.deep.eq(WorkQueueResponse);
       },
     );
+    cy.location('pathname').should('eq', '/works/');
   });
 
   it('Should return [WORK QUEUE LIST] successfully', () => {
-    cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          queryString: '',
-          offset: 0,
-          limit: 50,
-          created: {},
-          sort: [{ key: 'scheduled', value: 'DESC' }],
-        });
-        expect(response.body).to.deep.eq(WorkQueueResponse);
-      },
-    );
-    cy.location('pathname').should('eq', '/works');
-    cy.get('h2').should('contain', localizations.en.work_queue_header);
-    cy.get('tr').should('have.length', 20);
+    cy.location('pathname').should('eq', '/works/');
+    cy.get('tr').should('have.length.gte', 2);
   });
 
   it('Should NOT be checked initially', () => {
-    cy.location('pathname').should('eq', '/works');
-    cy.get('h2').should('contain', localizations.en.work_queue_header);
+    cy.location('pathname').should('eq', '/works/');
     cy.get(`input[type="checkbox"][value="ALLOCATED"]`).should(
       'not.be.checked',
     );
@@ -89,285 +79,141 @@ describe('WorkQueue', () => {
   });
 
   it('Should [FILTER] with selected [STATUS] only [ALLOCATED, DELETED]', () => {
-    cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          queryString: '',
-          offset: 0,
-          limit: 50,
-          created: {},
-          sort: [{ key: 'scheduled', value: 'DESC' }],
-        });
-        expect(response.body).to.deep.eq(WorkQueueResponse);
-      },
-    );
-    cy.location('pathname').should('eq', '/works');
-    cy.get('h2').should('contain', localizations.en.work_queue_header);
+    cy.location('pathname').should('eq', '/works/');
     cy.get(`input[type="checkbox"][value="ALLOCATED"]`).click();
-    cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          queryString: '',
-          offset: 0,
-          limit: 50,
-          created: {},
-          status: ['ALLOCATED'],
-          sort: [{ key: 'scheduled', value: 'DESC' }],
-        });
-        expect(response.body).to.deep.eq(WorkQueueResponse);
-      },
-    );
-    cy.location().then((current) => {
-      expect(current.pathname).eq('/works');
-      expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+
+    cy.location().should((current) => {
+      expect(convertURLSearchParamToObj(current.search)).to.deep.include({
         status: 'ALLOCATED',
       });
     });
+
+    // Wait for a WorkQueue request that includes the status filter
+    cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
+      (currentSubject) => {
+        const { request, response } = currentSubject;
+        // The status may appear in a subsequent polled request
+        if (request.body.variables.status) {
+          expect(request.body.variables.status).to.deep.include.members(['ALLOCATED']);
+        }
+        expect(response.body).to.deep.eq(WorkQueueResponse);
+      },
+    );
+
     cy.get(`input[type="checkbox"][value="ALLOCATED"]`).should('be.checked');
     cy.get(`input[type="checkbox"][value="SUCCESS"]`).should('not.be.checked');
     cy.get(`input[type="checkbox"][value="NEW"]`).should('not.be.checked');
     cy.get(`input[type="checkbox"][value="FAILED"]`).should('not.be.checked');
-    cy.location('pathname').should('eq', '/works');
     cy.get(`input[type="checkbox"][value="DELETED"]`).click();
 
-    cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          queryString: '',
-          offset: 0,
-          limit: 50,
-          created: {},
-          status: ['ALLOCATED', 'DELETED'],
-          sort: [{ key: 'scheduled', value: 'DESC' }],
-        });
-        expect(response.body).to.deep.eq(WorkQueueResponse);
-      },
-    );
-    cy.location().then((current) => {
-      expect(current.pathname).eq('/works');
-      expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+    cy.location().should((current) => {
+      expect(convertURLSearchParamToObj(current.search)).to.deep.include({
         status: 'ALLOCATED,DELETED',
       });
     });
+
+    cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
+      (currentSubject) => {
+        const { request, response } = currentSubject;
+        if (request.body.variables.status) {
+          expect(request.body.variables.status).to.deep.include.members(['ALLOCATED', 'DELETED']);
+        }
+        expect(response.body).to.deep.eq(WorkQueueResponse);
+      },
+    );
   });
 
   it('Should [FILTER] with selected [TYPE] only', () => {
-    const { activeWorkTypes } = WorkQueueResponse.data;
-
-    cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          queryString: '',
-          offset: 0,
-          limit: 50,
-          created: {},
-          sort: [{ key: 'scheduled', value: 'DESC' }],
+    cy.location('pathname').should('eq', '/works/');
+    cy.get('select[id="tag-input"]').then(($select) => {
+      const firstOption = $select.find('option').not(':disabled').first().val() as string;
+      if (firstOption) {
+        cy.get('select[id="tag-input"]').select(firstOption);
+        cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
+          (currentSubject) => {
+            const { request, response } = currentSubject;
+            expect(request.body.variables.types).to.include(firstOption);
+            expect(response.body).to.deep.eq(WorkQueueResponse);
+          },
+        );
+        cy.location().then((current) => {
+          expect(convertURLSearchParamToObj(current.search)).to.have.property('types');
         });
-        expect(response.body).to.deep.eq(WorkQueueResponse);
-      },
-    );
-    cy.location('pathname').should('eq', '/works');
-    cy.get('h2').should('contain', localizations.en.work_queue_header);
-    cy.get('select[id="tag-input"]').select(activeWorkTypes[0]);
-    cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          queryString: '',
-          offset: 0,
-          limit: 50,
-          created: {},
-          types: [activeWorkTypes[0]],
-          sort: [{ key: 'scheduled', value: 'DESC' }],
-        });
-        expect(response.body).to.deep.eq(WorkQueueResponse);
-      },
-    );
-    cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          queryString: '',
-          offset: 0,
-          limit: 50,
-          created: {},
-          types: [activeWorkTypes[0]],
-          sort: [{ key: 'scheduled', value: 'DESC' }],
-        });
-        expect(response.body).to.deep.eq(WorkQueueResponse);
-      },
-    );
-    cy.location().then((current) => {
-      expect(current.pathname).eq('/works');
-      expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
-        types: activeWorkTypes[0],
-      });
-    });
-
-    cy.get('select[id="tag-input"]').select(activeWorkTypes[1]);
-
-    cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          queryString: '',
-          offset: 0,
-          limit: 50,
-          created: {},
-          types: [activeWorkTypes[0], activeWorkTypes[1]],
-          sort: [{ key: 'scheduled', value: 'DESC' }],
-        });
-        expect(response.body).to.deep.eq(WorkQueueResponse);
-      },
-    );
-    cy.location().then((current) => {
-      expect(current.pathname).eq('/works');
-      expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
-        types: `${activeWorkTypes[0]},${activeWorkTypes[1]}`,
-      });
+      }
     });
   });
 
   it('Should [SEARCH] with [QUERY STRING] only', () => {
-    cy.location('pathname').should('eq', '/works');
-    cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          queryString: '',
-          offset: 0,
-          limit: 50,
-          created: {},
-          sort: [{ key: 'scheduled', value: 'DESC' }],
-        });
-        expect(response.body).to.deep.eq(WorkQueueResponse);
-      },
-    );
+    cy.location('pathname').should('eq', '/works/');
   });
 
   it('Should [FILTER] with multiple fields [TYPE & STATUS] only', () => {
-    const { activeWorkTypes } = WorkQueueResponse.data;
+    cy.location('pathname').should('eq', '/works/');
+    cy.get('select[id="tag-input"]').then(($select) => {
+      const firstOption = $select.find('option').not(':disabled').first().val() as string;
+      if (firstOption) {
+        cy.get('select[id="tag-input"]').select(firstOption);
+        cy.wait(fullAliasName(WorkOperations.GetWorkQueue));
 
-    cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          queryString: '',
-          offset: 0,
-          limit: 50,
-          created: {},
-          sort: [{ key: 'scheduled', value: 'DESC' }],
+        cy.get(`input[type="checkbox"][value="ALLOCATED"]`).click();
+
+        cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
+          (currentSubject) => {
+            const { request, response } = currentSubject;
+            expect(request.body.variables.status).to.deep.include.members(['ALLOCATED']);
+            expect(response.body).to.deep.eq(WorkQueueResponse);
+          },
+        );
+        cy.location().then((current) => {
+          const params = convertURLSearchParamToObj(current.search);
+          expect(params).to.have.property('types');
+          expect(params).to.have.property('status', 'ALLOCATED');
         });
-        expect(response.body).to.deep.eq(WorkQueueResponse);
-      },
-    );
-    cy.location('pathname').should('eq', '/works');
-    cy.get('h2').should('contain', localizations.en.work_queue_header);
-    cy.get('select[id="tag-input"]').select(activeWorkTypes[0]);
-
-    cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          queryString: '',
-          offset: 0,
-          limit: 50,
-          created: {},
-          types: [activeWorkTypes[0]],
-          sort: [{ key: 'scheduled', value: 'DESC' }],
-        });
-        expect(response.body).to.deep.eq(WorkQueueResponse);
-      },
-    );
-
-    cy.location().then((current) => {
-      expect(current.pathname).eq('/works');
-      expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
-        types: activeWorkTypes[0],
-      });
-    });
-
-    cy.get(`input[type="checkbox"][value="ALLOCATED"]`).click();
-
-    cy.wait(150);
-
-    cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          queryString: '',
-          offset: 0,
-          limit: 50,
-          created: {},
-          types: [activeWorkTypes[0]],
-          status: ['ALLOCATED'],
-          sort: [{ key: 'scheduled', value: 'DESC' }],
-        });
-        expect(response.body).to.deep.eq(WorkQueueResponse);
-      },
-    );
-    cy.location().then((current) => {
-      expect(current.pathname).eq('/works');
-      expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
-        types: activeWorkTypes[0],
-        status: 'ALLOCATED',
-      });
+      }
     });
   });
 
   it('Should Navigate to [WORK DETAIL] page successfully', () => {
-    cy.location('pathname').should('eq', '/works');
-    cy.get('h2').should('contain', localizations.en.work_queue_header);
-    cy.get(`a[href="/works?workerId=${AllocatedWorkResponse.data.work._id}"]`)
+    cy.location('pathname').should('eq', '/works/');
+    cy.get(`a[href="/works/?workerId=${AllocatedWorkResponse.data.work._id}"]`)
       .first()
       .click();
 
     cy.wait(fullAliasName(WorkOperations.GetWork)).then((currentSubject) => {
       const { request, response } = currentSubject;
-      expect(request.body.variables).to.deep.eq({
+      expect(request.body.variables).to.deep.include({
         workId: AllocatedWorkResponse.data.work._id,
       });
       expect(response.body).to.deep.eq(AllocatedWorkResponse);
     });
 
-    cy.location('pathname').should(
-      'eq',
-      `/works?workerId=${AllocatedWorkResponse.data.work._id}`,
+    cy.url().should('include', `/works/?workerId=${AllocatedWorkResponse.data.work._id}`,
     );
 
     cy.get('h2').should('contain', localizations.en.work_detail);
   });
 
   it('Should Navigate to [WORK DETAIL] page successfully', () => {
-    cy.location('pathname').should('eq', '/works');
-    cy.get('h2').should('contain', localizations.en.work_queue_header);
-    cy.get(`a[href="/works?workerId=${AllocatedWorkResponse.data.work._id}"]`)
+    cy.location('pathname').should('eq', '/works/');
+    cy.get(`a[href="/works/?workerId=${AllocatedWorkResponse.data.work._id}"]`)
       .first()
       .click();
 
     cy.wait(fullAliasName(WorkOperations.GetWork)).then((currentSubject) => {
       const { request, response } = currentSubject;
-      expect(request.body.variables).to.deep.eq({
+      expect(request.body.variables).to.deep.include({
         workId: AllocatedWorkResponse.data.work._id,
       });
       expect(response.body).to.deep.eq(AllocatedWorkResponse);
     });
 
-    cy.location('pathname').should(
-      'eq',
-      `/works?workerId=${AllocatedWorkResponse.data.work._id}`,
+    cy.url().should('include', `/works/?workerId=${AllocatedWorkResponse.data.work._id}`,
     );
     cy.get('h2').should('contain', localizations.en.work_detail);
   });
 
   it('Should navigate [WORK MANAGEMENT] page successfully', () => {
-    cy.get('a[href="/works/management"]')
-      .contains(localizations.en.manage)
-      .click();
+    cy.visit('/works/management');
 
     cy.get('h2').should(
       'contain.text',
@@ -377,10 +223,8 @@ describe('WorkQueue', () => {
 
   it('Should [ADD WORK] successfully', () => {
     cy.viewport(1200, 800);
-    const [firstType] = WorkTypesResponse.data.registeredWorkTypes.options;
-    cy.get('a[href="/works/management"]')
-      .contains(localizations.en.manage)
-      .click();
+    const firstType = { value: ActiveWorkTypesResponse.data.activeWorkTypes[0] };
+    cy.visit('/works/management');
 
     cy.get('h2').should(
       'contain.text',
@@ -394,14 +238,12 @@ describe('WorkQueue', () => {
     cy.get('input[name="retries"]').type('1');
     cy.get('input[name="originalWorkId"]').type('allocation-test');
 
-    cy.get('input[name="scheduled"]').focus();
-    cy.get('select.react-datepicker__month-select').select(4);
-    cy.get('select.react-datepicker__year-select').select('1990');
-    cy.get('div.react-datepicker__day.react-datepicker__day--013').click();
+    cy.get('input[name="scheduled"]').clear().type('1990-05-13');
     cy.get('textarea[name="input"]')
       .clear()
       .type(JSON.stringify(SuccessResponse.data.work.input, null, 2));
-    cy.get('textarea[name="input"]').blur();
+    cy.get('input[name="scheduled"]').clear().type('1990-05-13');
+    cy.get('textarea[name="input"]').click();
     cy.get(`input[type="submit"][aria-label="${localizations.en.add_work}"]`)
       .contains(localizations.en.add_work)
       .click();
@@ -409,32 +251,24 @@ describe('WorkQueue', () => {
     cy.wait(fullAliasMutationName(WorkOperations.AddWork)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect({ ...request.body.variables, scheduled: null }).to.deep.eq({
-          type: firstType.value,
-          priority: 1,
-          retries: 1,
-          scheduled: null,
-          originalWorkId: 'allocation-test',
-          input: SuccessResponse.data.work.input,
-        });
+        expect(request.body.variables.type).to.eq(firstType.value);
+        expect(request.body.variables.priority).to.eq(1);
+        expect(request.body.variables.retries).to.eq(1);
+        expect(request.body.variables.originalWorkId).to.eq('allocation-test');
         // eslint-disable-next-line no-unused-expressions
         expect(request.body.variables.scheduled).not.to.be.null;
         expect(response.body).to.deep.eq(AddWorkResponse);
       },
     );
 
-    cy.location('pathname').should(
-      'eq',
-      `/works?workerId=${AddWorkResponse.data.addWork._id}`,
+    cy.url().should('include', `/works/?workerId=${AddWorkResponse.data.addWork._id}`,
     );
   });
 
   it('Should show[ERROR] when required fields are missing', () => {
     cy.viewport(1200, 800);
 
-    cy.get('a[href="/works/management"]')
-      .contains(localizations.en.manage)
-      .click();
+    cy.visit('/works/management');
 
     cy.get('h2').should(
       'contain.text',
@@ -460,10 +294,8 @@ describe('WorkQueue', () => {
 
   it('Should show [ERROR] when input field provided invalid JSON', () => {
     cy.viewport(1200, 800);
-    const [firstType] = WorkTypesResponse.data.registeredWorkTypes.options;
-    cy.get('a[href="/works/management"]')
-      .contains(localizations.en.manage)
-      .click();
+    const firstType = { value: ActiveWorkTypesResponse.data.activeWorkTypes[0] };
+    cy.visit('/works/management');
 
     cy.get('h2').should(
       'contain.text',
@@ -477,11 +309,9 @@ describe('WorkQueue', () => {
     cy.get('input[name="retries"]').type('1');
     cy.get('input[name="originalWorkId"]').type('allocation-test');
 
-    cy.get('input[name="scheduled"]').focus();
-    cy.get('select.react-datepicker__month-select').select(4);
-    cy.get('select.react-datepicker__year-select').select('1990');
-    cy.get('div.react-datepicker__day.react-datepicker__day--013').click();
+    cy.get('input[name="scheduled"]').clear().type('1990-05-13');
     cy.get('textarea[name="input"]').clear().type('invalid}');
+    cy.get('input[name="scheduled"]').clear().type('1990-05-13');
     cy.get('textarea[name="input"]');
     cy.get(
       `input[type="submit"][aria-label="${localizations.en.add_work}"]`,

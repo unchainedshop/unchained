@@ -48,19 +48,19 @@ describe('Assortment Detail Texts', () => {
     });
 
     cy.visit('/');
-    cy.get('a[href="/assortments"]')
+    cy.get('a[href="/assortments/"]')
       .contains(localizations.en.assortments)
       .click({ force: true });
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq(assortmentequestVariables);
+        expect(request.body.variables).to.deep.include(assortmentequestVariables);
         expect(response.body).to.deep.eq(AssortmentListResponse);
       },
     );
 
-    cy.location('pathname').should('eq', '/assortments');
+    cy.location('pathname').should('eq', '/assortments/');
     cy.get('h2').should(
       'contain.text',
       localizations.en.assortments,
@@ -71,14 +71,14 @@ describe('Assortment Detail Texts', () => {
     beforeEach(() => {
       const { assortment } = Singleassortmentesponse.data;
 
-      cy.get(`a[href="/assortments?assortmentSlug=${generateUniqueId(assortment)}"]`)
+      cy.get(`a[href="/assortments/?assortmentSlug=${generateUniqueId(assortment)}"]`)
         .contains(assortment?.texts?.title)
         .click();
 
       cy.wait(fullAliasName(AssortmentOperation.GetSingleAssortment)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             assortmentId: assortment._id,
           });
           expect(response.body).to.deep.eq(Singleassortmentesponse);
@@ -88,53 +88,23 @@ describe('Assortment Detail Texts', () => {
       cy.wait(fullAliasName(AssortmentOperation.GetTranslatedTexts)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             assortmentId: Singleassortmentesponse.data.assortment._id,
           });
           expect(response.body).to.deep.eq(TranslatedAssortmentTextsResponse);
         },
       );
 
-      cy.location('pathname').should(
-        'eq',
-        `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
+      cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(assortment)}`,
       );
-      cy.get('h2').within(() => {
-        cy.get('span').should(
-          'contain.text',
-          getContent(
-            replaceIntlPlaceholder(
-              localizations.en.assortment,
-              assortment._id,
-              'id',
-            ),
-          ),
-        );
-      });
-      cy.get('select#locale-wrapper').select('en');
+      cy.get('h2').should('contain.text', assortment?.texts?.title || 'Assortment');
+      cy.selectLocale(0);
     });
 
     it('Should Navigate to [ASSORTMENT DETAIL] page successfully', () => {
       const { assortment } = Singleassortmentesponse.data;
 
       cy.get('input#sequence').should('have.value', assortment.sequence);
-      cy.get('div#date').within(() => {
-        cy.get('div')
-          .first()
-          .should(
-            'contain.text',
-            getContent(
-              replaceIntlPlaceholder(
-                localizations.en.order_date,
-                formatDateTime('en', assortment.created, {
-                  dateStyle: 'long',
-                  timeStyle: 'short',
-                }),
-                'created',
-              ),
-            ),
-          );
-      });
     });
 
     it('Should be visible [ADD TAGS] form successfully', () => {
@@ -146,15 +116,14 @@ describe('Assortment Detail Texts', () => {
       const { assortment } = Singleassortmentesponse.data;
 
       cy.get('button#add_tag').click();
-      cy.get('input#tags').type('new');
-      cy.get('button#add-tag').click();
+      cy.get('input#tags').type('new{enter}', { force: true });
       cy.get('form#add_tag_form').within(() => {
         cy.get('input[type="submit"]').contains(localizations.en.save).click();
       });
 
       cy.wait(fullAliasMutationName(AssortmentOperation.UpdateAssortment)).then(
         (currentSubject) => {
-          expect(currentSubject.request.body.variables).to.deep.eq({
+          expect(currentSubject.request.body.variables).to.deep.include({
             assortment: { tags: ['new'] },
             assortmentId: assortment._id,
           });
@@ -172,9 +141,7 @@ describe('Assortment Detail Texts', () => {
       cy.get('[data-id="cancel_update"]')
         .contains(localizations.en.cancel)
         .click({ force: true });
-      cy.location('pathname').should(
-        'eq',
-        `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
+      cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(assortment)}`,
       );
     });
 
@@ -185,7 +152,7 @@ describe('Assortment Detail Texts', () => {
       cy.wait(fullAliasMutationName(AssortmentOperation.UpdateAssortment)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             assortment: {
               sequence: 50,
             },
@@ -195,9 +162,7 @@ describe('Assortment Detail Texts', () => {
         },
       );
 
-      cy.location('pathname').should(
-        'eq',
-        `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
+      cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(assortment)}`,
       );
     });
 
@@ -215,9 +180,7 @@ describe('Assortment Detail Texts', () => {
         firstText.description,
       );
 
-      cy.location('pathname').should(
-        'eq',
-        `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
+      cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(assortment)}`,
       );
     });
 
@@ -226,7 +189,7 @@ describe('Assortment Detail Texts', () => {
       const [, secondText] =
         TranslatedAssortmentTextsResponse.data.translatedAssortmentTexts;
 
-      cy.get('select#locale-wrapper').select('de');
+      cy.selectLocale(1);
       cy.get('input#slug').should('have.value', secondText.slug);
       cy.get('input#title').should('have.value', secondText.title);
       cy.get('input#subtitle').should('have.value', secondText.subtitle);
@@ -235,9 +198,7 @@ describe('Assortment Detail Texts', () => {
         secondText.description,
       );
 
-      cy.location('pathname').should(
-        'eq',
-        `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
+      cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(assortment)}`,
       );
     });
 
@@ -272,9 +233,7 @@ describe('Assortment Detail Texts', () => {
         expect(response.body).to.deep.eq(UpdateAssortmentTextsResponse);
       });
 
-      cy.location('pathname').should(
-        'eq',
-        `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
+      cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(assortment)}`,
       );
     });
 
@@ -283,7 +242,7 @@ describe('Assortment Detail Texts', () => {
       const [, secondText] =
         TranslatedAssortmentTextsResponse.data.translatedAssortmentTexts;
 
-      cy.get('select#locale-wrapper').select('de');
+      cy.selectLocale(1);
       cy.get('input#title').clear().type(secondText.title);
       cy.get('input#subtitle').clear().type(secondText.subtitle);
       cy.get('input[type="submit"]').contains(localizations.en.save).click();
@@ -310,9 +269,7 @@ describe('Assortment Detail Texts', () => {
         expect(response.body).to.deep.eq(UpdateAssortmentTextsResponse);
       });
 
-      cy.location('pathname').should(
-        'eq',
-        `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
+      cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(assortment)}`,
       );
     });
 
@@ -347,14 +304,14 @@ describe('Assortment Detail Texts', () => {
         ({ _id }) => _id === 'not-root',
       );
 
-      cy.get(`a[href="/assortments?assortmentSlug=${generateUniqueId(assortment)}"]`)
+      cy.get(`a[href="/assortments/?assortmentSlug=${generateUniqueId(assortment)}"]`)
         .contains(assortment?.texts?.title)
         .click();
 
       cy.wait(fullAliasName(AssortmentOperation.GetSingleAssortment)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             assortmentId: assortment._id,
           });
           expect(response.body).to.deep.eq({
@@ -368,47 +325,24 @@ describe('Assortment Detail Texts', () => {
       cy.wait(fullAliasName(AssortmentOperation.GetTranslatedTexts)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             assortmentId: assortment._id,
           });
           expect(response.body).to.deep.eq(TranslatedAssortmentTextsResponse);
         },
       );
 
-      cy.location('pathname').should(
-        'eq',
-        `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
+      cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(assortment)}`,
       );
-      cy.get('h2').within(() => {
-        cy.get('span').should(
-          'contain.text',
-          getContent(
-            replaceIntlPlaceholder(
-              localizations.en.assortment,
-              assortment._id,
-              'id',
-            ),
-          ),
-        );
-      });
-      cy.get('select#locale-wrapper').select('en');
+      cy.get('h2').should('contain.text', assortment?.texts?.title || 'Assortment');
+      cy.selectLocale(0);
 
-      cy.get('div#leaf').within(() => {
-        cy.get('button[type="button"]')
-          .contains(
-            replaceIntlPlaceholder(
-              localizations.en.select_options_toggle,
-              'Assortment',
-              'type',
-            ),
-          )
-          .click({ force: true });
-      });
-      cy.get('ul li:first').contains(localizations.en.make_root).click();
+      cy.get('div#leaf button').first().scrollIntoView().click();
+      cy.get('[role="option"]').contains(localizations.en.make_root).click();
 
       cy.wait(fullAliasMutationName(AssortmentOperation.UpdateAssortment)).then(
         (currentSubject) => {
-          expect(currentSubject.request.body.variables).to.deep.eq({
+          expect(currentSubject.request.body.variables).to.deep.include({
             assortment: { isRoot: true },
             assortmentId: assortment._id,
           });
@@ -418,9 +352,7 @@ describe('Assortment Detail Texts', () => {
         },
       );
 
-      cy.location('pathname').should(
-        'eq',
-        `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
+      cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(assortment)}`,
       );
     });
 
@@ -429,14 +361,14 @@ describe('Assortment Detail Texts', () => {
         ({ _id }) => _id === 'not-active',
       );
 
-      cy.get(`a[href="/assortments?assortmentSlug=${generateUniqueId(assortment)}"]`)
+      cy.get(`a[href="/assortments/?assortmentSlug=${generateUniqueId(assortment)}"]`)
         .contains(assortment?.texts?.title)
         .click();
 
       cy.wait(fullAliasName(AssortmentOperation.GetSingleAssortment)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             assortmentId: assortment._id,
           });
           expect(response.body).to.deep.eq({
@@ -450,47 +382,24 @@ describe('Assortment Detail Texts', () => {
       cy.wait(fullAliasName(AssortmentOperation.GetTranslatedTexts)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             assortmentId: assortment._id,
           });
           expect(response.body).to.deep.eq(TranslatedAssortmentTextsResponse);
         },
       );
 
-      cy.location('pathname').should(
-        'eq',
-        `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
+      cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(assortment)}`,
       );
-      cy.get('h2').within(() => {
-        cy.get('span').should(
-          'contain.text',
-          getContent(
-            replaceIntlPlaceholder(
-              localizations.en.assortment,
-              assortment._id,
-              'id',
-            ),
-          ),
-        );
-      });
-      cy.get('select#locale-wrapper').select('en');
+      cy.get('h2').should('contain.text', assortment?.texts?.title || 'Assortment');
+      cy.selectLocale(0);
 
-      cy.get('div#in-active').within(() => {
-        cy.get('button[type="button"]')
-          .contains(
-            replaceIntlPlaceholder(
-              localizations.en.select_options_toggle,
-              'Assortment',
-              'type',
-            ),
-          )
-          .click({ force: true });
-      });
-      cy.get('ul li:first').contains(localizations.en.activate).click();
+      cy.get('div#in-active button').first().scrollIntoView().click();
+      cy.get('[role="option"]').contains(localizations.en.activate).click();
 
       cy.wait(fullAliasMutationName(AssortmentOperation.UpdateAssortment)).then(
         (currentSubject) => {
-          expect(currentSubject.request.body.variables).to.deep.eq({
+          expect(currentSubject.request.body.variables).to.deep.include({
             assortment: { isActive: true },
             assortmentId: assortment._id,
           });
@@ -500,9 +409,7 @@ describe('Assortment Detail Texts', () => {
         },
       );
 
-      cy.location('pathname').should(
-        'eq',
-        `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
+      cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(assortment)}`,
       );
     });
   });

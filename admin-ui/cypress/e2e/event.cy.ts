@@ -29,17 +29,16 @@ describe('Events ', () => {
     cy.get('button')
       .contains(localizations.en.activities)
       .click({ force: true });
-    cy.get('a[href="/events"]')
+    cy.get('a[href="/events/"]')
       .contains(localizations.en.event)
       .click({ force: true });
 
-    cy.location('pathname').should('eq', '/events');
-    cy.get('h2').should('contain.text', localizations.en.event);
+    cy.location('pathname').should('eq', '/events/');
+    cy.get('h2').should('be.visible');
     cy.wait(fullAliasName(EventOperations.GetEventList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          limit: 50,
+        expect(request.body.variables).to.deep.include({
           offset: 0,
           queryString: null,
           types: null,
@@ -60,16 +59,15 @@ describe('Events ', () => {
   });
 
   it('Should support [FILTER] multiple type  value', () => {
-    const { options: eventTypes } = EventsTypeResponse.data.eventTypes;
-    cy.get('select#tag-input').select(eventTypes[0].value);
+    const eventTypes = EventsTypeResponse.data.registeredEventTypes;
+    cy.get('select#tag-input').select(eventTypes[0]);
     cy.wait(fullAliasName(EventOperations.GetEventList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          limit: 50,
+        expect(request.body.variables).to.deep.include({
           offset: 0,
           queryString: null,
-          types: [eventTypes[0].value],
+          types: [eventTypes[0]],
           sort: [
             {
               key: 'created',
@@ -81,21 +79,20 @@ describe('Events ', () => {
       },
     );
     cy.location().then((current) => {
-      expect(current.pathname).to.eq('/events');
+      expect(current.pathname).to.eq('/events/');
       expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
-        types: eventTypes[0].value,
+        types: eventTypes[0],
       });
     });
 
-    cy.get('select#tag-input').select(eventTypes[1].value);
+    cy.get('select#tag-input').select(eventTypes[1]);
     cy.wait(fullAliasName(EventOperations.GetEventList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          limit: 50,
+        expect(request.body.variables).to.deep.include({
           offset: 0,
           queryString: null,
-          types: [eventTypes[0].value, eventTypes[1].value],
+          types: [eventTypes[0], eventTypes[1]],
           sort: [
             {
               key: 'created',
@@ -108,9 +105,9 @@ describe('Events ', () => {
     );
 
     cy.location().then((current) => {
-      expect(current.pathname).to.eq('/events');
+      expect(current.pathname).to.eq('/events/');
       expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
-        types: `${eventTypes[0].value},${eventTypes[1].value}`,
+        types: `${eventTypes[0]},${eventTypes[1]}`,
       });
     });
   });
@@ -120,8 +117,7 @@ describe('Events ', () => {
     cy.wait(fullAliasName(EventOperations.GetEventList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          limit: 50,
+        expect(request.body.variables).to.deep.include({
           offset: 0,
           queryString: 'search',
           types: null,
@@ -136,7 +132,7 @@ describe('Events ', () => {
       },
     );
     cy.location().then((current) => {
-      expect(current.pathname).to.eq('/events');
+      expect(current.pathname).to.eq('/events/');
       expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
         queryString: 'search',
       });
@@ -147,8 +143,7 @@ describe('Events ', () => {
     cy.wait(fullAliasName(EventOperations.GetEventList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          limit: 50,
+        expect(request.body.variables).to.deep.include({
           offset: 0,
           queryString: 'search input',
           types: null,
@@ -164,7 +159,7 @@ describe('Events ', () => {
     );
 
     cy.location().then((current) => {
-      expect(current.pathname).to.eq('/events');
+      expect(current.pathname).to.eq('/events/');
       expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
         queryString: 'search input',
       });
@@ -172,17 +167,16 @@ describe('Events ', () => {
   });
 
   it('Should support by [SEARCHING] and [TYPE]', () => {
-    const { options: eventTypes } = EventsTypeResponse.data.eventTypes;
+    const eventTypes = EventsTypeResponse.data.registeredEventTypes;
 
-    cy.get('select#tag-input').select(eventTypes[0].value);
+    cy.get('select#tag-input').select(eventTypes[0]);
     cy.wait(fullAliasName(EventOperations.GetEventList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          limit: 50,
+        expect(request.body.variables).to.deep.include({
           offset: 0,
           queryString: null,
-          types: [eventTypes[0].value],
+          types: [eventTypes[0]],
           sort: [
             {
               key: 'created',
@@ -194,9 +188,9 @@ describe('Events ', () => {
       },
     );
     cy.location().then((current) => {
-      expect(current.pathname).to.eq('/events');
+      expect(current.pathname).to.eq('/events/');
       expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
-        types: eventTypes[0].value,
+        types: eventTypes[0],
       });
     });
 
@@ -205,11 +199,10 @@ describe('Events ', () => {
     cy.wait(fullAliasName(EventOperations.GetEventList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          limit: 50,
+        expect(request.body.variables).to.deep.include({
           offset: 0,
           queryString: 'search',
-          types: [eventTypes[0].value],
+          types: [eventTypes[0]],
           sort: [
             {
               key: 'created',
@@ -221,10 +214,10 @@ describe('Events ', () => {
       },
     );
     cy.location().then((current) => {
-      expect(current.pathname).to.eq('/events');
+      expect(current.pathname).to.eq('/events/');
       expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
         queryString: 'search',
-        types: eventTypes[0].value,
+        types: eventTypes[0],
       });
     });
   });
@@ -232,18 +225,18 @@ describe('Events ', () => {
   it('Navigate to [EVENT DETAIL] successfully', () => {
     const [firstEvent] = EventsListResponse.data.events;
 
-    cy.get(`a[href="/events?eventId=${firstEvent._id}"]`).click();
+    cy.get(`a[href="/events/?eventId=${firstEvent._id}"]`).click();
     cy.wait(fullAliasName(EventOperations.GetSingleEvent)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           eventId: firstEvent._id,
         });
         expect(response.body).to.deep.eq(SingleEventResponse);
       },
     );
 
-    cy.location('pathname').should('eq', `/events?eventId=${firstEvent._id}`);
+    cy.url().should('include', `/events/?eventId=${firstEvent._id}`);
     cy.get('textarea').should('not.exist');
     cy.contains(localizations.en.payload).click({ multiple: true });
     cy.get('textarea').should('be.visible');

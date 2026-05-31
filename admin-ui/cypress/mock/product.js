@@ -357,7 +357,6 @@ export const UnpublishProductResponse = {
 
 export const ProductFilterRequest = {
   queryString: '',
-  limit: 50,
   offset: 0,
   includeDrafts: true,
   tags: null,

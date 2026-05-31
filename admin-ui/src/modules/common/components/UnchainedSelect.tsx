@@ -113,6 +113,7 @@ const UnchainedSelect = <OptionType,>({
   return (
     <Select
       {...props}
+      inputId={props.inputId || (props.id as string) || undefined}
       styles={mergedStyles}
       className="dark:text-slate-100"
       classNamePrefix="react-select"

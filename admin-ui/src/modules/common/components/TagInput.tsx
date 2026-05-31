@@ -169,6 +169,7 @@ const TagInput = ({
   const TagInputComponent = (
     <CreatableSelect
       id={id || name}
+      inputId={id || name}
       name={name}
       placeholder={placeholder}
       components={{ SingleValue: () => null }}

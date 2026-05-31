@@ -1960,7 +1960,7 @@ export const UserOperations = {
   SendVerificationEmail: 'SendVerificationEmail',
   RemoveEmail: 'RemoveEmail',
   AddEmail: 'AddEmail',
-  SetUserTags: 'setUserTags',
+  SetUserTags: 'SetUserTags',
   SetRoles: 'SetRoles',
   SetPassword: 'ChangePassword',
   SystemRoles: 'SystemRoles',

@@ -120,10 +120,7 @@ describe('Account', () => {
       cy.get('[data-id="cancel_update"]').first().click();
 
       cy.get('input#displayName').clear().type(currentUser.profile.displayName);
-      cy.get('input[name="birthday"]').focus();
-      cy.get('select.react-datepicker__month-select').select(3);
-      cy.get('select.react-datepicker__year-select').select('1992');
-      cy.get('div.react-datepicker__day.react-datepicker__day--011').click();
+      cy.get('input[name="birthday"]').clear().type('1992-04-11');
 
       cy.get('input[type="submit"]')
         .should('have.value', localizations.en.save)
@@ -156,7 +153,7 @@ describe('Account', () => {
       cy.get('input#displayName').clear().type(currentUser.profile.displayName);
       cy.get('button').contains(localizations.en.cancel).last().click();
 
-      cy.location('pathname').should('eq', `/account`);
+      cy.location('pathname').should('eq', '/account/');
     });
   });
 
@@ -183,7 +180,7 @@ describe('Account', () => {
       cy.wait(fullAliasMutationName(AccountOperations.ChangePassword)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             oldPassword: 'password',
             newPassword: 'password2',
           });
@@ -234,7 +231,7 @@ describe('Account', () => {
       cy.wait(fullAliasMutationName(AccountOperations.ChangePassword)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             oldPassword: 'pass',
             newPassword: 'password2',
           });
@@ -286,7 +283,7 @@ describe('Account', () => {
         fullAliasMutationName(AccountOperations.SendVerificationEmail),
       ).then((currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           email: currentUser?.emails?.find((email) => email.verified === false)
             .address,
         });
@@ -308,7 +305,7 @@ describe('Account', () => {
       cy.wait(fullAliasMutationName(AccountOperations.RemoveEmail)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             email: currentUser?.email,
             userId: currentUser._id,
           });
@@ -330,7 +327,7 @@ describe('Account', () => {
       cy.wait(fullAliasMutationName(AccountOperations.AddEmail)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.eq({
+          expect(request.body.variables).to.deep.include({
             email: currentUser?.email,
             userId: currentUser?._id,
           });

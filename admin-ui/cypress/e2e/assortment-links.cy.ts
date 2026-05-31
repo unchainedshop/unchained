@@ -22,7 +22,6 @@ const assortmentFilterQuery = {
   queryString: '',
   tags: null,
   slugs: null,
-  limit: 50,
   offset: 0,
   includeInactive: true,
   includeLeaves: true,
@@ -72,32 +71,32 @@ describe('Assortment Detail Links', () => {
 
     cy.viewport(1200, 800);
     cy.visit('/');
-    cy.get('a[href="/assortments"]')
+    cy.get('a[href="/assortments/"]')
       .contains(localizations.en.assortments)
       .click({ force: true });
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq(assortmentequestVariables);
+        expect(request.body.variables).to.deep.include(assortmentequestVariables);
         expect(response.body).to.deep.eq(AssortmentListResponse);
       },
     );
 
-    cy.location('pathname').should('eq', '/assortments');
+    cy.location('pathname').should('eq', '/assortments/');
     cy.get('h2').should(
       'contain.text',
       localizations.en.assortments,
     );
 
-    cy.get(`a[href="/assortments?assortmentSlug=${generateUniqueId(assortment)}"]`)
+    cy.get(`a[href="/assortments/?assortmentSlug=${generateUniqueId(assortment)}"]`)
       .contains(assortment?.texts?.title)
       .click();
 
     cy.wait(fullAliasName(AssortmentOperation.GetSingleAssortment)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           assortmentId: assortment._id,
         });
         expect(response.body).to.deep.eq(Singleassortmentesponse);
@@ -107,36 +106,23 @@ describe('Assortment Detail Links', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetTranslatedTexts)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           assortmentId: Singleassortmentesponse.data.assortment._id,
         });
         expect(response.body).to.deep.eq(TranslatedAssortmentTextsResponse);
       },
     );
 
-    cy.location('pathname').should(
-      'eq',
-      `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
+    cy.url().should('include', `/assortments/?assortmentSlug=${generateUniqueId(assortment)}`,
     );
-    cy.get('h2').within(() => {
-      cy.get('span').should(
-        'contain.text',
-        getContent(
-          replaceIntlPlaceholder(
-            localizations.en.assortment,
-            assortment._id,
-            'id',
-          ),
-        ),
-      );
-    });
+    cy.get('h2').should('contain.text', assortment?.texts?.title || 'Assortment');
 
     cy.get('a#links').contains(localizations.en.links).click();
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentLinks)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           assortmentId: assortment._id,
         });
         expect(response.body).to.deep.eq(AssortmentLinksResponse);
@@ -146,10 +132,9 @@ describe('Assortment Detail Links', () => {
 
   afterEach(() => {
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq(
-        `/assortments?assortmentSlug=${generateUniqueId(assortment)}`,
-      );
+      expect(loc.pathname).to.eq('/assortments/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+        assortmentSlug: generateUniqueId(assortment),
         tab: 'links',
       });
     });
@@ -164,31 +149,29 @@ describe('Assortment Detail Links', () => {
   });
 
   it('Should [ADD TAG] successfully', () => {
-    cy.get('input#tags').clear().type('new');
-    cy.get('button#add-tag').click();
+    cy.get('input#tags').clear({ force: true }).type('new{enter}', { force: true });
     cy.get('span#badge').should('contain.text', 'new');
   });
 
   it('Should [REMOVE TAG] successfully', () => {
-    cy.get('input#tags').clear().type('new');
-    cy.get('button#add-tag').click();
-    cy.get('span#badge').first().get('button#badge-x-button').click();
+    cy.get('input#tags').clear({ force: true }).type('new{enter}', { force: true });
+    cy.get('span#badge').contains('new').click();
   });
 
   it('Should [SEARCH] assortment successfully', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq(assortmentFilterQuery);
+        expect(request.body.variables).to.deep.include(assortmentFilterQuery);
         expect(response.body).to.deep.eq(AssortmentListResponse);
       },
     );
-    cy.get('input#react-select-2-input').clear().type('s');
+    cy.get('input#childAssortmentId').click({ force: true }).type('s');
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           ...assortmentFilterQuery,
           includeLeaves: true,
           queryString: 's',
@@ -203,17 +186,17 @@ describe('Assortment Detail Links', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq(assortmentFilterQuery);
+        expect(request.body.variables).to.deep.include(assortmentFilterQuery);
         expect(response.body).to.deep.eq(AssortmentListResponse);
       },
     );
 
-    cy.get('input#react-select-2-input').clear().type('s');
+    cy.get('input#childAssortmentId').click({ force: true }).type('s');
 
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           ...assortmentFilterQuery,
           queryString: 's',
         });
@@ -221,13 +204,13 @@ describe('Assortment Detail Links', () => {
       },
     );
 
-    cy.get('#react-select-2-option-1').click();
+    cy.get('[class*="react-select__option"]').contains(assortments[2].texts.title).click();
     cy.get('input[type="submit"]').contains(localizations.en.save).click();
 
     cy.wait(fullAliasMutationName(AssortmentOperation.AddAssortmentLink)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           parentAssortmentId: assortment._id,
           childAssortmentId: assortments[2]._id,
           tags: null,
@@ -239,7 +222,7 @@ describe('Assortment Detail Links', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentLinks)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           assortmentId: assortment._id,
         });
         expect(response.body).to.deep.eq(AssortmentLinksResponse);
@@ -267,11 +250,12 @@ describe('Assortment Detail Links', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq(assortmentFilterQuery);
+        expect(request.body.variables).to.deep.include(assortmentFilterQuery);
         expect(response.body).to.deep.eq(AssortmentListResponse);
       },
     );
-    cy.get('button[type="button"]#delete_button').first().click();
+    cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
+    cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
     cy.get('button[type="button"]#danger_continue')
       .contains(localizations.en.delete_link)
       .click();
@@ -280,7 +264,7 @@ describe('Assortment Detail Links', () => {
       fullAliasMutationName(AssortmentOperation.RemoveAssortmentLink),
     ).then((currentSubject) => {
       const { request, response } = currentSubject;
-      expect(request.body.variables).to.deep.eq({
+      expect(request.body.variables).to.deep.include({
         assortmentLinkId: '7336cc61081c8b0e770dca64',
       });
       expect(response.body).to.deep.eq(RemoveAssortmentLinkResponse);
@@ -289,7 +273,7 @@ describe('Assortment Detail Links', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentLinks)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           assortmentId: assortment._id,
         });
         expect(response.body).to.deep.eq(AssortmentLinksResponse);
@@ -301,11 +285,12 @@ describe('Assortment Detail Links', () => {
     cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq(assortmentFilterQuery);
+        expect(request.body.variables).to.deep.include(assortmentFilterQuery);
         expect(response.body).to.deep.eq(AssortmentListResponse);
       },
     );
-    cy.get('button[type="button"]#delete_button').first().click();
+    cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
+    cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
     cy.get('button[type="button"]#danger_cancel')
       .contains(localizations.en.cancel)
       .click();

@@ -49,3 +49,8 @@ dist
 # TypeScript build info
 tsconfig.tsbuildinfo
 client/tsconfig.tsbuildinfo
+
+# Cypress artifacts
+cypress/screenshots/
+cypress/videos/
+cypress/downloads/

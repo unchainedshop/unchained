@@ -22,6 +22,7 @@ const normalizeCountry = (country) => {
   return {
     isActive: country?.isActive,
     isoCode: country?.isoCode,
+    defaultCurrencyCode: country?.defaultCurrency?.isoCode,
   };
 };
 

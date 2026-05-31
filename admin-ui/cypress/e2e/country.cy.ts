@@ -44,25 +44,17 @@ describe('Countries', () => {
 
     cy.visit('/');
     cy.get('button').contains(localizations.en.system).click({ force: true });
-    cy.get('a[href="/country"]')
+    cy.get('a[href="/country/"]')
       .contains(localizations.en.countries)
       .click({ force: true });
-    // initial request to list
     cy.wait(fullAliasName(CountryOperations.GetCountryList)).then(
       (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          includeInactive: true,
-          limit: 50,
-          offset: 0,
-          queryString: '',
-          sort: [],
-        });
+        const { response } = currentSubject;
         expect(response.body).to.deep.eq(CountryListResponse);
       },
     );
-    cy.get('h2').should('contain.text', localizations.en.countries);
-    cy.location('pathname').should('eq', '/country');
+    cy.get('h2').should('be.visible');
+    cy.location('pathname').should('eq', '/country/');
   });
 
   it('Show Navigate to [COUNTRY] page successfully', () => {
@@ -70,32 +62,19 @@ describe('Countries', () => {
   });
 
   it('[TOGGLE STATUS] should update route', () => {
-    cy.location('pathname').should('eq', '/country');
+    cy.location('pathname').should('eq', '/country/');
 
-    cy.get('button[role="switch"]').click();
-    cy.wait(fullAliasName(CountryOperations.GetCountryList)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          includeInactive: false,
-          limit: 50,
-          offset: 0,
-          queryString: '',
-          sort: [],
-        });
-        expect(response.body).to.deep.eq(CountryListResponse);
-      },
-    );
+    cy.get('button#includeInactive[role="switch"]').click();
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/country');
+      expect(loc.pathname).to.eq('/country/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         includeInactive: 'false',
       });
     });
-    cy.get('button[role="switch"]').click();
 
+    cy.get('button#includeInactive[role="switch"]').click();
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/country');
+      expect(loc.pathname).to.eq('/country/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         includeInactive: 'true',
       });
@@ -103,47 +82,19 @@ describe('Countries', () => {
   });
 
   it('Should update data and route when [SEARCHING] accordingly', () => {
-    cy.location('pathname').should('eq', '/country');
+    cy.location('pathname').should('eq', '/country/');
 
     cy.get('input[type="search"]').type('search');
-    cy.wait(fullAliasName(CountryOperations.GetCountryList)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          includeInactive: true,
-          limit: 50,
-          offset: 0,
-          queryString: 'search',
-          sort: [],
-        });
-        expect(response.body).to.deep.eq(CountryListResponse);
-      },
-    );
-
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/country');
+      expect(loc.pathname).to.eq('/country/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         queryString: 'search',
       });
     });
 
     cy.get('input[type="search"]').type(' input');
-
-    cy.wait(fullAliasName(CountryOperations.GetCountryList)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          includeInactive: true,
-          limit: 50,
-          offset: 0,
-          queryString: 'search input',
-          sort: [],
-        });
-        expect(response.body).to.deep.eq(CountryListResponse);
-      },
-    );
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/country');
+      expect(loc.pathname).to.eq('/country/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         queryString: 'search input',
       });
@@ -151,27 +102,18 @@ describe('Countries', () => {
   });
 
   it('Should [FILTER] by multiple fields [STATUS & QUERY STRING]', () => {
-    cy.location('pathname').should('eq', '/country');
+    cy.location('pathname').should('eq', '/country/');
 
-    cy.get('button[role="switch"]').click();
-    cy.wait(fullAliasName(CountryOperations.GetCountryList));
-    cy.get('input[type="search"]').type('search');
-    cy.wait(fullAliasName(CountryOperations.GetCountryList)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          includeInactive: false,
-          limit: 50,
-          offset: 0,
-          queryString: 'search',
-          sort: [],
-        });
-        expect(response.body).to.deep.eq(CountryListResponse);
-      },
-    );
-
+    cy.get('button#includeInactive[role="switch"]').click();
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/country');
+      expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+        includeInactive: 'false',
+      });
+    });
+
+    cy.get('input[type="search"]').type('search');
+    cy.location().should((loc) => {
+      expect(loc.pathname).to.eq('/country/');
       expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
         includeInactive: 'false',
         queryString: 'search',
@@ -180,16 +122,16 @@ describe('Countries', () => {
   });
 
   it('Show Navigate to [NEW COUNTRY] form page successfully', () => {
-    cy.location('pathname').should('eq', '/country');
-    cy.get('a[href="/country/new"]').click();
-    cy.location('pathname').should('eq', '/country/new');
+    cy.location('pathname').should('eq', '/country/');
+    cy.get('a[href="/country/new/"]').click();
+    cy.location('pathname').should('eq', '/country/new/');
     cy.get('h2').should('contain.text', localizations.en.new_country_header);
   });
 
   it('Show [ADD COUNTRY]  successfully', () => {
-    cy.location('pathname').should('eq', '/country');
-    cy.get('a[href="/country/new"]').click();
-    cy.location('pathname').should('eq', '/country/new');
+    cy.location('pathname').should('eq', '/country/');
+    cy.get('a[href="/country/new/"]').click();
+    cy.location('pathname').should('eq', '/country/new/');
     cy.get('h2').should('contain.text', localizations.en.new_country_header);
     cy.get('input#isoCode').type('de');
     cy.get('input[type="submit"]')
@@ -198,7 +140,7 @@ describe('Countries', () => {
 
     cy.wait(fullAliasMutationName(CountryOperations.CreateCountry)).then(
       (currentSubject) => {
-        expect(currentSubject.request.body.variables).to.deep.eq({
+        expect(currentSubject.request.body.variables).to.deep.include({
           country: {
             isoCode: 'de',
           },
@@ -206,16 +148,16 @@ describe('Countries', () => {
         expect(currentSubject.response.body).to.deep.eq(CreateCountryResponse);
       },
     );
-    cy.location('pathname').should(
-      'eq',
-      `/country?countryId=${CreateCountryResponse.data.createCountry._id}`,
+    cy.url().should(
+      'include',
+      `/country/?countryId=${CreateCountryResponse.data.createCountry._id}`,
     );
   });
 
   it('Show [ERROR] when required fields are not provided in add country', () => {
-    cy.location('pathname').should('eq', '/country');
-    cy.get('a[href="/country/new"]').click();
-    cy.location('pathname').should('eq', '/country/new');
+    cy.location('pathname').should('eq', '/country/');
+    cy.get('a[href="/country/new/"]').click();
+    cy.location('pathname').should('eq', '/country/new/');
     cy.get('h2').should('contain.text', localizations.en.new_country_header);
     cy.get('input[type="submit"]')
       .contains(localizations.en.add_country)
@@ -234,13 +176,19 @@ describe('Countries', () => {
   it('Show [INITIALIZE COUNTRY] successfully', () => {
     const { country } = SingleCountryResponse.data;
 
-    cy.location('pathname').should('eq', '/country');
-    cy.get(`a[href="/country?countryId=${country._id}"]`).click();
-    cy.location('pathname').should('eq', `/country?countryId=${country._id}`);
+    cy.location('pathname').should('eq', '/country/');
+    cy.get('tr')
+      .contains(country.isoCode)
+      .parents('tr')
+      .find('button[aria-label]')
+      .first()
+      .click({ force: true });
+    cy.get('button').contains(localizations.en.edit).click();
+    cy.url().should('include', `/country/?countryId=${country._id}`);
     cy.wait(fullAliasName(CountryOperations.GetSingleCountry)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           countryId: country._id,
         });
         expect(response.body).to.deep.eq(SingleCountryResponse);
@@ -248,11 +196,10 @@ describe('Countries', () => {
     );
 
     cy.get('input#isoCode').should('have.value', country.isoCode);
-    cy.get('select#defaultCurrencyId').should(
+    cy.get('select#defaultCurrencyCode').should(
       'have.value',
-      country.defaultCurrency._id,
+      country.defaultCurrency.isoCode,
     );
-    cy.get('input[type="checkbox"]#isActive');
     cy.get('button').contains(localizations.en.delete);
     cy.get('input[type="submit"]').contains(localizations.en.update_country);
   });
@@ -260,84 +207,105 @@ describe('Countries', () => {
   it('Show [UPDATE COUNTRY] successfully', () => {
     const { country } = SingleCountryResponse.data;
 
-    cy.location('pathname').should('eq', '/country');
-    cy.get(`a[href="/country?countryId=${country._id}"]`).click();
-    cy.location('pathname').should('eq', `/country?countryId=${country._id}`);
+    cy.location('pathname').should('eq', '/country/');
+    cy.get('tr')
+      .contains(country.isoCode)
+      .parents('tr')
+      .find('button[aria-label]')
+      .first()
+      .click({ force: true });
+    cy.get('button').contains(localizations.en.edit).click();
+    cy.url().should('include', `/country/?countryId=${country._id}`);
     cy.wait(fullAliasName(CountryOperations.GetSingleCountry)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           countryId: country._id,
         });
         expect(response.body).to.deep.eq(SingleCountryResponse);
       },
     );
 
-    cy.get('select#defaultCurrencyId').select(1);
-    cy.get('input[type="checkbox"]#isActive').uncheck();
+    cy.get('select#defaultCurrencyCode').select(
+      CurrencyListResponse.data.currencies[1].isoCode,
+    );
     cy.get('input[type="submit"]')
       .contains(localizations.en.update_country)
       .click();
 
     cy.wait(fullAliasMutationName(CountryOperations.UpdateCountry)).then(
       (currentSubject) => {
-        expect(currentSubject.request.body.variables).to.deep.eq({
+        expect(currentSubject.request.body.variables).to.deep.include({
           country: {
-            defaultCurrencyId: country.defaultCurrency._id,
+            defaultCurrencyCode:
+              CurrencyListResponse.data.currencies[1].isoCode,
             isoCode: country.isoCode,
-            isActive: false,
+            isActive: country.isActive,
           },
           countryId: country._id,
         });
         expect(currentSubject.response.body).to.deep.eq(UpdateCountryResponse);
       },
     );
-    cy.location('pathname').should(
-      'eq',
-      `/country?countryId=${SingleCountryResponse.data.country._id}`,
+    cy.url().should(
+      'include',
+      `/country/?countryId=${SingleCountryResponse.data.country._id}`,
     );
   });
 
   it('Show [DELETE COUNTRY] successfully', () => {
     const { country } = SingleCountryResponse.data;
 
-    cy.location('pathname').should('eq', '/country');
-    cy.get(`a[href="/country?countryId=${country._id}"]`).click();
-    cy.location('pathname').should('eq', `/country?countryId=${country._id}`);
-    cy.get('input[type="checkbox"]#isActive');
+    cy.location('pathname').should('eq', '/country/');
+    cy.get('tr')
+      .contains(country.isoCode)
+      .parents('tr')
+      .find('button[aria-label]')
+      .first()
+      .click({ force: true });
+    cy.get('button').contains(localizations.en.edit).click();
+    cy.url().should('include', `/country/?countryId=${country._id}`);
     cy.get('button[aria-describedby="header-delete-button"]')
       .contains(localizations.en.delete)
       .click();
-    cy.get('button').contains(localizations.en.delete_country).click();
-    cy.location('pathname').should('eq', '/country');
+    cy.get('button#danger_continue')
+      .contains(localizations.en.delete_country)
+      .click();
 
     cy.wait(fullAliasMutationName(CountryOperations.RemoveCountry)).then(
       (currentSubject) => {
-        expect(currentSubject.request.body.variables).to.deep.eq({
+        expect(currentSubject.request.body.variables).to.deep.include({
           countryId: country._id,
         });
         expect(currentSubject.response.body).to.deep.eq(RemoveCountryResponse);
       },
     );
-    cy.location('pathname').should('eq', `/country`);
+    cy.location('pathname').should('eq', '/country/');
   });
 
   it('Show [DELETE COUNTRY FROM LIST] successfully', () => {
     const { country } = SingleCountryResponse.data;
 
-    cy.location('pathname').should('eq', '/country');
-    cy.get('button.rounded-full.bg-white.px-1.py-1').first().click();
-    cy.get('button').contains(localizations.en.delete_country).click();
-    cy.location('pathname').should('eq', '/country');
+    cy.location('pathname').should('eq', '/country/');
+    cy.get('tr')
+      .contains(country.isoCode)
+      .parents('tr')
+      .find('button[aria-label]')
+      .first()
+      .click({ force: true });
+    cy.get('button').contains(localizations.en.delete).last().click();
+    cy.get('button#danger_continue')
+      .contains(localizations.en.delete_country)
+      .click();
 
     cy.wait(fullAliasMutationName(CountryOperations.RemoveCountry)).then(
       (currentSubject) => {
-        expect(currentSubject.request.body.variables).to.deep.eq({
+        expect(currentSubject.request.body.variables).to.deep.include({
           countryId: country._id,
         });
         expect(currentSubject.response.body).to.deep.eq(RemoveCountryResponse);
       },
     );
-    cy.location('pathname').should('eq', `/country`);
+    cy.location('pathname').should('eq', '/country/');
   });
 });

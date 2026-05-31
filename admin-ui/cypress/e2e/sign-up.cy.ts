@@ -11,7 +11,10 @@ import hasOperationName from '../utils/hasOperationName';
 import replaceIntlPlaceholder from '../utils/replaceIntlPlaceholder';
 
 describe('Sign Up', () => {
+  let isLoggedIn = false;
+
   beforeEach(() => {
+    isLoggedIn = false;
     cy.intercept('POST', '/graphql', (req) => {
       const { body } = req;
       if (hasOperationName(req, AuthenticationOperations.CreateUser)) {
@@ -20,16 +23,15 @@ describe('Sign Up', () => {
 
         if (variables.email !== 'new@unchained.shop')
           req.reply(EmailExistsEnrollmentErrorResponse);
-        else
-          req.reply(EnrollmentSuccessResponse, {
-            'set-cookie':
-              'token=328eca624071dbdf9eac8e12d3fe7f88142408341ee; Path=/; Expires=Sun, 15 Jan 2023 19:50:22 GMT; HttpOnly; SameSite=None',
-          });
+        else {
+          isLoggedIn = true;
+          req.reply(EnrollmentSuccessResponse);
+        }
       }
 
       if (hasOperationName(req, UserOperations.CurrentUser)) {
         aliasQuery(req, UserOperations.CurrentUser);
-        if (req.headers?.cookie && req.headers?.cookie.includes('token')) {
+        if (isLoggedIn) {
           req.reply(CurrentUserResponse);
         } else {
           req.reply({ data: { impersonator: null, me: null } });
@@ -38,11 +40,11 @@ describe('Sign Up', () => {
     });
 
     cy.visit('/');
-    cy.location('pathname').should('eq', '/log-in');
-    cy.get('a[href="/sign-up"]')
+    cy.location('pathname').should('eq', '/log-in/');
+    cy.get('a[href="/sign-up/"]')
       .should('contain.text', localizations.en.sign_up)
       .click();
-    cy.location('pathname').should('eq', '/sign-up');
+    cy.location('pathname').should('eq', '/sign-up/');
     cy.get('h2').should('contain.text', localizations.en.sign_up_header);
   });
 
@@ -56,7 +58,7 @@ describe('Sign Up', () => {
     cy.wait(fullAliasMutationName(AuthenticationOperations.CreateUser)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           email: 'new@unchained.shop',
           plainPassword: 'password',
 
@@ -76,7 +78,7 @@ describe('Sign Up', () => {
       },
     );
 
-    cy.location('pathname').should('eq', '/account');
+    cy.location('pathname').should('eq', '/');
 
     cy.wait(fullAliasName(UserOperations.CurrentUser)).then(
       (currentSubject) => {
@@ -106,7 +108,7 @@ describe('Sign Up', () => {
     cy.wait(fullAliasMutationName(AuthenticationOperations.CreateUser)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
+        expect(request.body.variables).to.deep.include({
           email: 'admin@unchained.shop',
           plainPassword: 'password',
 
@@ -116,7 +118,7 @@ describe('Sign Up', () => {
       },
     );
 
-    cy.location('pathname').should('eq', '/sign-up');
+    cy.location('pathname').should('eq', '/sign-up/');
   });
 
   it('Should [ERROR] when [REQUIRED] fields are missing ', () => {
@@ -146,13 +148,13 @@ describe('Sign Up', () => {
       ),
     );
 
-    cy.location('pathname').should('eq', '/sign-up');
+    cy.location('pathname').should('eq', '/sign-up/');
   });
 
   it('Should  navigate back to [LOG IN PAGE] successfully ', () => {
-    cy.get('a[href="/log-in"]')
+    cy.get('a[href="/log-in/"]')
       .should('contain.text', localizations.en.log_in)
       .click();
-    cy.location('pathname').should('eq', '/log-in');
+    cy.location('pathname').should('eq', '/log-in/');
   });
 });

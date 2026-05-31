@@ -26,7 +26,7 @@ const WorkQueueListView = () => {
   const [expandedMessages, setExpandedMessages] = useState<Set<string>>(
     new Set(),
   );
-  let currentTypes = [];
+  let currentTypes: string[];
   const { activeWorkTypes } = useActiveWorkTypes();
   const queryTypes = ((query.types as string) ?? '').split(',').filter(Boolean);
   let availableTypeFilters = SYSTEM_MESSAGE_TYPES;

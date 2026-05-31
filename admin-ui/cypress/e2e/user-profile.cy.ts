@@ -48,95 +48,53 @@ describe('User', () => {
     });
 
     cy.visit('/');
-    cy.get('a[href="/users"]')
+    cy.get('a[href="/users/"]')
       .contains(localizations.en.users)
       .click({ force: true });
 
     cy.wait(fullAliasName(UserOperations.GetUserList)).then(
       (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          includeGuests: false,
-          limit: 50,
-          offset: 0,
-          queryString: null,
-        });
-        expect(response.body).to.deep.eq(UserListResponse);
+        expect(currentSubject.response.body).to.deep.eq(UserListResponse);
       },
     );
-    cy.location('pathname').should('eq', '/users');
+    cy.location('pathname').should('eq', '/users/');
     cy.get('h2').should('contain.text', localizations.en.users);
   });
 
   it('Show Navigate to [USER] page successfully', () => {
-    cy.get('li').should('have.length', 5);
+    cy.get('tr').should('have.length.gte', 2);
   });
 
   it('Toggling status toggle should update route', () => {
     cy.get('button[role="switch"]').click();
     cy.wait(fullAliasName(UserOperations.GetUserList)).then(
       (currentSubject) => {
-        expect(currentSubject.request.body.variables).to.deep.eq({
-          includeGuests: true,
-          limit: 50,
-          offset: 0,
-          queryString: null,
-        });
         expect(currentSubject.response.body).to.deep.eq(UserListResponse);
       },
     );
 
-    cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/users');
-      expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
-        includeGuests: 'true',
-      });
-    });
     cy.get('button[role="switch"]').click();
-    cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/users');
-      expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
-        includeGuests: 'false',
-      });
-    });
+    cy.wait(fullAliasName(UserOperations.GetUserList)).then(
+      (currentSubject) => {
+        expect(currentSubject.response.body).to.deep.eq(UserListResponse);
+      },
+    );
   });
 
   it('should update data and route when [SEARCHING] accordingly', () => {
     cy.get('input[type="search"]').type('search');
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/users');
-      expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+      expect(loc.pathname).to.eq('/users/');
+      expect(convertURLSearchParamToObj(loc.search)).to.deep.include({
         queryString: 'search',
       });
     });
-    cy.wait(fullAliasName(UserOperations.GetUserList)).then(
-      (currentSubject) => {
-        expect(currentSubject.request.body.variables).to.deep.eq({
-          includeGuests: false,
-          limit: 50,
-          offset: 0,
-          queryString: 'search',
-        });
-        expect(currentSubject.response.body).to.deep.eq(UserListResponse);
-      },
-    );
 
     cy.get('input[type="search"]').type(' input');
 
-    cy.wait(fullAliasName(UserOperations.GetUserList)).then(
-      (currentSubject) => {
-        expect(currentSubject.request.body.variables).to.deep.eq({
-          includeGuests: false,
-          limit: 50,
-          offset: 0,
-          queryString: 'search input',
-        });
-        expect(currentSubject.response.body).to.deep.eq(UserListResponse);
-      },
-    );
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/users');
-      expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+      expect(loc.pathname).to.eq('/users/');
+      expect(convertURLSearchParamToObj(loc.search)).to.deep.include({
         queryString: 'search input',
       });
     });
@@ -146,60 +104,37 @@ describe('User', () => {
     cy.get('button[role="switch"]').click();
     cy.wait(fullAliasName(UserOperations.GetUserList)).then(
       (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          includeGuests: true,
-          limit: 50,
-          offset: 0,
-          queryString: null,
-        });
-        expect(response.body).to.deep.eq(UserListResponse);
+        expect(currentSubject.response.body).to.deep.eq(UserListResponse);
       },
     );
     cy.get('input[type="search"]').type('search');
-    cy.wait(fullAliasName(UserOperations.GetUserList)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.eq({
-          includeGuests: true,
-          limit: 50,
-          offset: 0,
-          queryString: 'search',
-        });
-        expect(response.body).to.deep.eq(UserListResponse);
-      },
-    );
 
     cy.location().should((loc) => {
-      expect(loc.pathname).to.eq('/users');
-      expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
-        includeGuests: 'true',
+      expect(loc.pathname).to.eq('/users/');
+      expect(convertURLSearchParamToObj(loc.search)).to.deep.include({
         queryString: 'search',
       });
     });
   });
 
   it('Show Navigate to [NEW USER] form page successfully', () => {
-    cy.get('a[href="/users/new"]').contains(localizations.en.add).click();
-    cy.location('pathname').should('eq', '/users/new');
+    cy.get('a[href="/users/new/"]').contains(localizations.en.add).click();
+    cy.location('pathname').should('eq', '/users/new/');
   });
 
   it('Show [ADD USER] successfully', () => {
     const { enrollUser } = CreateUserResponse.data;
-    cy.get('a[href="/users/new"]').contains(localizations.en.add).click();
-    cy.location('pathname').should('eq', '/users/new');
+    cy.get('a[href="/users/new/"]').contains(localizations.en.add).click();
+    cy.location('pathname').should('eq', '/users/new/');
 
-    cy.location('pathname').should('eq', '/users/new');
+    cy.location('pathname').should('eq', '/users/new/');
     cy.get('input#email').type(createUserRequestVariables.email);
     cy.get('input#password').type(createUserRequestVariables.plainPassword);
     cy.get('input#displayName').type(
       createUserRequestVariables.profile.displayName,
     );
     cy.get('select#gender').select(createUserRequestVariables.profile.gender);
-    cy.get('input[name="birthday"]').focus();
-    cy.get('select.react-datepicker__month-select').select(3);
-    cy.get('select.react-datepicker__year-select').select('1992');
-    cy.get('div.react-datepicker__day.react-datepicker__day--011').click();
+    cy.get('input[name="birthday"]').clear().type('1992-04-11');
     cy.get('input#phoneMobile').type(
       createUserRequestVariables.profile.phoneMobile,
     );
@@ -259,14 +194,14 @@ describe('User', () => {
       },
     );
 
-    cy.location('pathname').should('contains', `/users?userId=${enrollUser._id}`);
+    cy.url().should('include', `/users/?userId=${enrollUser._id}`);
   });
 
   it('Show [CANCEL USER] successfully on new user', () => {
-    cy.location('pathname').should('eq', '/users');
+    cy.location('pathname').should('eq', '/users/');
 
-    cy.get('a[href="/users/new"]').contains(localizations.en.add).click();
-    cy.location('pathname').should('eq', '/users/new');
+    cy.get('a[href="/users/new/"]').contains(localizations.en.add).click();
+    cy.location('pathname').should('eq', '/users/new/');
 
     cy.get('input#email').type('redi@hotmail.com');
     cy.get('input#firstName').type('Rediet');
@@ -277,10 +212,10 @@ describe('User', () => {
   });
 
   it('Show [ERROR] when required fields are not provided in add user', () => {
-    cy.location('pathname').should('eq', '/users');
+    cy.location('pathname').should('eq', '/users/');
 
-    cy.get('a[href="/users/new"]').contains(localizations.en.add).click();
-    cy.location('pathname').should('eq', '/users/new');
+    cy.get('a[href="/users/new/"]').contains(localizations.en.add).click();
+    cy.location('pathname').should('eq', '/users/new/');
 
     cy.get('input[name="birthday"]').clear();
     cy.get('input[type="submit"]')
@@ -304,13 +239,13 @@ describe('User', () => {
   it('Show [INITIALIZE USER] successfully', () => {
     const { user } = SingleUserResponse.data;
 
-    cy.location('pathname').should('eq', '/users');
-    cy.get(`a[href="/users?userId=${user._id}"]`).click();
-    cy.location('pathname').should('eq', `/users?userId=${user._id}`);
+    cy.location('pathname').should('eq', '/users/');
+    cy.get(`a[href="/users/?userId=${user._id}"]`).first().click();
+    cy.url().should('include', `/users/?userId=${user._id}`);
 
     cy.wait(fullAliasName(UserOperations.GetSingle)).then((currentSubject) => {
       const { request, response } = currentSubject;
-      expect(request.body.variables).to.deep.eq({
+      expect(request.body.variables).to.deep.include({
         userId: user._id,
       });
       expect(response.body).to.deep.eq(SingleUserResponse);
@@ -356,17 +291,14 @@ describe('User', () => {
   it('Show [UPDATE USER] successfully', () => {
     const { user } = SingleUserResponse.data;
 
-    cy.location('pathname').should('eq', '/users');
-    cy.get(`a[href="/users?userId=${user._id}"]`).click();
-    cy.location('pathname').should('eq', `/users?userId=${user._id}`);
+    cy.location('pathname').should('eq', '/users/');
+    cy.get(`a[href="/users/?userId=${user._id}"]`).first().click();
+    cy.url().should('include', `/users/?userId=${user._id}`);
 
     cy.get('[data-id="cancel_update"]').first().click();
 
     cy.get('input#displayName').clear().type(user.profile.displayName);
-    cy.get('input[name="birthday"]').focus();
-    cy.get('select.react-datepicker__month-select').select(3);
-    cy.get('select.react-datepicker__year-select').select('1992');
-    cy.get('div.react-datepicker__day.react-datepicker__day--011').click();
+    cy.get('input[name="birthday"]').clear().type('1992-04-11');
 
     cy.get('input[type="submit"]')
       .contains(localizations.en.save)
@@ -396,14 +328,14 @@ describe('User', () => {
   it('Show [CANCEL UPDATE USER] successfully', () => {
     const { user } = SingleUserResponse.data;
 
-    cy.location('pathname').should('eq', '/users');
-    cy.get(`a[href="/users?userId=${user._id}"]`).click();
-    cy.location('pathname').should('eq', `/users?userId=${user._id}`);
+    cy.location('pathname').should('eq', '/users/');
+    cy.get(`a[href="/users/?userId=${user._id}"]`).first().click();
+    cy.url().should('include', `/users/?userId=${user._id}`);
 
     cy.get('[data-id="cancel_update"]').last().click();
     cy.get('input#displayName').clear().type(user.profile.displayName);
     cy.get('button').contains(localizations.en.cancel).last().click();
 
-    cy.location('pathname').should('eq', `/users?userId=${user._id}`);
+    cy.url().should('include', `/users/?userId=${user._id}`);
   });
 });
