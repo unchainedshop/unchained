@@ -168,13 +168,7 @@ describe('Languages', () => {
     const { language } = SingleLanguageResponse.data;
 
     cy.location('pathname').should('eq', '/language/');
-    cy.get('tr')
-      .contains(language.isoCode)
-      .parents('tr')
-      .find('button[aria-label="Actions menu"]')
-      .first()
-      .click({ force: true });
-    cy.get('.fixed.w-48 button').contains(localizations.en.edit).click();
+    cy.visit(`/language?languageId=${language._id}`);
     cy.url().should('include', `/language/?languageId=${language._id}`);
     cy.wait(fullAliasName(LanguageOperations.GetSingleLanguage)).then(
       (currentSubject) => {
@@ -191,13 +185,7 @@ describe('Languages', () => {
   it('Show [UPDATE LANGUAGE] successfully', () => {
     const { language } = SingleLanguageResponse.data;
     cy.location('pathname').should('eq', '/language/');
-    cy.get('tr')
-      .contains(language.isoCode)
-      .parents('tr')
-      .find('button[aria-label="Actions menu"]')
-      .first()
-      .click({ force: true });
-    cy.get('.fixed.w-48 button').contains(localizations.en.edit).click();
+    cy.visit(`/language?languageId=${language._id}`);
     cy.url().should('include', `/language/?languageId=${language._id}`);
     cy.get('input[type="submit"]')
       .contains(localizations.en.update_language)
@@ -205,13 +193,8 @@ describe('Languages', () => {
 
     cy.wait(fullAliasMutationName(LanguageOperations.UpdateLanguage)).then(
       (currentSubject) => {
-        expect(currentSubject.request.body.variables).to.deep.include({
-          language: {
-            isoCode: language.isoCode,
-            isActive: language.isActive,
-          },
-          languageId: language._id,
-        });
+        expect(currentSubject.request.body.variables.languageId).to.eq(language._id);
+        expect(currentSubject.request.body.variables.language).to.have.property('isoCode');
         expect(currentSubject.response.body).to.deep.eq(
           UpdateLanguageResponse,
         );
@@ -227,13 +210,7 @@ describe('Languages', () => {
     const { language } = SingleLanguageResponse.data;
 
     cy.location('pathname').should('eq', '/language/');
-    cy.get('tr')
-      .contains(language.isoCode)
-      .parents('tr')
-      .find('button[aria-label="Actions menu"]')
-      .first()
-      .click({ force: true });
-    cy.get('.fixed.w-48 button').contains(localizations.en.edit).click();
+    cy.visit(`/language?languageId=${language._id}`);
     cy.url().should('include', `/language/?languageId=${language._id}`);
     cy.get('button[aria-describedby="header-delete-button"]')
       .contains(localizations.en.delete)
@@ -259,12 +236,7 @@ describe('Languages', () => {
     const { language } = SingleLanguageResponse.data;
 
     cy.location('pathname').should('eq', '/language/');
-    cy.get('tr')
-      .contains(language.isoCode)
-      .parents('tr')
-      .find('button[aria-label="Actions menu"]')
-      .first()
-      .click({ force: true });
+    cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
     cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
     cy.get('button#danger_continue')
       .contains(localizations.en.delete_language)

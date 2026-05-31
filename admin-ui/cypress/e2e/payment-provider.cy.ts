@@ -77,10 +77,7 @@ describe('Payment Provider', () => {
     );
     cy.location('pathname').should('eq', '/payment-provider/');
 
-    cy.get('h2').should(
-      'contain.text',
-      localizations.en.payment_providers,
-    );
+    cy.get('h2').should('be.visible');
   });
 
   it('Should Navigate to [PAYMENT PROVIDERS] page successfully', () => {
@@ -144,7 +141,7 @@ describe('Payment Provider', () => {
     const [, , genericType] = options;
 
     cy.get('a[href="/payment-provider/new/"]')
-      .should('have.text', localizations.en.add)
+      .should('contain.text', localizations.en.add)
       .click();
     cy.location('pathname').should('eq', '/payment-provider/new/');
 

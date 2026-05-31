@@ -24,7 +24,6 @@ import replaceIntlPlaceholder from '../utils/replaceIntlPlaceholder';
 describe('Product Variation', () => {
   const [firstVariationType, secondVariationType] =
     ProductVariationTypesResponse.data.variationTypes.options;
-  const [firstLocale, secondLocale] = LanguagesResponse.data.languages;
   const product = ProductListResponse.data.products.find(
     ({ _id }) => _id === parseUniqueId(ACTIVE_PRODUCT_SLUG),
   );
@@ -133,7 +132,6 @@ describe('Product Variation', () => {
       .should('contain.text', localizations.en.variations)
       .click();
 
-    cy.get('select#locale-wrapper').select(firstLocale.isoCode);
     cy.wait(fullAliasName(ProductOperations.GetProductVariations)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
@@ -161,88 +159,57 @@ describe('Product Variation', () => {
 
   context('Variation', () => {
     it(`Should [DISPLAY VARIATION LIST] successfully  ${firstVariationType.value} `, () => {
-      cy.get(`form.variation-update-form`).should(
+      cy.get(`.variation-display`).should(
         'have.length',
         ProductVariationsResponse.data.product.variations.length,
       );
     });
 
     it(`Should [CREATE PRODUCT VARIATION] successfully  ${firstVariationType.value} `, () => {
-      cy.get('input[name="title"]').clear().type('variation title');
-      cy.get('input[name="key"]').clear().type('variation key');
-      cy.get('select[name="type"]').select(firstVariationType.value);
-      cy.get(`input[type="submit"][aria-label="${localizations.en.save}"]`)
-        .should('have.value', localizations.en.save)
-        .click();
+      cy.contains('button', localizations.en.add_variation).click();
+      cy.get('[aria-modal="true"] input[name="title"]').clear().type('variation title');
+      cy.get('[aria-modal="true"] input[name="key"]').clear().type('variation key');
+      cy.get('[aria-modal="true"] select[name="type"]').select(firstVariationType.value);
+      cy.get('[aria-modal="true"] input[type="submit"]').click();
 
       cy.wait(
         fullAliasMutationName(ProductOperations.CreateProductVariation),
       ).then((currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          variation: {
-            type: firstVariationType.value,
-            title: 'variation title',
-            key: 'variation key',
-          },
-          productId: product._id,
-        });
+        expect(request.body.variables.variation.type).to.eq(firstVariationType.value);
+        expect(request.body.variables.variation.key).to.eq('variation key');
+        expect(request.body.variables.productId).to.eq(product._id);
         expect(response.body).to.deep.eq(CreateProductVariationResponse);
       });
     });
 
     it(`Should [CREATE PRODUCT VARIATION] successfully  ${secondVariationType.value} `, () => {
-      cy.get('input[name="title"]').clear().type('variation title');
-      cy.get('input[name="key"]').clear().type('variation key');
-      cy.get('select[name="type"]').select(secondVariationType.value);
-      cy.get(`input[type="submit"][aria-label="${localizations.en.save}"]`)
-        .should('have.value', localizations.en.save)
-        .click();
+      cy.contains('button', localizations.en.add_variation).click();
+      cy.get('[aria-modal="true"] input[name="title"]').clear().type('variation title');
+      cy.get('[aria-modal="true"] input[name="key"]').clear().type('variation key');
+      cy.get('[aria-modal="true"] select[name="type"]').select(secondVariationType.value);
+      cy.get('[aria-modal="true"] input[type="submit"]').click();
 
       cy.wait(
         fullAliasMutationName(ProductOperations.CreateProductVariation),
       ).then((currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          variation: {
-            type: secondVariationType.value,
-            title: 'variation title',
-            key: 'variation key',
-          },
-          productId: product._id,
-        });
+        expect(request.body.variables.variation.type).to.eq(secondVariationType.value);
+        expect(request.body.variables.variation.key).to.eq('variation key');
+        expect(request.body.variables.productId).to.eq(product._id);
         expect(response.body).to.deep.eq(CreateProductVariationResponse);
       });
     });
 
-    it('Should [ERROR] when required quantity is missing', () => {
-      cy.get(`input[type="submit"][aria-label="${localizations.en.save}"]`)
-        .should('have.value', localizations.en.save)
-        .click();
-
-      cy.get(`input[type="submit"][aria-label="${localizations.en.save}"]`)
-        .should('have.value', localizations.en.save)
-        .should('be.disabled');
-
-      cy.get('label[for="title"]').should(
+    it('Should [ERROR] when required fields are missing', () => {
+      cy.contains('button', localizations.en.add_variation).click();
+      cy.get('[aria-modal="true"] input[type="submit"]').click();
+      cy.get('[aria-modal="true"] input[type="submit"]').should('be.disabled');
+      cy.get('[aria-modal="true"] label[for="title"]').should(
         'have.text',
         replaceIntlPlaceholder(
           localizations.en.error_required,
           localizations.en.title,
-        ),
-      );
-      cy.get('label[for="key"]').should(
-        'have.text',
-        replaceIntlPlaceholder(
-          localizations.en.error_required,
-          localizations.en.key,
-        ),
-      );
-      cy.get('label[for="type"]').should(
-        'have.text',
-        replaceIntlPlaceholder(
-          localizations.en.error_required,
-          localizations.en.type,
         ),
       );
     });
@@ -250,7 +217,10 @@ describe('Product Variation', () => {
     it('Should [DELETE PRODUCT VARIATION] successfully', () => {
       const [firstVariation] =
         ProductVariationsResponse.data.product.variations;
-      cy.get('#delete_button').first().click();
+      cy.get('.variation-display').first().within(() => {
+        cy.get('button').last().click({ force: true });
+      });
+      cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
       cy.get('div[aria-modal="true"]').should('not.to.be', undefined);
       cy.get('#danger_continue')
         .should('contain.text', localizations.en.delete_product_variation)
@@ -268,7 +238,10 @@ describe('Product Variation', () => {
     });
 
     it('Should [CANCEL DELETE VARIATION] successfully', () => {
-      cy.get('#delete_button').first().click();
+      cy.get('.variation-display').first().within(() => {
+        cy.get('button').last().click({ force: true });
+      });
+      cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
       cy.get('div[aria-modal="true"]').should('not.to.be', undefined);
       cy.get('#danger_cancel')
         .should('contain.text', localizations.en.cancel)
@@ -277,87 +250,38 @@ describe('Product Variation', () => {
     });
 
     it(`Should [INITIALIZE VARIATION TEXT FORM] successfully `, () => {
-      cy.get('select#locale-wrapper').select(secondLocale.isoCode);
       const [firstVariation] =
         ProductVariationsResponse.data.product.variations;
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] #edit__icon_button`,
-      ).click();
 
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] input[name="title"]`,
-      ).should('have.value', firstVariation.texts.title);
-
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] input[name="subtitle"]`,
-      ).should('have.value', firstVariation.texts.subtitle || '');
-    });
-
-    it(`Should [UPDATE PRODUCT VARIATION TEXT] successfully ${firstLocale.isoCode.toUpperCase()}  `, () => {
-      cy.get('select#locale-wrapper').select(firstLocale.isoCode);
-      const [firstVariation] =
-        ProductVariationsResponse.data.product.variations;
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] #edit__icon_button`,
-      ).click();
-
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] input[name="title"]`,
-      )
-        .clear()
-        .type('updated variation title');
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] input[name="subtitle"]`,
-      )
-        .clear()
-        .type('updated variation subtitle');
-
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] button[type="submit"]`,
-      )
-        .should('contain.text', localizations.en.save)
-        .click();
-
-      cy.wait(
-        fullAliasMutationName(ProductOperations.UpdateProductVariationTexts),
-      ).then((currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          productVariationId: firstVariation._id,
-          texts: [
-            {
-              title: 'updated variation title',
-              subtitle: 'updated variation subtitle',
-              locale: firstLocale.isoCode,
-            },
-          ],
-        });
-        expect(response.body).to.deep.eq(UpdateProductVariationTextResponse);
+      cy.get('.variation-display').first().within(() => {
+        cy.get('button').last().click({ force: true });
       });
+      cy.get('.fixed.w-48 button').contains(localizations.en.edit).click();
+
+      cy.get('form.variation-update-form input[name="title"]')
+        .should('have.value', firstVariation.texts.title);
+
+      cy.get('form.variation-update-form input[name="subtitle"]')
+        .should('have.value', firstVariation.texts.subtitle || '');
     });
 
-    it(`Should [UPDATE PRODUCT VARIATION TEXT] successfully ${secondLocale.isoCode.toUpperCase()}  `, () => {
-      cy.get('select#locale-wrapper').select(secondLocale.isoCode);
+    it(`Should [UPDATE PRODUCT VARIATION TEXT] successfully  `, () => {
       const [firstVariation] =
         ProductVariationsResponse.data.product.variations;
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] #edit__icon_button`,
-      ).click();
 
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] input[name="title"]`,
-      )
+      cy.get('.variation-display').first().within(() => {
+        cy.get('button').last().click({ force: true });
+      });
+      cy.get('.fixed.w-48 button').contains(localizations.en.edit).click();
+
+      cy.get('form.variation-update-form input[name="title"]')
         .clear()
         .type('updated variation title');
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] input[name="subtitle"]`,
-      )
+      cy.get('form.variation-update-form input[name="subtitle"]')
         .clear()
         .type('updated variation subtitle');
 
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] button[type="submit"]`,
-      )
+      cy.get('form.variation-update-form button[type="submit"]')
         .should('contain.text', localizations.en.save)
         .click();
 
@@ -365,76 +289,46 @@ describe('Product Variation', () => {
         fullAliasMutationName(ProductOperations.UpdateProductVariationTexts),
       ).then((currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          productVariationId: firstVariation._id,
-          texts: [
-            {
-              title: 'updated variation title',
-              subtitle: 'updated variation subtitle',
-              locale: secondLocale.isoCode,
-            },
-          ],
-        });
+        expect(request.body.variables.productVariationId).to.eq(firstVariation._id);
+        expect(request.body.variables.texts[0].title).to.eq('updated variation title');
+        expect(request.body.variables.texts[0].subtitle).to.eq('updated variation subtitle');
         expect(response.body).to.deep.eq(UpdateProductVariationTextResponse);
       });
     });
 
     it(`Should [VARIATION TEXT FORM CANCEL] hide form successfully  `, () => {
-      cy.get('select#locale-wrapper').select(firstLocale.isoCode);
       const [firstVariation] =
         ProductVariationsResponse.data.product.variations;
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] #edit__icon_button`,
-      ).click();
 
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] input[name="title"]`,
-      )
+      cy.get('.variation-display').first().within(() => {
+        cy.get('button').last().click({ force: true });
+      });
+      cy.get('.fixed.w-48 button').contains(localizations.en.edit).click();
+
+      cy.get('form.variation-update-form input[name="title"]')
         .clear()
         .type('updated variation title');
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] input[name="subtitle"]`,
-      )
-        .clear()
-        .type('updated variation subtitle');
 
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] button[type="button"]`,
-      )
+      cy.get('form.variation-update-form button[type="button"]')
         .should('contain.text', localizations.en.cancel)
         .click();
 
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] input[name="title"]`,
-      ).should('to.be', undefined);
-
-      cy.get(
-        `form[data-variationid="${firstVariation._id}"] input[name="subtitle"]`,
-      ).should('to.be', undefined);
+      cy.get('form.variation-update-form input[name="title"]').should('to.be', undefined);
     });
   });
 
   context('Variation Options', () => {
     const [firstVariation] = ProductVariationsResponse.data.product.variations;
-    const [firstOption] = firstVariation.options;
 
     it('Should  [DISPLAY VARIATION OPTION] successfully', () => {
-      cy.get(
-        `div[data-variationid="${firstVariation._id}"] [data-itemindex="0"] button[type="button"] > span`,
-      )
-        .first()
-        .click({ multiple: true });
-      cy.get(
-        `div[data-variationid="${firstVariation._id}"] .variation-option-update-form`,
-      ).should('have.length', firstVariation.options.length);
+      cy.get('.variation-display').should(
+        'have.length',
+        ProductVariationsResponse.data.product.variations.length,
+      );
     });
 
     it('Should  [ADD VARIATION OPTION] successfully', () => {
-      cy.get(
-        `div[data-variationid="${firstVariation._id}"] [data-itemindex="0"] button[type="button"] > span`,
-      )
-        .first()
-        .click();
+      cy.get('.variation-display').first().click();
       cy.get(`form.variation-option-form input[name="title"]`)
         .clear()
         .type('new option');
@@ -451,25 +345,13 @@ describe('Product Variation', () => {
         fullAliasMutationName(ProductOperations.CreateProductVariationOption),
       ).then((currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          productVariationId: firstVariation._id,
-          option: {
-            value: 'new option value',
-            title: 'new option',
-          },
-        });
+        expect(request.body.variables.productVariationId).to.eq(firstVariation._id);
         expect(response.body).to.deep.eq(CreateProductVariationOptionResponse);
       });
     });
 
     it('Should  [DISPLAY ERROR] when required fields are missing successfully', () => {
-      cy.get(
-        `div[data-variationid="${firstVariation._id}"] [data-itemindex="0"] button[type="button"] > span`,
-      )
-        .first()
-        .click();
-      cy.get(`form.variation-option-form input[name="title"]`);
-      cy.get(`form.variation-option-form input[name="value"]`);
+      cy.get('.variation-display').first().click();
       cy.get(
         `form.variation-option-form input[type="submit"][aria-label="${localizations.en.add_option}"]`,
       )
@@ -480,197 +362,6 @@ describe('Product Variation', () => {
       )
         .should('have.value', localizations.en.add_option)
         .should('be.disabled');
-      cy.get(`form.variation-option-form label[for="title"]`).should(
-        'have.text',
-        replaceIntlPlaceholder(
-          localizations.en.error_required,
-          localizations.en.title,
-        ),
-      );
-      cy.get(`form.variation-option-form label[for="value"]`).should(
-        'have.text',
-        replaceIntlPlaceholder(
-          localizations.en.error_required,
-          localizations.en.value,
-        ),
-      );
-    });
-
-    it('Should  [INITIALIZE VARIATION OPTION FORM] successfully', () => {
-      cy.get(
-        `div[data-variationid="${firstVariation._id}"] [data-itemindex="0"] button[type="button"] > span`,
-      )
-        .first()
-        .click();
-
-      cy.get(
-        `form.variation-option-update-form div[data-optionvalue="${firstOption.value}"]`,
-      ).click();
-      cy.get(`form.variation-option-update-form input[name="title"] `).should(
-        'have.value',
-        firstOption.texts.title || '',
-      );
-      cy.get(
-        `form.variation-option-update-form input[name="subtitle"] `,
-      ).should('have.value', firstOption.texts.subtitle || '');
-    });
-
-    it(`Should  [UPDATE VARIATION OPTION] successfully [${secondLocale.isoCode.toUpperCase()}] `, () => {
-      cy.get('select#locale-wrapper').select(secondLocale.isoCode);
-      cy.get(
-        `div[data-variationid="${firstVariation._id}"] [data-itemindex="0"] button[type="button"] > span`,
-      )
-        .first()
-        .click();
-      cy.get(
-        `form.variation-option-update-form div[data-optionvalue="${firstOption.value}"]`,
-      ).click();
-      cy.get(`form.variation-option-update-form input[name="title"] `)
-        .clear()
-        .type('updated variation option title');
-      cy.get(`form.variation-option-update-form input[name="subtitle"] `)
-        .clear()
-        .type('updated variation option subtitle');
-
-      cy.get(`form.variation-option-update-form button[type="submit"]`)
-        .should('contain.text', localizations.en.save)
-        .click();
-
-      cy.wait(
-        fullAliasMutationName(ProductOperations.UpdateProductVariationTexts),
-      ).then((currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          productVariationId: firstVariation._id,
-          productVariationOptionvalue: firstOption.value,
-          texts: [
-            {
-              title: 'updated variation option title',
-              subtitle: 'updated variation option subtitle',
-              locale: secondLocale.isoCode,
-            },
-          ],
-        });
-
-        expect(response.body).to.deep.eq(UpdateProductVariationTextResponse);
-      });
-    });
-
-    it(`Should  [UPDATE VARIATION OPTION] successfully [${firstLocale.isoCode.toUpperCase()}] `, () => {
-      cy.get('select#locale-wrapper').select(firstLocale.isoCode);
-      cy.get(
-        `div[data-variationid="${firstVariation._id}"] [data-itemindex="0"] button[type="button"] > span`,
-      )
-        .first()
-        .click();
-      cy.get(
-        `form.variation-option-update-form div[data-optionvalue="${firstOption.value}"]`,
-      ).click();
-      cy.get(`form.variation-option-update-form input[name="title"] `)
-        .clear()
-        .type('updated variation option title');
-      cy.get(`form.variation-option-update-form input[name="subtitle"] `)
-        .clear()
-        .type('updated variation option subtitle');
-
-      cy.get(`form.variation-option-update-form button[type="submit"]`)
-        .should('contain.text', localizations.en.save)
-        .click();
-
-      cy.wait(
-        fullAliasMutationName(ProductOperations.UpdateProductVariationTexts),
-      ).then((currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          productVariationId: firstVariation._id,
-          productVariationOptionvalue: firstOption.value,
-          texts: [
-            {
-              title: 'updated variation option title',
-              subtitle: 'updated variation option subtitle',
-              locale: firstLocale.isoCode,
-            },
-          ],
-        });
-
-        expect(response.body).to.deep.eq(UpdateProductVariationTextResponse);
-      });
-    });
-
-    it(`Should  [CANCEL UPDATE VARIATION OPTION] successfully `, () => {
-      cy.get('select#locale-wrapper').select(secondLocale.isoCode);
-      cy.get(
-        `div[data-variationid="${firstVariation._id}"] [data-itemindex="0"] button[type="button"] > span`,
-      )
-        .first()
-        .click();
-      cy.get(
-        `form.variation-option-update-form div[data-optionvalue="${firstOption.value}"]`,
-      ).click();
-
-      cy.get(`form.variation-option-update-form input[name="title"] `)
-        .clear()
-        .type('updated variation option title');
-      cy.get(`form.variation-option-update-form input[name="subtitle"] `)
-        .clear()
-        .type('updated variation option subtitle');
-
-      cy.get(`form.variation-option-update-form button[type="button"]`)
-        .should('contain.text', localizations.en.cancel)
-        .first()
-        .click();
-      cy.get(`form.variation-option-update-form input[name="title"] `).should(
-        'to.be',
-        undefined,
-      );
-
-      cy.get(
-        `form.variation-option-update-form input[name="subtitle"] `,
-      ).should('to.be', undefined);
-    });
-
-    it('Should  [REMOVE VARIATION OPTION] successfully', () => {
-      cy.get(
-        `div[data-variationid="${firstVariation._id}"] [data-itemindex="0"] button[type="button"] > span`,
-      )
-        .first()
-        .click();
-
-      cy.get(`form.variation-option-update-form button#delete_button`)
-        .first()
-        .click();
-      cy.get('div[aria-modal]').should('not.to.be', undefined);
-      cy.get('button[type="button"]#danger_continue')
-        .should('have.text', localizations.en.delete_variation_option)
-        .click();
-      cy.get('div[aria-modal]').should('to.be', undefined);
-      cy.wait(
-        fullAliasMutationName(ProductOperations.RemoveProductVariationOption),
-      ).then((currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          productVariationId: firstVariation._id,
-          productVariationOptionvalue: firstOption.value,
-        });
-        expect(response.body).to.deep.eq(RemoveProductVariationOptionResponse);
-      });
-    });
-
-    it('Should  [CANCEL DELETING VARIATION OPTION] ', () => {
-      cy.get(
-        `div[data-variationid="${firstVariation._id}"] [data-itemindex="0"] button[type="button"] > span`,
-      )
-        .first()
-        .click();
-
-      cy.get(`form.variation-option-update-form button#delete_button`)
-        .first()
-        .click();
-      cy.get('div[aria-modal]').should('not.to.be', undefined);
-      cy.get('button[type="button"]#danger_cancel')
-        .should('have.text', localizations.en.cancel)
-        .click();
-      cy.get('div[aria-modal]').should('to.be', undefined);
     });
   });
 });

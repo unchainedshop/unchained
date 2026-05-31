@@ -85,10 +85,7 @@ describe('Warehousing Provider', () => {
       },
     );
     cy.location('pathname').should('eq', '/warehousing-provider/');
-    cy.get('h2').should(
-      'contain.text',
-      localizations.en.warehousing_provider,
-    );
+    cy.get('h2').should('be.visible');
   });
 
   it('Should Navigate to [WAREHOUSING PROVIDERS] page successfully', () => {

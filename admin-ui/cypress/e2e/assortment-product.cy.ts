@@ -161,7 +161,7 @@ describe('Assortment Detail Products', () => {
   it('Should [SEARCH] product successfully', () => {
     cy.wait(fullAliasName(ProductOperations.GetProductList));
 
-    cy.get('input#productId').click({ force: true }).type('f{enter}', { delay: 100 });
+    cy.get('input#productId').click({ force: true }).type('f', { delay: 100 });
 
     cy.get('[class*="react-select__option"]').should('have.length.gte', 1);
   });

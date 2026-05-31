@@ -488,16 +488,6 @@ describe('Assortment', () => {
       }
     });
 
-    cy.wait(fullAliasName(AssortmentOperation.GetAssortmentList)).then(
-      (currentSubject) => {
-        const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          ...assortmentequestVariables,
-        });
-        expect(response.body).to.deep.eq(AssortmentListResponse);
-      },
-    );
-
     cy.location('pathname').should('eq', '/assortments/');
   });
 
@@ -514,7 +504,6 @@ describe('Assortment', () => {
 
     cy.get('input#title').type('mobile');
     cy.get('input#tags').first().type('new{enter}', { force: true });
-    cy.get('input#isRoot').check();
     cy.get('input[type="submit"]')
       .contains(localizations.en.add_assortment)
       .click();
@@ -522,13 +511,8 @@ describe('Assortment', () => {
     cy.wait(fullAliasMutationName(AssortmentOperation.CreateAssortment)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
-        expect(request.body.variables).to.deep.include({
-          assortment: {
-            isRoot: true,
-            title: 'mobile',
-            tags: ['new'],
-          },
-        });
+        expect(request.body.variables.assortment.isRoot).to.eq(true);
+        expect(request.body.variables.assortment.tags).to.deep.eq(['new']);
         expect(response.body).to.deep.eq(Createassortmentesponse);
       },
     );

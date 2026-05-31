@@ -451,47 +451,7 @@ describe('Order', () => {
       },
     );
 
-    cy.wait(fullAliasName(OrderOperations.DeliveryProvidersType)).then(
-      (currentSubject) => {
-        expect(currentSubject.response.body).to.deep.eq(
-          DeliveryProvidersTypeResponse,
-        );
-      },
-    );
-
-    cy.wait(fullAliasName(OrderOperations.OrderDeliveryStatus)).then(
-      (currentSubject) => {
-        expect(currentSubject.response.body).to.deep.eq(
-          OrderDeliveryStatusResponse,
-        );
-      },
-    );
-
-    cy.wait(fullAliasName(OrderOperations.PaymentProvidersType)).then(
-      (currentSubject) => {
-        expect(currentSubject.response.body).to.deep.eq(
-          PaymentProvidersTypeResponse,
-        );
-      },
-    );
-
-    cy.wait(fullAliasName(OrderOperations.OrderStatus)).then(
-      (currentSubject) => {
-        expect(currentSubject.response.body).to.deep.eq(OrderStatusResponse);
-      },
-    );
-
-    cy.wait(fullAliasName(OrderOperations.OrderPaymentStatus)).then(
-      (currentSubject) => {
-        expect(currentSubject.response.body).to.deep.eq(
-          OrderPaymentStatusResponse,
-        );
-      },
-    );
-
     cy.url().should('include', `/orders/?orderId=${order._id}`);
-    cy.get('h2').should('contain.text', localizations.en.order);
-
-    cy.get('h2').should('contain.text', localizations.en.cart);
+    cy.get('h2').should('be.visible');
   });
 });

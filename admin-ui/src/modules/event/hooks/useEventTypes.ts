@@ -8,12 +8,16 @@ const RegisteredEventTypesQuery = gql`
 `;
 
 const useEventTypes = () => {
-  const { data, loading, error } = useQuery<{ registeredEventTypes: string[] }>(RegisteredEventTypesQuery);
+  const { data, loading, error } = useQuery<{ registeredEventTypes: string[] }>(
+    RegisteredEventTypesQuery,
+  );
 
-  const eventsType = (data?.registeredEventTypes || []).map((value: string) => ({
-    value,
-    label: value,
-  }));
+  const eventsType = (data?.registeredEventTypes || []).map(
+    (value: string) => ({
+      value,
+      label: value,
+    }),
+  );
 
   return {
     eventsType,

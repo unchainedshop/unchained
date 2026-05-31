@@ -8,7 +8,9 @@ const ActiveWorkTypesQuery = gql`
 `;
 
 const useRegisteredWorkTypes = () => {
-  const { data, loading, error } = useQuery<{ activeWorkTypes: string[] }>(ActiveWorkTypesQuery);
+  const { data, loading, error } = useQuery<{ activeWorkTypes: string[] }>(
+    ActiveWorkTypesQuery,
+  );
 
   const workTypes = (data?.activeWorkTypes || []).map((value: string) => ({
     value,

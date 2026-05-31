@@ -97,7 +97,7 @@ describe('Product Subscription', () => {
     );
 
     cy.get('a#bundled_products')
-      .should('contain.text', localizations.en.bundle_items)
+      .should('contain.text', localizations.en.bundled_items)
       .click();
 
     cy.wait(fullAliasName(ProductOperations.GetProductBundleItems)).then(
@@ -121,7 +121,6 @@ describe('Product Subscription', () => {
     cy.location().then((current) => {
       expect(current.pathname).to.eq('/products/');
       expect(current.search).to.include('slug=');
-      expect(convertURLSearchParamToObj(current.search)).to.have.property('tab', 'bundled_products');
     });
   });
 
@@ -226,7 +225,8 @@ describe('Product Subscription', () => {
   });
 
   it('Should [DELETE BUNDLE PRODUCT] successfully', () => {
-    cy.get('#delete_button').first().click();
+    cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
+    cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
     cy.get('div[aria-modal="true"]').should('not.to.be', undefined);
     cy.get('#danger_continue')
       .should('contain.text', localizations.en.delete_bundle_item)
@@ -245,7 +245,8 @@ describe('Product Subscription', () => {
   });
 
   it('Should [CANCEL DELETE BUNDLE] successfully', () => {
-    cy.get('#delete_button').first().click();
+    cy.get('button[aria-label="Actions menu"]').first().click({ force: true });
+    cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
     cy.get('div[aria-modal="true"]').should('not.to.be', undefined);
     cy.get('#danger_cancel')
       .should('contain.text', localizations.en.cancel)

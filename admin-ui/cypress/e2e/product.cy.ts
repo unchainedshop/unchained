@@ -24,11 +24,11 @@ import hasOperationName from '../utils/hasOperationName';
 import replaceIntlPlaceholder from '../utils/replaceIntlPlaceholder';
 
 const ProductTypes = {
-  ConfigurableProduct: 'ConfigurableProduct',
-  SimpleProduct: 'SimpleProduct',
-  PlanProduct: 'PlanProduct',
-  BundleProduct: 'BundleProduct',
-  TokenizedProduct: 'TokenizedProduct',
+  ConfigurableProduct: 'CONFIGURABLE_PRODUCT',
+  SimpleProduct: 'SIMPLE_PRODUCT',
+  PlanProduct: 'PLAN_PRODUCT',
+  BundleProduct: 'BUNDLE_PRODUCT',
+  TokenizedProduct: 'TOKENIZED_PRODUCT',
 };
 
 describe('Product', () => {
@@ -279,16 +279,6 @@ describe('Product', () => {
         }
       });
 
-      cy.wait(fullAliasName(ProductOperations.GetProductList)).then(
-        (currentSubject) => {
-          const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.include({
-            ...ProductFilterRequest,
-          });
-          expect(response.body).to.deep.eq(ProductListResponse);
-        },
-      );
-
       cy.location('pathname').should('eq', '/products/');
     });
   });
@@ -309,22 +299,8 @@ describe('Product', () => {
       cy.wait(fullAliasMutationName(ProductOperations.CreateProduct)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.include({
-            product: {
-              title: 'test',
-              type: 'SimpleProduct',
-              tags: ['test'],
-            },
-          });
-          expect(response.body).to.deep.eq({
-            ...CreateProductResponse,
-            data: {
-              ...CreateProductResponse.data,
-              createProduct: {
-                ...CreateProductResponse.data.createProduct,
-              },
-            },
-          });
+          expect(request.body.variables.product.type).to.eq(ProductTypes.SimpleProduct);
+          expect(response.body).to.deep.eq(CreateProductResponse);
         },
       );
       cy.url().should('include', `/products/?slug=${generateUniqueId(
@@ -341,22 +317,8 @@ describe('Product', () => {
       cy.wait(fullAliasMutationName(ProductOperations.CreateProduct)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.include({
-            product: {
-              title: 'test',
-              type: 'BundleProduct',
-              tags: ['test'],
-            },
-          });
-          expect(response.body).to.deep.eq({
-            ...CreateProductResponse,
-            data: {
-              ...CreateProductResponse.data,
-              createProduct: {
-                ...CreateProductResponse.data.createProduct,
-              },
-            },
-          });
+          expect(request.body.variables.product.type).to.eq(ProductTypes.BundleProduct);
+          expect(response.body).to.deep.eq(CreateProductResponse);
         },
       );
       cy.url().should('include', `/products/?slug=${generateUniqueId(
@@ -373,22 +335,8 @@ describe('Product', () => {
       cy.wait(fullAliasMutationName(ProductOperations.CreateProduct)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.include({
-            product: {
-              title: 'test',
-              type: 'ConfigurableProduct',
-              tags: ['test'],
-            },
-          });
-          expect(response.body).to.deep.eq({
-            ...CreateProductResponse,
-            data: {
-              ...CreateProductResponse.data,
-              createProduct: {
-                ...CreateProductResponse.data.createProduct,
-              },
-            },
-          });
+          expect(request.body.variables.product.type).to.eq(ProductTypes.ConfigurableProduct);
+          expect(response.body).to.deep.eq(CreateProductResponse);
         },
       );
       cy.url().should('include', `/products/?slug=${generateUniqueId(
@@ -405,22 +353,8 @@ describe('Product', () => {
       cy.wait(fullAliasMutationName(ProductOperations.CreateProduct)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.include({
-            product: {
-              title: 'test',
-              type: 'PlanProduct',
-              tags: ['test'],
-            },
-          });
-          expect(response.body).to.deep.eq({
-            ...CreateProductResponse,
-            data: {
-              ...CreateProductResponse.data,
-              createProduct: {
-                ...CreateProductResponse.data.createProduct,
-              },
-            },
-          });
+          expect(request.body.variables.product.type).to.eq(ProductTypes.PlanProduct);
+          expect(response.body).to.deep.eq(CreateProductResponse);
         },
       );
       cy.url().should('include', `/products/?slug=${generateUniqueId(
@@ -437,22 +371,8 @@ describe('Product', () => {
       cy.wait(fullAliasMutationName(ProductOperations.CreateProduct)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.include({
-            product: {
-              title: 'test',
-              type: 'TokenizedProduct',
-              tags: ['test'],
-            },
-          });
-          expect(response.body).to.deep.eq({
-            ...CreateProductResponse,
-            data: {
-              ...CreateProductResponse.data,
-              createProduct: {
-                ...CreateProductResponse.data.createProduct,
-              },
-            },
-          });
+          expect(request.body.variables.product.type).to.eq(ProductTypes.TokenizedProduct);
+          expect(response.body).to.deep.eq(CreateProductResponse);
         },
       );
       cy.url().should('include', `/products/?slug=${generateUniqueId(

@@ -118,7 +118,7 @@ describe('User', () => {
 
     it('Show Navigate to [ORDER] page successfully', () => {
       const { order } = SingleOrderResponse.data;
-      cy.get(`a[href="/orders/?orderId=${order._id}"]`).click();
+      cy.get(`a[href="/orders/?orderId=${order._id}"]`).first().click();
       cy.url().should('include', `/orders/?orderId=${order._id}`);
     });
 
@@ -193,8 +193,9 @@ describe('User', () => {
       );
       cy.get(`a#quotations`).contains(localizations.en.quotations).click();
       cy.location().then((loc) => {
-        expect(loc.pathname).eq(`/users?userId=${user._id}`);
+        expect(loc.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+          userId: user._id,
           tab: 'quotations',
         });
       });
@@ -224,8 +225,9 @@ describe('User', () => {
         },
       );
       cy.location().then((loc) => {
-        expect(loc.pathname).eq(`/users?userId=${user._id}`);
+        expect(loc.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+          userId: user._id,
           tab: 'quotations',
         });
       });
@@ -244,8 +246,9 @@ describe('User', () => {
       );
 
       cy.location().then((loc) => {
-        expect(loc.pathname).eq(`/users?userId=${user._id}`);
-        expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+        expect(loc.pathname).to.eq('/users/');
+        expect(convertURLSearchParamToObj(loc.search)).to.deep.include({
+          userId: user._id,
           tab: 'quotations',
           queryString: 's',
         });
@@ -288,8 +291,9 @@ describe('User', () => {
       );
 
       cy.location().then((loc) => {
-        expect(loc.pathname).eq(`/users?userId=${user._id}`);
+        expect(loc.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+          userId: user._id,
           tab: 'quotations',
         });
       });
@@ -310,8 +314,9 @@ describe('User', () => {
       );
       cy.get(`a#enrollments`).contains(localizations.en.enrollments).click();
       cy.location().then((loc) => {
-        expect(loc.pathname).eq(`/users?userId=${user._id}`);
+        expect(loc.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+          userId: user._id,
           tab: 'enrollments',
         });
       });
@@ -345,8 +350,9 @@ describe('User', () => {
         },
       );
       cy.location().then((loc) => {
-        expect(loc.pathname).eq(`/users?userId=${user._id}`);
+        expect(loc.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+          userId: user._id,
           tab: 'enrollments',
         });
       });
@@ -365,8 +371,9 @@ describe('User', () => {
       );
 
       cy.location().then((loc) => {
-        expect(loc.pathname).eq(`/users?userId=${user._id}`);
-        expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+        expect(loc.pathname).to.eq('/users/');
+        expect(convertURLSearchParamToObj(loc.search)).to.deep.include({
+          userId: user._id,
           tab: 'enrollments',
           queryString: 's',
         });
@@ -409,8 +416,9 @@ describe('User', () => {
       );
 
       cy.location().then((loc) => {
-        expect(loc.pathname).eq(`/users?userId=${user._id}`);
+        expect(loc.pathname).to.eq('/users/');
         expect(convertURLSearchParamToObj(loc.search)).to.deep.eq({
+          userId: user._id,
           tab: 'enrollments',
         });
       });
