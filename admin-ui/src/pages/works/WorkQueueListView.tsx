@@ -15,7 +15,7 @@ import {
   convertSortFieldsToQueryFormat,
   normalizeQuery,
 } from '../../modules/common/utils/utils';
-import { ISortOptionInput, IWorkStatus } from '../../gql/types';
+import { ISortOptionInput, IWorkStatus, IWorkType } from '../../gql/types';
 import groupMessageWorks from '../../modules/work/utils/groupMessageWorks';
 import { EnvelopeIcon, RectangleStackIcon } from '@heroicons/react/24/outline';
 import useActiveWorkTypes from '../../modules/work/hooks/useActiveWorkTypes';
@@ -48,11 +48,11 @@ const WorkQueueListView = () => {
   }
   const filter = {
     created: {
-      start: query?.start,
-      end: query?.end,
+      start: query?.start as string,
+      end: query?.end as string,
     },
     status: (query?.status as string)?.split(',') as IWorkStatus[],
-    types: currentTypes.filter(Boolean),
+    types: currentTypes.filter(Boolean) as IWorkType[],
   };
   const limit = parseInt(query?.limit as string, 10) || DefaultLimit;
   const offset = parseInt(query?.skip as string, 10) || 0;
