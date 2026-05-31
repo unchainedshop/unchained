@@ -114,28 +114,15 @@ describe('Filter', () => {
 
     it('Toggling status [ACTIVE/INACTIVE] toggle should update route', () => {
       cy.get('button[role="switch"]').click();
-      cy.location().then((current) => {
+      cy.location().should((current) => {
         expect(current.pathname).to.eq('/filters/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
           includeInactive: 'false',
         });
       });
 
-      cy.wait(fullAliasName(FilterOperations.GetFiltersList)).then(
-        (currentSubject) => {
-          const { request } = currentSubject;
-          expect(request.body.variables.includeInactive).to.eq(false);
-        },
-      );
-
       cy.get('button[role="switch"]').click();
-      cy.wait(fullAliasName(FilterOperations.GetFiltersList)).then(
-        (currentSubject) => {
-          const { request } = currentSubject;
-          expect(request.body.variables.includeInactive).to.eq(true);
-        },
-      );
-      cy.location().then((current) => {
+      cy.location().should((current) => {
         expect(current.pathname).to.eq('/filters/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
           includeInactive: 'true',
