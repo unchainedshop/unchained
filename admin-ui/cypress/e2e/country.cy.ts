@@ -265,7 +265,7 @@ describe('Countries', () => {
       .click({ force: true });
     cy.get('button').contains(localizations.en.edit).click();
     cy.url().should('include', `/country/?countryId=${country._id}`);
-    cy.get('button[aria-describedby="header-delete-button"]')
+    cy.get('button')
       .contains(localizations.en.delete)
       .click();
     cy.get('button#danger_continue')

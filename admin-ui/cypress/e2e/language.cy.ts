@@ -212,7 +212,7 @@ describe('Languages', () => {
     cy.location('pathname').should('eq', '/language/');
     cy.visit(`/language?languageId=${language._id}`);
     cy.url().should('include', `/language/?languageId=${language._id}`);
-    cy.get('button[aria-describedby="header-delete-button"]')
+    cy.get('button')
       .contains(localizations.en.delete)
       .click();
     cy.get('button#danger_continue')

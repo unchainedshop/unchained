@@ -423,18 +423,14 @@ describe('Product', () => {
 
     it('Delete product button should be visible for unpublished/draft product', () => {
       cy.get(`a[href="/products/?slug=${DRAFT_PRODUCT_SLUG}"]`).first().click();
-      cy.get(
-        'button[aria-describedby="header-delete-button"]',
-      )
+      cy.get('button').contains(localizations.en.delete)
         .contains(localizations.en.delete)
         .should('be.visible');
     });
 
     it('Delete product button should [NOT] be visible for published product', () => {
       cy.get(`a[href="/products/?slug=${ACTIVE_PRODUCT_SLUG}"]`).first().click();
-      cy.get(
-        'button[aria-describedby="header-delete-button"]',
-      ).should('not.exist');
+      cy.get('button').contains(localizations.en.delete).should('not.exist');
     });
 
     it('[UNPUBLISH] product successfully', () => {
@@ -464,9 +460,7 @@ describe('Product', () => {
       cy.get(`a[href="/products/?slug=${generateUniqueId(firstProduct)}"]`)
         .first()
         .click();
-      cy.get(
-        'button[aria-describedby="header-delete-button"]',
-      ).click();
+      cy.get('button').contains(localizations.en.delete).click();
 
       cy.get('button#danger_continue')
         .should('contain.text', localizations.en.continue)
@@ -492,9 +486,7 @@ describe('Product', () => {
       cy.get(`a[href="/products/?slug=${generateUniqueId(firstProduct)}"]`)
         .first()
         .click();
-      cy.get(
-        'button[aria-describedby="header-delete-button"]',
-      ).click();
+      cy.get('button').contains(localizations.en.delete).click();
 
       cy.get('button#danger_cancel')
         .should('contain.text', localizations.en.cancel)

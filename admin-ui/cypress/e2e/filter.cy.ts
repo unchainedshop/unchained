@@ -531,7 +531,7 @@ describe('Filter', () => {
       );
       cy.get('input[name="key"]').type(SingleFilterResponse.data.filter.key);
       cy.get('select[name="type"]').select(firstFilterType.value);
-      cy.get(`button[aria-label="${localizations.en.delete}"]`).click();
+      cy.get('button.border-rose-500').first().click();
       cy.get('input[type="submit"]')
         .contains(localizations.en.create_filter)
         .click();
@@ -608,7 +608,7 @@ describe('Filter', () => {
       );
       cy.get('input[name="key"]').type(SingleFilterResponse.data.filter.key);
       cy.get('select[name="type"]').select(firstFilterType.value);
-      cy.get(`button[aria-label="${localizations.en.delete}"]`).click();
+      cy.get('button.border-rose-500').first().click();
       cy.get('input[type="submit"]')
         .contains(localizations.en.create_filter)
         .click();
