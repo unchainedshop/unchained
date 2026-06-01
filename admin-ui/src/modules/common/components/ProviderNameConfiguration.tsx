@@ -1,4 +1,4 @@
-import Badge from './Badge';
+import Badge from '@/components/ui/Badge';
 
 const ProviderNameConfiguration = ({ configuration, color }) => {
   let normalizedJSON = null;

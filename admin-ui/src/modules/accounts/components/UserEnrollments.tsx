@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import SearchField from '../../common/components/SearchField';
+import SearchField from '@/components/ui/SearchField';
 import EnrollmentList from '../../enrollment/components/EnrollmentList';
 import useUserEnrollments from '../../enrollment/hooks/useUserEnrollments';
 

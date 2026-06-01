@@ -4,10 +4,10 @@ import { IRoleAction } from '../../gql/types';
 import { useRouter } from 'next/router';
 import { useIntl } from 'react-intl';
 import useAuth from '../../modules/Auth/useAuth';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
 
 import NewProviderForm from '../../modules/common/components/NewProviderForm';
-import PageHeader from '../../modules/common/components/PageHeader';
+import PageHeader from '@/components/ui/PageHeader';
 import convertArrayOfObjectToObject from '../../modules/common/convertArrayOfObjectToObject';
 import useCreateDeliveryProvider from '../../modules/delivery-provider/hooks/useCreateDeliveryProvider';
 import useDeliveryInterfacesByType from '../../modules/delivery-provider/hooks/useDeliveryInterfacesByType';

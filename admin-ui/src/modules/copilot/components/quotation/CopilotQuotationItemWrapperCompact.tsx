@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useIntl } from 'react-intl';
 import { formatDistance } from 'date-fns';
 import CopyableId from '../shared/CopyableId';
-import Badge from '../../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import { QUOTATION_STATUS } from '../../../common/data/miscellaneous';
 import ConfigurationDisplay from '../shared/ConfigurationDisplay';
 

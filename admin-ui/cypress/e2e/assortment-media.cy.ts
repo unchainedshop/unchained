@@ -147,7 +147,7 @@ describe('Assortment Detail Media', () => {
   });
 
   it('Should [DELETE] media successfully', () => {
-    cy.get('button#delete_button').first().click({ force: true });
+    cy.get('li button.border-rose-500').first().click({ force: true });
     cy.get('button[type="button"]#danger_continue')
       .contains(localizations.en.delete_assortment_media)
       .click();
@@ -175,7 +175,7 @@ describe('Assortment Detail Media', () => {
   });
 
   it('Should [CANCEL] delete media successfully', () => {
-    cy.get('button#delete_button').first().click({ force: true });
+    cy.get('li button.border-rose-500').first().click({ force: true });
     cy.get('button[type="button"]#danger_cancel')
       .contains(localizations.en.cancel)
       .click();
@@ -186,7 +186,7 @@ describe('Assortment Detail Media', () => {
       TranslatedAssortmentMediaTextsResponse.data
         .translatedAssortmentMediaTexts;
 
-    cy.get('button#edit').first().click();
+    cy.get('button.bg-transparent.border-transparent').first().click();
     cy.get('input#title').should('have.value', firstText.title);
     cy.get('input#subtitle').should('have.value', firstText.subtitle);
   });
@@ -197,7 +197,7 @@ describe('Assortment Detail Media', () => {
         .translatedAssortmentMediaTexts;
 
     cy.selectLocale(1);
-    cy.get('button#edit').first().click();
+    cy.get('button.bg-transparent.border-transparent').first().click();
     cy.get('input#title').should('have.value', secondTexts.title);
     cy.get('input#subtitle').should('have.value', secondTexts.subtitle);
   });
@@ -207,7 +207,7 @@ describe('Assortment Detail Media', () => {
       TranslatedAssortmentMediaTextsResponse.data
         .translatedAssortmentMediaTexts;
 
-    cy.get('button#edit').first().click();
+    cy.get('button.bg-transparent.border-transparent').first().click();
     cy.get('input#title').clear().type(firstText.title);
     cy.get('input#subtitle').clear().type(firstText.subtitle);
 
@@ -239,7 +239,7 @@ describe('Assortment Detail Media', () => {
 
     cy.selectLocale(1);
     cy.get('select#locale-wrapper').should('not.have.value', '');
-    cy.get('button#edit').first().click();
+    cy.get('button.bg-transparent.border-transparent').first().click();
     cy.get('input#title').clear().type(secondTexts.title);
     cy.get('input#subtitle').clear().type(secondTexts.subtitle);
 
@@ -259,7 +259,7 @@ describe('Assortment Detail Media', () => {
   });
 
   it('Should [CANCEL] in media texts update form', () => {
-    cy.get('button#edit').first().click();
+    cy.get('button.bg-transparent.border-transparent').first().click();
     cy.get('input#title').clear().type('title');
     cy.get('button[type="button"][data-id="cancel_update"]')
       .contains(localizations.en.cancel)

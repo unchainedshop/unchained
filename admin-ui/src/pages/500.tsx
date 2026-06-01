@@ -1,4 +1,4 @@
-import ErrorFallback from '../modules/common/components/ErrorFallback';
+import ErrorFallback from '@/components/ui/ErrorFallback';
 
 const InternalError = () => {
   return <ErrorFallback />;

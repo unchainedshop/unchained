@@ -7,7 +7,7 @@ import { PlusIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
 import { getInterfaceLabel, useFormatPrice } from '../../common/utils/utils';
 import useDeliveryProviderTypes from '../../delivery-provider/hooks/useDeliveryProviderTypes';
-import useDeliveryStatusTypes from '../../delivery-provider/hooks/useDeliveryStatusTypes';
+import useStatusTypes from '../../common/hooks/useStatusTypes';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import AlertMessage from '../../modal/components/AlertMessage';
 import useModal from '../../modal/hooks/useModal';
@@ -18,7 +18,9 @@ import useAuth from '../../Auth/useAuth';
 const OrderDetailDelivery = ({ order }) => {
   const { deliveryProviderType } = useDeliveryProviderTypes();
   const { setModal } = useModal();
-  const { deliveryStatusType } = useDeliveryStatusTypes();
+  const { statusTypes: deliveryStatusType } = useStatusTypes(
+    'OrderDeliveryStatus',
+  );
   const { deliverOrder } = useDeliverOrder();
   const { formatPrice } = useFormatPrice();
   const { formatMessage } = useIntl();

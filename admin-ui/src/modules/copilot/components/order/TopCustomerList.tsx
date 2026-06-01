@@ -1,6 +1,6 @@
 import React from 'react';
 import { useIntl } from 'react-intl';
-import ImageWithFallback from '../../../common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { useFormatPrice } from '../../../common/utils/utils';
 import useFormatDateTime from '../../../common/utils/useFormatDateTime';
 import Link from 'next/link';

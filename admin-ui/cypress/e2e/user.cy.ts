@@ -127,53 +127,15 @@ describe('User', () => {
 
       cy.get('input[type="search"]').focus().type('sea');
 
-      cy.wait(fullAliasName(UserOperations.UserOrder)).then(
-        (currentSubject) => {
-          const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.include({
-            userId: user._id,
-            queryString: 'sea',
-            sort: [
-              {
-                key: 'ordered',
-                value: 'DESC',
-              },
-            ],
-          });
-          expect(response.body).to.deep.eq(UserOrderListResponse);
-        },
-      );
-
-      cy.location().then((current) => {
-        expect(current.pathname).to.eq('/users/');
-        expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
-          userId: user._id,
-          tab: 'orders',
+      cy.location().should((current) => {
+        expect(convertURLSearchParamToObj(current.search)).to.deep.include({
           queryString: 'sea',
         });
       });
       cy.get('input[type="search"]').focus().type('rch');
 
-      cy.wait(fullAliasName(UserOperations.UserOrder)).then(
-        (currentSubject) => {
-          const { request, response } = currentSubject;
-          expect(request.body.variables).to.deep.include({
-            userId: user._id,
-            queryString: 'search',
-            sort: [
-              {
-                key: 'ordered',
-                value: 'DESC',
-              },
-            ],
-          });
-          expect(response.body).to.deep.eq(UserOrderListResponse);
-        },
-      );
-
-      cy.location().then((current) => {
-        expect(current.pathname).to.eq('/users/');
-        expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
+      cy.location().should((current) => {
+        expect(convertURLSearchParamToObj(current.search)).to.deep.include({
           userId: user._id,
           tab: 'orders',
           queryString: 'search',

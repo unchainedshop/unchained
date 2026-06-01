@@ -220,7 +220,7 @@ describe('Product Variation', () => {
       cy.get('.variation-display').first().within(() => {
         cy.get('button').last().click({ force: true });
       });
-      cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
+      cy.get('.fixed.w-48 button').contains(localizations.en.delete).click({ force: true });
       cy.get('div[aria-modal="true"]').should('exist');
       cy.get('#danger_continue')
         .should('contain.text', localizations.en.delete_product_variation)
@@ -240,7 +240,7 @@ describe('Product Variation', () => {
       cy.get('.variation-display').first().within(() => {
         cy.get('button').last().click({ force: true });
       });
-      cy.get('.fixed.w-48 button').contains(localizations.en.delete).click();
+      cy.get('.fixed.w-48 button').contains(localizations.en.delete).click({ force: true });
       cy.get('div[aria-modal="true"]').should('exist');
       cy.get('#danger_cancel')
         .should('contain.text', localizations.en.cancel)
@@ -254,7 +254,7 @@ describe('Product Variation', () => {
       cy.get('.variation-display').first().within(() => {
         cy.get('button').last().click({ force: true });
       });
-      cy.get('.fixed.w-48 button').contains(localizations.en.edit).click();
+      cy.get('.fixed.w-48 button').contains(localizations.en.edit).click({ force: true });
 
       cy.get('form.variation-update-form input[name="title"]')
         .should('have.value', firstVariation.texts.title);
@@ -270,7 +270,7 @@ describe('Product Variation', () => {
       cy.get('.variation-display').first().within(() => {
         cy.get('button').last().click({ force: true });
       });
-      cy.get('.fixed.w-48 button').contains(localizations.en.edit).click();
+      cy.get('.fixed.w-48 button').contains(localizations.en.edit).click({ force: true });
 
       cy.get('form.variation-update-form input[name="title"]')
         .clear()
@@ -301,7 +301,7 @@ describe('Product Variation', () => {
       cy.get('.variation-display').first().within(() => {
         cy.get('button').last().click({ force: true });
       });
-      cy.get('.fixed.w-48 button').contains(localizations.en.edit).click();
+      cy.get('.fixed.w-48 button').contains(localizations.en.edit).click({ force: true });
 
       cy.get('form.variation-update-form input[name="title"]')
         .clear()
@@ -360,6 +360,83 @@ describe('Product Variation', () => {
       )
         .should('have.value', localizations.en.add_option)
         .should('be.disabled');
+    });
+
+    it('Should  [UPDATE VARIATION OPTION TEXT] successfully', () => {
+      const [firstOption] = firstVariation.options;
+      cy.get('.variation-display').first().click();
+
+      cy.get('form.variation-option-update-form button[aria-label="Actions menu"]').first().click({ force: true });
+      cy.get('.fixed.w-48 button').contains(localizations.en.edit).click({ force: true });
+
+      cy.get('form.variation-option-update-form input[name="title"]')
+        .clear()
+        .type('updated option title');
+      cy.get('form.variation-option-update-form input[name="subtitle"]')
+        .clear()
+        .type('updated option subtitle');
+      cy.get('form.variation-option-update-form button[type="submit"]')
+        .contains(localizations.en.save)
+        .click();
+
+      cy.wait(
+        fullAliasMutationName(ProductOperations.UpdateProductVariationTexts),
+      ).then((currentSubject) => {
+        const { request, response } = currentSubject;
+        expect(request.body.variables.productVariationId).to.eq(firstVariation._id);
+        expect(request.body.variables.productVariationOptionValue).to.eq(firstOption.value);
+        expect(request.body.variables.texts[0].title).to.eq('updated option title');
+        expect(request.body.variables.texts[0].subtitle).to.eq('updated option subtitle');
+        expect(response.body).to.deep.eq(UpdateProductVariationTextResponse);
+      });
+    });
+
+    it('Should  [CANCEL UPDATE VARIATION OPTION] successfully', () => {
+      cy.get('.variation-display').first().click();
+
+      cy.get('form.variation-option-update-form button[aria-label="Actions menu"]').first().click({ force: true });
+      cy.get('.fixed.w-48 button').contains(localizations.en.edit).click({ force: true });
+
+      cy.get('form.variation-option-update-form input[name="title"]')
+        .clear()
+        .type('updated option title');
+      cy.get('form.variation-option-update-form button[type="button"]')
+        .contains(localizations.en.cancel)
+        .click();
+
+      cy.get('form.variation-option-update-form input[name="title"]').should('not.exist');
+    });
+
+    it('Should  [REMOVE VARIATION OPTION] successfully', () => {
+      const [firstOption] = firstVariation.options;
+      cy.get('.variation-display').first().click();
+
+      cy.get('form.variation-option-update-form button[aria-label="Actions menu"]').first().click({ force: true });
+      cy.get('.fixed.w-48 button').contains(localizations.en.delete).click({ force: true });
+
+      cy.get('button#danger_continue')
+        .should('contain.text', localizations.en.delete_variation_option)
+        .click();
+
+      cy.wait(
+        fullAliasMutationName(ProductOperations.RemoveProductVariationOption),
+      ).then((currentSubject) => {
+        const { request, response } = currentSubject;
+        expect(request.body.variables.productVariationId).to.eq(firstVariation._id);
+        expect(request.body.variables.productVariationOptionValue).to.eq(firstOption.value);
+        expect(response.body).to.deep.eq(RemoveProductVariationOptionResponse);
+      });
+    });
+
+    it('Should  [CANCEL REMOVING VARIATION OPTION] successfully', () => {
+      cy.get('.variation-display').first().click();
+
+      cy.get('form.variation-option-update-form button[aria-label="Actions menu"]').first().click({ force: true });
+      cy.get('.fixed.w-48 button').contains(localizations.en.delete).click({ force: true });
+
+      cy.get('button#danger_cancel')
+        .should('contain.text', localizations.en.cancel)
+        .click();
     });
   });
 });

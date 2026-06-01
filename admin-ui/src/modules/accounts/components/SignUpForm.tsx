@@ -1,15 +1,15 @@
 import Link from 'next/link';
 import { useIntl } from 'react-intl';
 import FormWrapper from '../../common/components/FormWrapper';
-import ImageWithFallback from '../../common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 import Form from '../../forms/components/Form';
-import FormErrors from '../../forms/components/FormErrors';
-import PasswordField from '../../forms/components/PasswordField';
-import TextField from '../../forms/components/TextField';
+import FormErrors from '@/components/ui/form/FormErrors';
+import PasswordField from '@/components/ui/form/PasswordField';
+import TextField from '@/components/ui/form/TextField';
 
 import useForm from '../../forms/hooks/useForm';
-import Toggle from '../../common/components/Toggle';
+import Toggle from '@/components/ui/Toggle';
 import { useEffect, useState } from 'react';
 const SignUpForm = ({
   onSubmit,

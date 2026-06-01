@@ -1,7 +1,7 @@
 import { useIntl } from 'react-intl';
 import useFormatDateTime from '../utils/useFormatDateTime';
-import ImageWithFallback from './ImageWithFallback';
-import Toggle from './Toggle';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import Toggle from '@/components/ui/Toggle';
 
 const isBoolean = (value) => {
   try {

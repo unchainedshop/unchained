@@ -3,11 +3,11 @@ import { IRoleAction } from '../../../gql/types';
 
 import useAuth from '../../Auth/useAuth';
 import useSystemRoles from '../../common/hooks/useSystemRoles';
-import ChoicesField from '../../forms/components/ChoicesField';
+import ChoicesField from '@/components/ui/form/ChoicesField';
 import Form from '../../forms/components/Form';
-import FormErrors from '../../forms/components/FormErrors';
+import FormErrors from '@/components/ui/form/FormErrors';
 
-import SubmitButton from '../../forms/components/SubmitButton';
+import SubmitButton from '@/components/ui/form/SubmitButton';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 
 import useSetRoles from '../hooks/useSetRoles';

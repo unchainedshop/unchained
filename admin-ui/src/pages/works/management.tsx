@@ -1,7 +1,7 @@
 import { useIntl } from 'react-intl';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import PageHeader from '../../modules/common/components/PageHeader';
-import Tab from '../../modules/common/components/Tab';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import PageHeader from '@/components/ui/PageHeader';
+import Tab from '@/components/ui/Tab';
 import AllocateWorkForm from '../../modules/work/components/AllocateWorkForm';
 import WorkForm from '../../modules/work/components/WorkForm';
 

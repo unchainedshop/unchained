@@ -1,7 +1,8 @@
 import { useIntl } from 'react-intl';
-import Badge from '../../common/components/Badge';
-import DeleteButton from '../../common/components/DeleteButton';
-import ImageWithFallback from '../../common/components/ImageWithFallback';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+import { TrashIcon } from '@heroicons/react/20/solid';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import defaultNextImageLoader from '../../common/utils/defaultNextImageLoader';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 
@@ -47,7 +48,13 @@ const RegisteredWebAuthItem = ({
           <div>{formatDateTime(created)}</div>
           {!removeDisabled && (
             <div className="align-bottom">
-              <DeleteButton onClick={() => onRemoveCredential(_id)} />
+              <Button
+                variant="danger"
+                size="xs"
+                rounded="full"
+                icon={<TrashIcon className="h-5 w-5" />}
+                onClick={() => onRemoveCredential(_id)}
+              />
             </div>
           )}
         </div>

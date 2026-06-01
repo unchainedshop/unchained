@@ -4,11 +4,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useVerifyEmail from '../modules/accounts/hooks/useVerifyEmail';
-import Loading from '../modules/common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import CustomError from '../modules/common/CustomError';
 import useValidateEmailVerificationToken from '../modules/accounts/hooks/useValidateEmailVerificationToken';
 import FormWrapper from '../modules/common/components/FormWrapper';
-import ImageWithFallback from '../modules/common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 const VerifyEmail = () => {
   const { query } = useRouter();

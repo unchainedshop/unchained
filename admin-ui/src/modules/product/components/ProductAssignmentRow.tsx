@@ -3,7 +3,8 @@ import { IRoleAction } from '../../../gql/types';
 
 import { useIntl } from 'react-intl';
 import { ISortDirection } from '../../../gql/types';
-import DeleteButton from '../../common/components/DeleteButton';
+import Button from '@/components/ui/Button';
+import { TrashIcon } from '@heroicons/react/20/solid';
 import UnchainedSelect from '../../common/components/UnchainedSelect';
 import deBounce from '../../common/utils/deBounce';
 import DangerMessage from '../../modal/components/DangerMessage';
@@ -19,7 +20,6 @@ import Table from '../../common/components/Table';
 import Link from 'next/link';
 import generateUniqueId from '../../common/utils/getUniqueId';
 import { SparklesIcon } from '@heroicons/react/24/outline';
-import Button from '../../common/components/Button';
 import ProductAssignmentScaffoldForm from './ProductAssignmentScaffoldForm';
 import useAuth from '../../Auth/useAuth';
 
@@ -160,7 +160,13 @@ const ProductAssignmentRow = ({
       </Table.Cell>
       <Table.Cell>
         {variationProduct && variationProduct._id && (
-          <DeleteButton onClick={handleRemoveAssignment} />
+          <Button
+            variant="danger"
+            size="xs"
+            rounded="full"
+            icon={<TrashIcon className="h-5 w-5" />}
+            onClick={handleRemoveAssignment}
+          />
         )}
       </Table.Cell>
     </Table.Row>

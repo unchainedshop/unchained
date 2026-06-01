@@ -1,7 +1,7 @@
 import { useIntl } from 'react-intl';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import Loading from '../../modules/common/components/Loading';
-import PageHeader from '../../modules/common/components/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import Loading from '@/components/ui/Loading';
+import PageHeader from '@/components/ui/PageHeader';
 import EventDetail from '../../modules/event/components/EventDetail';
 import useEvent from '../../modules/event/hooks/useEvent';
 

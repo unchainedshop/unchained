@@ -7,8 +7,8 @@ import useAuth from '../../Auth/useAuth';
 import FormWrapper from '../../common/components/FormWrapper';
 
 import Form from '../../forms/components/Form';
-import SubmitButton from '../../forms/components/SubmitButton';
-import TextField from '../../forms/components/TextField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import TextField from '@/components/ui/form/TextField';
 import useForm from '../../forms/hooks/useForm';
 import useProductWarehousing from '../hooks/useProductWarehousing';
 import useUpdateProductWarehousing from '../hooks/useUpdateProductWarehousing';

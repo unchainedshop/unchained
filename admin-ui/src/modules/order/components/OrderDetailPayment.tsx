@@ -10,14 +10,15 @@ import useModal from '../../modal/hooks/useModal';
 import usePayOrder from '../hooks/usePayOrder';
 import { getInterfaceLabel, useFormatPrice } from '../../common/utils/utils';
 import usePaymentProviderTypes from '../../payment-providers/hooks/usePaymentProviderTypes';
-import usePaymentStatusTypes from '../../payment-providers/hooks/usePaymentStatusTypes';
+import useStatusTypes from '../../common/hooks/useStatusTypes';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import StatusInformation from '../../common/components/StatusInformation';
 import useAuth from '../../Auth/useAuth';
 
 const OrderDetailPayment = ({ order }) => {
   const { paymentProviderType } = usePaymentProviderTypes();
-  const { paymentStatusTypes } = usePaymentStatusTypes();
+  const { statusTypes: paymentStatusTypes } =
+    useStatusTypes('OrderPaymentStatus');
   const { formatDateTime } = useFormatDateTime();
   const { formatPrice } = useFormatPrice();
 

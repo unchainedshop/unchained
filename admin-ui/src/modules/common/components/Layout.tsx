@@ -25,7 +25,7 @@ import SideNav from './SideNav';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import useOutsideClick from '../hooks/useOutsideClick';
-import ImageWithFallback from './ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import AuthWrapper from '../../Auth/AuthWrapper';
 import formatUsername from '../utils/formatUsername';
 import { useApolloClient } from '@apollo/client/react';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useIntl } from 'react-intl';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import {
   FolderIcon,
   EyeIcon,
@@ -35,7 +35,7 @@ const AssortmentResultsSummary: React.FC<AssortmentResultsSummaryProps> = ({
     return (
       <div className="flex items-center gap-2">
         <div
-          className={classNames(
+          className={clsx(
             'w-2 h-2 rounded-full',
             isActive ? 'bg-emerald-500' : 'bg-slate-400',
           )}
@@ -64,7 +64,7 @@ const AssortmentResultsSummary: React.FC<AssortmentResultsSummaryProps> = ({
 
   return (
     <div
-      className={classNames(
+      className={clsx(
         'dark:bg-slate-900 rounded-lg border-1 dark:border-slate-700 p-4 my-5',
         className,
       )}

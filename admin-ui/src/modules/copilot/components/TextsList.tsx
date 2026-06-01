@@ -1,5 +1,5 @@
 import React from 'react';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import { GlobeAltIcon } from '@heroicons/react/24/outline';
 import { useIntl } from 'react-intl';
 

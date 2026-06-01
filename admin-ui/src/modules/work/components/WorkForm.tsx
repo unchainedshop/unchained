@@ -6,12 +6,12 @@ import useAuth from '../../Auth/useAuth';
 import FormWrapper from '../../common/components/FormWrapper';
 import convertArrayOfObjectToObject from '../../common/convertArrayOfObjectToObject';
 
-import DatePickerField from '../../forms/components/DatePickerField';
+import DatePickerField from '@/components/ui/form/DatePickerField';
 import Form from '../../forms/components/Form';
-import JSONAreaField from '../../forms/components/JSONAreaField';
-import SelectField from '../../forms/components/SelectField';
-import SubmitButton from '../../forms/components/SubmitButton';
-import TextField from '../../forms/components/TextField';
+import JSONAreaField from '@/components/ui/form/JSONAreaField';
+import SelectField from '@/components/ui/form/SelectField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import TextField from '@/components/ui/form/TextField';
 import useForm, {
   OnSubmitSuccessType,
   OnSubmitType,

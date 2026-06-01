@@ -4,14 +4,14 @@ import { IRoleAction } from '../../../gql/types';
 import { useIntl } from 'react-intl';
 
 import Form from '../../forms/components/Form';
-import SubmitButton from '../../forms/components/SubmitButton';
+import SubmitButton from '@/components/ui/form/SubmitButton';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import useAddAssortmentLink from '../hooks/useAddAssortmentLink';
 import FilterableDropdown from '../../common/components/FilterableDropdown';
-import TagInputField from '../../forms/components/TagInputField';
+import TagInputField from '@/components/ui/form/TagInputField';
 import useAuth from '../../Auth/useAuth';
 import FormWrapper from '../../common/components/FormWrapper';
-import FormErrors from '../../forms/components/FormErrors';
+import FormErrors from '@/components/ui/form/FormErrors';
 import useAssortments from '../hooks/useAssortments';
 import useAssortmentPaths from '../hooks/useAssortmentPaths';
 import { ISortDirection } from '../../../gql/types';

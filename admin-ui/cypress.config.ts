@@ -4,8 +4,8 @@ export default defineConfig({
   defaultCommandTimeout: 5000,
 
   retries: {
-    runMode: 3,
-    openMode: 2,
+    runMode: 2,
+    openMode: 1,
   },
 
   e2e: {
@@ -14,8 +14,8 @@ export default defineConfig({
     baseUrl: 'http://localhost:3000',
     supportFile: 'cypress/support/e2e.ts',
     retries: {
-      openMode: 2,
-      runMode: 3,
+      openMode: 1,
+      runMode: 1,
     },
   },
 

@@ -1,12 +1,12 @@
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import ListHeader from '../../modules/common/components/ListHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import ListHeader from '@/components/ui/ListHeader';
 import InfiniteScroll from '../../modules/common/components/InfiniteScroll';
-import Loading from '../../modules/common/components/Loading';
-import PageHeader from '../../modules/common/components/PageHeader';
-import Toggle from '../../modules/common/components/Toggle';
+import Loading from '@/components/ui/Loading';
+import PageHeader from '@/components/ui/PageHeader';
+import Toggle from '@/components/ui/Toggle';
 import { DefaultLimit } from '../../modules/common/data/miscellaneous';
 import OrderList from '../../modules/order/components/OrderList';
 import useOrders from '../../modules/order/hooks/useOrders';
@@ -16,7 +16,7 @@ import {
 } from '../../modules/common/utils/utils';
 import SearchWithTags from '../../modules/common/components/SearchWithTags';
 import OrderDetailPage from './OrderDetailPage';
-import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import OrderFilters from '../../modules/order/components/OrderFilters';
 import {
   IDeliveryProviderType,

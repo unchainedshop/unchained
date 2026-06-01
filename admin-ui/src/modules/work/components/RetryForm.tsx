@@ -2,11 +2,11 @@ import { useRouter } from 'next/router';
 import { IWork } from '../../../gql/types';
 import { useIntl } from 'react-intl';
 import FormWrapper from '../../common/components/FormWrapper';
-import DatePickerField from '../../forms/components/DatePickerField';
+import DatePickerField from '@/components/ui/form/DatePickerField';
 import Form from '../../forms/components/Form';
-import JSONAreaField from '../../forms/components/JSONAreaField';
-import SubmitButton from '../../forms/components/SubmitButton';
-import TextField from '../../forms/components/TextField';
+import JSONAreaField from '@/components/ui/form/JSONAreaField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import TextField from '@/components/ui/form/TextField';
 import useForm, {
   OnSubmitSuccessType,
   OnSubmitType,

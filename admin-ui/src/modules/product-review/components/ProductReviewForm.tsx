@@ -4,10 +4,10 @@ import { IRoleAction } from '../../../gql/types';
 import useAuth from '../../Auth/useAuth';
 import Form from '../../forms/components/Form';
 
-import SubmitButton from '../../forms/components/SubmitButton';
-import TextField from '../../forms/components/TextField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import TextField from '@/components/ui/form/TextField';
 import useForm from '../../forms/hooks/useForm';
-import TextAreaField from '../../forms/components/TextAreaField';
+import TextAreaField from '@/components/ui/form/TextAreaField';
 
 const ProductReviewForm = ({
   onSubmit,

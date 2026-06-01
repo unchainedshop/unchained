@@ -31,8 +31,11 @@ const ProductTypes = {
   TokenizedProduct: 'TOKENIZED_PRODUCT',
 };
 
+let productTypeOverride: string | null = null;
+
 describe('Product', () => {
   beforeEach(() => {
+    productTypeOverride = null;
     cy.intercept('POST', '/graphql', (req) => {
       const { body } = req;
       if (hasOperationName(req, LanguageOperations.GetLanguagesList)) {
@@ -43,11 +46,14 @@ describe('Product', () => {
         req.reply(ProductListResponse);
       }
       if (hasOperationName(req, ProductOperations.GetSingleProduct)) {
+        const foundProduct = ProductListResponse.data.products.find(
+          ({ _id }) => _id === body.variables.productId,
+        );
         req.reply({
           data: {
-            product: ProductListResponse.data.products.find(
-              ({ _id }) => _id === body.variables.productId,
-            ),
+            product: productTypeOverride
+              ? { ...foundProduct, __typename: productTypeOverride }
+              : foundProduct,
           },
         });
       }
@@ -423,18 +429,14 @@ describe('Product', () => {
 
     it('Delete product button should be visible for unpublished/draft product', () => {
       cy.get(`a[href="/products/?slug=${DRAFT_PRODUCT_SLUG}"]`).first().click();
-      cy.get(
-        'button[aria-describedby="header-delete-button"]',
-      )
+      cy.get('button').contains(localizations.en.delete)
         .contains(localizations.en.delete)
         .should('be.visible');
     });
 
     it('Delete product button should [NOT] be visible for published product', () => {
       cy.get(`a[href="/products/?slug=${ACTIVE_PRODUCT_SLUG}"]`).first().click();
-      cy.get(
-        'button[aria-describedby="header-delete-button"]',
-      ).should('not.exist');
+      cy.get('button').contains(localizations.en.delete).should('not.exist');
     });
 
     it('[UNPUBLISH] product successfully', () => {
@@ -464,9 +466,7 @@ describe('Product', () => {
       cy.get(`a[href="/products/?slug=${generateUniqueId(firstProduct)}"]`)
         .first()
         .click();
-      cy.get(
-        'button[aria-describedby="header-delete-button"]',
-      ).click();
+      cy.get('button').contains(localizations.en.delete).click();
 
       cy.get('button#danger_continue')
         .should('contain.text', localizations.en.continue)
@@ -492,9 +492,7 @@ describe('Product', () => {
       cy.get(`a[href="/products/?slug=${generateUniqueId(firstProduct)}"]`)
         .first()
         .click();
-      cy.get(
-        'button[aria-describedby="header-delete-button"]',
-      ).click();
+      cy.get('button').contains(localizations.en.delete).click();
 
       cy.get('button#danger_cancel')
         .should('contain.text', localizations.en.cancel)
@@ -526,41 +524,66 @@ describe('Product', () => {
   });
 
   context('Displayed tabs for types', () => {
-    beforeEach(() => {
+    it('SimpleProduct should show texts, media, commerce, supply, warehousing tabs', () => {
+      productTypeOverride = 'SimpleProduct';
       cy.get(`a[href="/products/?slug=${DRAFT_PRODUCT_SLUG}"]`).first().click();
-    });
-    it('SimpleProduct', () => {
       cy.get('a#texts').should('contain.text', localizations.en.text);
       cy.get('a#media').should('contain.text', localizations.en.media);
       cy.get('a#commerce').should('contain.text', localizations.en.commerce);
       cy.get('a#supply').should('contain.text', localizations.en.supply);
-      cy.get('a#warehousing').should(
-        'contain.text',
-        localizations.en.warehousing,
-      );
-      /* Tabs not applicable to this product type */
+      cy.get('a#warehousing').should('contain.text', localizations.en.warehousing);
+      cy.get('a#variations').should('not.exist');
+      cy.get('a#assignments').should('not.exist');
+      cy.get('a#subscriptions').should('not.exist');
+      cy.get('a#bundled_products').should('not.exist');
     });
 
-    it('ConfigurableProduct', () => {
+    it('ConfigurableProduct should show texts, media, variations, assignments tabs', () => {
+      productTypeOverride = 'ConfigurableProduct';
+      cy.get(`a[href="/products/?slug=${DRAFT_PRODUCT_SLUG}"]`).first().click();
       cy.get('a#texts').should('contain.text', localizations.en.text);
       cy.get('a#media').should('contain.text', localizations.en.media);
+      cy.get('a#variations').should('contain.text', localizations.en.variations);
+      cy.get('a#assignments').should('contain.text', localizations.en.assignments);
+      cy.get('a#commerce').should('not.exist');
+      cy.get('a#supply').should('not.exist');
+      cy.get('a#warehousing').should('not.exist');
     });
 
-    it('PlanProduct', () => {
+    it('PlanProduct should show texts, media, commerce, subscriptions tabs', () => {
+      productTypeOverride = 'PlanProduct';
+      cy.get(`a[href="/products/?slug=${DRAFT_PRODUCT_SLUG}"]`).first().click();
       cy.get('a#texts').should('contain.text', localizations.en.text);
       cy.get('a#media').should('contain.text', localizations.en.media);
       cy.get('a#commerce').should('contain.text', localizations.en.commerce);
+      cy.get('a#subscriptions').should('contain.text', localizations.en.subscriptions);
+      cy.get('a#variations').should('not.exist');
+      cy.get('a#supply').should('not.exist');
+      cy.get('a#warehousing').should('not.exist');
     });
 
-    it('BundleProduct', () => {
+    it('BundleProduct should show texts, media, commerce, bundled_products tabs', () => {
+      productTypeOverride = 'BundleProduct';
+      cy.get(`a[href="/products/?slug=${DRAFT_PRODUCT_SLUG}"]`).first().click();
       cy.get('a#texts').should('contain.text', localizations.en.text);
       cy.get('a#media').should('contain.text', localizations.en.media);
       cy.get('a#commerce').should('contain.text', localizations.en.commerce);
+      cy.get('a#bundled_products').should('contain.text', localizations.en.bundled_items);
+      cy.get('a#variations').should('not.exist');
+      cy.get('a#supply').should('not.exist');
+      cy.get('a#warehousing').should('not.exist');
     });
-    it('TokenizedProduct', () => {
+
+    it('TokenizedProduct should show texts, media, commerce, token tabs', () => {
+      productTypeOverride = 'TokenizedProduct';
+      cy.get(`a[href="/products/?slug=${DRAFT_PRODUCT_SLUG}"]`).first().click();
       cy.get('a#texts').should('contain.text', localizations.en.text);
       cy.get('a#media').should('contain.text', localizations.en.media);
       cy.get('a#commerce').should('contain.text', localizations.en.commerce);
+      cy.get('a#token').should('contain.text', localizations.en.token);
+      cy.get('a#variations').should('not.exist');
+      cy.get('a#supply').should('not.exist');
+      cy.get('a#warehousing').should('not.exist');
     });
   });
 });

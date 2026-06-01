@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import constructTangleLayout from '../utils/contructTangleLayout';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import generateUniqueId from '../../common/utils/getUniqueId';
 
 const color = scaleOrdinal(schemeDark2);

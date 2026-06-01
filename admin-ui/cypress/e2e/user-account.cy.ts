@@ -194,7 +194,7 @@ describe('User', () => {
             .contains(localizations.en.send_verification_mail)
             .should('be.visible');
         }
-        cy.get('button#delete_button').should('be.visible');
+        cy.get('button.border-rose-500').should('be.visible');
       });
     });
 
@@ -226,7 +226,7 @@ describe('User', () => {
     });
 
     it('Should [DELETE EMAIL] successfully', () => {
-      cy.get('button#delete_button').first().click();
+      cy.get('button.border-rose-500').eq(1).click();
 
       cy.get('button#danger_continue')
         .contains(localizations.en.delete_email)

@@ -3,9 +3,9 @@ import { IRoleAction } from '../../gql/types';
 
 import { useIntl } from 'react-intl';
 import useUser from '../../modules/accounts/hooks/useUser';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
 
-import PageHeader from '../../modules/common/components/PageHeader';
+import PageHeader from '@/components/ui/PageHeader';
 import UserSettings from '../../modules/accounts/components/UserSettings';
 import useDeleteUser from '../../modules/accounts/hooks/useDeleteUser';
 import { useCallback } from 'react';

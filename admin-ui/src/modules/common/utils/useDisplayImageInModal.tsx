@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl';
 import useModal from '../../modal/hooks/useModal';
-import ImageWithFallback from '../components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 const useDisplayImageInModal = () => {
   const { setModal } = useModal();

@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useState } from 'react';
 import { useIntl } from 'react-intl';
 import { UserCircleIcon } from '@heroicons/react/24/outline';
@@ -85,7 +85,7 @@ const MediaUploader = ({
         >
           <label htmlFor="file-upload" className="block">
             <div
-              className={classNames(
+              className={clsx(
                 'flex justify-center rounded-md border-1 border-dashed border-slate-300 px-6 py-10 cursor-pointer hover:border-slate-400 dark:hover:border-slate-500 dark:border-slate-600 dark:text-slate-400 transition-colors',
                 {
                   'border-slate-950': dragArea,

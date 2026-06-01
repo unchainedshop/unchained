@@ -4,8 +4,8 @@ import { IRoleAction } from '../../gql/types';
 import { useIntl } from 'react-intl';
 
 import CreateUserForm from '../../modules/accounts/components/CreateUserForm';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import PageHeader from '../../modules/common/components/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import PageHeader from '@/components/ui/PageHeader';
 import useAuth from '../../modules/Auth/useAuth';
 import useEnrollUser from '../../modules/accounts/hooks/useEnrollUser.ts';
 

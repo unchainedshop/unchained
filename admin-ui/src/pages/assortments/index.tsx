@@ -2,10 +2,10 @@ import { useIntl } from 'react-intl';
 import { IRoleAction } from '../../gql/types';
 
 import { useRouter } from 'next/router';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import ListHeader from '../../modules/common/components/ListHeader';
-import PageHeader from '../../modules/common/components/PageHeader';
-import Toggle from '../../modules/common/components/Toggle';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import ListHeader from '@/components/ui/ListHeader';
+import PageHeader from '@/components/ui/PageHeader';
+import Toggle from '@/components/ui/Toggle';
 
 import { DefaultLimit } from '../../modules/common/data/miscellaneous';
 
@@ -17,7 +17,7 @@ import SearchWithTags from '../../modules/common/components/SearchWithTags';
 import useAssortmentsCount from '../../modules/assortment/hooks/useAssortmentsCount';
 import AssortmentDetailPage from './AssortmentDetailPage';
 import LocaleWrapper from '../../modules/common/components/LocaleWrapper';
-import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import useApp from '../../modules/common/hooks/useApp';
 import AssortmentExport from '../../modules/assortment/components/AssortmentExport';
 import AssortmentImport from '../../modules/assortment/components/AssortmentImport';

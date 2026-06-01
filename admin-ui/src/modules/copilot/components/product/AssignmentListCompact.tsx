@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useIntl } from 'react-intl';
 import Link from 'next/link';
-import ImageWithFallback from '../../../common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import generateUniqueId from '../../../common/utils/getUniqueId';
 import { useFormatPrice } from '../../../common/utils/utils';
 

@@ -2,7 +2,7 @@ import { useIntl } from 'react-intl';
 import { IRoleAction } from '../../../gql/types';
 
 import useAuth from '../../Auth/useAuth';
-import Loading from '../../common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import InfiniteScroll from '../../common/components/InfiniteScroll';
 import Table from '../../common/components/Table';
 import useFilters from '../hooks/useFilters';

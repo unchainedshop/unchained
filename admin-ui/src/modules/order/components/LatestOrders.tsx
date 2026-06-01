@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import Loading from '../../common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import { convertSortFieldsToQueryFormat } from '../../common/utils/utils';
 import useOrders from '../hooks/useOrders';
 import OrderList from './OrderList';

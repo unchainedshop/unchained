@@ -2,12 +2,12 @@ import { useIntl } from 'react-intl';
 import { IRoleAction } from '../../../gql/types';
 
 import useAuth from '../../Auth/useAuth';
-import Toggle from '../../common/components/Toggle';
+import Toggle from '@/components/ui/Toggle';
 import Form from '../../forms/components/Form';
 
-import SubmitButton from '../../forms/components/SubmitButton';
-import TextField from '../../forms/components/TextField';
-import SelectField from '../../forms/components/SelectField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import TextField from '@/components/ui/form/TextField';
+import SelectField from '@/components/ui/form/SelectField';
 import useForm from '../../forms/hooks/useForm';
 import { isContractAddress } from '../../forms/lib/validators';
 

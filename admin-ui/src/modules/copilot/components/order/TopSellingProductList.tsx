@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useIntl } from 'react-intl';
 import { useFormatPrice } from '../../../common/utils/utils';
-import ImageWithFallback from '../../../common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import generateUniqueId from '../../../common/utils/getUniqueId';
 import { ProductStatusBadge } from '../../../product/components/ProductStatusBadge';
 import useFormatDateTime from '../../../common/utils/useFormatDateTime';

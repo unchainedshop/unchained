@@ -19,7 +19,7 @@ import useAssortmentProducts from '../hooks/useAssortmentProducts';
 import useRemoveAssortmentProduct from '../hooks/useRemoveAssortmentProduct';
 import AssortmentProductForm from './AssortmentProductForm';
 import AssortmentProductList from './AssortmentProductList';
-import Loading from '../../common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import useReorderAssortmentProducts from '../hooks/useReorderAssortmentProducts';
 import SelfDocumentingView from '../../common/components/SelfDocumentingView';
 import useAuth from '../../Auth/useAuth';

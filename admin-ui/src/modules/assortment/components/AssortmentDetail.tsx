@@ -14,8 +14,9 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import LocaleWrapper from '../../common/components/LocaleWrapper';
 import SelectOptions from '../../common/components/SelectOptions';
-import HeaderDeleteButton from '../../common/components/HeaderDeleteButton';
-import ErrorBoundary from '../../common/components/ErrorBoundary';
+import Button from '@/components/ui/Button';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import DangerMessage from '../../modal/components/DangerMessage';
 import useRemoveAssortment from '../hooks/useRemoveAssortment';
 import AssortmentTextForm from './AssortmentTextForm';
@@ -24,8 +25,8 @@ import AssortmentLinks from './AssortmentLinks';
 import AssortmentProducts from './AssortmentProducts';
 import AssortmentFilters from './AssortmentFilters';
 import useUpdateAssortment from '../hooks/useUpdateAssortment';
-import Tab from '../../common/components/Tab';
-import TagList from '../../common/components/TagList';
+import Tab from '@/components/ui/Tab';
+import TagList from '@/components/ui/Tag/TagList';
 import useAuth from '../../Auth/useAuth';
 import useModal from '../../modal/hooks/useModal';
 import DisplayExtendedFields from '../../common/components/DisplayExtendedFields';
@@ -361,7 +362,12 @@ const AssortmentDetail = ({
               })}
             />
             {hasRole(IRoleAction.ManageAssortments) && (
-              <HeaderDeleteButton onClick={handleDeleteAssortment} />
+              <Button
+                variant="danger"
+                icon={<XMarkIcon className="h-5 w-5" />}
+                text="Delete"
+                onClick={handleDeleteAssortment}
+              />
             )}
           </div>
         )}

@@ -3,13 +3,13 @@ import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 import useForm from '../../forms/hooks/useForm';
 import Form from '../../forms/components/Form';
-import TextField from '../../forms/components/TextField';
-import SelectField from '../../forms/components/SelectField';
-import DatePickerField from '../../forms/components/DatePickerField';
-import EmailField from '../../forms/components/EmailField';
-import PasswordField from '../../forms/components/PasswordField';
-import SaveAndCancelButtons from '../../common/components/SaveAndCancelButtons';
-import FormErrors from '../../forms/components/FormErrors';
+import TextField from '@/components/ui/form/TextField';
+import SelectField from '@/components/ui/form/SelectField';
+import DatePickerField from '@/components/ui/form/DatePickerField';
+import EmailField from '@/components/ui/form/EmailField';
+import PasswordField from '@/components/ui/form/PasswordField';
+import SaveAndCancelButtons from '@/components/ui/SaveAndCancelButtons';
+import FormErrors from '@/components/ui/form/FormErrors';
 import { validateBirthdate } from '../../forms/lib/validators';
 
 const CreateUserForm = ({ onSubmit, onSubmitSuccess }) => {

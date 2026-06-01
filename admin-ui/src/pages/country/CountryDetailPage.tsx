@@ -4,8 +4,8 @@ import { IRoleAction } from '../../gql/types';
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 import FormWrapper from '../../modules/common/components/FormWrapper';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import PageHeader from '../../modules/common/components/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import PageHeader from '@/components/ui/PageHeader';
 
 import CountryForm from '../../modules/country/components/CountryForm';
 import useCountry from '../../modules/country/hooks/useCountry';
@@ -13,8 +13,9 @@ import useRemoveCountry from '../../modules/country/hooks/useRemoveCountry';
 import useUpdateCountry from '../../modules/country/hooks/useUpdateCountry';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
 import useModal from '../../modules/modal/hooks/useModal';
-import HeaderDeleteButton from '../../modules/common/components/HeaderDeleteButton';
-import Loading from '../../modules/common/components/Loading';
+import Button from '@/components/ui/Button';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import Loading from '@/components/ui/Loading';
 import { normalizeCountryISOCode } from '../../modules/common/utils/utils';
 import useAuth from '../../modules/Auth/useAuth';
 
@@ -84,7 +85,12 @@ const CountryDetailPage = ({ countryId }) => {
           headerText={normalizeCountryISOCode(locale, country?.isoCode)}
         />
         {hasRole(IRoleAction.ManageCountries) && (
-          <HeaderDeleteButton onClick={onDelete} />
+          <Button
+            variant="danger"
+            icon={<XMarkIcon className="h-5 w-5" />}
+            text="Delete"
+            onClick={onDelete}
+          />
         )}
       </div>
       {loading ? (

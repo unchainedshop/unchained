@@ -1,13 +1,13 @@
 import { useIntl } from 'react-intl';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import Table from '../../common/components/Table';
 
 import { WORK_STATUSES } from '../../common/data/miscellaneous';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import useFormatWorkDurations from '../utils/useFormatWorkDurations';
-import Tooltip from '../../common/components/ToolTip';
+import Tooltip from '@/components/ui/ToolTip';
 import RetryStatistics from './RetryStatistics';
 
 const WorkListItem = ({ work }) => {

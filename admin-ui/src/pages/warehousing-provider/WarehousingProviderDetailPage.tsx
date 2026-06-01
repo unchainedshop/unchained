@@ -4,16 +4,17 @@ import { IRoleAction } from '../../gql/types';
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import PageHeader from '../../modules/common/components/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import PageHeader from '@/components/ui/PageHeader';
 import useRemoveWarehousingProvider from '../../modules/warehousing-providers/hooks/useRemoveWarehousingProvider';
 import useUpdateWarehousingProvider from '../../modules/warehousing-providers/hooks/useUpdateWarehousingProvider';
 import useWarehousingProvider from '../../modules/warehousing-providers/hooks/useWarehousingProvider';
 import useModal from '../../modules/modal/hooks/useModal';
 import ProviderDetail from '../../modules/common/components/ProviderDetail';
-import Loading from '../../modules/common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
-import HeaderDeleteButton from '../../modules/common/components/HeaderDeleteButton';
+import Button from '@/components/ui/Button';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { getInterfaceLabel } from '../../modules/common/utils/utils';
 import useAuth from '../../modules/Auth/useAuth';
 
@@ -93,7 +94,12 @@ const WarehousingProviderDetailPage = ({ warehousingProviderId }) => {
           )}
         />
         {hasRole(IRoleAction.ManageWarehousingProviders) && (
-          <HeaderDeleteButton onClick={handleOnClick} />
+          <Button
+            variant="danger"
+            icon={<XMarkIcon className="h-5 w-5" />}
+            text="Delete"
+            onClick={handleOnClick}
+          />
         )}
       </div>
 

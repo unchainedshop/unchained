@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useIntl } from 'react-intl';
 import useCurrentUser from '../modules/accounts/hooks/useCurrentUser';
 import FormWrapper from '../modules/common/components/FormWrapper';
-import ImageWithFallback from '../modules/common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 const NotAuthorized = () => {
   const { formatMessage } = useIntl();

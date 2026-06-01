@@ -1,8 +1,8 @@
 import { CheckIcon } from '@heroicons/react/24/outline';
 import { useIntl } from 'react-intl';
-import SaveAndCancelButtons from '../../common/components/SaveAndCancelButtons';
+import SaveAndCancelButtons from '@/components/ui/SaveAndCancelButtons';
 import Form from '../../forms/components/Form';
-import JSONAreaField from '../../forms/components/JSONAreaField';
+import JSONAreaField from '@/components/ui/form/JSONAreaField';
 import useForm from '../../forms/hooks/useForm';
 
 const QuotationConfigurationForm = ({

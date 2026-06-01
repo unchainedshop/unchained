@@ -1,12 +1,12 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useIntl } from 'react-intl';
-import ImageWithFallback from './ImageWithFallback';
-import NoImage from './NoImage';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import NoImage from '@/components/ui/NoImage';
 
 const MediaAvatar = ({ file, className = '' }) => {
   const { formatMessage } = useIntl();
   return (
-    <div className={classNames('h-10 w-10 shrink-0', className)}>
+    <div className={clsx('h-10 w-10 shrink-0', className)}>
       {file ? (
         <ImageWithFallback
           className="relative h-10 w-10 rounded-sm"

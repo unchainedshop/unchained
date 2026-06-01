@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useIntl } from 'react-intl';
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
-import Badge from '../../common/components/Badge';
-import Portal from '../../common/components/Portal';
+import Badge from '@/components/ui/Badge';
+import Portal from '@/components/ui/Portal/Portal';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/20/solid';
 import { useMenuPosition } from '../hooks/useMenuPosition';
 

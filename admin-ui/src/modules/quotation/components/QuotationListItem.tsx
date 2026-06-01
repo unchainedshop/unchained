@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useIntl } from 'react-intl';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import MediaAvatar from '../../common/components/MediaAvatar';
 import Table from '../../common/components/Table';
 import formatUsername from '../../common/utils/formatUsername';

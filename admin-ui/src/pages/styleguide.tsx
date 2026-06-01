@@ -8,13 +8,20 @@ import {
   CheckIcon,
   ChevronDownIcon,
 } from '@heroicons/react/24/outline';
-import Loading from '../modules/common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import ThemeToggle from '../modules/common/components/ThemeToggle';
 import LanguageToggle from '../modules/common/components/LanguageToggle';
-import Button from '../modules/common/components/Button';
-import DeleteButton from '../modules/common/components/DeleteButton';
-import Badge from '../modules/common/components/Badge';
-import TagList from '../modules/common/components/TagList';
+import Button from '@/components/ui/Button';
+import Badge from '@/components/ui/Badge';
+import TagList from '@/components/ui/Tag/TagList';
+import Toggle from '@/components/ui/Toggle';
+import Accordion from '@/components/ui/Accordion/Accordion';
+import ToolTip from '@/components/ui/ToolTip';
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
+import NoData from '@/components/ui/NoData';
+import CopyableText from '@/components/ui/CopyableText';
+import InfoTextBanner from '@/components/ui/InfoTextBanner';
+import HelpText from '@/components/ui/HelpText';
 
 const StyleGuidePage = () => {
   const { formatMessage } = useIntl();
@@ -432,48 +439,60 @@ const StyleGuidePage = () => {
                 </div>
               </div>
 
-              {/* Specialized Buttons */}
+              {/* Icon Buttons */}
               <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
                 <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
-                  Specialized Icon Buttons
+                  Icon Buttons
                 </h3>
                 <div className="flex items-center space-x-4">
                   <div className="flex flex-col items-center space-y-2">
-                    <DeleteButton onClick={() => alert('Delete clicked!')} />
+                    <Button
+                      variant="danger"
+                      size="xs"
+                      rounded="full"
+                      icon={<TrashIcon className="h-5 w-5" />}
+                      onClick={() => alert('Delete clicked!')}
+                      ariaLabel="Delete"
+                    />
                     <span className="text-xs text-slate-500 dark:text-slate-400">
-                      Default Delete
+                      Delete
                     </span>
                   </div>
                   <div className="flex flex-col items-center space-y-2">
-                    <DeleteButton
-                      onClick={() => alert('Close clicked!')}
+                    <Button
+                      variant="danger"
+                      size="xs"
+                      rounded="full"
                       icon={<XMarkIcon className="h-5 w-5" />}
+                      onClick={() => alert('Close clicked!')}
                       ariaLabel="Close"
                     />
                     <span className="text-xs text-slate-500 dark:text-slate-400">
-                      Close Button
+                      Close
                     </span>
                   </div>
                   <div className="flex flex-col items-center space-y-2">
-                    <DeleteButton
-                      onClick={() => alert('View clicked!')}
+                    <Button
+                      variant="ghost"
+                      size="xs"
+                      rounded="full"
                       icon={<EyeIcon className="h-5 w-5" />}
+                      onClick={() => alert('View clicked!')}
                       ariaLabel="View"
-                      className="text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 focus:ring-blue-500"
                     />
                     <span className="text-xs text-slate-500 dark:text-slate-400">
-                      Custom Icon
+                      View
                     </span>
                   </div>
                   <div className="flex flex-col items-center space-y-2">
-                    <DeleteButton
-                      onClick={() => alert('Custom clicked!')}
-                      textLeft="X"
-                      icon={null}
-                      ariaLabel="Custom text"
+                    <Button
+                      variant="danger"
+                      icon={<XMarkIcon className="h-5 w-5" />}
+                      text="Delete"
+                      onClick={() => alert('Header delete clicked!')}
                     />
                     <span className="text-xs text-slate-500 dark:text-slate-400">
-                      Text Only
+                      Header Delete
                     </span>
                   </div>
                 </div>
@@ -552,6 +571,129 @@ const StyleGuidePage = () => {
                   </span>
                   <LanguageToggle narrowNav={false} />
                 </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Toggle */}
+          <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+              Toggle
+            </h2>
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-8">
+                <Toggle toggleText="Active Filter" toggleKey="active" />
+                <Toggle
+                  toggleText="Disabled Toggle"
+                  toggleKey="disabled"
+                  disabled
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* Accordion */}
+          <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+              Accordion
+            </h2>
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
+              <Accordion
+                data={[
+                  {
+                    header: 'Section 1',
+                    body: (
+                      <p className="text-slate-600 dark:text-slate-400">
+                        Content for section 1
+                      </p>
+                    ),
+                  },
+                  {
+                    header: 'Section 2',
+                    body: (
+                      <p className="text-slate-600 dark:text-slate-400">
+                        Content for section 2
+                      </p>
+                    ),
+                  },
+                  {
+                    header: 'Section 3',
+                    body: (
+                      <p className="text-slate-600 dark:text-slate-400">
+                        Content for section 3
+                      </p>
+                    ),
+                  },
+                ]}
+              />
+            </div>
+          </section>
+
+          {/* Animated Counter */}
+          <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+              Animated Counter
+            </h2>
+            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-8">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+                    <AnimatedCounter value={42} />
+                  </div>
+                  <span className="text-sm text-slate-500">Count: 42</span>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+                    <AnimatedCounter value={1234} />
+                  </div>
+                  <span className="text-sm text-slate-500">Count: 1234</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Utility Components */}
+          <section>
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+              Utility Components
+            </h2>
+            <div className="space-y-6">
+              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
+                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+                  NoData
+                </h3>
+                <NoData message="items" />
+              </div>
+              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
+                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+                  CopyableText
+                </h3>
+                <CopyableText text="abc123-def456-ghi789" />
+              </div>
+              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
+                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+                  ToolTip
+                </h3>
+                <ToolTip text="This is a tooltip message">
+                  <span className="text-sm text-slate-600 dark:text-slate-400 underline cursor-help">
+                    Hover me for tooltip
+                  </span>
+                </ToolTip>
+              </div>
+              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
+                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+                  InfoTextBanner
+                </h3>
+                <InfoTextBanner description="This is an informational banner message." />
+              </div>
+              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
+                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+                  HelpText
+                </h3>
+                <HelpText
+                  messageKey="styleguide_help_example"
+                  defaultMessage="This is a help text that provides additional context."
+                />
               </div>
             </div>
           </section>

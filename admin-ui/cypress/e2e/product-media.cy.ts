@@ -141,7 +141,7 @@ describe('Product Media', () => {
   });
 
   it('Should [DELETE] media successfully', () => {
-    cy.get('button#delete_button').first().click({ force: true });
+    cy.get('button.border-rose-500').first().click({ force: true });
     cy.get('button[type="button"]#danger_continue')
       .contains(localizations.en.delete_product_media)
       .click();
@@ -176,7 +176,7 @@ describe('Product Media', () => {
   });
 
   it('Should [CANCEL] delete media successfully', () => {
-    cy.get('button#delete_button').first().click({ force: true });
+    cy.get('button.border-rose-500').first().click({ force: true });
     cy.get('button[type="button"]#danger_cancel')
       .contains(localizations.en.cancel)
       .click();
@@ -194,7 +194,7 @@ describe('Product Media', () => {
     const { translatedProductMediaTexts: mediaTexts } =
       TranslatedProductMediaTextsResponse.data;
 
-    cy.get('div#edit__icon_button').first().click();
+    cy.get('button.bg-transparent.border-transparent').first().click();
     cy.get('input#title').clear().type(mediaTexts[0].title);
     cy.get('input#subtitle').clear().type(mediaTexts[0].subtitle);
 
@@ -239,7 +239,7 @@ describe('Product Media', () => {
   });
 
   it('Should [CANCEL] in media texts update form', () => {
-    cy.get('div#edit__icon_button').first().click();
+    cy.get('button.bg-transparent.border-transparent').first().click();
     cy.get('input#title').clear().type('title');
     cy.get('button[type="button"][data-id="cancel_update"]')
       .contains(localizations.en.cancel)

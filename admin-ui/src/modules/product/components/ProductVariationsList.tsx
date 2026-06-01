@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
-import Accordion from '../../common/components/Accordion';
+import Accordion from '@/components/ui/Accordion/Accordion';
 import DangerMessage from '../../modal/components/DangerMessage';
 import useModal from '../../modal/hooks/useModal';
 import useRemoveProductVariation from '../hooks/useRemoveProductVariation';

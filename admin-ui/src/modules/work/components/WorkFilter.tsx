@@ -5,7 +5,7 @@ import MultipleSelect from '../../common/components/MultipleSelect';
 import StatusFilter from '../../common/components/StatusFilter';
 import { extractQuery } from '../../common/utils/normalizeFilterKeys';
 import { normalizeQuery } from '../../common/utils/utils';
-import DateRangeFilterInput from '../../common/components/DateRangeFilterInput';
+import DateRangeFilterInput from '@/components/ui/DateRangeFilterInput';
 
 const WORK_STATUSES = ['NEW', 'ALLOCATED', 'SUCCESS', 'FAILED', 'DELETED'];
 

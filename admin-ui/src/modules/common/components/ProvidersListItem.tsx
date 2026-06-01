@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-import Badge from './Badge';
+import Badge from '@/components/ui/Badge';
 import Table from './Table';
 import TableActionsMenu from './TableActionsMenu';
 import { PROVIDER_TYPE_CLASSES } from '../data/miscellaneous';
 import { getInterfaceLabel } from '../utils/utils';
-import ActiveInActive from './ActiveInActive';
+import ActiveInActive from '@/components/ui/ActiveInActive';
 import ProviderNameConfiguration from './ProviderNameConfiguration';
 
 const ProviderListItem = ({

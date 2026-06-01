@@ -1,7 +1,7 @@
 import { useIntl } from 'react-intl';
 import Form from '../../forms/components/Form';
-import SelectField from '../../forms/components/SelectField';
-import SubmitButton from '../../forms/components/SubmitButton';
+import SelectField from '@/components/ui/form/SelectField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
 import useForm from '../../forms/hooks/useForm';
 import FormWrapper from './FormWrapper';
 

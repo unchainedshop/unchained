@@ -8,13 +8,14 @@ import LanguageForm from '../../modules/language/components/LanguageForm';
 import useLanguage from '../../modules/language/hooks/useLanguage';
 import useRemoveLanguage from '../../modules/language/hooks/useRemoveLanguage';
 import useUpdateLanguage from '../../modules/language/hooks/useUpdateLanguage';
-import PageHeader from '../../modules/common/components/PageHeader';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
+import PageHeader from '@/components/ui/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
 import useModal from '../../modules/modal/hooks/useModal';
-import HeaderDeleteButton from '../../modules/common/components/HeaderDeleteButton';
+import Button from '@/components/ui/Button';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import FormWrapper from '../../modules/common/components/FormWrapper';
-import Loading from '../../modules/common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import useAuth from '../../modules/Auth/useAuth';
 
 const LanguageDetailPage = ({ languageId }) => {
@@ -82,7 +83,12 @@ const LanguageDetailPage = ({ languageId }) => {
       <div className="items-center flex min-w-full justify-between gap-3 flex-wrap">
         <PageHeader headerText={normalizeLanguageName(language?.isoCode)} />
         {hasRole(IRoleAction.ManageLanguages) && (
-          <HeaderDeleteButton onClick={onDelete} />
+          <Button
+            variant="danger"
+            icon={<XMarkIcon className="h-5 w-5" />}
+            text="Delete"
+            onClick={onDelete}
+          />
         )}
       </div>
       {loading ? (

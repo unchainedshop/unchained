@@ -9,13 +9,13 @@ import convertArrayOfObjectToObject from '../../common/convertArrayOfObjectToObj
 import useCountries from '../../country/hooks/useCountries';
 import useCurrencies from '../../currency/hooks/useCurrencies';
 
-import CheckboxField from '../../forms/components/CheckboxField';
+import CheckboxField from '@/components/ui/form/CheckboxField';
 import Form from '../../forms/components/Form';
-import FormErrors from '../../forms/components/FormErrors';
-import SelectField from '../../forms/components/SelectField';
-import SubmitButton from '../../forms/components/SubmitButton';
-import TextField from '../../forms/components/TextField';
-import Button from '../../common/components/Button';
+import FormErrors from '@/components/ui/form/FormErrors';
+import SelectField from '@/components/ui/form/SelectField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import TextField from '@/components/ui/form/TextField';
+import Button from '@/components/ui/Button';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import {
   validateProductCommerce,

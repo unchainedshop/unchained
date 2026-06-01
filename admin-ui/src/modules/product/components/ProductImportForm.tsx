@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import Button from '../../common/components/Button';
+import Button from '@/components/ui/Button';
 import parseCSV from 'papaparse';
 import { useIntl } from 'react-intl';
 import { CSVRow, downloadCSV } from '../../common/utils/csvUtils';

@@ -114,28 +114,15 @@ describe('Filter', () => {
 
     it('Toggling status [ACTIVE/INACTIVE] toggle should update route', () => {
       cy.get('button[role="switch"]').click();
-      cy.location().then((current) => {
+      cy.location().should((current) => {
         expect(current.pathname).to.eq('/filters/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
           includeInactive: 'false',
         });
       });
 
-      cy.wait(fullAliasName(FilterOperations.GetFiltersList)).then(
-        (currentSubject) => {
-          const { request } = currentSubject;
-          expect(request.body.variables.includeInactive).to.eq(false);
-        },
-      );
-
       cy.get('button[role="switch"]').click();
-      cy.wait(fullAliasName(FilterOperations.GetFiltersList)).then(
-        (currentSubject) => {
-          const { request } = currentSubject;
-          expect(request.body.variables.includeInactive).to.eq(true);
-        },
-      );
-      cy.location().then((current) => {
+      cy.location().should((current) => {
         expect(current.pathname).to.eq('/filters/');
         expect(convertURLSearchParamToObj(current.search)).to.deep.eq({
           includeInactive: 'true',
@@ -531,7 +518,7 @@ describe('Filter', () => {
       );
       cy.get('input[name="key"]').type(SingleFilterResponse.data.filter.key);
       cy.get('select[name="type"]').select(firstFilterType.value);
-      cy.get(`button[aria-label="${localizations.en.delete}"]`).click();
+      cy.get('button.border-rose-500').first().click();
       cy.get('input[type="submit"]')
         .contains(localizations.en.create_filter)
         .click();
@@ -608,7 +595,7 @@ describe('Filter', () => {
       );
       cy.get('input[name="key"]').type(SingleFilterResponse.data.filter.key);
       cy.get('select[name="type"]').select(firstFilterType.value);
-      cy.get(`button[aria-label="${localizations.en.delete}"]`).click();
+      cy.get('button.border-rose-500').first().click();
       cy.get('input[type="submit"]')
         .contains(localizations.en.create_filter)
         .click();

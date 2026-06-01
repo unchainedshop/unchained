@@ -3,7 +3,7 @@ import React, { useEffect, useMemo } from 'react';
 import useCurrentUser from '../accounts/hooks/useCurrentUser';
 import AuthContext from './AuthContext';
 import loadRoleConfig from '../common/utils/loadRoleConfig';
-import Loading from '../common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import useUsersCount from '../accounts/hooks/useUsersCount';
 
 const AuthWrapper = ({ children }) => {

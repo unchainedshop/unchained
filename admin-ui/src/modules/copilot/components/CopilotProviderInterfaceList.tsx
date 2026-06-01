@@ -2,7 +2,7 @@ import React from 'react';
 import { useIntl } from 'react-intl';
 
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 
 export const InterfaceItemCompact = ({ iface }) => {
   const { formatMessage } = useIntl();

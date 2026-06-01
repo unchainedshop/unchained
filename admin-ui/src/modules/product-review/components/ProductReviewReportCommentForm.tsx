@@ -1,7 +1,7 @@
 import { useIntl } from 'react-intl';
 import Form from '../../forms/components/Form';
-import SubmitButton from '../../forms/components/SubmitButton';
-import TextAreaField from '../../forms/components/TextAreaField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import TextAreaField from '@/components/ui/form/TextAreaField';
 import useForm, {
   OnSubmitSuccessType,
   OnSubmitType,

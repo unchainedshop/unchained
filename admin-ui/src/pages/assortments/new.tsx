@@ -3,9 +3,9 @@ import { useRouter } from 'next/router';
 import { useIntl } from 'react-intl';
 import AssortmentForm from '../../modules/assortment/components/AssortmentForm';
 import useCreateAssortment from '../../modules/assortment/hooks/useCreateAssortment';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
 import FormWrapper from '../../modules/common/components/FormWrapper';
-import PageHeader from '../../modules/common/components/PageHeader';
+import PageHeader from '@/components/ui/PageHeader';
 import generateUniqueId from '../../modules/common/utils/getUniqueId';
 import LocaleWrapper from '../../modules/common/components/LocaleWrapper';
 

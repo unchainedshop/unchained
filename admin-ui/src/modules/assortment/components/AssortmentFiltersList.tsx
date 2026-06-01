@@ -4,7 +4,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 
-import NoData from '../../common/components/NoData';
+import NoData from '@/components/ui/NoData';
 import AssortmentFiltersListItem from './AssortmentFiltersListItem';
 import { IFilter } from '../../../gql/types';
 

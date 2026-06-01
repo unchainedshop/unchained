@@ -1,8 +1,8 @@
 import { useIntl } from 'react-intl';
 
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
-import Badge from '../../common/components/Badge';
-import DetailHeader from '../../common/components/DetailHeader';
+import Badge from '@/components/ui/Badge';
+import DetailHeader from '@/components/ui/DetailHeader';
 import { normalizeCurrencyISOCode } from '../../common/utils/utils';
 
 const EnrollmentDetailHeader = ({ enrollment }) => {

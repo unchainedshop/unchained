@@ -5,8 +5,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import Form from '../../forms/components/Form';
 
-import SubmitButton from '../../forms/components/SubmitButton';
-import TextField from '../../forms/components/TextField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import TextField from '@/components/ui/form/TextField';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 
 import useTranslatedAssortmentTexts from '../hooks/useTranslatedAssortmentTexts';
@@ -14,7 +14,7 @@ import useUpdateAssortmentTexts from '../hooks/useUpdateAssortmentTexts';
 import SelfDocumentingView from '../../common/components/SelfDocumentingView';
 import useAuth from '../../Auth/useAuth';
 import FormWrapper from '../../common/components/FormWrapper';
-import MarkdownTextAreaField from '../../forms/components/MarkdownTextAreaField';
+import MarkdownTextAreaField from '@/components/ui/form/MarkdownTextAreaField';
 import useApp from '../../common/hooks/useApp';
 import useShopInfo from '../../common/hooks/useShopInfo';
 

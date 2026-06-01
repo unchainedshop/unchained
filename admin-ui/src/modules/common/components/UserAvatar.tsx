@@ -1,7 +1,7 @@
 import { useIntl } from 'react-intl';
 import defaultNextImageLoader from '../utils/defaultNextImageLoader';
 import formatUsername from '../utils/formatUsername';
-import ImageWithFallback from './ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { useApolloClient } from '@apollo/client/react';
 import { toast } from 'react-toastify';
 import logOut from '../../accounts/hooks/logOut';

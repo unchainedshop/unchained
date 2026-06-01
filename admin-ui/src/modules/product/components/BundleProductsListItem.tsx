@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import Badge from '../../common/components/Badge';
-import ImageWithFallback from '../../common/components/ImageWithFallback';
-import NoImage from '../../common/components/NoImage';
+import Badge from '@/components/ui/Badge';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import NoImage from '@/components/ui/NoImage';
 import TableActionsMenu from '../../common/components/TableActionsMenu';
 import generateUniqueId from '../../common/utils/getUniqueId';
 

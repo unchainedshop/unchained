@@ -2,12 +2,12 @@ import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import FormWrapper from '../../common/components/FormWrapper';
-import HelpText from '../../common/components/HelpText';
+import HelpText from '@/components/ui/HelpText';
 import useProductAssignments from '../hooks/useProductAssignments';
 import Table from '../../common/components/Table';
 import { matrixGenerator } from '../utils/productAssignment.utils';
 import ProductAssignmentRow from './ProductAssignmentRow';
-import InfoTextBanner from '../../common/components/InfoTextBanner';
+import InfoTextBanner from '@/components/ui/InfoTextBanner';
 
 const ProductAssignmentForm = ({ proxyId, disabled = false }) => {
   const { formatMessage } = useIntl();

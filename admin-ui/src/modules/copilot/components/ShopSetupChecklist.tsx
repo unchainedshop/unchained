@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -75,7 +75,7 @@ const ShopSetupChecklist: React.FC<ShopSetupChecklistProps> = ({
   if (isFullyConfigured && !isSetupMessageDismissed) {
     return (
       <div
-        className={classNames(
+        className={clsx(
           'p-6 bg-gradient-to-r from-emerald-50 to-emerald-50 dark:from-emerald-900/20 dark:to-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-700/50',
           className,
         )}
@@ -221,7 +221,7 @@ const ShopSetupChecklist: React.FC<ShopSetupChecklistProps> = ({
 
   return (
     <div
-      className={classNames(
+      className={clsx(
         'bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden',
         className,
       )}

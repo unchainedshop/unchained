@@ -3,7 +3,7 @@ import Table from '../../common/components/Table';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import formatUsername from '../../common/utils/formatUsername';
 import MediaAvatar from '../../common/components/MediaAvatar';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import { TOKEN_STATUSES } from '../../common/data/miscellaneous';
 
 const TokenListItem = ({ token }) => {

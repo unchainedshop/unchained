@@ -1,7 +1,7 @@
 import { useIntl } from 'react-intl';
 import useShopInfo from '../hooks/useShopInfo';
-import Badge from './Badge';
-import Loading from './Loading';
+import Badge from '@/components/ui/Badge';
+import Loading from '@/components/ui/Loading';
 
 const ShopInformation = () => {
   const { formatMessage, locale } = useIntl();

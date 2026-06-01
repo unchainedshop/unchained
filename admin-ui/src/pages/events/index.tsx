@@ -1,11 +1,11 @@
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 import { VariableIcon } from '@heroicons/react/24/outline';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
 
 import InfiniteScroll from '../../modules/common/components/InfiniteScroll';
-import Loading from '../../modules/common/components/Loading';
-import PageHeader from '../../modules/common/components/PageHeader';
+import Loading from '@/components/ui/Loading';
+import PageHeader from '@/components/ui/PageHeader';
 import { DefaultLimit } from '../../modules/common/data/miscellaneous';
 import EventList from '../../modules/event/components/EventList';
 import useEvents from '../../modules/event/hooks/useEvents';
@@ -16,11 +16,11 @@ import {
   convertSortFieldsToQueryFormat,
   normalizeQuery,
 } from '../../modules/common/utils/utils';
-import ListHeader from '../../modules/common/components/ListHeader';
+import ListHeader from '@/components/ui/ListHeader';
 import SearchWithTags from '../../modules/common/components/SearchWithTags';
 import EventDetailPage from './EventDetailPage';
-import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
-import DateRangeFilterInput from '../../modules/common/components/DateRangeFilterInput';
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
+import DateRangeFilterInput from '@/components/ui/DateRangeFilterInput';
 import { useMemo } from 'react';
 
 const Events = () => {

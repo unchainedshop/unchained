@@ -1,5 +1,5 @@
 import { MoonIcon, SunIcon } from '@heroicons/react/24/outline';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import useTheme from '../hooks/useTheme';
 
 const ThemeToggle = () => {
@@ -25,7 +25,7 @@ const ThemeToggle = () => {
         onClick={handleToggleTheme}
       >
         <SunIcon
-          className={classNames(
+          className={clsx(
             'w-6 h-6 text-slate-600 transition-all ease-out delay-1000',
             {
               hidden: theme === 'dark',
@@ -33,7 +33,7 @@ const ThemeToggle = () => {
           )}
         />
         <MoonIcon
-          className={classNames(
+          className={clsx(
             'w-6 h-6 text-yellow-200 group-hover:text-white transition-colors duration-200',
             {
               hidden: theme === 'light',

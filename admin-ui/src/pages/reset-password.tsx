@@ -6,9 +6,9 @@ import useValidateResetPasswordToken from '../modules/accounts/hooks/useValidate
 import useResetPassword from '../modules/accounts/hooks/useResetPassword';
 import { OnSubmitSuccessType } from '../modules/forms/hooks/useForm';
 import Link from 'next/link';
-import Loading from '../modules/common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import FormWrapper from '../modules/common/components/FormWrapper';
-import ImageWithFallback from '../modules/common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 const PasswordReset = () => {
   const { query, push } = useRouter();

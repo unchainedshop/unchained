@@ -2,14 +2,15 @@ import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 
 import Form from '../../forms/components/Form';
-import SubmitButton from '../../forms/components/SubmitButton';
-import TextField from '../../forms/components/TextField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import TextField from '@/components/ui/form/TextField';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import useModal from '../../modal/hooks/useModal';
 import DangerMessage from '../../modal/components/DangerMessage';
 
-import ActiveInActive from '../../common/components/ActiveInActive';
-import DeleteButton from '../../common/components/DeleteButton';
+import ActiveInActive from '@/components/ui/ActiveInActive';
+import Button from '@/components/ui/Button';
+import { TrashIcon } from '@heroicons/react/20/solid';
 import useRemoveWeb3Address from '../hooks/useRemoveWeb3Address';
 import useAddWeb3Address from '../hooks/useAddWeb3Address';
 import SignWeb3AddressForm from './SignWeb3AddressForm';
@@ -111,9 +112,13 @@ const Web3Addresses = ({ web3Addresses }) => {
                   </a>
                 )}
 
-                <DeleteButton
+                <Button
+                  variant="danger"
+                  size="xs"
+                  rounded="full"
+                  icon={<TrashIcon className="h-5 w-5" />}
                   onClick={() => onRemoveWeb3Address({ address })}
-                  className="ml-2 inline-flex items-center rounded-full bg-white hover:bg-rose-50"
+                  className="ml-2"
                 />
               </div>
             </div>

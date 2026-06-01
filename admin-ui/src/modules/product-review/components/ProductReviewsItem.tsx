@@ -7,17 +7,17 @@ import { useIntl } from 'react-intl';
 import { IRoleAction } from '../../../gql/types';
 
 import { toast } from 'react-toastify';
-import classNames from 'classnames';
-import DeleteButton from '../../common/components/DeleteButton';
+import clsx from 'clsx';
+import Button from '@/components/ui/Button';
+import { TrashIcon } from '@heroicons/react/20/solid';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import DangerMessage from '../../modal/components/DangerMessage';
 import useModal from '../../modal/hooks/useModal';
 import useRemoveProductReview from '../hooks/useRemoveProductReview';
-import Badge from '../../common/components/Badge';
-import ImageWithFallback from '../../common/components/ImageWithFallback';
+import Badge from '@/components/ui/Badge';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import formatUsername from '../../common/utils/formatUsername';
 import useAddProductReviewVote from '../hooks/useAddProductReviewVote';
-import Button from '../../common/components/Button';
 import useRemoveProductReviewVote from '../hooks/useRemoveProductReviewVote';
 import useAuth from '../../Auth/useAuth';
 import useCurrentUser from '../../accounts/hooks/useCurrentUser';
@@ -121,7 +121,7 @@ const ProductReviewsItem = ({
   return (
     <div
       key={review._id}
-      className={classNames(
+      className={clsx(
         'mb-4 rounded-lg shadow-sm bg-white dark:bg-slate-800 p-4',
         {
           'border-rose-200 bg-rose-50 dark:bg-rose-950': review.deleted,
@@ -246,7 +246,7 @@ const ProductReviewsItem = ({
               title="Report review"
             >
               <FlagIcon
-                className={classNames('h-4 w-4', {
+                className={clsx('h-4 w-4', {
                   'text-orange-600 dark:text-orange-400': hasAlreadyVoted(
                     voteTypes.REPORT,
                   ),
@@ -258,7 +258,13 @@ const ProductReviewsItem = ({
             </button>
           )}
           {canDeleteReview && (
-            <DeleteButton onClick={() => onRemove(review._id)} className="" />
+            <Button
+              variant="danger"
+              size="xs"
+              rounded="full"
+              icon={<TrashIcon className="h-5 w-5" />}
+              onClick={() => onRemove(review._id)}
+            />
           )}
           {review.deleted && (
             <Badge

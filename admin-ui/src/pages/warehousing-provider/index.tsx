@@ -6,10 +6,10 @@ import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 import { IWarehousingProviderType } from '../../gql/types';
 import useAuth from '../../modules/Auth/useAuth';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import ListHeader from '../../modules/common/components/ListHeader';
-import Loading from '../../modules/common/components/Loading';
-import PageHeader from '../../modules/common/components/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import ListHeader from '@/components/ui/ListHeader';
+import Loading from '@/components/ui/Loading';
+import PageHeader from '@/components/ui/PageHeader';
 import ProvidersFilter from '../../modules/common/components/ProvidersFilter';
 
 import ProvidersList from '../../modules/common/components/ProvidersList';

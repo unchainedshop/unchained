@@ -3,14 +3,15 @@ import { IRoleAction } from '../../../gql/types';
 
 import { useIntl } from 'react-intl';
 import useAuth from '../../Auth/useAuth';
-import DeleteButton from '../../common/components/DeleteButton';
+import Button from '@/components/ui/Button';
+import { TrashIcon } from '@heroicons/react/20/solid';
 import convertArrayOfObjectToObject from '../../common/convertArrayOfObjectToObject';
 import Form from '../../forms/components/Form';
-import FormErrors from '../../forms/components/FormErrors';
+import FormErrors from '@/components/ui/form/FormErrors';
 
-import SelectField from '../../forms/components/SelectField';
-import SubmitButton from '../../forms/components/SubmitButton';
-import TextField from '../../forms/components/TextField';
+import SelectField from '@/components/ui/form/SelectField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import TextField from '@/components/ui/form/TextField';
 import useForm, {
   OnSubmitSuccessType,
   OnSubmitType,
@@ -125,7 +126,13 @@ const FilterForm = ({
                       })}
                     />
                     <div className="ml-2 shrink-0 mt-8">
-                      <DeleteButton onClick={() => removeConfig(index)} />
+                      <Button
+                        variant="danger"
+                        size="xs"
+                        rounded="full"
+                        icon={<TrashIcon className="h-5 w-5" />}
+                        onClick={() => removeConfig(index)}
+                      />
                     </div>
                   </div>
                 );

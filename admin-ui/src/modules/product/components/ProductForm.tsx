@@ -4,15 +4,15 @@ import { IProductType, IRoleAction } from '../../../gql/types';
 import useAuth from '../../Auth/useAuth';
 
 import Form from '../../forms/components/Form';
-import SelectField from '../../forms/components/SelectField';
-import SubmitButton from '../../forms/components/SubmitButton';
-import TagInputField from '../../forms/components/TagInputField';
-import TextField from '../../forms/components/TextField';
+import SelectField from '@/components/ui/form/SelectField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import TagInputField from '@/components/ui/form/TagInputField';
+import TextField from '@/components/ui/form/TextField';
 import useForm, {
   OnSubmitSuccessType,
   OnSubmitType,
 } from '../../forms/hooks/useForm';
-import HelpText from '../../common/components/HelpText';
+import HelpText from '@/components/ui/HelpText';
 import useApp from '../../common/hooks/useApp';
 
 const ProductForm = ({

@@ -7,10 +7,10 @@ import FormWrapper from '../../common/components/FormWrapper';
 import convertArrayOfObjectToObject from '../../common/convertArrayOfObjectToObject';
 
 import Form from '../../forms/components/Form';
-import FieldWithHelp from '../../forms/components/FieldWithHelp';
-import SelectField from '../../forms/components/SelectField';
-import SubmitButton from '../../forms/components/SubmitButton';
-import HelpText from '../../common/components/HelpText';
+import FieldWithHelp from '@/components/ui/form/FieldWithHelp';
+import SelectField from '@/components/ui/form/SelectField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import HelpText from '@/components/ui/HelpText';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import useProductVariationTypes from '../hooks/useProductVariationTypes';
 

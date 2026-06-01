@@ -4,10 +4,10 @@ import { IRoleAction } from '../../gql/types';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import ListHeader from '../../modules/common/components/ListHeader';
-import PageHeader from '../../modules/common/components/PageHeader';
-import Toggle from '../../modules/common/components/Toggle';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import ListHeader from '@/components/ui/ListHeader';
+import PageHeader from '@/components/ui/PageHeader';
+import Toggle from '@/components/ui/Toggle';
 import { DefaultLimit } from '../../modules/common/data/miscellaneous';
 import FilterList from '../../modules/filter/components/FilterList';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
@@ -22,7 +22,7 @@ import SearchWithTags from '../../modules/common/components/SearchWithTags';
 import useFiltersCount from '../../modules/filter/hooks/useFiltersCount';
 import FilterDetailPage from './FilterDetailPage';
 import LocaleWrapper from '../../modules/common/components/LocaleWrapper';
-import AnimatedCounter from '../../modules/common/components/AnimatedCounter';
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import FilterExport from '../../modules/filter/components/FilterExport';
 import FilterImport from '../../modules/filter/components/FilterImport';
 

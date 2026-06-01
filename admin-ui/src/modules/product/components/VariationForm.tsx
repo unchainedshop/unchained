@@ -1,8 +1,8 @@
 import { useIntl } from 'react-intl';
 import Form from '../../forms/components/Form';
-import TextField from '../../forms/components/TextField';
-import Button from '../../common/components/Button';
-import Badge from '../../common/components/Badge';
+import TextField from '@/components/ui/form/TextField';
+import Button from '@/components/ui/Button';
+import Badge from '@/components/ui/Badge';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import useUpdateProductVariationTexts from '../hooks/useUpdateProductVariationTexts';
 import useApp from '../../common/hooks/useApp';

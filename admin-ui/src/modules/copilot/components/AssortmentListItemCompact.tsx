@@ -1,8 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { useIntl } from 'react-intl';
-import ImageWithFallback from '../../common/components/ImageWithFallback';
-import Badge from '../../common/components/Badge';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import Badge from '@/components/ui/Badge';
 import generateUniqueId from '../../common/utils/getUniqueId';
 import CopyableId from './shared/CopyableId';
 

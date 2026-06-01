@@ -1,7 +1,7 @@
 import { useIntl } from 'react-intl';
 
-import NoData from '../../common/components/NoData';
-import Badge from '../../common/components/Badge';
+import NoData from '@/components/ui/NoData';
+import Badge from '@/components/ui/Badge';
 import Table from '../../common/components/Table';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 

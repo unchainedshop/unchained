@@ -2,7 +2,7 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import { useIntl } from 'react-intl';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
-import DateInputField from '../../common/components/DateInput';
+import DateInputField from '@/components/ui/DateInput';
 
 const UserFilter: React.FC = () => {
   const { parseDate } = useFormatDateTime();

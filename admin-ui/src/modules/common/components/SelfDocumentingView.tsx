@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 const SelfDocumentingView = ({
   documentationLabel,
@@ -10,12 +10,7 @@ const SelfDocumentingView = ({
 }) => {
   return (
     <>
-      <div
-        className={classNames(
-          'mt-5 lg:grid lg:grid-cols-3 lg:gap-6',
-          className,
-        )}
-      >
+      <div className={clsx('mt-5 lg:grid lg:grid-cols-3 lg:gap-6', className)}>
         <div className="lg:col-span-1 mt-10 lg:mt-1">
           <div className="px-4 sm:px-0">
             <h3 className="text-lg text-slate-900 dark:text-slate-200">

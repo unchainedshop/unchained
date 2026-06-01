@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useIntl } from 'react-intl';
 import FormWrapper from '../modules/common/components/FormWrapper';
-import ImageWithFallback from '../modules/common/components/ImageWithFallback';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
 
 const Offline = () => {
   const { formatMessage } = useIntl();

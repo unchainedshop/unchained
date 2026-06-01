@@ -5,8 +5,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import Form from '../../forms/components/Form';
 
-import SubmitButton from '../../forms/components/SubmitButton';
-import TextField from '../../forms/components/TextField';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+import TextField from '@/components/ui/form/TextField';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import useUpdateFilterTexts from '../hooks/useUpdateFilterTexts';
 import useTranslatedFilterTexts from '../hooks/useTranslatedFilterTexts';

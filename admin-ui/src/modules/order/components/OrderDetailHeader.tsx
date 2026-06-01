@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
-import DetailHeader from '../../common/components/DetailHeader';
+import DetailHeader from '@/components/ui/DetailHeader';
 
 const OrderDetailHeader = ({ order }) => {
   const { formatMessage, locale } = useIntl();

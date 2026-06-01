@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { IRoleAction } from '../../../gql/types';
 
 import { useIntl } from 'react-intl';
@@ -88,7 +88,7 @@ const UserWebAuthCredentials = ({ userId }) => {
       <button
         type="button"
         disabled={userId !== currentUser?._id}
-        className={classNames(
+        className={clsx(
           'inline-flex cursor-pointer ml-4 justify-center rounded-md border border-transparent px-4 py-2 text-center text-sm font-medium leading-5 text-white shadow-xs focus:ring-slate-800 bg-slate-800 hover:bg-slate-950 focus:outline-hidden focus:ring-2 focus:ring-offset-2',
           {
             'focus:ring-slate-300 bg-slate-400 hover:bg-slate-300':

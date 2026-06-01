@@ -4,16 +4,17 @@ import { IDeliveryProviderPickUp, IRoleAction } from '../../gql/types';
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import PageHeader from '../../modules/common/components/PageHeader';
-import Loading from '../../modules/common/components/Loading';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import PageHeader from '@/components/ui/PageHeader';
+import Loading from '@/components/ui/Loading';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
 import useModal from '../../modules/modal/hooks/useModal';
 import useRemoveDeliveryProvider from '../../modules/delivery-provider/hooks/useRemoveDeliveryProvider';
 import useUpdateDeliveryProvider from '../../modules/delivery-provider/hooks/useUpdateDeliveryProvider';
 import useDeliveryProvider from '../../modules/delivery-provider/hooks/useDeliveryProvider';
 import ProviderDetail from '../../modules/common/components/ProviderDetail';
-import HeaderDeleteButton from '../../modules/common/components/HeaderDeleteButton';
+import Button from '@/components/ui/Button';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { getInterfaceLabel } from '../../modules/common/utils/utils';
 import useAuth from '../../modules/Auth/useAuth';
 
@@ -94,7 +95,12 @@ const DeliveryProviderDetailPage = ({ deliveryProviderId }) => {
           )}
         />
         {hasRole(IRoleAction.ManageDeliveryProviders) && (
-          <HeaderDeleteButton onClick={handleOnClick} />
+          <Button
+            variant="danger"
+            icon={<XMarkIcon className="h-5 w-5" />}
+            text="Delete"
+            onClick={handleOnClick}
+          />
         )}
       </div>
       {loading ? (

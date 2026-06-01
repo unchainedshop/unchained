@@ -2,13 +2,14 @@ import { useRouter } from 'next/router';
 import { IRoleAction } from '../../gql/types';
 
 import useToken from '../../modules/token/hooks/useToken';
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import PageHeader from '../../modules/common/components/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import PageHeader from '@/components/ui/PageHeader';
 import { useIntl } from 'react-intl';
-import Loading from '../../modules/common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import TokenDetail from '../../modules/token/components/TokenDetail';
 import ExportToken from '../../modules/accounts/components/ExportToken';
-import HeaderDeleteButton from '../../modules/common/components/HeaderDeleteButton';
+import Button from '@/components/ui/Button';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
 import useModal from '../../modules/modal/hooks/useModal';
 import useInvalidateTicket from '../../modules/token/hooks/useInvalidateTicket';
@@ -75,12 +76,14 @@ const TokenDetailPage = ({ tokenId }) => {
         {!token.invalidatedDate &&
         token.isInvalidateable &&
         hasRole(IRoleAction.UpdateToken) ? (
-          <HeaderDeleteButton
-            onClick={onInvalidateToken}
+          <Button
+            variant="danger"
+            icon={<XMarkIcon className="h-5 w-5" />}
             text={formatMessage({
               id: 'invalidate-token',
               defaultMessage: 'Invalidate',
             })}
+            onClick={onInvalidateToken}
           />
         ) : null}
       </div>

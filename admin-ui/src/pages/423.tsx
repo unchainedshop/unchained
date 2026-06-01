@@ -8,8 +8,8 @@ import logOut from '../modules/accounts/hooks/logOut';
 import { useApolloClient } from '@apollo/client/react';
 import { toast } from 'react-toastify';
 import FormWrapper from '../modules/common/components/FormWrapper';
-import ImageWithFallback from '../modules/common/components/ImageWithFallback';
-import Button from '../modules/common/components/Button';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import Button from '@/components/ui/Button';
 
 const Locked = () => {
   const { formatMessage } = useIntl();

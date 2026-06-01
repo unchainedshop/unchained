@@ -3,7 +3,7 @@ import { IRoleAction } from '../../../gql/types';
 
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
-import Badge from '../../common/components/Badge';
+import Badge from '@/components/ui/Badge';
 import MiniUserAvatar from '../../common/components/MiniUserAvatar';
 import Table from '../../common/components/Table';
 import TableActionsMenu from '../../common/components/TableActionsMenu';
@@ -13,7 +13,7 @@ import useAuth from '../../Auth/useAuth';
 import useModal from '../../modal/hooks/useModal';
 import DangerMessage from '../../modal/components/DangerMessage';
 import useDeleteUser from '../hooks/useDeleteUser';
-import Loading from '../../common/components/Loading';
+import Loading from '@/components/ui/Loading';
 import { ShoppingBagIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
 
 const UserLastLogin = ({ lastLogin }) => {

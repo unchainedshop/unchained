@@ -5,9 +5,9 @@ import { toast } from 'react-toastify';
 
 import FormWrapper from '../../common/components/FormWrapper';
 import Form from '../../forms/components/Form';
-import FormErrors from '../../forms/components/FormErrors';
-import PasswordField from '../../forms/components/PasswordField';
-import TextField from '../../forms/components/TextField';
+import FormErrors from '@/components/ui/form/FormErrors';
+import PasswordField from '@/components/ui/form/PasswordField';
+import TextField from '@/components/ui/form/TextField';
 
 import useForm, {
   OnSubmitSuccessType,

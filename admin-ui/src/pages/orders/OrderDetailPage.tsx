@@ -4,15 +4,16 @@ import { IRoleAction } from '../../gql/types';
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 
-import BreadCrumbs from '../../modules/common/components/BreadCrumbs';
-import Loading from '../../modules/common/components/Loading';
-import PageHeader from '../../modules/common/components/PageHeader';
+import BreadCrumbs from '@/components/ui/BreadCrumbs';
+import Loading from '@/components/ui/Loading';
+import PageHeader from '@/components/ui/PageHeader';
 import useOrder from '../../modules/order/hooks/useOrder';
 import OrderDetail from '../../modules/order/components/OrderDetail';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
 import useModal from '../../modules/modal/hooks/useModal';
 import useRemoveOrder from '../../modules/order/hooks/useRemoveOrder';
-import HeaderDeleteButton from '../../modules/common/components/HeaderDeleteButton';
+import Button from '@/components/ui/Button';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import useAuth from '../../modules/Auth/useAuth';
 
 const OrderDetailPage = ({ orderId }) => {
@@ -65,7 +66,12 @@ const OrderDetailPage = ({ orderId }) => {
         {order &&
         isDeletable(order.status) &&
         hasRole(IRoleAction.UpdateOrder) ? (
-          <HeaderDeleteButton onClick={handleOnClick} />
+          <Button
+            variant="danger"
+            icon={<XMarkIcon className="h-5 w-5" />}
+            text="Delete"
+            onClick={handleOnClick}
+          />
         ) : null}
       </div>
       {loading ? <Loading /> : <OrderDetail order={order} />}
