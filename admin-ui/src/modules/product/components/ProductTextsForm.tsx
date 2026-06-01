@@ -146,7 +146,7 @@ const ProductTextsForm = ({
               </li>
             ),
             strong: (chunk) => (
-              <strong className="font-semibold text-slate-800 dark:text-slate-200">
+              <strong className="font-semibold text-text-secondary">
                 {chunk}
               </strong>
             ),
@@ -156,7 +156,7 @@ const ProductTextsForm = ({
     >
       <FormWrapper>
         <Form form={form} disabled={!hasRole(IRoleAction.ManageProducts)}>
-          <div className="relative text-slate-500 dark:text-slate-200 px-4 py-5 sm:p-6">
+          <div className="relative text-text-muted px-4 py-5 sm:p-6">
             <div className="grid grid-cols-6 gap-6">
               <div className="col-span-6 sm:col-span-3">
                 <TextField
@@ -265,7 +265,7 @@ const ProductTextsForm = ({
             </div>
           </div>
           {hasRole(IRoleAction.ManageProducts) && (
-            <div className="border-t-slate-100 border-t dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-5 text-right sm:px-6">
+            <div className="border-t-slate-100 border-t border-t-border-subtle bg-surface-subtle px-4 py-5 text-right sm:px-6">
               <SubmitButton
                 label={formatMessage({
                   id: 'save',

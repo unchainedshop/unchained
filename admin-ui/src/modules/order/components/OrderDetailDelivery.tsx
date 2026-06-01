@@ -90,7 +90,7 @@ const OrderDetailDelivery = ({ order }) => {
           )}
         </span>
 
-        <div className="mt-3 text-sm text-slate-500 dark:text-slate-200">
+        <div className="mt-3 text-sm text-text-muted">
           {formatMessage({
             id: 'method',
             defaultMessage: 'Method',
@@ -114,7 +114,7 @@ const OrderDetailDelivery = ({ order }) => {
             ))}
         </span>
 
-        <div className="mt-3 text-sm text-slate-500 dark:text-slate-200">
+        <div className="mt-3 text-sm text-text-muted">
           {formatMessage({
             id: 'status',
             defaultMessage: 'Status',
@@ -142,7 +142,7 @@ const OrderDetailDelivery = ({ order }) => {
                       id="deliver"
                       type="button"
                       onClick={markAsDelivered}
-                      className="my-2  mr-2  inline-flex  h-full  items-center justify-center  rounded-sm border border-slate-300 border-transparent bg-slate-800 dark:bg-slate-600 py-1 px-2 text-xs font-semibold text-white  shadow-xs hover:bg-slate-950 dark:hover:bg-slate-500 focus:outline-hidden focus:ring-2 focus:ring-slate-700 dark:focus:ring-slate-400 focus:ring-offset-2"
+                      className="my-2  mr-2  inline-flex  h-full  items-center justify-center  rounded-sm border border-slate-300 border-transparent bg-accent py-1 px-2 text-xs font-semibold text-white  shadow-xs hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-slate-700 dark:focus:ring-slate-400 focus:ring-offset-2"
                     >
                       <span className="mr-1">
                         <PlusIcon className="inline-block h-3 w-3 text-white" />

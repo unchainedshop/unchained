@@ -158,17 +158,16 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
       id: 3,
       content: 'updated',
       visible: true,
-      Component: enrollment?.status === 'PAUSED' &&
-        hasRole(IRoleAction.UpdateEnrollment) && (
-          <Button
-            text={formatMessage({
-              id: 'activate',
-              defaultMessage: 'Activate',
-            })}
-            onClick={onActivateEnrollment}
-            className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-slate-900 dark:border-slate-600 bg-slate-800 dark:bg-slate-600 px-2 py-1 text-base font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500  dark:focus:border-slate-400 focus:outline-hidden focus:ring-0 focus:ring-slate-800 dark:focus:ring-slate-400"
-          />
-        ),
+      Component: enrollment?.status === 'PAUSED' && (
+        <Button
+          text={formatMessage({
+            id: 'activate',
+            defaultMessage: 'Activate',
+          })}
+          onClick={onActivateEnrollment}
+          className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-accent bg-accent px-2 py-1 text-base font-medium text-white hover:bg-accent-hover  dark:focus:border-slate-400 focus:outline-hidden focus:ring-0 focus:ring-slate-800 dark:focus:ring-slate-400"
+        />
+      ),
     },
     TERMINATED: {
       id: 4,
@@ -248,10 +247,10 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
                 </div>
               </div>
 
-              <div className="flex-auto border-t border-slate-300 dark:border-slate-800 pt-4 lg:col-span-6 lg:border-0">
+              <div className="flex-auto border-t border-border-default pt-4 lg:col-span-6 lg:border-0">
                 <JSONView
                   disabled
-                  className="bg-white dark:bg-slate-900 dark:text-slate-200 mt-1 block w-full max-w-full rounded-md border-1 resize-none border-slate-300 dark:border-slate-800 shadow-xs sm:text-sm"
+                  className="bg-surface-input dark:text-slate-200 mt-1 block w-full max-w-full rounded-md border-1 resize-none border-border-default shadow-xs sm:text-sm"
                   value={JSON.stringify(
                     (enrollment?.plan.configuration || []).map(
                       ({ __typename, ...rest }: any) => rest,
@@ -264,7 +263,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
             </div>
 
             <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:gap-y-8 lg:col-span-2 lg:grid-cols-2 lg:gap-x-8">
-              <div className="border-t border-slate-300 dark:border-slate-800 pt-4">
+              <div className="border-t border-border-default pt-4">
                 <dt className="font-medium text-slate-900">
                   {formatMessage({
                     id: 'payment_provider',
@@ -274,7 +273,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
                 <dd className="mt-2 text-sm text-slate-500">
                   <Link
                     href={`/payment-provider?paymentProviderId=${enrollment?.payment?.provider?._id}`}
-                    className="text-slate-900 dark:text-slate-300"
+                    className="text-text-primary"
                   >
                     {getInterfaceLabel(
                       enrollment?.payment?.provider?.interface,
@@ -283,7 +282,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
                 </dd>
               </div>
 
-              <div className="border-t border-slate-300 dark:border-slate-800 pt-4">
+              <div className="border-t border-border-default pt-4">
                 <dt className="font-medium text-slate-900">
                   {formatMessage({
                     id: 'delivery_provider',
@@ -293,7 +292,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
                 <dd className="mt-2 text-sm text-slate-500">
                   <Link
                     href={`/delivery-provider?deliveryProviderId=${enrollment?.delivery?.provider?._id}`}
-                    className="text-slate-900 dark:text-slate-300"
+                    className="text-text-primary"
                   >
                     {getInterfaceLabel(
                       enrollment?.delivery?.provider?.interface,
@@ -302,7 +301,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
                 </dd>
               </div>
               {enrollment?.contact && (
-                <div className="col-span-1 border-t border-slate-300 dark:border-slate-800 pt-4">
+                <div className="col-span-1 border-t border-border-default pt-4">
                   <div className="font-medium text-slate-900">
                     {formatMessage({
                       id: 'contact',
@@ -330,7 +329,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
               )}
             </div>
 
-            <div className="border-t border-slate-300 dark:border-slate-800 pt-4">
+            <div className="border-t border-border-default pt-4">
               <dt className="font-medium text-slate-900">
                 {formatMessage({
                   id: 'billing_address',

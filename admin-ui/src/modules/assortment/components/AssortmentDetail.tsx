@@ -333,10 +333,10 @@ const AssortmentDetail = ({
         />
         {!hideControls && (
           <div className="mt-5 flex flex-wrap gap-3">
-            <div className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium leading-5 shadow-sm bg-white dark:bg-slate-800 h-[38px]">
+            <div className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium leading-5 shadow-sm bg-surface h-[38px]">
               <label
                 htmlFor="sequence"
-                className="text-slate-700 dark:text-slate-200 font-medium"
+                className="text-text-secondary font-medium"
               >
                 {formatMessage({
                   id: 'sequence',
@@ -346,7 +346,7 @@ const AssortmentDetail = ({
               <input
                 id="sequence"
                 type="number"
-                className="text-center w-12 bg-transparent border border-slate-300 dark:border-slate-600 rounded focus:ring-0 focus:outline-none text-sm font-semibold text-slate-900 dark:text-slate-300 px-2 py-1"
+                className="text-center w-12 bg-transparent border border-border-default rounded focus:ring-0 focus:outline-none text-sm font-semibold text-text-primary px-2 py-1"
                 defaultValue={assortment?.sequence}
                 disabled={!hasRole(IRoleAction.ManageAssortments)}
                 onBlur={updateAssortmentSequence}

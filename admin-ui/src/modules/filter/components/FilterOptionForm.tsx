@@ -53,7 +53,7 @@ const FilterOptionForm = ({
         <button
           onClick={onCancel}
           type="button"
-          className="mr-2 rounded-md border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1 text-sm font-medium leading-5 text-slate-700 dark:text-slate-500 shadow-xs"
+          className="mr-2 rounded-md border border-border-subtle bg-surface px-3 py-1 text-sm font-medium leading-5 text-slate-700 dark:text-slate-500 shadow-xs"
         >
           {formatMessage({ id: 'cancel', defaultMessage: 'Cancel' })}
         </button>

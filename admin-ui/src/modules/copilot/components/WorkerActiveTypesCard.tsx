@@ -5,15 +5,15 @@ import Link from 'next/link';
 const CopilotWorkerActiveTypesItem = ({ type }) => {
   const { formatMessage } = useIntl();
   return (
-    <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+    <div className="flex items-center justify-between p-3 bg-surface rounded-lg shadow-sm border border-border-subtle">
       <div className="flex-1 min-w-0">
-        <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+        <h3 className="text-sm font-medium text-text-primary truncate">
           {type.replace(/_/g, ' ')}
         </h3>
       </div>
       <Link
         href={`/works/?types=${encodeURIComponent(type)}`}
-        className="px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex-shrink-0"
+        className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary border border-border-default rounded-md hover:bg-surface-raised transition-colors flex-shrink-0"
       >
         {formatMessage({ id: 'view', defaultMessage: 'View' })}
       </Link>
@@ -37,7 +37,7 @@ const CopilotWorkerActiveTypes = ({ activeTypes }) => {
 
   return (
     <div className="w-full space-y-1">
-      <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
+      <h2 className="text-sm font-semibold text-text-secondary mb-2">
         {formatMessage(
           {
             id: 'active_types',

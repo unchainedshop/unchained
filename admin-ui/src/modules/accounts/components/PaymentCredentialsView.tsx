@@ -6,7 +6,7 @@ const PaymentCredentialsView = ({ paymentCredentials }) => {
   const { formatMessage } = useIntl();
 
   return (
-    <div className="flex w-full min-w-full flex-row flex-nowrap divide-y divide-slate-200 overflow-hidden rounded-lg text-slate-900 dark:text-slate-200 shadow-sm dark:shadow-none">
+    <div className="flex w-full min-w-full flex-row flex-nowrap divide-y divide-slate-200 overflow-hidden rounded-lg text-text-primary shadow-sm dark:shadow-none">
       {paymentCredentials?.length ? (
         <ul className="-my-5 divide-y divide-slate-200 dark:divide-slate-700">
           {(paymentCredentials || []).map(
@@ -16,7 +16,7 @@ const PaymentCredentialsView = ({ paymentCredentials }) => {
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm">{paymentCredentialsId}</p>
                     {isPreferred && (
-                      <p className="truncate text-sm text-slate-500 dark:text-slate-200">
+                      <p className="truncate text-sm text-text-muted">
                         <Badge
                           text={formatMessage({
                             id: 'preferred',

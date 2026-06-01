@@ -128,11 +128,11 @@ const DeliveryProviderDetailPage = ({ deliveryProviderId }) => {
                   ).pickUpLocations.map((loc) => (
                     <li
                       key={loc._id}
-                      className="border rounded-md p-3 bg-slate-50 dark:bg-slate-800"
+                      className="border rounded-md p-3 bg-surface"
                     >
                       <div className="font-medium">{loc.name}</div>
                       {loc.address && (
-                        <div className="text-sm text-slate-600 dark:text-slate-300">
+                        <div className="text-sm text-text-secondary">
                           {loc.address.addressLine}
                           {loc.address.addressLine2
                             ? `, ${loc.address.addressLine2}`

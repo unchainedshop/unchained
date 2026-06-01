@@ -50,7 +50,7 @@ const AssortmentListItem: React.FC<AssortmentListItemProps> = ({
       );
     }
     return (
-      <div className="w-full h-32 bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+      <div className="w-full h-32 bg-surface-raised flex items-center justify-center">
         <FolderIcon className="w-12 h-12 text-slate-400 dark:text-slate-600" />
       </div>
     );
@@ -64,7 +64,7 @@ const AssortmentListItem: React.FC<AssortmentListItemProps> = ({
   return (
     <div
       className={clsx(
-        'bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-shadow',
+        'bg-surface rounded-lg border border-border-subtle overflow-hidden hover:shadow-md transition-shadow',
         className,
       )}
       style={{
@@ -82,7 +82,7 @@ const AssortmentListItem: React.FC<AssortmentListItemProps> = ({
       </div>
 
       {/* 2. Title */}
-      <h3 className="font-medium text-slate-900 dark:text-slate-100 line-clamp-2 px-4 pt-0">
+      <h3 className="font-medium text-text-primary line-clamp-2 px-4 pt-0">
         {assortment.texts?.title ||
           formatMessage({
             id: 'untitled_assortment',
@@ -93,7 +93,7 @@ const AssortmentListItem: React.FC<AssortmentListItemProps> = ({
       {/* 3. Subtitle */}
       <div className="px-4">
         {assortment.texts?.subtitle ? (
-          <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
+          <p className="text-sm text-text-secondary line-clamp-2">
             {assortment.texts.subtitle}
           </p>
         ) : (
@@ -102,7 +102,7 @@ const AssortmentListItem: React.FC<AssortmentListItemProps> = ({
       </div>
 
       {/* 4. Metadata */}
-      <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-500 px-4">
+      <div className="flex items-center justify-between text-xs text-text-muted px-4">
         <div className="flex items-center gap-1">
           <CalendarIcon className="w-3 h-3" />
           {formatDate(assortment.updated)}
@@ -114,7 +114,7 @@ const AssortmentListItem: React.FC<AssortmentListItemProps> = ({
 
       {/* 5. Tags */}
       <div className="px-4">
-        <span className="text-xs text-slate-500 dark:text-slate-400 truncate">
+        <span className="text-xs text-text-muted truncate">
           ID: {assortment._id}
         </span>
         {assortment.tags && assortment.tags.length > 0 ? (
@@ -122,19 +122,19 @@ const AssortmentListItem: React.FC<AssortmentListItemProps> = ({
             {assortment.tags.slice(0, 3).map((tag: string, index: number) => (
               <span
                 key={index}
-                className="px-2 py-1 text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded"
+                className="px-2 py-1 text-xs bg-surface-raised text-text-secondary rounded"
               >
                 {tag}
               </span>
             ))}
             {assortment.tags.length > 3 && (
-              <span className="px-2 py-1 text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded">
+              <span className="px-2 py-1 text-xs bg-surface-raised text-text-secondary rounded">
                 +{assortment.tags.length - 3}
               </span>
             )}
           </div>
         ) : assortment.childrenCount > 0 ? (
-          <div className="text-xs text-slate-600 dark:text-slate-400">
+          <div className="text-xs text-text-secondary">
             {formatMessage(
               {
                 id: 'children_count',
@@ -149,10 +149,10 @@ const AssortmentListItem: React.FC<AssortmentListItemProps> = ({
       </div>
 
       {/* 6. Actions */}
-      <div className="border-t border-slate-100 dark:border-slate-700 flex items-center justify-center">
+      <div className="border-t border-border-subtle flex items-center justify-center">
         <Link
           href={`/assortments?assortmentSlug=${generateUniqueId(assortment)}`}
-          className="text-center text-sm text-slate-900 dark:text-slate-200 hover:text-slate-800 dark:hover:text-slate-300 py-3"
+          className="text-center text-sm text-text-primary hover:text-slate-800 dark:hover:text-slate-300 py-3"
         >
           {formatMessage({ id: 'edit', defaultMessage: 'Edit' })}
         </Link>

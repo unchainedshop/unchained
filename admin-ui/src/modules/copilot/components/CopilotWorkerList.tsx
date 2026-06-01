@@ -34,15 +34,15 @@ export const CopilotWorkerListItem = ({ work }) => {
   return (
     <div
       key={work._id}
-      className="flex justify-between items-center p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700"
+      className="flex justify-between items-center p-3 bg-surface rounded-lg shadow-sm border border-border-subtle"
     >
       <div className="flex-1 min-w-0">
-        <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+        <h3 className="text-sm font-medium text-text-primary truncate">
           {work.type}
         </h3>
         <CopyableId
           id={work._id}
-          className="text-xs text-slate-500 dark:text-slate-400 break-all"
+          className="text-xs text-text-muted break-all"
         />
         {work.worker && (
           <p className="text-xs text-blue-600 dark:text-blue-300">
@@ -51,7 +51,7 @@ export const CopilotWorkerListItem = ({ work }) => {
           </p>
         )}
       </div>
-      <div className="text-xs text-slate-500 dark:text-slate-400 text-right whitespace-nowrap mr-4">
+      <div className="text-xs text-text-muted text-right whitespace-nowrap mr-4">
         <Badge text={status} color={WORK_STATUSES[status]} square />
         <br />
         {formatMessage({ id: 'created', defaultMessage: 'Created' })}:{' '}
@@ -67,7 +67,7 @@ export const CopilotWorkerListItem = ({ work }) => {
       <div className="flex flex-col items-end">
         <Link
           href={`/works?workerId=${work._id}`}
-          className="px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex-shrink-0"
+          className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary border border-border-default rounded-md hover:bg-surface-raised transition-colors flex-shrink-0"
         >
           {formatMessage({ id: 'view', defaultMessage: 'View' })}
         </Link>

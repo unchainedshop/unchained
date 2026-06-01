@@ -22,8 +22,8 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({ message, user }) => {
       <div
         className={`${
           isUser
-            ? 'bg-slate-200 dark:bg-slate-700 rounded-br-none rounded-xl max-w-md px-3 py-2'
-            : 'text-slate-800 dark:text-slate-200 flex-1 max-w-full py-3 overflow-hidden'
+            ? 'bg-surface-raised rounded-br-none rounded-xl max-w-md px-3 py-2'
+            : 'text-text-secondary flex-1 max-w-full py-3 overflow-hidden'
         }`}
       >
         {message.parts.map((part: any, index: number) => {

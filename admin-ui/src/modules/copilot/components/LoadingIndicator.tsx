@@ -21,12 +21,12 @@ const LoadingIndicator: React.FC = () => {
       </div>
       <div className="flex-1">
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <span className="text-sm font-medium text-text-secondary">
             Copilot
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-slate-500 dark:text-slate-400 italic transition-opacity duration-300">
+          <span className="text-sm text-text-muted italic transition-opacity duration-300">
             {loadingMessages[status]}
           </span>
           <div className="flex gap-1">

@@ -50,22 +50,7 @@ try {
 
   connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
-    adminUI: {
-      prefix: '/',
-      theme: {
-        accent: '#db2777',
-        'accent-hover': '#be185d',
-        surface: '#ffffff',
-        'surface-subtle': '#fdf2f8',
-        'surface-raised': '#fce7f3',
-        'border': '#f9a8d4',
-        'border-subtle': '#fbcfe8',
-        danger: '#e11d48',
-        'danger-surface': '#fff1f2',
-        success: '#059669',
-        warning: '#d97706',
-      },
-    },
+    adminUI: true,
     chat: provider ? {
       model: provider.chat(process.env.OPENAI_MODEL || "gpt-5.2"),
       imageGenerationTool: imageProvider ? { model: imageProvider.imageModel('gpt-image-1') } : undefined,

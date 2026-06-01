@@ -16,7 +16,7 @@ const OrderListItem = ({ order, showUser }) => {
       <Table.Cell>
         <Link
           href={`/orders?orderId=${order._id}`}
-          className="flex items-center gap-3 text-sm font-medium text-slate-800 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-200"
+          className="flex items-center gap-3 text-sm font-medium text-text-secondary group-hover:text-slate-900 dark:group-hover:text-slate-200"
         >
           {order?.orderNumber || (
             <>
@@ -52,7 +52,7 @@ const OrderListItem = ({ order, showUser }) => {
         <Table.Cell>
           <Link
             href={`/users?userId=${order.user._id}`}
-            className="flex items-center text-sm text-slate-800 dark:text-slate-300 hover:text-decoration"
+            className="flex items-center text-sm text-text-secondary hover:text-decoration"
             onClick={(e) => e.stopPropagation()}
           >
             <span className="font-medium">{formatUsername(order.user)}</span>

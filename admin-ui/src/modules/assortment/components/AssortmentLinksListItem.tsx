@@ -24,7 +24,7 @@ const AssortmentLinksListItem = ({ link, onDelete, linkId, isParent, id }) => {
   return (
     <Link href={`/assortments?assortmentSlug=${generateUniqueId(link)}`}>
       <div
-        className="group flex items-center justify-between rounded-sm border-b border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50/80 dark:hover:bg-slate-700/50 transition-all duration-200 ease-in-out hover:shadow-sm px-2 text-slate-900 dark:text-slate-200 last:border-none hover:cursor-pointer"
+        className="group flex items-center justify-between rounded-sm border-b border-border-subtle hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50/80 dark:hover:bg-slate-700/50 transition-all duration-200 ease-in-out hover:shadow-sm px-2 text-text-primary last:border-none hover:cursor-pointer"
         ref={setNodeRef}
         style={style}
       >
@@ -37,7 +37,7 @@ const AssortmentLinksListItem = ({ link, onDelete, linkId, isParent, id }) => {
               <div className="flex flex-wrap gap-5">
                 <h3 className="text-lg flex-auto">{link?.texts?.title}</h3>
                 {link?.texts?.title && (
-                  <p className="flex-auto text-xs text-slate-600 dark:text-slate-400 my-auto">
+                  <p className="flex-auto text-xs text-text-secondary my-auto">
                     {link?.texts?.subtitle}
                   </p>
                 )}

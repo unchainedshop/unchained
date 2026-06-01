@@ -64,7 +64,7 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
             textSizeClasses[size],
             progress === 100
               ? 'text-emerald-600 dark:text-emerald-400'
-              : 'text-slate-600 dark:text-slate-400',
+              : 'text-text-secondary',
           )}
         >
           {progress}%

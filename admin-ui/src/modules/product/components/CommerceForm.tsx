@@ -106,7 +106,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
             <div className="relative max-w-full p-3 sm:px-5">
               <div className="max-w-full justify-between align-baseline" />
 
-              <label className="sr-only flex w-full font-sans text-sm text-slate-500 dark:text-slate-200 lg:not-sr-only">
+              <label className="sr-only flex w-full font-sans text-sm text-text-muted lg:not-sr-only">
                 <span className="flex w-full">
                   <span className="w-full">
                     {formatMessage({
@@ -203,7 +203,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                                   id: 'vat_suspect',
                                   defaultMessage: 'Vat Suspect',
                                 })}
-                                className="mr-2 h-4 w-4 rounded-sm border-slate-300 dark:border-slate-600 bg-white dark:!bg-slate-900 text-slate-950 focus:ring-slate-800 lg:items-center"
+                                className="mr-2 h-4 w-4 rounded-sm border-border-default bg-white dark:!bg-slate-900 text-slate-950 focus:ring-slate-800 lg:items-center"
                                 type="checkbox"
                               />
                             </div>
@@ -218,7 +218,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                                   defaultMessage: 'Net Price',
                                 })}
                                 hideLabel
-                                className="mr-2 h-4 w-4 justify-between rounded-sm border-slate-300 dark:border-slate-600 bg-white dark:!bg-slate-900 text-slate-950 focus:ring-slate-800 lg:items-center"
+                                className="mr-2 h-4 w-4 justify-between rounded-sm border-border-default bg-white dark:!bg-slate-900 text-slate-950 focus:ring-slate-800 lg:items-center"
                                 type="checkbox"
                               />
                             </div>
@@ -271,7 +271,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                           {hasRole(IRoleAction.ManageProducts) && (
                             <div className="absolute -top-2 right-0 mt-0 mr-0 shrink-0  pb-1 md:mr-0 lg:mt-6 lg:py-0 lg:px-0 ">
                               <button
-                                className="items-center rounded-full bg-white dark:bg-slate-900 px-1 py-1 text-sm text-rose-500 dark:text-rose-400 hover:bg-rose-50 focus:outline-hidden focus:ring-0 focus:ring-rose-500 focus:ring-offset-2"
+                                className="items-center rounded-full bg-surface-input px-1 py-1 text-sm text-rose-500 dark:text-rose-400 hover:bg-rose-50 focus:outline-hidden focus:ring-0 focus:ring-rose-500 focus:ring-offset-2"
                                 type="button"
                                 onClick={() => removeConfig(index)}
                               >
@@ -324,7 +324,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
             <FormErrors displayFieldErrors />
 
             {hasRole(IRoleAction.ManageProducts) && (
-              <div className="-mx-6 p-6 bg-slate-50 dark:bg-slate-900 text-right">
+              <div className="-mx-6 p-6 bg-surface-subtle text-right">
                 <SubmitButton
                   className="mx-6"
                   label={formatMessage({
@@ -336,7 +336,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
             )}
           </Form>
         </FormWrapper>
-        <p className="mt-6 mb-10 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-6 mb-10 text-sm text-text-muted">
           {formatMessage({
             id: 'product_commerce_info',
             defaultMessage:

@@ -69,7 +69,7 @@ const ProductForm = ({
             defaultMessage: 'Name',
           })}
           required
-          className="block w-full max-w-full rounded-md border-slate-300 dark:border-slate-800 text-sm focus:ring-slate-800 sm:text-sm"
+          className="block w-full max-w-full rounded-md border-border-default text-sm focus:ring-slate-800 sm:text-sm"
         />
 
         <TextField
@@ -79,7 +79,7 @@ const ProductForm = ({
             id: 'subtitle',
             defaultMessage: 'Subtitle',
           })}
-          className="block w-full max-w-full rounded-md border-slate-300 dark:border-slate-800 text-sm focus:ring-slate-800 sm:text-sm"
+          className="block w-full max-w-full rounded-md border-border-default text-sm focus:ring-slate-800 sm:text-sm"
         />
 
         <SelectField
@@ -112,7 +112,7 @@ const ProductForm = ({
       </div>
 
       {hasRole(IRoleAction.ManageProducts) && (
-        <div className="border-t border-t-slate-100 dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 p-5 text-right">
+        <div className="border-t border-t-border-subtle bg-surface-subtle p-5 text-right">
           <SubmitButton
             label={formatMessage({
               id: 'add_product',

@@ -22,7 +22,7 @@ const ProviderDetail = ({
       <div className="space-y-8">
         <div className="space-y-8 sm:space-y-5">
           <div className="flex items-center">
-            <h3 className="text-2xl leading-6 text-slate-900 dark:text-slate-200 mr-2">
+            <h3 className="text-2xl leading-6 text-text-primary mr-2">
               {getInterfaceLabel(provider?.interface)}
             </h3>
             <ActiveInActive

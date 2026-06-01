@@ -17,7 +17,7 @@ const DangerMessage = ({
         {icon || (
           <div className="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-rose-100 dark:bg-rose-900/30 sm:mx-0 sm:h-10 sm:w-10">
             <svg
-              className="h-6 w-6 text-rose-600 dark:text-rose-400"
+              className="h-6 w-6 text-danger"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -34,15 +34,12 @@ const DangerMessage = ({
           </div>
         )}
         <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-          <h3
-            className="text-lg text-slate-900 dark:text-slate-200"
-            id="modal-title"
-          >
+          <h3 className="text-lg text-text-primary" id="modal-title">
             {headerText ||
               formatMessage({ id: 'warning', defaultMessage: 'Warning!' })}
           </h3>
           <div className="mt-2">
-            <p className="text-sm text-slate-500 dark:text-slate-200">
+            <p className="text-sm text-text-muted">
               {message ||
                 formatMessage({
                   id: 'are_you_sure',

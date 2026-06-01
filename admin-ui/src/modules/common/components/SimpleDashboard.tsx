@@ -82,10 +82,10 @@ const SimpleDashboard: React.FC = () => {
             >
               <CardHeader className="pb-6">
                 <div className="flex items-center justify-between">
-                  <div className="h-4 w-48 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
+                  <div className="h-4 w-48 bg-surface-raised rounded animate-pulse" />
                 </div>
-                <div className="h-10 w-40 bg-slate-200 dark:bg-slate-700 rounded animate-pulse mt-2" />
-                <div className="h-4 w-32 bg-slate-200 dark:bg-slate-700 rounded animate-pulse mt-2" />
+                <div className="h-10 w-40 bg-surface-raised rounded animate-pulse mt-2" />
+                <div className="h-4 w-32 bg-surface-raised rounded animate-pulse mt-2" />
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="h-49 relative overflow-hidden rounded">
@@ -119,14 +119,14 @@ const SimpleDashboard: React.FC = () => {
                     <path
                       d="M0,30 Q20,20 40,25 T80,15 L100,18 L100,40 L0,40 Z"
                       fill="url(#skeleton-gradient)"
-                      className="text-slate-400 dark:text-slate-500"
+                      className="text-text-muted"
                     />
                     <path
                       d="M0,30 Q20,20 40,25 T80,15 L100,18"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="1"
-                      className="text-slate-400 dark:text-slate-500"
+                      className="text-text-muted"
                     />
                   </svg>
                 </div>
@@ -135,10 +135,10 @@ const SimpleDashboard: React.FC = () => {
           ))}
         </div>
         {/* Top Selling Products Loading */}
-        <Card className="mb-8 relative overflow-hidden rounded-xl border-0 bg-white dark:bg-slate-800">
+        <Card className="mb-8 relative overflow-hidden rounded-xl border-0 bg-surface">
           <CardHeader className="pb-6">
             <div className="flex items-center justify-between">
-              <div className="h-4 w-56 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
+              <div className="h-4 w-56 bg-surface-raised rounded animate-pulse" />
             </div>
           </CardHeader>
           <CardContent className="pt-0 pb-6">
@@ -149,12 +149,12 @@ const SimpleDashboard: React.FC = () => {
                   className="flex items-center justify-between min-h-[2rem]"
                 >
                   <div className="flex items-center gap-3 flex-1">
-                    <div className="w-8 h-8 bg-slate-100 dark:bg-slate-700 rounded-md animate-pulse" />
-                    <div className="h-4 w-32 bg-slate-100 dark:bg-slate-700 rounded-lg animate-pulse" />
+                    <div className="w-8 h-8 bg-surface-raised rounded-md animate-pulse" />
+                    <div className="h-4 w-32 bg-surface-raised rounded-lg animate-pulse" />
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="w-24 h-2 bg-slate-100 dark:bg-slate-700 rounded-full animate-pulse" />
-                    <div className="h-4 w-6 bg-slate-100 dark:bg-slate-700 rounded-lg animate-pulse" />
+                    <div className="w-24 h-2 bg-surface-raised rounded-full animate-pulse" />
+                    <div className="h-4 w-6 bg-surface-raised rounded-lg animate-pulse" />
                   </div>
                 </div>
               ))}
@@ -170,7 +170,7 @@ const SimpleDashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
         <Card className="col-span-2">
           <CardContent className="p-6">
-            <p className="text-rose-600 dark:text-rose-400">
+            <p className="text-danger">
               Error loading analytics: {error.message}
             </p>
           </CardContent>
@@ -212,13 +212,13 @@ const SimpleDashboard: React.FC = () => {
     return (
       <div className="my-10">
         <ShoppingCart className="h-16 w-16 text-slate-300 dark:text-slate-600 mb-6" />
-        <h2 className="text-2xl font-bold text-slate-700 dark:text-slate-300 mb-3">
+        <h2 className="text-2xl font-bold text-text-secondary mb-3">
           {formatMessage({
             id: 'no_orders_title',
             defaultMessage: 'No orders yet',
           })}
         </h2>
-        <p className="text-slate-500 dark:text-slate-400 max-w-md text-lg">
+        <p className="text-text-muted max-w-md text-lg">
           {formatMessage({
             id: 'no_orders_description',
             defaultMessage:
@@ -493,10 +493,10 @@ const SimpleDashboard: React.FC = () => {
         </Card>
       </div>
       {/* Top Selling Products */}
-      <Card className="mb-8 relative overflow-hidden rounded-xl border-0 bg-white dark:bg-slate-800">
+      <Card className="mb-8 relative overflow-hidden rounded-xl border-0 bg-surface">
         <CardHeader className="pb-6">
           <div className="flex items-center justify-between">
-            <CardDescription className="text-slate-500 dark:text-slate-400 font-medium">
+            <CardDescription className="text-text-muted font-medium">
               {formatMessage({
                 id: 'top_selling_products',
                 defaultMessage: 'Top selling products',
@@ -513,14 +513,14 @@ const SimpleDashboard: React.FC = () => {
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="flex items-center justify-between">
-                  <div className="h-4 w-40 bg-slate-100 dark:bg-slate-700 rounded-lg animate-pulse" />
-                  <div className="h-4 w-12 bg-slate-100 dark:bg-slate-700 rounded-lg animate-pulse" />
+                  <div className="h-4 w-40 bg-surface-raised rounded-lg animate-pulse" />
+                  <div className="h-4 w-12 bg-surface-raised rounded-lg animate-pulse" />
                 </div>
               ))}
             </div>
           ) : productsError && !realTopProducts.length ? (
             <div className="text-center py-8">
-              <span className="text-slate-400 dark:text-slate-500 text-sm">
+              <span className="text-text-muted text-sm">
                 {formatMessage({
                   id: 'products_data_unavailable',
                   defaultMessage: 'Product data unavailable',
@@ -548,7 +548,7 @@ const SimpleDashboard: React.FC = () => {
                           ? `/products?slug=${generateUniqueId(product.product)}`
                           : `/products`
                       }
-                      className="group flex items-center gap-1 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-slate-100 text-sm font-medium transition-colors"
+                      className="group flex items-center gap-1 text-text-secondary hover:text-text-primary text-sm font-medium transition-colors"
                     >
                       <span className="truncate">
                         {product.productName || `Product ${index + 1}`}
@@ -557,7 +557,7 @@ const SimpleDashboard: React.FC = () => {
                     </a>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="w-24 bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+                    <div className="w-24 bg-surface-raised rounded-full h-2">
                       <div
                         className="bg-slate-700 dark:bg-slate-300 h-2 rounded-full transition-all duration-1000 ease-out"
                         style={{
@@ -568,7 +568,7 @@ const SimpleDashboard: React.FC = () => {
                         }}
                       />
                     </div>
-                    <span className="text-sm font-semibold text-slate-900 dark:text-slate-100 w-8 text-right">
+                    <span className="text-sm font-semibold text-text-primary w-8 text-right">
                       {product.totalQuantity}
                     </span>
                   </div>
@@ -579,13 +579,13 @@ const SimpleDashboard: React.FC = () => {
             <div className="text-center py-12">
               <div className="flex flex-col items-center">
                 <ShoppingCart className="h-12 w-12 text-slate-300 dark:text-slate-600 mb-4" />
-                <h3 className="text-lg font-medium text-slate-600 dark:text-slate-400 mb-2">
+                <h3 className="text-lg font-medium text-text-secondary mb-2">
                   {formatMessage({
                     id: 'no_orders_title',
                     defaultMessage: 'No orders yet',
                   })}
                 </h3>
-                <p className="text-sm text-slate-400 dark:text-slate-500 max-w-sm">
+                <p className="text-sm text-text-muted max-w-sm">
                   {formatMessage({
                     id: 'no_order_products_description',
                     defaultMessage:

@@ -53,7 +53,7 @@ const AddProduct = () => {
           </FormWrapper>
         </div>
         <div className="mt-10 lg:mt-0 lg:col-span-1 space-y-2">
-          <h3 className="text-lg text-slate-900 dark:text-slate-200">
+          <h3 className="text-lg text-text-primary">
             {formatMessage({
               id: 'product_type',
               defaultMessage: 'Product type',

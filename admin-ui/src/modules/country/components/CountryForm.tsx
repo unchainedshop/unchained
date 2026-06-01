@@ -106,7 +106,7 @@ const CountryForm = ({
         )}
       </div>
       {hasRole(IRoleAction.ManageCountries) && (
-        <div className="space-y-6 border-t border-t-slate-100 dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 p-5 text-right">
+        <div className="space-y-6 border-t border-t-border-subtle bg-surface-subtle p-5 text-right">
           <SubmitButton
             label={
               isEdit

@@ -38,7 +38,7 @@ const WorkListItem = ({ work }) => {
         <div className="flex items-center text-sm">
           <Link
             href={`/works?workerId=${work._id}`}
-            className="text-slate-900 dark:text-slate-300"
+            className="text-text-primary"
           >
             <RetryStatistics work={work}>
               {work?.type || (

@@ -77,7 +77,7 @@ const UserListItem = ({ user }) => {
       <Table.Cell>
         <Link
           href={`/users?userId=${user._id}`}
-          className="flex items-center text-sm text-slate-900 dark:text-slate-300 group-hover:text-slate-700 dark:group-hover:text-slate-100"
+          className="flex items-center text-sm text-text-primary group-hover:text-slate-700 dark:group-hover:text-slate-100"
         >
           <MiniUserAvatar
             showName={false}
@@ -103,7 +103,7 @@ const UserListItem = ({ user }) => {
 
       <Table.Cell>
         <Link href={`/users?userId=${user._id}`} className="block">
-          <div className="text-sm text-slate-900 dark:text-slate-300">
+          <div className="text-sm text-text-primary">
             {user?.primaryEmail?.address}
           </div>
         </Link>

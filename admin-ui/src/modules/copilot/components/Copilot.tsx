@@ -73,7 +73,7 @@ const Copilot = () => {
   }, [messages]);
   if (!chatEnabled) {
     return (
-      <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 font-sans">
+      <div className="flex flex-col min-h-screen bg-surface-subtle font-sans">
         <div className="py-16 text-center">
           <h1 className="text-4xl font-extrabold text-rose-900 dark:text-rose-200">
             {formatMessage({
@@ -81,7 +81,7 @@ const Copilot = () => {
               defaultMessage: 'Chat is Disabled',
             })}
           </h1>
-          <p className="mt-2 text-base text-slate-500 dark:text-slate-200">
+          <p className="mt-2 text-base text-text-muted">
             {formatMessage({
               id: 'chat_disabled_message',
               defaultMessage:
@@ -94,7 +94,7 @@ const Copilot = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 font-sans">
+    <div className="flex flex-col min-h-screen bg-surface-subtle font-sans">
       <CopilotHeader />
       <main className="flex-1 overflow-y-auto py-6 space-y-4 max-w-4xl mx-auto w-full px-4">
         {messages.length === 0 && !loading ? (

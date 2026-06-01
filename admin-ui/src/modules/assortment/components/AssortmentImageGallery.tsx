@@ -24,7 +24,7 @@ const AssortmentImageGallery = ({
         {media.map((item) => (
           <div key={item._id} className="relative flex-shrink-0 group">
             <div
-              className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden cursor-pointer border border-slate-200 dark:border-slate-700"
+              className="w-16 h-16 bg-surface-raised rounded-lg overflow-hidden cursor-pointer border border-border-subtle"
               onClick={() => handleImageClick(item._id)}
             >
               <ImageWithFallback

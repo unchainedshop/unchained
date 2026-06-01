@@ -8,7 +8,7 @@ const CopilotWorkerStatistics = ({ statistics }) => {
 
   if (!statistics?.allocationMap?.length) {
     return (
-      <p className="text-xs text-slate-500 dark:text-slate-400">
+      <p className="text-xs text-text-muted">
         {formatMessage({
           id: 'worker.noStatistics',
           defaultMessage: 'No statistics available',
@@ -20,7 +20,7 @@ const CopilotWorkerStatistics = ({ statistics }) => {
   return (
     <div className="flex flex-col gap-2 w-full">
       {statistics.dateRange?.from && statistics.dateRange?.to && (
-        <div className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+        <div className="text-xs text-text-muted mb-2">
           {formatMessage({
             id: 'worker.dateRange',
             defaultMessage: 'Date Range',
@@ -33,16 +33,16 @@ const CopilotWorkerStatistics = ({ statistics }) => {
         {statistics.allocationMap.map((item) => (
           <div
             key={item.type}
-            className="p-2 bg-white dark:bg-slate-800 rounded shadow border border-slate-200 dark:border-slate-700 text-xs flex flex-col gap-1"
+            className="p-2 bg-surface rounded shadow border border-border-subtle text-xs flex flex-col gap-1"
           >
-            <div className="font-semibold text-slate-900 dark:text-slate-100 truncate">
+            <div className="font-semibold text-text-primary truncate">
               {formatMessage({
                 id: `worker.type.${item.type}`,
                 defaultMessage: item.type,
               })}
             </div>
             <div className="flex flex-wrap gap-1">
-              <span className="px-1 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-slate-700 dark:text-slate-300">
+              <span className="px-1 py-0.5 bg-surface-raised rounded text-text-secondary">
                 {formatMessage({
                   id: 'worker.startCount',
                   defaultMessage: 'Start',
@@ -74,7 +74,7 @@ const CopilotWorkerStatistics = ({ statistics }) => {
                   : {item.deleteCount}
                 </span>
               )}
-              <span className="px-1 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-slate-700 dark:text-slate-300">
+              <span className="px-1 py-0.5 bg-surface-raised rounded text-text-secondary">
                 {formatMessage({
                   id: 'worker.newCount',
                   defaultMessage: 'New',

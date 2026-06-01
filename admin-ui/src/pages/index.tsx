@@ -16,7 +16,7 @@ const HomePage = () => {
     <div>
       <WorkQueueWarningBanner />
       <div className="mt-5">
-        <div className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+        <div className="text-xl font-semibold text-text-primary">
           Unchained
           <span className="font-light ml-1">
             AdminUI<span className="text-xs ml-1"> {packageJson.version}</span>
@@ -29,7 +29,7 @@ const HomePage = () => {
         <AnalyticsDashboard />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {isFullyConfigured && (
-            <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6">
+            <div className="bg-surface rounded-lg border border-border-subtle p-6">
               <DashboardShortcutCard />
             </div>
           )}

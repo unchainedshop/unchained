@@ -32,7 +32,7 @@ const VariationForm = ({ variation, onCancel, onSuccess }) => {
   return (
     <Form
       form={form}
-      className="variation-update-form bg-white dark:bg-slate-800 px-4 py-3 border-b border-slate-200 dark:border-slate-700 w-full overflow-x-hidden overflow-y-visible relative hover:outline hover:outline-2 hover:outline-slate-400 dark:hover:outline-slate-500 transition-all"
+      className="variation-update-form bg-surface px-4 py-3 border-b border-border-subtle w-full overflow-x-hidden overflow-y-visible relative hover:outline hover:outline-2 hover:outline-slate-400 dark:hover:outline-slate-500 transition-all"
       data-variationid={variation._id}
     >
       <div
@@ -60,7 +60,7 @@ const VariationForm = ({ variation, onCancel, onSuccess }) => {
             />
           )}
 
-          <div className="text-sm text-slate-500 dark:text-slate-400 truncate min-w-[200px]">
+          <div className="text-sm text-text-muted truncate min-w-[200px]">
             <TextField
               className="mt-0 py-1"
               name="subtitle"
@@ -76,7 +76,7 @@ const VariationForm = ({ variation, onCancel, onSuccess }) => {
               {variation.options.map((option, index) => (
                 <span
                   key={option.value || index}
-                  className="inline-flex text-nowrap items-center px-2 py-0.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800"
+                  className="inline-flex text-nowrap items-center px-2 py-0.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-900 text-text-secondary border border-border-subtle"
                 >
                   {option?.texts?.title || option.value}
                 </span>
@@ -84,7 +84,7 @@ const VariationForm = ({ variation, onCancel, onSuccess }) => {
             </div>
           )}
 
-          <div className="text-sm text-slate-400 dark:text-slate-500 font-mono flex-shrink-0">
+          <div className="text-sm text-text-muted font-mono flex-shrink-0">
             ({variation?.key})
           </div>
         </div>

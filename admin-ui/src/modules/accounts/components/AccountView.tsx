@@ -38,28 +38,25 @@ const AccountView = ({
             'This information will be displayed publicly so be careful what you share.',
         })}
       >
-        <div className="overflow-hidden rounded-md p-3 shadow-sm bg-white dark:bg-slate-800 sm:p-6">
+        <div className="overflow-hidden rounded-md p-3 shadow-sm bg-surface sm:p-6">
           <UserNameView username={username} _id={_id} />
         </div>
       </SelfDocumentingView>
-      {(currentUser?._id === _id ||
-        hasRole(IRoleAction.ViewUserPrivateInfos)) && (
-        <SelfDocumentingView
-          documentationLabel={formatMessage({
-            id: 'email_addresses',
-            defaultMessage: 'Email addresses',
-          })}
-        >
-          <div className="rounded-md border-slate-300 dark:border-slate-800 shadow-xs">
-            <EmailAddresses
-              emails={emails}
-              enableVerification
-              userId={_id}
-              emailBodyContainer="rounded-md shadow-sm"
-            />
-          </div>
-        </SelfDocumentingView>
-      )}
+      <SelfDocumentingView
+        documentationLabel={formatMessage({
+          id: 'email_addresses',
+          defaultMessage: 'Email addresses',
+        })}
+      >
+        <div className="rounded-md border-border-default shadow-xs">
+          <EmailAddresses
+            emails={emails}
+            enableVerification
+            userId={_id}
+            emailBodyContainer="rounded-md shadow-sm"
+          />
+        </div>
+      </SelfDocumentingView>
       {currentUser?._id === _id && (
         <SelfDocumentingView
           documentationLabel={formatMessage({
@@ -85,7 +82,7 @@ const AccountView = ({
             />
           }
         >
-          <div className="rounded-md border-slate-300 dark:border-slate-800 shaodw-sm">
+          <div className="rounded-md border-border-default shaodw-sm">
             <Web3Addresses web3Addresses={web3Addresses} />
           </div>
         </SelfDocumentingView>
@@ -97,7 +94,7 @@ const AccountView = ({
           defaultMessage: 'Tags',
         })}
       >
-        <div className="my-2 rounded-md px-4 py-5 shadow-sm bg-white dark:bg-slate-800 sm:p-6">
+        <div className="my-2 rounded-md px-4 py-5 shadow-sm bg-surface sm:p-6">
           <UserTagsView tags={tags} userId={_id} />
         </div>
       </SelfDocumentingView>
@@ -109,7 +106,7 @@ const AccountView = ({
             defaultMessage: 'Roles',
           })}
         >
-          <div className="overflow-hidden rounded-md border-b bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-200 border-slate-300 dark:border-slate-800 px-4 py-5 shadow-sm sm:p-6">
+          <div className="overflow-hidden rounded-md border-b bg-surface text-text-primary border-border-default px-4 py-5 shadow-sm sm:p-6">
             <UserRolesView roles={roles} userId={_id} />
           </div>
         </SelfDocumentingView>
@@ -122,7 +119,7 @@ const AccountView = ({
             defaultMessage: 'Set password',
           })}
         >
-          <div className="overflow-hidden rounded-md border-b bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-200 border-slate-300 dark:border-slate-800 shadow-sm">
+          <div className="overflow-hidden rounded-md border-b bg-surface text-text-primary border-border-default shadow-sm">
             <SetPassword
               userId={_id}
               isInitialPassword={isInitialPassword}
@@ -139,7 +136,7 @@ const AccountView = ({
             defaultMessage: 'Change password',
           })}
         >
-          <div className="overflow-hidden rounded-md border-b bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-200 border-slate-300 dark:border-slate-800 shadow-sm">
+          <div className="overflow-hidden rounded-md border-b bg-surface text-text-primary border-border-default shadow-sm">
             <ChangePassword />
           </div>
         </SelfDocumentingView>
@@ -152,7 +149,7 @@ const AccountView = ({
             defaultMessage: 'Web Authentication',
           })}
         >
-          <div className="text-end overflow-hidden rounded-md border-b bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-200 border-slate-300 dark:border-slate-800 px-4 py-5 shadow-sm sm:p-6">
+          <div className="text-end overflow-hidden rounded-md border-b bg-surface text-text-primary border-border-default px-4 py-5 shadow-sm sm:p-6">
             <UserWebAuthCredentials userId={_id} />
           </div>
         </SelfDocumentingView>

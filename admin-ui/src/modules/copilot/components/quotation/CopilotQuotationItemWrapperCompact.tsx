@@ -38,7 +38,7 @@ const CopilotQuotationItemWrapperCompact = ({ quotation, children }) => {
     : null;
 
   return (
-    <div className="relative border rounded-xl p-4 shadow-sm bg-white dark:bg-slate-900 space-y-4">
+    <div className="relative border rounded-xl p-4 shadow-sm bg-surface-input space-y-4">
       <div className="absolute top-2 right-2 text-xs font-medium">
         <Badge text={status} color={QUOTATION_STATUS[status]} square />
       </div>
@@ -46,7 +46,7 @@ const CopilotQuotationItemWrapperCompact = ({ quotation, children }) => {
       <div className="space-y-3">
         <div className="flex items-center gap-3">
           {quotationNumber && (
-            <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-600 px-2 py-1 rounded">
+            <span className="text-xs text-text-muted bg-slate-100 dark:bg-slate-600 px-2 py-1 rounded">
               #{quotationNumber}
             </span>
           )}
@@ -54,7 +54,7 @@ const CopilotQuotationItemWrapperCompact = ({ quotation, children }) => {
           <CopyableId id={_id} />
         </div>
 
-        <div className="flex flex-wrap gap-2 text-xs text-slate-500 dark:text-slate-400">
+        <div className="flex flex-wrap gap-2 text-xs text-text-muted">
           <div>
             {formatMessage({
               id: 'requested_by',
@@ -86,13 +86,13 @@ const CopilotQuotationItemWrapperCompact = ({ quotation, children }) => {
           )}
 
           {country && (
-            <div className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700">
+            <div className="px-2 py-0.5 rounded bg-surface-raised">
               {country.isoCode}
             </div>
           )}
 
           {currency && (
-            <div className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700">
+            <div className="px-2 py-0.5 rounded bg-surface-raised">
               {currency.isoCode}
             </div>
           )}
@@ -103,7 +103,7 @@ const CopilotQuotationItemWrapperCompact = ({ quotation, children }) => {
 
       {children && (
         <div className="pt-2">
-          <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg shadow-inner border border-slate-200 dark:border-slate-700">
+          <div className="p-3 bg-surface rounded-lg shadow-inner border border-border-subtle">
             {children}
           </div>
         </div>

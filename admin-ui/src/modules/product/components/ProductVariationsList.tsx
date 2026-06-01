@@ -65,7 +65,7 @@ const ProductVariationsList = ({ productVariationId, variation }) => {
       data-variationid={variation._id}
       data={variations}
       containerCSS="w-full max-w-full !my-0 !border-0 !shadow-none relative"
-      bodyCSS="bg-slate-50 dark:bg-slate-950 !border-t-0 relative overflow-visible"
+      bodyCSS="bg-surface-subtle !border-t-0 relative overflow-visible"
       itemContainerCSS="!mt-0 !mb-0 !border-0"
       headerCSS="w-full flex items-center justify-between !p-0 !bg-transparent !border-0"
       hideChevron={true}

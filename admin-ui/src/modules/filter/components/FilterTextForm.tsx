@@ -83,10 +83,7 @@ const FilterTextForm = ({ filterId }) => {
       }
     >
       <FormWrapper>
-        <Form
-          form={form}
-          className="border-slate-300 dark:border-slate-800 pt-2 lg:shadow-sm"
-        >
+        <Form form={form} className="border-border-default pt-2 lg:shadow-sm">
           <div>
             <TextField
               name="title"

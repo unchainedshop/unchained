@@ -53,7 +53,7 @@ const AssortmentMediaForm = ({ assortmentId }) => {
       AssortmentMediaList: !!AssortmentMediaList,
     });
     return (
-      <div className="mx-auto mt-5 max-w-full bg-white dark:bg-slate-800 py-6 shadow-sm dark:shadow-none lg:rounded-sm">
+      <div className="mx-auto mt-5 max-w-full bg-surface py-6 shadow-sm dark:shadow-none lg:rounded-sm">
         <div className="flex items-center justify-center p-8">
           <div className="text-rose-500">
             {formatMessage({
@@ -68,9 +68,9 @@ const AssortmentMediaForm = ({ assortmentId }) => {
   }
   if (loading) {
     return (
-      <div className="mx-auto mt-5 max-w-full bg-white dark:bg-slate-800 py-6 shadow-sm dark:shadow-none lg:rounded-sm">
+      <div className="mx-auto mt-5 max-w-full bg-surface py-6 shadow-sm dark:shadow-none lg:rounded-sm">
         <div className="flex items-center justify-center p-8">
-          <div className="text-slate-500 dark:text-slate-400">
+          <div className="text-text-muted">
             {formatMessage({
               id: 'loading_media',
               defaultMessage: 'Loading media...',
@@ -83,7 +83,7 @@ const AssortmentMediaForm = ({ assortmentId }) => {
 
   if (error) {
     return (
-      <div className="mx-auto mt-5 max-w-full bg-white dark:bg-slate-800 py-6 shadow-sm dark:shadow-none lg:rounded-sm">
+      <div className="mx-auto mt-5 max-w-full bg-surface py-6 shadow-sm dark:shadow-none lg:rounded-sm">
         <div className="flex items-center justify-center p-8">
           <div className="text-rose-500">
             {formatMessage({

@@ -44,7 +44,7 @@ const RecentExports = () => {
           </span>
         </div>
         <div className="flex flex-col items-start text-left">
-          <span className="text-slate-600 dark:text-slate-300">
+          <span className="text-text-secondary">
             {formatDateTime(batch.finished, timeFormatOptions)}
           </span>
           <span className="text-xs text-slate-400">
@@ -155,7 +155,7 @@ const RecentExports = () => {
         <Accordion
           data={accordionData}
           headerCSS="flex items-center rounded-lg shadow-sm"
-          bodyCSS="bg-slate-50 dark:bg-slate-800/50 rounded-b-lg border-x border-b dark:border-slate-800"
+          bodyCSS="bg-surface/50 rounded-b-lg border-x border-b dark:border-slate-800"
         />
       )}
     </>

@@ -12,7 +12,7 @@ const QuotationDetailHeader = ({ quotation }) => {
   return (
     <section>
       <DetailHeader user={quotation?.user} contact={quotation?.contact} />
-      <div className="mt-2 flex border-b border-slate-300 dark:border-slate-800 pb-2 text-sm">
+      <div className="mt-2 flex border-b border-border-default pb-2 text-sm">
         <dl className="flex flex-wrap items-center gap-1">
           <dt className="hidden capitalize text-slate-500 sm:block">
             {formatMessage({

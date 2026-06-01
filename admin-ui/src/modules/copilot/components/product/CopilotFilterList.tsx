@@ -8,16 +8,16 @@ export const CopilotFilterItem = ({ filter, toolCallId = '' }) => {
   const { formatMessage } = useIntl();
   const { formatDateTime } = useFormatDateTime();
   return (
-    <div className="relative border rounded-xl p-4 shadow-sm bg-white dark:bg-slate-900 space-y-4 w-full">
+    <div className="relative border rounded-xl p-4 shadow-sm bg-surface-input space-y-4 w-full">
       <Link
         href={`/filters?filterId=${filter._id}`}
-        className="absolute top-2 right-2 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+        className="absolute top-2 right-2 px-2 py-1 text-xs font-medium text-text-secondary hover:text-text-primary border border-border-default rounded-md hover:bg-surface-raised transition-colors"
       >
         {formatMessage({ id: 'edit', defaultMessage: 'Edit' })}
       </Link>
       <div className="flex items-start gap-4">
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
+          <h3 className="text-sm font-semibold text-text-primary truncate">
             {filter.texts?.name || filter.key}
           </h3>
           <CopyableId id={filter._id} />
@@ -39,7 +39,7 @@ export const CopilotFilterItem = ({ filter, toolCallId = '' }) => {
 
           {filter.options?.length > 0 && (
             <div className="mt-2">
-              <div className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <div className="text-xs font-medium text-text-secondary mb-1">
                 {formatMessage({
                   id: 'filter.options',
                   defaultMessage: 'Options',
@@ -64,7 +64,7 @@ export const CopilotFilterItem = ({ filter, toolCallId = '' }) => {
           )}
         </div>
 
-        <div className="flex flex-col items-end text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap mt-8 gap-1">
+        <div className="flex flex-col items-end text-xs text-text-muted whitespace-nowrap mt-8 gap-1">
           <span
             className={`text-xs font-medium rounded px-2 py-0.5 ${
               filter.isActive

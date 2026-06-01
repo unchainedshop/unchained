@@ -47,12 +47,12 @@ const colorConfigs: Record<string, ColorConfig> = {
   },
   slate: {
     button:
-      'bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600',
+      'bg-surface text-text-secondary border border-slate-200 dark:border-slate-600',
     hover: 'hover:bg-slate-100 dark:hover:bg-slate-600',
     focus: 'focus:ring-slate-500',
     dropdown:
-      'text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600',
-    description: 'text-slate-600 dark:text-slate-400',
+      'text-text-secondary bg-surface border border-slate-200 dark:border-slate-600',
+    description: 'text-text-secondary',
   },
   stone: {
     button:
@@ -157,7 +157,7 @@ const SelectOptions = ({
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="mt-1 absolute right-0 z-10 w-64 origin-top-right divide-y divide-slate-200 dark:divide-slate-600 overflow-hidden rounded-md bg-white dark:bg-slate-800 shadow-lg ring-1 ring-black dark:ring-slate-600 ring-opacity-5 dark:ring-opacity-50 focus:outline-hidden">
+              <Listbox.Options className="mt-1 absolute right-0 z-10 w-64 origin-top-right divide-y divide-slate-200 dark:divide-slate-600 overflow-hidden rounded-md bg-surface shadow-lg ring-1 ring-black dark:ring-slate-600 ring-opacity-5 dark:ring-opacity-50 focus:outline-hidden">
                 {options.map((option) => (
                   <Listbox.Option
                     key={option.title}
@@ -196,7 +196,7 @@ const SelectOptions = ({
                           {option?.description && (
                             <div
                               className={clsx(
-                                'mt-2 ms-1 text-sm text-slate-600 dark:text-slate-400',
+                                'mt-2 ms-1 text-sm text-text-secondary',
                               )}
                             >
                               {option.description}

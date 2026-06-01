@@ -200,7 +200,7 @@ const LogInForm = () => {
       <div className="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-4 text-center">
           <div>
-            <h2 className="text-center text-3xl text-slate-900 dark:text-slate-200">
+            <h2 className="text-center text-3xl text-text-primary">
               {formatMessage({
                 id: 'login_header',
                 defaultMessage: 'Log in to your account',
@@ -222,7 +222,7 @@ const LogInForm = () => {
                     id="previous-button"
                     name="previous-button"
                     onClick={previousStep}
-                    className="group relative flex w-full justify-center rounded-md border border-slate-300 bg-slate-100 dark:bg-slate-700 dark:border-slate-600 py-2 px-4 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 focus:outline-hidden focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 focus:ring-offset-2"
+                    className="group relative flex w-full justify-center rounded-md border border-slate-300 bg-surface-raised dark:border-slate-600 py-2 px-4 text-sm font-medium text-text-secondary hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 focus:ring-offset-2"
                   >
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3" />
                     {formatMessage({
@@ -236,7 +236,7 @@ const LogInForm = () => {
                   id="submit"
                   disabled={!form.formik.isValid}
                   name="submit"
-                  className="group relative flex w-full justify-center rounded-md border border-transparent bg-slate-800 dark:bg-slate-600 py-2 px-4 text-sm font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500 focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2"
+                  className="group relative flex w-full justify-center rounded-md border border-transparent bg-accent py-2 px-4 text-sm font-medium text-white hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2"
                 >
                   <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                     <svg
@@ -262,7 +262,7 @@ const LogInForm = () => {
                   <a
                     type="button"
                     href={singleSignOnURL}
-                    className="group relative flex w-full justify-center rounded-md border border-transparent bg-slate-800 dark:bg-slate-600 py-2 px-4 text-sm font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500 focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2"
+                    className="group relative flex w-full justify-center rounded-md border border-transparent bg-accent py-2 px-4 text-sm font-medium text-white hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2"
                   >
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                       <svg
@@ -287,7 +287,7 @@ const LogInForm = () => {
                 )}
               </div>
 
-              <div className="text-sm text-slate-400 dark:text-slate-200">
+              <div className="text-sm text-text-muted">
                 {formatMessage({
                   id: 'create_new_account',
                   defaultMessage: 'Create new account?',

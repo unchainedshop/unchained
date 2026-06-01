@@ -57,11 +57,11 @@ const SafeAssortmentMediaForm: React.FC<SafeAssortmentMediaFormProps> = (
       missingDependencies,
     );
     return (
-      <div className="mx-auto mt-5 max-w-full bg-white dark:bg-slate-800 py-6 shadow-sm dark:shadow-none lg:rounded-sm">
+      <div className="mx-auto mt-5 max-w-full bg-surface py-6 shadow-sm dark:shadow-none lg:rounded-sm">
         <div className="flex items-center justify-center p-8">
           <div className="text-center">
             <div className="text-rose-500 mb-2">Missing Dependencies</div>
-            <div className="text-sm text-slate-600 dark:text-slate-400">
+            <div className="text-sm text-text-secondary">
               The following dependencies are missing:{' '}
               {missingDependencies.join(', ')}
             </div>
@@ -76,11 +76,11 @@ const SafeAssortmentMediaForm: React.FC<SafeAssortmentMediaFormProps> = (
   } catch (error) {
     console.error('Error rendering AssortmentMediaForm:', error);
     return (
-      <div className="mx-auto mt-5 max-w-full bg-white dark:bg-slate-800 py-6 shadow-sm dark:shadow-none lg:rounded-sm">
+      <div className="mx-auto mt-5 max-w-full bg-surface py-6 shadow-sm dark:shadow-none lg:rounded-sm">
         <div className="flex items-center justify-center p-8">
           <div className="text-center">
             <div className="text-rose-500 mb-2">Component Error</div>
-            <div className="text-sm text-slate-600 dark:text-slate-400">
+            <div className="text-sm text-text-secondary">
               {error instanceof Error
                 ? error.message
                 : 'Unknown error occurred'}

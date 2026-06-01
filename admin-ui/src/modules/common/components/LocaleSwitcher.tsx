@@ -15,7 +15,7 @@ const LocaleSwitcher = () => {
   return (
     <div className="mr-auto">
       <select
-        className="cursor-pointer rounded-md border-1 border-slate-300 dark:border-slate-700 py-1 pr-8 text-sm lg:py-1 lg:pr-10 text-black dark:text-white dark:bg-slate-800 shadow-xs  focus:outline-hidden focus:ring-2 focus:ring-slate-800"
+        className="cursor-pointer rounded-md border-1 border-border-default py-1 pr-8 text-sm lg:py-1 lg:pr-10 text-black dark:text-white dark:bg-slate-800 shadow-xs  focus:outline-hidden focus:ring-2 focus:ring-slate-800"
         value={locale}
         onChange={handleOnChange}
       >
