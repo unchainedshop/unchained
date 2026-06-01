@@ -39,7 +39,7 @@ const FormErrorsPure = ({ submitError = '', fieldErrors = [] }) => {
           <li key={name} className="disabled">
             <button
               type="button"
-              className="no-button text-rose-600 dark:text-rose-400"
+              className="no-button text-danger"
               aria-label="Error button"
               onClick={createHandler(name)}
             >

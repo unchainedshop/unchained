@@ -69,7 +69,7 @@ const NoImageSvg = ({
         x="100"
         y="145"
         textAnchor="middle"
-        className="text-slate-800 dark:text-slate-300 text-sm font-semibold"
+        className="text-text-secondary text-sm font-semibold"
         fill="currentColor"
       >
         No Image

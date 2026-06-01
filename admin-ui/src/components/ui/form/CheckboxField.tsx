@@ -35,7 +35,7 @@ const CheckboxField = (props: CommonFieldProps) => {
         onBlur={field.onBlur}
         type="checkbox"
         className={clsx(
-          'h-4 w-4 rounded-xs border-slate-300 dark:border-slate-600 bg-white dark:!bg-slate-800 text-indigo-600 dark:text-slate-200 focus:ring-slate-800',
+          'h-4 w-4 rounded-xs border-border-default bg-white dark:!bg-slate-800 text-indigo-600 dark:text-slate-200 focus:ring-slate-800',
           inputClassName,
           props.className,
         )}
@@ -43,13 +43,9 @@ const CheckboxField = (props: CommonFieldProps) => {
       />
       <label
         htmlFor={field.name}
-        className={clsx(
-          'text-sm text-slate-900 dark:text-slate-200',
-          labelClassName,
-          {
-            'text-danger': !!field.error,
-          },
-        )}
+        className={clsx('text-sm text-text-primary', labelClassName, {
+          'text-danger': !!field.error,
+        })}
       >
         {field.label}
       </label>

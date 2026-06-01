@@ -15,7 +15,7 @@ const ImageWithFallback = ({ fallbackSrc = '', src, ...props }) => {
       <div
         className={
           props.className ||
-          'w-full h-full flex items-center justify-center bg-slate-50 dark:bg-slate-800'
+          'w-full h-full flex items-center justify-center bg-surface'
         }
       >
         <NoImageSvg

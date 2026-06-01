@@ -171,7 +171,7 @@ const ChartTooltipContent = React.forwardRef<
       <div
         ref={ref}
         className={cn(
-          'grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700',
+          'grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl bg-surface-input border-border-subtle',
           className,
         )}
       >
@@ -180,7 +180,7 @@ const ChartTooltipContent = React.forwardRef<
             {!hideLabel && (
               <div
                 className={cn(
-                  'font-medium text-foreground text-slate-900 dark:text-slate-100',
+                  'font-medium text-foreground text-text-primary',
                   labelClassName,
                 )}
               >
@@ -221,19 +221,19 @@ const ChartTooltipContent = React.forwardRef<
                             {nestLabel ? (
                               <div
                                 className={cn(
-                                  'font-medium text-foreground text-slate-900 dark:text-slate-100',
+                                  'font-medium text-foreground text-text-primary',
                                   labelClassName,
                                 )}
                               >
                                 {tooltipLabel}
                               </div>
                             ) : null}
-                            <div className="flex items-center gap-0.5 text-muted-foreground text-slate-600 dark:text-slate-400">
+                            <div className="flex items-center gap-0.5 text-muted-foreground text-text-secondary">
                               {itemConfig?.label || item.name}
                             </div>
                           </div>
                           {item.value && (
-                            <div className="font-mono font-medium tabular-nums text-foreground text-slate-900 dark:text-slate-100">
+                            <div className="font-mono font-medium tabular-nums text-foreground text-text-primary">
                               {item.value}
                             </div>
                           )}

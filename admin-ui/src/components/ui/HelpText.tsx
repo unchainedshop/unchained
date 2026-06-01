@@ -31,7 +31,7 @@ const HelpText: React.FC<HelpTextProps> = ({
 
   return (
     <div
-      className={`flex items-start space-x-1 text-sm text-slate-600 dark:text-slate-400 ${className}`}
+      className={`flex items-start space-x-1 text-sm text-text-secondary ${className}`}
     >
       {showIcon && (
         <QuestionMarkCircleIcon className="h-4 w-4 mt-0.5 flex-shrink-0" />

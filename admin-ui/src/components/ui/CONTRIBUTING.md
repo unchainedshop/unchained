@@ -6,7 +6,7 @@
 2. **Module-specific components** stay in `src/modules/<domain>/components/`.
 3. **Use `clsx`** (not `classnames`) for conditional class merging.
 4. **Variant/size pattern**: follow the Button.tsx pattern (mapped record objects, not conditional class strings).
-5. **Dark mode**: `bg-white dark:bg-slate-800` pairs are acceptable for now. Phase B will replace with semantic tokens.
+5. **Dark mode**: Use semantic token classes (`bg-surface`, `text-text-primary`, `border-border-default`, etc.) defined in `globals.css`. Do not add new `bg-X dark:bg-Y` pairs — use existing tokens or propose a new one.
 6. **No standalone `types.ts`** for internal types. Place types in the implementation file.
 7. **Barrel exports**: update `index.ts` (or `form/index.ts`) when adding a new component.
 8. **ESLint guard**: old import paths are blocked by `no-restricted-imports`. Do not bypass.

@@ -6,6 +6,23 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  --color-surface: var(--token-surface);
+  --color-surface-subtle: var(--token-surface-subtle);
+  --color-surface-raised: var(--token-surface-raised);
+  --color-surface-input: var(--token-surface-input);
+  --color-border-default: var(--token-border);
+  --color-border-subtle: var(--token-border-subtle);
+  --color-text-primary: var(--token-text-primary);
+  --color-text-secondary: var(--token-text-secondary);
+  --color-text-muted: var(--token-text-muted);
+  --color-text-on-dark: var(--token-text-on-dark);
+  --color-accent: var(--token-accent);
+  --color-accent-hover: var(--token-accent-hover);
+  --color-danger: var(--token-danger);
+  --color-danger-surface: var(--token-danger-surface);
+  --color-success: var(--token-success);
+  --color-warning: var(--token-warning);
+
   --color-blue-ribbon-50: #f7f7fe;
   --color-blue-ribbon-100: #eff0fe;
   --color-blue-ribbon-200: #d8d9fc;
@@ -23,6 +40,44 @@
   --chart-3: 197 37% 24%;
   --chart-4: 43 74% 66%;
   --chart-5: 27 87% 67%;
+}
+
+:root {
+  --token-surface: #ffffff;
+  --token-surface-subtle: #f8fafc;
+  --token-surface-raised: #f1f5f9;
+  --token-surface-input: #ffffff;
+  --token-border: #cbd5e1;
+  --token-border-subtle: #e2e8f0;
+  --token-text-primary: #0f172a;
+  --token-text-secondary: #475569;
+  --token-text-muted: #64748b;
+  --token-text-on-dark: #ffffff;
+  --token-accent: #1e293b;
+  --token-accent-hover: #020617;
+  --token-danger: #f43f5e;
+  --token-danger-surface: #fff1f2;
+  --token-success: #10b981;
+  --token-warning: #f59e0b;
+}
+
+.dark {
+  --token-surface: #1e293b;
+  --token-surface-subtle: #0f172a;
+  --token-surface-raised: #334155;
+  --token-surface-input: #0f172a;
+  --token-border: #475569;
+  --token-border-subtle: #334155;
+  --token-text-primary: #f1f5f9;
+  --token-text-secondary: #94a3b8;
+  --token-text-muted: #64748b;
+  --token-text-on-dark: #ffffff;
+  --token-accent: #475569;
+  --token-accent-hover: #64748b;
+  --token-danger: #fb7185;
+  --token-danger-surface: oklch(from #881337 l c h / 10%);
+  --token-success: #34d399;
+  --token-warning: #fbbf24;
 }
 
 /* Dark mode chart colors */
