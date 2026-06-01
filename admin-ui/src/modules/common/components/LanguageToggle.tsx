@@ -54,7 +54,7 @@ const LanguageToggle = ({ narrowNav = false }) => {
     <div className="relative" data-language-toggle>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-1 p-2 text-slate-600 dark:text-sky-400 hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800"
+        className="flex items-center space-x-1 p-2 text-slate-600 dark:text-sky-400 hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
         title={formatMessage({
           id: 'change_language',
           defaultMessage: 'Change language',

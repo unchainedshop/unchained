@@ -43,7 +43,7 @@ const DateInputField: React.FC<DateInputFieldProps> = ({
         min={min}
         max={max}
         className={clsx(
-          'w-full rounded-md border-1 border-border-default bg-surface-input px-3 py-2 text-sm shadow-xs text-text-primary focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:[color-scheme:dark]',
+          'w-full rounded-md border-1 border-border-default bg-surface-input px-3 py-2 text-sm shadow-xs text-text-primary focus:outline-hidden focus:ring-2 focus:ring-focus-ring dark:[color-scheme:dark]',
           className,
         )}
       />

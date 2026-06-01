@@ -142,7 +142,7 @@ const FilterForm = ({
                   <div className="shrink-0">
                     <button
                       type="button"
-                      className="items-right inline-flex rounded-sm border border-transparent bg-slate-800 px-2 py-2 text-sm font-medium text-white shadow-xs hover:bg-slate-950 focus:outline-hidden focus:ring-2 focus:ring-slate-800 focus:ring-offset-2"
+                      className="items-right inline-flex rounded-sm border border-transparent bg-slate-800 px-2 py-2 text-sm font-medium text-white shadow-xs hover:bg-slate-950 focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
                       onClick={() => push('')}
                     >
                       <svg

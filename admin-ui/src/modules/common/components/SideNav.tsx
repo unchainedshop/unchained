@@ -45,7 +45,7 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
       <div key={item.name} className="relative group" ref={dropdownRef}>
         <button
           className={clsx(
-            'flex w-full justify-center items-center p-2 rounded-md transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800',
+            'flex w-full justify-center items-center p-2 rounded-md transition-colors focus:outline-hidden focus:ring-2 focus:ring-focus-ring',
             isChildActive
               ? 'text-text-primary bg-surface-raised'
               : 'text-text-secondary hover:text-text-primary hover:bg-surface-raised',
@@ -81,7 +81,7 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
                     key={subItem.name}
                     href={subItem.href}
                     className={clsx(
-                      'block px-4 py-2 text-sm text-text-secondary hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-slate-800',
+                      'block px-4 py-2 text-sm text-text-secondary hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-focus-ring',
                       {
                         'bg-surface-raised text-text-primary':
                           router.pathname === subItem.href,
@@ -110,20 +110,18 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
         <>
           <DisclosureButton
             className={clsx(
-              'group flex w-full cursor-pointer hover:bg-surface-subtle hover:bg-surface-raised dark:text-slate-400 items-center rounded-md py-2 pl-2 pr-4 text-left text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-slate-800',
+              'group flex w-full cursor-pointer hover:bg-surface-subtle hover:bg-surface-raised items-center rounded-md py-2 pl-2 pr-4 text-left text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-focus-ring',
             )}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
             {item?.icon && (
               <item.icon
-                className="mr-3 h-6 w-6 shrink-0 text-text-secondary group-hover:text-slate-900 dark:group-hover:text-slate-100"
+                className="mr-3 h-6 w-6 shrink-0 text-text-secondary group-hover:text-text-primary"
                 aria-hidden="true"
               />
             )}
-            <span className="flex-1 dark:text-slate-300 dark:hover:text-white">
-              {item.name}
-            </span>
+            <span className="flex-1 hover:text-text-primary">{item.name}</span>
             <ChevronDownIcon
               className={clsx(
                 'h-5 w-5 transition-all duration-200 ease-out',
@@ -142,9 +140,9 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
                   key={subItem.name}
                   href={subItem.href}
                   className={clsx(
-                    'group flex w-full items-center rounded-md py-2 pl-5 pr-2 text-sm font-medium text-text-secondary hover:bg-surface-raised hover:text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-slate-800',
+                    'group flex w-full items-center rounded-md py-2 pl-5 pr-2 text-sm font-medium text-text-secondary hover:bg-surface-raised hover:text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-focus-ring',
                     {
-                      ' dark:bg-slate-800 text-text-primary dark:hover:text-white bg-slate-50 hover:bg-slate-100':
+                      ' text-text-primary hover:text-text-primary bg-slate-50 hover:bg-slate-100':
                         router.pathname === subItem.href,
                     },
                   )}
@@ -164,7 +162,7 @@ const SideNav = ({ navigation, onClick = null, narrowView = false }) => {
   const router = useRouter();
 
   return (
-    <div className="mt-8 flex grow flex-col dark:bg-slate-900">
+    <div className="mt-8 flex grow flex-col bg-surface-input">
       <nav
         className={`pb-8 flex-1 space-y-1 bg-surface-input ${narrowView ? 'px-2' : 'px-2 lg:px-4 2xl:px-6'}`}
         aria-label="Sidebar"
@@ -176,7 +174,7 @@ const SideNav = ({ navigation, onClick = null, narrowView = false }) => {
               <Link
                 href={item?.href || '#'}
                 className={clsx(
-                  'group flex w-full items-center rounded-md py-2 text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-slate-800',
+                  'group flex w-full items-center rounded-md py-2 text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-focus-ring',
                   router.asPath === item.href || router.pathname === item.href
                     ? 'text-text-primary bg-surface-raised'
                     : 'text-text-secondary hover:text-text-primary hover:bg-surface-raised',
@@ -194,7 +192,7 @@ const SideNav = ({ navigation, onClick = null, narrowView = false }) => {
                         'text-text-primary':
                           router.asPath === item.href ||
                           router.pathname === item.href,
-                        'text-text-secondary group-hover:text-slate-900 dark:group-hover:text-slate-100':
+                        'text-text-secondary group-hover:text-text-primary':
                           router.asPath !== item.href &&
                           router.pathname !== item.href,
                         'mr-3': !narrowView,
@@ -202,11 +200,7 @@ const SideNav = ({ navigation, onClick = null, narrowView = false }) => {
                       aria-hidden="true"
                     />
                   )}
-                  {!narrowView && (
-                    <span className="flex-1 dark:text-slate-300">
-                      {item.name}
-                    </span>
-                  )}
+                  {!narrowView && <span className="flex-1">{item.name}</span>}
                   {item.count && <Badge text={item.count} dotted />}
                 </>
               </Link>

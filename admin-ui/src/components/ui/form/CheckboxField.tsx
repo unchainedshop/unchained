@@ -35,7 +35,7 @@ const CheckboxField = (props: CommonFieldProps) => {
         onBlur={field.onBlur}
         type="checkbox"
         className={clsx(
-          'h-4 w-4 rounded-xs border-border-default bg-white dark:!bg-slate-800 text-indigo-600 dark:text-slate-200 focus:ring-slate-800',
+          'h-4 w-4 rounded-xs border-border-default bg-white dark:!bg-slate-800 text-indigo-600 dark:text-slate-200 focus:ring-focus-ring',
           inputClassName,
           props.className,
         )}

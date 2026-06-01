@@ -75,8 +75,8 @@ const UserNameView = ({ _id: userId, username }) => {
                   onClick={() => setIsEdit(!isEdit)}
                   type="button"
                   className={clsx(
-                    isEdit ? '' : 'focus:ring-slate-800',
-                    'inline-flex items-center rounded-md border border-border-default bg-surface px-4 py-2 text-sm font-medium text-text-secondary shadow-xs hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2',
+                    isEdit ? '' : 'focus:ring-focus-ring',
+                    'inline-flex items-center rounded-md border border-border-default bg-surface px-4 py-2 text-sm font-medium text-text-secondary shadow-xs hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2',
                   )}
                 >
                   {isEdit
@@ -92,7 +92,7 @@ const UserNameView = ({ _id: userId, username }) => {
                 {isEdit && (
                   <button
                     type="submit"
-                    className="inline-flex items-center rounded-md border border-transparent bg-accent px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2"
+                    className="inline-flex items-center rounded-md border border-transparent bg-accent px-4 py-2 text-sm font-medium text-text-on-accent shadow-xs hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
                   >
                     {formatMessage({
                       id: 'save',

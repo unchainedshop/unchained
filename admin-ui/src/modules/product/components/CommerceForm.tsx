@@ -201,7 +201,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                                   id: 'vat_suspect',
                                   defaultMessage: 'Vat Suspect',
                                 })}
-                                className="mr-2 h-4 w-4 rounded-sm border-border-default bg-white dark:!bg-slate-900 text-slate-950 focus:ring-slate-800 lg:items-center"
+                                className="mr-2 h-4 w-4 rounded-sm border-border-default bg-white dark:!bg-slate-900 text-slate-950 focus:ring-focus-ring lg:items-center"
                                 type="checkbox"
                               />
                             </div>
@@ -216,7 +216,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                                   defaultMessage: 'Net Price',
                                 })}
                                 hideLabel
-                                className="mr-2 h-4 w-4 justify-between rounded-sm border-border-default bg-white dark:!bg-slate-900 text-slate-950 focus:ring-slate-800 lg:items-center"
+                                className="mr-2 h-4 w-4 justify-between rounded-sm border-border-default bg-white dark:!bg-slate-900 text-slate-950 focus:ring-focus-ring lg:items-center"
                                 type="checkbox"
                               />
                             </div>

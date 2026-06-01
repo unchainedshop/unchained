@@ -16,14 +16,17 @@ const fastify = Fastify({
   trustProxy: true,
 });
 
+const provider =
+  process.env.OPENAI_API_KEY &&
+  createOpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
 
-const provider = process.env.OPENAI_API_KEY && createOpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-const imageProvider = process.env.OPENAI_API_KEY && createOpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const imageProvider =
+  process.env.OPENAI_API_KEY &&
+  createOpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
 
 try {
   // Register all plugins before starting platform
@@ -51,10 +54,14 @@ try {
   connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
     adminUI: true,
-    chat: provider ? {
-      model: provider.chat(process.env.OPENAI_MODEL || "gpt-5.2"),
-      imageGenerationTool: imageProvider ? { model: imageProvider.imageModel('gpt-image-1') } : undefined,
-    } : undefined,
+    chat: provider
+      ? {
+          model: provider.chat(process.env.OPENAI_MODEL || 'gpt-5.2'),
+          imageGenerationTool: imageProvider
+            ? { model: imageProvider.imageModel('gpt-image-1') }
+            : undefined,
+        }
+      : undefined,
   });
 
   await seed(platform.unchainedAPI);

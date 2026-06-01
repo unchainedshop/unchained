@@ -97,7 +97,7 @@ const BreadCrumbs = ({
               )}
               <Link
                 href={data.path}
-                className="text-sm font-medium capitalize text-text-muted dark:hover:text-slate-300 hover:text-slate-700 focus:outline-hidden focus:ring-2 focus:ring-slate-800 rounded-md px-1 py-1"
+                className="text-sm font-medium capitalize text-text-muted dark:hover:text-slate-300 hover:text-slate-700 focus:outline-hidden focus:ring-2 focus:ring-focus-ring rounded-md px-1 py-1"
               >
                 {i === result.length - 1 && currentPageTitle
                   ? currentPageTitle

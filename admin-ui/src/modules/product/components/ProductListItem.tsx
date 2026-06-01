@@ -169,7 +169,7 @@ const ProductListItem = ({
           <input
             type="number"
             id={`${product?._id}-sequence`}
-            className="text-center w-16 shadow-xs focus:ring-slate-900 dark:bg-slate-800 dark:border-slate-700 focus:border-slate-900 block text-sm border-slate-300 rounded-md mr-2 font-semibold text-text-primary"
+            className="text-center w-16 shadow-xs focus:ring-focus-ring dark:bg-slate-800 dark:border-slate-700 focus:border-slate-900 block text-sm border-slate-300 rounded-md mr-2 font-semibold text-text-primary"
             defaultValue={product?.sequence}
             disabled={!hasRole(IRoleAction.ManageProducts)}
             onBlur={updateProductSequence}

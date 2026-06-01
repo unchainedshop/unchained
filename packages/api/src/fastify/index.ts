@@ -31,6 +31,8 @@ export interface AdminUIThemeTokens {
   'danger-surface'?: string;
   success?: string;
   warning?: string;
+  'focus-ring'?: string;
+  'text-on-accent'?: string;
 }
 
 export interface AdminUIThemeConfig {

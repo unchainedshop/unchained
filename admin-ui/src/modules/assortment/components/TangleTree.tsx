@@ -106,7 +106,7 @@ const TangleTree = ({ data, options = {} }: { data: any; options?: any }) => {
                           texts: n,
                         },
                       )}`}
-                      className="text-slate-900 dark:text-fuchsia-400 dark:hover:text-fuchsia-600 ml-2 inline-flex items-center px-4 border border-slate-300 shadow-xs text-sm font-medium rounded-md bg-white dark:bg-slate-500 hover:bg-slate-50 dark:hover:bg-slate-400 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-slate-900"
+                      className="text-slate-900 dark:text-fuchsia-400 dark:hover:text-fuchsia-600 ml-2 inline-flex items-center px-4 border border-slate-300 shadow-xs text-sm font-medium rounded-md bg-white dark:bg-slate-500 hover:bg-slate-50 dark:hover:bg-slate-400 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-focus-ring"
                     >
                       {formatMessage({
                         id: 'children',

@@ -69,7 +69,7 @@ const ProductAssignmentScaffoldForm = ({
             defaultMessage: 'Name',
           })}
           required
-          className="block w-full max-w-full rounded-md border-border-default text-sm focus:ring-slate-800 sm:text-sm"
+          className="block w-full max-w-full rounded-md border-border-default text-sm focus:ring-focus-ring sm:text-sm"
         />
         <SelectField
           className="mt-1 w-full"

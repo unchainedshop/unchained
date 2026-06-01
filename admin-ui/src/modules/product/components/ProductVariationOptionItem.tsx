@@ -94,7 +94,7 @@ const ProductVariationOptionItem = ({ option, onDelete, variationId }) => {
                       defaultMessage: 'Cancel',
                     })}
                     type="button"
-                    className="inline-flex items-center justify-center font-medium shadow-sm focus:outline-hidden focus:ring-2 focus:ring-offset-2 transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 px-3 py-2 text-sm h-8 rounded-md border border-border-default bg-surface text-text-secondary hover:bg-surface-raised focus:ring-slate-500"
+                    className="inline-flex items-center justify-center font-medium shadow-sm focus:outline-hidden focus:ring-2 focus:ring-offset-2 transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 px-3 py-2 text-sm h-8 rounded-md border border-border-default bg-surface text-text-secondary hover:bg-surface-raised focus:ring-focus-ring"
                   >
                     {formatMessage({
                       id: 'cancel',
@@ -108,7 +108,7 @@ const ProductVariationOptionItem = ({ option, onDelete, variationId }) => {
                       id: 'save',
                       defaultMessage: 'Save',
                     })}
-                    className="inline-flex items-center justify-center font-medium shadow-sm focus:outline-hidden focus:ring-2 focus:ring-offset-2 transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 px-3 py-2 text-sm h-8 rounded-md border border-accent bg-accent text-white hover:bg-accent-hover focus:ring-slate-800 dark:focus:ring-slate-400"
+                    className="inline-flex items-center justify-center font-medium shadow-sm focus:outline-hidden focus:ring-2 focus:ring-offset-2 transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 px-3 py-2 text-sm h-8 rounded-md border border-accent bg-accent text-text-on-accent hover:bg-accent-hover focus:ring-focus-ring"
                   >
                     {formatMessage({
                       id: 'save',
