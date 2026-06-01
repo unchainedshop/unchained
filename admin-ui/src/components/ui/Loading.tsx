@@ -4,7 +4,7 @@ const Loading = () => {
   const { formatMessage } = useIntl();
   return (
     <div className="my-5 flex h-full w-full items-center justify-center bg-slate-50 dark:bg-slate-950 py-5">
-      <div className="flex items-center justify-center space-x-1 text-sm text-slate-700 dark:text-slate-200">
+      <div className="flex items-center justify-center space-x-1 text-sm text-text-secondary">
         <svg
           fill="none"
           className="h-6 w-6 animate-spin"

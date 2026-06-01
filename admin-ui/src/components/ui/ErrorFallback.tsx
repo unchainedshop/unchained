@@ -10,7 +10,7 @@ const ErrorFallback = ({ error = null, resetError = null }) => {
     <div className="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-4 text-center">
         <div>
-          <h2 className="text-center text-3xl text-slate-900 dark:text-slate-200">
+          <h2 className="text-center text-3xl text-text-primary">
             {formatMessage({
               id: 'internal_server_error',
               defaultMessage: '500 Internal Server Error',
@@ -22,7 +22,7 @@ const ErrorFallback = ({ error = null, resetError = null }) => {
             <div className="text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 dark:bg-rose-900">
                 <svg
-                  className="h-6 w-6 text-rose-600 dark:text-rose-400"
+                  className="h-6 w-6 text-danger"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -37,13 +37,13 @@ const ErrorFallback = ({ error = null, resetError = null }) => {
                   />
                 </svg>
               </div>
-              <p className="mt-4 text-sm font-semibold uppercase tracking-wide text-rose-600 dark:text-rose-400">
+              <p className="mt-4 text-sm font-semibold uppercase tracking-wide text-danger">
                 {formatMessage({
                   id: 'error_500',
                   defaultMessage: '500 Error',
                 })}
               </p>
-              <p className="mt-2 text-base text-slate-500 dark:text-slate-400">
+              <p className="mt-2 text-base text-text-muted">
                 {formatMessage({
                   id: 'internal_server_error_message',
                   defaultMessage:
@@ -52,13 +52,13 @@ const ErrorFallback = ({ error = null, resetError = null }) => {
               </p>
               {error?.message && (
                 <details className="mt-4 text-left">
-                  <summary className="cursor-pointer text-sm text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-300">
+                  <summary className="cursor-pointer text-sm text-text-secondary hover:text-slate-800 dark:hover:text-slate-300">
                     {formatMessage({
                       id: 'show_error_details',
                       defaultMessage: 'Show error details',
                     })}
                   </summary>
-                  <pre className="mt-2 text-xs text-slate-500 dark:text-slate-400 whitespace-pre-wrap break-all">
+                  <pre className="mt-2 text-xs text-text-muted whitespace-pre-wrap break-all">
                     {error?.message}
                   </pre>
                 </details>
@@ -68,7 +68,7 @@ const ErrorFallback = ({ error = null, resetError = null }) => {
             <div className="flex flex-col gap-3 mt-6">
               <Link
                 href="/"
-                className="group relative flex w-full justify-center rounded-md border border-transparent bg-slate-800 dark:bg-slate-600 py-2 px-4 text-sm font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500 focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2"
+                className="group relative flex w-full justify-center rounded-md border border-transparent bg-accent py-2 px-4 text-sm font-medium text-white hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2"
               >
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                   <svg
@@ -94,11 +94,11 @@ const ErrorFallback = ({ error = null, resetError = null }) => {
                 <button
                   type="button"
                   onClick={resetError}
-                  className="group relative flex w-full justify-center rounded-md border border-slate-300 bg-slate-100 dark:bg-slate-700 dark:border-slate-600 py-2 px-4 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 focus:outline-hidden focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 focus:ring-offset-2"
+                  className="group relative flex w-full justify-center rounded-md border border-slate-300 bg-surface-raised dark:border-slate-600 py-2 px-4 text-sm font-medium text-text-secondary hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 focus:ring-offset-2"
                 >
                   <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                     <svg
-                      className="h-5 w-5 text-slate-500 dark:text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
+                      className="h-5 w-5 text-text-muted group-hover:text-slate-600 dark:group-hover:text-slate-300"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 20 20"
                       fill="currentColor"

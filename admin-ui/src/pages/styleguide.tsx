@@ -27,11 +27,11 @@ const StyleGuidePage = () => {
   const { formatMessage } = useIntl();
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-8">
+    <div className="min-h-screen bg-surface-subtle py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-semibold text-slate-900 dark:text-slate-100">
+          <h1 className="text-3xl font-semibold text-text-primary">
             Style Guide
           </h1>
           <div className="flex items-center space-x-4">
@@ -41,13 +41,120 @@ const StyleGuidePage = () => {
         </div>
 
         <div className="space-y-12">
+          {/* Design Tokens */}
+          <section>
+            <h2 className="text-2xl font-semibold text-text-primary mb-6">
+              Design Tokens
+            </h2>
+            <p className="text-text-secondary mb-4">
+              Semantic color tokens that adapt to light/dark mode. Toggle the
+              theme to see them switch.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                {
+                  name: '--color-surface',
+                  cls: 'bg-surface',
+                  label: 'Surface',
+                },
+                {
+                  name: '--color-surface-subtle',
+                  cls: 'bg-surface-subtle',
+                  label: 'Surface Subtle',
+                },
+                {
+                  name: '--color-surface-raised',
+                  cls: 'bg-surface-raised',
+                  label: 'Surface Raised',
+                },
+                {
+                  name: '--color-surface-input',
+                  cls: 'bg-surface-input',
+                  label: 'Surface Input',
+                },
+                {
+                  name: '--color-border-default',
+                  cls: 'bg-border-default',
+                  label: 'Border',
+                },
+                {
+                  name: '--color-border-subtle',
+                  cls: 'bg-border-subtle',
+                  label: 'Border Subtle',
+                },
+                {
+                  name: '--color-text-primary',
+                  cls: 'bg-text-primary',
+                  label: 'Text Primary',
+                },
+                {
+                  name: '--color-text-secondary',
+                  cls: 'bg-text-secondary',
+                  label: 'Text Secondary',
+                },
+                {
+                  name: '--color-text-muted',
+                  cls: 'bg-text-muted',
+                  label: 'Text Muted',
+                },
+                {
+                  name: '--color-accent',
+                  cls: 'bg-accent',
+                  label: 'Accent',
+                },
+                {
+                  name: '--color-accent-hover',
+                  cls: 'bg-accent-hover',
+                  label: 'Accent Hover',
+                },
+                {
+                  name: '--color-danger',
+                  cls: 'bg-danger',
+                  label: 'Danger',
+                },
+                {
+                  name: '--color-danger-surface',
+                  cls: 'bg-danger-surface',
+                  label: 'Danger Surface',
+                },
+                {
+                  name: '--color-success',
+                  cls: 'bg-success',
+                  label: 'Success',
+                },
+                {
+                  name: '--color-warning',
+                  cls: 'bg-warning',
+                  label: 'Warning',
+                },
+              ].map((token) => (
+                <div
+                  key={token.name}
+                  className="flex items-center space-x-3 rounded-lg border border-border-subtle bg-surface p-3"
+                >
+                  <div
+                    className={`h-10 w-10 shrink-0 rounded-md border border-border-subtle ${token.cls}`}
+                  />
+                  <div>
+                    <div className="text-sm font-medium text-text-primary">
+                      {token.label}
+                    </div>
+                    <div className="text-xs font-mono text-text-muted">
+                      {token.name}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
           {/* Loading Indicators */}
           <section>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 className="text-2xl font-semibold text-text-primary mb-6">
               Loading Indicators
             </h2>
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-8 border border-slate-200 dark:border-slate-700">
-              <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+            <div className="bg-surface rounded-lg p-8 border border-border-subtle">
+              <h3 className="text-lg font-medium text-text-secondary mb-4">
                 Loading Indicators
               </h3>
               <Loading />
@@ -56,13 +163,13 @@ const StyleGuidePage = () => {
 
           {/* Colors */}
           <section>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 className="text-2xl font-semibold text-text-primary mb-6">
               Color Palette
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Light Theme Colors */}
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
                   Slate Colors
                 </h3>
                 <div className="space-y-3">
@@ -70,9 +177,9 @@ const StyleGuidePage = () => {
                     (shade) => (
                       <div key={shade} className="flex items-center space-x-3">
                         <div
-                          className={`w-12 h-8 rounded border border-slate-300 dark:border-slate-600 bg-slate-${shade}`}
+                          className={`w-12 h-8 rounded border border-border-default bg-slate-${shade}`}
                         />
-                        <span className="text-sm font-mono text-slate-600 dark:text-slate-400">
+                        <span className="text-sm font-mono text-text-secondary">
                           slate-{shade}
                         </span>
                       </div>
@@ -82,46 +189,46 @@ const StyleGuidePage = () => {
               </div>
 
               {/* Status Colors */}
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
                   Status Colors
                 </h3>
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
-                    <div className="w-12 h-8 rounded border border-slate-300 dark:border-slate-600 bg-lime-600" />
-                    <span className="text-sm font-mono text-slate-600 dark:text-slate-400">
+                    <div className="w-12 h-8 rounded border border-border-default bg-lime-600" />
+                    <span className="text-sm font-mono text-text-secondary">
                       <span className="font-medium">Confirmed</span> - lime-600
                     </span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <div className="w-12 h-8 rounded border border-slate-300 dark:border-slate-600 bg-amber-600" />
-                    <span className="text-sm font-mono text-slate-600 dark:text-slate-400">
+                    <div className="w-12 h-8 rounded border border-border-default bg-amber-600" />
+                    <span className="text-sm font-mono text-text-secondary">
                       <span className="font-medium">Pending</span> - amber-600
                     </span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <div className="w-12 h-8 rounded border border-slate-300 dark:border-slate-600 bg-sky-600" />
-                    <span className="text-sm font-mono text-slate-600 dark:text-slate-400">
+                    <div className="w-12 h-8 rounded border border-border-default bg-sky-600" />
+                    <span className="text-sm font-mono text-text-secondary">
                       <span className="font-medium">Open</span> - sky-600
                     </span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <div className="w-12 h-8 rounded border border-slate-300 dark:border-slate-600 bg-emerald-600" />
-                    <span className="text-sm font-mono text-slate-600 dark:text-slate-400">
+                    <div className="w-12 h-8 rounded border border-border-default bg-emerald-600" />
+                    <span className="text-sm font-mono text-text-secondary">
                       <span className="font-medium">Fulfilled</span> -
                       emerald-600
                     </span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <div className="w-12 h-8 rounded border border-slate-300 dark:border-slate-600 bg-rose-600" />
-                    <span className="text-sm font-mono text-slate-600 dark:text-slate-400">
+                    <div className="w-12 h-8 rounded border border-border-default bg-rose-600" />
+                    <span className="text-sm font-mono text-text-secondary">
                       <span className="font-medium">Rejected/Error</span> -
                       rose-600
                     </span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <div className="w-12 h-8 rounded border border-slate-300 dark:border-slate-600 bg-slate-600" />
-                    <span className="text-sm font-mono text-slate-600 dark:text-slate-400">
+                    <div className="w-12 h-8 rounded border border-border-default bg-slate-600" />
+                    <span className="text-sm font-mono text-text-secondary">
                       <span className="font-medium">Default/Neutral</span> -
                       slate-600
                     </span>
@@ -133,10 +240,10 @@ const StyleGuidePage = () => {
 
           {/* Badges */}
           <section>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 className="text-2xl font-semibold text-text-primary mb-6">
               Status Badges
             </h2>
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
+            <div className="bg-surface rounded-lg p-6 border border-border-subtle">
               <div className="flex flex-wrap gap-3">
                 <Badge
                   text="CONFIRMED"
@@ -170,7 +277,7 @@ const StyleGuidePage = () => {
                 />
               </div>
               <div className="mt-6">
-                <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+                <h4 className="text-sm font-medium text-text-secondary mb-3">
                   Badge Variations
                 </h4>
                 <div className="flex flex-wrap gap-3">
@@ -189,14 +296,14 @@ const StyleGuidePage = () => {
 
           {/* TagList */}
           <section>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 className="text-2xl font-semibold text-text-primary mb-6">
               Tag Lists
             </h2>
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
+            <div className="bg-surface rounded-lg p-6 border border-border-subtle">
               <div className="space-y-6">
                 {/* TagList with tags */}
                 <div>
-                  <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+                  <h4 className="text-sm font-medium text-text-secondary mb-3">
                     TagList with Tags
                   </h4>
                   <TagList
@@ -213,7 +320,7 @@ const StyleGuidePage = () => {
 
                 {/* TagList without tags */}
                 <div>
-                  <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+                  <h4 className="text-sm font-medium text-text-secondary mb-3">
                     TagList without Tags (Empty State)
                   </h4>
                   <TagList
@@ -225,7 +332,7 @@ const StyleGuidePage = () => {
 
                 {/* TagList read-only */}
                 <div>
-                  <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+                  <h4 className="text-sm font-medium text-text-secondary mb-3">
                     TagList Read-Only (No Edit Button)
                   </h4>
                   <TagList
@@ -237,7 +344,7 @@ const StyleGuidePage = () => {
 
                 {/* TagList with many tags */}
                 <div>
-                  <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+                  <h4 className="text-sm font-medium text-text-secondary mb-3">
                     TagList with Many Tags (Wrapping)
                   </h4>
                   <TagList
@@ -263,29 +370,29 @@ const StyleGuidePage = () => {
 
           {/* Typography */}
           <section>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 className="text-2xl font-semibold text-text-primary mb-6">
               Typography
             </h2>
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700 space-y-4">
-              <h1 className="text-4xl font-semibold text-slate-900 dark:text-slate-100">
+            <div className="bg-surface rounded-lg p-6 border border-border-subtle space-y-4">
+              <h1 className="text-4xl font-semibold text-text-primary">
                 Heading 1 - 4xl Semibold
               </h1>
-              <h2 className="text-3xl font-semibold text-slate-900 dark:text-slate-100">
+              <h2 className="text-3xl font-semibold text-text-primary">
                 Heading 2 - 3xl Semibold
               </h2>
-              <h3 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
+              <h3 className="text-2xl font-semibold text-text-primary">
                 Heading 3 - 2xl Semibold
               </h3>
-              <h4 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+              <h4 className="text-xl font-semibold text-text-primary">
                 Heading 4 - xl Semibold
               </h4>
-              <h5 className="text-lg font-medium text-slate-900 dark:text-slate-100">
+              <h5 className="text-lg font-medium text-text-primary">
                 Heading 5 - lg Medium
               </h5>
-              <h6 className="text-base font-medium text-slate-900 dark:text-slate-100">
+              <h6 className="text-base font-medium text-text-primary">
                 Heading 6 - base Medium
               </h6>
-              <p className="text-base text-slate-600 dark:text-slate-400">
+              <p className="text-base text-text-secondary">
                 Body text - Regular paragraph text with good readability and
                 contrast.
               </p>
@@ -298,13 +405,13 @@ const StyleGuidePage = () => {
 
           {/* Buttons */}
           <section>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 className="text-2xl font-semibold text-text-primary mb-6">
               Button System
             </h2>
             <div className="space-y-8">
               {/* Button Variants */}
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
                   Button Variants
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -321,8 +428,8 @@ const StyleGuidePage = () => {
               </div>
 
               {/* Button Sizes */}
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
                   Button Sizes
                 </h3>
                 <div className="flex items-end space-x-4">
@@ -334,8 +441,8 @@ const StyleGuidePage = () => {
               </div>
 
               {/* Button States */}
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
                   Button States
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -350,8 +457,8 @@ const StyleGuidePage = () => {
               </div>
 
               {/* Button with Icons */}
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
                   Buttons with Icons
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -374,8 +481,8 @@ const StyleGuidePage = () => {
               </div>
 
               {/* Button Shapes */}
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
                   Button Shapes
                 </h3>
                 <div className="flex items-center space-x-4">
@@ -388,16 +495,16 @@ const StyleGuidePage = () => {
               </div>
 
               {/* Full Width Button */}
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
                   Full Width Button
                 </h3>
                 <Button text="Full Width Button" fullWidth />
               </div>
 
               {/* Application Style Buttons */}
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
                   Application Style Buttons
                 </h3>
                 <div className="flex flex-wrap items-center gap-4">
@@ -440,8 +547,8 @@ const StyleGuidePage = () => {
               </div>
 
               {/* Icon Buttons */}
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
                   Icon Buttons
                 </h3>
                 <div className="flex items-center space-x-4">
@@ -454,9 +561,7 @@ const StyleGuidePage = () => {
                       onClick={() => alert('Delete clicked!')}
                       ariaLabel="Delete"
                     />
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
-                      Delete
-                    </span>
+                    <span className="text-xs text-text-muted">Delete</span>
                   </div>
                   <div className="flex flex-col items-center space-y-2">
                     <Button
@@ -467,9 +572,7 @@ const StyleGuidePage = () => {
                       onClick={() => alert('Close clicked!')}
                       ariaLabel="Close"
                     />
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
-                      Close
-                    </span>
+                    <span className="text-xs text-text-muted">Close</span>
                   </div>
                   <div className="flex flex-col items-center space-y-2">
                     <Button
@@ -480,9 +583,7 @@ const StyleGuidePage = () => {
                       onClick={() => alert('View clicked!')}
                       ariaLabel="View"
                     />
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
-                      View
-                    </span>
+                    <span className="text-xs text-text-muted">View</span>
                   </div>
                   <div className="flex flex-col items-center space-y-2">
                     <Button
@@ -491,7 +592,7 @@ const StyleGuidePage = () => {
                       text="Delete"
                       onClick={() => alert('Header delete clicked!')}
                     />
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                    <span className="text-xs text-text-muted">
                       Header Delete
                     </span>
                   </div>
@@ -502,49 +603,49 @@ const StyleGuidePage = () => {
 
           {/* Form Elements */}
           <section>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 className="text-2xl font-semibold text-text-primary mb-6">
               Form Elements
             </h2>
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700 space-y-4">
+            <div className="bg-surface rounded-lg p-6 border border-border-subtle space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
                   Text Input
                 </label>
                 <input
                   type="text"
                   placeholder="Enter text here..."
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-border-default rounded-md bg-white dark:bg-slate-700 text-text-primary focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
                   Select
                 </label>
-                <select className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent">
+                <select className="w-full px-3 py-2 border border-border-default rounded-md bg-white dark:bg-slate-700 text-text-primary focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent">
                   <option>Option 1</option>
                   <option>Option 2</option>
                   <option>Option 3</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
                   Textarea
                 </label>
                 <textarea
                   placeholder="Enter longer text here..."
                   rows={3}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-border-default rounded-md bg-white dark:bg-slate-700 text-text-primary focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent"
                 />
               </div>
               <div className="flex items-center space-x-2">
                 <input
                   type="checkbox"
                   id="checkbox"
-                  className="rounded border-slate-300 dark:border-slate-600 text-slate-800 focus:ring-slate-800 dark:focus:ring-slate-400"
+                  className="rounded border-border-default text-slate-800 focus:ring-slate-800 dark:focus:ring-slate-400"
                 />
                 <label
                   htmlFor="checkbox"
-                  className="text-sm text-slate-700 dark:text-slate-300"
+                  className="text-sm text-text-secondary"
                 >
                   Checkbox option
                 </label>
@@ -554,19 +655,19 @@ const StyleGuidePage = () => {
 
           {/* Theme Controls */}
           <section>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 className="text-2xl font-semibold text-text-primary mb-6">
               Theme Controls
             </h2>
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
+            <div className="bg-surface rounded-lg p-6 border border-border-subtle">
               <div className="flex items-center space-x-6">
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  <span className="text-sm font-medium text-text-secondary">
                     Theme Toggle:
                   </span>
                   <ThemeToggle />
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  <span className="text-sm font-medium text-text-secondary">
                     Language Toggle:
                   </span>
                   <LanguageToggle narrowNav={false} />
@@ -577,10 +678,10 @@ const StyleGuidePage = () => {
 
           {/* Toggle */}
           <section>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 className="text-2xl font-semibold text-text-primary mb-6">
               Toggle
             </h2>
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
+            <div className="bg-surface rounded-lg p-6 border border-border-subtle">
               <div className="flex items-center gap-8">
                 <Toggle toggleText="Active Filter" toggleKey="active" />
                 <Toggle
@@ -594,16 +695,16 @@ const StyleGuidePage = () => {
 
           {/* Accordion */}
           <section>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 className="text-2xl font-semibold text-text-primary mb-6">
               Accordion
             </h2>
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
+            <div className="bg-surface rounded-lg p-6 border border-border-subtle">
               <Accordion
                 data={[
                   {
                     header: 'Section 1',
                     body: (
-                      <p className="text-slate-600 dark:text-slate-400">
+                      <p className="text-text-secondary">
                         Content for section 1
                       </p>
                     ),
@@ -611,7 +712,7 @@ const StyleGuidePage = () => {
                   {
                     header: 'Section 2',
                     body: (
-                      <p className="text-slate-600 dark:text-slate-400">
+                      <p className="text-text-secondary">
                         Content for section 2
                       </p>
                     ),
@@ -619,7 +720,7 @@ const StyleGuidePage = () => {
                   {
                     header: 'Section 3',
                     body: (
-                      <p className="text-slate-600 dark:text-slate-400">
+                      <p className="text-text-secondary">
                         Content for section 3
                       </p>
                     ),
@@ -631,19 +732,19 @@ const StyleGuidePage = () => {
 
           {/* Animated Counter */}
           <section>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 className="text-2xl font-semibold text-text-primary mb-6">
               Animated Counter
             </h2>
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
+            <div className="bg-surface rounded-lg p-6 border border-border-subtle">
               <div className="flex items-center gap-8">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+                  <div className="text-3xl font-bold text-text-primary">
                     <AnimatedCounter value={42} />
                   </div>
                   <span className="text-sm text-slate-500">Count: 42</span>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+                  <div className="text-3xl font-bold text-text-primary">
                     <AnimatedCounter value={1234} />
                   </div>
                   <span className="text-sm text-slate-500">Count: 1234</span>
@@ -654,40 +755,40 @@ const StyleGuidePage = () => {
 
           {/* Utility Components */}
           <section>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 className="text-2xl font-semibold text-text-primary mb-6">
               Utility Components
             </h2>
             <div className="space-y-6">
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
                   NoData
                 </h3>
                 <NoData message="items" />
               </div>
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
                   CopyableText
                 </h3>
                 <CopyableText text="abc123-def456-ghi789" />
               </div>
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
                   ToolTip
                 </h3>
                 <ToolTip text="This is a tooltip message">
-                  <span className="text-sm text-slate-600 dark:text-slate-400 underline cursor-help">
+                  <span className="text-sm text-text-secondary underline cursor-help">
                     Hover me for tooltip
                   </span>
                 </ToolTip>
               </div>
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
                   InfoTextBanner
                 </h3>
                 <InfoTextBanner description="This is an informational banner message." />
               </div>
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
-                <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-4">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
                   HelpText
                 </h3>
                 <HelpText
@@ -700,24 +801,24 @@ const StyleGuidePage = () => {
 
           {/* Cards & Containers */}
           <section>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 mb-6">
+            <h2 className="text-2xl font-semibold text-text-primary mb-6">
               Cards & Containers
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
-                <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle shadow-sm">
+                <h3 className="text-lg font-medium text-text-primary mb-2">
                   Standard Card
                 </h3>
-                <p className="text-slate-600 dark:text-slate-400">
+                <p className="text-text-secondary">
                   This is a standard card with border, shadow, and rounded
                   corners.
                 </p>
               </div>
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700 shadow-lg">
-                <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle shadow-lg">
+                <h3 className="text-lg font-medium text-text-primary mb-2">
                   Elevated Card
                 </h3>
-                <p className="text-slate-600 dark:text-slate-400">
+                <p className="text-text-secondary">
                   This card has a larger shadow for more emphasis.
                 </p>
               </div>

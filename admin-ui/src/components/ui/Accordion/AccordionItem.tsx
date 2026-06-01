@@ -18,7 +18,7 @@ const AccordionItem = ({
         type="button"
         onClick={() => setShow(!show)}
         className={clsx(
-          'relative cursor-pointer border dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 w-full max-w-full overflow-hidden',
+          'relative cursor-pointer border dark:border-slate-800 bg-surface-input text-text-muted hover:bg-surface-raised w-full max-w-full overflow-hidden',
           headerCSS,
         )}
       >

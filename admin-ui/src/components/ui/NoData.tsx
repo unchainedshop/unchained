@@ -6,7 +6,7 @@ const NoData = ({ message, className = '', Icon = null }) => {
   return (
     <div
       className={clsx(
-        'rounded-md flex w-full flex-col items-center justify-center min-h-[176px] py-8 border-1 border-dashed border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-600',
+        'rounded-md flex w-full flex-col items-center justify-center min-h-[176px] py-8 border-1 border-dashed border-border-default text-slate-500 dark:text-slate-600',
         className,
       )}
     >

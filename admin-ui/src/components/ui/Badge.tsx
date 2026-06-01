@@ -21,7 +21,7 @@ const Badge = ({
       id="badge"
       className={clsx(
         isRainbow
-          ? 'inline-flex items-center text-sm font-bold text-slate-900 dark:text-white shadow-lg relative p-[2px] bg-gradient-to-r from-rose-500 via-emerald-500 to-sky-500'
+          ? 'inline-flex items-center text-sm font-bold text-text-primary shadow-lg relative p-[2px] bg-gradient-to-r from-rose-500 via-emerald-500 to-sky-500'
           : `inline-flex items-center border ${borderColor(
               normalizedColor,
               400,
@@ -48,7 +48,7 @@ const Badge = ({
         >
           {dotted && (
             <svg
-              className="text-slate-900 dark:text-white -ml-1 mr-1.5 h-2 w-2"
+              className="text-text-primary -ml-1 mr-1.5 h-2 w-2"
               fill="currentColor"
               viewBox="0 0 8 8"
             >
@@ -61,7 +61,7 @@ const Badge = ({
               id="badge-x-button"
               type="button"
               onClick={onClick}
-              className="ml-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-slate-900 dark:text-white hover:bg-slate-900 hover:bg-opacity-10 dark:hover:bg-white dark:hover:bg-opacity-20 focus:outline-hidden focus:bg-slate-900 focus:bg-opacity-20 dark:focus:bg-white dark:focus:bg-opacity-30"
+              className="ml-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-text-primary hover:bg-slate-900 hover:bg-opacity-10 dark:hover:bg-white dark:hover:bg-opacity-20 focus:outline-hidden focus:bg-slate-900 focus:bg-opacity-20 dark:focus:bg-white dark:focus:bg-opacity-30"
             >
               <svg
                 className="h-2 w-2"

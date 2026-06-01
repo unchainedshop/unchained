@@ -61,7 +61,7 @@ const ChoicesField = ({ multiple, options, ...props }: ChoicesFieldProps) => {
                 value={value}
                 checked={mappableValue.includes(value)}
                 className={clsx(
-                  'mr-2 h-4 w-4 rounded-sm border-slate-300 dark:border-slate-600 bg-white dark:!bg-slate-800 text-slate-950 focus:ring-slate-800',
+                  'mr-2 h-4 w-4 rounded-sm border-border-default bg-white dark:!bg-slate-800 text-slate-950 focus:ring-slate-800',
                   inputClassName,
                 )}
                 disabled={field.disabled}
