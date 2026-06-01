@@ -64,7 +64,7 @@ const DangerMessage = ({
           id="danger_cancel"
           onClick={onCancelClick || close}
           type="button"
-          className="mt-3 inline-flex w-full justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-base font-medium text-slate-700 shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+          className="mt-3 inline-flex w-full justify-center rounded-md border border-border-default bg-surface px-4 py-2 text-base font-medium text-text-secondary shadow-xs hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
         >
           {cancelText ||
             formatMessage({ id: 'cancel', defaultMessage: 'Cancel' })}

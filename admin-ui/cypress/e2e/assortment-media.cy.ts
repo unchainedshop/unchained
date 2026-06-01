@@ -147,7 +147,7 @@ describe('Assortment Detail Media', () => {
   });
 
   it('Should [DELETE] media successfully', () => {
-    cy.get('li button.border-rose-500').first().click({ force: true });
+    cy.get('li button.border-danger').first().click({ force: true });
     cy.get('button[type="button"]#danger_continue')
       .contains(localizations.en.delete_assortment_media)
       .click();
@@ -175,7 +175,7 @@ describe('Assortment Detail Media', () => {
   });
 
   it('Should [CANCEL] delete media successfully', () => {
-    cy.get('li button.border-rose-500').first().click({ force: true });
+    cy.get('li button.border-danger').first().click({ force: true });
     cy.get('button[type="button"]#danger_cancel')
       .contains(localizations.en.cancel)
       .click();

@@ -25,17 +25,6 @@
   --color-focus-ring: var(--token-focus-ring);
   --color-text-on-accent: var(--token-text-on-accent);
 
-  --color-blue-ribbon-50: #f7f7fe;
-  --color-blue-ribbon-100: #eff0fe;
-  --color-blue-ribbon-200: #d8d9fc;
-  --color-blue-ribbon-300: #c1c2f9;
-  --color-blue-ribbon-400: #9294f5;
-  --color-blue-ribbon-500: #6366f1;
-  --color-blue-ribbon-600: #595cd9;
-  --color-blue-ribbon-700: #4a4db5;
-  --color-blue-ribbon-800: #3b3d91;
-  --color-blue-ribbon-900: #313276;
-
   /* Chart colors - Light mode */
   --chart-1: 12 76% 61%;
   --chart-2: 173 58% 39%;
@@ -340,27 +329,6 @@ iframe#external-page {
   box-shadow: none !important;
 }
 
-/* Modal blur effect using backdrop-filter to avoid layout shifts */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  backdrop-filter: blur(12px);
-  z-index: 45;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 200ms ease-out;
-  background-color: oklch(
-    12.9% 0.042 264.695 / 0.6
-  ); /* Semi-transparent white */
-}
-
-body.modal-blur-active::before {
-  opacity: 1;
-}
 
 .tag-input-portal {
   pointer-events: none !important;
