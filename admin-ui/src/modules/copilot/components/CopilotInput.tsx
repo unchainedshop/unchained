@@ -178,7 +178,7 @@ const CopilotInput: React.FC = () => {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Message Copilot..."
-                  className="w-full border-0 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-0 focus:outline-none resize-none text-base leading-5 overflow-hidden py-1"
+                  className="w-full border-0 bg-transparent text-text-primary placeholder-gray-500 dark:placeholder-gray-400 focus:ring-0 focus:outline-none resize-none text-base leading-5 overflow-hidden py-1"
                   rows={1}
                   style={{
                     height: '20px',

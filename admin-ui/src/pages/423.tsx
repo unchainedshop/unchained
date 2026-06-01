@@ -30,7 +30,7 @@ const Locked = () => {
     <div className="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-4 text-center">
         <div>
-          <h2 className="text-center text-3xl text-slate-900 dark:text-slate-200">
+          <h2 className="text-center text-3xl text-text-primary">
             {formatMessage({
               id: 'access_restricted',
               defaultMessage: 'Access Restricted',
@@ -63,14 +63,14 @@ const Locked = () => {
                   defaultMessage: '423 Locked',
                 })}
               </p>
-              <p className="mt-2 text-base text-slate-500 dark:text-slate-400">
+              <p className="mt-2 text-base text-text-muted">
                 {formatMessage({
                   id: 'required-role-not-satisfied',
                   defaultMessage:
                     'Current account does not have access, please log in with an account that has the required role.',
                 })}
               </p>
-              <p className="mt-2 text-sm text-slate-400 dark:text-slate-500">
+              <p className="mt-2 text-sm text-text-muted">
                 {formatMessage({
                   id: 'contact_admin_help',
                   defaultMessage:

@@ -118,7 +118,7 @@ const ProductAssignmentForm = ({ proxyId, disabled = false }) => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
             <InformationCircleIcon className="w-8 h-8 text-gray-400" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+          <h3 className="text-lg font-medium text-text-primary mb-2">
             {formatMessage({
               id: 'no_variations_configured',
               defaultMessage:
@@ -182,7 +182,7 @@ const ProductAssignmentForm = ({ proxyId, disabled = false }) => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-100 dark:bg-yellow-900/30 mb-4">
             <InformationCircleIcon className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+          <h3 className="text-lg font-medium text-text-primary mb-2">
             {formatMessage({
               id: 'assign_product_needs_variations',
               defaultMessage:

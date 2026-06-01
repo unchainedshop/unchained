@@ -37,7 +37,7 @@ const ExportTokenForm = ({ isOpen, addresses, cancel, onExport }) => {
                             web3Address.address?.toLowerCase()
                           }
                           type="checkbox"
-                          className="h-4 w-4 rounded-sm border-slate-300 dark:border-slate-600 bg-white dark:!bg-slate-800 text-slate-950 focus:ring-slate-900"
+                          className="h-4 w-4 rounded-sm border-border-default bg-white dark:!bg-slate-800 text-slate-950 focus:ring-slate-900"
                         />
                       </div>
                       <div className="ml-3 text-sm">

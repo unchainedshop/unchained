@@ -45,7 +45,7 @@ const UserNameView = ({ _id: userId, username }) => {
     <Form form={form}>
       <dl className="divide-y divide-slate-200">
         <div className="flex flex-wrap justify-between items-center sm:gap-4">
-          <div className="flex flex-wrap justify-between items-center sm:gap-4 text-sm text-slate-400 dark:text-slate-200">
+          <div className="flex flex-wrap justify-between items-center sm:gap-4 text-sm text-text-muted">
             {!isEdit &&
               formatMessage({ id: 'username', defaultMessage: 'Username' })}
             <span className="grow">
@@ -60,7 +60,7 @@ const UserNameView = ({ _id: userId, username }) => {
                   })}
                 />
               ) : (
-                <div className="text-base font-medium text-slate-900 dark:text-white">
+                <div className="text-base font-medium text-text-primary">
                   {username}
                 </div>
               )}
@@ -76,7 +76,7 @@ const UserNameView = ({ _id: userId, username }) => {
                   type="button"
                   className={clsx(
                     isEdit ? '' : 'focus:ring-slate-800',
-                    'inline-flex items-center rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 shadow-xs hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2',
+                    'inline-flex items-center rounded-md border border-border-default bg-surface px-4 py-2 text-sm font-medium text-text-secondary shadow-xs hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2',
                   )}
                 >
                   {isEdit
@@ -92,7 +92,7 @@ const UserNameView = ({ _id: userId, username }) => {
                 {isEdit && (
                   <button
                     type="submit"
-                    className="inline-flex items-center rounded-md border border-transparent bg-slate-800 dark:bg-slate-600 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-slate-950 dark:hover:bg-slate-500 focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2"
+                    className="inline-flex items-center rounded-md border border-transparent bg-accent px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2"
                   >
                     {formatMessage({
                       id: 'save',

@@ -46,12 +46,12 @@ const RetryForm = ({
   return (
     <FormWrapper>
       <Form form={form}>
-        <div className="space-y-6 rounded-md bg-white dark:bg-slate-900 shadow-md ">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-200 ">
+        <div className="space-y-6 rounded-md bg-surface-input shadow-md ">
+          <h2 className="text-2xl font-bold text-text-primary ">
             {formatMessage({ id: 'retry_work', defaultMessage: 'Retry Work' })}
           </h2>
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center dark:border-slate-700 pb-4 mb-4">
-            <div className="text-sm text-slate-500 dark:text-slate-400 mt-2 sm:mt-0 flex flex-col sm:flex-row sm:gap-4">
+            <div className="text-sm text-text-muted mt-2 sm:mt-0 flex flex-col sm:flex-row sm:gap-4">
               <span>
                 <strong>
                   {formatMessage({ id: 'type', defaultMessage: 'Type' })}
@@ -71,7 +71,7 @@ const RetryForm = ({
               })}
               labelClassName="text-sm font-medium text-slate-500 mb-1"
               type="number"
-              className="w-full py-2 text-sm text-slate-900 dark:text-slate-200 dark:bg-slate-800 rounded-md"
+              className="w-full py-2 text-sm text-text-primary dark:bg-slate-800 rounded-md"
             />
 
             <TextField
@@ -83,7 +83,7 @@ const RetryForm = ({
               })}
               labelClassName="text-sm font-medium text-slate-500 mb-1"
               type="number"
-              className="w-full py-2 text-sm text-slate-900 dark:text-slate-200 dark:bg-slate-800 rounded-md"
+              className="w-full py-2 text-sm text-text-primary dark:bg-slate-800 rounded-md"
             />
           </div>
 
@@ -94,7 +94,7 @@ const RetryForm = ({
               defaultMessage: 'Scheduled',
             })}
             labelClassName="text-sm font-medium text-slate-500 mb-1"
-            className="w-full py-2 text-sm text-slate-900 dark:text-slate-200 dark:bg-slate-800 rounded-md"
+            className="w-full py-2 text-sm text-text-primary dark:bg-slate-800 rounded-md"
             containerClassName="w-full"
             locale={locale}
             showTimeInput
@@ -107,10 +107,10 @@ const RetryForm = ({
               name="input"
               label={formatMessage({ id: 'input', defaultMessage: 'Input' })}
               labelClassName="text-sm font-medium text-slate-500 mb-1"
-              className="w-full h-48 text-sm text-slate-900 dark:text-slate-200 dark:bg-slate-800 rounded-md"
+              className="w-full h-48 text-sm text-text-primary dark:bg-slate-800 rounded-md"
             />
           </div>
-          <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 p-5 text-right">
+          <div className="border-t-slate-100 border-t border-t-border-subtle space-y-6 bg-surface-subtle p-5 text-right">
             <SubmitButton
               label={formatMessage({
                 id: 'retry_submit',

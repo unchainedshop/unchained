@@ -73,7 +73,7 @@ export default function ExportOptionsForm({
               key={o.key}
               label={o.label}
               hideLabel
-              className="mr-2 h-4 w-4 justify-between rounded-sm border-slate-300 dark:border-slate-600 bg-white text-slate-950 focus:ring-slate-800 lg:items-center"
+              className="mr-2 h-4 w-4 justify-between rounded-sm border-border-default bg-white text-slate-950 focus:ring-slate-800 lg:items-center"
               type="checkbox"
             />
           ))}

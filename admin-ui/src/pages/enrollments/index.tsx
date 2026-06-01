@@ -105,7 +105,7 @@ const EnrollmentListView = () => {
         headerText={headerText}
       />
       <div>
-        <p className="mt-5 text-sm text-slate-400 dark:text-slate-200 lg:gap-7 lg:leading-6 ">
+        <p className="mt-5 text-sm text-text-muted lg:gap-7 lg:leading-6 ">
           {formatMessage({ id: 'status', defaultMessage: 'Status' })}
         </p>
         <div className="flex flex-wrap gap-10">

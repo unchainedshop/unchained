@@ -12,7 +12,7 @@ const OrderDetailHeader = ({ order }) => {
     <div>
       <div className="flex justify-between items-baseline flex-wrap mb-10">
         <div className="flex items-center justify-between gap-5 flex-wrap">
-          <h2 className="text-2xl font-medium text-slate-900 dark:text-slate-200 sm:truncate sm:text-3xl lg:text-4xl xl:text-5xl">
+          <h2 className="text-2xl font-medium text-text-primary sm:truncate sm:text-3xl lg:text-4xl xl:text-5xl">
             {isCart ? (
               <>
                 {formatMessage({
@@ -33,7 +33,7 @@ const OrderDetailHeader = ({ order }) => {
           </h2>
         </div>
         <div>
-          <span className="mr-1 text-slate-400 dark:text-slate-500">
+          <span className="mr-1 text-text-muted">
             {isCart
               ? formatMessage({
                   id: 'cart_created',
@@ -56,7 +56,7 @@ const OrderDetailHeader = ({ order }) => {
 
       {isCart && order?.user && (
         <div className="mt-5">
-          <span className="text-lg text-slate-600 dark:text-slate-400">
+          <span className="text-lg text-text-secondary">
             {order.user.profile?.displayName ||
               (order.user.profile?.address?.firstName &&
               order.user.profile?.address?.lastName

@@ -24,12 +24,12 @@ const CopilotEventStatistics = ({ statistics }) => {
       {sortedStats.map((stat) => (
         <div
           key={stat.type}
-          className="p-4 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col items-center"
+          className="p-4 bg-surface rounded-lg shadow-sm border border-border-subtle flex flex-col items-center"
         >
-          <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+          <p className="text-lg font-semibold text-text-primary">
             {stat.emitCount}
           </p>
-          <p className="text-xs text-slate-500 dark:text-slate-400 text-center break-words">
+          <p className="text-xs text-text-muted text-center break-words">
             {stat.type}
           </p>
         </div>

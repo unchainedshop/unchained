@@ -133,7 +133,7 @@ const ProductDetailPage = ({ slug }) => {
     return (
       <div className="mt-5 max-w-full">
         <div className="text-center py-8">
-          <p className="text-rose-600 dark:text-rose-400">
+          <p className="text-danger">
             {formatMessage({
               id: 'product_load_error',
               defaultMessage: 'Failed to load product',
@@ -171,7 +171,7 @@ const ProductDetailPage = ({ slug }) => {
                     'This product is linked to the following product types:',
                 })}
               </p>
-              <ul className="list-disc list-inside text-sm text-slate-700 dark:text-slate-300">
+              <ul className="list-disc list-inside text-sm text-text-secondary">
                 {'proxies' in product &&
                   product.proxies.map(({ __typename }, idx) => (
                     <li key={idx}>{__typename.replace('Product', '')}</li>
@@ -224,7 +224,7 @@ const ProductDetailPage = ({ slug }) => {
                 icon={
                   <div className="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-rose-100 dark:bg-rose-900/30 sm:mx-0 sm:h-10 sm:w-10">
                     <XMarkIcon
-                      className="h-6 w-6 text-rose-600 dark:text-rose-400"
+                      className="h-6 w-6 text-danger"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -298,10 +298,10 @@ const ProductDetailPage = ({ slug }) => {
                 })}
               />
             )}
-            <div className="inline-flex items-center gap-2 rounded-md dark:border-slate-600 px-4 py-2 text-sm font-medium leading-5 shadow-xs bg-white dark:bg-slate-800 h-[38px]">
+            <div className="inline-flex items-center gap-2 rounded-md dark:border-slate-600 px-4 py-2 text-sm font-medium leading-5 shadow-xs bg-surface h-[38px]">
               <label
                 htmlFor="sequence-input"
-                className="text-slate-700 dark:text-slate-200 font-medium cursor-pointer"
+                className="text-text-secondary font-medium cursor-pointer"
               >
                 {formatMessage({
                   id: 'sequence',
@@ -312,7 +312,7 @@ const ProductDetailPage = ({ slug }) => {
                 type="number"
                 id="sequence-input"
                 disabled={!hasRole(IRoleAction.ManageProducts)}
-                className="text-center w-12 bg-transparent border border-slate-300 dark:border-slate-600 rounded focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent focus:outline-none text-sm font-semibold text-slate-900 dark:text-slate-300 px-2 py-1 transition-all"
+                className="text-center w-12 bg-transparent border border-border-default rounded focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent focus:outline-none text-sm font-semibold text-text-primary px-2 py-1 transition-all"
                 defaultValue={product?.sequence}
                 onBlur={updateProductSequence}
               />
@@ -328,22 +328,18 @@ const ProductDetailPage = ({ slug }) => {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-3 gap-x-10 text-slate-600 dark:text-slate-400">
+        <div className="mt-8 flex flex-wrap gap-3 gap-x-10 text-text-secondary">
           <div className="flex flex-col items-baseline gap-0">
-            <span className="mr-2 text-xs text-slate-500 dark:text-slate-500">
-              ID:
-            </span>
+            <span className="mr-2 text-xs text-text-muted">ID:</span>
             <span className="text-sm font-mono">{product?._id}</span>
           </div>
           <div className="flex flex-col items-baseline gap-0">
-            <span className="text-xs text-slate-500 dark:text-slate-500">
-              Type:
-            </span>
+            <span className="text-xs text-text-muted">Type:</span>
             <p className="text-sm font-mono">{product?.['__typename']}</p>
           </div>
           {product?.created && (
             <div className="flex flex-col items-baseline gap-0">
-              <span className="text-xs text-slate-500 dark:text-slate-500">
+              <span className="text-xs text-text-muted">
                 {formatMessage({ id: 'created', defaultMessage: 'Created' })}:
               </span>
               <span className="text-sm font-mono">
@@ -356,7 +352,7 @@ const ProductDetailPage = ({ slug }) => {
           )}
           {product?.updated && (
             <div className="flex flex-col items-baseline gap-0">
-              <span className="text-xs text-slate-500 dark:text-slate-500">
+              <span className="text-xs text-text-muted">
                 {formatMessage({ id: 'updated', defaultMessage: 'Updated' })}:
               </span>
               <span className="text-sm font-mono">
@@ -369,7 +365,7 @@ const ProductDetailPage = ({ slug }) => {
           )}
           {product?.published && (
             <div className="flex flex-col items-baseline gap-0">
-              <span className="text-xs text-slate-500 dark:text-slate-500">
+              <span className="text-xs text-text-muted">
                 {formatMessage({
                   id: 'published',
                   defaultMessage: 'Published',

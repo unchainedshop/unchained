@@ -115,7 +115,7 @@ const CurrencyForm = ({
         )}
       </div>
       {hasRole(IRoleAction.ManageCurrencies) && (
-        <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 rounded-b-md bg-slate-50 dark:bg-slate-900 p-5 text-right">
+        <div className="border-t-slate-100 border-t border-t-border-subtle space-y-6 rounded-b-md bg-surface-subtle p-5 text-right">
           <SubmitButton
             label={
               isEdit

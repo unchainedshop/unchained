@@ -68,7 +68,7 @@ const OrderFilters = ({ paymentProviders = [], deliveryProviders = [] }) => {
   return (
     <div className="space-y-6 dark:bg-slate-900">
       <div>
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-200 uppercase tracking-wide mb-3">
+        <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-3">
           {formatMessage({
             id: 'filter_by_creation_date',
             defaultMessage: 'Filter by creation date',
@@ -108,7 +108,7 @@ const OrderFilters = ({ paymentProviders = [], deliveryProviders = [] }) => {
       </div>
 
       <div>
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-200 uppercase tracking-wide mb-3">
+        <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-3">
           {formatMessage({
             id: 'order_status',
             defaultMessage: 'Order status',

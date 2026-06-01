@@ -396,7 +396,7 @@ const StyleGuidePage = () => {
                 Body text - Regular paragraph text with good readability and
                 contrast.
               </p>
-              <p className="text-sm text-slate-500 dark:text-slate-500">
+              <p className="text-sm text-text-muted">
                 Small text - Used for captions, metadata, and secondary
                 information.
               </p>
@@ -614,14 +614,14 @@ const StyleGuidePage = () => {
                 <input
                   type="text"
                   placeholder="Enter text here..."
-                  className="w-full px-3 py-2 border border-border-default rounded-md bg-white dark:bg-slate-700 text-text-primary focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-border-default rounded-md bg-surface text-text-primary focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-2">
                   Select
                 </label>
-                <select className="w-full px-3 py-2 border border-border-default rounded-md bg-white dark:bg-slate-700 text-text-primary focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent">
+                <select className="w-full px-3 py-2 border border-border-default rounded-md bg-surface text-text-primary focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent">
                   <option>Option 1</option>
                   <option>Option 2</option>
                   <option>Option 3</option>
@@ -634,7 +634,7 @@ const StyleGuidePage = () => {
                 <textarea
                   placeholder="Enter longer text here..."
                   rows={3}
-                  className="w-full px-3 py-2 border border-border-default rounded-md bg-white dark:bg-slate-700 text-text-primary focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-border-default rounded-md bg-surface text-text-primary focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent"
                 />
               </div>
               <div className="flex items-center space-x-2">

@@ -18,28 +18,32 @@ export const ThemeContext = createContext<ThemeContextType | undefined>(
 interface ThemeWrapperProps {
   children: ReactNode;
 }
-const ThemeWrapper = ({ children }: ThemeWrapperProps) => {
-  const [theme, setTheme] = useLocalStorage('theme', 'light');
-
-  useEffect(() => {
-    if (
-      localStorage.theme === 'dark' ||
-      (!('theme' in localStorage) &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches)
-    ) {
-      document.getElementsByTagName('html')[0].classList.add('dark');
-    } else {
-      document.getElementsByTagName('html')[0].classList.remove('dark');
+const getInitialTheme = (): Theme => {
+  if (typeof window === 'undefined') return 'light';
+  try {
+    const stored = window.localStorage.getItem('theme');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed === 'dark' || parsed === 'light') return parsed;
     }
-  }, []);
+  } catch {
+    const raw = window.localStorage.getItem('theme');
+    if (raw === 'dark' || raw === '"dark"') return 'dark';
+    if (raw === 'light' || raw === '"light"') return 'light';
+  }
+  if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+  return 'light';
+};
+
+const ThemeWrapper = ({ children }: ThemeWrapperProps) => {
+  const [theme, setTheme] = useLocalStorage('theme', getInitialTheme());
 
   useEffect(() => {
+    const html = document.documentElement;
     if (theme === 'dark') {
-      document.getElementsByTagName('html')[0].classList.add('dark');
-      localStorage.theme = 'dark';
+      html.classList.add('dark');
     } else {
-      document.getElementsByTagName('html')[0].classList.remove('dark');
-      localStorage.theme = 'light';
+      html.classList.remove('dark');
     }
   }, [theme]);
 

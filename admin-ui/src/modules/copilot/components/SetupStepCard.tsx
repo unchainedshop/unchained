@@ -50,7 +50,7 @@ const SetupStepCard: React.FC<SetupStepCardProps> = ({ step, onStepClick }) => {
         'relative p-4 rounded-lg border transition-all duration-200',
         step.isComplete
           ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-700/50'
-          : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm',
+          : 'bg-surface border-border-subtle hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm',
         !step.isComplete && 'cursor-pointer',
       )}
       onClick={!step.isComplete ? handleClick : undefined}
@@ -61,7 +61,7 @@ const SetupStepCard: React.FC<SetupStepCardProps> = ({ step, onStepClick }) => {
             'flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center',
             step.isComplete
               ? 'bg-emerald-100 dark:bg-emerald-900/30'
-              : 'bg-slate-100 dark:bg-slate-700',
+              : 'bg-surface-raised',
           )}
         >
           {step.isComplete ? (
@@ -70,9 +70,7 @@ const SetupStepCard: React.FC<SetupStepCardProps> = ({ step, onStepClick }) => {
             <IconComponent
               className={clsx(
                 'w-5 h-5',
-                step.isRequired
-                  ? 'text-slate-600 dark:text-slate-400'
-                  : 'text-slate-500 dark:text-slate-500',
+                step.isRequired ? 'text-text-secondary' : 'text-text-muted',
               )}
             />
           )}
@@ -86,7 +84,7 @@ const SetupStepCard: React.FC<SetupStepCardProps> = ({ step, onStepClick }) => {
                   'font-medium text-sm',
                   step.isComplete
                     ? 'text-emerald-700 dark:text-emerald-300'
-                    : 'text-slate-900 dark:text-slate-100',
+                    : 'text-text-primary',
                 )}
               >
                 {step.title}
@@ -99,7 +97,7 @@ const SetupStepCard: React.FC<SetupStepCardProps> = ({ step, onStepClick }) => {
                   'text-xs mt-1',
                   step.isComplete
                     ? 'text-emerald-600 dark:text-emerald-400'
-                    : 'text-slate-600 dark:text-slate-400',
+                    : 'text-text-secondary',
                 )}
               >
                 {step.description}
@@ -109,7 +107,7 @@ const SetupStepCard: React.FC<SetupStepCardProps> = ({ step, onStepClick }) => {
             {/* Time estimate and status */}
             <div className="flex flex-col items-end gap-1 text-xs">
               {!step.isComplete && (
-                <div className="flex items-center gap-1 text-slate-500 dark:text-slate-500">
+                <div className="flex items-center gap-1 text-text-muted">
                   <ClockIcon className="w-3 h-3" />
                   <span>{step.estimatedTime}</span>
                 </div>
@@ -134,7 +132,7 @@ const SetupStepCard: React.FC<SetupStepCardProps> = ({ step, onStepClick }) => {
                     'inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md transition-colors',
                     step.isRequired
                       ? 'bg-slate-900 dark:bg-slate-200 text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-300'
-                      : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600',
+                      : 'bg-surface-raised text-text-secondary hover:bg-surface-raised',
                   )}
                 >
                   {formatMessage({

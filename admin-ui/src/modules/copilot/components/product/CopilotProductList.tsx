@@ -31,7 +31,7 @@ const CopilotProductList: React.FC<ProductListProps> = ({ products }) => {
       {availableStatuses.length > 1 && (
         <div className="flex gap-2">
           <div
-            className={`px-3 py-1 text-sm rounded-md transition-colors text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200`}
+            className={`px-3 py-1 text-sm rounded-md transition-colors text-text-secondary hover:text-text-primary`}
           >
             {formatMessage({ id: 'all', defaultMessage: 'All' })} (
             {products.length})
@@ -46,8 +46,8 @@ const CopilotProductList: React.FC<ProductListProps> = ({ products }) => {
                 onClick={() => setStatusFilter(status)}
                 className={`px-3 py-1 text-sm rounded-md transition-colors ${
                   statusFilter === status
-                    ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-slate-100'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                    ? 'bg-surface-raised text-text-primary'
+                    : 'text-text-secondary hover:text-text-primary'
                 }`}
               >
                 {status} ({count})

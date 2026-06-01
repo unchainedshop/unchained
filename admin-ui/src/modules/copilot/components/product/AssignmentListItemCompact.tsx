@@ -43,14 +43,14 @@ const AssignmentListItemCompact: React.FC<AssignmentListItemCompactProps> = ({
   const currency = product?.pricing?.currencyCode;
 
   return (
-    <div className="relative flex items-start gap-4 p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow duration-200 w-full overflow-hidden">
+    <div className="relative flex items-start gap-4 p-3 bg-surface rounded-lg shadow-sm border border-border-subtle hover:shadow-md transition-shadow duration-200 w-full overflow-hidden">
       <div className="flex-1 min-w-0">
-        <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+        <h3 className="text-sm font-medium text-text-primary truncate">
           {title}
         </h3>
 
         {(subtitle || brand) && (
-          <p className="text-xs text-slate-600 dark:text-slate-400 truncate">
+          <p className="text-xs text-text-secondary truncate">
             {brand && <span className="font-semibold">{brand}</span>}
             {brand && subtitle ? ' — ' : ''}
             {subtitle}
@@ -58,7 +58,7 @@ const AssignmentListItemCompact: React.FC<AssignmentListItemCompactProps> = ({
         )}
 
         {sku && (
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-text-muted mt-0.5">
             {formatMessage({ id: 'assignment_sku', defaultMessage: 'SKU' })}:{' '}
             {sku}
           </p>
@@ -69,7 +69,7 @@ const AssignmentListItemCompact: React.FC<AssignmentListItemCompactProps> = ({
             {tags.map((tag, idx) => (
               <span
                 key={idx}
-                className="px-1.5 py-0.5 text-[10px] font-medium bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded"
+                className="px-1.5 py-0.5 text-[10px] font-medium bg-surface-raised text-text-secondary rounded"
               >
                 {tag}
               </span>
@@ -78,7 +78,7 @@ const AssignmentListItemCompact: React.FC<AssignmentListItemCompactProps> = ({
         )}
 
         {price !== undefined && currency && (
-          <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 mt-1">
+          <p className="text-xs font-semibold text-text-primary mt-1">
             {(price / 100).toFixed(2)} {currency}
           </p>
         )}
@@ -98,7 +98,7 @@ const AssignmentListItemCompact: React.FC<AssignmentListItemCompactProps> = ({
           </div>
           <Link
             href={`/products?slug=${generateUniqueId(product)}`}
-            className="px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex-shrink-0"
+            className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary border border-border-default rounded-md hover:bg-surface-raised transition-colors flex-shrink-0"
           >
             {formatMessage({ id: 'edit', defaultMessage: 'Edit' })}
           </Link>

@@ -58,7 +58,7 @@ const NewProviderForm = ({
             />
           </div>
           {!readOnly && (
-            <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 p-6 px-5 text-right">
+            <div className="border-t-slate-100 border-t border-t-border-subtle space-y-6 bg-surface-subtle p-6 px-5 text-right">
               <SubmitButton
                 label={formatMessage({
                   id: 'create_provider',

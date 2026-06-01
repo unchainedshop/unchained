@@ -50,13 +50,13 @@ const CopilotPriceCompact: React.FC<Props> = ({
 
   return (
     <ProductItemWrapperCompact product={product} tab="commerce">
-      <div className="flex flex-col gap-3 text-sm text-center text-slate-700 dark:text-slate-300 min-w-[140px]">
+      <div className="flex flex-col gap-3 text-sm text-center text-text-secondary min-w-[140px]">
         {price && (
           <>
-            <span className="font-semibold text-slate-900 dark:text-white">
+            <span className="font-semibold text-text-primary">
               {formatPrice(price)}
             </span>
-            <span className="text-xs text-slate-500 dark:text-slate-400">
+            <span className="text-xs text-text-muted">
               {price.isNetPrice
                 ? formatMessage({
                     id: 'net_price',
@@ -76,20 +76,20 @@ const CopilotPriceCompact: React.FC<Props> = ({
 
         {priceRange && (
           <div className="text-xs">
-            <div className="text-slate-500 dark:text-slate-400">
+            <div className="text-text-muted">
               {formatMessage({
                 id: 'price_range',
                 defaultMessage: 'Price Range',
               })}
             </div>
-            <div className="font-medium text-slate-900 dark:text-white">
+            <div className="font-medium text-text-primary">
               {displayPriceRange}
             </div>
           </div>
         )}
 
         {!!leveledCatalogPrice.length && (
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-700 text-left">
+          <div className="pt-2 border-t border-border-subtle text-left">
             <div className="font-medium mb-1 text-xs text-slate-600 uppercase">
               {formatMessage({
                 id: 'tiered_pricing',
@@ -104,7 +104,7 @@ const CopilotPriceCompact: React.FC<Props> = ({
                       {minQuantity}
                       {maxQuantity !== null ? ` – ${maxQuantity}` : '+'}
                     </span>
-                    <span className="text-slate-900 dark:text-white font-medium">
+                    <span className="text-text-primary font-medium">
                       {formatPrice(price)}
                     </span>
                   </li>

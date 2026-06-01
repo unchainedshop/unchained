@@ -9,7 +9,7 @@ const FormWrapper = ({ children, className = '' }) => {
       <div className="sm:max-w-full">
         <div
           className={clsx(
-            'bg-white dark:bg-slate-800 rounded-md shadow-sm overflow-hidden',
+            'bg-surface rounded-md shadow-sm overflow-hidden',
             className,
           )}
         >

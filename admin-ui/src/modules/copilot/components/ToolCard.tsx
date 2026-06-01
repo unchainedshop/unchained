@@ -41,8 +41,7 @@ const categoryColors: Record<string, string> = {
     'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300',
   'Media & Content':
     'bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-300',
-  'Other Tools':
-    'bg-slate-50 dark:bg-slate-900/20 text-slate-700 dark:text-slate-300',
+  'Other Tools': 'bg-surface-subtle/20 text-text-secondary',
 };
 
 export const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
@@ -52,20 +51,20 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
     categoryColors[tool.category] || categoryColors['Other Tools'];
 
   return (
-    <div className="group relative p-4 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all hover:shadow-md">
+    <div className="group relative p-4 bg-surface rounded-lg border border-border-subtle hover:border-slate-300 dark:hover:border-slate-600 transition-all hover:shadow-md">
       <div className="flex items-start gap-3">
         <div className={`p-2 rounded-lg ${colorClass}`}>
           <Icon className="h-5 w-5" />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+          <h3 className="text-sm font-medium text-text-primary truncate">
             {normalizeToolName(tool.name)}
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
+          <p className="text-xs text-text-muted mt-1 line-clamp-2">
             {tool.description}
           </p>
           <div className="mt-2">
-            <p className="text-xs text-slate-600 dark:text-slate-300 italic">
+            <p className="text-xs text-text-secondary italic">
               {getToolDescription(tool.name)}
             </p>
           </div>

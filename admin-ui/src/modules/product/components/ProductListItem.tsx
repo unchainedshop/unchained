@@ -66,7 +66,7 @@ const ProductListItem = ({
   };
   const productUrl = `/products?slug=${generateUniqueId(product)}`;
   const TypeName = (
-    <span className="text-xs mt-1 px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded w-fit">
+    <span className="text-xs mt-1 px-2 py-0.5 bg-surface-raised text-text-secondary rounded w-fit">
       {(product.__typename || product.type || 'SimpleProduct').replace(
         'Product',
         '',
@@ -79,7 +79,7 @@ const ProductListItem = ({
         {product?.status !== 'DELETED' ? (
           <Link
             href={productUrl}
-            className="flex items-center text-sm text-slate-900 dark:text-slate-300 group-hover:text-slate-700 dark:group-hover:text-slate-100"
+            className="flex items-center text-sm text-text-primary group-hover:text-slate-700 dark:group-hover:text-slate-100"
           >
             {showAvatar && (
               <MediaAvatar
@@ -169,7 +169,7 @@ const ProductListItem = ({
           <input
             type="number"
             id={`${product?._id}-sequence`}
-            className="text-center w-16 shadow-xs focus:ring-slate-900 dark:bg-slate-800 dark:border-slate-700 focus:border-slate-900 block text-sm border-slate-300 rounded-md mr-2 font-semibold text-slate-900 dark:text-slate-300"
+            className="text-center w-16 shadow-xs focus:ring-slate-900 dark:bg-slate-800 dark:border-slate-700 focus:border-slate-900 block text-sm border-slate-300 rounded-md mr-2 font-semibold text-text-primary"
             defaultValue={product?.sequence}
             disabled={!hasRole(IRoleAction.ManageProducts)}
             onBlur={updateProductSequence}

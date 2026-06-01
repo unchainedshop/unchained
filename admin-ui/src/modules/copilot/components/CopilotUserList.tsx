@@ -61,11 +61,11 @@ export const CopilotUserListItem = ({ user }) => {
   return (
     <div
       key={user._id}
-      className="relative border rounded-xl p-4 shadow-sm bg-white dark:bg-slate-900 space-y-4 w-full"
+      className="relative border rounded-xl p-4 shadow-sm bg-surface-input space-y-4 w-full"
     >
       <div className="flex justify-between items-start w-full">
         <div className="flex items-start gap-3 flex-1 min-w-0">
-          <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center overflow-hidden flex-shrink-0">
+          <div className="w-10 h-10 rounded-full bg-surface-raised flex items-center justify-center overflow-hidden flex-shrink-0">
             {avatar?.file?.url ? (
               <ImageWithFallback
                 src={avatar?.file?.url}
@@ -75,19 +75,19 @@ export const CopilotUserListItem = ({ user }) => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
+              <span className="text-sm font-medium text-text-secondary">
                 {initials}
               </span>
             )}
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+            <h3 className="text-sm font-medium text-text-primary truncate">
               {user?.name} {' - '} {user?.username ? `@${user?.username}` : ''}
             </h3>
 
             {user?.emails?.length > 0 && (
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-text-muted">
                 {user?.primaryEmail?.address}{' '}
                 {!user?.primaryEmail?.verified ? (
                   <Badge
@@ -118,7 +118,7 @@ export const CopilotUserListItem = ({ user }) => {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-text-muted">
                 {formatMessage({ id: 'roles', defaultMessage: 'Roles' })}: –
               </p>
             )}
@@ -133,10 +133,10 @@ export const CopilotUserListItem = ({ user }) => {
           </div>
         </div>
 
-        <div className="flex flex-col items-end text-xs text-slate-500 dark:text-slate-400 ml-4 whitespace-nowrap gap-1">
+        <div className="flex flex-col items-end text-xs text-text-muted ml-4 whitespace-nowrap gap-1">
           <Link
             href={`/users?userId=${user._id}`}
-            className="mt-2 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+            className="mt-2 px-2 py-1 text-xs font-medium text-text-secondary hover:text-text-primary border border-border-default rounded-md hover:bg-surface-raised transition-colors"
           >
             {formatMessage({ id: 'edit', defaultMessage: 'Edit' })}
           </Link>
@@ -176,7 +176,7 @@ export const CopilotUserListItem = ({ user }) => {
           ))}
         </div>
       )}
-      <div className="flex flex-wrap justify-between gap-4 mt-4 text-xs text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 pt-3">
+      <div className="flex flex-wrap justify-between gap-4 mt-4 text-xs text-text-secondary border-t border-border-subtle pt-3">
         {tabFields.map(({ key, label, href }) => {
           const count = user[key]?.length ?? 0;
           return (

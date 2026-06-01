@@ -82,7 +82,7 @@ const MediaListItem = ({
             {media?.tags.map((tag, i) => (
               <span
                 key={`${tag}${i + 1}`}
-                className="rounded border px-1 text-sm font-light capitalize text-slate-900 dark:text-slate-200 shadow-xs dark:shadow-none"
+                className="rounded border px-1 text-sm font-light capitalize text-text-primary shadow-xs dark:shadow-none"
               >
                 {tag}
               </span>

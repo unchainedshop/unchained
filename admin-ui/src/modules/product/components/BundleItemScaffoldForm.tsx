@@ -49,10 +49,7 @@ const BundleItemScaffoldForm = ({ bundleProduct, onSuccess }) => {
   });
 
   return (
-    <Form
-      className="mt-4 rounded-md border border-slate-200 dark:border-slate-700"
-      form={form}
-    >
+    <Form className="mt-4 rounded-md border border-border-subtle" form={form}>
       <div className="p-5 flex flex-col gap-3">
         <h3 className="text-md font-semibold text-slate-800 dark:text-slate-100">
           {formatMessage({
@@ -69,7 +66,7 @@ const BundleItemScaffoldForm = ({ bundleProduct, onSuccess }) => {
             defaultMessage: 'Name',
           })}
           required
-          className="block w-full rounded-md border-slate-300 dark:border-slate-800 text-sm"
+          className="block w-full rounded-md border-border-default text-sm"
         />
 
         <SelectField
@@ -97,7 +94,7 @@ const BundleItemScaffoldForm = ({ bundleProduct, onSuccess }) => {
       </div>
 
       {hasRole(IRoleAction.ManageProducts) && (
-        <div className="border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-5 text-right">
+        <div className="border-t border-border-subtle bg-surface-subtle p-5 text-right">
           <SubmitButton
             label={formatMessage({
               id: 'scaffold_and_add',

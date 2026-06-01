@@ -61,11 +61,11 @@ const AnalyticsDashboard: React.FC = () => {
         {[1, 2, 3].map((i) => (
           <Card key={i} className="animate-pulse">
             <CardHeader className="pb-2">
-              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
-              <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/3"></div>
+              <div className="h-4 bg-surface-raised rounded w-1/2"></div>
+              <div className="h-8 bg-surface-raised rounded w-1/3"></div>
             </CardHeader>
             <CardContent>
-              <div className="h-32 bg-slate-200 dark:bg-slate-700 rounded"></div>
+              <div className="h-32 bg-surface-raised rounded"></div>
             </CardContent>
           </Card>
         ))}

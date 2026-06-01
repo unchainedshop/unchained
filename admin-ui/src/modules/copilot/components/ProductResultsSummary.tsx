@@ -26,16 +26,16 @@ const ProductResultsSummary: React.FC<ProductResultsSummaryProps> = ({
   const activeCount = statusGroups['ACTIVE'] || 0;
 
   return (
-    <div className="my-4 p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md">
+    <div className="my-4 p-3 bg-surface border border-border-subtle rounded-md">
       <div className="flex items-center justify-between mb-2">
-        <h4 className="text-sm font-medium text-slate-900 dark:text-slate-100">
+        <h4 className="text-sm font-medium text-text-primary">
           {formatMessage(
             { id: 'products_found', defaultMessage: '{count} products found' },
             { count: totalCount },
           )}
         </h4>
         {requestedFilters?.status && (
-          <span className="text-xs text-slate-600 dark:text-slate-400">
+          <span className="text-xs text-text-secondary">
             Filter: {requestedFilters.status}
           </span>
         )}
@@ -45,7 +45,7 @@ const ProductResultsSummary: React.FC<ProductResultsSummaryProps> = ({
         {draftCount > 0 && (
           <div className="flex items-center gap-1">
             <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
-            <span className="text-slate-600 dark:text-slate-400">
+            <span className="text-text-secondary">
               {draftCount}{' '}
               {formatMessage({ id: 'draft', defaultMessage: 'Draft' })}
             </span>
@@ -54,7 +54,7 @@ const ProductResultsSummary: React.FC<ProductResultsSummaryProps> = ({
         {activeCount > 0 && (
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
-            <span className="text-slate-600 dark:text-slate-400">
+            <span className="text-text-secondary">
               {activeCount}{' '}
               {formatMessage({ id: 'active', defaultMessage: 'Active' })}
             </span>
@@ -65,7 +65,7 @@ const ProductResultsSummary: React.FC<ProductResultsSummaryProps> = ({
           return (
             <div key={status} className="flex items-center gap-1">
               <span className="w-2 h-2 bg-slate-500 rounded-full"></span>
-              <span className="text-slate-600 dark:text-slate-400">
+              <span className="text-text-secondary">
                 {totalCount} {status}
               </span>
             </div>

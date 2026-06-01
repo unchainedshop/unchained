@@ -16,25 +16,25 @@ export const CountryItemCompact = ({ country }) => {
   const flag = getFlagEmoji(country.isoCode);
 
   return (
-    <div className="relative border rounded-xl p-4 shadow-sm bg-white dark:bg-slate-900 space-y-4">
+    <div className="relative border rounded-xl p-4 shadow-sm bg-surface-input space-y-4">
       <Link
         href={`/country?countryId=${country._id}`}
-        className="absolute top-2 right-2 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+        className="absolute top-2 right-2 px-2 py-1 text-xs font-medium text-text-secondary hover:text-text-primary border border-border-default rounded-md hover:bg-surface-raised transition-colors"
       >
         {formatMessage({ id: 'edit', defaultMessage: 'Edit' })}
       </Link>
 
       <div className="flex items-start gap-4">
-        <div className="w-12 h-12 flex-shrink-0 bg-slate-100 dark:bg-slate-700 rounded-md flex items-center justify-center text-xl">
+        <div className="w-12 h-12 flex-shrink-0 bg-surface-raised rounded-md flex items-center justify-center text-xl">
           {flag || <GlobeAltIcon className="w-6 h-6" />}
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+          <h3 className="text-sm font-semibold text-text-primary truncate">
             {normalizeCountryISOCode(locale, country.isoCode)}
           </h3>
           <CopyableId id={country._id} />
-          <div className="text-xs text-slate-600 dark:text-slate-300 mt-1">
+          <div className="text-xs text-text-secondary mt-1">
             {formatMessage({
               id: 'default_currency',
               defaultMessage: 'Default currency',
@@ -43,7 +43,7 @@ export const CountryItemCompact = ({ country }) => {
           </div>
         </div>
 
-        <div className="flex flex-col items-end text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap mt-8 gap-1">
+        <div className="flex flex-col items-end text-xs text-text-muted whitespace-nowrap mt-8 gap-1">
           <span
             className={`text-xs font-medium rounded px-2 py-0.5 ${
               country.isActive

@@ -100,7 +100,7 @@ const SignUpForm = ({
               defaultMessage: 'Unchained Logo',
             })}
           />
-          <h2 className="text-center text-3xl text-slate-900 dark:text-slate-200">
+          <h2 className="text-center text-3xl text-text-primary">
             {formHeaderText ||
               formatMessage({
                 id: 'sign_up_header',
@@ -172,7 +172,7 @@ const SignUpForm = ({
             <div className="my-2">
               <button
                 type="submit"
-                className="group relative flex w-full justify-center rounded-md border border-transparent bg-slate-800 dark:bg-slate-600 py-2 px-4 text-sm font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500 focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2"
+                className="group relative flex w-full justify-center rounded-md border border-transparent bg-accent py-2 px-4 text-sm font-medium text-white hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2"
               >
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                   <svg
@@ -198,7 +198,7 @@ const SignUpForm = ({
               </button>
             </div>
             {!disableLoginRedirectLink && (
-              <div className="text-sm text-slate-400 dark:text-slate-200">
+              <div className="text-sm text-text-muted">
                 {formatMessage({
                   id: 'already_got_a_user',
                   defaultMessage: 'Already got a user?',

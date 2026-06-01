@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl';
 const CopyableId = ({
   id,
   label = null,
-  className = 'text-xs text-slate-500 dark:text-slate-400',
+  className = 'text-xs text-text-muted',
 }) => {
   const { formatMessage } = useIntl();
   const [copied, setCopied] = useState(false);
@@ -23,7 +23,7 @@ const CopyableId = ({
     label || formatMessage({ id: 'id', defaultMessage: 'ID' });
 
   return (
-    <div className="relative inline-block group bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded text-xs text-slate-500 dark:text-slate-400">
+    <div className="relative inline-block group bg-surface-raised px-2 py-1 rounded text-xs text-text-muted">
       <button
         onClick={copyToClipboard}
         className={`${className} hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer transition-colors truncate text-left`}

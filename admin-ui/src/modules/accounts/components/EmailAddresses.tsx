@@ -114,7 +114,7 @@ const EmailAddresses = ({
   return (
     <div
       className={clsx(
-        'rounded-md shadow-sm px-4 py-5 sm:p-6 bg-white dark:bg-slate-800',
+        'rounded-md shadow-sm px-4 py-5 sm:p-6 bg-surface',
         emailBodyContainer,
       )}
     >
@@ -123,7 +123,7 @@ const EmailAddresses = ({
           <li className="py-4" key={address}>
             <div className="flex flex-wrap items-center justify-between">
               <div className="mr-2 flex max-w-md flex-wrap items-center space-x-2">
-                <div className="truncate text-sm font-medium text-slate-900 dark:text-slate-200">
+                <div className="truncate text-sm font-medium text-text-primary">
                   {address}
                 </div>
                 <ActiveInActive
@@ -147,7 +147,7 @@ const EmailAddresses = ({
                       onClick={async () => {
                         await onSendVerification({ email: address });
                       }}
-                      className="inline-flex items-center rounded-md dark:text-slate-500 dark:hover:text-slate-200 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-slate-800 focus:ring-offset-2"
+                      className="inline-flex items-center rounded-md dark:text-slate-500 dark:hover:text-slate-200 border border-border-default bg-surface px-4 py-2 text-sm font-medium text-slate-700 shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-slate-800 focus:ring-offset-2"
                     >
                       {formatMessage({
                         id: 'send_verification_mail',
@@ -178,7 +178,7 @@ const EmailAddresses = ({
 
       {hasRole(IRoleAction.UpdateUser) && (
         <Form form={form}>
-          <div className="mt-4 border-t dark:border-t-slate-700">
+          <div className="mt-4 border-t border-t-border-subtle">
             <div className="items-between mt-4 flex space-x-4">
               <TextField
                 className="mt-0"

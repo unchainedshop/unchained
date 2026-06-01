@@ -19,9 +19,9 @@ const VariationListItemCompact: React.FC<VariationListItemCompactProps> = ({
   const { formatMessage } = useIntl();
 
   return (
-    <div className="flex items-center gap-4 p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow duration-200 w-full overflow-hidden">
+    <div className="flex items-center gap-4 p-3 bg-surface rounded-lg shadow-sm border border-border-subtle hover:shadow-md transition-shadow duration-200 w-full overflow-hidden">
       <div className="flex-1 min-w-0">
-        <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+        <h3 className="text-sm font-medium text-text-primary truncate">
           {variation.key ||
             formatMessage({
               id: 'variation.untitled',
@@ -29,7 +29,7 @@ const VariationListItemCompact: React.FC<VariationListItemCompactProps> = ({
             })}
         </h3>
         <div className="flex items-center gap-3 mt-1 text-xs">
-          <span className="text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-600 px-2 py-0.5 rounded">
+          <span className="text-text-muted bg-slate-100 dark:bg-slate-600 px-2 py-0.5 rounded">
             {variation.type}
           </span>
           <span className="text-slate-400 truncate">
@@ -52,7 +52,7 @@ const VariationListItemCompact: React.FC<VariationListItemCompactProps> = ({
       </div>
 
       {/* Right: Metadata */}
-      <div className="flex flex-col items-end text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
+      <div className="flex flex-col items-end text-xs text-text-muted whitespace-nowrap">
         <span>
           {formatMessage({
             id: 'created',

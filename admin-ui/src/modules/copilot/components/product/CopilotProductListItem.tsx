@@ -23,14 +23,14 @@ const CopilotProductListItem: React.FC<ProductListItemProps> = ({
 
   return (
     <div
-      className="gap-3 my-5 bg-white dark:bg-slate-800 rounded-lg shadow-md border border-slate-300 dark:border-slate-700 overflow-hidden hover:shadow-md transition-shadow duration-200"
+      className="gap-3 my-5 bg-surface rounded-lg shadow-md border border-border-default overflow-hidden hover:shadow-md transition-shadow duration-200"
       style={{
         display: 'grid',
         gridTemplateRows: 'subgrid',
         gridRow: 'span 6',
       }}
     >
-      <div className="aspect-square bg-slate-50 dark:bg-slate-700 relative">
+      <div className="aspect-square bg-surface relative">
         {media?.length ? (
           <ImageWithFallback
             src={media[0]?.file?.url}
@@ -48,32 +48,32 @@ const CopilotProductListItem: React.FC<ProductListItemProps> = ({
           </div>
         )}
       </div>
-      <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100 px-4 line-clamp-2">
+      <h3 className="text-sm font-medium text-text-primary px-4 line-clamp-2">
         {text.title}
       </h3>
       <div className="px-4 flex items-center gap-2">
         <ProductStatusBadge status={product?.status} />
-        <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-600 px-2 py-1 rounded">
+        <span className="text-xs text-text-muted bg-slate-100 dark:bg-slate-600 px-2 py-1 rounded">
           {(product.__typename || product.type || 'SimpleProduct').replace(
             'Product',
             '',
           ) || 'Simple'}
         </span>
       </div>
-      <p className="text-sm text-slate-600 dark:text-slate-300 px-4">
+      <p className="text-sm text-text-secondary px-4">
         {price ? (
           <>{formatPrice(price)}</>
         ) : (
           <span className="text-slate-400">No price</span>
         )}
       </p>
-      <p className="text-xs text-slate-500 dark:text-slate-400 px-4">
+      <p className="text-xs text-text-muted px-4">
         {product._id || 'auf Lager'}
       </p>
-      <div className="border-t border-slate-100 dark:border-slate-700">
+      <div className="border-t border-border-subtle">
         <Link
           href={`/products?slug=${generateUniqueId(product)}`}
-          className="block text-center text-sm text-slate-900 dark:text-slate-200 hover:text-slate-800 dark:hover:text-slate-300 py-3"
+          className="block text-center text-sm text-text-primary hover:text-slate-800 dark:hover:text-slate-300 py-3"
         >
           {formatMessage({ id: 'edit', defaultMessage: 'Edit' })}
         </Link>

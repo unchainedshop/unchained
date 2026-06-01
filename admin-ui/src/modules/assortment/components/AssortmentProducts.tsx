@@ -133,7 +133,7 @@ const AssortmentProducts = ({ assortmentId }) => {
                   </li>
                 ),
                 strong: (chunk) => (
-                  <strong className="font-semibold text-slate-800 dark:text-slate-200">
+                  <strong className="font-semibold text-text-secondary">
                     {chunk}
                   </strong>
                 ),
@@ -165,7 +165,7 @@ const AssortmentProducts = ({ assortmentId }) => {
                 </li>
               ),
               strong: (chunk) => (
-                <strong className="font-semibold text-slate-800 dark:text-slate-200">
+                <strong className="font-semibold text-text-secondary">
                   {chunk}
                 </strong>
               ),

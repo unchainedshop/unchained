@@ -14,7 +14,7 @@ const TableRow = ({
   return (
     <tr
       className={clsx(
-        'grid grid-cols-1 auto-rows-fr border border-slate-100 dark:border-slate-700 sm:border-0 rounded-md sm:mb-0 sm:table-row sm:rounded-none bg-white dark:bg-slate-800 sm:bg-inherit dark:sm:bg-inherit',
+        'grid grid-cols-1 auto-rows-fr border border-border-subtle sm:border-0 rounded-md sm:mb-0 sm:table-row sm:rounded-none bg-surface sm:bg-inherit dark:sm:bg-inherit',
         className,
       )}
       {...props}

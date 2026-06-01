@@ -85,13 +85,13 @@ const Web3Addresses = ({ web3Addresses }) => {
   });
 
   return (
-    <div className="rounded-md shadow-sm px-4 py-5 sm:p-6 bg-white dark:bg-slate-800">
+    <div className="rounded-md shadow-sm px-4 py-5 sm:p-6 bg-surface">
       <ul className="-my-5 divide-y divide-slate-200 dark:divide-slate-700">
         {(web3Addresses || []).map(({ address, verified, nonce }) => (
           <li className="py-4" key={address}>
             <div className="flex flex-wrap items-center justify-between">
               <div className="mr-2 flex max-w-md flex-wrap items-center space-x-2">
-                <div className="truncate text-sm font-medium text-slate-900 dark:text-slate-200">
+                <div className="truncate text-sm font-medium text-text-primary">
                   {address}
                 </div>
                 <ActiveInActive isActive={verified} />

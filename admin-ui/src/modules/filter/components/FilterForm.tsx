@@ -174,7 +174,7 @@ const FilterForm = ({
       </div>
       <FormErrors />
       {hasRole(IRoleAction.ManageFilters) && (
-        <div className="space-y-6 bg-slate-50 dark:bg-slate-900 border-t-slate-100 dark:border-t-slate-700 p-5 text-right">
+        <div className="space-y-6 bg-surface-subtle border-t-border-subtle p-5 text-right">
           <SubmitButton
             label={formatMessage({
               id: 'create_filter',

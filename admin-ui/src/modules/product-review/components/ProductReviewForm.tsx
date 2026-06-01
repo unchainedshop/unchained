@@ -39,8 +39,8 @@ const ProductReviewForm = ({
     },
   });
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-md shadow-sm overflow-hidden p-6 mb-6">
-      <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
+    <div className="bg-surface rounded-md shadow-sm overflow-hidden p-6 mb-6">
+      <h3 className="text-lg font-semibold text-text-primary mb-4">
         {formatMessage({
           id: 'write_review',
           defaultMessage: 'Write a Review',

@@ -17,10 +17,10 @@ const getNormalizedDetailPageLink = (type, provider) => {
 export const CopilotProviderListItem = ({ provider, type }) => {
   const { formatMessage } = useIntl();
   return (
-    <div className="relative border rounded-xl p-4 shadow-sm bg-white dark:bg-slate-900 space-y-4 w-full">
+    <div className="relative border rounded-xl p-4 shadow-sm bg-surface-input space-y-4 w-full">
       <Link
         href={getNormalizedDetailPageLink(type, provider) || '/'}
-        className="absolute top-2 right-2 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+        className="absolute top-2 right-2 px-2 py-1 text-xs font-medium text-text-secondary hover:text-text-primary border border-border-default rounded-md hover:bg-surface-raised transition-colors"
       >
         {formatMessage({ id: 'edit', defaultMessage: 'Edit' })}
       </Link>
@@ -32,16 +32,16 @@ export const CopilotProviderListItem = ({ provider, type }) => {
 
         <div className="flex-1 min-w-0 space-y-1">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+            <h3 className="text-sm font-semibold text-text-primary truncate">
               {provider.adapterKey}
             </h3>
           </div>
 
-          <div className="flex items-center flex-wrap gap-3 text-xs text-slate-500 dark:text-slate-400">
+          <div className="flex items-center flex-wrap gap-3 text-xs text-text-muted">
             <Badge text={provider.type} square dotted />
             <CopyableId
               id={provider._id}
-              className="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded text-xs text-slate-500 dark:text-slate-400"
+              className="bg-surface-raised px-2 py-1 rounded text-xs text-text-muted"
             />
             <span>
               {formatMessage({ id: 'created', defaultMessage: 'Created' })}:{' '}

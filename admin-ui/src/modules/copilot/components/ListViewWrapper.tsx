@@ -21,14 +21,14 @@ const ListViewWrapper: React.FC<ListViewWrapperProps> = ({
   return (
     <div className={clsx('space-y-4', className)}>
       <div className="flex justify-end">
-        <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+        <div className="flex bg-surface-raised rounded-lg p-1">
           <button
             onClick={() => setViewMode('grid')}
             className={clsx(
               'p-2 rounded-md transition-colors',
               viewMode === 'grid'
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200',
+                ? 'bg-surface text-text-primary shadow-sm'
+                : 'text-text-muted hover:text-slate-700 dark:hover:text-slate-200',
             )}
           >
             <Squares2X2Icon className="w-4 h-4" />
@@ -38,8 +38,8 @@ const ListViewWrapper: React.FC<ListViewWrapperProps> = ({
             className={clsx(
               'p-2 rounded-md transition-colors',
               viewMode === 'list'
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200',
+                ? 'bg-surface text-text-primary shadow-sm'
+                : 'text-text-muted hover:text-slate-700 dark:hover:text-slate-200',
             )}
           >
             <ListBulletIcon className="w-4 h-4" />

@@ -68,7 +68,7 @@ const FilterOptionsListItem = ({ filterId, option, onDelete }) => {
                 className="break-all"
               />
               <div className="flex flex-wrap gap-3">
-                <div className="truncate text-sm text-slate-900 dark:text-slate-200">
+                <div className="truncate text-sm text-text-primary">
                   {isEdit ? (
                     <TextField
                       name="title"
@@ -82,7 +82,7 @@ const FilterOptionsListItem = ({ filterId, option, onDelete }) => {
                     option?.texts?.title
                   )}
                 </div>
-                <div className="truncate text-sm text-slate-500 dark:text-slate-200">
+                <div className="truncate text-sm text-text-muted">
                   {isEdit ? (
                     <TextField
                       name="subtitle"

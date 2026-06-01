@@ -32,16 +32,16 @@ const AssortmentListItemCompact = ({ assortment, children = null }) => {
     dateString ? new Date(dateString).toLocaleDateString() : '';
 
   return (
-    <div className="relative border rounded-xl p-4 shadow-sm bg-white dark:bg-slate-900 space-y-4">
+    <div className="relative border rounded-xl p-4 shadow-sm bg-surface-input space-y-4">
       <Link
         href={`/assortments?assortmentSlug=${assortmentSlug}`}
-        className="absolute top-2 right-2 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+        className="absolute top-2 right-2 px-2 py-1 text-xs font-medium text-text-secondary hover:text-text-primary border border-border-default rounded-md hover:bg-surface-raised transition-colors"
       >
         {formatMessage({ id: 'edit', defaultMessage: 'Edit' })}
       </Link>
 
       <div className="flex items-start gap-4">
-        <div className="w-16 h-16 flex-shrink-0 bg-slate-50 dark:bg-slate-700 rounded-md overflow-hidden">
+        <div className="w-16 h-16 flex-shrink-0 bg-surface rounded-md overflow-hidden">
           {thumbnailUrl ? (
             <ImageWithFallback
               src={thumbnailUrl}
@@ -58,7 +58,7 @@ const AssortmentListItemCompact = ({ assortment, children = null }) => {
         </div>
 
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+          <div className="text-sm font-semibold text-text-primary truncate">
             {texts.title ||
               formatMessage({
                 id: 'untitled_assortment',
@@ -67,7 +67,7 @@ const AssortmentListItemCompact = ({ assortment, children = null }) => {
           </div>
 
           {texts.subtitle && (
-            <div className="text-xs text-slate-500 dark:text-slate-400 truncate mt-1">
+            <div className="text-xs text-text-muted truncate mt-1">
               {texts.subtitle}
             </div>
           )}
@@ -86,7 +86,7 @@ const AssortmentListItemCompact = ({ assortment, children = null }) => {
           )}
         </div>
 
-        <div className="flex flex-col items-end text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap mt-8 gap-1">
+        <div className="flex flex-col items-end text-xs text-text-muted whitespace-nowrap mt-8 gap-1">
           <Badge
             text={
               isActive
@@ -102,13 +102,13 @@ const AssortmentListItemCompact = ({ assortment, children = null }) => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 border-t pt-2 mt-2">
+      <div className="flex items-center justify-between text-xs text-text-secondary border-t pt-2 mt-2">
         <Link
           href={`/assortments/?assortmentSlug=${assortmentSlug}&tab=links`}
           className="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
         >
           {formatMessage({ id: 'children', defaultMessage: 'Children' })}
-          <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
+          <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-surface-raised text-text-secondary">
             {linksCount}
           </span>
         </Link>
@@ -118,7 +118,7 @@ const AssortmentListItemCompact = ({ assortment, children = null }) => {
           className="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
         >
           {formatMessage({ id: 'filters', defaultMessage: 'Filters' })}
-          <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
+          <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-surface-raised text-text-secondary">
             {filtersCount}
           </span>
         </Link>
@@ -128,7 +128,7 @@ const AssortmentListItemCompact = ({ assortment, children = null }) => {
           className="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
         >
           {formatMessage({ id: 'products', defaultMessage: 'Products' })}
-          <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
+          <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-surface-raised text-text-secondary">
             {productsCount}
           </span>
         </Link>
@@ -137,8 +137,8 @@ const AssortmentListItemCompact = ({ assortment, children = null }) => {
       {children && (
         <div className="pt-2">
           <div
-            className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg shadow-inner 
-                          border border-slate-200 dark:border-slate-700"
+            className="p-3 bg-surface rounded-lg shadow-inner 
+                          border border-border-subtle"
           >
             {children}
           </div>

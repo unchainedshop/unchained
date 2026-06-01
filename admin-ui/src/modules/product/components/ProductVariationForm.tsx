@@ -45,8 +45,8 @@ const ProductVariationForm = ({
     <FormWrapper>
       <Form form={form}>
         <div className="max-w-full rounded-md p-2 sm:p-4">
-          <div className="mb-6 p-3 bg-slate-50 dark:bg-slate-900/20 rounded-lg border border-slate-200 dark:border-slate-800">
-            <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100 mb-2">
+          <div className="mb-6 p-3 bg-surface-subtle/20 rounded-lg border border-border-subtle">
+            <h3 className="text-sm font-medium text-text-primary mb-2">
               {formatMessage({
                 id: 'product_variations_explanation_title',
                 defaultMessage: 'About Product Variations',
@@ -77,7 +77,7 @@ const ProductVariationForm = ({
               })}
               required
               autoComplete="on"
-              className="w-full text-sm text-slate-400 dark:text-slate-200"
+              className="w-full text-sm text-text-muted"
             />
           </div>
           <div className="grid grid-rows-2 gap-4">
@@ -96,13 +96,13 @@ const ProductVariationForm = ({
                 })}
                 required
                 autoComplete="on"
-                className="w-full text-sm text-slate-400 dark:text-slate-200"
+                className="w-full text-sm text-text-muted"
               />
             </div>
             <div className="space-y-1">
               <SelectField
                 required
-                className="mt-0 w-full pb-2 text-sm text-slate-400 dark:text-slate-200"
+                className="mt-0 w-full pb-2 text-sm text-text-muted"
                 label={formatMessage({
                   id: 'type',
                   defaultMessage: 'Type',
@@ -128,7 +128,7 @@ const ProductVariationForm = ({
         </div>
 
         {hasRole(IRoleAction.ManageProducts) && (
-          <div className="space-y-6 bg-slate-50 dark:bg-slate-700 px-5 py-6 text-right">
+          <div className="space-y-6 bg-surface px-5 py-6 text-right">
             <SubmitButton
               label={formatMessage({
                 id: 'add_variation',

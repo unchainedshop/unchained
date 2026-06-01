@@ -75,7 +75,7 @@ const Modal = ({
             &#8203;
           </span>
           <div
-            className={`inline-block z-50 transform overflow-hidden rounded-lg bg-white dark:bg-slate-800 px-4 pt-5 pb-4 text-left shadow-2xl dark:shadow-2xl transition-all duration-200 ease-out sm:my-8 sm:w-full sm:max-w-lg sm:p-6 sm:align-middle ${
+            className={`inline-block z-50 transform overflow-hidden rounded-lg bg-surface px-4 pt-5 pb-4 text-left shadow-2xl dark:shadow-2xl transition-all duration-200 ease-out sm:my-8 sm:w-full sm:max-w-lg sm:p-6 sm:align-middle ${
               isAnimating
                 ? 'opacity-100 scale-100 translate-y-0'
                 : 'opacity-0 scale-95 translate-y-4'
@@ -89,7 +89,7 @@ const Modal = ({
                 id="modal_close"
                 type="button"
                 onClick={close}
-                className="rounded-md bg-white dark:bg-slate-900 text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 focus:outline-hidden focus:ring-2 focus:ring-slate-800 focus:ring-offset-2"
+                className="rounded-md bg-surface-input text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 focus:outline-hidden focus:ring-2 focus:ring-slate-800 focus:ring-offset-2"
               >
                 <span className="sr-only">
                   {intl.formatMessage({ id: 'close', defaultMessage: 'Close' })}

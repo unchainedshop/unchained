@@ -34,7 +34,7 @@ const FilterListItem = ({ filter, onRemove }) => {
       <Table.Cell>
         <Link
           href={`/filters?filterId=${filter._id}`}
-          className="flex items-center text-sm text-slate-900 dark:text-slate-300 group-hover:text-slate-700 dark:group-hover:text-slate-100"
+          className="flex items-center text-sm text-text-primary group-hover:text-slate-700 dark:group-hover:text-slate-100"
         >
           {filter?.key &&
             (filter?.key || (

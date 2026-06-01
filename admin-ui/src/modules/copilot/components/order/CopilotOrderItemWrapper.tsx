@@ -16,16 +16,16 @@ const CopilotOrderItemWrapper = ({ order, children = null }) => {
 
   if (!order) return children;
   return (
-    <div className="relative border rounded-xl p-4 shadow-sm bg-white dark:bg-slate-900 space-y-4">
+    <div className="relative border rounded-xl p-4 shadow-sm bg-surface-input space-y-4">
       <Link
         href={`/orders?orderId=${order?._id}`}
-        className="absolute top-2 right-2 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+        className="absolute top-2 right-2 px-2 py-1 text-xs font-medium text-text-secondary hover:text-text-primary border border-border-default rounded-md hover:bg-surface-raised transition-colors"
       >
         {formatMessage({ id: 'view', defaultMessage: 'View' })}
       </Link>
 
       <div className="absolute top-10 right-2 flex gap-2 items-end">
-        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 whitespace-nowrap">
+        <div className="text-sm font-semibold text-text-primary whitespace-nowrap">
           {formatPrice(order?.total)}
         </div>
       </div>
@@ -54,12 +54,12 @@ const CopilotOrderItemWrapper = ({ order, children = null }) => {
 
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div className="flex-1 min-w-0 space-y-1 overflow-hidden">
-          <div className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+          <div className="text-sm font-semibold text-text-primary truncate">
             {formatMessage({ id: 'order_number', defaultMessage: 'Order #' })}{' '}
             {order?.orderNumber || order?._id}
           </div>
 
-          <div className="text-sm text-slate-500 dark:text-slate-400 truncate">
+          <div className="text-sm text-text-muted truncate">
             {order?.billingAddress?.firstName} {order?.billingAddress?.lastName}
             {order?.billingAddress?.company &&
               ` — ${order.billingAddress.company}`}
@@ -69,7 +69,7 @@ const CopilotOrderItemWrapper = ({ order, children = null }) => {
             {order?.billingAddress?.city}, {order?.billingAddress?.countryCode}
           </div>
 
-          <div className="flex flex-wrap gap-2 mt-2 text-xs text-slate-500 dark:text-slate-400">
+          <div className="flex flex-wrap gap-2 mt-2 text-xs text-text-muted">
             <span>
               {formatMessage({ id: 'ordered', defaultMessage: 'Ordered' })}:{' '}
               <strong>{formatDateTime(order?.ordered)}</strong>
@@ -108,7 +108,7 @@ const CopilotOrderItemWrapper = ({ order, children = null }) => {
 
       {children && (
         <div className="pt-2">
-          <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg shadow-inner border border-slate-200 dark:border-slate-700">
+          <div className="p-3 bg-surface rounded-lg shadow-inner border border-border-subtle">
             {children}
           </div>
         </div>

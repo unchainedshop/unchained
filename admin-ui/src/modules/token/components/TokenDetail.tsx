@@ -18,11 +18,11 @@ const TokenDetail = ({ token }) => {
   if (!token) return null;
 
   return (
-    <div className="grid gap-8 bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
-      <div className="border-b border-slate-300 dark:border-slate-700 pb-6">
+    <div className="grid gap-8 bg-surface p-6 rounded-lg shadow-md">
+      <div className="border-b border-border-default pb-6">
         <Link
           href={`/products?slug=${generateUniqueId(token?.product)}`}
-          className="block overflow-hidden rounded-lg bg-slate-50 dark:bg-slate-700 hover:opacity-90"
+          className="block overflow-hidden rounded-lg bg-surface hover:opacity-90"
         >
           <ImageWithFallback
             src={
@@ -42,10 +42,10 @@ const TokenDetail = ({ token }) => {
           />
         </Link>
         <div className="mt-4">
-          <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+          <h3 className="text-xl font-semibold text-text-primary">
             {token?.product?.texts?.title || 'Untitled Product'}
           </h3>
-          <p className="mt-2 text-lg font-semibold text-slate-800 dark:text-slate-300">
+          <p className="mt-2 text-lg font-semibold text-text-secondary">
             {formatPrice(token?.product?.simulatedPrice)}
           </p>
           <p className="mt-2 text-slate-700 dark:text-slate-400">
@@ -59,7 +59,7 @@ const TokenDetail = ({ token }) => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <span className="block font-medium text-slate-700 dark:text-slate-300">
+          <span className="block font-medium text-text-secondary">
             {formatMessage({ id: 'status', defaultMessage: 'Status' })}
           </span>
           <Badge
@@ -72,31 +72,29 @@ const TokenDetail = ({ token }) => {
         </div>
 
         <div>
-          <span className="block font-medium text-slate-700 dark:text-slate-300">
+          <span className="block font-medium text-text-secondary">
             {formatMessage({
               id: 'chain-token-id',
               defaultMessage: 'Token Serial Number',
             })}
             :
           </span>
-          <p className="text-slate-900 dark:text-slate-100">
-            {token?.tokenSerialNumber}
-          </p>
+          <p className="text-text-primary">{token?.tokenSerialNumber}</p>
         </div>
 
         <div>
-          <span className="block font-medium text-slate-700 dark:text-slate-300">
+          <span className="block font-medium text-text-secondary">
             {formatMessage({
               id: 'chain-id',
               defaultMessage: 'Chain ID {chainId}',
             })}
             :
           </span>
-          <p className="text-slate-900 dark:text-slate-100">{token?.chainId}</p>
+          <p className="text-text-primary">{token?.chainId}</p>
         </div>
 
         <div>
-          <span className="block font-medium text-slate-700 dark:text-slate-300">
+          <span className="block font-medium text-text-secondary">
             {formatMessage({ id: 'order', defaultMessage: 'Order' })}:
           </span>
           <Link
@@ -108,14 +106,14 @@ const TokenDetail = ({ token }) => {
         </div>
 
         <div>
-          <span className="block font-medium text-slate-700 dark:text-slate-300">
+          <span className="block font-medium text-text-secondary">
             {formatMessage({
               id: 'invalidated',
               defaultMessage: 'Invalidated',
             })}
             :
           </span>
-          <p className="text-slate-900 dark:text-slate-100">
+          <p className="text-text-primary">
             {token?.invalidatedDate
               ? formatDateTime(token.invalidatedDate)
               : formatMessage({ id: 'not-applicable', defaultMessage: 'N/A' })}
@@ -124,7 +122,7 @@ const TokenDetail = ({ token }) => {
 
         {token?.walletAddress && (
           <div>
-            <span className="block font-medium text-slate-700 dark:text-slate-300">
+            <span className="block font-medium text-text-secondary">
               {formatMessage(
                 {
                   id: 'wallet-address',

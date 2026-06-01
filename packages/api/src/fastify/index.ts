@@ -14,10 +14,34 @@ import { mountRoutes } from './mountRoutes.ts';
 import { readFileSync } from 'node:fs';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
 
+export interface AdminUIThemeTokens {
+  surface?: string;
+  'surface-subtle'?: string;
+  'surface-raised'?: string;
+  'surface-input'?: string;
+  border?: string;
+  'border-subtle'?: string;
+  'text-primary'?: string;
+  'text-secondary'?: string;
+  'text-muted'?: string;
+  'text-on-dark'?: string;
+  accent?: string;
+  'accent-hover'?: string;
+  danger?: string;
+  'danger-surface'?: string;
+  success?: string;
+  warning?: string;
+}
+
+export interface AdminUIThemeConfig {
+  light?: AdminUIThemeTokens;
+  dark?: AdminUIThemeTokens;
+}
+
 export interface AdminUIRouterOptions {
   prefix: string;
   enabled?: boolean;
-  theme?: Record<string, string>;
+  theme?: AdminUIThemeConfig;
 }
 
 /**
@@ -211,7 +235,7 @@ export const connect = async (
   mountRoutes(fastify, unchainedAPI, routes);
 
   if (adminUI) {
-    const adminUITheme = typeof adminUI === 'object' ? adminUI.theme : undefined;
+    const adminUITheme: AdminUIThemeConfig | undefined = typeof adminUI === 'object' ? adminUI.theme : undefined;
     const themeCSS = generateThemeCSS(adminUITheme);
     fastify.get('/admin-ui-theme.css', async (_, reply) => {
       return reply.type('text/css').send(themeCSS);
@@ -249,12 +273,22 @@ const resolveAdminUIPath = () => {
   }
 };
 
-const generateThemeCSS = (theme?: Record<string, string>): string => {
-  if (!theme || Object.keys(theme).length === 0) return '/* default theme */';
-  const vars = Object.entries(theme)
-    .map(([key, value]) => `  --token-${key}: ${value};`)
-    .join('\n');
-  return `:root:root {\n${vars}\n}`;
+const generateThemeCSS = (theme?: AdminUIThemeConfig): string => {
+  if (!theme) return '/* default theme */';
+  const blocks: string[] = [];
+  if (theme.light && Object.keys(theme.light).length > 0) {
+    const vars = Object.entries(theme.light)
+      .map(([key, value]) => `  --token-${key}: ${value};`)
+      .join('\n');
+    blocks.push(`:root:root {\n${vars}\n}`);
+  }
+  if (theme.dark && Object.keys(theme.dark).length > 0) {
+    const vars = Object.entries(theme.dark)
+      .map(([key, value]) => `  --token-${key}: ${value};`)
+      .join('\n');
+    blocks.push(`.dark.dark {\n${vars}\n}`);
+  }
+  return blocks.length > 0 ? blocks.join('\n\n') : '/* default theme */';
 };
 
 export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
