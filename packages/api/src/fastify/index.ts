@@ -211,10 +211,14 @@ export const connect = async (
   mountRoutes(fastify, unchainedAPI, routes);
 
   if (adminUI) {
+    const adminUITheme = typeof adminUI === 'object' ? adminUI.theme : undefined;
+    const themeCSS = generateThemeCSS(adminUITheme);
+    fastify.get('/admin-ui-theme.css', async (_, reply) => {
+      return reply.type('text/css').send(themeCSS);
+    });
     fastify.register(adminUIRouter, {
       enabled: true,
       prefix: typeof adminUI === 'object' ? adminUI.prefix : '/',
-      theme: typeof adminUI === 'object' ? adminUI.theme : undefined,
     });
   }
 };
@@ -250,7 +254,7 @@ const generateThemeCSS = (theme?: Record<string, string>): string => {
   const vars = Object.entries(theme)
     .map(([key, value]) => `  --token-${key}: ${value};`)
     .join('\n');
-  return `:root {\n${vars}\n}`;
+  return `:root:root {\n${vars}\n}`;
 };
 
 export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
@@ -258,11 +262,6 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
   opts,
 ) => {
   try {
-    const themeCSS = generateThemeCSS(opts.theme);
-    fastify.get('/admin-ui-theme.css', async (_, reply) => {
-      return reply.type('text/css').send(themeCSS);
-    });
-
     let fastifyStatic;
     try {
       const fastifyStaticModule = await import('@fastify/static');

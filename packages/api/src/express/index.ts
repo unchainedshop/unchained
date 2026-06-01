@@ -24,7 +24,7 @@ const generateThemeCSS = (theme?: Record<string, string>): string => {
   const vars = Object.entries(theme)
     .map(([key, value]) => `  --token-${key}: ${value};`)
     .join('\n');
-  return `:root {\n${vars}\n}`;
+  return `:root:root {\n${vars}\n}`;
 };
 
 export const adminUIRouter = (enabled = true, theme?: Record<string, string>) => {
