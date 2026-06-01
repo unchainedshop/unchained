@@ -16,15 +16,28 @@ import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogou
 export interface AdminUIRouterOptions {
   prefix: string;
   enabled?: boolean;
+  theme?: Record<string, string>;
 }
 
-export const adminUIRouter = (enabled = true) => {
+const generateThemeCSS = (theme?: Record<string, string>): string => {
+  if (!theme || Object.keys(theme).length === 0) return '/* default theme */';
+  const vars = Object.entries(theme)
+    .map(([key, value]) => `  --token-${key}: ${value};`)
+    .join('\n');
+  return `:root {\n${vars}\n}`;
+};
+
+export const adminUIRouter = (enabled = true, theme?: Record<string, string>) => {
   const router = e.Router();
 
   const staticURL = import.meta.resolve('@unchainedshop/admin-ui');
   const staticPath = new URL(staticURL).pathname.split('/').slice(0, -1).join('/');
 
   if (enabled) {
+    const themeCSS = generateThemeCSS(theme);
+    router.get('/admin-ui-theme.css', (_, res) => {
+      res.type('text/css').send(themeCSS);
+    });
     router.use(e.static(staticPath));
     router.get(/(.*)/, (_, res) => {
       res.sendFile(`${staticPath}/index.html`);
@@ -141,6 +154,7 @@ export const connect = async (
     trustProxy?: boolean;
   } = {},
 ) => {
+  const adminUITheme = typeof adminUI === 'object' ? adminUI.theme : undefined;
   if (allowRemoteToLocalhostSecureCookies) {
     // SECURITY: This mode is for development only - block in production
     if (process.env.NODE_ENV === 'production') {
@@ -200,7 +214,7 @@ export const connect = async (
   mountRoutes(expressApp, unchainedAPI, routes);
 
   if (adminUI) {
-    expressApp.use(typeof adminUI === 'object' ? adminUI.prefix : '/', adminUIRouter(true));
+    expressApp.use(typeof adminUI === 'object' ? adminUI.prefix : '/', adminUIRouter(true, adminUITheme));
   }
 };
 

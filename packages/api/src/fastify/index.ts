@@ -17,6 +17,7 @@ import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogou
 export interface AdminUIRouterOptions {
   prefix: string;
   enabled?: boolean;
+  theme?: Record<string, string>;
 }
 
 /**
@@ -213,6 +214,7 @@ export const connect = async (
     fastify.register(adminUIRouter, {
       enabled: true,
       prefix: typeof adminUI === 'object' ? adminUI.prefix : '/',
+      theme: typeof adminUI === 'object' ? adminUI.theme : undefined,
     });
   }
 };
@@ -243,11 +245,24 @@ const resolveAdminUIPath = () => {
   }
 };
 
+const generateThemeCSS = (theme?: Record<string, string>): string => {
+  if (!theme || Object.keys(theme).length === 0) return '/* default theme */';
+  const vars = Object.entries(theme)
+    .map(([key, value]) => `  --token-${key}: ${value};`)
+    .join('\n');
+  return `:root {\n${vars}\n}`;
+};
+
 export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
   fastify: FastifyInstance,
   opts,
 ) => {
   try {
+    const themeCSS = generateThemeCSS(opts.theme);
+    fastify.get('/admin-ui-theme.css', async (_, reply) => {
+      return reply.type('text/css').send(themeCSS);
+    });
+
     let fastifyStatic;
     try {
       const fastifyStaticModule = await import('@fastify/static');

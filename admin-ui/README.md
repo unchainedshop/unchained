@@ -116,6 +116,61 @@ import { fastifyRouter } from '@unchainedshop/admin-ui/fastify';
 fastify.register(fastifyRouter, { prefix: '/admin' });
 ```
 
+### 🎨 Custom Theming
+
+The admin UI uses semantic CSS custom property tokens for all surface, text, and border colors. Engine consumers can override these at runtime — no rebuild required.
+
+Pass a `theme` object when connecting the admin UI:
+
+```typescript
+await connect(fastify, platform, {
+  adminUI: {
+    prefix: '/',
+    theme: {
+      surface: '#ffffff',
+      'surface-subtle': '#f8fafc',
+      'surface-raised': '#f1f5f9',
+      'surface-input': '#ffffff',
+      border: '#cbd5e1',
+      'border-subtle': '#e2e8f0',
+      'text-primary': '#0f172a',
+      'text-secondary': '#475569',
+      'text-muted': '#64748b',
+      accent: '#8b5cf6',
+      'accent-hover': '#7c3aed',
+      danger: '#f43f5e',
+      'danger-surface': '#fff1f2',
+      success: '#10b981',
+      warning: '#f59e0b',
+    },
+  },
+});
+```
+
+You only need to include the tokens you want to override — unset tokens use the built-in defaults. Each key maps to a `--token-{key}` CSS variable. The engine serves these as `/admin-ui-theme.css` which loads before first paint (no flicker).
+
+Available tokens:
+
+| Token | Light default | Description |
+|-------|--------------|-------------|
+| `surface` | `#ffffff` | Main backgrounds (cards, modals) |
+| `surface-subtle` | `#f8fafc` | Page backgrounds |
+| `surface-raised` | `#f1f5f9` | Hover states, raised elements |
+| `surface-input` | `#ffffff` | Form input backgrounds |
+| `border` | `#cbd5e1` | Default borders |
+| `border-subtle` | `#e2e8f0` | Subtle/secondary borders |
+| `text-primary` | `#0f172a` | Headings, primary text |
+| `text-secondary` | `#475569` | Labels, secondary text |
+| `text-muted` | `#64748b` | Captions, placeholders |
+| `accent` | `#1e293b` | Primary buttons, active elements |
+| `accent-hover` | `#020617` | Hover state for accent |
+| `danger` | `#f43f5e` | Error states, destructive actions |
+| `danger-surface` | `#fff1f2` | Danger background |
+| `success` | `#10b981` | Success states |
+| `warning` | `#f59e0b` | Warning states |
+
+Dark mode values are defined separately in `globals.css` and activate automatically when the `.dark` class is on `<html>`.
+
 ---
 
 ## 📝 Development
