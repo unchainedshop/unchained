@@ -210,6 +210,15 @@ class MyDocument extends Document {
           {(metaLinks || []).map((attr, i) => (
             <link key={`${attr?.href}-${attr.type}-${i}`} {...attr} />
           ))}
+          <link
+            rel="stylesheet"
+            href={`/admin-ui-theme.css?v=${process.env.npm_package_version}`}
+            id="theme-config-style"
+          />
+          <script
+            src={`/admin-ui-permissions.js?v=${process.env.npm_package_version}`}
+            id="role-config-script"
+          />
         </Head>
         <body className="h-full bg-slate-50 dark:bg-slate-950 dark:text-slate-200">
           <noscript
