@@ -55,7 +55,7 @@ try {
       theme: {
         accent: '#db2777',
         'accent-hover': '#be185d',
-        surface: '#000000',
+        surface: '#ffffff',
         'surface-subtle': '#fdf2f8',
         'surface-raised': '#fce7f3',
         'border': '#f9a8d4',
