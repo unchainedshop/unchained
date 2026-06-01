@@ -34,7 +34,7 @@ const CopyableText = ({ text }) => {
   return (
     <div
       onClick={copyToClipboard}
-      className="relative inline-flex items-center rounded-md border border-transparent bg-slate-950 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-slate-950 focus:outline-hidden focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+      className="relative inline-flex items-center rounded-md border border-transparent bg-slate-950 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-slate-950 focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
       onMouseEnter={() =>
         setTooltipText(
           formatMessage({

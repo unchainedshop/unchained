@@ -49,7 +49,7 @@ const colorConfigs: Record<string, ColorConfig> = {
     button:
       'bg-surface text-text-secondary border border-slate-200 dark:border-slate-600',
     hover: 'hover:bg-slate-100 dark:hover:bg-slate-600',
-    focus: 'focus:ring-slate-500',
+    focus: 'focus:ring-focus-ring',
     dropdown:
       'text-text-secondary bg-surface border border-slate-200 dark:border-slate-600',
     description: 'text-text-secondary',

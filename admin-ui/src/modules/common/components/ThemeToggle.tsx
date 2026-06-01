@@ -17,7 +17,7 @@ const ThemeToggle = () => {
     <div className="inline-flex items-center z-50">
       <button
         type="button"
-        className="group hover:cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-slate-800 hover:bg-surface-raised transition-colors rounded-md p-2"
+        className="group hover:cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-focus-ring hover:bg-surface-raised transition-colors rounded-md p-2"
         id="theme-toggle"
         title="Toggles light & dark"
         aria-label="auto"

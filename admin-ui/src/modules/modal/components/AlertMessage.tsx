@@ -36,7 +36,7 @@ const AlertMessage = ({
           id="alert_ok"
           onClick={onOkClick}
           type="button"
-          className="inline-flex w-full justify-center rounded-md border border-transparent bg-accent px-4 py-2 text-base font-medium text-white shadow-xs hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2 sm:text-sm"
+          className="inline-flex w-full justify-center rounded-md border border-transparent bg-accent px-4 py-2 text-base font-medium text-text-on-accent shadow-xs hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 sm:text-sm"
         >
           {buttonText}
         </button>

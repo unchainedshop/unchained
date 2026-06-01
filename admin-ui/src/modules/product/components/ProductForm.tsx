@@ -69,7 +69,7 @@ const ProductForm = ({
             defaultMessage: 'Name',
           })}
           required
-          className="block w-full max-w-full rounded-md border-border-default text-sm focus:ring-slate-800 sm:text-sm"
+          className="block w-full max-w-full rounded-md border-border-default text-sm focus:ring-focus-ring sm:text-sm"
         />
 
         <TextField
@@ -79,7 +79,7 @@ const ProductForm = ({
             id: 'subtitle',
             defaultMessage: 'Subtitle',
           })}
-          className="block w-full max-w-full rounded-md border-border-default text-sm focus:ring-slate-800 sm:text-sm"
+          className="block w-full max-w-full rounded-md border-border-default text-sm focus:ring-focus-ring sm:text-sm"
         />
 
         <SelectField

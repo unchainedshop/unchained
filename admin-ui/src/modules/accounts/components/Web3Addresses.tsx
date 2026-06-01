@@ -103,7 +103,7 @@ const Web3Addresses = ({ web3Addresses }) => {
                     onClick={async () => {
                       await onVerifyAddress({ address, nonce });
                     }}
-                    className="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-slate-800 focus:ring-offset-2"
+                    className="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
                   >
                     {formatMessage({
                       id: 'verification_web3_address',

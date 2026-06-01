@@ -312,7 +312,7 @@ const ProductDetailPage = ({ slug }) => {
                 type="number"
                 id="sequence-input"
                 disabled={!hasRole(IRoleAction.ManageProducts)}
-                className="text-center w-12 bg-transparent border border-border-default rounded focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:border-transparent focus:outline-none text-sm font-semibold text-text-primary px-2 py-1 transition-all"
+                className="text-center w-12 bg-transparent border border-border-default rounded focus:ring-2 focus:ring-focus-ring focus:border-transparent focus:outline-none text-sm font-semibold text-text-primary px-2 py-1 transition-all"
                 defaultValue={product?.sequence}
                 onBlur={updateProductSequence}
               />

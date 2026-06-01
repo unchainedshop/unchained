@@ -123,7 +123,7 @@ const ProductTokenizationForm = ({ productId, disabled = false }) => {
                 defaultMessage: 'Contract Address',
               })}
               required
-              className="block w-full max-w-full rounded-md border-border-default text-sm  focus:ring-slate-800 sm:text-sm"
+              className="block w-full max-w-full rounded-md border-border-default text-sm  focus:ring-focus-ring sm:text-sm"
             />
             <TextField
               name="supply"
@@ -138,7 +138,7 @@ const ProductTokenizationForm = ({ productId, disabled = false }) => {
                 defaultMessage: 'Supply',
               })}
               required
-              className="block w-full max-w-full rounded-md border-border-default text-sm  focus:ring-slate-800 sm:text-sm"
+              className="block w-full max-w-full rounded-md border-border-default text-sm  focus:ring-focus-ring sm:text-sm"
             />
             <TextField
               name="tokenId"
@@ -151,7 +151,7 @@ const ProductTokenizationForm = ({ productId, disabled = false }) => {
                 id: 'token-id-label',
                 defaultMessage: 'Token Serial Number',
               })}
-              className="block w-full max-w-full rounded-md border-border-default text-sm  focus:ring-slate-800 sm:text-sm"
+              className="block w-full max-w-full rounded-md border-border-default text-sm  focus:ring-focus-ring sm:text-sm"
             />
           </div>
 

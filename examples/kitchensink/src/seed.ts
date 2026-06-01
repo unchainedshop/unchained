@@ -111,9 +111,7 @@ countries: ${countries.join(',')}
 currencies: ${currencies.join(',')}
 languages: ${languages.join(',')}
 deliveryProvider: ${deliveryProvider._id} (${deliveryProvider.adapterKey})
-paymentProvider: ${
-  paymentProvider._id
-} (${paymentProvider.adapterKey})
+paymentProvider: ${paymentProvider._id} (${paymentProvider.adapterKey})
 user: admin@unchained.local / ${seedPassword}`);
   } catch (e) {
     logger.error(e);

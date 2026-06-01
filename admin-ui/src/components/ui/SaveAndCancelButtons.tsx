@@ -24,8 +24,8 @@ const SaveAndCancelButtons = ({
           data-id="cancel_update"
           type="button"
           className={clsx(
-            'focus:ring-slate-800',
-            'inline-flex items-center rounded-md border border-border-default bg-surface px-4 py-2 text-sm font-medium text-text-secondary shadow-xs hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-slate-800 focus:ring-offset-2',
+            'focus:ring-focus-ring',
+            'inline-flex items-center rounded-md border border-border-default bg-surface px-4 py-2 text-sm font-medium text-text-secondary shadow-xs hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2',
           )}
         >
           {cancelText ||

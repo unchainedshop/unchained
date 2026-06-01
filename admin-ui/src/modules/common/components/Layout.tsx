@@ -287,7 +287,7 @@ const Layout = ({
               id="close_sidebar"
               type="button"
               onClick={() => setHideNav(!hideNav)}
-              className="ml-1 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 dark:bg-slate-800/50 backdrop-blur-sm shadow-lg focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-white dark:focus:ring-slate-400"
+              className="ml-1 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 dark:bg-slate-800/50 backdrop-blur-sm shadow-lg focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-focus-ring"
             >
               <span className="sr-only">
                 {formatMessage({
@@ -318,7 +318,7 @@ const Layout = ({
             <div className="flex shrink-0 items-center px-2 lg:px-4 2xl:px-6">
               <Link
                 href="/"
-                className="focus:outline-hidden focus:ring-2 focus:ring-slate-800 rounded-md p-1"
+                className="focus:outline-hidden focus:ring-2 focus:ring-focus-ring rounded-md p-1"
               >
                 <div className="dark:brightness-0 dark:invert">
                   <ImageWithFallback
@@ -341,7 +341,7 @@ const Layout = ({
           <div className="flex items-center shrink-0 border-t border-border-default px-2 py-2">
             <Link
               href="/account"
-              className="flex items-center flex-1 py-2 pr-2 text-text-secondary hover:text-text-primary hover:bg-surface-raised rounded-md text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-slate-800"
+              className="flex items-center flex-1 py-2 pr-2 text-text-secondary hover:text-text-primary hover:bg-surface-raised rounded-md text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
             >
               {currentUser?.avatar ? (
                 <ImageWithFallback
@@ -358,7 +358,7 @@ const Layout = ({
                 <UserIcon className="h-8 w-8 shrink-0 mr-2 text-text-secondary" />
               )}
               <div className="flex-1">
-                <div className="text-sm font-medium dark:text-slate-400">
+                <div className="text-sm font-medium text-text-muted">
                   {formatMessage({ id: 'account', defaultMessage: 'Account' })}
                 </div>
                 <div className="text-xs text-text-muted">
@@ -369,7 +369,7 @@ const Layout = ({
             <div className="flex items-center space-x-2 ml-auto">
               <button
                 onClick={onLogout}
-                className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800"
+                className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
                 title={formatMessage({
                   id: 'log_out',
                   defaultMessage: 'Log out',
@@ -381,7 +381,7 @@ const Layout = ({
                 href="https://docs.unchained.shop/admin-ui/overview"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800"
+                className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
                 title={formatMessage({
                   id: 'documentation',
                   defaultMessage: 'Documentation',
@@ -405,7 +405,7 @@ const Layout = ({
             >
               <Link
                 href="/"
-                className="focus:outline-hidden focus:ring-2 focus:ring-slate-800 rounded-md p-1"
+                className="focus:outline-hidden focus:ring-2 focus:ring-focus-ring rounded-md p-1"
               >
                 <div className="dark:brightness-0 dark:invert">
                   <ImageWithFallback
@@ -429,7 +429,7 @@ const Layout = ({
               <>
                 <Link
                   href="/account"
-                  className="flex items-center flex-1 py-2 pr-2 text-text-secondary hover:text-text-primary hover:bg-surface-raised rounded-md text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-slate-800"
+                  className="flex items-center flex-1 py-2 pr-2 text-text-secondary hover:text-text-primary hover:bg-surface-raised rounded-md text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
                 >
                   {currentUser?.avatar ? (
                     <ImageWithFallback
@@ -446,7 +446,7 @@ const Layout = ({
                     <UserIcon className="h-8 w-8 shrink-0 mr-3 text-text-secondary" />
                   )}
                   <div className="flex-1">
-                    <div className="text-sm font-medium dark:text-slate-400">
+                    <div className="text-sm font-medium text-text-muted">
                       {formatMessage({
                         id: 'account',
                         defaultMessage: 'Account',
@@ -459,7 +459,7 @@ const Layout = ({
                 </Link>
                 <button
                   onClick={onLogout}
-                  className="p-2 mr-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800 ml-auto"
+                  className="p-2 mr-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-focus-ring ml-auto"
                   title={formatMessage({
                     id: 'log_out',
                     defaultMessage: 'Log out',
@@ -473,7 +473,7 @@ const Layout = ({
               <div className="flex items-center flex-col space-y-2">
                 <Link
                   href="/account"
-                  className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-raised rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400"
+                  className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-raised rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-focus-ring"
                   title={formatMessage({
                     id: 'account',
                     defaultMessage: 'Account',
@@ -496,7 +496,7 @@ const Layout = ({
                 </Link>
                 <button
                   onClick={onLogout}
-                  className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-none focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400"
+                  className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-none focus:ring-2 focus:ring-focus-ring"
                   title={formatMessage({
                     id: 'log_out',
                     defaultMessage: 'Log out',
@@ -509,7 +509,7 @@ const Layout = ({
                   href="https://docs.unchained.shop/admin-ui/overview"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-none focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400"
+                  className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-none focus:ring-2 focus:ring-focus-ring"
                   title={formatMessage({
                     id: 'documentation',
                     defaultMessage: 'Documentation',
@@ -527,7 +527,7 @@ const Layout = ({
             {narrowNav ? (
               <button
                 onClick={() => setNarrowNav(!narrowNav)}
-                className="w-full flex items-center justify-center p-2 text-slate-600 dark:text-emerald-400 hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800"
+                className="w-full flex items-center justify-center p-2 text-slate-600 dark:text-emerald-400 hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
                 title={formatMessage({
                   id: 'expand_navigation',
                   defaultMessage: 'Expand navigation',
@@ -539,7 +539,7 @@ const Layout = ({
               <div className="w-full flex items-center justify-center">
                 <button
                   onClick={() => setNarrowNav(!narrowNav)}
-                  className="flex items-center p-2 text-slate-600 dark:text-emerald-400 hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800"
+                  className="flex items-center p-2 text-slate-600 dark:text-emerald-400 hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
                   title={formatMessage({
                     id: 'collapse_navigation',
                     defaultMessage: 'Collapse navigation',
@@ -553,7 +553,7 @@ const Layout = ({
                     href="https://docs.unchained.shop/admin-ui/overview"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800"
+                    className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
                     title={formatMessage({
                       id: 'documentation',
                       defaultMessage: 'Documentation',
@@ -576,7 +576,7 @@ const Layout = ({
             type="button"
             ref={ref}
             onClick={() => setHideNav(!hideNav)}
-            className="-ml-0.5 -mt-0.5 inline-flex h-12 w-12 items-center justify-center rounded-md text-slate-500 hover:text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-slate-800 dark:text-slate-200"
+            className="-ml-0.5 -mt-0.5 inline-flex h-12 w-12 items-center justify-center rounded-md text-text-muted hover:text-text-primary focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-focus-ring"
           >
             <span className="sr-only">
               {formatMessage({
@@ -620,7 +620,7 @@ const Layout = ({
               href="https://docs.unchained.shop/admin-ui/overview"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800"
+              className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
               title={formatMessage({
                 id: 'documentation',
                 defaultMessage: 'Documentation',

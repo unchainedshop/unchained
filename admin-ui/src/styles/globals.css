@@ -22,6 +22,8 @@
   --color-danger-surface: var(--token-danger-surface);
   --color-success: var(--token-success);
   --color-warning: var(--token-warning);
+  --color-focus-ring: var(--token-focus-ring);
+  --color-text-on-accent: var(--token-text-on-accent);
 
   --color-blue-ribbon-50: #f7f7fe;
   --color-blue-ribbon-100: #eff0fe;
@@ -59,6 +61,8 @@
   --token-danger-surface: #fff1f2;
   --token-success: #10b981;
   --token-warning: #f59e0b;
+  --token-focus-ring: #1e293b;
+  --token-text-on-accent: #ffffff;
 }
 
 .dark {
@@ -78,6 +82,8 @@
   --token-danger-surface: oklch(from #881337 l c h / 10%);
   --token-success: #34d399;
   --token-warning: #fbbf24;
+  --token-focus-ring: #94a3b8;
+  --token-text-on-accent: #ffffff;
 }
 
 /* Dark mode chart colors */
