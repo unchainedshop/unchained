@@ -90,7 +90,6 @@
     "react-is": "19.2",
     "react-intl": "^10.1.1",
     "react-markdown": "^10.1.0",
-    "react-select": "^5.10.2",
     "react-toastify": "^11.0.5",
     "recharts": "^3.6.0",
     "rehype-raw": "^7.0.0",

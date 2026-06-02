@@ -13,3 +13,4 @@ export { default as PasswordField } from './PasswordField';
 export { default as JSONAreaField } from './JSONAreaField';
 export { default as MarkdownTextAreaField } from './MarkdownTextAreaField';
 export { default as TagInputField } from './TagInputField';
+export { default as Combobox } from './Combobox';

@@ -136,9 +136,9 @@ describe('Product Assignment', () => {
     });
     it('Should add product variation assignment ', () => {
       const [firstProduct] = SearchProductResponse.data.searchProducts.products;
-      cy.get('.react-select__input-container input').first().clear({ force: true }).type('Salad', { force: true });
+      cy.get('[role="combobox"]').first().clear({ force: true }).type('Salad', { force: true });
 
-      cy.get('[class*="react-select__option"]').first().click();
+      cy.get('[role="option"]').first().click();
       cy.wait(
         fullAliasMutationName(ProductOperations.AddProductAssignment),
       ).then((currentSubject) => {

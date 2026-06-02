@@ -204,7 +204,7 @@ describe('Assortment Detail Links', () => {
       },
     );
 
-    cy.get('[class*="react-select__option"]').contains(assortments[2].texts.title).click();
+    cy.get('[role="option"]').contains(assortments[2].texts.title).click();
     cy.get('input[type="submit"]').contains(localizations.en.save).click();
 
     cy.wait(fullAliasMutationName(AssortmentOperation.AddAssortmentLink)).then(

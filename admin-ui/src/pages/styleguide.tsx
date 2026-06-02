@@ -22,9 +22,22 @@ import NoData from '@/components/ui/NoData';
 import CopyableText from '@/components/ui/CopyableText';
 import InfoTextBanner from '@/components/ui/InfoTextBanner';
 import HelpText from '@/components/ui/HelpText';
+import Combobox from '@/components/ui/form/Combobox';
+import { useState } from 'react';
+
+const comboboxOptions = [
+  { label: 'Switzerland', value: 'ch' },
+  { label: 'Germany', value: 'de' },
+  { label: 'Austria', value: 'at' },
+  { label: 'France', value: 'fr' },
+  { label: 'Italy', value: 'it' },
+  { label: 'United Kingdom', value: 'uk' },
+];
 
 const StyleGuidePage = () => {
   const { formatMessage } = useIntl();
+  const [singleValue, setSingleValue] = useState<string | null>(null);
+  const [multiValue, setMultiValue] = useState<string[]>([]);
 
   return (
     <div className="min-h-screen bg-surface-subtle py-8">
@@ -659,6 +672,47 @@ const StyleGuidePage = () => {
                 >
                   Checkbox option
                 </label>
+              </div>
+            </div>
+          </section>
+
+          {/* Combobox */}
+          <section>
+            <h2 className="text-2xl font-semibold text-text-primary mb-6">
+              Combobox
+            </h2>
+            <div className="space-y-6">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
+                  Single Select
+                </h3>
+                <div className="max-w-sm">
+                  <Combobox
+                    options={comboboxOptions}
+                    value={singleValue}
+                    onChange={(val) => setSingleValue(val as string)}
+                    placeholder="Search countries..."
+                  />
+                </div>
+                {singleValue && (
+                  <p className="mt-2 text-sm text-text-muted">
+                    Selected: {singleValue}
+                  </p>
+                )}
+              </div>
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
+                  Multi Select
+                </h3>
+                <div className="max-w-sm">
+                  <Combobox
+                    multiple
+                    options={comboboxOptions}
+                    value={multiValue}
+                    onChange={(val) => setMultiValue(val as string[])}
+                    placeholder="Search countries..."
+                  />
+                </div>
               </div>
             </div>
           </section>

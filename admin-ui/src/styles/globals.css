@@ -160,7 +160,7 @@
 
   @media (max-width: 639px) {
     thead tr {
-      @apply border border-slate-300;
+      @apply border border-border-default;
     }
   }
 
@@ -288,19 +288,4 @@ iframe#external-page {
 
 .shadow-none {
   box-shadow: none !important;
-}
-
-
-.tag-input-portal {
-  pointer-events: none !important;
-  z-index: 9999999 !important;
-}
-
-.tag-input-portal .react-select__menu {
-  pointer-events: auto !important;
-  z-index: 9999999 !important;
-}
-
-.tag-input-portal .react-select__option {
-  pointer-events: auto !important;
 }
