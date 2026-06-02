@@ -97,6 +97,7 @@ const Combobox = ({
           multiple
           disabled={disabled}
           name={name}
+          immediate
         >
           <div className="relative">
             <ComboboxInput
