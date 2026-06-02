@@ -4,14 +4,40 @@
   "version": "5.0.0-alpha.3",
   "description": "Unchained Commerce Admin UI Template",
   "main": "./out/index.html",
+  "exports": {
+    ".": "./out/index.html",
+    "./ui": {
+      "import": "./dist/ui.mjs",
+      "types": "./dist/components/ui/index.d.ts"
+    },
+    "./form": {
+      "import": "./dist/form.mjs",
+      "types": "./dist/components/ui/form/index.d.ts"
+    },
+    "./hooks": {
+      "import": "./dist/hooks.mjs",
+      "types": "./dist/sdk/hooks.d.ts"
+    },
+    "./providers": {
+      "import": "./dist/providers.mjs",
+      "types": "./dist/sdk/providers.d.ts"
+    },
+    "./modal": {
+      "import": "./dist/modal.mjs",
+      "types": "./dist/sdk/modal.d.ts"
+    },
+    "./styles": "./src/styles/globals.css"
+  },
   "files": [
     "dist",
-    "out"
+    "out",
+    "src/styles/globals.css"
   ],
   "scripts": {
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run build && npm run build:sdk",
     "dev": "next dev",
     "build": "NODE_ENV=production next build",
+    "build:sdk": "tsup && tsc -p tsconfig.sdk.json",
     "start": "next start",
     "lint": "eslint .",
     "format": "eslint --fix .",
@@ -55,6 +81,7 @@
     "@graphql-codegen/typescript-operations": "^5.0.6",
     "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.2.0",
+    "@next/eslint-plugin-next": "^16.0.0",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/typography": "^0.5.19",
@@ -69,7 +96,6 @@
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "deepmerge": "^4.3.1",
-    "@next/eslint-plugin-next": "^16.0.0",
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-cypress": "^6.0.0",
@@ -87,8 +113,8 @@
     "prettier": "^3.7.4",
     "react": "19.2",
     "react-dom": "19.2",
-    "react-is": "19.2",
     "react-intl": "^10.1.1",
+    "react-is": "19.2",
     "react-markdown": "^10.1.0",
     "react-toastify": "^11.0.5",
     "recharts": "^3.6.0",
@@ -98,6 +124,7 @@
     "rxjs": "^7.8.2",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.12",
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "validator": "^13.15.23"
   }

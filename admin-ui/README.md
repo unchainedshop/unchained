@@ -170,6 +170,66 @@ Available tokens:
 
 ---
 
+### 🧩 SDK — Using UI Primitives in Custom Apps
+
+The admin UI exports its component library, form system, hooks, and providers as separate entry points. This allows custom admin pages, plugins, or white-label apps to reuse the design system without forking.
+
+```bash
+npm install @unchainedshop/admin-ui
+```
+
+**Available imports:**
+
+```typescript
+// UI primitives — Button, Badge, Combobox, Card, Tab, etc.
+import { Button, Badge, Loading, Tab, Accordion } from '@unchainedshop/admin-ui/ui';
+
+// Form components — TextField, SelectField, Combobox, CheckboxField, etc.
+import { TextField, SelectField, Combobox, SubmitButton } from '@unchainedshop/admin-ui/form';
+
+// Hooks — useTheme, useModal, useField, useForm, etc.
+import { useTheme, useModal, useField, useForm } from '@unchainedshop/admin-ui/hooks';
+
+// Providers — ThemeWrapper, ModalWrapper for app composition
+import { ThemeWrapper, ModalWrapper } from '@unchainedshop/admin-ui/providers';
+
+// Modal system — Modal, AlertMessage, DangerMessage
+import { Modal, AlertMessage, DangerMessage, useModal } from '@unchainedshop/admin-ui/modal';
+
+// Styles — import the full design token stylesheet
+import '@unchainedshop/admin-ui/styles';
+```
+
+**Building a custom admin page:**
+
+```tsx
+import { ThemeWrapper, ModalWrapper } from '@unchainedshop/admin-ui/providers';
+import { Button, Card, CardContent } from '@unchainedshop/admin-ui/ui';
+import { TextField, SubmitButton } from '@unchainedshop/admin-ui/form';
+import '@unchainedshop/admin-ui/styles';
+
+export default function CustomPage() {
+  return (
+    <ThemeWrapper>
+      <ModalWrapper>
+        <Card>
+          <CardContent>
+            <h1>My Custom Admin Page</h1>
+            <Button variant="primary" text="Click me" />
+          </CardContent>
+        </Card>
+      </ModalWrapper>
+    </ThemeWrapper>
+  );
+}
+```
+
+**Peer dependencies:** React 19+, Next.js 15+ (for components that use `next/link` and `next/router`).
+
+**Build the SDK:** `npm run build:sdk` generates the `dist/` directory with ESM bundles and TypeScript declarations.
+
+---
+
 ## 📝 Development
 
 | Command | Description |
