@@ -4,12 +4,14 @@ import Loading from '@/components/ui/Loading';
 
 const PluginEntityPage = () => {
   const router = useRouter();
-  const { path, entityId } = router.query;
+  const { slug } = router.query;
   const { manifests, getComponent, loading } = usePlugins();
 
   if (loading) return <Loading />;
 
-  if (!path) {
+  const slugParts = Array.isArray(slug) ? slug : slug ? [slug] : [];
+
+  if (slugParts.length === 0) {
     return (
       <div className="text-center py-16 text-text-muted">
         No plugin path specified.
@@ -17,7 +19,8 @@ const PluginEntityPage = () => {
     );
   }
 
-  const pathStr = String(path);
+  const pathStr = slugParts[0];
+  const entityId = slugParts[1];
   const isNew = entityId === 'new';
 
   for (const manifest of manifests) {

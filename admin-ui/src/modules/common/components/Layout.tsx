@@ -113,24 +113,39 @@ const Layout = ({
   const { manifests } = usePlugins();
 
   const pluginNavItems = manifests.flatMap((manifest) => {
-    const items = [];
+    const children = [];
     manifest.slots.entities?.forEach((entity) => {
-      items.push({
+      children.push({
         name: entity.label,
         icon: resolveIcon(entity.icon),
-        href: `/ext?path=${entity.path.replace(/^\//, '')}`,
+        href: `/ext/${entity.path.replace(/^\//, '')}`,
         requiredRole: entity.requiredRole,
       });
     });
     manifest.slots.pages?.forEach((page) => {
-      items.push({
+      children.push({
         name: page.label,
         icon: resolveIcon(page.icon),
-        href: `/ext?path=${page.path.replace(/^\//, '')}`,
+        href: `/ext/${page.path.replace(/^\//, '')}`,
         requiredRole: page.requiredRole,
       });
     });
-    return items;
+
+    if (children.length === 0) return [];
+
+    const nav = manifest.navigation;
+    if (nav) {
+      return [
+        {
+          name: nav.label,
+          icon: resolveIcon(nav.icon),
+          requiredRole: nav.requiredRole,
+          children,
+        },
+      ];
+    }
+
+    return children;
   });
 
   const defaultNavigation = [

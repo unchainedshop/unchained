@@ -12,6 +12,7 @@ import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-h
 import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
 import { registerProductDiscoverabilityFilter, pluginRegistry } from '@unchainedshop/core';
 import type { AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
+import { definePlugin } from '@unchainedshop/admin-ui/plugins';
 
 const adminUITheme: AdminUIThemeConfig = {
   light: {
@@ -95,7 +96,7 @@ try {
     adminUI: {
       theme: adminUITheme,
       plugins: [
-        {
+        definePlugin({
           name: 'bookmark-manager',
           bundlePath: resolve(__dirname, '../plugins/bookmark-manager/dist/index.global.js'),
           slots: {
@@ -118,7 +119,7 @@ try {
               },
             ],
           },
-        },
+        }),
       ],
     },
     chat: provider

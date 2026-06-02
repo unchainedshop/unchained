@@ -1,9 +1,32 @@
-import './pluginGlobals';
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from 'react';
+import * as jsxRuntime from 'react/jsx-runtime';
+import { gql } from '@apollo/client';
+import { useQuery, useMutation, useApolloClient } from '@apollo/client/react';
+import { useRouter } from 'next/router';
+import { useIntl } from 'react-intl';
+import { toast } from 'react-toastify';
+
+declare global {
+  interface Window {
+    __UNCHAINED_PLUGIN_DEPS__: Record<string, any>;
+    __UNCHAINED_PLUGINS__: Record<string, Record<string, any>>;
+  }
+}
 
 interface PluginManifest {
   name: string;
   bundleUrl: string;
+  navigation?: {
+    label: string;
+    icon?: string;
+    requiredRole?: string;
+  };
   slots: Record<string, any[]>;
 }
 
@@ -42,6 +65,22 @@ const getPluginBaseUrl = () => {
   }
 };
 
+const setupPluginRuntime = () => {
+  if (typeof window === 'undefined') return;
+  if (window.__UNCHAINED_PLUGIN_DEPS__) return;
+
+  window.__UNCHAINED_PLUGINS__ = {};
+  window.__UNCHAINED_PLUGIN_DEPS__ = {
+    react: React,
+    'react/jsx-runtime': jsxRuntime,
+    '@apollo/client': { gql, useQuery, useMutation, useApolloClient },
+    '@apollo/client/react': { useQuery, useMutation, useApolloClient },
+    'next/router': { useRouter },
+    'react-intl': { useIntl },
+    'react-toastify': { toast },
+  };
+};
+
 const loadPluginScript = (url: string): Promise<void> => {
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
@@ -58,6 +97,7 @@ export const PluginProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setupPluginRuntime();
     (async () => {
       try {
         const baseUrl = getPluginBaseUrl();
@@ -83,10 +123,7 @@ export const PluginProvider = ({ children }: { children: ReactNode }) => {
                 );
               }
             } catch (err) {
-              console.error(
-                `Failed to load plugin "${manifest.name}":`,
-                err,
-              );
+              console.error(`Failed to load plugin "${manifest.name}":`, err);
             }
           }),
         );

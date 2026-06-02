@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useQuery, gql } from '@apollo/client';
+import { useRouter } from 'next/router';
 
 // ---- GraphQL query to demonstrate shared Apollo context ----
 
@@ -130,16 +131,15 @@ const UserIcon = () => (
 // ---- Navigation helper ----
 
 const usePluginRouter = () => {
-  const navigate = useCallback((subPath: string) => {
-    if (!subPath || subPath === '') {
-      window.location.href = '/ext?path=bookmarks';
-    } else if (subPath.startsWith('/new')) {
-      window.location.href = '/ext?path=bookmarks&entityId=new';
-    } else {
-      const id = subPath.replace(/^\//, '');
-      window.location.href = `/ext?path=bookmarks&entityId=${encodeURIComponent(id)}`;
-    }
-  }, []);
+  const router = useRouter();
+
+  const navigate = useCallback(
+    (subPath: string) => {
+      const cleanPath = subPath ? subPath.replace(/^\//, '') : '';
+      router.push(cleanPath ? `/ext/bookmarks/${cleanPath}` : '/ext/bookmarks');
+    },
+    [router],
+  );
 
   return { navigate };
 };

@@ -58,6 +58,11 @@ export interface AdminUIPluginSlotConfig {
 export interface AdminUIPluginConfig {
   name: string;
   bundlePath: string;
+  navigation?: {
+    label: string;
+    icon?: string;
+    requiredRole?: string;
+  };
   slots: {
     entities?: AdminUIPluginEntityConfig[];
     pages?: AdminUIPluginPageConfig[];

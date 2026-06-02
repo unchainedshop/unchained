@@ -32,6 +32,12 @@
       "import": "./dist/plugins.mjs",
       "types": "./dist/sdk/plugins.d.ts"
     },
+    "./plugin-build": {
+      "import": "./src/sdk/plugin-build.mjs"
+    },
+    "./tailwind-preset": {
+      "import": "./src/sdk/tailwind-preset.mjs"
+    },
     "./styles": "./src/styles/globals.css"
   },
   "files": [

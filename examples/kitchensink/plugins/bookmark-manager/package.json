@@ -4,11 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "build:watch": "tsup --watch"
   },
   "devDependencies": {
-    "tsup": "^8.0.0",
+    "@types/react": "^19.0.0",
+    "@unchainedshop/admin-ui": "file:../../../../admin-ui",
+    "esbuild": "^0.25.0",
     "react": "^19.0.0",
-    "@types/react": "^19.0.0"
+    "tsup": "^8.0.0"
   }
 }
