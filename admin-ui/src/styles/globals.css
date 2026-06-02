@@ -175,7 +175,7 @@
   }
 
   .quill-error-border .ql-editor {
-    @apply border border-rose-300;
+    @apply border border-danger;
   }
 
   .ql-editor:focus {

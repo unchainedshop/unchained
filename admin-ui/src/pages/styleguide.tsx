@@ -23,6 +23,7 @@ import CopyableText from '@/components/ui/CopyableText';
 import InfoTextBanner from '@/components/ui/InfoTextBanner';
 import HelpText from '@/components/ui/HelpText';
 import Combobox from '@/components/ui/form/Combobox';
+import TagInput from '@/components/ui/Tag/TagInput';
 import { useState } from 'react';
 
 const comboboxOptions = [
@@ -38,6 +39,7 @@ const StyleGuidePage = () => {
   const { formatMessage } = useIntl();
   const [singleValue, setSingleValue] = useState<string | null>(null);
   const [multiValue, setMultiValue] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>(['example', 'demo']);
 
   return (
     <div className="min-h-screen bg-surface-subtle py-8">
@@ -711,6 +713,28 @@ const StyleGuidePage = () => {
                     value={multiValue}
                     onChange={(val) => setMultiValue(val as string[])}
                     placeholder="Search countries..."
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Tag Input */}
+          <section>
+            <h2 className="text-2xl font-semibold text-text-primary mb-6">
+              Tag Input
+            </h2>
+            <div className="space-y-6">
+              <div className="bg-surface rounded-lg p-6 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
+                  Creatable Tags
+                </h3>
+                <div className="max-w-sm">
+                  <TagInput
+                    tagList={tags}
+                    onChange={setTags}
+                    placeholder="Type and press Enter..."
+                    selectOptions={comboboxOptions}
                   />
                 </div>
               </div>
