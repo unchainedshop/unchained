@@ -38,6 +38,18 @@ import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline';
 import useApp from '../hooks/useApp';
 import useShopConfiguration from '../hooks/useShopConfiguration';
 import useRecentExports from '../../work/hooks/useRecentExports';
+import { usePlugins } from '../../plugins/PluginContext';
+import * as HeroIcons from '@heroicons/react/24/outline';
+
+const resolveIcon = (iconName?: string) => {
+  if (!iconName) return null;
+  const pascalCase =
+    iconName
+      .split('-')
+      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+      .join('') + 'Icon';
+  return HeroIcons[pascalCase] || null;
+};
 
 const QuotationIcon = ({ className }) => (
   <svg
@@ -97,6 +109,29 @@ const Layout = ({
   };
 
   const showSetupLabel = !configuration.isFullyConfigured && isAdmin();
+
+  const { manifests } = usePlugins();
+
+  const pluginNavItems = manifests.flatMap((manifest) => {
+    const items = [];
+    manifest.slots.entities?.forEach((entity) => {
+      items.push({
+        name: entity.label,
+        icon: resolveIcon(entity.icon),
+        href: `/ext/${entity.path.replace(/^\//, '')}`,
+        requiredRole: entity.requiredRole,
+      });
+    });
+    manifest.slots.pages?.forEach((page) => {
+      items.push({
+        name: page.label,
+        icon: resolveIcon(page.icon),
+        href: `/ext/${page.path.replace(/^\//, '')}`,
+        requiredRole: page.requiredRole,
+      });
+    });
+    return items;
+  });
 
   const defaultNavigation = [
     {
@@ -268,6 +303,7 @@ const Layout = ({
         };
       }),
     },
+    ...pluginNavItems,
   ].filter(Boolean);
 
   return (

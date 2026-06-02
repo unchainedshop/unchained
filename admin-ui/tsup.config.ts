@@ -8,6 +8,7 @@ export default defineConfig({
     providers: 'src/sdk/providers.ts',
     modal: 'src/sdk/modal.ts',
     theme: 'src/sdk/theme.ts',
+    plugins: 'src/sdk/plugins.ts',
   },
   format: ['esm'],
   dts: false,

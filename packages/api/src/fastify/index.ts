@@ -12,16 +12,70 @@ import { connectChat } from './chatHandler.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
 import { mountRoutes } from './mountRoutes.ts';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
 import { generateThemeCSS, type AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
 
 export type { AdminUIThemeTokens, AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
 
+export interface AdminUIPluginEntityConfig {
+  path: string;
+  label: string;
+  icon?: string;
+  requiredRole?: string;
+  components: {
+    list: string;
+    detail: string;
+    create?: string;
+  };
+}
+
+export interface AdminUIPluginPageConfig {
+  path: string;
+  label: string;
+  icon?: string;
+  requiredRole?: string;
+  component: string;
+}
+
+export interface AdminUIPluginTabConfig {
+  label: string;
+  component: string;
+  requiredRole?: string;
+}
+
+export interface AdminUIPluginWidgetConfig {
+  component: string;
+  width?: 'full' | 'half' | 'third';
+}
+
+export interface AdminUIPluginSlotConfig {
+  component: string;
+}
+
+export interface AdminUIPluginConfig {
+  name: string;
+  bundlePath: string;
+  slots: {
+    entities?: AdminUIPluginEntityConfig[];
+    pages?: AdminUIPluginPageConfig[];
+    'dashboard:widgets'?: AdminUIPluginWidgetConfig[];
+    [key: string]:
+      | AdminUIPluginTabConfig[]
+      | AdminUIPluginSlotConfig[]
+      | AdminUIPluginEntityConfig[]
+      | AdminUIPluginPageConfig[]
+      | AdminUIPluginWidgetConfig[]
+      | undefined;
+  };
+}
+
 export interface AdminUIRouterOptions {
   prefix?: string;
   enabled?: boolean;
   theme?: AdminUIThemeConfig;
+  plugins?: AdminUIPluginConfig[];
 }
 
 /**
@@ -216,6 +270,8 @@ export const connect = async (
 
   if (adminUI) {
     const adminUIOptions = typeof adminUI === 'object' ? adminUI : undefined;
+    const adminUIPlugins: AdminUIPluginConfig[] = adminUIOptions?.plugins || [];
+
     const themeCSS = generateThemeCSS(adminUIOptions?.theme);
     const themeHash = createHash('sha256').update(themeCSS).digest('hex').slice(0, 8);
     const themeEtag = `"${themeHash}"`;
@@ -229,9 +285,56 @@ export const connect = async (
         .type('text/css')
         .send(themeCSS);
     });
+
+    const manifest = adminUIPlugins.map(({ bundlePath, ...rest }) => ({
+      ...rest,
+      bundleUrl: `/admin-plugins/${rest.name}.js`,
+    }));
+    fastify.get('/admin-ui-plugins.json', async (_, reply) => {
+      return reply.type('application/json').send(manifest);
+    });
+
+    if (adminUIPlugins.length > 0) {
+      for (const plugin of adminUIPlugins) {
+        const pluginName = plugin.name;
+        const pluginBundlePath = plugin.bundlePath;
+        fastify.get(`/admin-plugins/${pluginName}.js`, async (_, reply) => {
+          const content = readFileSync(resolve(pluginBundlePath), 'utf-8');
+          return reply.type('application/javascript').send(content);
+        });
+      }
+
+      const adminUIPath = resolveAdminUIPath();
+      if (adminUIPath) {
+        const sdkFiles = ['ui.mjs', 'form.mjs', 'hooks.mjs', 'providers.mjs', 'modal.mjs'];
+        for (const file of sdkFiles) {
+          const sdkPath = join(adminUIPath, '..', 'dist', file);
+          if (existsSync(sdkPath)) {
+            fastify.get(`/admin-ui-sdk/${file}`, async (_, reply) => {
+              return reply.type('application/javascript').send(readFileSync(sdkPath, 'utf-8'));
+            });
+          }
+        }
+
+        const importMap = {
+          imports: {
+            '@unchainedshop/admin-ui/ui': '/admin-ui-sdk/ui.mjs',
+            '@unchainedshop/admin-ui/form': '/admin-ui-sdk/form.mjs',
+            '@unchainedshop/admin-ui/hooks': '/admin-ui-sdk/hooks.mjs',
+            '@unchainedshop/admin-ui/modal': '/admin-ui-sdk/modal.mjs',
+            '@unchainedshop/admin-ui/providers': '/admin-ui-sdk/providers.mjs',
+          },
+        };
+        fastify.get('/admin-ui-importmap.json', async (_, reply) => {
+          return reply.type('application/json').send(importMap);
+        });
+      }
+    }
+
     fastify.register(adminUIRouter, {
       enabled: true,
       prefix: adminUIOptions?.prefix || '/',
+      plugins: adminUIPlugins,
     });
   }
 };
@@ -278,10 +381,41 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
     if (fastifyStatic) {
       const adminUIPath = resolveAdminUIPath();
       if (adminUIPath) {
-        await fastify.register(fastifyStatic, {
-          root: adminUIPath,
-          prefix: opts.prefix || '/',
-        });
+        const hasPlugins = opts.plugins && opts.plugins.length > 0;
+
+        if (hasPlugins) {
+          const importMap = {
+            imports: {
+              '@unchainedshop/admin-ui/ui': '/admin-ui-sdk/ui.mjs',
+              '@unchainedshop/admin-ui/form': '/admin-ui-sdk/form.mjs',
+              '@unchainedshop/admin-ui/hooks': '/admin-ui-sdk/hooks.mjs',
+              '@unchainedshop/admin-ui/modal': '/admin-ui-sdk/modal.mjs',
+              '@unchainedshop/admin-ui/providers': '/admin-ui-sdk/providers.mjs',
+            },
+          };
+          const importMapTag = `<script type="importmap">${JSON.stringify(importMap)}</script>`;
+          const indexHtml = readFileSync(join(adminUIPath, 'index.html'), 'utf-8');
+          const injectedHtml = indexHtml.replace('</head>', `${importMapTag}</head>`);
+
+          await fastify.register(fastifyStatic, {
+            root: adminUIPath,
+            prefix: opts.prefix || '/',
+            serve: true,
+          });
+
+          fastify.get('/*', async (request, reply) => {
+            const url = (request.params as any)['*'] || '';
+            if (url === '' || url === 'index.html' || !url.includes('.')) {
+              return reply.type('text/html').send(injectedHtml);
+            }
+            return reply.callNotFound();
+          });
+        } else {
+          await fastify.register(fastifyStatic, {
+            root: adminUIPath,
+            prefix: opts.prefix || '/',
+          });
+        }
         return;
       }
     }
@@ -289,7 +423,6 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
   } catch (e) {
     fastify.log.error(e);
     if (process.env.NODE_ENV !== 'production') {
-      // Trying the default admin ui dev port
       fastify.get('/', async (request, reply) => {
         return reply.redirect('http://localhost:3000');
       });

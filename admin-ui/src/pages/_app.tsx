@@ -19,6 +19,7 @@ import Head from 'next/head';
 import Script from 'next/script';
 import AuthWrapper from '../modules/Auth/AuthWrapper';
 import { ChatProvider } from '../modules/copilot/ChatContext';
+import { PluginProvider } from '../modules/plugins/PluginContext';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { AppContextWrapper } from '../modules/common/components/AppContext';
 
@@ -102,18 +103,20 @@ const UnchainedAdmin = ({ Component, componentName, pageProps, router }) => {
               <UnchainedContextWrapper>
                 <ThemeWrapper>
                   <ChatProvider>
-                    <ToastContainer
-                      position="top-right"
-                      autoClose={5000}
-                      newestOnTop={false}
-                      closeOnClick
-                      pauseOnFocusLoss
-                      draggable
-                      pauseOnHover
-                    />
-                    <ModalWrapper>
-                      {getLayout(<Component {...pageProps} />)}
-                    </ModalWrapper>
+                    <PluginProvider>
+                      <ToastContainer
+                        position="top-right"
+                        autoClose={5000}
+                        newestOnTop={false}
+                        closeOnClick
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                      />
+                      <ModalWrapper>
+                        {getLayout(<Component {...pageProps} />)}
+                      </ModalWrapper>
+                    </PluginProvider>
                   </ChatProvider>
                 </ThemeWrapper>
               </UnchainedContextWrapper>

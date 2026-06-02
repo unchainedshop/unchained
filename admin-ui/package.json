@@ -28,6 +28,10 @@
       "types": "./dist/sdk/modal.d.ts"
     },
     "./theme": "./src/sdk/theme.ts",
+    "./plugins": {
+      "import": "./dist/plugins.mjs",
+      "types": "./dist/sdk/plugins.d.ts"
+    },
     "./styles": "./src/styles/globals.css"
   },
   "files": [

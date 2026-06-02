@@ -3,6 +3,8 @@ import cookieParser from 'cookie-parser';
 import type { YogaServerInstance } from 'graphql-yoga';
 import type { UnchainedCore } from '@unchainedshop/core';
 import { pluginRegistry } from '@unchainedshop/core';
+import { existsSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 
 import { createHash } from 'node:crypto';
 
@@ -18,17 +20,83 @@ import { generateThemeCSS, type AdminUIThemeConfig } from '@unchainedshop/admin-
 
 export type { AdminUIThemeTokens, AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
 
+export interface AdminUIPluginEntityConfig {
+  path: string;
+  label: string;
+  icon?: string;
+  requiredRole?: string;
+  components: {
+    list: string;
+    detail: string;
+    create?: string;
+  };
+}
+
+export interface AdminUIPluginPageConfig {
+  path: string;
+  label: string;
+  icon?: string;
+  requiredRole?: string;
+  component: string;
+}
+
+export interface AdminUIPluginTabConfig {
+  label: string;
+  component: string;
+  requiredRole?: string;
+}
+
+export interface AdminUIPluginWidgetConfig {
+  component: string;
+  width?: 'full' | 'half' | 'third';
+}
+
+export interface AdminUIPluginSlotConfig {
+  component: string;
+}
+
+export interface AdminUIPluginConfig {
+  name: string;
+  bundlePath: string;
+  slots: {
+    entities?: AdminUIPluginEntityConfig[];
+    pages?: AdminUIPluginPageConfig[];
+    'dashboard:widgets'?: AdminUIPluginWidgetConfig[];
+    [key: string]:
+      | AdminUIPluginTabConfig[]
+      | AdminUIPluginSlotConfig[]
+      | AdminUIPluginEntityConfig[]
+      | AdminUIPluginPageConfig[]
+      | AdminUIPluginWidgetConfig[]
+      | undefined;
+  };
+}
+
 export interface AdminUIRouterOptions {
   prefix?: string;
   enabled?: boolean;
   theme?: AdminUIThemeConfig;
+  plugins?: AdminUIPluginConfig[];
 }
 
-export const adminUIRouter = (enabled = true, theme?: AdminUIThemeConfig) => {
+const resolveAdminUIPath = () => {
+  try {
+    const staticURL = import.meta.resolve('@unchainedshop/admin-ui');
+    return new URL(staticURL).pathname.split('/').slice(0, -1).join('/');
+  } catch {
+    return null;
+  }
+};
+
+export const adminUIRouter = (
+  enabled = true,
+  theme?: AdminUIThemeConfig,
+  plugins: AdminUIPluginConfig[] = [],
+) => {
   const router = e.Router();
 
-  const staticURL = import.meta.resolve('@unchainedshop/admin-ui');
-  const staticPath = new URL(staticURL).pathname.split('/').slice(0, -1).join('/');
+  const adminUIPath = resolveAdminUIPath();
+  if (!adminUIPath) return router;
 
   if (enabled) {
     const themeCSS = generateThemeCSS(theme);
@@ -44,10 +112,69 @@ export const adminUIRouter = (enabled = true, theme?: AdminUIThemeConfig) => {
         .type('text/css')
         .send(themeCSS);
     });
-    router.use(e.static(staticPath));
-    router.get(/(.*)/, (_, res) => {
-      res.sendFile(`${staticPath}/index.html`);
+
+    const manifest = plugins.map(({ bundlePath, ...rest }) => ({
+      ...rest,
+      bundleUrl: `/admin-plugins/${rest.name}.js`,
+    }));
+    router.get('/admin-ui-plugins.json', (_, res) => {
+      res.type('application/json').send(manifest);
     });
+
+    if (plugins.length > 0) {
+      for (const plugin of plugins) {
+        router.get(`/admin-plugins/${plugin.name}.js`, (_, res) => {
+          const content = readFileSync(resolve(plugin.bundlePath), 'utf-8');
+          res.type('application/javascript').send(content);
+        });
+      }
+
+      const sdkFiles = ['ui.mjs', 'form.mjs', 'hooks.mjs', 'providers.mjs', 'modal.mjs'];
+      for (const file of sdkFiles) {
+        const sdkPath = join(adminUIPath, '..', 'dist', file);
+        if (existsSync(sdkPath)) {
+          router.get(`/admin-ui-sdk/${file}`, (_, res) => {
+            res.type('application/javascript').send(readFileSync(sdkPath, 'utf-8'));
+          });
+        }
+      }
+
+      router.get('/admin-ui-importmap.json', (_, res) => {
+        res.type('application/json').send({
+          imports: {
+            '@unchainedshop/admin-ui/ui': '/admin-ui-sdk/ui.mjs',
+            '@unchainedshop/admin-ui/form': '/admin-ui-sdk/form.mjs',
+            '@unchainedshop/admin-ui/hooks': '/admin-ui-sdk/hooks.mjs',
+            '@unchainedshop/admin-ui/modal': '/admin-ui-sdk/modal.mjs',
+            '@unchainedshop/admin-ui/providers': '/admin-ui-sdk/providers.mjs',
+          },
+        });
+      });
+    }
+
+    router.use(e.static(adminUIPath));
+
+    if (plugins.length > 0) {
+      const importMap = {
+        imports: {
+          '@unchainedshop/admin-ui/ui': '/admin-ui-sdk/ui.mjs',
+          '@unchainedshop/admin-ui/form': '/admin-ui-sdk/form.mjs',
+          '@unchainedshop/admin-ui/hooks': '/admin-ui-sdk/hooks.mjs',
+          '@unchainedshop/admin-ui/modal': '/admin-ui-sdk/modal.mjs',
+          '@unchainedshop/admin-ui/providers': '/admin-ui-sdk/providers.mjs',
+        },
+      };
+      const importMapTag = `<script type="importmap">${JSON.stringify(importMap)}</script>`;
+      const indexHtml = readFileSync(join(adminUIPath, 'index.html'), 'utf-8');
+      const injectedHtml = indexHtml.replace('</head>', `${importMapTag}</head>`);
+      router.get(/(.*)/, (_, res) => {
+        res.type('text/html').send(injectedHtml);
+      });
+    } else {
+      router.get(/(.*)/, (_, res) => {
+        res.sendFile(`${adminUIPath}/index.html`);
+      });
+    }
   }
 
   return router;
@@ -162,6 +289,7 @@ export const connect = async (
 ) => {
   const adminUIOptions = typeof adminUI === 'object' ? adminUI : undefined;
   const adminUITheme = adminUIOptions?.theme;
+  const adminUIPlugins: AdminUIPluginConfig[] = adminUIOptions?.plugins || [];
   if (allowRemoteToLocalhostSecureCookies) {
     // SECURITY: This mode is for development only - block in production
     if (process.env.NODE_ENV === 'production') {
@@ -221,7 +349,10 @@ export const connect = async (
   mountRoutes(expressApp, unchainedAPI, routes);
 
   if (adminUI) {
-    expressApp.use(adminUIOptions?.prefix || '/', adminUIRouter(true, adminUITheme));
+    expressApp.use(
+      adminUIOptions?.prefix || '/',
+      adminUIRouter(true, adminUITheme, adminUIPlugins),
+    );
   }
 };
 
