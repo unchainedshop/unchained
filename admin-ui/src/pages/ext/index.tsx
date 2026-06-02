@@ -4,18 +4,25 @@ import Loading from '@/components/ui/Loading';
 
 const PluginEntityPage = () => {
   const router = useRouter();
-  const { slug } = router.query;
+  const { path, entityId } = router.query;
   const { manifests, getComponent, loading } = usePlugins();
 
-  if (loading || !slug) return <Loading />;
+  if (loading) return <Loading />;
 
-  const slugParts = Array.isArray(slug) ? slug : [slug];
-  const entityId = slugParts[1];
+  if (!path) {
+    return (
+      <div className="text-center py-16 text-text-muted">
+        No plugin path specified.
+      </div>
+    );
+  }
+
+  const pathStr = String(path);
   const isNew = entityId === 'new';
 
   for (const manifest of manifests) {
     const entity = manifest.slots.entities?.find(
-      (e) => e.path.replace(/^\//, '') === slugParts[0],
+      (e) => e.path.replace(/^\//, '') === pathStr,
     );
     if (entity) {
       let componentName: string;
@@ -29,13 +36,18 @@ const PluginEntityPage = () => {
 
       const Component = getComponent(manifest.name, componentName);
       if (!Component)
-        return <div>Component &quot;{componentName}&quot; not found</div>;
+        return (
+          <div className="text-center py-16 text-text-muted">
+            Component &quot;{componentName}&quot; not found in plugin &quot;
+            {manifest.name}&quot;
+          </div>
+        );
 
       return <Component entityId={entityId} />;
     }
 
     const page = manifest.slots.pages?.find(
-      (p) => p.path.replace(/^\//, '') === slugParts[0],
+      (p) => p.path.replace(/^\//, '') === pathStr,
     );
     if (page) {
       const Component = getComponent(manifest.name, page.component);
@@ -43,8 +55,11 @@ const PluginEntityPage = () => {
     }
   }
 
-  router.replace('/404');
-  return null;
+  return (
+    <div className="text-center py-16 text-text-muted">
+      Plugin page &quot;{pathStr}&quot; not found.
+    </div>
+  );
 };
 
 export default PluginEntityPage;

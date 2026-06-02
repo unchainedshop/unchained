@@ -400,15 +400,14 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
           await fastify.register(fastifyStatic, {
             root: adminUIPath,
             prefix: opts.prefix || '/',
-            serve: true,
+            wildcard: false,
           });
 
-          fastify.get('/*', async (request, reply) => {
-            const url = (request.params as any)['*'] || '';
-            if (url === '' || url === 'index.html' || !url.includes('.')) {
+          fastify.setNotFoundHandler(async (request, reply) => {
+            if (request.method === 'GET' && !request.url.includes('.')) {
               return reply.type('text/html').send(injectedHtml);
             }
-            return reply.callNotFound();
+            return reply.code(404).send({ error: 'Not Found' });
           });
         } else {
           await fastify.register(fastifyStatic, {

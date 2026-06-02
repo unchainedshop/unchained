@@ -1,3 +1,4 @@
+import './pluginGlobals';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
 interface PluginManifest {
@@ -29,15 +30,26 @@ const PluginContext = createContext<PluginContextType>({
   loading: true,
 });
 
-const moduleCache = new Map<string, PluginModule>();
+const getPluginBaseUrl = () => {
+  if (typeof window === 'undefined') return '';
+  const graphqlEndpoint =
+    process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || '/graphql';
+  try {
+    const url = new URL(graphqlEndpoint);
+    return url.origin;
+  } catch {
+    return '';
+  }
+};
 
-const loadPluginModule = async (
-  bundleUrl: string,
-): Promise<PluginModule> => {
-  if (moduleCache.has(bundleUrl)) return moduleCache.get(bundleUrl)!;
-  const module = await import(/* webpackIgnore: true */ bundleUrl);
-  moduleCache.set(bundleUrl, module);
-  return module;
+const loadPluginScript = (url: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = url;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
+    document.head.appendChild(script);
+  });
 };
 
 export const PluginProvider = ({ children }: { children: ReactNode }) => {
@@ -48,7 +60,8 @@ export const PluginProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch('/admin-ui-plugins.json');
+        const baseUrl = getPluginBaseUrl();
+        const res = await fetch(`${baseUrl}/admin-ui-plugins.json`);
         if (!res.ok) {
           setLoading(false);
           return;
@@ -60,8 +73,15 @@ export const PluginProvider = ({ children }: { children: ReactNode }) => {
         await Promise.all(
           data.map(async (manifest) => {
             try {
-              const mod = await loadPluginModule(manifest.bundleUrl);
-              loaded.set(manifest.name, mod);
+              await loadPluginScript(`${baseUrl}${manifest.bundleUrl}`);
+              const mod = window.__UNCHAINED_PLUGINS__?.[manifest.name];
+              if (mod) {
+                loaded.set(manifest.name, mod);
+              } else {
+                console.error(
+                  `Plugin "${manifest.name}" loaded but did not register on window.__UNCHAINED_PLUGINS__`,
+                );
+              }
             } catch (err) {
               console.error(
                 `Failed to load plugin "${manifest.name}":`,

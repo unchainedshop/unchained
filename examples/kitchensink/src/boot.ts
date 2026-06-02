@@ -1,3 +1,5 @@
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import Fastify from 'fastify';
 import { createOpenAI } from '@ai-sdk/openai';
 import { startPlatform } from '@unchainedshop/platform';
@@ -45,6 +47,8 @@ const adminUITheme: AdminUIThemeConfig = {
   },
 };
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
   disableRequestLogging: true,
@@ -90,6 +94,32 @@ try {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
     adminUI: {
       theme: adminUITheme,
+      plugins: [
+        {
+          name: 'bookmark-manager',
+          bundlePath: resolve(__dirname, '../plugins/bookmark-manager/dist/index.global.js'),
+          slots: {
+            entities: [
+              {
+                path: '/bookmarks',
+                label: 'Bookmarks',
+                icon: 'bookmark',
+                components: {
+                  list: 'BookmarkList',
+                  detail: 'BookmarkDetail',
+                  create: 'BookmarkCreate',
+                },
+              },
+            ],
+            'dashboard:widgets': [
+              {
+                component: 'BookmarkWidget',
+                width: 'half',
+              },
+            ],
+          },
+        },
+      ],
     },
     chat: provider
       ? {

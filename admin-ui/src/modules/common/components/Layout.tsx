@@ -118,7 +118,7 @@ const Layout = ({
       items.push({
         name: entity.label,
         icon: resolveIcon(entity.icon),
-        href: `/ext/${entity.path.replace(/^\//, '')}`,
+        href: `/ext?path=${entity.path.replace(/^\//, '')}`,
         requiredRole: entity.requiredRole,
       });
     });
@@ -126,7 +126,7 @@ const Layout = ({
       items.push({
         name: page.label,
         icon: resolveIcon(page.icon),
-        href: `/ext/${page.path.replace(/^\//, '')}`,
+        href: `/ext?path=${page.path.replace(/^\//, '')}`,
         requiredRole: page.requiredRole,
       });
     });
