@@ -1,9 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
-import CreatableSelect from 'react-select/creatable';
 import Badge from '../Badge';
-import useTheme from '../../../modules/common/hooks/useTheme';
 
 const normalizeTagValue = (tags) => {
   if (tags) {
@@ -16,97 +14,6 @@ const normalizeTagValue = (tags) => {
   return [];
 };
 
-const getCreatableSelectStyles = (theme) => {
-  const baseStyles = {
-    control: (provided, state) => ({
-      ...provided,
-      borderWidth: '1px',
-      borderRadius: '0.375rem',
-      minHeight: '42px',
-      paddingLeft: '16px',
-      paddingRight: '16px',
-      boxShadow: state.isFocused
-        ? '0 0 0 2px #1e293b'
-        : '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-    }),
-    valueContainer: (provided) => ({
-      ...provided,
-      padding: '0',
-    }),
-    input: (provided) => ({
-      ...provided,
-      margin: 0,
-      padding: 0,
-    }),
-    menu: (provided) => ({
-      ...provided,
-      zIndex: 9999999,
-    }),
-    menuList: (provided) => ({
-      ...provided,
-      maxHeight: '300px',
-      overflowY: 'auto',
-    }),
-    option: (provided, state) => ({
-      ...provided,
-      padding: '10px 16px',
-    }),
-  };
-
-  if (theme === 'dark') {
-    return {
-      control: (base, state) => ({
-        ...baseStyles.control(base, state),
-        backgroundColor: '#0f172a',
-        borderColor: state.isFocused ? '#1e293b' : '#374151',
-      }),
-      input: (base) => ({
-        ...baseStyles.input(base),
-        color: '#f1f5f9',
-      }),
-      menu: (base) => ({
-        ...baseStyles.menu(base),
-        backgroundColor: '#0f172a',
-        border: '1px solid #1e293b',
-      }),
-      option: (base, state) => ({
-        ...baseStyles.option(base, state),
-        backgroundColor: state.isFocused ? '#1e293b' : 'transparent',
-        color: '#f1f5f9',
-      }),
-      placeholder: (base) => ({
-        ...base,
-        color: '#64748b',
-      }),
-    };
-  }
-
-  return {
-    control: (base, state) => ({
-      ...baseStyles.control(base, state),
-      backgroundColor: '#ffffff',
-      borderColor: state.isFocused ? '#1e293b' : '#cbd5e1',
-    }),
-    input: (base) => ({
-      ...baseStyles.input(base),
-      color: '#0f172a',
-    }),
-    menu: (base) => ({
-      ...baseStyles.menu(base),
-      backgroundColor: '#ffffff',
-      border: '1px solid #e2e8f0',
-    }),
-    option: (base, state) => ({
-      ...baseStyles.option(base, state),
-      backgroundColor: state.isFocused ? '#f1f5f9' : 'transparent',
-      color: '#0f172a',
-    }),
-    placeholder: (base) => ({
-      ...base,
-      color: '#9ca3af',
-    }),
-  };
-};
 const TagInput = ({
   tagList: tags,
   onChange,
@@ -120,29 +27,27 @@ const TagInput = ({
   showTagsInline = true,
 }) => {
   const { formatMessage } = useIntl();
-  const { theme } = useTheme();
   const [tagList, setTagList] = useState(normalizeTagValue(tags));
   const [inputValue, setInputValue] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const getGlobalPortal = () => {
-    let portal = document.getElementById('global-tag-input-portal');
-    if (!portal) {
-      portal = document.createElement('div');
-      portal.id = 'global-tag-input-portal';
-      portal.className = 'tag-input-portal';
-      Object.assign(portal.style, {
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        width: '100vw',
-        height: '100vh',
-        zIndex: '9999999',
-        pointerEvents: 'none',
-      });
-      document.body.appendChild(portal);
-    }
-    return portal;
-  };
+  useEffect(() => {
+    setTagList(normalizeTagValue(tags));
+  }, [tags]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const onRemoveTag = (tag) => {
     const index = tagList.indexOf(tag);
@@ -154,63 +59,110 @@ const TagInput = ({
     }
   };
 
-  const addTag = (tag: string) => {
-    if (!tagList.includes(tag) && tag) {
-      const newTags = [...tagList, tag];
-      setTagList(newTags);
-      onChange(newTags);
-      setInputValue('');
+  const addTag = useCallback(
+    (tag: string) => {
+      if (!tagList.includes(tag) && tag) {
+        const newTags = [...tagList, tag];
+        setTagList(newTags);
+        onChange(newTags);
+        setInputValue('');
+        setIsOpen(false);
+      }
+    },
+    [tagList, onChange],
+  );
+
+  const filteredOptions = useMemo(() => {
+    const available = selectOptions.filter(
+      (option) => !(tagList || []).includes(option.value),
+    );
+    if (!inputValue) return available;
+    return available.filter((opt) =>
+      opt.label.toLowerCase().includes(inputValue.toLowerCase()),
+    );
+  }, [selectOptions, tagList, inputValue]);
+
+  const showCreateOption =
+    inputValue.trim() &&
+    !tagList.includes(inputValue.trim()) &&
+    !filteredOptions.some(
+      (opt) => opt.value.toLowerCase() === inputValue.trim().toLowerCase(),
+    );
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && inputValue.trim()) {
+      e.preventDefault();
+      addTag(inputValue.trim());
     }
   };
 
-  useMemo(() => {
-    setTagList(normalizeTagValue(tags));
-  }, [tags]);
   const TagInputComponent = (
-    <CreatableSelect
-      id={id || name}
-      inputId={id || name}
-      name={name}
-      placeholder={placeholder}
-      components={{ SingleValue: () => null }}
-      isDisabled={disabled}
-      inputValue={inputValue}
-      onInputChange={(newValue, { action }) => {
-        if (action !== 'input-blur' && action !== 'menu-close') {
-          setInputValue(newValue);
-        }
-      }}
-      onChange={(option) => option && addTag(option.value)}
-      onCreateOption={addTag}
-      options={selectOptions.filter(
-        (option) => !(tagList || []).includes(option.value),
+    <div className="relative" ref={wrapperRef}>
+      <input
+        id={id}
+        name={name}
+        type="text"
+        role="combobox"
+        aria-expanded={isOpen}
+        aria-autocomplete="list"
+        disabled={disabled}
+        className={clsx(
+          'w-full rounded-md border border-border-default bg-surface-input py-2.5 pl-4 pr-4 text-sm text-text-primary placeholder:text-text-muted shadow-xs focus:outline-hidden focus:ring-2 focus:ring-focus-ring',
+          className,
+        )}
+        placeholder={placeholder}
+        value={inputValue}
+        onChange={(e) => {
+          setInputValue(e.target.value);
+          setIsOpen(true);
+        }}
+        onFocus={() => setIsOpen(true)}
+        onKeyDown={handleKeyDown}
+      />
+      {isOpen && (showCreateOption || filteredOptions.length > 0) && (
+        <ul
+          role="listbox"
+          className="absolute z-9999999 mt-1 max-h-60 w-full overflow-auto rounded-md bg-surface border border-border-subtle py-1 text-sm shadow-lg"
+        >
+          {showCreateOption && (
+            <li
+              role="option"
+              aria-selected={false}
+              className="cursor-pointer select-none py-2 px-4 text-text-primary hover:bg-surface-raised"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                addTag(inputValue.trim());
+              }}
+            >
+              {buttonText ||
+                formatMessage(
+                  {
+                    id: 'add_new_tag',
+                    defaultMessage: 'Add "{inputValue}"',
+                  },
+                  { inputValue: inputValue.trim() },
+                )}
+            </li>
+          )}
+          {filteredOptions.map((opt) => (
+            <li
+              key={opt.value}
+              role="option"
+              aria-selected={false}
+              className="cursor-pointer select-none py-2 px-4 text-text-primary hover:bg-surface-raised"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                addTag(opt.value);
+              }}
+            >
+              {opt.label}
+            </li>
+          ))}
+        </ul>
       )}
-      value={null}
-      formatCreateLabel={(value) =>
-        buttonText ||
-        formatMessage(
-          { id: 'add_new_tag', defaultMessage: 'Add "{inputValue}"' },
-          { inputValue: value },
-        )
-      }
-      noOptionsMessage={({ inputValue: input }) =>
-        input
-          ? formatMessage(
-              {
-                id: 'no_options',
-                defaultMessage: 'No options found for "{inputValue}"',
-              },
-              { inputValue: input },
-            )
-          : placeholder
-      }
-      styles={getCreatableSelectStyles(theme)}
-      className={`w-full tag-input-creatable ${className}`}
-      classNamePrefix="react-select"
-      menuPortalTarget={getGlobalPortal()}
-      menuShouldBlockScroll={false}
-    />
+    </div>
   );
+
   if (!showTagsInline) {
     return TagInputComponent;
   }
@@ -218,7 +170,6 @@ const TagInput = ({
   return (
     <>
       {TagInputComponent}
-
       <div
         className={clsx(
           'ml-4 flex items-center flex-wrap gap-5',

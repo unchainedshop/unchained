@@ -42,7 +42,7 @@ const SearchWithTags = ({
             />
           </div>
           {showTagFilter && (
-            <div className="flex flex-col gap-2 flex-1 sm:border-l sm:border-slate-300 sm:dark:border-slate-700 sm:pl-3">
+            <div className="flex flex-col gap-2 flex-1 sm:border-l sm:border-border-default sm:pl-3">
               <div className="max-w-xs">
                 <TagInput
                   buttonText={formatMessage({

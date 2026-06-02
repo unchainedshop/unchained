@@ -182,7 +182,7 @@ describe('Assortment Detail Filters', () => {
       },
     );
 
-    cy.get('[class*="react-select__menu-list"] [class*="react-select__option"]').should('have.length.gte', 1);
+    cy.get('[role="option"]').should('have.length.gte', 1);
   });
 
   it('Should [ADD FILTER] successfully', () => {
@@ -210,7 +210,7 @@ describe('Assortment Detail Filters', () => {
         expect(response.body).to.deep.eq(FiltersListResponse);
       },
     );
-    cy.get('[class*="react-select__option"]').first().click();
+    cy.get('[role="option"]').first().click();
     cy.get('input[type="submit"]').contains(localizations.en.save).click();
 
     cy.wait(fullAliasMutationName(AssortmentOperation.AddFilter)).then(
