@@ -12,76 +12,29 @@ import { connectChat } from './chatHandler.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
 import { mountRoutes } from './mountRoutes.ts';
 import { createHash } from 'node:crypto';
-import { existsSync, readFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
 import { generateThemeCSS, type AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
+import { preparePluginAssets, resolveAdminUIPath, type AdminUIPluginConfig } from '../adminUiPlugins.ts';
+
+export type {
+  AdminUIPluginConfig,
+  AdminUIPluginEntityConfig,
+  AdminUIPluginPageConfig,
+  AdminUIPluginTabConfig,
+  AdminUIPluginWidgetConfig,
+  AdminUIPluginSlotConfig,
+} from '../adminUiPlugins.ts';
 
 export type { AdminUIThemeTokens, AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
-
-export interface AdminUIPluginEntityConfig {
-  path: string;
-  label: string;
-  icon?: string;
-  requiredRole?: string;
-  components: {
-    list: string;
-    detail: string;
-    create?: string;
-  };
-}
-
-export interface AdminUIPluginPageConfig {
-  path: string;
-  label: string;
-  icon?: string;
-  requiredRole?: string;
-  component: string;
-}
-
-export interface AdminUIPluginTabConfig {
-  label: string;
-  component: string;
-  requiredRole?: string;
-}
-
-export interface AdminUIPluginWidgetConfig {
-  component: string;
-  width?: 'full' | 'half' | 'third';
-}
-
-export interface AdminUIPluginSlotConfig {
-  component: string;
-}
-
-export interface AdminUIPluginConfig {
-  name: string;
-  version?: string;
-  bundlePath: string;
-  navigation?: {
-    label: string;
-    icon?: string;
-    requiredRole?: string;
-  };
-  slots: {
-    entities?: AdminUIPluginEntityConfig[];
-    pages?: AdminUIPluginPageConfig[];
-    'dashboard:widgets'?: AdminUIPluginWidgetConfig[];
-    [key: string]:
-      | AdminUIPluginTabConfig[]
-      | AdminUIPluginSlotConfig[]
-      | AdminUIPluginEntityConfig[]
-      | AdminUIPluginPageConfig[]
-      | AdminUIPluginWidgetConfig[]
-      | undefined;
-  };
-}
 
 export interface AdminUIRouterOptions {
   prefix?: string;
   enabled?: boolean;
   theme?: AdminUIThemeConfig;
   plugins?: AdminUIPluginConfig[];
+  importMapTag?: string | null;
 }
 
 /**
@@ -292,95 +245,23 @@ export const connect = async (
         .send(themeCSS);
     });
 
-    const PLUGIN_NAME_RE = /^[a-z0-9][a-z0-9._-]*$/i;
-    const validPlugins = adminUIPlugins.filter((p) => {
-      if (!PLUGIN_NAME_RE.test(p.name)) {
-        fastify.log.warn(`Skipping admin-ui plugin with invalid name: "${p.name}"`);
-        return false;
-      }
-      return true;
+    const devMode = process.env.NODE_ENV !== 'production';
+    const { routes: pluginRoutes, importMapTag } = preparePluginAssets(adminUIPlugins, fastify.log, {
+      devMode,
     });
 
-    if (validPlugins.length > 0) {
-      const pluginList = validPlugins
-        .map((p) => `${p.name}${p.version ? `@${p.version}` : ''}`)
-        .join(', ');
-      fastify.log.info(`Loading ${validPlugins.length} admin-ui plugin(s): ${pluginList}`);
-    }
-
-    const contentHash = (content: string) =>
-      createHash('sha256').update(content).digest('hex').slice(0, 8);
-
-    const pluginBundles = new Map<string, { content: string; hash: string }>();
-    for (const plugin of validPlugins) {
-      const content = readFileSync(resolve(plugin.bundlePath), 'utf-8');
-      pluginBundles.set(plugin.name, { content, hash: contentHash(content) });
-    }
-
-    const manifestJSON = JSON.stringify(
-      validPlugins.map((plugin) => {
-        const bundle = pluginBundles.get(plugin.name);
-        return {
-          ...Object.fromEntries(Object.entries(plugin).filter(([k]) => k !== 'bundlePath')),
-          bundleUrl: `/admin-plugins/${plugin.name}.js?v=${bundle?.hash || ''}`,
-        };
-      }),
-    );
-    fastify.get('/admin-ui-plugins.json', async (_, reply) => {
-      return reply
-        .header('Cache-Control', 'public, max-age=31536000, immutable')
-        .type('application/json')
-        .send(manifestJSON);
-    });
-
-    if (validPlugins.length > 0) {
-      for (const [name, { content }] of pluginBundles) {
-        fastify.get(`/admin-plugins/${name}.js`, async (_, reply) => {
-          return reply
-            .header('Cache-Control', 'public, max-age=31536000, immutable')
-            .type('application/javascript')
-            .send(content);
-        });
-      }
-
-      const adminUIPath = resolveAdminUIPath();
-      if (adminUIPath) {
-        const sdkFiles = ['ui.mjs', 'form.mjs', 'hooks.mjs', 'providers.mjs', 'modal.mjs'];
-        for (const file of sdkFiles) {
-          const sdkPath = join(adminUIPath, '..', 'dist', file);
-          if (existsSync(sdkPath)) {
-            const sdkContent = readFileSync(sdkPath, 'utf-8');
-            fastify.get(`/admin-ui-sdk/${file}`, async (_, reply) => {
-              return reply
-                .header('Cache-Control', 'public, max-age=31536000, immutable')
-                .type('application/javascript')
-                .send(sdkContent);
-            });
-          }
-        }
-
-        const importMapJSON = JSON.stringify({
-          imports: {
-            '@unchainedshop/admin-ui/ui': '/admin-ui-sdk/ui.mjs',
-            '@unchainedshop/admin-ui/form': '/admin-ui-sdk/form.mjs',
-            '@unchainedshop/admin-ui/hooks': '/admin-ui-sdk/hooks.mjs',
-            '@unchainedshop/admin-ui/modal': '/admin-ui-sdk/modal.mjs',
-            '@unchainedshop/admin-ui/providers': '/admin-ui-sdk/providers.mjs',
-          },
-        });
-        fastify.get('/admin-ui-importmap.json', async (_, reply) => {
-          return reply
-            .header('Cache-Control', 'public, max-age=31536000, immutable')
-            .type('application/json')
-            .send(importMapJSON);
-        });
-      }
+    for (const [path, asset] of pluginRoutes) {
+      fastify.get(path, async (_, reply) => {
+        const body = typeof asset.content === 'function' ? asset.content() : asset.content;
+        return reply.header('Cache-Control', asset.cacheControl).type(asset.contentType).send(body);
+      });
     }
 
     fastify.register(adminUIRouter, {
       enabled: true,
       prefix: adminUIOptions?.prefix || '/',
       plugins: adminUIPlugins,
+      importMapTag,
     });
   }
 };
@@ -402,14 +283,6 @@ const fallbackLandingPageHandler = (request: any, reply: any) => {
   }
 };
 
-const resolveAdminUIPath = () => {
-  try {
-    const staticURL = import.meta.resolve('@unchainedshop/admin-ui');
-    return new URL(staticURL).pathname.split('/').slice(0, -1).join('/');
-  } catch {
-    return null;
-  }
-};
 
 export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
   fastify: FastifyInstance,
@@ -427,21 +300,9 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
     if (fastifyStatic) {
       const adminUIPath = resolveAdminUIPath();
       if (adminUIPath) {
-        const hasPlugins = opts.plugins && opts.plugins.length > 0;
-
-        if (hasPlugins) {
-          const importMap = {
-            imports: {
-              '@unchainedshop/admin-ui/ui': '/admin-ui-sdk/ui.mjs',
-              '@unchainedshop/admin-ui/form': '/admin-ui-sdk/form.mjs',
-              '@unchainedshop/admin-ui/hooks': '/admin-ui-sdk/hooks.mjs',
-              '@unchainedshop/admin-ui/modal': '/admin-ui-sdk/modal.mjs',
-              '@unchainedshop/admin-ui/providers': '/admin-ui-sdk/providers.mjs',
-            },
-          };
-          const importMapTag = `<script type="importmap">${JSON.stringify(importMap)}</script>`;
+        if (opts.importMapTag) {
           const indexHtml = readFileSync(join(adminUIPath, 'index.html'), 'utf-8');
-          const injectedHtml = indexHtml.replace('</head>', `${importMapTag}</head>`);
+          const injectedHtml = indexHtml.replace('</head>', `${opts.importMapTag}</head>`);
 
           await fastify.register(fastifyStatic, {
             root: adminUIPath,
