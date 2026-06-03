@@ -18,18 +18,20 @@ export default async function bulkAssignProductsToAssortment(
   const failedIds: string[] = [];
   let successCount = 0;
 
-  for (const productId of productIds) {
-    try {
-      if (!(await modules.products.productExists({ productId }))) {
-        failedIds.push(productId);
-        continue;
-      }
+  const results = await Promise.allSettled(
+    productIds.map(async (productId) => {
+      if (!(await modules.products.productExists({ productId }))) throw new Error('not-found');
       await modules.assortments.products.create({ assortmentId, productId, tags: [] });
+    }),
+  );
+
+  results.forEach((result, index) => {
+    if (result.status === 'fulfilled') {
       successCount += 1;
-    } catch {
-      failedIds.push(productId);
+    } else {
+      failedIds.push(productIds[index]);
     }
-  }
+  });
 
   return { successCount, failedCount: failedIds.length, failedIds };
 }

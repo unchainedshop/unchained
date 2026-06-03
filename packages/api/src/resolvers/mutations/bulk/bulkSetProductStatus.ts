@@ -8,38 +8,16 @@ export default async function bulkSetProductStatus(
 ) {
   log(`mutation bulkSetProductStatus ${status} for ${productIds.length} products`, { userId });
 
-  const failedIds: string[] = [];
-  let successCount = 0;
+  let successIds: string[];
 
-  for (const productId of productIds) {
-    try {
-      const product = await modules.products.findProduct({ productId });
-      if (!product) {
-        failedIds.push(productId);
-        continue;
-      }
-
-      if (status === 'ACTIVE') {
-        const result = await modules.products.publish(product);
-        if (!result) {
-          failedIds.push(productId);
-          continue;
-        }
-      } else if (status === 'DRAFT') {
-        const result = await modules.products.unpublish(product);
-        if (!result) {
-          failedIds.push(productId);
-          continue;
-        }
-      } else {
-        failedIds.push(productId);
-        continue;
-      }
-      successCount += 1;
-    } catch {
-      failedIds.push(productId);
-    }
+  if (status === 'ACTIVE') {
+    successIds = await modules.products.bulkPublish(productIds);
+  } else if (status === 'DRAFT') {
+    successIds = await modules.products.bulkUnpublish(productIds);
+  } else {
+    return { successCount: 0, failedCount: productIds.length, failedIds: productIds };
   }
 
-  return { successCount, failedCount: failedIds.length, failedIds };
+  const failedIds = productIds.filter((id) => !successIds.includes(id));
+  return { successCount: successIds.length, failedCount: failedIds.length, failedIds };
 }

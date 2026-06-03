@@ -460,6 +460,72 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
     publish: publishProduct,
     unpublish: unpublishProduct,
 
+    bulkPublish: async (productIds: string[]): Promise<string[]> => {
+      const result = await Products.updateMany(
+        { _id: { $in: productIds }, status: InternalProductStatus.DRAFT },
+        {
+          $set: {
+            status: ProductStatus.ACTIVE,
+            updated: new Date(),
+            published: new Date(),
+          },
+        },
+      );
+      if (result.modifiedCount > 0) {
+        const published = await Products.find({
+          _id: { $in: productIds },
+          status: ProductStatus.ACTIVE,
+        }).toArray();
+        await Promise.all(published.map((product) => emit('PRODUCT_PUBLISH', { product })));
+        return published.map((p) => p._id);
+      }
+      return [];
+    },
+
+    bulkUnpublish: async (productIds: string[]): Promise<string[]> => {
+      const activeProducts = await Products.find({
+        _id: { $in: productIds },
+        status: ProductStatus.ACTIVE,
+      }).toArray();
+      const activeIds = activeProducts.map((p) => p._id);
+      if (activeIds.length > 0) {
+        await Products.updateMany(
+          { _id: { $in: activeIds } },
+          {
+            $set: {
+              status: InternalProductStatus.DRAFT,
+              updated: new Date(),
+            },
+            $unset: { published: 1 },
+          },
+        );
+        await Promise.all(activeProducts.map((product) => emit('PRODUCT_UNPUBLISH', { product })));
+      }
+      return activeIds;
+    },
+
+    bulkAddTags: async (productIds: string[], tags: string[]): Promise<number> => {
+      const result = await Products.updateMany(
+        { _id: { $in: productIds } },
+        {
+          $addToSet: { tags: { $each: tags } },
+          $set: { updated: new Date() },
+        },
+      );
+      return result.modifiedCount;
+    },
+
+    bulkRemoveTags: async (productIds: string[], tags: string[]): Promise<number> => {
+      const result = await Products.updateMany(
+        { _id: { $in: productIds } },
+        {
+          $pullAll: { tags },
+          $set: { updated: new Date() },
+        },
+      );
+      return result.modifiedCount;
+    },
+
     /*
      * Sub entities
      */
