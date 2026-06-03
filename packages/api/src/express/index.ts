@@ -3,10 +3,9 @@ import cookieParser from 'cookie-parser';
 import type { YogaServerInstance } from 'graphql-yoga';
 import type { UnchainedCore } from '@unchainedshop/core';
 import { pluginRegistry } from '@unchainedshop/core';
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-
-import { createHash } from 'node:crypto';
 
 import { getCurrentContextResolver } from '../context.ts';
 import { createAuthContext, type AuthContextParams } from '../middleware/createAuthMiddleware.ts';
@@ -57,6 +56,7 @@ export interface AdminUIPluginSlotConfig {
 
 export interface AdminUIPluginConfig {
   name: string;
+  version?: string;
   bundlePath: string;
   navigation?: {
     label: string;
@@ -121,31 +121,51 @@ export const adminUIRouter = (
     const PLUGIN_NAME_RE = /^[a-z0-9][a-z0-9._-]*$/i;
     const validPlugins = plugins.filter((p) => {
       if (!PLUGIN_NAME_RE.test(p.name)) {
-        console.warn(`Skipping plugin with invalid name: "${p.name}"`);
+        console.warn(`Skipping admin-ui plugin with invalid name: "${p.name}"`);
         return false;
       }
       return true;
     });
 
+    if (validPlugins.length > 0) {
+      const pluginList = validPlugins
+        .map((p) => `${p.name}${p.version ? `@${p.version}` : ''}`)
+        .join(', ');
+      console.info(`Loading ${validPlugins.length} admin-ui plugin(s): ${pluginList}`);
+    }
+
+    const contentHash = (content: string) =>
+      createHash('sha256').update(content).digest('hex').slice(0, 8);
+
+    const pluginBundles = new Map<string, { content: string; hash: string }>();
+    for (const plugin of validPlugins) {
+      const content = readFileSync(resolve(plugin.bundlePath), 'utf-8');
+      pluginBundles.set(plugin.name, { content, hash: contentHash(content) });
+    }
+
     const manifestJSON = JSON.stringify(
-      validPlugins.map((plugin) => ({
-        ...Object.fromEntries(Object.entries(plugin).filter(([k]) => k !== 'bundlePath')),
-        bundleUrl: `/admin-plugins/${plugin.name}.js`,
-      })),
+      validPlugins.map((plugin) => {
+        const bundle = pluginBundles.get(plugin.name);
+        return {
+          ...Object.fromEntries(Object.entries(plugin).filter(([k]) => k !== 'bundlePath')),
+          bundleUrl: `/admin-plugins/${plugin.name}.js?v=${bundle?.hash || ''}`,
+        };
+      }),
     );
     router.get('/admin-ui-plugins.json', (_, res) => {
-      res.set('Cache-Control', 'public, max-age=60').type('application/json').send(manifestJSON);
+      res
+        .set('Cache-Control', 'public, max-age=31536000, immutable')
+        .type('application/json')
+        .send(manifestJSON);
     });
 
     if (validPlugins.length > 0) {
-      const pluginBundles = new Map<string, string>();
-      for (const plugin of validPlugins) {
-        pluginBundles.set(plugin.name, readFileSync(resolve(plugin.bundlePath), 'utf-8'));
-      }
-
-      for (const [name, content] of pluginBundles) {
+      for (const [name, { content }] of pluginBundles) {
         router.get(`/admin-plugins/${name}.js`, (_, res) => {
-          res.set('Cache-Control', 'public, max-age=3600').type('application/javascript').send(content);
+          res
+            .set('Cache-Control', 'public, max-age=31536000, immutable')
+            .type('application/javascript')
+            .send(content);
         });
       }
 
@@ -156,7 +176,7 @@ export const adminUIRouter = (
           const sdkContent = readFileSync(sdkPath, 'utf-8');
           router.get(`/admin-ui-sdk/${file}`, (_, res) => {
             res
-              .set('Cache-Control', 'public, max-age=3600')
+              .set('Cache-Control', 'public, max-age=31536000, immutable')
               .type('application/javascript')
               .send(sdkContent);
           });
@@ -173,7 +193,10 @@ export const adminUIRouter = (
         },
       });
       router.get('/admin-ui-importmap.json', (_, res) => {
-        res.set('Cache-Control', 'public, max-age=3600').type('application/json').send(importMapJSON);
+        res
+          .set('Cache-Control', 'public, max-age=31536000, immutable')
+          .type('application/json')
+          .send(importMapJSON);
       });
     }
 

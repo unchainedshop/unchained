@@ -98,6 +98,7 @@ try {
       plugins: [
         definePlugin({
           name: 'bookmark-manager',
+          version: '1.0.0',
           bundlePath: resolve(__dirname, '../plugins/bookmark-manager/dist/index.global.js'),
           slots: {
             entities: [

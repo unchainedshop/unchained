@@ -11,6 +11,7 @@ import { useQuery, useMutation, useApolloClient } from '@apollo/client/react';
 import { useRouter } from 'next/router';
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
+import { usePluginRuntime } from './PluginRuntimeContext';
 
 declare global {
   interface Window {
@@ -21,6 +22,7 @@ declare global {
 
 interface PluginManifest {
   name: string;
+  version?: string;
   bundleUrl: string;
   navigation?: {
     label: string;
@@ -78,6 +80,7 @@ const setupPluginRuntime = () => {
     'next/router': { useRouter },
     'react-intl': { useIntl },
     'react-toastify': { toast },
+    '@unchainedshop/admin-ui/plugins': { usePluginRuntime },
   };
 };
 

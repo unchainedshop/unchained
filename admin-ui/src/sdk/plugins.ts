@@ -82,6 +82,7 @@ export interface PluginNavigationGroup {
 
 export interface PluginConfig {
   name: string;
+  version?: string;
   bundlePath: string;
   /** Optional: group all plugin nav items under a collapsible sidebar section */
   navigation?: PluginNavigationGroup;

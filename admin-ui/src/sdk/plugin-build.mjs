@@ -45,6 +45,9 @@ const SHARED_DEPS = {
   'react-toastify': {
     named: ['toast'],
   },
+  '@unchainedshop/admin-ui/plugins': {
+    named: ['usePluginRuntime'],
+  },
 };
 
 function generateShim(specifier) {

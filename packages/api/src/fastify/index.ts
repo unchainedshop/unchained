@@ -56,6 +56,7 @@ export interface AdminUIPluginSlotConfig {
 
 export interface AdminUIPluginConfig {
   name: string;
+  version?: string;
   bundlePath: string;
   navigation?: {
     label: string;
@@ -294,35 +295,49 @@ export const connect = async (
     const PLUGIN_NAME_RE = /^[a-z0-9][a-z0-9._-]*$/i;
     const validPlugins = adminUIPlugins.filter((p) => {
       if (!PLUGIN_NAME_RE.test(p.name)) {
-        console.warn(`Skipping plugin with invalid name: "${p.name}"`);
+        fastify.log.warn(`Skipping admin-ui plugin with invalid name: "${p.name}"`);
         return false;
       }
       return true;
     });
 
+    if (validPlugins.length > 0) {
+      const pluginList = validPlugins
+        .map((p) => `${p.name}${p.version ? `@${p.version}` : ''}`)
+        .join(', ');
+      fastify.log.info(`Loading ${validPlugins.length} admin-ui plugin(s): ${pluginList}`);
+    }
+
+    const contentHash = (content: string) =>
+      createHash('sha256').update(content).digest('hex').slice(0, 8);
+
+    const pluginBundles = new Map<string, { content: string; hash: string }>();
+    for (const plugin of validPlugins) {
+      const content = readFileSync(resolve(plugin.bundlePath), 'utf-8');
+      pluginBundles.set(plugin.name, { content, hash: contentHash(content) });
+    }
+
     const manifestJSON = JSON.stringify(
-      validPlugins.map((plugin) => ({
-        ...Object.fromEntries(Object.entries(plugin).filter(([k]) => k !== 'bundlePath')),
-        bundleUrl: `/admin-plugins/${plugin.name}.js`,
-      })),
+      validPlugins.map((plugin) => {
+        const bundle = pluginBundles.get(plugin.name);
+        return {
+          ...Object.fromEntries(Object.entries(plugin).filter(([k]) => k !== 'bundlePath')),
+          bundleUrl: `/admin-plugins/${plugin.name}.js?v=${bundle?.hash || ''}`,
+        };
+      }),
     );
     fastify.get('/admin-ui-plugins.json', async (_, reply) => {
       return reply
-        .header('Cache-Control', 'public, max-age=60')
+        .header('Cache-Control', 'public, max-age=31536000, immutable')
         .type('application/json')
         .send(manifestJSON);
     });
 
     if (validPlugins.length > 0) {
-      const pluginBundles = new Map<string, string>();
-      for (const plugin of validPlugins) {
-        pluginBundles.set(plugin.name, readFileSync(resolve(plugin.bundlePath), 'utf-8'));
-      }
-
-      for (const [name, content] of pluginBundles) {
+      for (const [name, { content }] of pluginBundles) {
         fastify.get(`/admin-plugins/${name}.js`, async (_, reply) => {
           return reply
-            .header('Cache-Control', 'public, max-age=3600')
+            .header('Cache-Control', 'public, max-age=31536000, immutable')
             .type('application/javascript')
             .send(content);
         });
@@ -337,7 +352,7 @@ export const connect = async (
             const sdkContent = readFileSync(sdkPath, 'utf-8');
             fastify.get(`/admin-ui-sdk/${file}`, async (_, reply) => {
               return reply
-                .header('Cache-Control', 'public, max-age=3600')
+                .header('Cache-Control', 'public, max-age=31536000, immutable')
                 .type('application/javascript')
                 .send(sdkContent);
             });
@@ -355,7 +370,7 @@ export const connect = async (
         });
         fastify.get('/admin-ui-importmap.json', async (_, reply) => {
           return reply
-            .header('Cache-Control', 'public, max-age=3600')
+            .header('Cache-Control', 'public, max-age=31536000, immutable')
             .type('application/json')
             .send(importMapJSON);
         });

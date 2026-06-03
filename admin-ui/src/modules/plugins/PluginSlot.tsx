@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { usePlugins } from './PluginContext';
-import ErrorBoundary from '@/components/ui/ErrorBoundary';
+import { PluginRuntimeProvider } from './PluginRuntimeContext';
+import PluginErrorBoundary from './PluginErrorBoundary';
 import Loading from '@/components/ui/Loading';
 
 interface PluginSlotProps {
@@ -34,16 +35,29 @@ const PluginSlot = ({ slot, children, ...props }: PluginSlotProps) => {
           return null;
         }
 
+        const runtimeCtx = {
+          pluginName: manifest.name,
+          version: manifest.version,
+          slotId: slot,
+          config,
+        };
+
         return (
-          <ErrorBoundary key={`${manifest.name}-${componentName}`}>
-            <Suspense fallback={<Loading />}>
-              {children ? (
-                children(Component, config, manifest)
-              ) : (
-                <Component {...props} />
-              )}
-            </Suspense>
-          </ErrorBoundary>
+          <PluginErrorBoundary
+            key={`${manifest.name}-${componentName}`}
+            pluginName={manifest.name}
+            componentName={componentName}
+          >
+            <PluginRuntimeProvider value={runtimeCtx}>
+              <Suspense fallback={<Loading />}>
+                {children ? (
+                  children(Component, config, manifest)
+                ) : (
+                  <Component {...props} />
+                )}
+              </Suspense>
+            </PluginRuntimeProvider>
+          </PluginErrorBoundary>
         );
       })}
     </>
