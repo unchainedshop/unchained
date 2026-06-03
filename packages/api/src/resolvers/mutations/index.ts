@@ -150,6 +150,11 @@ import updateCartDeliveryPickUp from './orders/updateCartDeliveryPickUp.ts';
 import updateCartDeliveryShipping from './orders/updateCartDeliveryShipping.ts';
 import updateCartPaymentGeneric from './orders/updateCartPaymentGeneric.ts';
 import updateCartPaymentInvoice from './orders/updateCartPaymentInvoice.ts';
+import bulkSetProductStatus from './bulk/bulkSetProductStatus.ts';
+import bulkUpdateProductTags from './bulk/bulkUpdateProductTags.ts';
+import bulkAssignProductsToAssortment from './bulk/bulkAssignProductsToAssortment.ts';
+import bulkRemoveProducts from './bulk/bulkRemoveProducts.ts';
+import bulkUpdateUserTags from './bulk/bulkUpdateUserTags.ts';
 
 export default {
   logout: acl(actions.logout)(logout),
@@ -311,4 +316,9 @@ export default {
   ),
   signPaymentProviderForCheckout: acl(actions.updateOrderPayment)(signPaymentProviderForCheckout),
   removeUserProductReviews: acl(actions.updateUser)(removeUserProductReviews),
+  bulkSetProductStatus: acl(actions.manageProducts)(bulkSetProductStatus),
+  bulkUpdateProductTags: acl(actions.manageProducts)(bulkUpdateProductTags),
+  bulkAssignProductsToAssortment: acl(actions.manageAssortments)(bulkAssignProductsToAssortment),
+  bulkRemoveProducts: acl(actions.manageProducts)(bulkRemoveProducts),
+  bulkUpdateUserTags: acl(actions.manageUsers)(bulkUpdateUserTags),
 };

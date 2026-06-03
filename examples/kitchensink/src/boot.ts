@@ -127,11 +127,11 @@ try {
     },
     chat: provider
       ? {
-          model: provider.chat(process.env.OPENAI_MODEL || 'gpt-5.2'),
-          imageGenerationTool: imageProvider
-            ? { model: imageProvider.imageModel('gpt-image-1') }
-            : undefined,
-        }
+        model: provider.chat(process.env.OPENAI_MODEL || 'gpt-5.2'),
+        imageGenerationTool: imageProvider
+          ? { model: imageProvider.imageModel('gpt-image-1') }
+          : undefined,
+      }
       : undefined,
   });
 
