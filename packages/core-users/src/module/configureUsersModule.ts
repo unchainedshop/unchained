@@ -1085,6 +1085,38 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       })) as string[];
       return tags.filter(Boolean).toSorted();
     },
+
+    bulkAddTags: async (userIds: string[], tags: string[]): Promise<number> => {
+      const result = await Users.updateMany(
+        { _id: { $in: userIds } },
+        {
+          $addToSet: { tags: { $each: tags } },
+          $set: { updated: new Date() },
+        },
+      );
+      return result.modifiedCount;
+    },
+
+    bulkRemoveTags: async (userIds: string[], tags: string[]): Promise<number> => {
+      const result = await Users.updateMany(
+        { _id: { $in: userIds } },
+        {
+          $pullAll: { tags },
+          $set: { updated: new Date() },
+        },
+      );
+      return result.modifiedCount;
+    },
+
+    bulkUpdateRoles: async (userIds: string[], roles: string[]): Promise<number> => {
+      const result = await Users.updateMany(
+        { _id: { $in: userIds } },
+        {
+          $set: { roles, updated: new Date() },
+        },
+      );
+      return result.modifiedCount;
+    },
   };
 };
 

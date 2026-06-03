@@ -866,7 +866,11 @@ export default [
       """
       Add or remove tags from multiple products at once
       """
-      bulkUpdateProductTags(productIds: [ID!]!, add: [LowerCaseString!], remove: [LowerCaseString!]): BulkOperationResult!
+      bulkUpdateProductTags(
+        productIds: [ID!]!
+        add: [LowerCaseString!]
+        remove: [LowerCaseString!]
+      ): BulkOperationResult!
 
       """
       Assign multiple products to an assortment
@@ -881,7 +885,50 @@ export default [
       """
       Add or remove tags from multiple users at once
       """
-      bulkUpdateUserTags(userIds: [ID!]!, add: [LowerCaseString!], remove: [LowerCaseString!]): BulkOperationResult!
+      bulkUpdateUserTags(
+        userIds: [ID!]!
+        add: [LowerCaseString!]
+        remove: [LowerCaseString!]
+      ): BulkOperationResult!
+
+      """
+      Remove multiple users
+      """
+      bulkRemoveUsers(userIds: [ID!]!): BulkOperationResult!
+
+      """
+      Set roles for multiple users at once
+      """
+      bulkSetUserRoles(userIds: [ID!]!, roles: [String!]!): BulkOperationResult!
+
+      """
+      Remove multiple assortments
+      """
+      bulkRemoveAssortments(assortmentIds: [ID!]!): BulkOperationResult!
+
+      """
+      Add or remove tags from multiple assortments at once
+      """
+      bulkUpdateAssortmentTags(
+        assortmentIds: [ID!]!
+        add: [LowerCaseString!]
+        remove: [LowerCaseString!]
+      ): BulkOperationResult!
+
+      """
+      Activate or deactivate multiple assortments at once
+      """
+      bulkSetAssortmentActive(assortmentIds: [ID!]!, isActive: Boolean!): BulkOperationResult!
+
+      """
+      Remove multiple filters
+      """
+      bulkRemoveFilters(filterIds: [ID!]!): BulkOperationResult!
+
+      """
+      Activate or deactivate multiple filters at once
+      """
+      bulkSetFilterActive(filterIds: [ID!]!, isActive: Boolean!): BulkOperationResult!
 
       """
       Store user W3C Push subscription object

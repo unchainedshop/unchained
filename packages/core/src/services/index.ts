@@ -57,6 +57,9 @@ import { simulateConfigurablePriceRangeService } from './simulateConfigurablePri
 import { createFileDownloadURLService } from './createFileDownloadURL.ts';
 import { resolveTokenStatusService } from './resolveTokenStatus.ts';
 import { isTokenInvalidateableService } from './isTokenInvalidateable.ts';
+import { bulkRemoveProductsService } from './bulkRemoveProducts.ts';
+import { bulkRemoveFiltersService } from './bulkRemoveFilters.ts';
+import { bulkDeleteUsersService } from './bulkDeleteUsers.ts';
 
 // Auto-Inject Unchained API as last parameter
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
@@ -143,6 +146,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
         typeof simulateProductInventoryService
       >,
       removeProduct: removeProductService as Bound<typeof removeProductService>,
+      bulkRemoveProducts: bulkRemoveProductsService as Bound<typeof bulkRemoveProductsService>,
       findProductSiblings: findProductSiblingsService as Bound<typeof findProductSiblingsService>,
       simulateConfigurablePriceRange: simulateConfigurablePriceRangeService as Bound<
         typeof simulateConfigurablePriceRangeService
@@ -154,6 +158,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
         typeof updateUserAvatarAfterUploadService
       >,
       deleteUser: deleteUserService as Bound<typeof deleteUserService>,
+      bulkDeleteUsers: bulkDeleteUsersService as Bound<typeof bulkDeleteUsersService>,
     },
     enrollments: {
       createEnrollmentFromCheckout: createEnrollmentFromCheckoutService as Bound<
@@ -181,6 +186,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
       loadFilters: loadFiltersService as Bound<typeof loadFiltersService>,
       loadFilterOptions: loadFilterOptionsService as Bound<typeof loadFilterOptionsService>,
       removeFilter: removeFilterService as Bound<typeof removeFilterService>,
+      bulkRemoveFilters: bulkRemoveFiltersService as Bound<typeof bulkRemoveFiltersService>,
     },
     warehousing: {
       ercMetadata: ercMetadataService as Bound<typeof ercMetadataService>,
