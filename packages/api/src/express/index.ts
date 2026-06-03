@@ -118,19 +118,34 @@ export const adminUIRouter = (
         .send(themeCSS);
     });
 
-    const manifest = plugins.map(({ bundlePath, ...rest }) => ({
-      ...rest,
-      bundleUrl: `/admin-plugins/${rest.name}.js`,
-    }));
-    router.get('/admin-ui-plugins.json', (_, res) => {
-      res.type('application/json').send(manifest);
+    const PLUGIN_NAME_RE = /^[a-z0-9][a-z0-9._-]*$/i;
+    const validPlugins = plugins.filter((p) => {
+      if (!PLUGIN_NAME_RE.test(p.name)) {
+        console.warn(`Skipping plugin with invalid name: "${p.name}"`);
+        return false;
+      }
+      return true;
     });
 
-    if (plugins.length > 0) {
-      for (const plugin of plugins) {
-        router.get(`/admin-plugins/${plugin.name}.js`, (_, res) => {
-          const content = readFileSync(resolve(plugin.bundlePath), 'utf-8');
-          res.type('application/javascript').send(content);
+    const manifestJSON = JSON.stringify(
+      validPlugins.map((plugin) => ({
+        ...Object.fromEntries(Object.entries(plugin).filter(([k]) => k !== 'bundlePath')),
+        bundleUrl: `/admin-plugins/${plugin.name}.js`,
+      })),
+    );
+    router.get('/admin-ui-plugins.json', (_, res) => {
+      res.set('Cache-Control', 'public, max-age=60').type('application/json').send(manifestJSON);
+    });
+
+    if (validPlugins.length > 0) {
+      const pluginBundles = new Map<string, string>();
+      for (const plugin of validPlugins) {
+        pluginBundles.set(plugin.name, readFileSync(resolve(plugin.bundlePath), 'utf-8'));
+      }
+
+      for (const [name, content] of pluginBundles) {
+        router.get(`/admin-plugins/${name}.js`, (_, res) => {
+          res.set('Cache-Control', 'public, max-age=3600').type('application/javascript').send(content);
         });
       }
 
@@ -138,28 +153,33 @@ export const adminUIRouter = (
       for (const file of sdkFiles) {
         const sdkPath = join(adminUIPath, '..', 'dist', file);
         if (existsSync(sdkPath)) {
+          const sdkContent = readFileSync(sdkPath, 'utf-8');
           router.get(`/admin-ui-sdk/${file}`, (_, res) => {
-            res.type('application/javascript').send(readFileSync(sdkPath, 'utf-8'));
+            res
+              .set('Cache-Control', 'public, max-age=3600')
+              .type('application/javascript')
+              .send(sdkContent);
           });
         }
       }
 
+      const importMapJSON = JSON.stringify({
+        imports: {
+          '@unchainedshop/admin-ui/ui': '/admin-ui-sdk/ui.mjs',
+          '@unchainedshop/admin-ui/form': '/admin-ui-sdk/form.mjs',
+          '@unchainedshop/admin-ui/hooks': '/admin-ui-sdk/hooks.mjs',
+          '@unchainedshop/admin-ui/modal': '/admin-ui-sdk/modal.mjs',
+          '@unchainedshop/admin-ui/providers': '/admin-ui-sdk/providers.mjs',
+        },
+      });
       router.get('/admin-ui-importmap.json', (_, res) => {
-        res.type('application/json').send({
-          imports: {
-            '@unchainedshop/admin-ui/ui': '/admin-ui-sdk/ui.mjs',
-            '@unchainedshop/admin-ui/form': '/admin-ui-sdk/form.mjs',
-            '@unchainedshop/admin-ui/hooks': '/admin-ui-sdk/hooks.mjs',
-            '@unchainedshop/admin-ui/modal': '/admin-ui-sdk/modal.mjs',
-            '@unchainedshop/admin-ui/providers': '/admin-ui-sdk/providers.mjs',
-          },
-        });
+        res.set('Cache-Control', 'public, max-age=3600').type('application/json').send(importMapJSON);
       });
     }
 
     router.use(e.static(adminUIPath));
 
-    if (plugins.length > 0) {
+    if (validPlugins.length > 0) {
       const importMap = {
         imports: {
           '@unchainedshop/admin-ui/ui': '/admin-ui-sdk/ui.mjs',

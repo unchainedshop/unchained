@@ -291,21 +291,40 @@ export const connect = async (
         .send(themeCSS);
     });
 
-    const manifest = adminUIPlugins.map(({ bundlePath, ...rest }) => ({
-      ...rest,
-      bundleUrl: `/admin-plugins/${rest.name}.js`,
-    }));
-    fastify.get('/admin-ui-plugins.json', async (_, reply) => {
-      return reply.type('application/json').send(manifest);
+    const PLUGIN_NAME_RE = /^[a-z0-9][a-z0-9._-]*$/i;
+    const validPlugins = adminUIPlugins.filter((p) => {
+      if (!PLUGIN_NAME_RE.test(p.name)) {
+        console.warn(`Skipping plugin with invalid name: "${p.name}"`);
+        return false;
+      }
+      return true;
     });
 
-    if (adminUIPlugins.length > 0) {
-      for (const plugin of adminUIPlugins) {
-        const pluginName = plugin.name;
-        const pluginBundlePath = plugin.bundlePath;
-        fastify.get(`/admin-plugins/${pluginName}.js`, async (_, reply) => {
-          const content = readFileSync(resolve(pluginBundlePath), 'utf-8');
-          return reply.type('application/javascript').send(content);
+    const manifestJSON = JSON.stringify(
+      validPlugins.map((plugin) => ({
+        ...Object.fromEntries(Object.entries(plugin).filter(([k]) => k !== 'bundlePath')),
+        bundleUrl: `/admin-plugins/${plugin.name}.js`,
+      })),
+    );
+    fastify.get('/admin-ui-plugins.json', async (_, reply) => {
+      return reply
+        .header('Cache-Control', 'public, max-age=60')
+        .type('application/json')
+        .send(manifestJSON);
+    });
+
+    if (validPlugins.length > 0) {
+      const pluginBundles = new Map<string, string>();
+      for (const plugin of validPlugins) {
+        pluginBundles.set(plugin.name, readFileSync(resolve(plugin.bundlePath), 'utf-8'));
+      }
+
+      for (const [name, content] of pluginBundles) {
+        fastify.get(`/admin-plugins/${name}.js`, async (_, reply) => {
+          return reply
+            .header('Cache-Control', 'public, max-age=3600')
+            .type('application/javascript')
+            .send(content);
         });
       }
 
@@ -315,13 +334,17 @@ export const connect = async (
         for (const file of sdkFiles) {
           const sdkPath = join(adminUIPath, '..', 'dist', file);
           if (existsSync(sdkPath)) {
+            const sdkContent = readFileSync(sdkPath, 'utf-8');
             fastify.get(`/admin-ui-sdk/${file}`, async (_, reply) => {
-              return reply.type('application/javascript').send(readFileSync(sdkPath, 'utf-8'));
+              return reply
+                .header('Cache-Control', 'public, max-age=3600')
+                .type('application/javascript')
+                .send(sdkContent);
             });
           }
         }
 
-        const importMap = {
+        const importMapJSON = JSON.stringify({
           imports: {
             '@unchainedshop/admin-ui/ui': '/admin-ui-sdk/ui.mjs',
             '@unchainedshop/admin-ui/form': '/admin-ui-sdk/form.mjs',
@@ -329,9 +352,12 @@ export const connect = async (
             '@unchainedshop/admin-ui/modal': '/admin-ui-sdk/modal.mjs',
             '@unchainedshop/admin-ui/providers': '/admin-ui-sdk/providers.mjs',
           },
-        };
+        });
         fastify.get('/admin-ui-importmap.json', async (_, reply) => {
-          return reply.type('application/json').send(importMap);
+          return reply
+            .header('Cache-Control', 'public, max-age=3600')
+            .type('application/json')
+            .send(importMapJSON);
         });
       }
     }
