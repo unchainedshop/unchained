@@ -1,12 +1,12 @@
 import React from 'react';
 import { useIntl } from 'react-intl';
-import { toast } from 'react-toastify';
 import { IRoleAction } from '../../../gql/types';
 import useAuth from '../../Auth/useAuth';
 import Table from '../../common/components/Table';
 import BulkActionsToolbar from '../../common/components/BulkActionsToolbar';
 import BulkTagForm from '../../common/components/BulkTagForm';
 import useBulkSelection from '../../common/hooks/useBulkSelection';
+import useBulkResultHandler from '../../common/hooks/useBulkResultHandler';
 import useBulkUserOperations from '../hooks/useBulkUserOperations';
 import useModal from '../../modal/hooks/useModal';
 import DangerMessage from '../../modal/components/DangerMessage';
@@ -28,27 +28,10 @@ const UserList = ({ users }) => {
 
   const { bulkUpdateUserTags, bulkRemoveUsers, bulkSetUserRoles } =
     useBulkUserOperations();
+  const handleBulkResult = useBulkResultHandler();
 
   const allIds = users?.map((u) => u._id) || [];
   const canManage = hasRole(IRoleAction.RemoveUser);
-
-  const handleBulkResult = (result: any, operationName: string) => {
-    const data = result?.data?.[operationName];
-    if (data) {
-      toast.success(
-        formatMessage(
-          {
-            id: 'bulk_operation_result',
-            defaultMessage: '{successCount} succeeded, {failedCount} failed',
-          },
-          {
-            successCount: data.successCount,
-            failedCount: data.failedCount,
-          },
-        ),
-      );
-    }
-  };
 
   const bulkActions = canManage
     ? [
@@ -61,12 +44,10 @@ const UserList = ({ users }) => {
           renderForm: ({ onCancel }) => (
             <BulkTagForm
               onSubmit={async ({ add, remove }) => {
-                const result = await bulkUpdateUserTags(
-                  selectedIds,
-                  add,
-                  remove,
+                await handleBulkResult(
+                  () => bulkUpdateUserTags(selectedIds, add, remove),
+                  'bulkUpdateUserTags',
                 );
-                handleBulkResult(result, 'bulkUpdateUserTags');
                 clearAll();
               }}
               onCancel={onCancel}
@@ -82,8 +63,10 @@ const UserList = ({ users }) => {
           renderForm: ({ onCancel }) => (
             <BulkRolesForm
               onSubmit={async (roles) => {
-                const result = await bulkSetUserRoles(selectedIds, roles);
-                handleBulkResult(result, 'bulkSetUserRoles');
+                await handleBulkResult(
+                  () => bulkSetUserRoles(selectedIds, roles),
+                  'bulkSetUserRoles',
+                );
                 clearAll();
               }}
               onCancel={onCancel}
@@ -115,8 +98,10 @@ const UserList = ({ users }) => {
                   )}
                   onOkClick={async () => {
                     setModal('');
-                    const result = await bulkRemoveUsers(ids);
-                    handleBulkResult(result, 'bulkRemoveUsers');
+                    await handleBulkResult(
+                      () => bulkRemoveUsers(ids),
+                      'bulkRemoveUsers',
+                    );
                     resolve();
                   }}
                   okText={formatMessage({

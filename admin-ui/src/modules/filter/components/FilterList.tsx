@@ -1,5 +1,4 @@
 import { useIntl } from 'react-intl';
-import { toast } from 'react-toastify';
 import { IRoleAction } from '../../../gql/types';
 
 import useAuth from '../../Auth/useAuth';
@@ -8,6 +7,7 @@ import InfiniteScroll from '../../common/components/InfiniteScroll';
 import Table from '../../common/components/Table';
 import BulkActionsToolbar from '../../common/components/BulkActionsToolbar';
 import useBulkSelection from '../../common/hooks/useBulkSelection';
+import useBulkResultHandler from '../../common/hooks/useBulkResultHandler';
 import useBulkFilterOperations from '../hooks/useBulkFilterOperations';
 import useModal from '../../modal/hooks/useModal';
 import DangerMessage from '../../modal/components/DangerMessage';
@@ -46,27 +46,10 @@ const FilterList = ({
   } = useBulkSelection();
 
   const { bulkRemoveFilters, bulkSetFilterActive } = useBulkFilterOperations();
+  const handleBulkResult = useBulkResultHandler();
 
   const allIds = filters?.map((f) => f._id) || [];
   const canManage = hasRole(IRoleAction.ManageFilters);
-
-  const handleBulkResult = (result: any, operationName: string) => {
-    const data = result?.data?.[operationName];
-    if (data) {
-      toast.success(
-        formatMessage(
-          {
-            id: 'bulk_operation_result',
-            defaultMessage: '{successCount} succeeded, {failedCount} failed',
-          },
-          {
-            successCount: data.successCount,
-            failedCount: data.failedCount,
-          },
-        ),
-      );
-    }
-  };
 
   const bulkActions = canManage
     ? [
@@ -77,8 +60,10 @@ const FilterList = ({
             defaultMessage: 'Activate',
           }),
           onAction: async (ids: string[]) => {
-            const result = await bulkSetFilterActive(ids, true);
-            handleBulkResult(result, 'bulkSetFilterActive');
+            await handleBulkResult(
+              () => bulkSetFilterActive(ids, true),
+              'bulkSetFilterActive',
+            );
           },
         },
         {
@@ -88,8 +73,10 @@ const FilterList = ({
             defaultMessage: 'Deactivate',
           }),
           onAction: async (ids: string[]) => {
-            const result = await bulkSetFilterActive(ids, false);
-            handleBulkResult(result, 'bulkSetFilterActive');
+            await handleBulkResult(
+              () => bulkSetFilterActive(ids, false),
+              'bulkSetFilterActive',
+            );
           },
         },
         {
@@ -117,8 +104,10 @@ const FilterList = ({
                   )}
                   onOkClick={async () => {
                     setModal('');
-                    const result = await bulkRemoveFilters(ids);
-                    handleBulkResult(result, 'bulkRemoveFilters');
+                    await handleBulkResult(
+                      () => bulkRemoveFilters(ids),
+                      'bulkRemoveFilters',
+                    );
                     resolve();
                   }}
                   okText={formatMessage({
