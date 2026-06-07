@@ -93,7 +93,7 @@
     "prettier": "^3.7.4",
     "typedoc": "^0.28.15",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.50.0"
+    "typescript-eslint": "^8.60.1"
   },
   "trustedDependencies": [
     "@mongodb-js/zstd"
