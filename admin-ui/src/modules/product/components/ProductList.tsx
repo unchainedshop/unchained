@@ -1,5 +1,4 @@
 import { useIntl } from 'react-intl';
-import { toast } from 'react-toastify';
 import Loading from '@/components/ui/Loading';
 import InfiniteScroll from '../../common/components/InfiniteScroll';
 import Table from '../../common/components/Table';
@@ -8,6 +7,7 @@ import BulkTagForm from '../../common/components/BulkTagForm';
 import useProducts from '../hooks/useProducts';
 import useBulkProductOperations from '../hooks/useBulkProductOperations';
 import useBulkSelection from '../../common/hooks/useBulkSelection';
+import useBulkResultHandler from '../../common/hooks/useBulkResultHandler';
 import useAuth from '../../Auth/useAuth';
 import { IRoleAction } from '../../../gql/types';
 import ProductListItem from './ProductListItem';
@@ -50,26 +50,9 @@ const ProductList = ({
 
   const { bulkSetProductStatus, bulkUpdateProductTags, bulkRemoveProducts } =
     useBulkProductOperations();
+  const handleBulkResult = useBulkResultHandler();
 
   const allIds = products?.map((p) => p._id) || [];
-
-  const handleBulkResult = (result: any, operationName: string) => {
-    const data = result?.data?.[operationName];
-    if (data) {
-      toast.success(
-        formatMessage(
-          {
-            id: 'bulk_operation_result',
-            defaultMessage: '{successCount} succeeded, {failedCount} failed',
-          },
-          {
-            successCount: data.successCount,
-            failedCount: data.failedCount,
-          },
-        ),
-      );
-    }
-  };
 
   const bulkActions = hasRole(IRoleAction.ManageProducts)
     ? [
@@ -80,8 +63,10 @@ const ProductList = ({
             defaultMessage: 'Set Active',
           }),
           onAction: async (ids: string[]) => {
-            const result = await bulkSetProductStatus(ids, 'ACTIVE');
-            handleBulkResult(result, 'bulkSetProductStatus');
+            await handleBulkResult(
+              () => bulkSetProductStatus(ids, 'ACTIVE'),
+              'bulkSetProductStatus',
+            );
           },
         },
         {
@@ -91,8 +76,10 @@ const ProductList = ({
             defaultMessage: 'Set Draft',
           }),
           onAction: async (ids: string[]) => {
-            const result = await bulkSetProductStatus(ids, 'DRAFT');
-            handleBulkResult(result, 'bulkSetProductStatus');
+            await handleBulkResult(
+              () => bulkSetProductStatus(ids, 'DRAFT'),
+              'bulkSetProductStatus',
+            );
           },
         },
         {
@@ -104,12 +91,10 @@ const ProductList = ({
           renderForm: ({ onCancel }) => (
             <BulkTagForm
               onSubmit={async ({ add, remove }) => {
-                const result = await bulkUpdateProductTags(
-                  selectedIds,
-                  add,
-                  remove,
+                await handleBulkResult(
+                  () => bulkUpdateProductTags(selectedIds, add, remove),
+                  'bulkUpdateProductTags',
                 );
-                handleBulkResult(result, 'bulkUpdateProductTags');
                 clearAll();
               }}
               onCancel={onCancel}
@@ -141,8 +126,10 @@ const ProductList = ({
                   )}
                   onOkClick={async () => {
                     setModal('');
-                    const result = await bulkRemoveProducts(ids);
-                    handleBulkResult(result, 'bulkRemoveProducts');
+                    await handleBulkResult(
+                      () => bulkRemoveProducts(ids),
+                      'bulkRemoveProducts',
+                    );
                     resolve();
                   }}
                   okText={formatMessage({

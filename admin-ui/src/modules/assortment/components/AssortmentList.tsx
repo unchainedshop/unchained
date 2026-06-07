@@ -1,11 +1,11 @@
 import { useIntl } from 'react-intl';
-import { toast } from 'react-toastify';
 import { IRoleAction } from '../../../gql/types';
 import useAuth from '../../Auth/useAuth';
 import Table from '../../common/components/Table';
 import BulkActionsToolbar from '../../common/components/BulkActionsToolbar';
 import BulkTagForm from '../../common/components/BulkTagForm';
 import useBulkSelection from '../../common/hooks/useBulkSelection';
+import useBulkResultHandler from '../../common/hooks/useBulkResultHandler';
 import useBulkAssortmentOperations from '../hooks/useBulkAssortmentOperations';
 import useModal from '../../modal/hooks/useModal';
 import DangerMessage from '../../modal/components/DangerMessage';
@@ -30,27 +30,10 @@ const AssortmentList = ({ assortments, showAvatar = true, sortable }) => {
     bulkUpdateAssortmentTags,
     bulkSetAssortmentActive,
   } = useBulkAssortmentOperations();
+  const handleBulkResult = useBulkResultHandler();
 
   const allIds = assortments?.map((a) => a._id) || [];
   const canManage = hasRole(IRoleAction.ManageAssortments);
-
-  const handleBulkResult = (result: any, operationName: string) => {
-    const data = result?.data?.[operationName];
-    if (data) {
-      toast.success(
-        formatMessage(
-          {
-            id: 'bulk_operation_result',
-            defaultMessage: '{successCount} succeeded, {failedCount} failed',
-          },
-          {
-            successCount: data.successCount,
-            failedCount: data.failedCount,
-          },
-        ),
-      );
-    }
-  };
 
   const bulkActions = canManage
     ? [
@@ -61,8 +44,10 @@ const AssortmentList = ({ assortments, showAvatar = true, sortable }) => {
             defaultMessage: 'Activate',
           }),
           onAction: async (ids: string[]) => {
-            const result = await bulkSetAssortmentActive(ids, true);
-            handleBulkResult(result, 'bulkSetAssortmentActive');
+            await handleBulkResult(
+              () => bulkSetAssortmentActive(ids, true),
+              'bulkSetAssortmentActive',
+            );
           },
         },
         {
@@ -72,8 +57,10 @@ const AssortmentList = ({ assortments, showAvatar = true, sortable }) => {
             defaultMessage: 'Deactivate',
           }),
           onAction: async (ids: string[]) => {
-            const result = await bulkSetAssortmentActive(ids, false);
-            handleBulkResult(result, 'bulkSetAssortmentActive');
+            await handleBulkResult(
+              () => bulkSetAssortmentActive(ids, false),
+              'bulkSetAssortmentActive',
+            );
           },
         },
         {
@@ -85,12 +72,10 @@ const AssortmentList = ({ assortments, showAvatar = true, sortable }) => {
           renderForm: ({ onCancel }) => (
             <BulkTagForm
               onSubmit={async ({ add, remove }) => {
-                const result = await bulkUpdateAssortmentTags(
-                  selectedIds,
-                  add,
-                  remove,
+                await handleBulkResult(
+                  () => bulkUpdateAssortmentTags(selectedIds, add, remove),
+                  'bulkUpdateAssortmentTags',
                 );
-                handleBulkResult(result, 'bulkUpdateAssortmentTags');
                 clearAll();
               }}
               onCancel={onCancel}
@@ -122,8 +107,10 @@ const AssortmentList = ({ assortments, showAvatar = true, sortable }) => {
                   )}
                   onOkClick={async () => {
                     setModal('');
-                    const result = await bulkRemoveAssortments(ids);
-                    handleBulkResult(result, 'bulkRemoveAssortments');
+                    await handleBulkResult(
+                      () => bulkRemoveAssortments(ids),
+                      'bulkRemoveAssortments',
+                    );
                     resolve();
                   }}
                   okText={formatMessage({
