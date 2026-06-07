@@ -45,6 +45,7 @@ import productsCount from './products/productsCount.ts';
 import quotation from './quotations/quotation.ts';
 import quotations from './quotations/quotations.ts';
 import quotationsCount from './quotations/quotationsCount.ts';
+import globalSearch from './search/globalSearch.ts';
 import searchAssortments from './filters/searchAssortments.ts';
 import searchProducts from './filters/searchProducts.ts';
 import shopInfo from './shopInfo.ts';
@@ -131,6 +132,7 @@ export default {
   quotation: acl(actions.viewQuotation)(quotation),
   quotations: acl(actions.viewQuotations)(quotations),
   quotationsCount: acl(actions.viewQuotations)(quotationsCount),
+  globalSearch: acl(actions.search)(globalSearch),
   searchProducts: acl(actions.search)(searchProducts),
   searchAssortments: acl(actions.search)(searchAssortments),
   workQueue: acl(actions.viewWorkQueue)(workQueue),
