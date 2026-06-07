@@ -423,6 +423,10 @@ export default [
         types: [SearchableEntity!]
         limit: Int = 5
         typeLimits: [GlobalSearchTypeLimitInput!]
+        includeDraftProducts: Boolean = true
+        includeInactiveAssortments: Boolean = true
+        includeGuestUsers: Boolean = false
+        includeCarts: Boolean = false
       ): GlobalSearchResponse! @cacheControl(maxAge: 30)
 
       """
