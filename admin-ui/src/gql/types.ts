@@ -924,6 +924,35 @@ export type IGeoPosition = {
   longitude: Scalars['Float']['output'];
 };
 
+export type IGlobalSearchResponse = {
+  counts: Array<IGlobalSearchTypeCount>;
+  results: Array<IGlobalSearchResult>;
+};
+
+export type IGlobalSearchResult =
+  | IAssortment
+  | IBundleProduct
+  | IConfigurableProduct
+  | IEnrollment
+  | IFilter
+  | IOrder
+  | IPlanProduct
+  | IQuotation
+  | ISimpleProduct
+  | ITokenizedProduct
+  | IUser
+  | IWork;
+
+export type IGlobalSearchTypeCount = {
+  totalCount: Scalars['Int']['output'];
+  type: ISearchableEntity;
+};
+
+export type IGlobalSearchTypeLimitInput = {
+  limit: Scalars['Int']['input'];
+  type: ISearchableEntity;
+};
+
 export type ILanguage = {
   _id: Scalars['ID']['output'];
   isActive?: Maybe<Scalars['Boolean']['output']>;
@@ -2833,6 +2862,8 @@ export type IQuery = {
   filters: Array<IFilter>;
   /** Returns total number of filters */
   filtersCount: Scalars['Int']['output'];
+  /** Search across multiple entity types in a single request */
+  globalSearch: IGlobalSearchResponse;
   /** User impersonating currently logged in user */
   impersonator?: Maybe<IUser>;
   /** Get a specific language */
@@ -3070,6 +3101,17 @@ export type IQueryFiltersArgs = {
 export type IQueryFiltersCountArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
   queryString?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type IQueryGlobalSearchArgs = {
+  includeCarts?: InputMaybe<Scalars['Boolean']['input']>;
+  includeDraftProducts?: InputMaybe<Scalars['Boolean']['input']>;
+  includeGuestUsers?: InputMaybe<Scalars['Boolean']['input']>;
+  includeInactiveAssortments?: InputMaybe<Scalars['Boolean']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  query: Scalars['String']['input'];
+  typeLimits?: InputMaybe<Array<IGlobalSearchTypeLimitInput>>;
+  types?: InputMaybe<Array<ISearchableEntity>>;
 };
 
 export type IQueryLanguageArgs = {
@@ -3518,6 +3560,17 @@ export type ISearchResultProductsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
+
+export enum ISearchableEntity {
+  Assortment = 'ASSORTMENT',
+  Enrollment = 'ENROLLMENT',
+  Filter = 'FILTER',
+  Order = 'ORDER',
+  Product = 'PRODUCT',
+  Quotation = 'QUOTATION',
+  User = 'USER',
+  Work = 'WORK',
+}
 
 export type IShop = {
   _id: Scalars['ID']['output'];
@@ -15713,6 +15766,143 @@ export type IVerifyQuotationMutation = {
             file?: { _id: string; type: string; url?: string | null } | null;
           }>;
         };
+  };
+};
+
+type IGlobalSearchProductFragment_BundleProduct = {
+  __typename: 'BundleProduct';
+  _id: string;
+  texts?: { _id: string; title?: string | null; slug?: string | null } | null;
+  media: Array<{ file?: { url?: string | null } | null }>;
+};
+
+type IGlobalSearchProductFragment_ConfigurableProduct = {
+  __typename: 'ConfigurableProduct';
+  _id: string;
+  texts?: { _id: string; title?: string | null; slug?: string | null } | null;
+  media: Array<{ file?: { url?: string | null } | null }>;
+};
+
+type IGlobalSearchProductFragment_PlanProduct = {
+  __typename: 'PlanProduct';
+  _id: string;
+  texts?: { _id: string; title?: string | null; slug?: string | null } | null;
+  media: Array<{ file?: { url?: string | null } | null }>;
+};
+
+type IGlobalSearchProductFragment_SimpleProduct = {
+  __typename: 'SimpleProduct';
+  _id: string;
+  texts?: { _id: string; title?: string | null; slug?: string | null } | null;
+  media: Array<{ file?: { url?: string | null } | null }>;
+};
+
+type IGlobalSearchProductFragment_TokenizedProduct = {
+  __typename: 'TokenizedProduct';
+  _id: string;
+  texts?: { _id: string; title?: string | null; slug?: string | null } | null;
+  media: Array<{ file?: { url?: string | null } | null }>;
+};
+
+export type IGlobalSearchProductFragment =
+  | IGlobalSearchProductFragment_BundleProduct
+  | IGlobalSearchProductFragment_ConfigurableProduct
+  | IGlobalSearchProductFragment_PlanProduct
+  | IGlobalSearchProductFragment_SimpleProduct
+  | IGlobalSearchProductFragment_TokenizedProduct;
+
+export type IGlobalSearchProductFragmentVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type IGlobalSearchQueryVariables = Exact<{
+  query: Scalars['String']['input'];
+  types?: InputMaybe<Array<ISearchableEntity>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  includeDraftProducts?: InputMaybe<Scalars['Boolean']['input']>;
+  includeInactiveAssortments?: InputMaybe<Scalars['Boolean']['input']>;
+  includeGuestUsers?: InputMaybe<Scalars['Boolean']['input']>;
+  includeCarts?: InputMaybe<Scalars['Boolean']['input']>;
+}>;
+
+export type IGlobalSearchQuery = {
+  globalSearch: {
+    counts: Array<{ type: ISearchableEntity; totalCount: number }>;
+    results: Array<
+      | {
+          __typename: 'Assortment';
+          _id: string;
+          texts?: {
+            _id: string;
+            title?: string | null;
+            slug?: string | null;
+          } | null;
+          media: Array<{ file?: { url?: string | null } | null }>;
+        }
+      | {
+          __typename: 'BundleProduct';
+          _id: string;
+          texts?: {
+            _id: string;
+            title?: string | null;
+            slug?: string | null;
+          } | null;
+          media: Array<{ file?: { url?: string | null } | null }>;
+        }
+      | {
+          __typename: 'ConfigurableProduct';
+          _id: string;
+          texts?: {
+            _id: string;
+            title?: string | null;
+            slug?: string | null;
+          } | null;
+          media: Array<{ file?: { url?: string | null } | null }>;
+        }
+      | { __typename: 'Enrollment'; _id: string }
+      | { __typename: 'Filter'; _id: string; key?: string | null }
+      | { __typename: 'Order'; _id: string; orderNumber?: string | null }
+      | {
+          __typename: 'PlanProduct';
+          _id: string;
+          texts?: {
+            _id: string;
+            title?: string | null;
+            slug?: string | null;
+          } | null;
+          media: Array<{ file?: { url?: string | null } | null }>;
+        }
+      | { __typename: 'Quotation'; _id: string }
+      | {
+          __typename: 'SimpleProduct';
+          _id: string;
+          texts?: {
+            _id: string;
+            title?: string | null;
+            slug?: string | null;
+          } | null;
+          media: Array<{ file?: { url?: string | null } | null }>;
+        }
+      | {
+          __typename: 'TokenizedProduct';
+          _id: string;
+          texts?: {
+            _id: string;
+            title?: string | null;
+            slug?: string | null;
+          } | null;
+          media: Array<{ file?: { url?: string | null } | null }>;
+        }
+      | {
+          __typename: 'User';
+          _id: string;
+          username?: string | null;
+          name: string;
+          emails?: Array<{ address: string; verified: boolean }> | null;
+          avatar?: { url?: string | null } | null;
+        }
+      | { __typename: 'Work'; _id: string; type: IWorkType }
+    >;
   };
 };
 
