@@ -119,6 +119,7 @@ const keyMappings: any = {
           'success',
           'from',
           'until',
+          'queryText',
           'limit',
         ]),
       },

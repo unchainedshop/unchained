@@ -15,7 +15,6 @@ import {
   CubeIcon,
   DocumentTextIcon,
   FolderArrowDownIcon,
-  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -233,21 +232,15 @@ const Layout = ({
           requiredRole: 'viewWarehousingProviders',
           href: '/warehousing-provider',
         },
-      ].filter(Boolean),
-    },
-    isSystemReady && {
-      name: formatMessage({ id: 'settings', defaultMessage: 'Settings' }),
-      icon: ShieldCheckIcon,
-      children: [
-        {
+        isSystemReady && {
           name: formatMessage({
-            id: 'security',
-            defaultMessage: 'Security',
+            id: 'audit_log',
+            defaultMessage: 'Audit Log',
           }),
           requiredRole: 'viewAuditLog',
           href: '/settings/security',
         },
-      ],
+      ].filter(Boolean),
     },
     {
       name: formatMessage({ id: 'activities', defaultMessage: 'Activities' }),

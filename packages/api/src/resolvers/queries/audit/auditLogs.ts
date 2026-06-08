@@ -1,5 +1,12 @@
 import { log } from '@unchainedshop/logger';
-import { OCSF_CLASS, type OCSFEvent, type OCSFUser, type OCSFActor } from '@unchainedshop/events';
+import {
+  OCSF_CLASS,
+  type OCSFEvent,
+  type OCSFUser,
+  type OCSFAuthenticationEvent,
+  type OCSFAccountChangeEvent,
+  type OCSFApiActivityEvent,
+} from '@unchainedshop/events';
 import type { Context } from '../../../context.ts';
 
 const CLASS_NAMES: Record<number, string> = {
@@ -17,32 +24,46 @@ function mapUser(user?: OCSFUser) {
   };
 }
 
-function mapActor(
-  event: OCSFEvent,
-): { user?: ReturnType<typeof mapUser>; session?: { uid?: string } } | undefined {
-  if ('actor' in event && (event as any).actor) {
-    const actor = (event as any).actor as OCSFActor;
-    return {
-      user: mapUser(actor.user),
-      session: actor.session ? { uid: actor.session.uid } : undefined,
-    };
-  }
-  if ('user' in event && (event as any).user) {
-    return {
-      user: mapUser((event as any).user as OCSFUser),
-      session:
-        'session' in event && (event as any).session ? { uid: (event as any).session.uid } : undefined,
-    };
-  }
-  return undefined;
-}
-
 function mapEndpoint(ep?: { ip?: string; port?: number }) {
   if (!ep) return undefined;
   return { ip: ep.ip, port: ep.port };
 }
 
+function extractActor(event: OCSFEvent) {
+  switch (event.class_uid) {
+    case OCSF_CLASS.API_ACTIVITY: {
+      const e = event as OCSFApiActivityEvent;
+      return {
+        user: mapUser(e.actor?.user),
+        session: e.actor?.session ? { uid: e.actor.session.uid } : undefined,
+      };
+    }
+    case OCSF_CLASS.ACCOUNT_CHANGE: {
+      const e = event as OCSFAccountChangeEvent;
+      if (e.actor) {
+        return {
+          user: mapUser(e.actor.user),
+          session: e.actor.session ? { uid: e.actor.session.uid } : undefined,
+        };
+      }
+      return { user: mapUser(e.user), session: undefined };
+    }
+    case OCSF_CLASS.AUTHENTICATION: {
+      const e = event as OCSFAuthenticationEvent;
+      return {
+        user: mapUser(e.user),
+        session: e.session ? { uid: e.session.uid } : undefined,
+      };
+    }
+    default:
+      return undefined;
+  }
+}
+
 export function mapAuditEntry(event: OCSFEvent) {
+  const apiEvent =
+    event.class_uid === OCSF_CLASS.API_ACTIVITY ? (event as OCSFApiActivityEvent) : undefined;
+
   return {
     id: event.unmapped?.hash || `${event.time}-${event.unmapped?.seq}`,
     time: event.time,
@@ -56,10 +77,11 @@ export function mapAuditEntry(event: OCSFEvent) {
     severityId: event.severity_id,
     statusId: event.status_id ?? 0,
     statusDetail: event.status_detail,
-    actor: mapActor(event),
-    srcEndpoint: mapEndpoint('src_endpoint' in event ? (event as any).src_endpoint : undefined),
-    dstEndpoint: mapEndpoint('dst_endpoint' in event ? (event as any).dst_endpoint : undefined),
-    api: 'api' in event ? (event as any).api : undefined,
+    actor: extractActor(event),
+    srcEndpoint:
+      'src_endpoint' in event ? mapEndpoint(event.src_endpoint as { ip?: string }) : undefined,
+    dstEndpoint: undefined,
+    api: apiEvent?.api,
     metadata: event.metadata,
     sequenceNumber: event.unmapped?.seq,
     prevHash: event.unmapped?.prev_hash,
@@ -78,6 +100,7 @@ export default async function auditLogs(
     success?: boolean;
     from?: number;
     until?: number;
+    queryText?: string;
   },
   context: Context,
 ) {
@@ -93,6 +116,7 @@ export default async function auditLogs(
     success: params.success ?? undefined,
     startTime: params.from ? new Date(params.from) : undefined,
     endTime: params.until ? new Date(params.until) : undefined,
+    queryText: params.queryText || undefined,
   });
 
   return entries.map(mapAuditEntry);
