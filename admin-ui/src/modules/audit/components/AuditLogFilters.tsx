@@ -1,11 +1,10 @@
+import { useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 import StatusFilter from '../../common/components/StatusFilter';
 import DateInputField from '@/components/ui/DateInput';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import { normalizeQuery } from '../../common/utils/utils';
-import deBounce from '../../common/utils/deBounce';
-
 const CLASS_OPTIONS = [
   { value: '3002', label: 'Authentication' },
   { value: '3001', label: 'Account Change' },
@@ -14,12 +13,15 @@ const CLASS_OPTIONS = [
 
 const STATUS_OPTIONS = ['Success', 'Failure'];
 
-const debouncedPush = deBounce(300);
-
 const AuditLogFilters = () => {
   const { formatMessage } = useIntl();
   const { parseDate } = useFormatDateTime();
-  const { query, push } = useRouter();
+  const router = useRouter();
+  const { query, push } = router;
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const userIdTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const routerRef = useRef(router);
+  routerRef.current = router;
 
   const selectedStatuses = (() => {
     if (query.success === 'true') return ['Success'];
@@ -196,16 +198,24 @@ const AuditLogFilters = () => {
               className="block w-full rounded-md border border-slate-300 dark:border-slate-700 text-slate-900 dark:bg-slate-900 dark:text-slate-200 py-2 pl-10 pr-3 shadow-xs placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:ring-2 focus:ring-slate-800 focus:outline-hidden text-sm"
               onChange={(e) => {
                 const value = e.target.value;
-                debouncedPush(() => {
-                  const { queryText, ...rest } = query;
+                if (searchTimerRef.current)
+                  clearTimeout(searchTimerRef.current);
+                searchTimerRef.current = setTimeout(() => {
+                  const { query: currentQuery, push: currentPush } =
+                    routerRef.current;
+                  const { queryText, ...rest } = currentQuery;
                   if (value) {
-                    push({ query: { ...rest, queryText: value } }, undefined, {
-                      shallow: true,
-                    });
+                    currentPush(
+                      { query: { ...rest, queryText: value } },
+                      undefined,
+                      {
+                        shallow: true,
+                      },
+                    );
                   } else {
-                    push({ query: rest }, undefined, { shallow: true });
+                    currentPush({ query: rest }, undefined, { shallow: true });
                   }
-                });
+                }, 300);
               }}
             />
           </div>
@@ -230,18 +240,27 @@ const AuditLogFilters = () => {
                 defaultMessage: 'Enter user ID...',
               })}
               className="block w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm shadow-xs text-slate-900 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-slate-800"
-              value={(query.userId as string) || ''}
+              defaultValue={(query.userId as string) || ''}
               onChange={(e) => {
-                const { userId, ...rest } = query;
-                if (e.target.value) {
-                  push(
-                    { query: { ...rest, userId: e.target.value } },
-                    undefined,
-                    { shallow: true },
-                  );
-                } else {
-                  push({ query: rest }, undefined, { shallow: true });
-                }
+                const value = e.target.value;
+                if (userIdTimerRef.current)
+                  clearTimeout(userIdTimerRef.current);
+                userIdTimerRef.current = setTimeout(() => {
+                  const { query: currentQuery, push: currentPush } =
+                    routerRef.current;
+                  const { userId, ...rest } = currentQuery;
+                  if (value) {
+                    currentPush(
+                      { query: { ...rest, userId: value } },
+                      undefined,
+                      {
+                        shallow: true,
+                      },
+                    );
+                  } else {
+                    currentPush({ query: rest }, undefined, { shallow: true });
+                  }
+                }, 300);
               }}
             />
           </div>

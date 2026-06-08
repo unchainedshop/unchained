@@ -75,9 +75,12 @@ const useAuditLogs = ({
     });
 
   const isFetchingMore = networkStatus === 3;
-  const auditLogs = data?.auditLogs || previousData?.auditLogs || [];
+  const auditLogs =
+    data?.auditLogs || (isFetchingMore ? previousData?.auditLogs : null) || [];
   const auditLogsCount =
-    data?.auditLogsCount ?? previousData?.auditLogsCount ?? 0;
+    data?.auditLogsCount ??
+    (isFetchingMore ? previousData?.auditLogsCount : null) ??
+    0;
   const hasMore = auditLogs.length > 0 && auditLogs.length < auditLogsCount;
 
   const loadMore = () => {

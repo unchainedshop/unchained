@@ -1,29 +1,5 @@
 export default [
   /* GraphQL */ `
-    enum AuditLogClass {
-      ACCOUNT_CHANGE
-      AUTHENTICATION
-      API_ACTIVITY
-    }
-
-    enum AuditLogSeverity {
-      UNKNOWN
-      INFORMATIONAL
-      LOW
-      MEDIUM
-      HIGH
-      CRITICAL
-      FATAL
-      OTHER
-    }
-
-    enum AuditLogStatus {
-      UNKNOWN
-      SUCCESS
-      FAILURE
-      OTHER
-    }
-
     type AuditLogUser {
       uid: String
       name: String
@@ -73,9 +49,7 @@ export default [
       statusDetail: String
       actor: AuditLogActor
       srcEndpoint: AuditLogEndpoint
-      dstEndpoint: AuditLogEndpoint
       api: AuditLogApi
-      metadata: JSON
       sequenceNumber: Int
       prevHash: String
       hash: String

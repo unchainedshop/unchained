@@ -7,6 +7,7 @@ import type { UnchainedCore } from '@unchainedshop/core';
 import {
   createAuditLog,
   configureAuditIntegration,
+  setAuditLogInstance,
   type AuditLogConfig,
   type AuditLog,
 } from '@unchainedshop/events';
@@ -120,6 +121,7 @@ export const startPlatform = async ({
   let auditLog: AuditLog | undefined;
   if (auditLogConfig !== false) {
     auditLog = createAuditLog(auditLogConfig || undefined);
+    setAuditLogInstance(auditLog);
   }
 
   // Setup Accounts specific extensions and event handlers

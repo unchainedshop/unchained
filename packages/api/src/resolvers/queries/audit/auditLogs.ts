@@ -71,7 +71,7 @@ export function mapAuditEntry(event: OCSFEvent) {
     classUid: event.class_uid,
     className: CLASS_NAMES[event.class_uid] || 'UNKNOWN',
     activityId: event.activity_id,
-    activityName: event.message,
+    activityName: apiEvent?.api?.operation || event.message,
     typeUid: event.type_uid,
     categoryUid: event.category_uid,
     severityId: event.severity_id,
@@ -80,9 +80,7 @@ export function mapAuditEntry(event: OCSFEvent) {
     actor: extractActor(event),
     srcEndpoint:
       'src_endpoint' in event ? mapEndpoint(event.src_endpoint as { ip?: string }) : undefined,
-    dstEndpoint: undefined,
     api: apiEvent?.api,
-    metadata: event.metadata,
     sequenceNumber: event.unmapped?.seq,
     prevHash: event.unmapped?.prev_hash,
     hash: event.unmapped?.hash,

@@ -32,6 +32,8 @@ export {
   // Main class and factory
   AuditLog,
   createAuditLog,
+  setAuditLogInstance,
+  getAuditLogInstance,
   // OCSF constants
   OCSF_CLASS,
   OCSF_CATEGORY,

@@ -12,6 +12,7 @@ import AuditLogFilters from '../../modules/audit/components/AuditLogFilters';
 import AuditLogTable from '../../modules/audit/components/AuditLogTable';
 import AuditEntryDetail from '../../modules/audit/components/AuditEntryDetail';
 import useAuditLogs from '../../modules/audit/hooks/useAuditLogs';
+import { useCSVExport } from '../../modules/common/hooks/useCSVExport';
 
 const SecurityPage = () => {
   const { formatMessage } = useIntl();
@@ -41,61 +42,23 @@ const SecurityPage = () => {
       until,
     });
 
+  const { exportCSV, isExporting } = useCSVExport();
+
   const exportAuditLogs = useCallback(
-    (format: 'json' | 'csv') => {
-      if (!auditLogs.length) return;
-
-      let content: string;
-      let mimeType: string;
-      let filename: string;
-
-      if (format === 'json') {
-        content = JSON.stringify(
-          auditLogs.map((e) => e.raw),
-          null,
-          2,
-        );
-        mimeType = 'application/json';
-        filename = `audit-log-${new Date().toISOString().slice(0, 10)}.json`;
-      } else {
-        const headers = [
-          'time',
-          'class',
-          'activity',
-          'message',
-          'user',
-          'userId',
-          'ip',
-          'operation',
-          'status',
-        ];
-        const rows = auditLogs.map((entry) => [
-          new Date(entry.time).toISOString(),
-          entry.className,
-          entry.activityId,
-          `"${(entry.message || '').replace(/"/g, '""')}"`,
-          entry.actor?.user?.name || entry.actor?.user?.emailAddr || '',
-          entry.actor?.user?.uid || '',
-          entry.srcEndpoint?.ip || '',
-          entry.api?.operation || '',
-          entry.statusId === 1 ? 'Success' : 'Failure',
-        ]);
-        content = [headers.join(','), ...rows.map((r) => r.join(','))].join(
-          '\n',
-        );
-        mimeType = 'text/csv';
-        filename = `audit-log-${new Date().toISOString().slice(0, 10)}.csv`;
-      }
-
-      const blob = new Blob([content], { type: mimeType });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(url);
+    async (format: 'csv' | 'jsonl') => {
+      await exportCSV({
+        type: 'AUDIT_LOGS',
+        exportCSV: format === 'csv',
+        exportJSONL: format === 'jsonl',
+        ...(classUids ? { classUids } : {}),
+        ...(userId ? { userId } : {}),
+        ...(success !== null ? { success } : {}),
+        ...(from ? { from } : {}),
+        ...(until ? { until } : {}),
+        ...(queryText ? { queryText } : {}),
+      });
     },
-    [auditLogs],
+    [exportCSV, classUids, userId, success, from, until, queryText],
   );
 
   return (
@@ -113,21 +76,35 @@ const SecurityPage = () => {
       >
         <Button
           variant="secondary"
-          text={formatMessage({
-            id: 'export_csv',
-            defaultMessage: 'Export CSV',
-          })}
+          text={
+            isExporting
+              ? formatMessage({
+                  id: 'exporting',
+                  defaultMessage: 'Exporting...',
+                })
+              : formatMessage({
+                  id: 'export_csv',
+                  defaultMessage: 'Export CSV',
+                })
+          }
           onClick={() => exportAuditLogs('csv')}
-          disabled={!auditLogs.length}
+          disabled={isExporting || !auditLogsCount}
         />
         <Button
           variant="secondary"
-          text={formatMessage({
-            id: 'export_json',
-            defaultMessage: 'Export JSON',
-          })}
-          onClick={() => exportAuditLogs('json')}
-          disabled={!auditLogs.length}
+          text={
+            isExporting
+              ? formatMessage({
+                  id: 'exporting',
+                  defaultMessage: 'Exporting...',
+                })
+              : formatMessage({
+                  id: 'export_jsonl',
+                  defaultMessage: 'Export JSONL',
+                })
+          }
+          onClick={() => exportAuditLogs('jsonl')}
+          disabled={isExporting || !auditLogsCount}
         />
       </PageHeader>
 
