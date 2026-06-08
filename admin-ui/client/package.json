@@ -94,6 +94,11 @@
       "import": "./dist/modules/work/index.js",
       "require": "./dist/modules/work/index.js",
       "types": "./dist/modules/work/index.d.ts"
+    },
+    "./audit": {
+      "import": "./dist/modules/audit/index.js",
+      "require": "./dist/modules/audit/index.js",
+      "types": "./dist/modules/audit/index.d.ts"
     }
   },
   "peerDependencies": {

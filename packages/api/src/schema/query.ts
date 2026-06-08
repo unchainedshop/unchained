@@ -507,6 +507,40 @@ export default [
       registeredEventTypes: [String!]!
 
       """
+      Get audit log entries
+      """
+      auditLogs(
+        limit: Int = 50
+        offset: Int = 0
+        classUids: [Int!]
+        userId: String
+        success: Boolean
+        from: Timestamp
+        until: Timestamp
+      ): [AuditLogEntry!]!
+
+      """
+      Get total count of audit log entries
+      """
+      auditLogsCount(
+        classUids: [Int!]
+        userId: String
+        success: Boolean
+        from: Timestamp
+        until: Timestamp
+      ): Int!
+
+      """
+      Verify tamper-evident hash chain integrity of the audit log
+      """
+      auditChainStatus: AuditChainStatus!
+
+      """
+      Get count of failed login attempts
+      """
+      failedLoginAttempts(userId: String, remoteAddress: String, since: Timestamp): Int!
+
+      """
       Returns aggregated report of all the events that occurred in the system
       """
       eventStatistics(types: [String!], dateRange: DateFilterInput): [EventStatistics!]!
