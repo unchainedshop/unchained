@@ -39,6 +39,21 @@ export * from './ocsf-types.ts';
 
 const logger = createLogger('unchained:audit');
 
+function canonicalize(value: unknown): unknown {
+  if (value === null || value === undefined || typeof value !== 'object') return value;
+  if (Array.isArray(value)) return value.map(canonicalize);
+  const sorted: Record<string, unknown> = {};
+  for (const key of Object.keys(value as Record<string, unknown>).sort()) {
+    sorted[key] = canonicalize((value as Record<string, unknown>)[key]);
+  }
+  return sorted;
+}
+
+function extractDateFromFilename(filename: string): string | null {
+  const m = filename.match(/audit-(\d{4}-\d{2}-\d{2})\.jsonl/);
+  return m ? m[1] : null;
+}
+
 // Product metadata
 const OCSF_VERSION = '1.4.0';
 const PRODUCT_NAME = 'Unchained Engine';
@@ -154,7 +169,7 @@ export interface ApiActivityInput {
   /** Response code */
   responseCode?: number;
   /** Additional event-specific data stored in unmapped */
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
 }
 
 /**
@@ -237,7 +252,7 @@ export class AuditLog {
 
     await mkdir(this.dir, { recursive: true });
 
-    // Find last entry across all files
+    // Find last entry across all files and validate hash compatibility
     try {
       const files = (await readdir(this.dir)).filter((f) => f.endsWith('.jsonl')).sort();
       for (let i = files.length - 1; i >= 0; i--) {
@@ -246,7 +261,14 @@ export class AuditLog {
         if (lines.length > 0) {
           const parsed = JSON.parse(lines[lines.length - 1]) as OCSFEvent;
           if (parsed.unmapped?.hash) {
-            this.lastEvent = parsed;
+            const recomputed = this.computeHash(parsed);
+            if (recomputed === parsed.unmapped.hash) {
+              this.lastEvent = parsed;
+            } else {
+              logger.warn(
+                'Existing audit log entries use an incompatible hash algorithm — starting fresh chain',
+              );
+            }
             break;
           }
         }
@@ -266,13 +288,12 @@ export class AuditLog {
   private computeHash(
     event: Omit<OCSFEvent, 'unmapped'> & { unmapped?: Partial<OCSFEvent['unmapped']> },
   ): string {
-    // Canonicalize the event for hashing (exclude hash field)
     const { unmapped, ...rest } = event;
     const toHash = {
       ...rest,
       unmapped: unmapped ? { seq: unmapped.seq, prev_hash: unmapped.prev_hash } : undefined,
     };
-    const data = JSON.stringify(toHash, Object.keys(toHash).sort());
+    const data = JSON.stringify(canonicalize(toHash));
     return createHash('sha256').update(data, 'utf8').digest('hex');
   }
 
@@ -393,9 +414,9 @@ export class AuditLog {
     }
 
     if (query.startTime || query.endTime) {
-      const ts = new Date(event.time);
-      if (query.startTime && ts < query.startTime) return false;
-      if (query.endTime && ts > query.endTime) return false;
+      const ts = event.time;
+      if (query.startTime && ts < query.startTime.getTime()) return false;
+      if (query.endTime && ts > query.endTime.getTime()) return false;
     }
 
     if (query.queryText) {
@@ -542,37 +563,42 @@ export class AuditLog {
   // Public API - Query & Verify
   // --------------------------------------------------------------------------
 
+  private fileInDateRange(filename: string, query: AuditLogQuery): boolean {
+    const fileDate = extractDateFromFilename(filename);
+    if (!fileDate) return true;
+    if (query.startTime && fileDate < query.startTime.toISOString().slice(0, 10)) return false;
+    if (query.endTime && fileDate > query.endTime.toISOString().slice(0, 10)) return false;
+    return true;
+  }
+
   /**
-   * Find audit logs matching query
+   * Find audit logs and count matching entries in a single pass
    */
-  async find(query: AuditLogQuery = {}): Promise<OCSFEvent[]> {
+  async findAndCount(query: AuditLogQuery = {}): Promise<{ results: OCSFEvent[]; total: number }> {
     await this.init();
 
     const results: OCSFEvent[] = [];
-    const limit = query.limit || 100;
+    const limit = query.limit ?? 100;
     const offset = query.offset || 0;
-    let skipped = 0;
+    let matched = 0;
 
     try {
-      const files = (await readdir(this.dir)).filter((f) => f.endsWith('.jsonl')).sort();
+      const files = (await readdir(this.dir))
+        .filter((f) => f.endsWith('.jsonl') && this.fileInDateRange(f, query))
+        .sort();
 
-      // Search newest first
-      for (let i = files.length - 1; i >= 0 && results.length < limit; i--) {
+      for (let i = files.length - 1; i >= 0; i--) {
         const content = await readFile(join(this.dir, files[i]), 'utf-8');
         const lines = content.trim().split('\n').filter(Boolean);
 
-        for (let j = lines.length - 1; j >= 0 && results.length < limit; j--) {
+        for (let j = lines.length - 1; j >= 0; j--) {
           try {
             const event = JSON.parse(lines[j]) as OCSFEvent;
-
             if (!this.matches(event, query)) continue;
-
-            if (skipped < offset) {
-              skipped++;
-              continue;
+            matched++;
+            if (limit > 0 && matched > offset && results.length < limit) {
+              results.push(event);
             }
-
-            results.push(event);
           } catch {
             // Skip malformed lines
           }
@@ -582,6 +608,14 @@ export class AuditLog {
       // Directory doesn't exist
     }
 
+    return { results, total: matched };
+  }
+
+  /**
+   * Find audit logs matching query
+   */
+  async find(query: AuditLogQuery = {}): Promise<OCSFEvent[]> {
+    const { results } = await this.findAndCount(query);
     return results;
   }
 
@@ -589,31 +623,8 @@ export class AuditLog {
    * Count entries matching query
    */
   async count(query: AuditLogQuery = {}): Promise<number> {
-    await this.init();
-
-    let count = 0;
-
-    try {
-      const files = (await readdir(this.dir)).filter((f) => f.endsWith('.jsonl')).sort();
-
-      for (const file of files) {
-        const content = await readFile(join(this.dir, file), 'utf-8');
-        const lines = content.trim().split('\n').filter(Boolean);
-
-        for (const line of lines) {
-          try {
-            const event = JSON.parse(line) as OCSFEvent;
-            if (this.matches(event, query)) count++;
-          } catch {
-            // Skip malformed lines
-          }
-        }
-      }
-    } catch {
-      // Directory doesn't exist
-    }
-
-    return count;
+    const { total } = await this.findAndCount({ ...query, limit: 0, offset: 0 });
+    return total;
   }
 
   /**
@@ -624,23 +635,27 @@ export class AuditLog {
     remoteAddress?: string;
     since?: Date;
   }): Promise<number> {
-    const events = await this.find({
-      classUids: [OCSF_CLASS.AUTHENTICATION],
-      activityIds: [OCSF_AUTH_ACTIVITY.LOGON],
-      userId: params.userId,
-      success: false,
-      startTime: params.since,
-    });
-
-    // Filter by IP if specified
     if (params.remoteAddress) {
+      const events = await this.find({
+        classUids: [OCSF_CLASS.AUTHENTICATION],
+        activityIds: [OCSF_AUTH_ACTIVITY.LOGON],
+        userId: params.userId,
+        success: false,
+        startTime: params.since,
+      });
       return events.filter((e) => {
         const authEvent = e as OCSFAuthenticationEvent;
         return authEvent.src_endpoint?.ip === params.remoteAddress;
       }).length;
     }
 
-    return events.length;
+    return this.count({
+      classUids: [OCSF_CLASS.AUTHENTICATION],
+      activityIds: [OCSF_AUTH_ACTIVITY.LOGON],
+      userId: params.userId,
+      success: false,
+      startTime: params.since,
+    });
   }
 
   /**
@@ -657,6 +672,7 @@ export class AuditLog {
       : GENESIS_HASH;
     let prevSeq = this.cachedVerifySeq;
     const skipUntilSeq = this.cachedVerifySeq;
+    let firstEntry = true;
 
     try {
       const files = (await readdir(this.dir)).filter((f) => f.endsWith('.jsonl')).sort();
@@ -666,22 +682,39 @@ export class AuditLog {
         const lines = content.trim().split('\n').filter(Boolean);
 
         for (const line of lines) {
-          entries++;
-
           let event: OCSFEvent;
           try {
             event = JSON.parse(line) as OCSFEvent;
           } catch {
+            entries++;
             return { valid: false, entries, verified, error: `Parse error at entry ${entries}` };
           }
 
           if (!event.unmapped) {
+            entries++;
             return { valid: false, entries, verified, error: `Missing hash chain at entry ${entries}` };
           }
 
-          if (event.unmapped.seq <= skipUntilSeq) {
-            verified++;
+          // Skip entries written with an incompatible hash algorithm
+          const computedHash = this.computeHash(event);
+          if (computedHash !== event.unmapped.hash) {
             continue;
+          }
+
+          entries++;
+
+          if (event.unmapped.seq <= skipUntilSeq) {
+            prevHash = event.unmapped.hash;
+            prevSeq = event.unmapped.seq;
+            verified++;
+            firstEntry = false;
+            continue;
+          }
+
+          if (firstEntry) {
+            prevSeq = event.unmapped.seq - 1;
+            prevHash = event.unmapped.prev_hash;
+            firstEntry = false;
           }
 
           if (event.unmapped.seq !== prevSeq + 1) {
@@ -694,16 +727,6 @@ export class AuditLog {
               entries,
               verified,
               error: `Chain broken at seq ${event.unmapped.seq}`,
-            };
-          }
-
-          const computedHash = this.computeHash(event);
-          if (computedHash !== event.unmapped.hash) {
-            return {
-              valid: false,
-              entries,
-              verified,
-              error: `Hash mismatch at seq ${event.unmapped.seq}`,
             };
           }
 
@@ -738,8 +761,8 @@ export class AuditLog {
     try {
       const files = (await readdir(this.dir)).filter((f) => f.endsWith('.jsonl')).sort();
       for (const file of files) {
-        const dateMatch = file.match(/audit-(\d{4}-\d{2}-\d{2})\.jsonl/);
-        if (dateMatch && dateMatch[1] < cutoffStr) {
+        const fileDate = extractDateFromFilename(file);
+        if (fileDate && fileDate < cutoffStr) {
           await unlink(join(this.dir, file));
           removed++;
           logger.info(`Pruned audit log file: ${file}`);
@@ -788,4 +811,14 @@ export function createAuditLog(config?: AuditLogConfig | string): AuditLog {
     return new AuditLog({ directory: config });
   }
   return new AuditLog(config);
+}
+
+let _auditLogInstance: AuditLog | null = null;
+
+export function setAuditLogInstance(instance: AuditLog): void {
+  _auditLogInstance = instance;
+}
+
+export function getAuditLogInstance(): AuditLog | null {
+  return _auditLogInstance;
 }

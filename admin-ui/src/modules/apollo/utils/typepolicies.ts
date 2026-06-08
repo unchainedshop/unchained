@@ -120,7 +120,6 @@ const keyMappings: any = {
           'from',
           'until',
           'queryText',
-          'limit',
         ]),
       },
     },

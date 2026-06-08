@@ -47,6 +47,7 @@ import { HeartbeatPlugin } from '../worker/heartbeat/index.ts';
 import { EmailPlugin } from '../worker/email/index.ts';
 import { ErrorNotificationsPlugin } from '../worker/error-notifications/index.ts';
 import { BulkExportPlugin } from '../worker/bulk-export/index.ts';
+import { AuditLogPrunePlugin } from '../worker/audit-log-prune/index.ts';
 
 export function registerBasePlugins() {
   // Files
@@ -96,4 +97,5 @@ export function registerBasePlugins() {
   pluginRegistry.register(EmailPlugin);
   pluginRegistry.register(ErrorNotificationsPlugin); // Auto-scheduling configured in onRegister
   pluginRegistry.register(BulkExportPlugin);
+  pluginRegistry.register(AuditLogPrunePlugin);
 }
