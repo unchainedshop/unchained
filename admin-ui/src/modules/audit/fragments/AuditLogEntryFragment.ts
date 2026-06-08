@@ -28,10 +28,6 @@ const AuditLogEntryFragment = gql`
       ip
       port
     }
-    dstEndpoint {
-      ip
-      port
-    }
     api {
       operation
       request {
@@ -41,7 +37,6 @@ const AuditLogEntryFragment = gql`
         code
       }
     }
-    metadata
     sequenceNumber
     prevHash
     hash
