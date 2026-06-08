@@ -204,7 +204,9 @@ export async function createAuthContext(
     const tokenObject = {
       _id: crypto.randomUUID(), // Session ID equivalent
       userId: user._id,
+      userName: user.username || user.emails?.[0]?.address,
       tokenExpires: expires,
+      remoteAddress: params.remoteAddress,
     };
 
     await emit(API_EVENTS.API_LOGIN_TOKEN_CREATED, tokenObject);

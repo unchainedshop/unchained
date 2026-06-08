@@ -15,6 +15,7 @@ import {
   CubeIcon,
   DocumentTextIcon,
   FolderArrowDownIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -297,6 +298,20 @@ const Layout = ({
           href: '/warehousing-provider',
         },
       ].filter(Boolean),
+    },
+    isSystemReady && {
+      name: formatMessage({ id: 'settings', defaultMessage: 'Settings' }),
+      icon: ShieldCheckIcon,
+      children: [
+        {
+          name: formatMessage({
+            id: 'security',
+            defaultMessage: 'Security',
+          }),
+          requiredRole: 'viewAuditLog',
+          href: '/settings/security',
+        },
+      ],
     },
     {
       _sortOrder: 120,

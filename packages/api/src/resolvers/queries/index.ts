@@ -74,6 +74,10 @@ import eventStatistics from './events/eventStatistics.ts';
 import registeredEventTypes from './events/registeredEventTypes.ts';
 import orderStatistics from './orders/orderStatistics.ts';
 import impersonator from './users/impersonator.ts';
+import auditLogs from './audit/auditLogs.ts';
+import auditLogsCount from './audit/auditLogsCount.ts';
+import auditChainStatus from './audit/auditChainStatus.ts';
+import failedLoginAttempts from './audit/failedLoginAttempts.ts';
 
 export default {
   me,
@@ -149,4 +153,8 @@ export default {
   registeredEventTypes: acl(actions.viewEvents)(registeredEventTypes),
   eventStatistics: acl(actions.viewStatistics)(eventStatistics),
   orderStatistics: acl(actions.viewStatistics)(orderStatistics),
+  auditLogs: acl(actions.viewAuditLog)(auditLogs),
+  auditLogsCount: acl(actions.viewAuditLog)(auditLogsCount),
+  auditChainStatus: acl(actions.verifyAuditChain)(auditChainStatus),
+  failedLoginAttempts: acl(actions.viewAuditLog)(failedLoginAttempts),
 };
