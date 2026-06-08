@@ -1,8 +1,7 @@
 /**
- * Audit Log Integration Layer
+ * Audit Integration — bridges unchained events to OCSF audit log entries.
  *
- * Connects Unchained's event system to the OCSF audit log for compliance.
- * Subscribes to relevant events and automatically creates audit log entries.
+ * Uses a data-driven mapping so new events only require a table entry.
  */
 
 import { createLogger } from '@unchainedshop/logger';
@@ -22,12 +21,19 @@ function entityLabel(entity: Record<string, any> | undefined, fallbackId?: strin
   return name || id || 'unknown';
 }
 
-function changedFields(payload: Record<string, any>, excludeKeys: string[]): string {
+function changedFields(
+  payload: Record<string, any>,
+  excludeKeys: string[],
+): { label: string; data: Record<string, any> | null } {
   const keys = Object.keys(payload).filter(
     (k) => !excludeKeys.includes(k) && !k.startsWith('_') && k !== 'updated',
   );
-  if (!keys.length) return '';
-  return ` [${keys.join(', ')}]`;
+  if (!keys.length) return { label: '', data: null };
+  const data: Record<string, any> = {};
+  for (const key of keys) {
+    data[key] = payload[key];
+  }
+  return { label: ` [${keys.join(', ')}]`, data };
 }
 
 /** Extracts common audit context from any event payload */
@@ -57,6 +63,514 @@ const ACCOUNT_ACTION_MAP: Record<string, { activity: AccountActivity; message: s
   'enroll-account': { activity: OCSF_ACCOUNT_ACTIVITY.ENABLE, message: 'Account enrolled' },
 };
 
+// ---------------------------------------------------------------------------
+// Data-driven API activity mappings
+// ---------------------------------------------------------------------------
+
+type ApiActivity = (typeof OCSF_API_ACTIVITY)[keyof typeof OCSF_API_ACTIVITY];
+
+interface ApiEventMapping {
+  activity: ApiActivity;
+  operation: string;
+  message: string | ((p: Record<string, any>) => string);
+  success?: boolean;
+  entityKey?: string;
+  entityIdKey?: string;
+  useOrderUserId?: boolean;
+  trackChangedFields?: boolean;
+}
+
+const PAYLOAD_META_KEYS = ['userId', 'userName', 'remoteAddress', 'sessionId'];
+
+const API_EVENT_MAP: Record<string, ApiEventMapping> = {
+  // Orders
+  ORDER_CREATE: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createOrder',
+    message: (p) => `Order created: ${entityLabel(p.order)}`,
+    useOrderUserId: true,
+  },
+  ORDER_CHECKOUT: {
+    activity: OCSF_API_ACTIVITY.CHECKOUT,
+    operation: 'checkoutOrder',
+    message: (p) => `Order checkout: ${entityLabel(p.order)}`,
+    useOrderUserId: true,
+  },
+  ORDER_CONFIRMED: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'confirmOrder',
+    message: (p) => `Order confirmed: ${entityLabel(p.order)}`,
+    useOrderUserId: true,
+  },
+  ORDER_FULFILLED: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'fulfillOrder',
+    message: (p) => `Order fulfilled: ${entityLabel(p.order)}`,
+    useOrderUserId: true,
+  },
+  ORDER_REJECTED: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'rejectOrder',
+    message: (p) => `Order rejected: ${entityLabel(p.order)}`,
+    success: false,
+    useOrderUserId: true,
+  },
+  ORDER_DELIVER: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'deliverOrder',
+    message: (p) => `Order delivered: ${entityLabel(p.order)}`,
+    useOrderUserId: true,
+  },
+  ORDER_REMOVE: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeOrder',
+    message: (p) => `Order removed: ${entityLabel(p.order)}`,
+  },
+  ORDER_EMPTY_CART: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'emptyCart',
+    message: 'Cart emptied',
+  },
+  ORDER_ADD_PRODUCT: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'addToCart',
+    message: (p) => `Product added to cart: ${p.orderPosition?.productId || 'unknown'}`,
+  },
+  ORDER_REMOVE_CART_ITEM: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeFromCart',
+    message: 'Product removed from cart',
+  },
+  ORDER_SET_PAYMENT_PROVIDER: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'setPaymentProvider',
+    message: (p) => `Payment provider set: ${p.paymentProviderId || 'unknown'}`,
+  },
+  ORDER_SET_DELIVERY_PROVIDER: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'setDeliveryProvider',
+    message: (p) => `Delivery provider set: ${p.deliveryProviderId || 'unknown'}`,
+  },
+
+  // Payments
+  ORDER_PAY: {
+    activity: OCSF_API_ACTIVITY.PAYMENT,
+    operation: 'processPayment',
+    message: 'Payment processed for order',
+  },
+  ORDER_UPDATE_PAYMENT: {
+    activity: OCSF_API_ACTIVITY.PAYMENT,
+    operation: 'updatePayment',
+    message: 'Payment updated',
+  },
+
+  // Access control
+  ACL_DENIED: {
+    activity: OCSF_API_ACTIVITY.ACCESS_DENIED,
+    operation: '',
+    message: (p) => `Access denied: ${p.action || 'unknown'}`,
+    success: false,
+  },
+  ACL_GRANTED_SENSITIVE: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: '',
+    message: (p) => `Sensitive access granted: ${p.action || 'unknown'}`,
+  },
+
+  // Products
+  PRODUCT_CREATE: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createProduct',
+    message: (p) => `Product created: ${entityLabel(p.product)}`,
+  },
+  PRODUCT_UPDATE: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateProduct',
+    entityKey: 'product',
+    entityIdKey: 'productId',
+    trackChangedFields: true,
+    message: '',
+  },
+  PRODUCT_REMOVE: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeProduct',
+    message: (p) => `Product removed: ${entityLabel(p.product, p.productId)}`,
+  },
+  PRODUCT_PUBLISH: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'publishProduct',
+    message: (p) => `Product published: ${entityLabel(p.product, p.productId)}`,
+  },
+  PRODUCT_UNPUBLISH: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'unpublishProduct',
+    message: (p) => `Product unpublished: ${entityLabel(p.product, p.productId)}`,
+  },
+  PRODUCT_UPDATE_TEXT: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateProductText',
+    message: (p) =>
+      `Product text updated: ${p.productId || 'unknown'} [${p.text?.locale || ''}] ${p.text?.title || ''}`,
+  },
+  PRODUCT_UPDATE_MEDIA_TEXT: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateProductMediaText',
+    message: (p) => `Product media text updated: ${p.productId || p.mediaId || 'unknown'}`,
+  },
+  PRODUCT_ADD_MEDIA: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'addProductMedia',
+    message: (p) => `Product media added: ${p.productId || 'unknown'}`,
+  },
+  PRODUCT_REMOVE_MEDIA: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeProductMedia',
+    message: (p) => `Product media removed: ${p.productId || p.mediaId || 'unknown'}`,
+  },
+  PRODUCT_REORDER_MEDIA: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'reorderProductMedia',
+    message: (p) => `Product media reordered: ${p.productId || 'unknown'}`,
+  },
+  PRODUCT_ADD_ASSIGNMENT: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'addProductAssignment',
+    message: (p) => `Product assignment added: ${p.productId || 'unknown'}`,
+  },
+  PRODUCT_REMOVE_ASSIGNMENT: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeProductAssignment',
+    message: (p) => `Product assignment removed: ${p.productId || 'unknown'}`,
+  },
+  PRODUCT_CREATE_BUNDLE_ITEM: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createBundleItem',
+    message: (p) => `Bundle item created: ${p.productId || 'unknown'}`,
+  },
+  PRODUCT_REMOVE_BUNDLE_ITEM: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeBundleItem',
+    message: (p) => `Bundle item removed: ${p.productId || 'unknown'}`,
+  },
+  PRODUCT_CREATE_VARIATION: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createProductVariation',
+    message: (p) => `Product variation created: ${p.productId || 'unknown'}`,
+  },
+  PRODUCT_REMOVE_VARIATION: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeProductVariation',
+    message: (p) => `Product variation removed: ${p.productId || 'unknown'}`,
+  },
+  PRODUCT_VARIATION_OPTION_CREATE: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createVariationOption',
+    message: (p) => `Variation option created: ${p.productId || 'unknown'}`,
+  },
+  PRODUCT_REMOVE_VARIATION_OPTION: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeVariationOption',
+    message: (p) => `Variation option removed: ${p.productId || 'unknown'}`,
+  },
+  PRODUCT_UPDATE_VARIATION_TEXT: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateVariationText',
+    message: (p) => `Variation text updated: ${p.productId || 'unknown'}`,
+  },
+  PRODUCT_REVIEW_CREATE: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createProductReview',
+    message: (p) => `Product review created: ${p.productId || 'unknown'}`,
+  },
+  PRODUCT_UPDATE_REVIEW: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateProductReview',
+    message: (p) => `Product review updated: ${p.productId || 'unknown'}`,
+  },
+  PRODUCT_REMOVE_REVIEW: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeProductReview',
+    message: (p) => `Product review removed: ${p.productId || 'unknown'}`,
+  },
+  PRODUCT_REVIEW_ADD_VOTE: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'addProductReviewVote',
+    message: (p) => `Review vote added: ${p.productId || 'unknown'}`,
+  },
+  PRODUCT_REMOVE_REVIEW_VOTE: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeProductReviewVote',
+    message: (p) => `Review vote removed: ${p.productId || 'unknown'}`,
+  },
+
+  // Assortment sub-events
+  ASSORTMENT_UPDATE_TEXT: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateAssortmentText',
+    message: (p) =>
+      `Assortment text updated: ${p.assortmentId || 'unknown'} [${p.text?.locale || ''}] ${p.text?.title || ''}`,
+  },
+  ASSORTMENT_UPDATE_MEDIA_TEXT: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateAssortmentMediaText',
+    message: (p) => `Assortment media text updated: ${p.assortmentId || 'unknown'}`,
+  },
+  ASSORTMENT_ADD_PRODUCT: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'addAssortmentProduct',
+    message: (p) =>
+      `Product added to assortment: ${p.productId || 'unknown'} → ${p.assortmentId || 'unknown'}`,
+  },
+  ASSORTMENT_REMOVE_PRODUCT: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeAssortmentProduct',
+    message: (p) => `Product removed from assortment: ${p.assortmentId || 'unknown'}`,
+  },
+  ASSORTMENT_ADD_LINK: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'addAssortmentLink',
+    message: (p) => `Assortment link added: ${p.assortmentId || 'unknown'}`,
+  },
+  ASSORTMENT_REMOVE_LINK: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeAssortmentLink',
+    message: (p) => `Assortment link removed: ${p.assortmentId || 'unknown'}`,
+  },
+  ASSORTMENT_ADD_FILTER: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'addAssortmentFilter',
+    message: (p) => `Filter added to assortment: ${p.assortmentId || 'unknown'}`,
+  },
+  ASSORTMENT_REMOVE_FILTER: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeAssortmentFilter',
+    message: (p) => `Filter removed from assortment: ${p.assortmentId || 'unknown'}`,
+  },
+  ASSORTMENT_ADD_MEDIA: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'addAssortmentMedia',
+    message: (p) => `Assortment media added: ${p.assortmentId || 'unknown'}`,
+  },
+  ASSORTMENT_REMOVE_MEDIA: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeAssortmentMedia',
+    message: (p) => `Assortment media removed: ${p.assortmentId || 'unknown'}`,
+  },
+  ASSORTMENT_REORDER_PRODUCTS: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'reorderAssortmentProducts',
+    message: (p) => `Assortment products reordered: ${p.assortmentId || 'unknown'}`,
+  },
+  ASSORTMENT_REORDER_LINKS: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'reorderAssortmentLinks',
+    message: (p) => `Assortment links reordered: ${p.assortmentId || 'unknown'}`,
+  },
+  ASSORTMENT_REORDER_FILTERS: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'reorderAssortmentFilters',
+    message: (p) => `Assortment filters reordered: ${p.assortmentId || 'unknown'}`,
+  },
+  ASSORTMENT_REORDER_MEDIA: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'reorderAssortmentMedia',
+    message: (p) => `Assortment media reordered: ${p.assortmentId || 'unknown'}`,
+  },
+
+  // Filter sub-events
+  FILTER_UPDATE_TEXT: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateFilterText',
+    message: (p) =>
+      `Filter text updated: ${p.filterId || 'unknown'} [${p.text?.locale || ''}] ${p.text?.title || ''}`,
+  },
+
+  // Provider configuration
+  PAYMENT_PROVIDER_CREATE: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createPaymentProvider',
+    message: (p) => `Payment provider created: ${entityLabel(p.paymentProvider)}`,
+  },
+  PAYMENT_PROVIDER_UPDATE: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updatePaymentProvider',
+    message: (p) => `Payment provider updated: ${entityLabel(p.paymentProvider, p.paymentProviderId)}`,
+  },
+  PAYMENT_PROVIDER_REMOVE: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removePaymentProvider',
+    message: (p) => `Payment provider removed: ${entityLabel(p.paymentProvider, p.paymentProviderId)}`,
+  },
+  DELIVERY_PROVIDER_CREATE: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createDeliveryProvider',
+    message: (p) => `Delivery provider created: ${entityLabel(p.deliveryProvider)}`,
+  },
+  DELIVERY_PROVIDER_UPDATE: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateDeliveryProvider',
+    message: (p) =>
+      `Delivery provider updated: ${entityLabel(p.deliveryProvider, p.deliveryProviderId)}`,
+  },
+  DELIVERY_PROVIDER_REMOVE: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeDeliveryProvider',
+    message: (p) =>
+      `Delivery provider removed: ${entityLabel(p.deliveryProvider, p.deliveryProviderId)}`,
+  },
+  WAREHOUSING_PROVIDER_CREATE: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createWarehousingProvider',
+    message: (p) => `Warehousing provider created: ${entityLabel(p.warehousingProvider)}`,
+  },
+  WAREHOUSING_PROVIDER_UPDATE: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateWarehousingProvider',
+    message: (p) =>
+      `Warehousing provider updated: ${entityLabel(p.warehousingProvider, p.warehousingProviderId)}`,
+  },
+  WAREHOUSING_PROVIDER_REMOVE: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeWarehousingProvider',
+    message: (p) =>
+      `Warehousing provider removed: ${entityLabel(p.warehousingProvider, p.warehousingProviderId)}`,
+  },
+
+  // Tokens
+  TOKEN_OWNERSHIP_CHANGED: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'transferToken',
+    message: (p) => `Token ownership changed: ${entityLabel(p.token, p.tokenId)}`,
+  },
+  TOKEN_INVALIDATED: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'invalidateToken',
+    message: (p) => `Token invalidated: ${entityLabel(p.token, p.tokenId)}`,
+  },
+
+  // Enrollments
+  ENROLLMENT_CREATE: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createEnrollment',
+    message: (p) => `Enrollment created: ${entityLabel(p.enrollment)}`,
+  },
+  ENROLLMENT_UPDATE: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateEnrollment',
+    message: (p) => `Enrollment updated: ${entityLabel(p.enrollment, p.enrollmentId)}`,
+  },
+  ENROLLMENT_REMOVE: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeEnrollment',
+    message: (p) => `Enrollment removed: ${entityLabel(p.enrollment, p.enrollmentId)}`,
+  },
+
+  // Quotations
+  QUOTATION_REQUEST_CREATE: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createQuotation',
+    message: (p) => `Quotation created: ${entityLabel(p.quotation)}`,
+  },
+  QUOTATION_UPDATE: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateQuotation',
+    message: (p) => `Quotation updated: ${entityLabel(p.quotation, p.quotationId)}`,
+  },
+
+  // Assortments
+  ASSORTMENT_CREATE: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createAssortment',
+    message: (p) => `Assortment created: ${entityLabel(p.assortment)}`,
+  },
+  ASSORTMENT_UPDATE: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateAssortment',
+    message: (p) => `Assortment updated: ${entityLabel(p.assortment, p.assortmentId)}`,
+  },
+  ASSORTMENT_REMOVE: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeAssortment',
+    message: (p) => `Assortment removed: ${entityLabel(p.assortment, p.assortmentId)}`,
+  },
+
+  // Filters
+  FILTER_CREATE: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createFilter',
+    message: (p) => `Filter created: ${entityLabel(p.filter)}`,
+  },
+  FILTER_UPDATE: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateFilter',
+    message: (p) => `Filter updated: ${entityLabel(p.filter, p.filterId)}`,
+  },
+  FILTER_REMOVE: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeFilter',
+    message: (p) => `Filter removed: ${entityLabel(p.filter, p.filterId)}`,
+  },
+
+  // Files
+  FILE_CREATE: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createFile',
+    message: (p) => `File created: ${entityLabel(p.file, p.fileId)}`,
+  },
+  FILE_REMOVE: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeFile',
+    message: (p) => `File removed: ${entityLabel(p.file, p.fileId)}`,
+  },
+
+  // System configuration
+  COUNTRY_CREATE: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createCountry',
+    message: (p) => `Country created: ${entityLabel(p.country, p.countryId)}`,
+  },
+  COUNTRY_UPDATE: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateCountry',
+    message: (p) => `Country updated: ${entityLabel(p.country, p.countryId)}`,
+  },
+  COUNTRY_REMOVE: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeCountry',
+    message: (p) => `Country removed: ${entityLabel(p.country, p.countryId)}`,
+  },
+  CURRENCY_CREATE: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createCurrency',
+    message: (p) => `Currency created: ${entityLabel(p.currency, p.currencyId)}`,
+  },
+  CURRENCY_UPDATE: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateCurrency',
+    message: (p) => `Currency updated: ${entityLabel(p.currency, p.currencyId)}`,
+  },
+  CURRENCY_REMOVE: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeCurrency',
+    message: (p) => `Currency removed: ${entityLabel(p.currency, p.currencyId)}`,
+  },
+  LANGUAGE_CREATE: {
+    activity: OCSF_API_ACTIVITY.CREATE,
+    operation: 'createLanguage',
+    message: (p) => `Language created: ${entityLabel(p.language, p.languageId)}`,
+  },
+  LANGUAGE_UPDATE: {
+    activity: OCSF_API_ACTIVITY.UPDATE,
+    operation: 'updateLanguage',
+    message: (p) => `Language updated: ${entityLabel(p.language, p.languageId)}`,
+  },
+  LANGUAGE_REMOVE: {
+    activity: OCSF_API_ACTIVITY.DELETE,
+    operation: 'removeLanguage',
+    message: (p) => `Language removed: ${entityLabel(p.language, p.languageId)}`,
+  },
+};
+
 /**
  * Configure automatic audit logging for Unchained events.
  *
@@ -74,11 +588,12 @@ export function configureAuditIntegration(auditLog: AuditLog): void {
         }
       });
     } catch {
-      // Event not registered - skip
+      // Event not registered — skip
     }
   };
 
-  // Authentication
+  // --- Authentication events (special shape) ---
+
   sub('API_LOGIN_TOKEN_CREATED', async (p) => {
     const ctx = extractContext(p);
     await auditLog.logAuthentication({ activity: OCSF_AUTH_ACTIVITY.LOGON, ...ctx, success: true });
@@ -99,7 +614,8 @@ export function configureAuditIntegration(auditLog: AuditLog): void {
     await auditLog.logAuthentication({ activity: OCSF_AUTH_ACTIVITY.LOGOFF, ...ctx, success: true });
   });
 
-  // User Account
+  // --- Account change events (special shape) ---
+
   sub('USER_CREATE', async (p) => {
     const ctx = extractContext(p);
     await auditLog.logAccountChange({ activity: OCSF_ACCOUNT_ACTIVITY.CREATE, ...ctx, success: true });
@@ -148,626 +664,44 @@ export function configureAuditIntegration(auditLog: AuditLog): void {
     await auditLog.logAccountChange({ ...mapped, ...ctx, success: true });
   });
 
-  // Orders
-  sub('ORDER_CREATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.CREATE,
-      ...ctx,
-      userId: p.order?.userId || ctx.userId,
-      success: true,
-      operation: 'createOrder',
-      message: `Order created: ${entityLabel(p.order)}`,
-    });
-  });
+  // --- API activity events (data-driven) ---
 
-  sub('ORDER_CHECKOUT', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.CHECKOUT,
-      ...ctx,
-      userId: p.order?.userId || ctx.userId,
-      success: true,
-      operation: 'checkoutOrder',
-      message: `Order checkout: ${entityLabel(p.order)}`,
-    });
-  });
+  for (const [event, mapping] of Object.entries(API_EVENT_MAP)) {
+    sub(event, async (p) => {
+      const ctx = extractContext(p);
 
-  sub('ORDER_CONFIRMED', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      userId: p.order?.userId || ctx.userId,
-      success: true,
-      operation: 'confirmOrder',
-      message: `Order confirmed: ${entityLabel(p.order)}`,
-    });
-  });
+      let message: string;
+      let data: Record<string, any> | null = null;
+      if (mapping.trackChangedFields) {
+        const entity = mapping.entityKey ? p[mapping.entityKey] : undefined;
+        const idKey = mapping.entityIdKey ? p[mapping.entityIdKey] : undefined;
+        const changed = changedFields(p, [
+          mapping.entityKey || '',
+          mapping.entityIdKey || '',
+          ...PAYLOAD_META_KEYS,
+        ]);
+        message = `${mapping.operation
+          .replace(/([A-Z])/g, ' $1')
+          .replace(/^./, (s) => s.toUpperCase())
+          .trim()}: ${entityLabel(entity, idKey)}${changed.label}`;
+        data = changed.data;
+      } else if (typeof mapping.message === 'function') {
+        message = mapping.message(p);
+      } else {
+        message = mapping.message;
+      }
 
-  sub('ORDER_FULFILLED', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      userId: p.order?.userId || ctx.userId,
-      success: true,
-      operation: 'fulfillOrder',
-      message: `Order fulfilled: ${entityLabel(p.order)}`,
+      await auditLog.logApiActivity({
+        activity: mapping.activity,
+        ...ctx,
+        userId: mapping.useOrderUserId ? p.order?.userId || ctx.userId : ctx.userId,
+        success: mapping.success ?? true,
+        operation: mapping.operation || p.action || 'unknown',
+        message,
+        ...(data ? { data } : {}),
+      });
     });
-  });
-
-  sub('ORDER_REJECTED', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      userId: p.order?.userId || ctx.userId,
-      success: false,
-      operation: 'rejectOrder',
-      message: `Order rejected: ${entityLabel(p.order)}`,
-    });
-  });
-
-  sub('ORDER_ADD_PRODUCT', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'addToCart',
-      message: `Product added to cart: ${p.orderPosition?.productId || 'unknown'}`,
-    });
-  });
-
-  sub('ORDER_REMOVE_CART_ITEM', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.DELETE,
-      ...ctx,
-      success: true,
-      operation: 'removeFromCart',
-      message: 'Product removed from cart',
-    });
-  });
-
-  // Payments
-  sub('ORDER_PAY', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.PAYMENT,
-      ...ctx,
-      success: true,
-      operation: 'processPayment',
-      message: 'Payment processed for order',
-    });
-  });
-
-  sub('ORDER_UPDATE_PAYMENT', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.PAYMENT,
-      ...ctx,
-      success: true,
-      operation: 'updatePayment',
-      message: 'Payment updated',
-    });
-  });
-
-  // Order lifecycle (remaining)
-  sub('ORDER_DELIVER', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      userId: p.order?.userId || ctx.userId,
-      success: true,
-      operation: 'deliverOrder',
-      message: `Order delivered: ${entityLabel(p.order)}`,
-    });
-  });
-
-  sub('ORDER_REMOVE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.DELETE,
-      ...ctx,
-      success: true,
-      operation: 'removeOrder',
-      message: `Order removed: ${entityLabel(p.order)}`,
-    });
-  });
-
-  sub('ORDER_EMPTY_CART', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.DELETE,
-      ...ctx,
-      success: true,
-      operation: 'emptyCart',
-      message: 'Cart emptied',
-    });
-  });
-
-  sub('ORDER_SET_PAYMENT_PROVIDER', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'setPaymentProvider',
-      message: `Payment provider set: ${p.paymentProviderId || 'unknown'}`,
-    });
-  });
-
-  sub('ORDER_SET_DELIVERY_PROVIDER', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'setDeliveryProvider',
-      message: `Delivery provider set: ${p.deliveryProviderId || 'unknown'}`,
-    });
-  });
-
-  // Access control
-  sub('ACL_DENIED', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.ACCESS_DENIED,
-      ...ctx,
-      success: false,
-      operation: p.action || 'unknown',
-      message: `Access denied: ${p.action || 'unknown'}`,
-    });
-  });
-
-  sub('ACL_GRANTED_SENSITIVE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: p.action || 'impersonate',
-      message: `Sensitive access granted: ${p.action || 'unknown'}`,
-    });
-  });
-
-  // Products
-  sub('PRODUCT_CREATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.CREATE,
-      ...ctx,
-      success: true,
-      operation: 'createProduct',
-      message: `Product created: ${entityLabel(p.product)}`,
-    });
-  });
-
-  sub('PRODUCT_UPDATE', async (p) => {
-    const ctx = extractContext(p);
-    const fields = changedFields(p, [
-      'product',
-      'productId',
-      'userId',
-      'userName',
-      'remoteAddress',
-      'sessionId',
-    ]);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'updateProduct',
-      message: `Product updated: ${entityLabel(p.product, p.productId)}${fields}`,
-    });
-  });
-
-  sub('PRODUCT_REMOVE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.DELETE,
-      ...ctx,
-      success: true,
-      operation: 'removeProduct',
-      message: `Product removed: ${entityLabel(p.product, p.productId)}`,
-    });
-  });
-
-  sub('PRODUCT_PUBLISH', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'publishProduct',
-      message: `Product published: ${entityLabel(p.product, p.productId)}`,
-    });
-  });
-
-  sub('PRODUCT_UNPUBLISH', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'unpublishProduct',
-      message: `Product unpublished: ${entityLabel(p.product, p.productId)}`,
-    });
-  });
-
-  // Provider configuration
-  sub('PAYMENT_PROVIDER_CREATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.CREATE,
-      ...ctx,
-      success: true,
-      operation: 'createPaymentProvider',
-      message: `Payment provider created: ${entityLabel(p.paymentProvider)}`,
-    });
-  });
-
-  sub('PAYMENT_PROVIDER_UPDATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'updatePaymentProvider',
-      message: `Payment provider updated: ${entityLabel(p.paymentProvider, p.paymentProviderId)}`,
-    });
-  });
-
-  sub('PAYMENT_PROVIDER_REMOVE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.DELETE,
-      ...ctx,
-      success: true,
-      operation: 'removePaymentProvider',
-      message: `Payment provider removed: ${entityLabel(p.paymentProvider, p.paymentProviderId)}`,
-    });
-  });
-
-  sub('DELIVERY_PROVIDER_CREATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.CREATE,
-      ...ctx,
-      success: true,
-      operation: 'createDeliveryProvider',
-      message: `Delivery provider created: ${entityLabel(p.deliveryProvider)}`,
-    });
-  });
-
-  sub('DELIVERY_PROVIDER_UPDATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'updateDeliveryProvider',
-      message: `Delivery provider updated: ${entityLabel(p.deliveryProvider, p.deliveryProviderId)}`,
-    });
-  });
-
-  sub('DELIVERY_PROVIDER_REMOVE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.DELETE,
-      ...ctx,
-      success: true,
-      operation: 'removeDeliveryProvider',
-      message: `Delivery provider removed: ${entityLabel(p.deliveryProvider, p.deliveryProviderId)}`,
-    });
-  });
-
-  sub('WAREHOUSING_PROVIDER_CREATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.CREATE,
-      ...ctx,
-      success: true,
-      operation: 'createWarehousingProvider',
-      message: `Warehousing provider created: ${entityLabel(p.warehousingProvider)}`,
-    });
-  });
-
-  sub('WAREHOUSING_PROVIDER_UPDATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'updateWarehousingProvider',
-      message: `Warehousing provider updated: ${entityLabel(p.warehousingProvider, p.warehousingProviderId)}`,
-    });
-  });
-
-  sub('WAREHOUSING_PROVIDER_REMOVE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.DELETE,
-      ...ctx,
-      success: true,
-      operation: 'removeWarehousingProvider',
-      message: `Warehousing provider removed: ${entityLabel(p.warehousingProvider, p.warehousingProviderId)}`,
-    });
-  });
-
-  // Tokens
-  sub('TOKEN_OWNERSHIP_CHANGED', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'transferToken',
-      message: `Token ownership changed: ${entityLabel(p.token, p.tokenId)}`,
-    });
-  });
-
-  sub('TOKEN_INVALIDATED', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.DELETE,
-      ...ctx,
-      success: true,
-      operation: 'invalidateToken',
-      message: `Token invalidated: ${entityLabel(p.token, p.tokenId)}`,
-    });
-  });
-
-  // Enrollments / Subscriptions
-  sub('ENROLLMENT_CREATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.CREATE,
-      ...ctx,
-      success: true,
-      operation: 'createEnrollment',
-      message: `Enrollment created: ${entityLabel(p.enrollment)}`,
-    });
-  });
-
-  sub('ENROLLMENT_UPDATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'updateEnrollment',
-      message: `Enrollment updated: ${entityLabel(p.enrollment, p.enrollmentId)}`,
-    });
-  });
-
-  sub('ENROLLMENT_REMOVE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.DELETE,
-      ...ctx,
-      success: true,
-      operation: 'removeEnrollment',
-      message: `Enrollment removed: ${entityLabel(p.enrollment, p.enrollmentId)}`,
-    });
-  });
-
-  // Quotations
-  sub('QUOTATION_REQUEST_CREATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.CREATE,
-      ...ctx,
-      success: true,
-      operation: 'createQuotation',
-      message: `Quotation created: ${entityLabel(p.quotation)}`,
-    });
-  });
-
-  sub('QUOTATION_UPDATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'updateQuotation',
-      message: `Quotation updated: ${entityLabel(p.quotation, p.quotationId)}`,
-    });
-  });
-
-  // Assortments / Merchandising
-  sub('ASSORTMENT_CREATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.CREATE,
-      ...ctx,
-      success: true,
-      operation: 'createAssortment',
-      message: `Assortment created: ${entityLabel(p.assortment)}`,
-    });
-  });
-
-  sub('ASSORTMENT_UPDATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'updateAssortment',
-      message: `Assortment updated: ${entityLabel(p.assortment, p.assortmentId)}`,
-    });
-  });
-
-  sub('ASSORTMENT_REMOVE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.DELETE,
-      ...ctx,
-      success: true,
-      operation: 'removeAssortment',
-      message: `Assortment removed: ${entityLabel(p.assortment, p.assortmentId)}`,
-    });
-  });
-
-  // Filters
-  sub('FILTER_CREATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.CREATE,
-      ...ctx,
-      success: true,
-      operation: 'createFilter',
-      message: `Filter created: ${entityLabel(p.filter)}`,
-    });
-  });
-
-  sub('FILTER_UPDATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'updateFilter',
-      message: `Filter updated: ${entityLabel(p.filter, p.filterId)}`,
-    });
-  });
-
-  sub('FILTER_REMOVE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.DELETE,
-      ...ctx,
-      success: true,
-      operation: 'removeFilter',
-      message: `Filter removed: ${entityLabel(p.filter, p.filterId)}`,
-    });
-  });
-
-  // Files
-  sub('FILE_CREATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.CREATE,
-      ...ctx,
-      success: true,
-      operation: 'createFile',
-      message: `File created: ${entityLabel(p.file, p.fileId)}`,
-    });
-  });
-
-  sub('FILE_REMOVE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.DELETE,
-      ...ctx,
-      success: true,
-      operation: 'removeFile',
-      message: `File removed: ${entityLabel(p.file, p.fileId)}`,
-    });
-  });
-
-  // System configuration
-  sub('COUNTRY_CREATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.CREATE,
-      ...ctx,
-      success: true,
-      operation: 'createCountry',
-      message: `Country created: ${entityLabel(p.country, p.countryId)}`,
-    });
-  });
-
-  sub('COUNTRY_UPDATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'updateCountry',
-      message: `Country updated: ${entityLabel(p.country, p.countryId)}`,
-    });
-  });
-
-  sub('COUNTRY_REMOVE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.DELETE,
-      ...ctx,
-      success: true,
-      operation: 'removeCountry',
-      message: `Country removed: ${entityLabel(p.country, p.countryId)}`,
-    });
-  });
-
-  sub('CURRENCY_CREATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.CREATE,
-      ...ctx,
-      success: true,
-      operation: 'createCurrency',
-      message: `Currency created: ${entityLabel(p.currency, p.currencyId)}`,
-    });
-  });
-
-  sub('CURRENCY_UPDATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'updateCurrency',
-      message: `Currency updated: ${entityLabel(p.currency, p.currencyId)}`,
-    });
-  });
-
-  sub('CURRENCY_REMOVE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.DELETE,
-      ...ctx,
-      success: true,
-      operation: 'removeCurrency',
-      message: `Currency removed: ${entityLabel(p.currency, p.currencyId)}`,
-    });
-  });
-
-  sub('LANGUAGE_CREATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.CREATE,
-      ...ctx,
-      success: true,
-      operation: 'createLanguage',
-      message: `Language created: ${entityLabel(p.language, p.languageId)}`,
-    });
-  });
-
-  sub('LANGUAGE_UPDATE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      ...ctx,
-      success: true,
-      operation: 'updateLanguage',
-      message: `Language updated: ${entityLabel(p.language, p.languageId)}`,
-    });
-  });
-
-  sub('LANGUAGE_REMOVE', async (p) => {
-    const ctx = extractContext(p);
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.DELETE,
-      ...ctx,
-      success: true,
-      operation: 'removeLanguage',
-      message: `Language removed: ${entityLabel(p.language, p.languageId)}`,
-    });
-  });
+  }
 }
 
 /**
@@ -818,6 +752,44 @@ export const AUDITED_EVENTS = [
   'PRODUCT_REMOVE',
   'PRODUCT_PUBLISH',
   'PRODUCT_UNPUBLISH',
+  'PRODUCT_UPDATE_TEXT',
+  'PRODUCT_UPDATE_MEDIA_TEXT',
+  'PRODUCT_ADD_MEDIA',
+  'PRODUCT_REMOVE_MEDIA',
+  'PRODUCT_REORDER_MEDIA',
+  'PRODUCT_ADD_ASSIGNMENT',
+  'PRODUCT_REMOVE_ASSIGNMENT',
+  'PRODUCT_CREATE_BUNDLE_ITEM',
+  'PRODUCT_REMOVE_BUNDLE_ITEM',
+  'PRODUCT_CREATE_VARIATION',
+  'PRODUCT_REMOVE_VARIATION',
+  'PRODUCT_VARIATION_OPTION_CREATE',
+  'PRODUCT_REMOVE_VARIATION_OPTION',
+  'PRODUCT_UPDATE_VARIATION_TEXT',
+  'PRODUCT_REVIEW_CREATE',
+  'PRODUCT_UPDATE_REVIEW',
+  'PRODUCT_REMOVE_REVIEW',
+  'PRODUCT_REVIEW_ADD_VOTE',
+  'PRODUCT_REMOVE_REVIEW_VOTE',
+
+  // Assortment sub-events
+  'ASSORTMENT_UPDATE_TEXT',
+  'ASSORTMENT_UPDATE_MEDIA_TEXT',
+  'ASSORTMENT_ADD_PRODUCT',
+  'ASSORTMENT_REMOVE_PRODUCT',
+  'ASSORTMENT_ADD_LINK',
+  'ASSORTMENT_REMOVE_LINK',
+  'ASSORTMENT_ADD_FILTER',
+  'ASSORTMENT_REMOVE_FILTER',
+  'ASSORTMENT_ADD_MEDIA',
+  'ASSORTMENT_REMOVE_MEDIA',
+  'ASSORTMENT_REORDER_PRODUCTS',
+  'ASSORTMENT_REORDER_LINKS',
+  'ASSORTMENT_REORDER_FILTERS',
+  'ASSORTMENT_REORDER_MEDIA',
+
+  // Filter sub-events
+  'FILTER_UPDATE_TEXT',
 
   // Provider configuration
   'PAYMENT_PROVIDER_CREATE',

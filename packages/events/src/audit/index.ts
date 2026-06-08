@@ -14,7 +14,7 @@
  */
 
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, appendFile, readdir } from 'node:fs/promises';
+import { mkdir, readFile, appendFile, readdir, unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { createLogger } from '@unchainedshop/logger';
 import {
@@ -70,6 +70,9 @@ export interface AuditLogConfig {
 
   /** Flush interval in ms for HTTP push (default: 5000) */
   flushIntervalMs?: number;
+
+  /** Number of days to retain audit log files (default: 90, 0 = no pruning) */
+  retentionDays?: number;
 }
 
 // ============================================================================
@@ -150,6 +153,8 @@ export interface ApiActivityInput {
   path?: string;
   /** Response code */
   responseCode?: number;
+  /** Additional event-specific data stored in unmapped */
+  data?: Record<string, any>;
 }
 
 /**
@@ -168,6 +173,8 @@ export interface AuditLogQuery {
   startTime?: Date;
   /** End time */
   endTime?: Date;
+  /** Full-text search on message and operation */
+  queryText?: string;
   /** Maximum results */
   limit?: number;
   /** Skip entries */
@@ -197,12 +204,15 @@ export class AuditLog {
   private readonly collectorHeaders: Record<string, string>;
   private readonly batchSize: number;
   private readonly flushIntervalMs: number;
+  private readonly retentionDays: number;
 
   private lastEvent: OCSFEvent | null = null;
   private writeLock: Promise<unknown> = Promise.resolve();
   private initialized = false;
   private pendingEvents: OCSFEvent[] = [];
   private flushTimer?: ReturnType<typeof setInterval>;
+  private cachedVerifyResult: VerifyResult | null = null;
+  private cachedVerifySeq = 0;
 
   constructor(config: AuditLogConfig = {}) {
     this.dir = config.directory || './audit-logs';
@@ -210,6 +220,7 @@ export class AuditLog {
     this.collectorHeaders = config.collectorHeaders || {};
     this.batchSize = config.batchSize || 10;
     this.flushIntervalMs = config.flushIntervalMs || 5000;
+    this.retentionDays = config.retentionDays ?? 90;
   }
 
   // --------------------------------------------------------------------------
@@ -302,6 +313,7 @@ export class AuditLog {
       const eventWithChain: OCSFEvent = {
         ...event,
         unmapped: {
+          ...event.unmapped,
           seq,
           prev_hash: prevHash,
           hash: '', // Will be computed
@@ -384,6 +396,16 @@ export class AuditLog {
       const ts = new Date(event.time);
       if (query.startTime && ts < query.startTime) return false;
       if (query.endTime && ts > query.endTime) return false;
+    }
+
+    if (query.queryText) {
+      const q = query.queryText.toLowerCase();
+      const message = (event.message || '').toLowerCase();
+      const operation =
+        event.class_uid === OCSF_CLASS.API_ACTIVITY
+          ? ((event as OCSFApiActivityEvent).api?.operation || '').toLowerCase()
+          : '';
+      if (!message.includes(q) && !operation.includes(q)) return false;
     }
 
     return true;
@@ -510,6 +532,7 @@ export class AuditLog {
               url: input.path ? { path: input.path } : undefined,
             }
           : undefined,
+      ...(input.data ? { unmapped: { data: input.data } as any } : {}),
     };
 
     return this.writeEvent(event);
@@ -621,15 +644,19 @@ export class AuditLog {
   }
 
   /**
-   * Verify the integrity of the hash chain
+   * Verify the integrity of the hash chain.
+   * Uses incremental verification — only checks entries added since the last successful verify.
    */
   async verify(): Promise<VerifyResult> {
     await this.init();
 
     let entries = 0;
     let verified = 0;
-    let prevHash = GENESIS_HASH;
-    let prevSeq = 0;
+    let prevHash = this.cachedVerifyResult?.valid
+      ? (this.cachedVerifyResult as any)._lastHash || GENESIS_HASH
+      : GENESIS_HASH;
+    let prevSeq = this.cachedVerifySeq;
+    const skipUntilSeq = this.cachedVerifySeq;
 
     try {
       const files = (await readdir(this.dir)).filter((f) => f.endsWith('.jsonl')).sort();
@@ -652,12 +679,15 @@ export class AuditLog {
             return { valid: false, entries, verified, error: `Missing hash chain at entry ${entries}` };
           }
 
-          // Verify sequence
+          if (event.unmapped.seq <= skipUntilSeq) {
+            verified++;
+            continue;
+          }
+
           if (event.unmapped.seq !== prevSeq + 1) {
             return { valid: false, entries, verified, error: `Sequence gap at ${event.unmapped.seq}` };
           }
 
-          // Verify previous hash link
           if (event.unmapped.prev_hash !== prevHash) {
             return {
               valid: false,
@@ -667,7 +697,6 @@ export class AuditLog {
             };
           }
 
-          // Verify entry hash
           const computedHash = this.computeHash(event);
           if (computedHash !== event.unmapped.hash) {
             return {
@@ -687,7 +716,45 @@ export class AuditLog {
       return { valid: false, entries, verified, error: `Read error: ${e}` };
     }
 
-    return { valid: true, entries, verified };
+    const result = { valid: true, entries, verified };
+    this.cachedVerifyResult = { ...result, _lastHash: prevHash } as any;
+    this.cachedVerifySeq = prevSeq;
+    return result;
+  }
+
+  /**
+   * Remove audit log files older than the configured retention period.
+   * Returns the number of files removed.
+   */
+  async prune(): Promise<number> {
+    if (this.retentionDays <= 0) return 0;
+    await this.init();
+
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - this.retentionDays);
+    const cutoffStr = cutoff.toISOString().slice(0, 10);
+    let removed = 0;
+
+    try {
+      const files = (await readdir(this.dir)).filter((f) => f.endsWith('.jsonl')).sort();
+      for (const file of files) {
+        const dateMatch = file.match(/audit-(\d{4}-\d{2}-\d{2})\.jsonl/);
+        if (dateMatch && dateMatch[1] < cutoffStr) {
+          await unlink(join(this.dir, file));
+          removed++;
+          logger.info(`Pruned audit log file: ${file}`);
+        }
+      }
+    } catch {
+      // Directory doesn't exist or permission error
+    }
+
+    if (removed > 0) {
+      this.cachedVerifyResult = null;
+      this.cachedVerifySeq = 0;
+    }
+
+    return removed;
   }
 
   /**

@@ -1,5 +1,10 @@
 import { useIntl } from 'react-intl';
-import { CLASS_LABELS, SEVERITY_LABELS, STATUS_LABELS } from './ocsf-labels';
+import {
+  CLASS_LABELS,
+  SEVERITY_LABELS,
+  STATUS_LABELS,
+  getActivityName,
+} from './ocsf-labels';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
 const AuditEntryDetail = ({
@@ -13,6 +18,8 @@ const AuditEntryDetail = ({
 
   if (!entry) return null;
 
+  const changedData = entry.raw?.unmapped?.data;
+
   const sections = [
     {
       label: formatMessage({
@@ -21,8 +28,8 @@ const AuditEntryDetail = ({
       }),
       rows: [
         ['Class', CLASS_LABELS[entry.className] || entry.className],
+        ['Activity', getActivityName(entry.classUid, entry.activityId)],
         ['Type UID', entry.typeUid],
-        ['Activity ID', entry.activityId],
         ['Severity', SEVERITY_LABELS[entry.severityId] || entry.severityId],
         ['Status', STATUS_LABELS[entry.statusId] || entry.statusId],
         entry.statusDetail && ['Status Detail', entry.statusDetail],
@@ -124,6 +131,32 @@ const AuditEntryDetail = ({
             </dl>
           </div>
         ))}
+
+        {changedData && (
+          <div>
+            <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              {formatMessage({
+                id: 'audit_detail_changed_data',
+                defaultMessage: 'Changed Data',
+              })}
+            </h3>
+            <div className="space-y-2">
+              {Object.entries(changedData).map(([field, value]) => (
+                <div key={field}>
+                  <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
+                    {field}
+                  </p>
+                  <pre className="mt-1 overflow-x-auto rounded bg-slate-100 p-2 text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    {typeof value === 'object'
+                      ? JSON.stringify(value, null, 2)
+                      : String(value)}
+                  </pre>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div>
           <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             {formatMessage({

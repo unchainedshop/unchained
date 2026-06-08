@@ -517,6 +517,7 @@ export default [
         success: Boolean
         from: Timestamp
         until: Timestamp
+        queryText: String
       ): [AuditLogEntry!]!
 
       """
@@ -528,6 +529,7 @@ export default [
         success: Boolean
         from: Timestamp
         until: Timestamp
+        queryText: String
       ): Int!
 
       """

@@ -1,68 +1,38 @@
 /**
  * Audit Log Compliance Integration Test
  *
- * This test verifies that all security-relevant events are properly captured
+ * Verifies that security-relevant events are properly captured
  * in the OCSF-compliant audit log during a complete e-commerce flow:
  *
- * 1. Login
- * 2. Add product to cart
- * 3. Update cart with billing/contact
- * 4. Checkout
- * 5. Verify all audit entries exist in append-only file
+ * 1. Add product to cart
+ * 2. Update cart with billing/contact
+ * 3. Checkout
+ * 4. Verify all audit entries exist in append-only file
  *
- * Compliance requirements tested:
- * - PCI DSS 10.2.1: Log all access to cardholder data
- * - PCI DSS 10.2.4: Log invalid logical access attempts
- * - PCI DSS 10.2.5: Log changes to identification/authentication
- * - SOC 2: Log authentication and account changes
- * - GDPR Article 30: Track data processing activities
+ * Uses the platform's built-in audit log (configured in startPlatform).
  */
 
 import { createLoggedInGraphqlFetch, disconnect, setupDatabase } from './helpers.js';
 import { SimpleProduct } from './seeds/products.js';
-import { rm, mkdir, readFile, readdir } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import { tmpdir } from 'node:os';
 import assert from 'node:assert';
 import test from 'node:test';
 
-import {
-  createAuditLog,
-  configureAuditIntegration,
-  OCSF_CLASS,
-  OCSF_API_ACTIVITY,
-} from '@unchainedshop/events';
+import { createAuditLog, OCSF_CLASS, OCSF_API_ACTIVITY } from '@unchainedshop/events';
 
-const auditDir = join(tmpdir(), `audit-compliance-test-${Date.now()}`);
+const auditDir = './audit-logs';
 
 test.describe('Audit Log Compliance - Checkout Flow', () => {
   let graphqlFetch;
-  let auditLog;
-  let cleanupIntegration;
   let orderId;
 
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();
-
-    // Create audit log instance
-    await mkdir(auditDir, { recursive: true });
-    auditLog = createAuditLog(auditDir);
-
-    // Configure automatic event -> audit log integration
-    cleanupIntegration = configureAuditIntegration(auditLog);
   });
 
   test.after(async () => {
-    // Cleanup integration subscriptions
-    if (cleanupIntegration) cleanupIntegration();
-
-    // Close audit log
-    if (auditLog) await auditLog.close();
-
-    // Cleanup temp directory
-    await rm(auditDir, { recursive: true, force: true });
-
     await disconnect();
   });
 
@@ -86,7 +56,6 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
     assert.strictEqual(createCart.orderNumber, 'audit-test-order');
     orderId = createCart._id;
 
-    // Allow time for async event processing
     await new Promise((resolve) => setTimeout(resolve, 50));
   });
 
@@ -189,21 +158,18 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
     assert.ok(checkoutCart, 'Checkout should succeed');
     assert.strictEqual(checkoutCart.status, 'CONFIRMED');
 
-    // Allow time for async event processing
     await new Promise((resolve) => setTimeout(resolve, 100));
   });
 
   // ============================================================================
-  // Verify Audit Trail
+  // Verify Audit Trail (reads from platform's audit log directory)
   // ============================================================================
 
   test('Audit: should have all required entries in append-only file', async () => {
-    // Read the audit file directly
     const files = await readdir(auditDir);
     const jsonlFiles = files.filter((f) => f.endsWith('.jsonl'));
     assert.ok(jsonlFiles.length >= 1, 'Should have at least one audit log file');
 
-    // Read and parse all entries
     const allEntries = [];
     for (const file of jsonlFiles) {
       const content = await readFile(join(auditDir, file), 'utf-8');
@@ -213,12 +179,9 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
       }
     }
 
-    // Verify minimum required entries exist
     const apiEntries = allEntries.filter((e) => e.class_uid === OCSF_CLASS.API_ACTIVITY);
-
     assert.ok(apiEntries.length >= 3, 'Should have API activity entries (order, add, checkout)');
 
-    // Verify entries have required OCSF fields
     for (const entry of allEntries) {
       assert.ok(entry.class_uid, 'Entry should have class_uid');
       assert.ok(entry.category_uid, 'Entry should have category_uid');
@@ -234,7 +197,9 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
   });
 
   test('Audit: should verify hash chain integrity', async () => {
+    const auditLog = createAuditLog(auditDir);
     const result = await auditLog.verify();
+    await auditLog.close();
 
     assert.strictEqual(result.valid, true, 'Hash chain should be valid');
     assert.ok(result.entries > 0, 'Should have verified entries');
@@ -242,9 +207,10 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
   });
 
   test('Audit: should have sequential sequence numbers (no gaps)', async () => {
-    const entries = await auditLog.find({ limit: 100 });
+    const auditLog = createAuditLog(auditDir);
+    const entries = await auditLog.find({ limit: 1000 });
+    await auditLog.close();
 
-    // Entries are returned newest first, so check they decrement
     for (let i = 0; i < entries.length - 1; i++) {
       const expected = (entries[i + 1].unmapped?.seq || 0) + 1;
       assert.strictEqual(
@@ -256,7 +222,10 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
   });
 
   test('Audit: should be able to count entries', async () => {
+    const auditLog = createAuditLog(auditDir);
     const total = await auditLog.count({});
+    await auditLog.close();
+
     assert.ok(total >= 3, 'Should have at least 3 audit entries for checkout flow');
   });
 
@@ -265,9 +234,10 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
   // ============================================================================
 
   test('PCI DSS 10.2.1 - Checkout activity logged', async () => {
-    const entries = await auditLog.find({ limit: 100 });
+    const auditLog = createAuditLog(auditDir);
+    const entries = await auditLog.find({ limit: 1000 });
+    await auditLog.close();
 
-    // Verify we have entries for the checkout flow (access to order/payment data)
     const hasCheckout = entries.some(
       (e) =>
         e.activity_id === OCSF_API_ACTIVITY.CHECKOUT || e.message?.toLowerCase().includes('checkout'),
@@ -277,17 +247,21 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
   });
 
   test('SOC 2 - Audit trail integrity (hash chain valid)', async () => {
+    const auditLog = createAuditLog(auditDir);
     const result = await auditLog.verify();
+    await auditLog.close();
+
     assert.strictEqual(result.valid, true, 'Audit trail should be tamper-evident (hash chain valid)');
   });
 
   test('GDPR Article 30 - Processing activities tracked', async () => {
+    const auditLog = createAuditLog(auditDir);
     const apiEntries = await auditLog.find({
       classUids: [OCSF_CLASS.API_ACTIVITY],
       limit: 50,
     });
+    await auditLog.close();
 
-    // Should have order processing activities
     assert.ok(apiEntries.length >= 1, 'Should track data processing activities');
   });
 });

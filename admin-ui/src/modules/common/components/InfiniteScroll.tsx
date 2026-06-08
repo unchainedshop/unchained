@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import Loading from '@/components/ui/Loading';
 
 interface InfiniteScrollProps {
@@ -17,36 +17,35 @@ const InfiniteScroll = ({
   threshold = 200,
 }: InfiniteScrollProps) => {
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const loadingRef = useRef(loading);
+  const hasMoreRef = useRef(hasMore);
+  const onLoadMoreRef = useRef(onLoadMore);
 
-  const handleIntersect = useCallback(
-    (entries: IntersectionObserverEntry[]) => {
-      const [entry] = entries;
-      if (entry.isIntersecting && hasMore && !loading) {
-        onLoadMore();
-      }
-    },
-    [hasMore, loading, onLoadMore],
-  );
+  loadingRef.current = loading;
+  hasMoreRef.current = hasMore;
+  onLoadMoreRef.current = onLoadMore;
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
 
-    const observer = new IntersectionObserver(handleIntersect, {
-      rootMargin: `${threshold}px`,
-    });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasMoreRef.current && !loadingRef.current) {
+          onLoadMoreRef.current();
+        }
+      },
+      { rootMargin: `${threshold}px` },
+    );
 
     observer.observe(sentinel);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [handleIntersect, threshold]);
+    return () => observer.disconnect();
+  }, [threshold]);
 
   return (
     <>
       {children}
-      <div ref={sentinelRef} className="h-4" />
+      {hasMore && <div ref={sentinelRef} className="h-4" />}
       {loading && (
         <div className="flex justify-center py-4">
           <Loading />

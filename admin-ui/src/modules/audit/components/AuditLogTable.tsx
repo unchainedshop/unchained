@@ -1,5 +1,11 @@
+import Link from 'next/link';
 import { useIntl } from 'react-intl';
-import { CLASS_LABELS, STATUS_LABELS, CLASS_COLORS } from './ocsf-labels';
+import {
+  CLASS_LABELS,
+  STATUS_LABELS,
+  CLASS_COLORS,
+  getActivityName,
+} from './ocsf-labels';
 
 const AuditLogTable = ({
   entries,
@@ -31,6 +37,12 @@ const AuditLogTable = ({
             </th>
             <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
               {formatMessage({ id: 'audit_class', defaultMessage: 'Class' })}
+            </th>
+            <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              {formatMessage({
+                id: 'audit_activity',
+                defaultMessage: 'Activity',
+              })}
             </th>
             <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
               {formatMessage({
@@ -90,11 +102,24 @@ const AuditLogTable = ({
                     {CLASS_LABELS[entry.className] || entry.className}
                   </span>
                 </td>
+                <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
+                  {getActivityName(entry.classUid, entry.activityId)}
+                </td>
                 <td className="px-4 py-3 text-sm text-slate-800 dark:text-slate-200 max-w-xs truncate">
                   {entry.message || '—'}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
-                  {userName}
+                  {entry.actor?.user?.uid ? (
+                    <Link
+                      href={`/users/?userId=${entry.actor.user.uid}`}
+                      className="text-blue-600 hover:underline dark:text-blue-400"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {userName}
+                    </Link>
+                  ) : (
+                    userName
+                  )}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm">
                   <span
