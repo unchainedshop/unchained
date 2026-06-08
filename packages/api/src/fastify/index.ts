@@ -1,3 +1,4 @@
+import { runWithAuditContext } from '@unchainedshop/events';
 import { getCurrentContextResolver } from '../context.ts';
 import { createAuthContext, type AuthContextParams } from '../middleware/createAuthMiddleware.ts';
 import type { AuthConfig } from '../auth.ts';
@@ -96,7 +97,7 @@ const createMiddlewareHook = (authConfig?: AuthConfig, trustProxy = false) =>
     const context = getCurrentContextResolver();
 
     // Build full context
-    (req as any).unchainedContext = await context(
+    const unchainedContext = await context(
       {
         setHeader,
         getHeader,
@@ -112,6 +113,13 @@ const createMiddlewareHook = (authConfig?: AuthConfig, trustProxy = false) =>
       req,
       reply,
     );
+    (req as any).unchainedContext = unchainedContext;
+    (req as any)._auditContext = {
+      userId: unchainedContext.userId,
+      userName: unchainedContext.user?.username || unchainedContext.user?.emails?.[0]?.address,
+      remoteAddress,
+      sessionId: authContext.accessToken,
+    };
   };
 
 export const unchainedLogger = (prefix: string): FastifyBaseLogger => {
@@ -197,11 +205,16 @@ export const connect = async (
     url: graphqlHandler.graphqlEndpoint,
     method: ['GET', 'POST', 'OPTIONS'],
     handler: async (req, reply) => {
-      // Second parameter adds Fastify's `req` and `reply` to the GraphQL Context
-      return graphqlHandler.handleNodeRequestAndResponse(req, reply, {
-        req,
-        reply,
-      });
+      const auditCtx = (req as any)._auditContext;
+      const handle = () =>
+        graphqlHandler.handleNodeRequestAndResponse(req, reply, {
+          req,
+          reply,
+        });
+      if (auditCtx) {
+        return runWithAuditContext(auditCtx, handle);
+      }
+      return handle();
     },
   });
 

@@ -1,12 +1,17 @@
+import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import useFailedLoginAttempts from '../hooks/useFailedLoginAttempts';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 const FailedLoginsWidget = () => {
   const { formatMessage } = useIntl();
-  const now = Date.now();
-  const oneDayAgo = now - 24 * 60 * 60 * 1000;
-  const oneWeekAgo = now - 7 * 24 * 60 * 60 * 1000;
+  const { oneDayAgo, oneWeekAgo } = useMemo(() => {
+    const now = Date.now();
+    return {
+      oneDayAgo: now - 24 * 60 * 60 * 1000,
+      oneWeekAgo: now - 7 * 24 * 60 * 60 * 1000,
+    };
+  }, []);
 
   const { failedLoginAttempts: last24h, loading: loading24h } =
     useFailedLoginAttempts({ since: oneDayAgo });

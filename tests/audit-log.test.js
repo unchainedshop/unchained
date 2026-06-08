@@ -142,17 +142,17 @@ test.describe('Audit Log', () => {
   test.describe('Login emits audit entry', () => {
     test('login produces an authentication audit log entry', async () => {
       // Trigger a login
-      await graphqlFetchAsAnonymousUser({
+      const loginResult = await graphqlFetchAsAnonymousUser({
         query: /* GraphQL */ `
           mutation {
-            loginWithPassword(username: "admin", plainPassword: "password") {
-              id
-              token
+            loginWithPassword(username: "admin", password: "password") {
+              _id
               tokenExpires
             }
           }
         `,
       });
+      assert.ok(!loginResult.errors, `Login should succeed: ${JSON.stringify(loginResult.errors)}`);
 
       // Small delay to let the event propagate to the audit log
       await new Promise((resolve) => setTimeout(resolve, 200));

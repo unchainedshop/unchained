@@ -9,6 +9,7 @@ export default async function auditLogsCount(
     success?: boolean;
     from?: number;
     until?: number;
+    queryText?: string;
   },
   context: Context,
 ) {
@@ -22,5 +23,6 @@ export default async function auditLogsCount(
     success: params.success ?? undefined,
     startTime: params.from ? new Date(params.from) : undefined,
     endTime: params.until ? new Date(params.until) : undefined,
+    queryText: params.queryText || undefined,
   });
 }
