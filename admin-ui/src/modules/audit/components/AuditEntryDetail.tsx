@@ -1,20 +1,17 @@
 import { useIntl } from 'react-intl';
-import {
-  CLASS_LABELS,
-  SEVERITY_LABELS,
-  STATUS_LABELS,
-  getActivityName,
-} from './ocsf-labels';
+import { useOcsfLabels } from './ocsf-labels';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { IAuditLogEntryFragment } from '@/gql/types';
 
 const AuditEntryDetail = ({
   entry,
   onClose,
 }: {
-  entry: any;
+  entry: IAuditLogEntryFragment | null;
   onClose: () => void;
 }) => {
   const { formatMessage, formatDate, formatTime } = useIntl();
+  const { CLASS_LABELS, SEVERITY_LABELS, STATUS_LABELS, getActivityName } = useOcsfLabels();
 
   if (!entry) return null;
 

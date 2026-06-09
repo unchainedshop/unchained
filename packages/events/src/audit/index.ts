@@ -230,7 +230,7 @@ export class AuditLog {
   private cachedVerifySeq = 0;
 
   constructor(config: AuditLogConfig = {}) {
-    this.dir = config.directory || './audit-logs';
+    this.dir = config.directory || process.env.UNCHAINED_AUDIT_LOG_DIR || './audit-logs';
     this.collectorUrl = config.collectorUrl;
     this.collectorHeaders = config.collectorHeaders || {};
     this.batchSize = config.batchSize || 10;
@@ -347,7 +347,12 @@ export class AuditLog {
 
       // Write to file
       const line = JSON.stringify(eventWithChain);
-      await appendFile(this.getFilePath(), line + '\n', 'utf-8');
+      try {
+        await appendFile(this.getFilePath(), line + '\n', 'utf-8');
+      } catch (err) {
+        logger.error(`Failed to write audit event seq=${seq}: ${(err as Error).message}`);
+        throw err;
+      }
 
       // Update state
       this.lastEvent = eventWithChain;
@@ -367,7 +372,10 @@ export class AuditLog {
       return eventWithChain.metadata.uid!;
     });
 
-    this.writeLock = result;
+    // Recover the write lock so subsequent writes aren't blocked by a single failure
+    this.writeLock = result.catch((e) => {
+      console.error('Error writing audit event:', e);
+    });
     return result;
   }
 

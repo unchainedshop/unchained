@@ -13,12 +13,13 @@ const FailedLoginsWidget = () => {
     };
   }, []);
 
-  const { failedLoginAttempts: last24h, loading: loading24h } =
+  const { failedLoginAttempts: last24h, loading: loading24h, error: error24h } =
     useFailedLoginAttempts({ since: oneDayAgo });
-  const { failedLoginAttempts: last7d, loading: loading7d } =
+  const { failedLoginAttempts: last7d, loading: loading7d, error: error7d } =
     useFailedLoginAttempts({ since: oneWeekAgo });
 
   const loading = loading24h || loading7d;
+  const error = error24h || error7d;
 
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
@@ -31,7 +32,14 @@ const FailedLoginsWidget = () => {
           })}
         </h3>
       </div>
-      {loading ? (
+      {error ? (
+        <p className="text-sm text-red-600 dark:text-red-400">
+          {formatMessage({
+            id: 'failed_login_error',
+            defaultMessage: 'Failed to load login data',
+          })}
+        </p>
+      ) : loading ? (
         <div className="animate-pulse h-12 bg-slate-100 dark:bg-slate-700 rounded" />
       ) : (
         <div className="grid grid-cols-2 gap-4">

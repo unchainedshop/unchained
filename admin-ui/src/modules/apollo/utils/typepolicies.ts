@@ -118,7 +118,7 @@ const keyMappings: any = {
           'userId',
           'success',
           'from',
-          'until',
+          'to',
           'queryText',
         ]),
       },

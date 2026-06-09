@@ -97,7 +97,7 @@ export default async function auditLogs(
     userId?: string;
     success?: boolean;
     from?: number;
-    until?: number;
+    to?: number;
     queryText?: string;
   },
   context: Context,
@@ -113,7 +113,7 @@ export default async function auditLogs(
     userId: params.userId,
     success: params.success ?? undefined,
     startTime: params.from ? new Date(params.from) : undefined,
-    endTime: params.until ? new Date(params.until) : undefined,
+    endTime: params.to ? new Date(params.to) : undefined,
     queryText: params.queryText || undefined,
   });
 

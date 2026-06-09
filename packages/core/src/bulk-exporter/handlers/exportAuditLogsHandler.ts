@@ -9,7 +9,7 @@ export const AuditLogExportPayloadSchema = z.object({
   userId: z.string().optional(),
   success: z.boolean().optional(),
   from: z.number().optional(),
-  until: z.number().optional(),
+  to: z.number().optional(),
   queryText: z.string().optional(),
   exportCSV: z.boolean().optional(),
   exportJSONL: z.boolean().optional(),
@@ -67,7 +67,7 @@ const exportAuditLogsHandler = async (
     userId: payload.userId,
     success: payload.success,
     startTime: payload.from ? new Date(payload.from) : undefined,
-    endTime: payload.until ? new Date(payload.until) : undefined,
+    endTime: payload.to ? new Date(payload.to) : undefined,
     queryText: payload.queryText,
   });
 
