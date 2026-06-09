@@ -1,3 +1,7 @@
+import {
+  IFailedLoginAttemptsQuery,
+  IFailedLoginAttemptsQueryVariables,
+} from '@/gql/types';
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 
@@ -19,14 +23,11 @@ const useFailedLoginAttempts = ({
   userId = null,
   remoteAddress = null,
   since = null,
-}: {
-  userId?: string | null;
-  remoteAddress?: string | null;
-  since?: number | null;
-} = {}) => {
-  const { data, loading, error, refetch } = useQuery<{
-    failedLoginAttempts: number;
-  }>(FailedLoginAttemptsQuery, {
+}: IFailedLoginAttemptsQueryVariables = {}) => {
+  const { data, loading, error, refetch } = useQuery<
+    IFailedLoginAttemptsQuery,
+    IFailedLoginAttemptsQueryVariables
+  >(FailedLoginAttemptsQuery, {
     variables: { userId, remoteAddress, since },
   });
 

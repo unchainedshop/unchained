@@ -27,8 +27,8 @@ const SecurityPage = () => {
   const userId = (query.userId as string) || null;
   const queryText = (query.queryText as string) || null;
   const from = query.from ? new Date(query.from as string).getTime() : null;
-  const until = query.until
-    ? new Date(query.until as string).getTime() + 86400000
+  const to = query.to
+    ? new Date(query.to as string).getTime() + 86400000
     : null;
 
   const { auditLogs, auditLogsCount, loading, loadingMore, hasMore, loadMore } =
@@ -39,7 +39,7 @@ const SecurityPage = () => {
       userId,
       queryText,
       from,
-      until,
+      to,
     });
 
   const { exportCSV, isExporting } = useCSVExport();
@@ -54,11 +54,11 @@ const SecurityPage = () => {
         ...(userId ? { userId } : {}),
         ...(success !== null ? { success } : {}),
         ...(from ? { from } : {}),
-        ...(until ? { until } : {}),
+        ...(to ? { to } : {}),
         ...(queryText ? { queryText } : {}),
       });
     },
-    [exportCSV, classUids, userId, success, from, until, queryText],
+    [exportCSV, classUids, userId, success, from, to, queryText],
   );
 
   return (

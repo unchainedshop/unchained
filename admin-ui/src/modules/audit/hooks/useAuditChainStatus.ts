@@ -1,3 +1,7 @@
+import {
+  IAuditChainStatusQuery,
+  IAuditChainStatusQueryVariables,
+} from '@/gql/types';
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 
@@ -18,16 +22,10 @@ const AuditChainStatusQuery = gql`
 `;
 
 const useAuditChainStatus = () => {
-  const { data, loading, error, refetch } = useQuery<{
-    auditChainStatus: {
-      valid: boolean;
-      totalEntries: number;
-      checkedEntries: number;
-      firstEntry: number | null;
-      lastEntry: number | null;
-      errors: { sequenceNumber: number; message: string }[];
-    };
-  }>(AuditChainStatusQuery);
+  const { data, loading, error, refetch } = useQuery<
+    IAuditChainStatusQuery,
+    IAuditChainStatusQueryVariables
+  >(AuditChainStatusQuery);
 
   return {
     chainStatus: data?.auditChainStatus,
