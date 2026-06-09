@@ -14,7 +14,7 @@ import AuditEntryDetail from '../../modules/audit/components/AuditEntryDetail';
 import useAuditLogs from '../../modules/audit/hooks/useAuditLogs';
 import { useCSVExport } from '../../modules/common/hooks/useCSVExport';
 
-const SecurityPage = () => {
+const AuditLogPage = () => {
   const { formatMessage } = useIntl();
   const { query } = useRouter();
   const [selectedEntry, setSelectedEntry] = useState<any>(null);
@@ -66,12 +66,12 @@ const SecurityPage = () => {
       <BreadCrumbs />
       <PageHeader
         title={formatMessage({
-          id: 'security_page_title',
-          defaultMessage: 'Security & Audit Log',
+          id: 'audit_log_page_title',
+          defaultMessage: 'Audit Log',
         })}
         headerText={formatMessage({
-          id: 'security_page_header',
-          defaultMessage: 'Security & Audit Log',
+          id: 'audit_log_page_header',
+          defaultMessage: 'Audit Log',
         })}
       >
         <Button
@@ -156,4 +156,4 @@ const SecurityPage = () => {
   );
 };
 
-export default SecurityPage;
+export default AuditLogPage;

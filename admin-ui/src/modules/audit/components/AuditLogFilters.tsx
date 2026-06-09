@@ -151,7 +151,7 @@ const AuditLogFilters = () => {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-8">
+      <div className="flex flex-wrap gap-x-12 gap-y-4">
         <div>
           <div className="text-md text-slate-800 dark:text-slate-200">
             {formatMessage({ id: 'class', defaultMessage: 'Class' })}
