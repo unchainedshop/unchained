@@ -11,7 +11,8 @@ const AuditEntryDetail = ({
   onClose: () => void;
 }) => {
   const { formatMessage, formatDate, formatTime } = useIntl();
-  const { CLASS_LABELS, SEVERITY_LABELS, STATUS_LABELS, getActivityName } = useOcsfLabels();
+  const { CLASS_LABELS, SEVERITY_LABELS, STATUS_LABELS, getActivityName } =
+    useOcsfLabels();
 
   if (!entry) return null;
 

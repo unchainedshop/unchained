@@ -13,10 +13,16 @@ const FailedLoginsWidget = () => {
     };
   }, []);
 
-  const { failedLoginAttempts: last24h, loading: loading24h, error: error24h } =
-    useFailedLoginAttempts({ since: oneDayAgo });
-  const { failedLoginAttempts: last7d, loading: loading7d, error: error7d } =
-    useFailedLoginAttempts({ since: oneWeekAgo });
+  const {
+    failedLoginAttempts: last24h,
+    loading: loading24h,
+    error: error24h,
+  } = useFailedLoginAttempts({ since: oneDayAgo });
+  const {
+    failedLoginAttempts: last7d,
+    loading: loading7d,
+    error: error7d,
+  } = useFailedLoginAttempts({ since: oneWeekAgo });
 
   const loading = loading24h || loading7d;
   const error = error24h || error7d;
