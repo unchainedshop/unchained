@@ -7,7 +7,23 @@ import {
 
 const ChainStatusBanner = () => {
   const { formatMessage } = useIntl();
-  const { chainStatus, loading, refetch } = useAuditChainStatus();
+  const { chainStatus, loading, error, refetch } = useAuditChainStatus();
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950">
+        <div className="flex items-center gap-3">
+          <ExclamationTriangleIcon className="h-6 w-6 text-red-600 dark:text-red-400" />
+          <p className="text-sm text-red-700 dark:text-red-300">
+            {formatMessage({
+              id: 'audit_chain_error',
+              defaultMessage: 'Failed to load audit chain status',
+            })}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading || !chainStatus) return null;
 

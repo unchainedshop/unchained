@@ -578,6 +578,8 @@ const API_EVENT_MAP: Record<string, ApiEventMapping> = {
  * Call once during application startup after creating the audit log.
  */
 export function configureAuditIntegration(auditLog: AuditLog): void {
+  const subscribedEvents = new Set<string>();
+
   const sub = (event: string, handler: (payload: Record<string, any>) => Promise<void>) => {
     try {
       EventDirector.subscribe(event, async ({ payload }) => {
@@ -587,6 +589,7 @@ export function configureAuditIntegration(auditLog: AuditLog): void {
           logger.error(`Audit log error for ${event}: ${error}`);
         }
       });
+      subscribedEvents.add(event);
     } catch {
       // Event not registered — skip
     }
@@ -702,6 +705,17 @@ export function configureAuditIntegration(auditLog: AuditLog): void {
       });
     });
   }
+
+  // Verify all advertised events are actually subscribed
+  const missing = AUDITED_EVENTS.filter((e) => !subscribedEvents.has(e));
+  if (missing.length > 0) {
+    logger.warn(
+      `Audit integration: ${missing.length} advertised events not registered: ${missing.join(', ')}`,
+    );
+  }
+  logger.info(
+    `Audit integration configured: ${subscribedEvents.size}/${AUDITED_EVENTS.length} events subscribed`,
+  );
 }
 
 /**

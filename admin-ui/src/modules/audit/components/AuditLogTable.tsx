@@ -1,20 +1,17 @@
 import Link from 'next/link';
 import { useIntl } from 'react-intl';
-import {
-  CLASS_LABELS,
-  STATUS_LABELS,
-  CLASS_COLORS,
-  getActivityName,
-} from './ocsf-labels';
+import type { IAuditLogEntryFragment } from '@/gql/types';
+import { CLASS_COLORS, useOcsfLabels } from './ocsf-labels';
 
 const AuditLogTable = ({
   entries,
   onSelectEntry,
 }: {
-  entries: any[];
-  onSelectEntry: (entry: any) => void;
+  entries: IAuditLogEntryFragment[];
+  onSelectEntry: (entry: IAuditLogEntryFragment) => void;
 }) => {
   const { formatMessage, formatDate, formatTime } = useIntl();
+  const { CLASS_LABELS, STATUS_LABELS, getActivityName } = useOcsfLabels();
 
   if (!entries?.length) {
     return (

@@ -5,16 +5,37 @@ import StatusFilter from '../../common/components/StatusFilter';
 import DateInputField from '@/components/ui/DateInput';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import { normalizeQuery } from '../../common/utils/utils';
-const CLASS_OPTIONS = [
-  { value: '3002', label: 'Authentication' },
-  { value: '3001', label: 'Account Change' },
-  { value: '6003', label: 'API Activity' },
-];
-
-const STATUS_OPTIONS = ['Success', 'Failure'];
-
 const AuditLogFilters = () => {
   const { formatMessage } = useIntl();
+
+  const CLASS_OPTIONS = [
+    {
+      value: '3002',
+      label: formatMessage({
+        id: 'audit_class_authentication',
+        defaultMessage: 'Authentication',
+      }),
+    },
+    {
+      value: '3001',
+      label: formatMessage({
+        id: 'audit_class_account_change',
+        defaultMessage: 'Account Change',
+      }),
+    },
+    {
+      value: '6003',
+      label: formatMessage({
+        id: 'audit_class_api_activity',
+        defaultMessage: 'API Activity',
+      }),
+    },
+  ];
+
+  const STATUS_OPTIONS = [
+    formatMessage({ id: 'audit_status_success', defaultMessage: 'Success' }),
+    formatMessage({ id: 'audit_status_failure', defaultMessage: 'Failure' }),
+  ];
   const { parseDate } = useFormatDateTime();
   const router = useRouter();
   const { query, push } = router;
@@ -101,22 +122,22 @@ const AuditLogFilters = () => {
             value={query?.from ? parseDate(query?.from) : null}
             containerClassName="w-full"
           />
-          <label className="mr-2 ml-3" htmlFor="audit-until">
+          <label className="mr-2 ml-3" htmlFor="audit-to">
             {formatMessage({ id: 'to', defaultMessage: 'To' })}
           </label>
           <DateInputField
-            id="audit-until"
+            id="audit-to"
             onChange={(value) => {
               if (value) {
                 push({
                   query: normalizeQuery(
                     query,
                     new Date(value).toISOString(),
-                    'until',
+                    'to',
                   ),
                 });
               } else {
-                const { until, ...rest } = query;
+                const { to, ...rest } = query;
                 push({ query: { ...rest } });
               }
             }}
@@ -124,9 +145,7 @@ const AuditLogFilters = () => {
               id: 'end_date',
               defaultMessage: 'End Date',
             })}
-            value={
-              query?.until ? parseDate(query?.until) : parseDate(new Date())
-            }
+            value={query?.to ? parseDate(query?.to) : parseDate(new Date())}
             containerClassName="w-full"
           />
         </div>

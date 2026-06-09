@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 import AuditLogEntryFragment from '../fragments/AuditLogEntryFragment';
+import { IAuditLogsQuery, IAuditLogsQueryVariables } from '@/gql/types';
 
 const AuditLogsQuery = gql`
   query AuditLogs(
@@ -10,7 +11,7 @@ const AuditLogsQuery = gql`
     $userId: String
     $success: Boolean
     $from: Timestamp
-    $until: Timestamp
+    $to: Timestamp
     $queryText: String
   ) {
     auditLogs(
@@ -20,7 +21,7 @@ const AuditLogsQuery = gql`
       userId: $userId
       success: $success
       from: $from
-      until: $until
+      to: $to
       queryText: $queryText
     ) {
       ...AuditLogEntryFragment
@@ -30,7 +31,7 @@ const AuditLogsQuery = gql`
       userId: $userId
       success: $success
       from: $from
-      until: $until
+      to: $to
       queryText: $queryText
     )
   }
@@ -44,23 +45,11 @@ const useAuditLogs = ({
   userId = null,
   success = null,
   from = null,
-  until = null,
+  to = null,
   queryText = null,
-}: {
-  limit?: number;
-  offset?: number;
-  classUids?: number[] | null;
-  userId?: string | null;
-  success?: boolean | null;
-  from?: number | null;
-  until?: number | null;
-  queryText?: string | null;
-} = {}) => {
+}: IAuditLogsQueryVariables = {}) => {
   const { data, loading, error, fetchMore, previousData, networkStatus } =
-    useQuery<{
-      auditLogs: any[];
-      auditLogsCount: number;
-    }>(AuditLogsQuery, {
+    useQuery<IAuditLogsQuery, IAuditLogsQueryVariables>(AuditLogsQuery, {
       variables: {
         limit,
         offset,
@@ -68,7 +57,7 @@ const useAuditLogs = ({
         userId,
         success,
         from,
-        until,
+        to,
         queryText,
       },
       notifyOnNetworkStatusChange: true,

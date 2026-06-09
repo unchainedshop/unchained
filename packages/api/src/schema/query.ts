@@ -516,7 +516,7 @@ export default [
         userId: String
         success: Boolean
         from: Timestamp
-        until: Timestamp
+        to: Timestamp
         queryText: String
       ): [AuditLogEntry!]!
 
@@ -528,7 +528,7 @@ export default [
         userId: String
         success: Boolean
         from: Timestamp
-        until: Timestamp
+        to: Timestamp
         queryText: String
       ): Int!
 
