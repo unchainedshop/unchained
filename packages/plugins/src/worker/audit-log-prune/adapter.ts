@@ -14,7 +14,7 @@ export const AuditLogPrune: IWorkerAdapter<Record<string, never>, Result> = {
   ...WorkerAdapter,
 
   key: 'shop.unchained.worker-plugin.audit-log-prune',
-  label: 'Prune expired audit log files',
+  label: 'Prune expired audit log entries',
   version: '1.0.0',
   type: 'AUDIT_LOG_PRUNE',
   maxParallelAllocations: 1,

@@ -296,14 +296,6 @@ const Layout = ({
           requiredRole: 'viewWarehousingProviders',
           href: '/warehousing-provider',
         },
-        isSystemReady && {
-          name: formatMessage({
-            id: 'audit_log',
-            defaultMessage: 'Audit Log',
-          }),
-          requiredRole: 'viewAuditLog',
-          href: '/settings/security',
-        },
       ].filter(Boolean),
     },
     {
@@ -324,7 +316,15 @@ const Layout = ({
           href: '/events',
           requiredRole: 'viewEvents',
         },
-      ],
+        isSystemReady && {
+          name: formatMessage({
+            id: 'audit_log',
+            defaultMessage: 'Audit Log',
+          }),
+          requiredRole: 'viewAuditLog',
+          href: '/activities/audit-log',
+        },
+      ].filter(Boolean),
     },
     shopInfo?.adminUiConfig?.externalLinks?.length && {
       _sortOrder: 130,

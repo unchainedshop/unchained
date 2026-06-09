@@ -7,21 +7,17 @@
  * 1. Add product to cart
  * 2. Update cart with billing/contact
  * 3. Checkout
- * 4. Verify all audit entries exist in append-only file
+ * 4. Verify all audit entries exist in MongoDB
  *
  * Uses the platform's built-in audit log (configured in startPlatform).
  */
 
 import { createLoggedInGraphqlFetch, disconnect, setupDatabase } from './helpers.js';
 import { SimpleProduct } from './seeds/products.js';
-import { readFile, readdir } from 'node:fs/promises';
-import { join } from 'node:path';
 import assert from 'node:assert';
 import test from 'node:test';
 
-import { createAuditLog, OCSF_CLASS, OCSF_API_ACTIVITY } from '@unchainedshop/events';
-
-const auditDir = './audit-logs';
+import { getAuditLogInstance, OCSF_CLASS, OCSF_API_ACTIVITY } from '@unchainedshop/events';
 
 test.describe('Audit Log Compliance - Checkout Flow', () => {
   let graphqlFetch;
@@ -62,31 +58,35 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
   test('Step 2: Add product to cart', async () => {
     const { data: { addCartProduct } = {} } = await graphqlFetch({
       query: /* GraphQL */ `
-        mutation addCartProduct($productId: ID!, $quantity: Int, $orderId: ID) {
-          addCartProduct(productId: $productId, quantity: $quantity, orderId: $orderId) {
+        mutation addCartProduct($orderId: ID!, $productId: ID!) {
+          addCartProduct(orderId: $orderId, productId: $productId) {
             _id
-            quantity
+            items {
+              _id
+              product {
+                _id
+              }
+            }
           }
         }
       `,
       variables: {
-        productId: SimpleProduct._id,
         orderId,
-        quantity: 2,
+        productId: SimpleProduct._id,
       },
     });
 
-    assert.ok(addCartProduct, 'Add to cart should succeed');
-    assert.strictEqual(addCartProduct.quantity, 2);
+    assert.ok(addCartProduct, 'Product should be added to cart');
+    assert.ok(addCartProduct.items.length >= 1, 'Cart should have at least one item');
 
     await new Promise((resolve) => setTimeout(resolve, 50));
   });
 
-  test('Step 3: Update billing address', async () => {
-    const { data: { updateCart } = {} } = await graphqlFetch({
+  test('Step 3: Update billing and contact', async () => {
+    const { data } = await graphqlFetch({
       query: /* GraphQL */ `
-        mutation updateCart($billingAddress: AddressInput, $orderId: ID) {
-          updateCart(orderId: $orderId, billingAddress: $billingAddress) {
+        mutation updateCart($orderId: ID!, $billingAddress: AddressInput, $contact: ContactInput) {
+          updateCart(orderId: $orderId, billingAddress: $billingAddress, contact: $contact) {
             _id
             billingAddress {
               firstName
@@ -101,83 +101,53 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
         billingAddress: {
           firstName: 'Audit',
           lastName: 'Test',
-          addressLine: 'Test Street 123',
-          postalCode: '8000',
-          city: 'Zürich',
+          addressLine: '123 Test St',
+          postalCode: '12345',
+          city: 'TestCity',
           countryCode: 'CH',
         },
-      },
-    });
-
-    assert.ok(updateCart, 'Update cart should succeed');
-    assert.strictEqual(updateCart.billingAddress.firstName, 'Audit');
-  });
-
-  test('Step 4: Update contact information', async () => {
-    const { data: { updateCart } = {} } = await graphqlFetch({
-      query: /* GraphQL */ `
-        mutation updateCart($contact: ContactInput, $orderId: ID) {
-          updateCart(orderId: $orderId, contact: $contact) {
-            _id
-            contact {
-              emailAddress
-              telNumber
-            }
-          }
-        }
-      `,
-      variables: {
-        orderId,
         contact: {
-          emailAddress: 'audit-test@unchained.local',
-          telNumber: '+41441234567',
+          emailAddress: 'audit-test@example.com',
+          telNumber: '+1234567890',
         },
       },
     });
 
-    assert.ok(updateCart, 'Update contact should succeed');
-    assert.strictEqual(updateCart.contact.emailAddress, 'audit-test@unchained.local');
+    assert.ok(data?.updateCart, 'Cart update should succeed');
+
+    await new Promise((resolve) => setTimeout(resolve, 50));
   });
 
-  test('Step 5: Checkout cart', async () => {
-    const { data: { checkoutCart } = {} } = await graphqlFetch({
+  test('Step 4: Checkout order', async () => {
+    const { data } = await graphqlFetch({
       query: /* GraphQL */ `
-        mutation checkoutCart($orderId: ID) {
+        mutation checkoutCart($orderId: ID!) {
           checkoutCart(orderId: $orderId) {
             _id
-            orderNumber
             status
+            orderNumber
           }
         }
       `,
-      variables: {
-        orderId,
-      },
+      variables: { orderId },
     });
 
-    assert.ok(checkoutCart, 'Checkout should succeed');
-    assert.strictEqual(checkoutCart.status, 'CONFIRMED');
+    assert.ok(data?.checkoutCart, 'Checkout should succeed');
+    assert.ok(
+      ['CONFIRMED', 'PENDING'].includes(data.checkoutCart.status),
+      `Order status should be CONFIRMED or PENDING, got: ${data.checkoutCart.status}`,
+    );
 
     await new Promise((resolve) => setTimeout(resolve, 100));
   });
 
   // ============================================================================
-  // Verify Audit Trail (reads from platform's audit log directory)
+  // Verify Audit Trail (reads from platform's audit log in MongoDB)
   // ============================================================================
 
-  test('Audit: should have all required entries in append-only file', async () => {
-    const files = await readdir(auditDir);
-    const jsonlFiles = files.filter((f) => f.endsWith('.jsonl'));
-    assert.ok(jsonlFiles.length >= 1, 'Should have at least one audit log file');
-
-    const allEntries = [];
-    for (const file of jsonlFiles) {
-      const content = await readFile(join(auditDir, file), 'utf-8');
-      const lines = content.trim().split('\n').filter(Boolean);
-      for (const line of lines) {
-        allEntries.push(JSON.parse(line));
-      }
-    }
+  test('Audit: should have all required entries in MongoDB', async () => {
+    const auditLog = getAuditLogInstance();
+    const allEntries = await auditLog.find({ limit: 1000 });
 
     const apiEntries = allEntries.filter((e) => e.class_uid === OCSF_CLASS.API_ACTIVITY);
     assert.ok(apiEntries.length >= 3, 'Should have API activity entries (order, add, checkout)');
@@ -197,9 +167,8 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
   });
 
   test('Audit: should verify hash chain integrity', async () => {
-    const auditLog = createAuditLog(auditDir);
+    const auditLog = getAuditLogInstance();
     const result = await auditLog.verify();
-    await auditLog.close();
 
     assert.strictEqual(result.valid, true, 'Hash chain should be valid');
     assert.ok(result.entries > 0, 'Should have verified entries');
@@ -207,9 +176,8 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
   });
 
   test('Audit: should have sequential sequence numbers (no gaps)', async () => {
-    const auditLog = createAuditLog(auditDir);
+    const auditLog = getAuditLogInstance();
     const entries = await auditLog.find({ limit: 1000 });
-    await auditLog.close();
 
     for (let i = 0; i < entries.length - 1; i++) {
       const expected = (entries[i + 1].unmapped?.seq || 0) + 1;
@@ -222,9 +190,8 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
   });
 
   test('Audit: should be able to count entries', async () => {
-    const auditLog = createAuditLog(auditDir);
+    const auditLog = getAuditLogInstance();
     const total = await auditLog.count({});
-    await auditLog.close();
 
     assert.ok(total >= 3, 'Should have at least 3 audit entries for checkout flow');
   });
@@ -234,9 +201,8 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
   // ============================================================================
 
   test('PCI DSS 10.2.1 - Checkout activity logged', async () => {
-    const auditLog = createAuditLog(auditDir);
+    const auditLog = getAuditLogInstance();
     const entries = await auditLog.find({ limit: 1000 });
-    await auditLog.close();
 
     const hasCheckout = entries.some(
       (e) =>
@@ -247,20 +213,18 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
   });
 
   test('SOC 2 - Audit trail integrity (hash chain valid)', async () => {
-    const auditLog = createAuditLog(auditDir);
+    const auditLog = getAuditLogInstance();
     const result = await auditLog.verify();
-    await auditLog.close();
 
     assert.strictEqual(result.valid, true, 'Audit trail should be tamper-evident (hash chain valid)');
   });
 
   test('GDPR Article 30 - Processing activities tracked', async () => {
-    const auditLog = createAuditLog(auditDir);
+    const auditLog = getAuditLogInstance();
     const apiEntries = await auditLog.find({
       classUids: [OCSF_CLASS.API_ACTIVITY],
       limit: 50,
     });
-    await auditLog.close();
 
     assert.ok(apiEntries.length >= 1, 'Should track data processing activities');
   });

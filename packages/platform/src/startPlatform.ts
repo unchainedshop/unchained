@@ -120,7 +120,7 @@ export const startPlatform = async ({
   // Create audit log instance (integration configured after events are registered)
   let auditLog: AuditLog | undefined;
   if (auditLogConfig !== false) {
-    auditLog = createAuditLog(auditLogConfig || undefined);
+    auditLog = createAuditLog(auditLogConfig ? { ...auditLogConfig, db } : { db });
     setAuditLogInstance(auditLog);
   }
 
