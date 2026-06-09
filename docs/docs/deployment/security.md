@@ -90,28 +90,29 @@ Unchained provides **OCSF-compliant** (Open Cybersecurity Schema Framework) audi
 ### Features
 
 - **OCSF v1.4.0 schema** - Industry-standard format supported by AWS Security Lake, Datadog, Splunk, Google Chronicle
+- **MongoDB storage** - Indexed queries with text search
 - **Tamper-evident** - SHA-256 hash chain for integrity verification
-- **Append-only** - No update or delete operations
-- **SIEM-ready** - Direct ingestion into security monitoring tools
+- **Append-only** - No update or delete operations (except retention pruning)
+- **SIEM-ready** - HTTP push and OCSF format for direct ingestion into security monitoring tools
 
 ### Quick Start
 
+Audit logging is automatically enabled when using `startPlatform()` — events are stored in MongoDB with indexed queries and a SHA-256 hash chain for tamper detection.
+
 ```typescript
-import { createAuditLog, configureAuditIntegration } from '@unchainedshop/events';
+import { startPlatform } from '@unchainedshop/platform';
 
-// Create audit log instance
-const auditLog = createAuditLog('./audit-logs');
-
-// Enable automatic event capture
-configureAuditIntegration(auditLog);
+// Audit logging enabled by default (MongoDB storage)
+const platform = await startPlatform({ modules: defaultModules });
 
 // Events automatically captured:
-// - Login/logout
+// - Login/logout (97 event types total)
 // - User creation/deletion
 // - Password changes
 // - Role changes
 // - Order checkout
 // - Payments
+// - Access denied
 ```
 
 See [Audit Logging](../extend/events#audit-logging) for detailed documentation.
