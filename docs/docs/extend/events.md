@@ -267,21 +267,41 @@ Unchained provides enterprise-grade audit logging based on the **OCSF (Open Cybe
 
 - **OCSF v1.4.0 compliant** - Industry-standard event schema
 - **Tamper-evident** - SHA-256 hash chain for integrity verification
-- **Append-only** - No update or delete operations
-- **JSON Lines format** - Easy parsing and integration
-- **SIEM-ready** - Direct ingestion into security monitoring tools
+- **MongoDB storage** - Indexed queries for fast filtering and search
+- **Append-only** - No update or delete operations (except retention pruning)
+- **SIEM-ready** - OCSF format for direct ingestion into security monitoring tools
 - **HTTP push** - Optional push to OpenTelemetry Collector, Fluentd, or Vector
+- **Automatic pruning** - Configurable retention period with scheduled cleanup
 
 ### Quick Start
 
+Audit logging is automatically enabled when using `startPlatform()`. The platform passes the MongoDB database instance to the audit log, so no manual setup is needed:
+
 ```typescript
-import { createAuditLog, configureAuditIntegration } from '@unchainedshop/events';
+import { startPlatform } from '@unchainedshop/platform';
 
-// Create audit log instance
-const auditLog = createAuditLog('./audit-logs');
+// Audit logging is enabled by default with MongoDB storage
+const platform = await startPlatform({
+  modules: defaultModules,
+});
 
-// Enable automatic event capture for all security-relevant events
-configureAuditIntegration(auditLog);
+// To customize audit log settings:
+const platform = await startPlatform({
+  modules: defaultModules,
+  auditLog: {
+    retentionDays: 180,            // Keep entries for 180 days (default: 90)
+    collectorUrl: 'http://...',    // Optional: push to SIEM
+  },
+});
+
+// To disable audit logging:
+const platform = await startPlatform({
+  modules: defaultModules,
+  auditLog: false,
+});
+```
+
+When enabled, the following events are automatically captured:
 
 // Events automatically captured:
 // - API_LOGIN_TOKEN_CREATED → Authentication (LOGON)
@@ -298,17 +318,17 @@ configureAuditIntegration(auditLog);
 
 ### Manual Logging
 
-For custom audit events:
+For custom audit events, use the singleton instance:
 
 ```typescript
 import {
-  createAuditLog,
+  getAuditLogInstance,
   OCSF_AUTH_ACTIVITY,
   OCSF_ACCOUNT_ACTIVITY,
   OCSF_API_ACTIVITY,
 } from '@unchainedshop/events';
 
-const auditLog = createAuditLog('./audit-logs');
+const auditLog = getAuditLogInstance();
 
 // Log authentication event
 await auditLog.logAuthentication({
@@ -358,17 +378,19 @@ await auditLog.logApiActivity({
 
 ### HTTP Collector Push
 
-Push audit logs to OpenTelemetry Collector, Fluentd, or Vector:
+Push audit events to OpenTelemetry Collector, Fluentd, or Vector alongside MongoDB storage:
 
 ```typescript
-const auditLog = createAuditLog({
-  directory: './audit-logs',
-  collectorUrl: 'http://otel-collector:4318/v1/logs',
-  collectorHeaders: {
-    'Authorization': 'Bearer <token>',
+const platform = await startPlatform({
+  modules: defaultModules,
+  auditLog: {
+    collectorUrl: 'http://otel-collector:4318/v1/logs',
+    collectorHeaders: {
+      'Authorization': 'Bearer <token>',
+    },
+    batchSize: 10,        // Flush after 10 events (default: 10)
+    flushIntervalMs: 5000, // Or flush every 5 seconds (default: 5000)
   },
-  batchSize: 10,
-  flushIntervalMs: 5000,
 });
 ```
 
@@ -408,38 +430,42 @@ if (!result.valid) {
 
 ### SIEM Integration
 
-Audit log files (`audit-YYYY-MM-DD.jsonl`) can be directly ingested by SIEM systems:
+Audit events are stored in OCSF v1.4.0 format and can be integrated with SIEM systems through:
 
-**Filebeat (Elastic):**
-```yaml
-filebeat.inputs:
-  - type: log
-    paths:
-      - /path/to/audit-logs/*.jsonl
-    json.keys_under_root: true
-```
+1. **HTTP Collector Push** (recommended) — Real-time push to any OCSF-compatible endpoint via the `collectorUrl` config
+2. **MongoDB Change Streams** — Stream events from the `audit_logs` collection to external systems
+3. **Bulk Export** — Export audit logs as CSV or JSONL via the admin UI or GraphQL API
 
-**Promtail (Loki/Grafana):**
-```yaml
-scrape_configs:
-  - job_name: unchained-audit
-    static_configs:
-      - targets: [localhost]
-        labels:
-          job: audit
-          __path__: /path/to/audit-logs/*.jsonl
-```
+**Supported SIEM systems** (via OCSF format):
+- AWS Security Lake (direct ingestion)
+- Splunk (OCSF add-on)
+- Datadog Cloud SIEM
+- Google Chronicle / SecOps
+- CrowdStrike Falcon LogScale
+- Elastic Security
+
+### Configuration Reference
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `collectorUrl` | `string` | — | HTTP endpoint for real-time event push |
+| `collectorHeaders` | `Record<string, string>` | — | HTTP headers for collector auth |
+| `batchSize` | `number` | `10` | Number of events to batch before pushing |
+| `flushIntervalMs` | `number` | `5000` | Max interval (ms) between pushes |
+| `retentionDays` | `number` | `90` | Days to keep entries (0 = no pruning) |
+
+### Admin UI
+
+The audit log is accessible in the admin UI under **Activities → Audit Log** with:
+- Filterable table (by event class, status, user, date range, text search)
+- Chain integrity verification banner
+- Failed login attempts widget
+- CSV and JSONL export
+- Detailed event inspector
 
 ### Shutdown
 
-Always close the audit log on shutdown to flush pending events:
-
-```typescript
-process.on('SIGTERM', async () => {
-  await auditLog.close();
-  process.exit(0);
-});
-```
+When using `startPlatform()`, audit log shutdown is handled automatically. The platform flushes pending HTTP collector events and waits for the write lock to complete before exiting.
 
 ## Related
 

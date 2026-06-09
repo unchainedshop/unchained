@@ -61,12 +61,7 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
         mutation addCartProduct($orderId: ID!, $productId: ID!) {
           addCartProduct(orderId: $orderId, productId: $productId) {
             _id
-            items {
-              _id
-              product {
-                _id
-              }
-            }
+            quantity
           }
         }
       `,
@@ -77,7 +72,7 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
     });
 
     assert.ok(addCartProduct, 'Product should be added to cart');
-    assert.ok(addCartProduct.items.length >= 1, 'Cart should have at least one item');
+    assert.ok(addCartProduct._id, 'Order item should have an ID');
 
     await new Promise((resolve) => setTimeout(resolve, 50));
   });
