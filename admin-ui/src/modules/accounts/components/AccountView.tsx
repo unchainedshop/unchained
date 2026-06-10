@@ -42,21 +42,24 @@ const AccountView = ({
           <UserNameView username={username} _id={_id} />
         </div>
       </SelfDocumentingView>
-      <SelfDocumentingView
-        documentationLabel={formatMessage({
-          id: 'email_addresses',
-          defaultMessage: 'Email addresses',
-        })}
-      >
-        <div className="rounded-md border-border-default shadow-xs">
-          <EmailAddresses
-            emails={emails}
-            enableVerification
-            userId={_id}
-            emailBodyContainer="rounded-md shadow-sm"
-          />
-        </div>
-      </SelfDocumentingView>
+      {(currentUser?._id === _id ||
+        hasRole(IRoleAction.ViewUserPrivateInfos)) && (
+        <SelfDocumentingView
+          documentationLabel={formatMessage({
+            id: 'email_addresses',
+            defaultMessage: 'Email addresses',
+          })}
+        >
+          <div className="rounded-md border-border-default shadow-xs">
+            <EmailAddresses
+              emails={emails}
+              enableVerification
+              userId={_id}
+              emailBodyContainer="rounded-md shadow-sm"
+            />
+          </div>
+        </SelfDocumentingView>
+      )}
       {currentUser?._id === _id && (
         <SelfDocumentingView
           documentationLabel={formatMessage({

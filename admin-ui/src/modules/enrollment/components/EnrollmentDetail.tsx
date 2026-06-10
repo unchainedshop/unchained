@@ -158,16 +158,17 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
       id: 3,
       content: 'updated',
       visible: true,
-      Component: enrollment?.status === 'PAUSED' && (
-        <Button
-          text={formatMessage({
-            id: 'activate',
-            defaultMessage: 'Activate',
-          })}
-          onClick={onActivateEnrollment}
-          className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-accent bg-accent px-2 py-1 text-base font-medium text-text-on-accent hover:bg-accent-hover  dark:focus:border-slate-400 focus:outline-hidden focus:ring-0 focus:ring-focus-ring"
-        />
-      ),
+      Component: enrollment?.status === 'PAUSED' &&
+        hasRole(IRoleAction.UpdateEnrollment) && (
+          <Button
+            text={formatMessage({
+              id: 'activate',
+              defaultMessage: 'Activate',
+            })}
+            onClick={onActivateEnrollment}
+            className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-accent bg-accent px-2 py-1 text-base font-medium text-text-on-accent hover:bg-accent-hover  dark:focus:border-slate-400 focus:outline-hidden focus:ring-0 focus:ring-focus-ring"
+          />
+        ),
     },
     TERMINATED: {
       id: 4,

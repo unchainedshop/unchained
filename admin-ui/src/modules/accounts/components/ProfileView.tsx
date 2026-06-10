@@ -278,60 +278,65 @@ const ProfileView = ({ profile, avatar, _id }) => {
                   </div>
                 </div>
 
-                <div className="py-4 sm:grid sm:py-2">
-                  <label className="text-sm text-text-muted">
-                    {!isEdit &&
-                      formatMessage({
-                        id: 'birthday',
-                        defaultMessage: 'Birthday',
-                      })}
-                  </label>
-                  <div className="mt-1 flex text-sm text-text-primary sm:mt-0">
-                    {isEdit ? (
-                      <DatePickerField
-                        label={formatMessage({
-                          id: 'birthday',
-                          defaultMessage: 'Birthday',
-                        })}
-                        className="mt-0 w-full"
-                        name="birthday"
-                        validators={[validateBirthdate]}
-                      />
-                    ) : (
-                      <span className="grow">
-                        {formatDateTime(profile?.birthday, {
-                          dateStyle: 'short',
-                        })}
-                      </span>
-                    )}
-                  </div>
-                </div>
+                {(currentUser?._id === _id ||
+                  hasRole(IRoleAction.ViewUserPrivateInfos)) && (
+                  <>
+                    <div className="py-4 sm:grid sm:py-2">
+                      <label className="text-sm text-text-muted">
+                        {!isEdit &&
+                          formatMessage({
+                            id: 'birthday',
+                            defaultMessage: 'Birthday',
+                          })}
+                      </label>
+                      <div className="mt-1 flex text-sm text-text-primary sm:mt-0">
+                        {isEdit ? (
+                          <DatePickerField
+                            label={formatMessage({
+                              id: 'birthday',
+                              defaultMessage: 'Birthday',
+                            })}
+                            className="mt-0 w-full"
+                            name="birthday"
+                            validators={[validateBirthdate]}
+                          />
+                        ) : (
+                          <span className="grow">
+                            {formatDateTime(profile?.birthday, {
+                              dateStyle: 'short',
+                            })}
+                          </span>
+                        )}
+                      </div>
+                    </div>
 
-                <div className="py-4 sm:grid sm:py-2">
-                  <label className="text-sm text-text-muted">
-                    {!isEdit &&
-                      formatMessage({
-                        id: 'mobile_phone',
-                        defaultMessage: 'Mobile phone',
-                      })}
-                  </label>
-                  <div className="mt-1 flex text-sm text-text-primary sm:mt-0">
-                    {isEdit ? (
-                      <TextField
-                        className="mt-0 w-full"
-                        name="phoneMobile"
-                        label={formatMessage({
-                          id: 'mobile_phone',
-                          defaultMessage: 'Mobile phone',
-                        })}
-                      />
-                    ) : (
-                      <span className="grow">
-                        {profile?.phoneMobile || 'n/a'}
-                      </span>
-                    )}
-                  </div>
-                </div>
+                    <div className="py-4 sm:grid sm:py-2">
+                      <label className="text-sm text-text-muted">
+                        {!isEdit &&
+                          formatMessage({
+                            id: 'mobile_phone',
+                            defaultMessage: 'Mobile phone',
+                          })}
+                      </label>
+                      <div className="mt-1 flex text-sm text-text-primary sm:mt-0">
+                        {isEdit ? (
+                          <TextField
+                            className="mt-0 w-full"
+                            name="phoneMobile"
+                            label={formatMessage({
+                              id: 'mobile_phone',
+                              defaultMessage: 'Mobile phone',
+                            })}
+                          />
+                        ) : (
+                          <span className="grow">
+                            {profile?.phoneMobile || 'n/a'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
               <div className="-mx-6 bg-surface flex shrink-0 items-center justify-end space-x-4 pr-5">
                 {isEdit ? (
