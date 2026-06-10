@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+} from 'react';
 import { useRouter } from 'next/router';
 import { useIntl } from 'react-intl';
 import {
@@ -15,10 +21,11 @@ import {
 } from '@heroicons/react/24/outline';
 import useGlobalSearch from '../hooks/useGlobalSearch';
 import { useSearch } from '../SearchContext';
-import deBounce from '../../common/utils/deBounce';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import generateUniqueId from '../../common/utils/getUniqueId';
-import type { IGlobalSearchQuery, ISearchableEntity } from '../../../gql/types';
+import useAuth from '../../Auth/useAuth';
+import { IRoleAction } from '../../../gql/types';
+import type { IGlobalSearchQuery } from '../../../gql/types';
 
 type SearchResult = IGlobalSearchQuery['globalSearch']['results'][number];
 
@@ -61,6 +68,17 @@ const typeViewAllPaths: Record<string, string> = {
   ENROLLMENT: '/enrollments',
   QUOTATION: '/quotations',
   WORK: '/works',
+};
+
+const typeViewAllRoles: Record<string, IRoleAction> = {
+  PRODUCT: IRoleAction.ViewProducts,
+  USER: IRoleAction.ViewUsers,
+  ORDER: IRoleAction.ViewOrders,
+  ASSORTMENT: IRoleAction.ViewAssortments,
+  FILTER: IRoleAction.ViewFilters,
+  ENROLLMENT: IRoleAction.ViewEnrollments,
+  QUOTATION: IRoleAction.ViewQuotations,
+  WORK: IRoleAction.ViewWorkQueue,
 };
 
 function getResultTitle(result: SearchResult): string {
@@ -146,6 +164,37 @@ const LoadingSkeleton = () => (
   </div>
 );
 
+const allQuickNavItems = [
+  {
+    labelId: 'products',
+    defaultLabel: 'Products',
+    href: '/products',
+    icon: CubeIcon,
+    requiredRole: IRoleAction.ViewProducts,
+  },
+  {
+    labelId: 'orders',
+    defaultLabel: 'Orders',
+    href: '/orders',
+    icon: InboxStackIcon,
+    requiredRole: IRoleAction.ViewOrders,
+  },
+  {
+    labelId: 'users',
+    defaultLabel: 'Users',
+    href: '/users',
+    icon: UserIcon,
+    requiredRole: IRoleAction.ViewUsers,
+  },
+  {
+    labelId: 'assortments',
+    defaultLabel: 'Assortments',
+    href: '/assortments',
+    icon: RectangleStackIcon,
+    requiredRole: IRoleAction.ViewAssortments,
+  },
+];
+
 const CommandPalette = () => {
   const { isOpen, close, toggle } = useSearch();
   const [query, setQuery] = useState('');
@@ -154,47 +203,49 @@ const CommandPalette = () => {
   const { search, clear, results, counts, loading, error } = useGlobalSearch();
   const router = useRouter();
   const { formatMessage } = useIntl();
+  const { hasRole } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const quickNavItems = useMemo(
-    () => [
-      {
-        label: formatMessage({ id: 'products', defaultMessage: 'Products' }),
-        href: '/products',
-        icon: CubeIcon,
-      },
-      {
-        label: formatMessage({ id: 'orders', defaultMessage: 'Orders' }),
-        href: '/orders',
-        icon: InboxStackIcon,
-      },
-      {
-        label: formatMessage({ id: 'users', defaultMessage: 'Users' }),
-        href: '/users',
-        icon: UserIcon,
-      },
-      {
-        label: formatMessage({
-          id: 'assortments',
-          defaultMessage: 'Assortments',
-        }),
-        href: '/assortments',
-        icon: RectangleStackIcon,
-      },
-    ],
-    [formatMessage],
+    () =>
+      allQuickNavItems
+        .filter((item) => hasRole(item.requiredRole))
+        .map((item) => ({
+          label: formatMessage({
+            id: item.labelId,
+            defaultMessage: item.defaultLabel,
+          }),
+          href: item.href,
+          icon: item.icon,
+        })),
+    [formatMessage, hasRole],
   );
 
-  const debouncedSearch = useMemo(
+  const visibleCounts = useMemo(
     () =>
-      deBounce(300)((value: string) => {
+      counts.filter(
+        (c) => c.totalCount > 0 && hasRole(typeViewAllRoles[c.type]),
+      ),
+    [counts, hasRole],
+  );
+
+  const totalSelectableItems = results.length + visibleCounts.length;
+
+  const debouncedSearch = useCallback(
+    (value: string) => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+      debounceTimerRef.current = setTimeout(() => {
         if (value.trim().length >= 2) {
           search(value);
         } else {
           clear();
         }
-      }),
+      }, 300);
+    },
     [search, clear],
   );
 
@@ -220,6 +271,11 @@ const CommandPalette = () => {
       setActiveIndex(0);
       clear();
     }
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
   }, [isOpen, clear]);
 
   useEffect(() => {
@@ -241,19 +297,32 @@ const CommandPalette = () => {
     debouncedSearch(value);
   };
 
+  const navigateToResult = (index: number) => {
+    if (index < results.length) {
+      router.push(getResultHref(results[index]));
+    } else {
+      const countIndex = index - results.length;
+      const c = visibleCounts[countIndex];
+      if (c) {
+        const path = typeViewAllPaths[c.type];
+        router.push(`${path}?queryString=${encodeURIComponent(query)}`);
+      }
+    }
+    close();
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       setKeyboardNav(true);
-      setActiveIndex((prev) => Math.min(prev + 1, results.length - 1));
+      setActiveIndex((prev) => Math.min(prev + 1, totalSelectableItems - 1));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setKeyboardNav(true);
       setActiveIndex((prev) => Math.max(prev - 1, 0));
-    } else if (e.key === 'Enter' && results[activeIndex]) {
+    } else if (e.key === 'Enter' && totalSelectableItems > 0) {
       e.preventDefault();
-      router.push(getResultHref(results[activeIndex]));
-      close();
+      navigateToResult(activeIndex);
     }
   };
 
@@ -270,6 +339,8 @@ const CommandPalette = () => {
   if (!isOpen) return null;
 
   const hasQuery = query.trim().length >= 2;
+  const activeOptionId =
+    totalSelectableItems > 0 ? `search-option-${activeIndex}` : undefined;
 
   return (
     <div
@@ -292,15 +363,15 @@ const CommandPalette = () => {
             <input
               ref={inputRef}
               type="text"
+              role="combobox"
+              aria-expanded={results.length > 0}
+              aria-controls="search-listbox"
+              aria-activedescendant={activeOptionId}
               value={query}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               className="w-full px-3 py-4 bg-transparent border-0 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-0 text-sm"
               placeholder={formatMessage({
-                id: 'global_search_placeholder',
-                defaultMessage: 'Search products, orders, users...',
-              })}
-              aria-label={formatMessage({
                 id: 'global_search_placeholder',
                 defaultMessage: 'Search products, orders, users...',
               })}
@@ -336,9 +407,14 @@ const CommandPalette = () => {
               </div>
             )}
 
-            {!error && results.length > 0 && (
+            {!error && totalSelectableItems > 0 && (
               <>
-                <ul ref={listRef} className="py-2" role="listbox">
+                <ul
+                  ref={listRef}
+                  id="search-listbox"
+                  className="py-2"
+                  role="listbox"
+                >
                   {results.map((result: SearchResult, index: number) => {
                     const Icon = typeIcons[result.__typename] || CubeIcon;
                     const label = typeLabels[result.__typename] || 'Unknown';
@@ -348,6 +424,7 @@ const CommandPalette = () => {
                     return (
                       <li
                         key={`${result.__typename}-${result._id}`}
+                        id={`search-option-${index}`}
                         onClick={() => handleResultClick(result)}
                         onMouseEnter={() => handleMouseEnter(index)}
                         role="option"
@@ -382,6 +459,46 @@ const CommandPalette = () => {
                       </li>
                     );
                   })}
+                  {visibleCounts.map((c, i) => {
+                    const globalIndex = results.length + i;
+                    const isActive = globalIndex === activeIndex;
+                    return (
+                      <li
+                        key={`count-${c.type}`}
+                        id={`search-option-${globalIndex}`}
+                        onClick={() => {
+                          router.push(
+                            `${typeViewAllPaths[c.type]}?queryString=${encodeURIComponent(query)}`,
+                          );
+                          close();
+                        }}
+                        onMouseEnter={() => handleMouseEnter(globalIndex)}
+                        role="option"
+                        aria-selected={isActive}
+                        className={`flex items-center px-4 py-2 cursor-pointer text-xs ${
+                          isActive
+                            ? 'bg-slate-100 dark:bg-slate-800'
+                            : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                        }`}
+                      >
+                        <span className="text-slate-500 dark:text-slate-400">
+                          {formatMessage({
+                            id: c.type.toLowerCase(),
+                            defaultMessage:
+                              c.type.charAt(0) + c.type.slice(1).toLowerCase(),
+                          })}
+                          : {c.totalCount}
+                        </span>
+                        <span className="ml-auto text-slate-400 text-xs">
+                          {formatMessage({
+                            id: 'view',
+                            defaultMessage: 'View',
+                          })}
+                          {' →'}
+                        </span>
+                      </li>
+                    );
+                  })}
                 </ul>
                 {loading && (
                   <div className="px-4 py-1.5 border-t border-slate-200 dark:border-slate-700">
@@ -389,34 +506,6 @@ const CommandPalette = () => {
                   </div>
                 )}
               </>
-            )}
-
-            {!error && counts.length > 0 && (
-              <div className="border-t border-slate-200 dark:border-slate-700 px-4 py-2 flex flex-wrap gap-2">
-                {counts
-                  .filter((c) => c.totalCount > 0)
-                  .map((c) => {
-                    const path = typeViewAllPaths[c.type];
-                    return (
-                      <button
-                        key={c.type}
-                        onClick={() => {
-                          router.push(
-                            `${path}?queryString=${encodeURIComponent(query)}`,
-                          );
-                          close();
-                        }}
-                        className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:underline"
-                      >
-                        {formatMessage({
-                          id: c.type.toLowerCase(),
-                          defaultMessage: c.type,
-                        })}
-                        : {c.totalCount}
-                      </button>
-                    );
-                  })}
-              </div>
             )}
           </div>
 
@@ -428,21 +517,23 @@ const CommandPalette = () => {
                   defaultMessage: 'Type at least 2 characters to search',
                 })}
               </p>
-              <div className="flex flex-wrap gap-2">
-                {quickNavItems.map((item) => (
-                  <button
-                    key={item.href}
-                    onClick={() => {
-                      router.push(item.href);
-                      close();
-                    }}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-                  >
-                    <item.icon className="h-3.5 w-3.5" />
-                    {item.label}
-                  </button>
-                ))}
-              </div>
+              {quickNavItems.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {quickNavItems.map((item) => (
+                    <button
+                      key={item.href}
+                      onClick={() => {
+                        router.push(item.href);
+                        close();
+                      }}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <item.icon className="h-3.5 w-3.5" />
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

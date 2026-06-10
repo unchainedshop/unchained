@@ -59,7 +59,7 @@ export default [
       totalCount: Int!
     }
 
-    type GlobalSearchResponse @cacheControl(maxAge: 30) {
+    type GlobalSearchResponse {
       results: [GlobalSearchResult!]!
       counts: [GlobalSearchTypeCount!]!
     }

@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import { useLazyQuery } from '@apollo/client/react';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import GlobalSearchProductFragment from '../fragments/GlobalSearchFragment';
 import type {
   IGlobalSearchQuery,
@@ -14,6 +14,7 @@ const GLOBAL_SEARCH_QUERY = gql`
     $limit: Int
     $includeDraftProducts: Boolean
     $includeInactiveAssortments: Boolean
+    $includeInactiveFilters: Boolean
     $includeGuestUsers: Boolean
     $includeCarts: Boolean
   ) {
@@ -23,6 +24,7 @@ const GLOBAL_SEARCH_QUERY = gql`
       limit: $limit
       includeDraftProducts: $includeDraftProducts
       includeInactiveAssortments: $includeInactiveAssortments
+      includeInactiveFilters: $includeInactiveFilters
       includeGuestUsers: $includeGuestUsers
       includeCarts: $includeCarts
     ) {
@@ -91,6 +93,7 @@ const GLOBAL_SEARCH_QUERY = gql`
 interface SearchOptions {
   includeDraftProducts?: boolean;
   includeInactiveAssortments?: boolean;
+  includeInactiveFilters?: boolean;
   includeGuestUsers?: boolean;
   includeCarts?: boolean;
 }
@@ -99,11 +102,13 @@ const useGlobalSearch = (options: SearchOptions = {}) => {
   const {
     includeDraftProducts = true,
     includeInactiveAssortments = true,
+    includeInactiveFilters = true,
     includeGuestUsers = false,
     includeCarts = false,
   } = options;
 
   const [cleared, setCleared] = useState(false);
+  const abortRef = useRef<(() => void) | null>(null);
   const [searchFn, { data, loading, error, called }] = useLazyQuery<
     IGlobalSearchQuery,
     IGlobalSearchQueryVariables
@@ -119,28 +124,37 @@ const useGlobalSearch = (options: SearchOptions = {}) => {
       limit?: number,
     ) => {
       setCleared(false);
-      return searchFn({
+      const result = searchFn({
         variables: {
           query,
           types,
           limit,
           includeDraftProducts,
           includeInactiveAssortments,
+          includeInactiveFilters,
           includeGuestUsers,
           includeCarts,
-        } as any,
+        },
       });
+      return result;
     },
     [
       searchFn,
       includeDraftProducts,
       includeInactiveAssortments,
+      includeInactiveFilters,
       includeGuestUsers,
       includeCarts,
     ],
   );
 
-  const clear = useCallback(() => setCleared(true), []);
+  const clear = useCallback(() => {
+    setCleared(true);
+    if (abortRef.current) {
+      abortRef.current();
+      abortRef.current = null;
+    }
+  }, []);
 
   const results = cleared ? [] : data?.globalSearch?.results || [];
   const counts = cleared ? [] : data?.globalSearch?.counts || [];

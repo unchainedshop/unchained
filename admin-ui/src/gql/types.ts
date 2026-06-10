@@ -3108,6 +3108,7 @@ export type IQueryGlobalSearchArgs = {
   includeDraftProducts?: InputMaybe<Scalars['Boolean']['input']>;
   includeGuestUsers?: InputMaybe<Scalars['Boolean']['input']>;
   includeInactiveAssortments?: InputMaybe<Scalars['Boolean']['input']>;
+  includeInactiveFilters?: InputMaybe<Scalars['Boolean']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   query: Scalars['String']['input'];
   typeLimits?: InputMaybe<Array<IGlobalSearchTypeLimitInput>>;
@@ -15821,6 +15822,7 @@ export type IGlobalSearchQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
   includeDraftProducts?: InputMaybe<Scalars['Boolean']['input']>;
   includeInactiveAssortments?: InputMaybe<Scalars['Boolean']['input']>;
+  includeInactiveFilters?: InputMaybe<Scalars['Boolean']['input']>;
   includeGuestUsers?: InputMaybe<Scalars['Boolean']['input']>;
   includeCarts?: InputMaybe<Scalars['Boolean']['input']>;
 }>;
