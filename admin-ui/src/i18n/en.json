@@ -1064,6 +1064,7 @@
   "worker.startCount": "Start",
   "worker.successCount": "Success",
   "worker_dynamic": "{worker}",
+  "work": "Work",
   "workers": "Workers",
   "write_review": "Write a Review"
 }

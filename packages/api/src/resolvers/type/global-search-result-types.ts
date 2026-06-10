@@ -9,13 +9,9 @@ const productTypeMap: Record<string, string> = {
 
 export const GlobalSearchResult = {
   __resolveType(obj: Record<string, any>): string {
-    if (obj.emails || obj.username || obj.lastLogin) return 'User';
-    if (obj.orderNumber != null || obj.paymentId || obj.deliveryId) return 'Order';
-    if (obj.isRoot !== undefined) return 'Assortment';
-    if (obj.key && obj.options) return 'Filter';
-    if (obj.billingAddress) return 'Enrollment';
-    if (obj.priority != null && obj.scheduled) return 'Work';
-    if (obj.quotationNumber != null || obj.expires) return 'Quotation';
-    return productTypeMap[obj.type] || 'SimpleProduct';
+    if (obj.__typename === 'Product') {
+      return productTypeMap[obj.type] || 'SimpleProduct';
+    }
+    return obj.__typename;
   },
 };

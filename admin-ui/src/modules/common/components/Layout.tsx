@@ -69,7 +69,9 @@ const QuotationIcon = ({ className }) => (
 const useIsMac = () => {
   const [isMac, setIsMac] = useState(false);
   useEffect(() => {
-    setIsMac(navigator.platform?.toUpperCase().includes('MAC'));
+    const platform =
+      (navigator as any).userAgentData?.platform || navigator.platform || '';
+    setIsMac(platform.toUpperCase().includes('MAC'));
   }, []);
   return isMac;
 };

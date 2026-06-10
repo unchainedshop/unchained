@@ -425,6 +425,7 @@ export default [
         typeLimits: [GlobalSearchTypeLimitInput!]
         includeDraftProducts: Boolean = true
         includeInactiveAssortments: Boolean = true
+        includeInactiveFilters: Boolean = true
         includeGuestUsers: Boolean = false
         includeCarts: Boolean = false
       ): GlobalSearchResponse! @cacheControl(maxAge: 30)
