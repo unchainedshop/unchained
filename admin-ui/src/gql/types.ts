@@ -924,6 +924,35 @@ export type IGeoPosition = {
   longitude: Scalars['Float']['output'];
 };
 
+export type IGlobalSearchResponse = {
+  counts: Array<IGlobalSearchTypeCount>;
+  results: Array<IGlobalSearchResult>;
+};
+
+export type IGlobalSearchResult =
+  | IAssortment
+  | IBundleProduct
+  | IConfigurableProduct
+  | IEnrollment
+  | IFilter
+  | IOrder
+  | IPlanProduct
+  | IQuotation
+  | ISimpleProduct
+  | ITokenizedProduct
+  | IUser
+  | IWork;
+
+export type IGlobalSearchTypeCount = {
+  totalCount: Scalars['Int']['output'];
+  type: ISearchableEntity;
+};
+
+export type IGlobalSearchTypeLimitInput = {
+  limit: Scalars['Int']['input'];
+  type: ISearchableEntity;
+};
+
 export type ILanguage = {
   _id: Scalars['ID']['output'];
   isActive?: Maybe<Scalars['Boolean']['output']>;
@@ -2833,6 +2862,8 @@ export type IQuery = {
   filters: Array<IFilter>;
   /** Returns total number of filters */
   filtersCount: Scalars['Int']['output'];
+  /** Search across multiple entity types in a single request */
+  globalSearch: IGlobalSearchResponse;
   /** User impersonating currently logged in user */
   impersonator?: Maybe<IUser>;
   /** Get a specific language */
@@ -3070,6 +3101,18 @@ export type IQueryFiltersArgs = {
 export type IQueryFiltersCountArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
   queryString?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type IQueryGlobalSearchArgs = {
+  includeCarts?: InputMaybe<Scalars['Boolean']['input']>;
+  includeDraftProducts?: InputMaybe<Scalars['Boolean']['input']>;
+  includeGuestUsers?: InputMaybe<Scalars['Boolean']['input']>;
+  includeInactiveAssortments?: InputMaybe<Scalars['Boolean']['input']>;
+  includeInactiveFilters?: InputMaybe<Scalars['Boolean']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  query: Scalars['String']['input'];
+  typeLimits?: InputMaybe<Array<IGlobalSearchTypeLimitInput>>;
+  types?: InputMaybe<Array<ISearchableEntity>>;
 };
 
 export type IQueryLanguageArgs = {
@@ -3518,6 +3561,17 @@ export type ISearchResultProductsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
+
+export enum ISearchableEntity {
+  Assortment = 'ASSORTMENT',
+  Enrollment = 'ENROLLMENT',
+  Filter = 'FILTER',
+  Order = 'ORDER',
+  Product = 'PRODUCT',
+  Quotation = 'QUOTATION',
+  User = 'USER',
+  Work = 'WORK',
+}
 
 export type IShop = {
   _id: Scalars['ID']['output'];

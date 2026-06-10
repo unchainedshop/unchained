@@ -220,10 +220,6 @@ class MyDocument extends Document {
             href={`/admin-ui-theme.css?v=${process.env.npm_package_version}`}
             id="theme-config-style"
           />
-          <script
-            src={`/admin-ui-permissions.js?v=${process.env.npm_package_version}`}
-            id="role-config-script"
-          />
         </Head>
         <body className="h-full bg-surface-subtle text-text-primary">
           <noscript
