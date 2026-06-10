@@ -4,6 +4,7 @@ import {
   ClipboardDocumentListIcon,
   PuzzlePieceIcon,
 } from '@heroicons/react/20/solid';
+import { IRoleAction } from '../../../gql/types';
 
 import { toast } from 'react-toastify';
 import SelectOptions from '../../common/components/SelectOptions';
@@ -14,6 +15,7 @@ import FilterSummary from './FilterSummary';
 import useUpdateFilter from '../hooks/useUpdateFilter';
 import DisplayExtendedFields from '../../common/components/DisplayExtendedFields';
 import LocaleWrapper from '../../common/components/LocaleWrapper';
+import useAuth from '../../Auth/useAuth';
 
 const GetCurrentTab = ({ selectedView, id, ...extendedData }) => {
   if (selectedView === 'text')
@@ -42,6 +44,7 @@ const FilterDetail = ({ filter, extendedData }) => {
   const { _id: filterId, isActive, key, type, created, updated } = filter || {};
   const { formatMessage, formatDate } = useIntl();
   const { updateFilter } = useUpdateFilter();
+  const { hasRole } = useAuth();
 
   const filterOptions = [
     {
@@ -97,6 +100,7 @@ const FilterDetail = ({ filter, extendedData }) => {
       },
 
       current: isActive,
+      disable: !hasRole(IRoleAction.ManageFilters),
       bgColor: 'green',
     },
     {
@@ -124,6 +128,7 @@ const FilterDetail = ({ filter, extendedData }) => {
       }),
 
       current: !isActive,
+      disable: !hasRole(IRoleAction.ManageFilters),
       bgColor: 'slate',
     },
   ];

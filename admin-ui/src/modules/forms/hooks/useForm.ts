@@ -81,11 +81,12 @@ const useForm = ({
         } else if (typeof errors === 'string') {
           reset = false;
           setSubmitError(getSubmitErrorMessage(errors) || parseError(errors));
+        } else if (typeof errors === 'object' && errors !== null) {
+          reset = false;
+          setSubmitError(getSubmitErrorMessage(errors) || parseError(errors));
         } else {
           reset = false;
-          setSubmitError(
-            getSubmitErrorMessage(!!errors) || parseError(!!errors),
-          );
+          setSubmitError(getSubmitErrorMessage(errors) || parseError(errors));
         }
       }
     } catch (error) {

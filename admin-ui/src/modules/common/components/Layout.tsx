@@ -115,6 +115,7 @@ const Layout = ({
         id: 'recent_exports',
         defaultMessage: 'Recent exports',
       }),
+      requiredRole: 'viewWorkQueue',
       icon: FolderArrowDownIcon,
       href: '/exports',
       count: recentExports?.count || '',
@@ -243,7 +244,7 @@ const Layout = ({
         {
           name: formatMessage({ id: 'event', defaultMessage: 'Events' }),
           href: '/events',
-          requiredRole: 'showEvents',
+          requiredRole: 'viewEvents',
         },
       ],
     },

@@ -11,7 +11,7 @@
   "scripts": {
     "prepublishOnly": "npm run build",
     "dev": "next dev",
-    "build": "node ./generate-permissions.js && NODE_ENV=production next build",
+    "build": "NODE_ENV=production next build",
     "start": "next start",
     "lint": "eslint .",
     "format": "eslint --fix .",

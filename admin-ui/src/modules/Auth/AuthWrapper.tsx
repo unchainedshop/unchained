@@ -1,8 +1,14 @@
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import useCurrentUser from '../accounts/hooks/useCurrentUser';
 import AuthContext from './AuthContext';
-import loadRoleConfig from '../common/utils/loadRoleConfig';
+import {
+  checkAccess,
+  checkRole,
+  isPublicOnlyPage,
+  isUserAdmin,
+  isUserAuthenticated,
+} from './permissionConfig';
 import Loading from '@/components/ui/Loading';
 import useUsersCount from '../accounts/hooks/useUsersCount';
 
@@ -14,29 +20,20 @@ const AuthWrapper = ({ children }) => {
     usersCount,
     error: userCountError,
   } = useUsersCount();
-  const {
-    checkAccess,
-    isUserAuthenticated,
-    isUserAdmin,
-    checkRole,
-    isPublicOnlyPage,
-  } = useMemo(() => loadRoleConfig(), []);
 
   const ctx = useMemo(() => {
     return {
       isAdmin: () => {
-        if (!isUserAdmin) return false;
         return isUserAdmin(currentUser);
       },
       hasRole: (action: string | ((user) => boolean)) => {
         if (typeof action === 'function') {
           return action(currentUser);
         }
-        if (!checkRole) return false;
         return checkRole(currentUser, action);
       },
     };
-  }, [currentUser, checkRole, isUserAdmin]);
+  }, [currentUser]);
 
   useEffect(() => {
     if (loading || usersCountLoading) return;
@@ -61,16 +58,7 @@ const AuthWrapper = ({ children }) => {
     if (nextPathname && router.pathname !== nextPathname) {
       router.replace(nextPathname);
     }
-  }, [
-    currentUser,
-    loading,
-    isUserAdmin,
-    isUserAuthenticated,
-    isPublicOnlyPage,
-    router,
-    checkAccess,
-    usersCountLoading,
-  ]);
+  }, [currentUser, loading, router, usersCountLoading]);
 
   return (
     <AuthContext.Provider value={ctx}>

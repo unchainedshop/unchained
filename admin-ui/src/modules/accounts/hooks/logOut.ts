@@ -10,13 +10,15 @@ const logOut = async (apollo, router = null) => {
       }
     `,
   });
-  await apollo.resetStore();
+  try {
+    await apollo.resetStore();
+  } catch (e) {
+    if (e?.name !== 'AbortError') throw e;
+  }
 
-  // Redirect to login page if router is provided
   if (router) {
     router.push('/log-in');
   } else if (typeof window !== 'undefined') {
-    // Fallback to window.location if no router provided
     window.location.href = '/log-in';
   }
 };
