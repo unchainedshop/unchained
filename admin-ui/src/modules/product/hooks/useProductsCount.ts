@@ -30,6 +30,7 @@ const useProductsCount = ({
     IProductsCountQuery,
     IProductsCountQueryVariables
   >(ProductsCountQuery, {
+    errorPolicy: 'all',
     variables: {
       queryString,
       includeDrafts,

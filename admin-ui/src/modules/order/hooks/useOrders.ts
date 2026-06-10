@@ -60,6 +60,7 @@ const useOrders = ({
     IOrdersQuery,
     IOrdersQueryVariables
   >(OrdersQuery, {
+    errorPolicy: 'all',
     variables: {
       limit,
       deliveryProviderIds: deliveryProviderIds?.length

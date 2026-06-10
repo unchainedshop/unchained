@@ -81,11 +81,13 @@ const getActiveFilesAndCount = (
 interface UseRecentExportsParams {
   sortOptions?: ISortOptionInput[];
   queryString?: string | null;
+  skip?: boolean;
 }
 
 const useRecentExports = ({
   queryString = null,
   sortOptions,
+  skip = false,
 }: UseRecentExportsParams = {}): RecentExportsResult => {
   const twentyFourHoursAgo = useMemo(
     () => new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
@@ -98,6 +100,7 @@ const useRecentExports = ({
     created: { start: twentyFourHoursAgo },
     status: [IWorkStatus.Success],
     pollInterval: 60000,
+    skip,
   });
 
   return getActiveFilesAndCount(workQueue as ExportedWork[]);

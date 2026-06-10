@@ -3,13 +3,15 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import useWorkQueue from '../hooks/useWorkQueue';
-import { IWorkStatus } from '../../../gql/types';
+import { IRoleAction, IWorkStatus } from '../../../gql/types';
 import Link from 'next/link';
 import { useIntl } from 'react-intl';
 import useLocalStorage from '../../common/hooks/useLocalStorage';
+import useAuth from '../../Auth/useAuth';
 
 export const WorkQueueWarningBanner = () => {
   const { formatMessage } = useIntl();
+  const { hasRole } = useAuth();
   const [isDismissed, setIsDismissed] = useLocalStorage(
     'workQueueWarningBanner:dismissed',
     false,
@@ -17,6 +19,7 @@ export const WorkQueueWarningBanner = () => {
   const { workQueue } = useWorkQueue({
     status: [IWorkStatus.Failed],
     pollInterval: 0,
+    skip: !hasRole(IRoleAction.ViewWorkQueue),
   });
   const normalizedQueue = workQueue.reduce((prev, work) => {
     if (prev[work?.type]) {
