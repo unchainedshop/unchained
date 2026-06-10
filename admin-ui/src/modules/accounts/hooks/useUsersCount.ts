@@ -31,6 +31,7 @@ const useUsersCount = ({
     IUsersCountQuery,
     IUsersCountQueryVariables
   >(UsersCountQuery, {
+    errorPolicy: 'all',
     variables: {
       includeGuests,
       queryString,

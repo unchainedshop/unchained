@@ -1,5 +1,6 @@
 import React from 'react';
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../../gql/types';
 import {
   CubeIcon,
   UsersIcon,
@@ -7,13 +8,15 @@ import {
 } from '@heroicons/react/20/solid';
 import MetricCard from './MetricCard';
 import useDashboardMetrics from '../hooks/useDashboardMetrics';
+import useAuth from '../../Auth/useAuth';
 
 const DashboardMetrics: React.FC = () => {
   const { formatMessage } = useIntl();
   const { metrics } = useDashboardMetrics();
+  const { hasRole } = useAuth();
 
   const metricCards = [
-    {
+    hasRole(IRoleAction.ViewProducts) && {
       title: formatMessage({
         id: 'products_count',
         defaultMessage: 'Products',
@@ -23,7 +26,7 @@ const DashboardMetrics: React.FC = () => {
       loading: metrics.products.loading,
       href: '/products',
     },
-    {
+    hasRole(IRoleAction.ViewAssortments) && {
       title: formatMessage({
         id: 'categories_count',
         defaultMessage: 'Assortments',
@@ -35,7 +38,7 @@ const DashboardMetrics: React.FC = () => {
       loading: metrics.categories.loading,
       href: '/assortments',
     },
-    {
+    hasRole(IRoleAction.ViewUsers) && {
       title: formatMessage({
         id: 'customers_count',
         defaultMessage: 'Customers',
@@ -47,7 +50,9 @@ const DashboardMetrics: React.FC = () => {
       loading: metrics.customers.loading,
       href: '/users',
     },
-  ];
+  ].filter(Boolean);
+
+  if (metricCards.length === 0) return null;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">

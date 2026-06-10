@@ -194,6 +194,7 @@ const AssortmentDetail = ({
       }),
       current: isActive,
       bgColor: 'emerald',
+      disable: !hasRole(IRoleAction.ManageAssortments),
       onClick: async () => {
         await setActive(true);
         toast.success(
@@ -220,6 +221,7 @@ const AssortmentDetail = ({
       }),
       current: !isActive,
       bgColor: 'amber',
+      disable: !hasRole(IRoleAction.ManageAssortments),
       onClick: async () => {
         await setActive(false);
         toast.success(
@@ -249,6 +251,7 @@ const AssortmentDetail = ({
       }),
       current: isRoot,
       bgColor: 'emerald',
+      disable: !hasRole(IRoleAction.ManageAssortments),
       onClick: async () => {
         await setIsRoot(true);
         toast.success(
@@ -275,6 +278,7 @@ const AssortmentDetail = ({
       }),
       current: !isRoot,
       bgColor: 'emerald',
+      disable: !hasRole(IRoleAction.ManageAssortments),
       onClick: async () => {
         await setIsRoot(false);
         toast.success(
@@ -344,6 +348,7 @@ const AssortmentDetail = ({
                 type="number"
                 className="text-center w-12 bg-transparent border border-slate-300 dark:border-slate-600 rounded focus:ring-0 focus:outline-none text-sm font-semibold text-slate-900 dark:text-slate-300 px-2 py-1"
                 defaultValue={assortment?.sequence}
+                disabled={!hasRole(IRoleAction.ManageAssortments)}
                 onBlur={updateAssortmentSequence}
               />
             </div>

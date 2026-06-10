@@ -17,9 +17,11 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '../../../components/ui/chart';
+import { IRoleAction } from '../../../gql/types';
 import { useFormatPrice } from '../utils/utils';
 import MetricGraphCard from './MetricGraphCard';
 import useOrderAnalytics from '../hooks/useOrderAnalytics';
+import useAuth from '../../Auth/useAuth';
 
 const chartConfig = {
   sales: {
@@ -38,6 +40,8 @@ const chartConfig = {
 
 const AnalyticsDashboard: React.FC = () => {
   const { formatMessage } = useIntl();
+  const { hasRole } = useAuth();
+  const canViewOrders = hasRole(IRoleAction.ViewOrders);
   const {
     dateRange,
     totalSales,
@@ -46,8 +50,11 @@ const AnalyticsDashboard: React.FC = () => {
     salesData,
     loading,
     currencyCode,
-  } = useOrderAnalytics({ days: 30 });
+  } = useOrderAnalytics({ days: 30, skip: !canViewOrders });
   const { formatPrice } = useFormatPrice();
+
+  if (!canViewOrders) return null;
+
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">

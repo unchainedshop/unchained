@@ -13,6 +13,7 @@ import ProgressIndicator from './ProgressIndicator';
 import SetupStepCard from './SetupStepCard';
 import { Step } from '../../common/utils/getSetupStepsConfigurationsMeta';
 import useApp from '../../common/hooks/useApp';
+import useAuth from '../../Auth/useAuth';
 
 interface ShopSetupChecklistProps {
   className?: string;
@@ -24,6 +25,9 @@ const ShopSetupChecklist: React.FC<ShopSetupChecklistProps> = ({
   const { formatMessage } = useIntl();
   const { configuration, loading, error } = useShopConfiguration();
   const { isSystemReady } = useApp();
+  const { isAdmin } = useAuth();
+
+  if (!isAdmin()) return null;
   const [expandedSections, setExpandedSections] = useState({
     essential: true,
     commerce: false,

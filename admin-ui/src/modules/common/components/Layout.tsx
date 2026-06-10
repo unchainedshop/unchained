@@ -26,7 +26,9 @@ import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import useOutsideClick from '../hooks/useOutsideClick';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import { IRoleAction } from '../../../gql/types';
 import AuthWrapper from '../../Auth/AuthWrapper';
+import useAuth from '../../Auth/useAuth';
 import formatUsername from '../utils/formatUsername';
 import { useApolloClient } from '@apollo/client/react';
 import { toast } from 'react-toastify';
@@ -59,7 +61,10 @@ const Layout = ({
   const { formatMessage } = useIntl();
   const { currentUser } = useCurrentUser();
   const { configuration } = useShopConfiguration();
-  const recentExports = useRecentExports();
+  const { isAdmin, hasRole } = useAuth();
+  const recentExports = useRecentExports({
+    skip: !hasRole(IRoleAction.ViewWorkQueue),
+  });
 
   const { shopInfo } = useShopInfo();
   const [hideNav, setHideNav] = useState(true);
@@ -91,16 +96,16 @@ const Layout = ({
     );
   };
 
-  const conditionalDashboardTitle = configuration.isFullyConfigured
-    ? formatMessage({ id: 'dashboard', defaultMessage: 'Dashboard' })
-    : formatMessage({
-        id: 'complete_system_setup',
-        defaultMessage: 'Complete Setup',
-      });
+  const showSetupLabel = !configuration.isFullyConfigured && isAdmin();
 
   const defaultNavigation = [
     {
-      name: conditionalDashboardTitle,
+      name: showSetupLabel
+        ? formatMessage({
+            id: 'complete_system_setup',
+            defaultMessage: 'Complete Setup',
+          })
+        : formatMessage({ id: 'dashboard', defaultMessage: 'Dashboard' }),
       icon: HomeModernIcon,
       href: '/',
     },
@@ -115,6 +120,7 @@ const Layout = ({
         id: 'recent_exports',
         defaultMessage: 'Recent exports',
       }),
+      requiredRole: 'viewWorkQueue',
       icon: FolderArrowDownIcon,
       href: '/exports',
       count: recentExports?.count || '',
@@ -243,7 +249,7 @@ const Layout = ({
         {
           name: formatMessage({ id: 'event', defaultMessage: 'Events' }),
           href: '/events',
-          requiredRole: 'showEvents',
+          requiredRole: 'viewEvents',
         },
       ],
     },

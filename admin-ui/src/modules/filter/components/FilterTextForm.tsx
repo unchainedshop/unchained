@@ -91,6 +91,7 @@ const FilterTextForm = ({ filterId }) => {
             <TextField
               name="title"
               id="title"
+              disabled={!hasRole(IRoleAction.ManageFilters)}
               label={formatMessage({
                 id: 'title',
                 defaultMessage: 'Title',
@@ -104,6 +105,7 @@ const FilterTextForm = ({ filterId }) => {
             <TextField
               name="subtitle"
               id="subtitle"
+              disabled={!hasRole(IRoleAction.ManageFilters)}
               label={formatMessage({
                 id: 'subtitle',
                 defaultMessage: 'Subtitle',

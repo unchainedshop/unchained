@@ -32,12 +32,15 @@ const useCountries = ({
   offset = 0,
   includeInactive = true,
   sort = [],
-} = {}) => {
+  skip = false,
+}: ICountriesQueryVariables & { skip?: boolean } = {}) => {
   const { data, loading, error, fetchMore } = useQuery<
     ICountriesQuery,
     ICountriesQueryVariables
   >(CountriesQuery, {
     variables: { queryString, limit, offset, includeInactive, sort },
+    errorPolicy: 'all',
+    skip,
   });
 
   const countries = data?.countries || [];

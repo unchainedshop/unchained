@@ -26,6 +26,7 @@ import UserOrders from './UserOrders';
 import UserQuotations from './UserQuotations';
 import UserTokens from './UserTokens';
 import useAuth from '../../Auth/useAuth';
+import useCurrentUser from '../hooks/useCurrentUser';
 
 const GetCurrentTab = ({ user, selectedView, ...extendedData }) => {
   if (!user) return <Loading />;
@@ -50,6 +51,8 @@ const GetCurrentTab = ({ user, selectedView, ...extendedData }) => {
 const UserSettings = ({ user, extendedData }) => {
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
+  const { currentUser } = useCurrentUser();
+  const isOwnUser = currentUser?._id === user?._id;
 
   const userProfileSettingOptions = [
     {
@@ -62,7 +65,7 @@ const UserSettings = ({ user, extendedData }) => {
       title: formatMessage({ id: 'account', defaultMessage: 'Account' }),
       Icon: <LockClosedIcon className="h-5 w-5" />,
     },
-    {
+    (isOwnUser || hasRole(IRoleAction.ViewUserOrders)) && {
       id: 'orders',
       title: formatMessage({ id: 'orders', defaultMessage: 'Orders' }),
       Icon: <ShoppingCartIcon className="h-5 w-5" />,
@@ -83,7 +86,7 @@ const UserSettings = ({ user, extendedData }) => {
       }),
       Icon: <ClipboardDocumentListIcon className="h-5 w-5" />,
     },
-    {
+    (isOwnUser || hasRole(IRoleAction.ViewUserPrivateInfos)) && {
       id: 'payment_credentials',
       title: formatMessage({
         id: 'payment_credentials',
@@ -91,7 +94,7 @@ const UserSettings = ({ user, extendedData }) => {
       }),
       Icon: <CreditCardIcon className="h-5 w-5" />,
     },
-    {
+    (isOwnUser || hasRole(IRoleAction.ViewUserTokens)) && {
       id: 'tokens',
       title: formatMessage({
         id: 'tokens',
@@ -107,7 +110,7 @@ const UserSettings = ({ user, extendedData }) => {
       }),
       Icon: <StarIcon className="h-5 w-5" />,
     },
-    {
+    (isOwnUser || hasRole(IRoleAction.ViewUserPrivateInfos)) && {
       id: 'logs',
       title: formatMessage({
         id: 'user-activities',

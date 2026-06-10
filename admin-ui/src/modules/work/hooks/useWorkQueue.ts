@@ -49,13 +49,15 @@ const useWorkQueue = ({
   sort: sortOptions = [],
   offset = 0,
   pollInterval = 1000,
-}: IWorkQueueQueryVariables & { pollInterval?: number }) => {
+  skip = false,
+}: IWorkQueueQueryVariables & { pollInterval?: number; skip?: boolean }) => {
   const { data, loading, error, fetchMore, previousData } = useQuery<
     IWorkQueueQuery,
     IWorkQueueQueryVariables
   >(WorkQueueQuery, {
     fetchPolicy: 'cache-and-network',
-    pollInterval,
+    pollInterval: skip ? 0 : pollInterval,
+    skip,
     variables: {
       queryString,
       offset,

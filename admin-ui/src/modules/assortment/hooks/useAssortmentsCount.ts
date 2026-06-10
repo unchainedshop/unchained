@@ -31,6 +31,7 @@ const useAssortmentsCount = ({
     IAssortmentsCountQuery,
     IAssortmentsCountQueryVariables
   >(AssortmentsCountQuery, {
+    errorPolicy: 'all',
     variables: {
       queryString,
       tags,

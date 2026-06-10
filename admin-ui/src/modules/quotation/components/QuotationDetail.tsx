@@ -16,10 +16,13 @@ import QuotationConfigurationForm from './QuotationConfigurationForm';
 import useMakeQuotationProposal from '../hooks/useMakeQuotationProposal';
 import JSONView from '@/components/ui/JSONView';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import { IRoleAction } from '../../../gql/types';
+import useAuth from '../../Auth/useAuth';
 
 const QuotationDetail = ({ quotation }) => {
   const { formatMessage } = useIntl();
   const { setModal } = useModal();
+  const { hasRole } = useAuth();
 
   const { statusTypes: quotationStatusTypes } =
     useStatusTypes('QuotationStatus');
@@ -131,25 +134,27 @@ const QuotationDetail = ({ quotation }) => {
       id: 1,
       content: 'created',
       visible: true,
-      Component: quotation?.status === 'REQUESTED' && (
-        <Button
-          text="Verify"
-          onClick={onVerify}
-          className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-slate-900 dark:border-slate-600 bg-slate-800 dark:bg-slate-600 px-2 py-1 text-base font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500  dark:focus:border-slate-400 focus:outline-hidden focus:ring-0 focus:ring-slate-800 dark:focus:ring-slate-400"
-        />
-      ),
+      Component: quotation?.status === 'REQUESTED' &&
+        hasRole(IRoleAction.AnswerQuotation) && (
+          <Button
+            text="Verify"
+            onClick={onVerify}
+            className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-slate-900 dark:border-slate-600 bg-slate-800 dark:bg-slate-600 px-2 py-1 text-base font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500  dark:focus:border-slate-400 focus:outline-hidden focus:ring-0 focus:ring-slate-800 dark:focus:ring-slate-400"
+          />
+        ),
     },
     PROCESSING: {
       id: 2,
       content: 'updated',
       visible: quotation?.status === 'PROCESSING',
-      Component: quotation?.status === 'PROCESSING' && (
-        <Button
-          text="Propose"
-          onClick={proposeQuote}
-          className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-slate-900 dark:border-slate-600 bg-slate-800 dark:bg-slate-600 px-2 py-1 text-base font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500  dark:focus:border-slate-400 focus:outline-hidden focus:ring-0 focus:ring-slate-800 dark:focus:ring-slate-400"
-        />
-      ),
+      Component: quotation?.status === 'PROCESSING' &&
+        hasRole(IRoleAction.AnswerQuotation) && (
+          <Button
+            text="Propose"
+            onClick={proposeQuote}
+            className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-slate-900 dark:border-slate-600 bg-slate-800 dark:bg-slate-600 px-2 py-1 text-base font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500  dark:focus:border-slate-400 focus:outline-hidden focus:ring-0 focus:ring-slate-800 dark:focus:ring-slate-400"
+          />
+        ),
     },
     PROPOSED: {
       id: 3,
@@ -161,7 +166,8 @@ const QuotationDetail = ({ quotation }) => {
       content: 'rejected',
       visible: quotation?.status !== 'FULFILLED',
       Component: quotation?.status !== 'FULFILLED' &&
-        quotation?.status !== 'REJECTED' && (
+        quotation?.status !== 'REJECTED' &&
+        hasRole(IRoleAction.AnswerQuotation) && (
           <Button
             text="Reject"
             onClick={onReject}

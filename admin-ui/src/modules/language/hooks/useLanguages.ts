@@ -31,12 +31,15 @@ const useLanguages = ({
   offset = 0,
   includeInactive = true,
   sort = [],
-}: ILanguagesQueryVariables = {}) => {
+  skip = false,
+}: ILanguagesQueryVariables & { skip?: boolean } = {}) => {
   const { data, loading, error, fetchMore } = useQuery<
     ILanguagesQuery,
     ILanguagesQueryVariables
   >(LanguagesQuery, {
     variables: { queryString, limit, offset, includeInactive, sort },
+    errorPolicy: 'all',
+    skip,
   });
   const languages = data?.languages || [];
   const languagesCount = data?.languagesCount;

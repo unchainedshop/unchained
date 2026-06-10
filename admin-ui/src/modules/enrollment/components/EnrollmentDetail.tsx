@@ -19,11 +19,13 @@ import DangerMessage from '../../modal/components/DangerMessage';
 import EnrollmentDetailHeader from './EnrollmentDetailHeader';
 import JSONView from '@/components/ui/JSONView';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import { IEnrollment } from '../../../gql/types';
+import { IEnrollment, IRoleAction } from '../../../gql/types';
+import useAuth from '../../Auth/useAuth';
 
 const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
   const { formatMessage } = useIntl();
   const { setModal } = useModal();
+  const { hasRole } = useAuth();
 
   const { statusTypes: enrollmentStatusTypes } =
     useStatusTypes('EnrollmentStatus');
@@ -156,31 +158,33 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
       id: 3,
       content: 'updated',
       visible: true,
-      Component: enrollment?.status === 'PAUSED' && (
-        <Button
-          text={formatMessage({
-            id: 'activate',
-            defaultMessage: 'Activate',
-          })}
-          onClick={onActivateEnrollment}
-          className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-slate-900 dark:border-slate-600 bg-slate-800 dark:bg-slate-600 px-2 py-1 text-base font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500  dark:focus:border-slate-400 focus:outline-hidden focus:ring-0 focus:ring-slate-800 dark:focus:ring-slate-400"
-        />
-      ),
+      Component: enrollment?.status === 'PAUSED' &&
+        hasRole(IRoleAction.UpdateEnrollment) && (
+          <Button
+            text={formatMessage({
+              id: 'activate',
+              defaultMessage: 'Activate',
+            })}
+            onClick={onActivateEnrollment}
+            className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-slate-900 dark:border-slate-600 bg-slate-800 dark:bg-slate-600 px-2 py-1 text-base font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500  dark:focus:border-slate-400 focus:outline-hidden focus:ring-0 focus:ring-slate-800 dark:focus:ring-slate-400"
+          />
+        ),
     },
     TERMINATED: {
       id: 4,
       content: 'updated',
       visible: true,
-      Component: enrollment?.status !== 'TERMINATED' && (
-        <Button
-          text={formatMessage({
-            id: 'terminate_enrollment',
-            defaultMessage: 'Terminate Enrollment',
-          })}
-          onClick={onTerminateEnrollment}
-          className="bg-white-300  inline-flex items-center space-x-2 rounded-md border border-rose-500 bg-rose-500 px-2 py-1 text-base font-medium text-white hover:bg-rose-700 focus:border-rose-400 focus:outline-hidden focus:ring-0 focus:ring-rose-400"
-        />
-      ),
+      Component: enrollment?.status !== 'TERMINATED' &&
+        hasRole(IRoleAction.UpdateEnrollment) && (
+          <Button
+            text={formatMessage({
+              id: 'terminate_enrollment',
+              defaultMessage: 'Terminate Enrollment',
+            })}
+            onClick={onTerminateEnrollment}
+            className="bg-white-300  inline-flex items-center space-x-2 rounded-md border border-rose-500 bg-rose-500 px-2 py-1 text-base font-medium text-white hover:bg-rose-700 focus:border-rose-400 focus:outline-hidden focus:ring-0 focus:ring-rose-400"
+          />
+        ),
     },
   };
 
@@ -311,16 +315,17 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
                   <div className="mt-2 text-sm text-slate-500">
                     {enrollment?.contact?.emailAddress}
                   </div>
-                  {enrollment?.contact?.emailAddress && (
-                    <Button
-                      text={formatMessage({
-                        id: 'send_email_button',
-                        defaultMessage: 'Send Email',
-                      })}
-                      className="px-2 py-1"
-                      onClick={onSendEnrollmentEmail}
-                    />
-                  )}
+                  {enrollment?.contact?.emailAddress &&
+                    hasRole(IRoleAction.UpdateEnrollment) && (
+                      <Button
+                        text={formatMessage({
+                          id: 'send_email_button',
+                          defaultMessage: 'Send Email',
+                        })}
+                        className="px-2 py-1"
+                        onClick={onSendEnrollmentEmail}
+                      />
+                    )}
                 </div>
               )}
             </div>

@@ -4,6 +4,7 @@ import useLanguages from '../../language/hooks/useLanguages';
 import useCountries from '../../country/hooks/useCountries';
 import useShopInfo from '../hooks/useShopInfo';
 import useLocalStorage from '../hooks/useLocalStorage';
+import useCurrentUser from '../../accounts/hooks/useCurrentUser';
 import { IShopInfoQuery } from '../../../gql/types';
 
 const isSupportedLocale = (locale) => {
@@ -51,14 +52,16 @@ export const AppContextWrapper = ({
   children: React.ReactNode;
   onlyFull?: boolean;
 }) => {
-  const { languages } = useLanguages();
+  const { currentUser } = useCurrentUser();
+  const isAuthenticated = !!currentUser?._id && !currentUser?.isGuest;
+  const { languages } = useLanguages({ skip: !isAuthenticated });
   const { locale } = useIntl();
   const [storedLocale, setStoredLocale] = useLocalStorage(
     'selectedLocale',
     null,
   );
   const { shopInfo, loading: shopInfoLoading } = useShopInfo();
-  const { countries } = useCountries();
+  const { countries } = useCountries({ skip: !isAuthenticated });
 
   const [selectedLocale, setSelectedLocale] = useState<string>(locale);
   const setSelectedLocaleWrapper = (newLocale: string) => {

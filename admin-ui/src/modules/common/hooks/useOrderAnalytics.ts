@@ -64,8 +64,10 @@ const buildSalesData = (
 
 const useOrderAnalytics = ({
   days = 30,
+  skip = false,
 }: {
   days?: number;
+  skip?: boolean;
 }): SalesAnalyticsResult => {
   const endDate = useMemo(() => new Date(), []);
   const startDate = subDays(endDate, days);
@@ -84,6 +86,7 @@ const useOrderAnalytics = ({
   >(ORDER_ANALYTICS_QUERY, {
     variables: { dateRange },
     errorPolicy: 'all',
+    skip,
   });
 
   return useMemo(() => {
