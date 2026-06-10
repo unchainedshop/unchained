@@ -97,6 +97,14 @@ export const checkAccess = (
 ) => {
   if (!user?._id && !UNRESTRICTED_PAGES.includes(pathname)) return false;
   if (user?.isGuest) return false;
+  if (!ROUTE_ROLES[pathname] && !UNRESTRICTED_PAGES.includes(pathname)) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(
+        `[permissionConfig] Unmapped route: "${pathname}" — access denied by default`,
+      );
+    }
+    return false;
+  }
   if (
     ROUTE_ROLES[pathname] === UNRESTRICTED ||
     isUserAdmin(user) ||
