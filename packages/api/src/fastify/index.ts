@@ -12,7 +12,7 @@ import { connectChat } from './chatHandler.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
 import { mountRoutes } from './mountRoutes.ts';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
 import { generateThemeCSS, type AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
@@ -251,7 +251,14 @@ export const connect = async (
     });
 
     for (const [path, asset] of pluginRoutes) {
-      fastify.get(path, async (_, reply) => {
+      fastify.get(path, async (request, reply) => {
+        if (asset.etag) {
+          const ifNoneMatch = request.headers['if-none-match'];
+          if (ifNoneMatch === asset.etag) {
+            return reply.code(304).send();
+          }
+          reply.header('ETag', asset.etag);
+        }
         const body = typeof asset.content === 'function' ? asset.content() : asset.content;
         return reply.header('Cache-Control', asset.cacheControl).type(asset.contentType).send(body);
       });
@@ -301,8 +308,16 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
       const adminUIPath = resolveAdminUIPath();
       if (adminUIPath) {
         if (opts.importMapTag) {
+          const injectImportMap = (html: string) =>
+            html.replace('</head>', `${opts.importMapTag}</head>`);
+
           const indexHtml = readFileSync(join(adminUIPath, 'index.html'), 'utf-8');
-          const injectedHtml = indexHtml.replace('</head>', `${opts.importMapTag}</head>`);
+          const injectedHtml = injectImportMap(indexHtml);
+
+          const extHtmlPath = join(adminUIPath, 'ext', '[[...slug]]', 'index.html');
+          const extHtml = existsSync(extHtmlPath)
+            ? injectImportMap(readFileSync(extHtmlPath, 'utf-8'))
+            : null;
 
           await fastify.register(fastifyStatic, {
             root: adminUIPath,
@@ -312,6 +327,10 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
 
           fastify.setNotFoundHandler(async (request, reply) => {
             if (request.method === 'GET' && !request.url.includes('.')) {
+              const urlPath = request.url.split('?')[0].replace(/\/+$/, '');
+              if (extHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/'))) {
+                return reply.type('text/html').send(extHtml);
+              }
               return reply.type('text/html').send(injectedHtml);
             }
             return reply.code(404).send({ error: 'Not Found' });

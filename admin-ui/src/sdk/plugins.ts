@@ -48,15 +48,6 @@ export interface PluginWidgetConfig {
   width?: 'full' | 'half' | 'third';
 }
 
-type EntityTabSlot =
-  | 'product:tabs'
-  | 'assortment:tabs'
-  | 'filter:tabs'
-  | 'user:tabs'
-  | 'order:tabs';
-
-type BuiltinSlot = 'dashboard:widgets' | 'entities' | 'pages' | EntityTabSlot;
-
 export interface PluginSlots {
   entities?: PluginEntityConfig[];
   pages?: PluginPageConfig[];

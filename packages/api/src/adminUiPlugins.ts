@@ -80,6 +80,7 @@ interface StaticAsset {
   content: string | (() => string);
   contentType: string;
   cacheControl: string;
+  etag?: string;
 }
 
 export interface PreparedPluginAssets {
@@ -149,10 +150,13 @@ export function preparePluginAssets(
 
   const devCacheControl = 'no-cache, no-store, must-revalidate';
 
+  const manifestHash = contentHash(manifestJSON);
+
   routes.set('/admin-ui-plugins.json', {
     content: devMode ? () => manifestJSON : manifestJSON,
     contentType: 'application/json',
-    cacheControl: devMode ? devCacheControl : IMMUTABLE_CACHE,
+    cacheControl: devMode ? devCacheControl : `public, max-age=0, must-revalidate`,
+    etag: `"${manifestHash}"`,
   });
 
   for (const plugin of validPlugins.filter((p) => pluginBundles.has(p.name))) {

@@ -83,6 +83,9 @@ export const checkAccess = (
   if (UNRESTRICTED_PAGES.includes(pathname)) return true;
   if (!user?._id) return false;
   if (user?.isGuest) return false;
+  if (pathname.startsWith('/ext/') || pathname === '/ext') {
+    return !!user?._id;
+  }
   if (!ROUTE_ROLES[pathname]) {
     if (process.env.NODE_ENV === 'development') {
       console.warn(

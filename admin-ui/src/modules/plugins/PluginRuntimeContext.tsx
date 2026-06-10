@@ -16,7 +16,9 @@ export const PluginRuntimeProvider = PluginRuntimeContext.Provider;
 export const usePluginRuntime = (): PluginRuntimeContextType => {
   const ctx = useContext(PluginRuntimeContext);
   if (!ctx) {
-    throw new Error('usePluginRuntime must be used inside a plugin component rendered by PluginSlot');
+    throw new Error(
+      'usePluginRuntime must be used inside a plugin component rendered by PluginSlot',
+    );
   }
   return ctx;
 };

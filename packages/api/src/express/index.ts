@@ -4,7 +4,7 @@ import type { YogaServerInstance } from 'graphql-yoga';
 import type { UnchainedCore } from '@unchainedshop/core';
 import { pluginRegistry } from '@unchainedshop/core';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { getCurrentContextResolver } from '../context.ts';
@@ -67,7 +67,13 @@ export const adminUIRouter = (
     const { routes: pluginRoutes, importMapTag } = preparePluginAssets(plugins, log, { devMode });
 
     for (const [path, asset] of pluginRoutes) {
-      router.get(path, (_, res) => {
+      router.get(path, (req, res) => {
+        if (asset.etag) {
+          if (req.headers['if-none-match'] === asset.etag) {
+            return res.status(304).end();
+          }
+          res.set('ETag', asset.etag);
+        }
         const body = typeof asset.content === 'function' ? asset.content() : asset.content;
         res.set('Cache-Control', asset.cacheControl).type(asset.contentType).send(body);
       });
@@ -76,10 +82,22 @@ export const adminUIRouter = (
     router.use(e.static(adminUIPath));
 
     if (importMapTag) {
+      const injectImportMap = (html: string) => html.replace('</head>', `${importMapTag}</head>`);
+
       const indexHtml = readFileSync(join(adminUIPath, 'index.html'), 'utf-8');
-      const injectedHtml = indexHtml.replace('</head>', `${importMapTag}</head>`);
-      router.get(/(.*)/, (_, res) => {
-        res.type('text/html').send(injectedHtml);
+      const injectedHtml = injectImportMap(indexHtml);
+
+      const extHtmlPath = join(adminUIPath, 'ext', '[[...slug]]', 'index.html');
+      const extHtml = existsSync(extHtmlPath)
+        ? injectImportMap(readFileSync(extHtmlPath, 'utf-8'))
+        : null;
+
+      router.get(/(.*)/, (req, res) => {
+        const urlPath = req.path.replace(/\/+$/, '');
+        if (extHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/'))) {
+          return res.type('text/html').send(extHtml);
+        }
+        return res.type('text/html').send(injectedHtml);
       });
     } else {
       router.get(/(.*)/, (_, res) => {

@@ -104,7 +104,7 @@ export const PluginProvider = ({ children }: { children: ReactNode }) => {
     (async () => {
       try {
         const baseUrl = getPluginBaseUrl();
-        const res = await fetch(`${baseUrl}/admin-ui-plugins.json`);
+        const res = await fetch(`${baseUrl}/admin-ui-plugins.json`, { cache: 'no-cache' });
         if (!res.ok) {
           setLoading(false);
           return;

@@ -1,11 +1,13 @@
 import { useRouter } from 'next/router';
 import { usePlugins } from '../../modules/plugins/PluginContext';
+import useAuth from '../../modules/Auth/useAuth';
 import Loading from '@/components/ui/Loading';
 
 const PluginEntityPage = () => {
   const router = useRouter();
   const { slug } = router.query;
   const { manifests, getComponent, loading } = usePlugins();
+  const { hasRole } = useAuth();
 
   if (loading) return <Loading />;
 
@@ -28,6 +30,11 @@ const PluginEntityPage = () => {
       (e) => e.path.replace(/^\//, '') === pathStr,
     );
     if (entity) {
+      if (entity.requiredRole && !hasRole(entity.requiredRole)) {
+        router.replace('/403');
+        return <Loading />;
+      }
+
       let componentName: string;
       if (!entityId) {
         componentName = entity.components.list;
@@ -53,6 +60,10 @@ const PluginEntityPage = () => {
       (p) => p.path.replace(/^\//, '') === pathStr,
     );
     if (page) {
+      if (page.requiredRole && !hasRole(page.requiredRole)) {
+        router.replace('/403');
+        return <Loading />;
+      }
       const Component = getComponent(manifest.name, page.component);
       if (Component) return <Component />;
     }
