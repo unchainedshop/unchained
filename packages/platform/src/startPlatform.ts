@@ -2,6 +2,7 @@ import { startAPIServer, roles, type UnchainedServerOptions } from '@unchainedsh
 import { initCore, type UnchainedCoreOptions, pluginRegistry } from '@unchainedshop/core';
 import { initDb, mongodb, stopDb } from '@unchainedshop/mongodb';
 import { defaultLogger } from '@unchainedshop/logger';
+import { getEmitAdapter } from '@unchainedshop/events';
 import type { UnchainedCore } from '@unchainedshop/core';
 import { setupAccounts } from './setup/setupAccounts.ts';
 import { setupUploadHandlers } from './setup/setupUploadHandlers.ts';
@@ -161,6 +162,9 @@ export const startPlatform = async ({
 
       defaultLogger.debug('Shutting down plugins', { signal });
       await pluginRegistry.shutdown(unchainedAPI);
+
+      defaultLogger.debug('Shutting down event emitter', { signal });
+      await getEmitAdapter()?.shutdown?.();
 
       defaultLogger.debug('Stopping GraphQL server', { signal });
       await graphqlHandler.dispose();
