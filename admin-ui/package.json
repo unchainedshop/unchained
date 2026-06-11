@@ -3,7 +3,6 @@
   "license": "EUPL-1.2",
   "version": "5.0.0-alpha.3",
   "description": "Unchained Commerce Admin UI Template",
-  "type": "module",
   "main": "./out/index.html",
   "exports": {
     ".": "./out/index.html",
@@ -28,10 +27,7 @@
       "types": "./dist/sdk/modal.d.ts"
     },
     "./theme": "./src/sdk/theme.ts",
-    "./plugins": {
-      "import": "./dist/plugins.mjs",
-      "types": "./dist/sdk/plugins.d.ts"
-    },
+    "./plugins": "./src/sdk/plugins.ts",
     "./plugin-build": {
       "import": "./src/sdk/plugin-build.mjs"
     },
