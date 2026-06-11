@@ -2,17 +2,22 @@ import { FilterAdapter, type IPlugin, type IFilterAdapter } from '../core-index.
 import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 
 export default function registerProductDiscoverabilityFilter({
+  adapterId,
   orderIndex = 0,
   hiddenTagValue = 'hidden',
 }: {
+  adapterId?: string;
   orderIndex?: number;
   hiddenTagValue?: string;
 }): IPlugin {
+  const id = adapterId ?? crypto.randomUUID();
   const adapter: IFilterAdapter = {
     ...FilterAdapter,
 
-    key: `shop.unchained.filters.product-discoverability-${crypto.randomUUID()}`,
-    label: 'Product Discoverability Filter (auto-generated)',
+    key: `shop.unchained.filters.product-discoverability-${id}`,
+    label: adapterId
+      ? `Product Discoverability Filter: ${adapterId}`
+      : 'Product Discoverability Filter (auto-generated)',
     version: '1.0.0',
     orderIndex,
 

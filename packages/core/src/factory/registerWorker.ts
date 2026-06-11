@@ -17,7 +17,7 @@ export default function registerWorker<Input = any, Result = any>({
 
     key: 'shop.unchained.worker.' + type.toLowerCase(),
     label: 'Worker: ' + type,
-    version: '1.0',
+    version: '1.0.0',
     external: external ?? false,
     maxParallelAllocations,
     type,
