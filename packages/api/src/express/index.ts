@@ -4,6 +4,8 @@ import type { YogaServerInstance } from 'graphql-yoga';
 import type { UnchainedCore } from '@unchainedshop/core';
 import { pluginRegistry } from '@unchainedshop/core';
 
+import { createHash } from 'node:crypto';
+
 import { getCurrentContextResolver } from '../context.ts';
 import { createAuthContext, type AuthContextParams } from '../middleware/createAuthMiddleware.ts';
 import type { AuthConfig } from '../auth.ts';
@@ -12,56 +14,15 @@ import type { ChatConfiguration } from '../chat/utils.ts';
 import { connectChat } from './chatHandler.ts';
 import { mountRoutes } from './mountRoutes.ts';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
+import { generateThemeCSS, type AdminUIThemeConfig } from '../adminUiTheme.ts';
 
-export interface AdminUIThemeTokens {
-  surface?: string;
-  'surface-subtle'?: string;
-  'surface-raised'?: string;
-  'surface-input'?: string;
-  border?: string;
-  'border-subtle'?: string;
-  'text-primary'?: string;
-  'text-secondary'?: string;
-  'text-muted'?: string;
-  'text-on-dark'?: string;
-  accent?: string;
-  'accent-hover'?: string;
-  danger?: string;
-  'danger-surface'?: string;
-  success?: string;
-  warning?: string;
-  'focus-ring'?: string;
-  'text-on-accent'?: string;
-}
-
-export interface AdminUIThemeConfig {
-  light?: AdminUIThemeTokens;
-  dark?: AdminUIThemeTokens;
-}
+export type { AdminUIThemeTokens, AdminUIThemeConfig } from '../adminUiTheme.ts';
 
 export interface AdminUIRouterOptions {
   prefix: string;
   enabled?: boolean;
   theme?: AdminUIThemeConfig;
 }
-
-const generateThemeCSS = (theme?: AdminUIThemeConfig): string => {
-  if (!theme) return '/* default theme */';
-  const blocks: string[] = [];
-  if (theme.light && Object.keys(theme.light).length > 0) {
-    const vars = Object.entries(theme.light)
-      .map(([key, value]) => `  --token-${key}: ${value};`)
-      .join('\n');
-    blocks.push(`:root:root {\n${vars}\n}`);
-  }
-  if (theme.dark && Object.keys(theme.dark).length > 0) {
-    const vars = Object.entries(theme.dark)
-      .map(([key, value]) => `  --token-${key}: ${value};`)
-      .join('\n');
-    blocks.push(`.dark.dark {\n${vars}\n}`);
-  }
-  return blocks.length > 0 ? blocks.join('\n\n') : '/* default theme */';
-};
 
 export const adminUIRouter = (enabled = true, theme?: AdminUIThemeConfig) => {
   const router = e.Router();
@@ -71,8 +32,17 @@ export const adminUIRouter = (enabled = true, theme?: AdminUIThemeConfig) => {
 
   if (enabled) {
     const themeCSS = generateThemeCSS(theme);
-    router.get('/admin-ui-theme.css', (_, res) => {
-      res.type('text/css').send(themeCSS);
+    const themeHash = createHash('sha256').update(themeCSS).digest('hex').slice(0, 8);
+    const themeEtag = `"${themeHash}"`;
+    router.get('/admin-ui-theme.css', (req, res) => {
+      if (req.headers['if-none-match'] === themeEtag) {
+        return res.status(304).end();
+      }
+      res
+        .set('Cache-Control', 'public, max-age=0, must-revalidate')
+        .set('ETag', themeEtag)
+        .type('text/css')
+        .send(themeCSS);
     });
     router.use(e.static(staticPath));
     router.get(/(.*)/, (_, res) => {
@@ -190,7 +160,8 @@ export const connect = async (
     trustProxy?: boolean;
   } = {},
 ) => {
-  const adminUITheme = typeof adminUI === 'object' ? adminUI.theme : undefined;
+  const adminUIOptions = typeof adminUI === 'object' ? adminUI : undefined;
+  const adminUITheme = adminUIOptions?.theme;
   if (allowRemoteToLocalhostSecureCookies) {
     // SECURITY: This mode is for development only - block in production
     if (process.env.NODE_ENV === 'production') {
@@ -250,7 +221,7 @@ export const connect = async (
   mountRoutes(expressApp, unchainedAPI, routes);
 
   if (adminUI) {
-    expressApp.use(typeof adminUI === 'object' ? adminUI.prefix : '/', adminUIRouter(true, adminUITheme));
+    expressApp.use(adminUIOptions?.prefix || '/', adminUIRouter(true, adminUITheme));
   }
 };
 

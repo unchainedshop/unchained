@@ -110,7 +110,7 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
         <>
           <DisclosureButton
             className={clsx(
-              'group flex w-full cursor-pointer hover:bg-surface-subtle hover:bg-surface-raised items-center rounded-md py-2 pl-2 pr-4 text-left text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-focus-ring',
+              'group flex w-full cursor-pointer hover:bg-surface-raised items-center rounded-md py-2 pl-2 pr-4 text-left text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-focus-ring',
             )}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -140,9 +140,9 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
                   key={subItem.name}
                   href={subItem.href}
                   className={clsx(
-                    'group flex w-full items-center rounded-md py-2 pl-5 pr-2 text-sm font-medium text-text-secondary hover:bg-surface-raised hover:text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-focus-ring',
+                    'group flex w-full items-center rounded-md py-2 pl-5 pr-2 text-sm font-medium text-text-secondary hover:bg-surface-raised hover:text-text-primary focus:outline-hidden focus:ring-2 focus:ring-focus-ring',
                     {
-                      ' text-text-primary hover:text-text-primary bg-slate-50 hover:bg-slate-100':
+                      'text-text-primary bg-surface-raised':
                         router.pathname === subItem.href,
                     },
                   )}
