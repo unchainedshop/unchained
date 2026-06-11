@@ -9,6 +9,41 @@ import { useErrorHandler } from '@envelop/core';
 import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
 import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
 import { registerProductDiscoverabilityFilter, pluginRegistry } from '@unchainedshop/core';
+import type { AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
+
+const adminUITheme: AdminUIThemeConfig = {
+  light: {
+    accent: '#7c3aed',
+    'accent-hover': '#6d28d9',
+    'text-on-accent': '#ffffff',
+    'focus-ring': 'rgba(124, 58, 237, 0.4)',
+    'surface-subtle': '#faf5ff',
+    'surface-raised': '#f3e8ff',
+    border: '#c4b5fd',
+    'border-subtle': '#ddd6fe',
+    success: '#059669',
+    danger: '#dc2626',
+    warning: '#d97706',
+  },
+  dark: {
+    accent: '#a78bfa',
+    'accent-hover': '#c4b5fd',
+    'text-on-accent': '#1e1b4b',
+    'focus-ring': 'rgba(167, 139, 250, 0.4)',
+    surface: '#1e1b4b',
+    'surface-subtle': '#252262',
+    'surface-raised': '#312e81',
+    'surface-input': '#1e1b4b',
+    border: '#4c1d95',
+    'border-subtle': '#3b0764',
+    'text-primary': '#ede9fe',
+    'text-secondary': '#c4b5fd',
+    'text-muted': '#a78bfa',
+    success: '#34d399',
+    danger: '#f87171',
+    warning: '#fbbf24',
+  },
+};
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -53,7 +88,9 @@ try {
 
   connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
-    adminUI: true,
+    adminUI: {
+      theme: adminUITheme,
+    },
     chat: provider
       ? {
           model: provider.chat(process.env.OPENAI_MODEL || 'gpt-5.2'),

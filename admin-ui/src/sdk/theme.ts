@@ -32,7 +32,10 @@ const sanitizeCSSValue = (value: string): string | null => {
   return trimmed;
 };
 
-const buildTokenBlock = (selector: string, tokens: AdminUIThemeTokens): string | null => {
+const buildTokenBlock = (
+  selector: string,
+  tokens: AdminUIThemeTokens,
+): string | null => {
   const vars = Object.entries(tokens)
     .map(([key, value]) => {
       const safe = sanitizeCSSValue(value);
