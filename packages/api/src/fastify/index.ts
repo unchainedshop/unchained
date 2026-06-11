@@ -11,34 +11,12 @@ import mcpHandler from './mcpHandler.ts';
 import { connectChat } from './chatHandler.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
 import { mountRoutes } from './mountRoutes.ts';
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
+import { generateThemeCSS, type AdminUIThemeConfig } from '../adminUiTheme.ts';
 
-export interface AdminUIThemeTokens {
-  surface?: string;
-  'surface-subtle'?: string;
-  'surface-raised'?: string;
-  'surface-input'?: string;
-  border?: string;
-  'border-subtle'?: string;
-  'text-primary'?: string;
-  'text-secondary'?: string;
-  'text-muted'?: string;
-  'text-on-dark'?: string;
-  accent?: string;
-  'accent-hover'?: string;
-  danger?: string;
-  'danger-surface'?: string;
-  success?: string;
-  warning?: string;
-  'focus-ring'?: string;
-  'text-on-accent'?: string;
-}
-
-export interface AdminUIThemeConfig {
-  light?: AdminUIThemeTokens;
-  dark?: AdminUIThemeTokens;
-}
+export type { AdminUIThemeTokens, AdminUIThemeConfig } from '../adminUiTheme.ts';
 
 export interface AdminUIRouterOptions {
   prefix: string;
@@ -237,14 +215,23 @@ export const connect = async (
   mountRoutes(fastify, unchainedAPI, routes);
 
   if (adminUI) {
-    const adminUITheme: AdminUIThemeConfig | undefined = typeof adminUI === 'object' ? adminUI.theme : undefined;
-    const themeCSS = generateThemeCSS(adminUITheme);
-    fastify.get('/admin-ui-theme.css', async (_, reply) => {
-      return reply.type('text/css').send(themeCSS);
+    const adminUIOptions = typeof adminUI === 'object' ? adminUI : undefined;
+    const themeCSS = generateThemeCSS(adminUIOptions?.theme);
+    const themeHash = createHash('sha256').update(themeCSS).digest('hex').slice(0, 8);
+    const themeEtag = `"${themeHash}"`;
+    fastify.get('/admin-ui-theme.css', async (request, reply) => {
+      if (request.headers['if-none-match'] === themeEtag) {
+        return reply.code(304).send();
+      }
+      return reply
+        .header('Cache-Control', 'public, max-age=0, must-revalidate')
+        .header('ETag', themeEtag)
+        .type('text/css')
+        .send(themeCSS);
     });
     fastify.register(adminUIRouter, {
       enabled: true,
-      prefix: typeof adminUI === 'object' ? adminUI.prefix : '/',
+      prefix: adminUIOptions?.prefix || '/',
     });
   }
 };
@@ -273,24 +260,6 @@ const resolveAdminUIPath = () => {
   } catch {
     return null;
   }
-};
-
-const generateThemeCSS = (theme?: AdminUIThemeConfig): string => {
-  if (!theme) return '/* default theme */';
-  const blocks: string[] = [];
-  if (theme.light && Object.keys(theme.light).length > 0) {
-    const vars = Object.entries(theme.light)
-      .map(([key, value]) => `  --token-${key}: ${value};`)
-      .join('\n');
-    blocks.push(`:root:root {\n${vars}\n}`);
-  }
-  if (theme.dark && Object.keys(theme.dark).length > 0) {
-    const vars = Object.entries(theme.dark)
-      .map(([key, value]) => `  --token-${key}: ${value};`)
-      .join('\n');
-    blocks.push(`.dark.dark {\n${vars}\n}`);
-  }
-  return blocks.length > 0 ? blocks.join('\n\n') : '/* default theme */';
 };
 
 export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
