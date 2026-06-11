@@ -57,6 +57,7 @@ export default [
     type GlobalSearchTypeCount {
       type: SearchableEntity!
       totalCount: Int!
+      authorized: Boolean!
     }
 
     type GlobalSearchResponse {

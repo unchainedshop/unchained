@@ -2,6 +2,14 @@ import { log } from '@unchainedshop/logger';
 import { checkAction } from '../../../acl.ts';
 import { actions } from '../../../roles/index.ts';
 import type { Context } from '../../../context.ts';
+import type { Product } from '@unchainedshop/core-products';
+import type { User } from '@unchainedshop/core-users';
+import type { Order } from '@unchainedshop/core-orders';
+import type { Assortment } from '@unchainedshop/core-assortments';
+import type { Filter } from '@unchainedshop/core-filters';
+import type { Enrollment } from '@unchainedshop/core-enrollments';
+import type { Quotation } from '@unchainedshop/core-quotations';
+import type { Work } from '@unchainedshop/core-worker';
 
 type SearchableEntity =
   | 'PRODUCT'
@@ -17,6 +25,19 @@ interface TypeLimitInput {
   type: SearchableEntity;
   limit: number;
 }
+
+type SearchResultItem = (
+  | Product
+  | User
+  | Order
+  | Assortment
+  | Filter
+  | Enrollment
+  | Quotation
+  | Work
+) & {
+  __typename: string;
+};
 
 const ALL_TYPES: SearchableEntity[] = [
   'PRODUCT',
@@ -75,8 +96,8 @@ async function searchType(
   limit: number,
   modules: Context['modules'],
   options: SearchOptions,
-): Promise<any[]> {
-  let results: any[];
+): Promise<SearchResultItem[]> {
+  let results: (Product | User | Order | Assortment | Filter | Enrollment | Quotation | Work)[];
   switch (type) {
     case 'PRODUCT':
       results = await modules.products.findProducts({
@@ -165,6 +186,28 @@ async function countType(
   }
 }
 
+async function checkTypeAuthorization(
+  context: Context,
+  types: SearchableEntity[],
+): Promise<{ authorized: SearchableEntity[]; unauthorized: Set<SearchableEntity> }> {
+  const results = await Promise.allSettled(
+    types.map(async (type) => {
+      await checkAction(context, typeActionMap[type]);
+      return type;
+    }),
+  );
+  const authorized: SearchableEntity[] = [];
+  const unauthorized = new Set<SearchableEntity>();
+  results.forEach((result, i) => {
+    if (result.status === 'fulfilled') {
+      authorized.push(types[i]);
+    } else {
+      unauthorized.add(types[i]);
+    }
+  });
+  return { authorized, unauthorized };
+}
+
 export default async function globalSearch(
   root: never,
   params: {
@@ -198,9 +241,8 @@ export default async function globalSearch(
 
   log(`query globalSearch: "${sanitizedQuery}" types: ${types?.join(',') || 'all'}`, { userId });
 
-  const searchTypes = types?.length ? types : ALL_TYPES;
-
-  await Promise.all(searchTypes.map((type) => checkAction(context, typeActionMap[type])));
+  const requestedTypes = types?.length ? types : ALL_TYPES;
+  const { authorized, unauthorized } = await checkTypeAuthorization(context, requestedTypes);
 
   const searchOptions: SearchOptions = {
     includeDraftProducts,
@@ -212,7 +254,7 @@ export default async function globalSearch(
 
   const [resultsByType, countsByType] = await Promise.all([
     Promise.all(
-      searchTypes.map((type) =>
+      authorized.map((type) =>
         searchType(
           type,
           sanitizedQuery,
@@ -222,14 +264,22 @@ export default async function globalSearch(
         ),
       ),
     ),
-    Promise.all(searchTypes.map((type) => countType(type, sanitizedQuery, modules, searchOptions))),
+    Promise.all(authorized.map((type) => countType(type, sanitizedQuery, modules, searchOptions))),
   ]);
 
   const results = resultsByType.flat();
-  const counts = searchTypes.map((type, i) => ({
-    type,
-    totalCount: countsByType[i],
-  }));
+  const counts = [
+    ...authorized.map((type, i) => ({
+      type,
+      totalCount: countsByType[i],
+      authorized: true,
+    })),
+    ...[...unauthorized].map((type) => ({
+      type,
+      totalCount: 0,
+      authorized: false,
+    })),
+  ];
 
   return { results, counts };
 }
