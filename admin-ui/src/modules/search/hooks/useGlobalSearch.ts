@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import { useLazyQuery } from '@apollo/client/react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import GlobalSearchProductFragment from '../fragments/GlobalSearchFragment';
 import type {
   IGlobalSearchQuery,
@@ -31,6 +31,7 @@ const GLOBAL_SEARCH_QUERY = gql`
       counts {
         type
         totalCount
+        authorized
       }
       results {
         ...GlobalSearchProductFragment
@@ -108,7 +109,6 @@ const useGlobalSearch = (options: SearchOptions = {}) => {
   } = options;
 
   const [cleared, setCleared] = useState(false);
-  const abortRef = useRef<(() => void) | null>(null);
   const [searchFn, { data, loading, error, called }] = useLazyQuery<
     IGlobalSearchQuery,
     IGlobalSearchQueryVariables
@@ -150,10 +150,6 @@ const useGlobalSearch = (options: SearchOptions = {}) => {
 
   const clear = useCallback(() => {
     setCleared(true);
-    if (abortRef.current) {
-      abortRef.current();
-      abortRef.current = null;
-    }
   }, []);
 
   const results = cleared ? [] : data?.globalSearch?.results || [];

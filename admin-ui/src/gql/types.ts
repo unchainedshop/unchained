@@ -944,6 +944,7 @@ export type IGlobalSearchResult =
   | IWork;
 
 export type IGlobalSearchTypeCount = {
+  authorized: Scalars['Boolean']['output'];
   totalCount: Scalars['Int']['output'];
   type: ISearchableEntity;
 };
@@ -15829,7 +15830,11 @@ export type IGlobalSearchQueryVariables = Exact<{
 
 export type IGlobalSearchQuery = {
   globalSearch: {
-    counts: Array<{ type: ISearchableEntity; totalCount: number }>;
+    counts: Array<{
+      type: ISearchableEntity;
+      totalCount: number;
+      authorized: boolean;
+    }>;
     results: Array<
       | {
           __typename: 'Assortment';
