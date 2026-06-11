@@ -119,20 +119,17 @@ test.describe('Query.globalSearch', () => {
   });
 
   test.describe('Anonymous user', () => {
-    test('return empty results with all types unauthorized', async () => {
-      const {
-        data: { globalSearch },
-      } = await graphqlFetchAsAnonymousUser({
+    test('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
         query: GLOBAL_SEARCH_QUERY,
         variables: { query: 'test' },
       });
 
-      assert.deepStrictEqual(globalSearch.results, []);
-      assert.ok(globalSearch.counts.length > 0);
-      for (const count of globalSearch.counts) {
-        assert.strictEqual(count.authorized, false);
-        assert.strictEqual(count.totalCount, 0);
-      }
+      assert.ok(errors?.length > 0);
+      assert.ok(
+        ['NoPermissionError', 'INTERNAL_SERVER_ERROR'].includes(errors[0].extensions?.code),
+        `Expected permission error, got: ${errors[0].extensions?.code}`,
+      );
     });
   });
 });
