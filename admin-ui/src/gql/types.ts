@@ -924,6 +924,36 @@ export type IGeoPosition = {
   longitude: Scalars['Float']['output'];
 };
 
+export type IGlobalSearchResponse = {
+  counts: Array<IGlobalSearchTypeCount>;
+  results: Array<IGlobalSearchResult>;
+};
+
+export type IGlobalSearchResult =
+  | IAssortment
+  | IBundleProduct
+  | IConfigurableProduct
+  | IEnrollment
+  | IFilter
+  | IOrder
+  | IPlanProduct
+  | IQuotation
+  | ISimpleProduct
+  | ITokenizedProduct
+  | IUser
+  | IWork;
+
+export type IGlobalSearchTypeCount = {
+  authorized: Scalars['Boolean']['output'];
+  totalCount: Scalars['Int']['output'];
+  type: ISearchableEntity;
+};
+
+export type IGlobalSearchTypeLimitInput = {
+  limit: Scalars['Int']['input'];
+  type: ISearchableEntity;
+};
+
 export type ILanguage = {
   _id: Scalars['ID']['output'];
   isActive?: Maybe<Scalars['Boolean']['output']>;
@@ -12824,69 +12854,69 @@ export type IProductFulfillmentSimulationQueryVariables = Exact<{
 
 export type IProductFulfillmentSimulationQuery = {
   product?:
-    | { _id: string }
-    | { _id: string }
-    | { _id: string }
-    | {
+  | { _id: string }
+  | { _id: string }
+  | { _id: string }
+  | {
+    _id: string;
+    simulatedDispatches?: Array<{
+      shipping?: any | null;
+      earliestDelivery?: any | null;
+      deliveryProvider?:
+      | {
         _id: string;
-        simulatedDispatches?: Array<{
-          shipping?: any | null;
-          earliestDelivery?: any | null;
-          deliveryProvider?:
-            | {
-                _id: string;
-                type?: IDeliveryProviderType | null;
-                isActive?: boolean | null;
-                interface?: {
-                  _id: string;
-                  label?: string | null;
-                  version?: string | null;
-                } | null;
-              }
-            | {
-                _id: string;
-                type?: IDeliveryProviderType | null;
-                isActive?: boolean | null;
-                interface?: {
-                  _id: string;
-                  label?: string | null;
-                  version?: string | null;
-                } | null;
-              }
-            | null;
-          warehousingProvider?: {
-            _id: string;
-            type?: IWarehousingProviderType | null;
-            isActive?: boolean | null;
-            interface?: {
-              _id: string;
-              label?: string | null;
-              version?: string | null;
-            } | null;
-          } | null;
-        }> | null;
-        simulatedStocks?: Array<{
-          quantity?: number | null;
-          deliveryProvider?:
-            | {
-                _id: string;
-                type?: IDeliveryProviderType | null;
-                interface?: { _id: string; label?: string | null } | null;
-              }
-            | {
-                _id: string;
-                type?: IDeliveryProviderType | null;
-                interface?: { _id: string; label?: string | null } | null;
-              }
-            | null;
-          warehousingProvider?: {
-            _id: string;
-            interface?: { _id: string; label?: string | null } | null;
-          } | null;
-        }> | null;
+        type?: IDeliveryProviderType | null;
+        isActive?: boolean | null;
+        interface?: {
+          _id: string;
+          label?: string | null;
+          version?: string | null;
+        } | null;
       }
-    | { _id: string }
-    | null;
+      | {
+        _id: string;
+        type?: IDeliveryProviderType | null;
+        isActive?: boolean | null;
+        interface?: {
+          _id: string;
+          label?: string | null;
+          version?: string | null;
+        } | null;
+      }
+      | null;
+      warehousingProvider?: {
+        _id: string;
+        type?: IWarehousingProviderType | null;
+        isActive?: boolean | null;
+        interface?: {
+          _id: string;
+          label?: string | null;
+          version?: string | null;
+        } | null;
+      } | null;
+    }> | null;
+    simulatedStocks?: Array<{
+      quantity?: number | null;
+      deliveryProvider?:
+      | {
+        _id: string;
+        type?: IDeliveryProviderType | null;
+        interface?: { _id: string; label?: string | null } | null;
+      }
+      | {
+        _id: string;
+        type?: IDeliveryProviderType | null;
+        interface?: { _id: string; label?: string | null } | null;
+      }
+      | null;
+      warehousingProvider?: {
+        _id: string;
+        interface?: { _id: string; label?: string | null } | null;
+      } | null;
+    }> | null;
+  }
+  | { _id: string }
+  | null;
 };
 
 export type IProductMediaQueryVariables = Exact<{
@@ -15851,7 +15881,11 @@ export type IGlobalSearchQueryVariables = Exact<{
 
 export type IGlobalSearchQuery = {
   globalSearch: {
-    counts: Array<{ type: ISearchableEntity; totalCount: number }>;
+    counts: Array<{
+      type: ISearchableEntity;
+      totalCount: number;
+      authorized: boolean;
+    }>;
     results: Array<
       | {
         __typename: 'Assortment';
