@@ -290,7 +290,6 @@ const fallbackLandingPageHandler = (request: any, reply: any) => {
   }
 };
 
-
 export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
   fastify: FastifyInstance,
   opts,

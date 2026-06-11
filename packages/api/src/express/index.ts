@@ -36,7 +36,6 @@ export interface AdminUIRouterOptions {
   plugins?: AdminUIPluginConfig[];
 }
 
-
 export const adminUIRouter = (
   enabled = true,
   theme?: AdminUIThemeConfig,
@@ -278,10 +277,7 @@ export const connect = async (
   mountRoutes(expressApp, unchainedAPI, routes);
 
   if (adminUI) {
-    expressApp.use(
-      adminUIOptions?.prefix || '/',
-      adminUIRouter(true, adminUITheme, adminUIPlugins),
-    );
+    expressApp.use(adminUIOptions?.prefix || '/', adminUIRouter(true, adminUITheme, adminUIPlugins));
   }
 };
 

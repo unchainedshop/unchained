@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
-const PLUGIN_NAME_RE = /^[a-z0-9][a-z0-9._-]*$/i;
+const PLUGIN_NAME_RE = /^[a-z0-9]([a-z0-9_-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9_-]*[a-z0-9])?)*$/i;
 
 const IMMUTABLE_CACHE = 'public, max-age=31536000, immutable';
 
@@ -53,6 +53,7 @@ export interface AdminUIPluginSlotConfig {
   component: string;
 }
 
+// Keep in sync with admin-ui/src/sdk/plugins.ts PluginConfig
 export interface AdminUIPluginConfig {
   name: string;
   version?: string;
@@ -66,6 +67,11 @@ export interface AdminUIPluginConfig {
     entities?: AdminUIPluginEntityConfig[];
     pages?: AdminUIPluginPageConfig[];
     'dashboard:widgets'?: AdminUIPluginWidgetConfig[];
+    'product:tabs'?: AdminUIPluginTabConfig[];
+    'assortment:tabs'?: AdminUIPluginTabConfig[];
+    'filter:tabs'?: AdminUIPluginTabConfig[];
+    'user:tabs'?: AdminUIPluginTabConfig[];
+    'order:tabs'?: AdminUIPluginTabConfig[];
     [key: string]:
       | AdminUIPluginTabConfig[]
       | AdminUIPluginSlotConfig[]

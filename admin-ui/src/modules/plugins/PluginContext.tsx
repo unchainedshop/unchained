@@ -7,9 +7,14 @@ import React, {
 } from 'react';
 import * as jsxRuntime from 'react/jsx-runtime';
 import { gql } from '@apollo/client';
-import { useQuery, useMutation, useApolloClient } from '@apollo/client/react';
+import {
+  useQuery,
+  useMutation,
+  useLazyQuery,
+  useApolloClient,
+} from '@apollo/client/react';
 import { useRouter } from 'next/router';
-import { useIntl } from 'react-intl';
+import { useIntl, FormattedMessage, defineMessages } from 'react-intl';
 import { toast } from 'react-toastify';
 import { usePluginRuntime } from './PluginRuntimeContext';
 
@@ -75,10 +80,21 @@ const setupPluginRuntime = () => {
   window.__UNCHAINED_PLUGIN_DEPS__ = {
     react: React,
     'react/jsx-runtime': jsxRuntime,
-    '@apollo/client': { gql, useQuery, useMutation, useApolloClient },
-    '@apollo/client/react': { useQuery, useMutation, useApolloClient },
+    '@apollo/client': {
+      gql,
+      useQuery,
+      useMutation,
+      useLazyQuery,
+      useApolloClient,
+    },
+    '@apollo/client/react': {
+      useQuery,
+      useMutation,
+      useLazyQuery,
+      useApolloClient,
+    },
     'next/router': { useRouter },
-    'react-intl': { useIntl },
+    'react-intl': { useIntl, FormattedMessage, defineMessages },
     'react-toastify': { toast },
     '@unchainedshop/admin-ui/plugins': { usePluginRuntime },
   };
@@ -104,7 +120,9 @@ export const PluginProvider = ({ children }: { children: ReactNode }) => {
     (async () => {
       try {
         const baseUrl = getPluginBaseUrl();
-        const res = await fetch(`${baseUrl}/admin-ui-plugins.json`, { cache: 'no-cache' });
+        const res = await fetch(`${baseUrl}/admin-ui-plugins.json`, {
+          cache: 'no-cache',
+        });
         if (!res.ok) {
           setLoading(false);
           return;

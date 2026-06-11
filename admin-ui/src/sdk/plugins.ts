@@ -15,7 +15,7 @@ export type PageProps = Record<string, never>;
 
 export type DashboardWidgetProps = Record<string, never>;
 
-// ---- Plugin manifest types ----
+// Keep in sync with packages/api/src/adminUiPlugins.ts AdminUIPluginConfig
 
 export interface PluginEntityConfig {
   path: string;
