@@ -7,6 +7,7 @@ export default defineConfig({
     hooks: 'src/sdk/hooks.ts',
     providers: 'src/sdk/providers.ts',
     modal: 'src/sdk/modal.ts',
+    theme: 'src/sdk/theme.ts',
   },
   format: ['esm'],
   dts: false,

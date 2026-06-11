@@ -14,12 +14,12 @@ import { mountRoutes } from './mountRoutes.ts';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
-import { generateThemeCSS, type AdminUIThemeConfig } from '../adminUiTheme.ts';
+import { generateThemeCSS, type AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
 
-export type { AdminUIThemeTokens, AdminUIThemeConfig } from '../adminUiTheme.ts';
+export type { AdminUIThemeTokens, AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
 
 export interface AdminUIRouterOptions {
-  prefix: string;
+  prefix?: string;
   enabled?: boolean;
   theme?: AdminUIThemeConfig;
 }
