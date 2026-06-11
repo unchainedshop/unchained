@@ -95,11 +95,14 @@ export const ProductSchema = z.object({
         .array(
           z.object({
             amount: z.number().int().describe('Price amount in smallest currency unit.'),
-            maxQuantity: z
+            minQuantity: z
               .number()
               .int()
+              .min(0)
               .optional()
-              .describe('Optional maximum quantity for this price tier'),
+              .describe(
+                'Optional inclusive minimum quantity (tier floor) this price applies to; defaults to the base tier (0).',
+              ),
             isTaxable: z.boolean().optional().describe('Whether tax applies to this price'),
             isNetPrice: z.boolean().optional().describe('Whether this is a net price (without tax)'),
             currencyCode: z

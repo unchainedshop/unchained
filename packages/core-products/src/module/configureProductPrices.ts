@@ -63,7 +63,13 @@ export const configureProductPricesModule = ({
       countryCode,
     });
 
-    const foundPrice = pricing.find((level) => !level.maxQuantity || level.maxQuantity >= quantity);
+    // Tiers are sorted ascending by minQuantity; the applicable tier is the
+    // highest floor that is <= quantity. The base tier has minQuantity 0, so the
+    // default quantity 0 used by price-range queries resolves to it. Tiers
+    // without a floor (legacy, un-migrated data) are ignored rather than mispriced.
+    const foundPrice = pricing
+      .filter((level) => level.minQuantity != null && level.minQuantity <= quantity)
+      .pop();
     if (!foundPrice) return null;
 
     const normalizedPrice = {
@@ -138,29 +144,23 @@ export const configureProductPricesModule = ({
     ): Promise<
       {
         minQuantity: number;
-        maxQuantity: number;
+        maxQuantity: number | null;
         price: ProductPrice;
       }[]
     > => {
-      let previousMax: number | undefined;
-
-      const filteredAndSortedPriceLevels = getPriceLevels({
+      const sortedPriceLevels = getPriceLevels({
         product,
         currencyCode,
         countryCode,
       });
 
-      return filteredAndSortedPriceLevels.map((priceLevel, i) => {
-        const max = priceLevel.maxQuantity || 0;
-        const min = previousMax ? previousMax + 1 : 0;
-        previousMax = priceLevel.maxQuantity;
-
+      return sortedPriceLevels.map((priceLevel, i) => {
+        const nextLevel = sortedPriceLevels[i + 1];
+        // Present each tier as [minQuantity .. maxQuantity]. The upper bound is
+        // derived from the next tier's floor; the highest tier is open-ended (null).
         return {
-          minQuantity: min,
-          maxQuantity:
-            i === 0 && priceLevel.maxQuantity && priceLevel.maxQuantity > 0
-              ? priceLevel.maxQuantity
-              : max,
+          minQuantity: priceLevel.minQuantity ?? 0,
+          maxQuantity: nextLevel?.minQuantity != null ? nextLevel.minQuantity - 1 : null,
           price: {
             isTaxable: !!priceLevel.isTaxable,
             isNetPrice: !!priceLevel.isNetPrice,
