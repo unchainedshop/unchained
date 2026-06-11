@@ -56,8 +56,18 @@ const PluginEntityPage = () => {
         );
 
       return (
-        <PluginErrorBoundary pluginName={manifest.name} componentName={componentName}>
-          <PluginRuntimeProvider value={{ pluginName: manifest.name, version: manifest.version, slotId: 'entities', config: entity }}>
+        <PluginErrorBoundary
+          pluginName={manifest.name}
+          componentName={componentName}
+        >
+          <PluginRuntimeProvider
+            value={{
+              pluginName: manifest.name,
+              version: manifest.version,
+              slotId: 'entities',
+              config: entity,
+            }}
+          >
             <Component entityId={entityId} />
           </PluginRuntimeProvider>
         </PluginErrorBoundary>
@@ -75,8 +85,18 @@ const PluginEntityPage = () => {
       const Component = getComponent(manifest.name, page.component);
       if (Component)
         return (
-          <PluginErrorBoundary pluginName={manifest.name} componentName={page.component}>
-            <PluginRuntimeProvider value={{ pluginName: manifest.name, version: manifest.version, slotId: 'pages', config: page }}>
+          <PluginErrorBoundary
+            pluginName={manifest.name}
+            componentName={page.component}
+          >
+            <PluginRuntimeProvider
+              value={{
+                pluginName: manifest.name,
+                version: manifest.version,
+                slotId: 'pages',
+                config: page,
+              }}
+            >
               <Component />
             </PluginRuntimeProvider>
           </PluginErrorBoundary>

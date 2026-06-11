@@ -138,7 +138,9 @@ export const PluginProvider = ({ children }: { children: ReactNode }) => {
         await Promise.all(
           data.map(async (manifest) => {
             try {
-              const script = await loadPluginScript(`${baseUrl}${manifest.bundleUrl}`);
+              const script = await loadPluginScript(
+                `${baseUrl}${manifest.bundleUrl}`,
+              );
               scriptElements.push(script);
               const mod = window.__UNCHAINED_PLUGINS__?.[manifest.name];
               if (mod) {
