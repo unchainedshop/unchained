@@ -100,11 +100,11 @@ const setupPluginRuntime = () => {
   };
 };
 
-const loadPluginScript = (url: string): Promise<void> => {
+const loadPluginScript = (url: string): Promise<HTMLScriptElement> => {
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.src = url;
-    script.onload = () => resolve();
+    script.onload = () => resolve(script);
     script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
     document.head.appendChild(script);
   });
@@ -117,24 +117,29 @@ export const PluginProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     setupPluginRuntime();
+    const scriptElements: HTMLScriptElement[] = [];
+    let cancelled = false;
+
     (async () => {
       try {
         const baseUrl = getPluginBaseUrl();
         const res = await fetch(`${baseUrl}/admin-ui-plugins.json`, {
           cache: 'no-cache',
         });
-        if (!res.ok) {
+        if (!res.ok || cancelled) {
           setLoading(false);
           return;
         }
         const data: PluginManifest[] = await res.json();
+        if (cancelled) return;
         setManifests(data);
 
         const loaded = new Map<string, PluginModule>();
         await Promise.all(
           data.map(async (manifest) => {
             try {
-              await loadPluginScript(`${baseUrl}${manifest.bundleUrl}`);
+              const script = await loadPluginScript(`${baseUrl}${manifest.bundleUrl}`);
+              scriptElements.push(script);
               const mod = window.__UNCHAINED_PLUGINS__?.[manifest.name];
               if (mod) {
                 loaded.set(manifest.name, mod);
@@ -148,13 +153,19 @@ export const PluginProvider = ({ children }: { children: ReactNode }) => {
             }
           }),
         );
-        setModules(loaded);
+        if (!cancelled) setModules(loaded);
       } catch (err) {
         console.error('Failed to load plugin manifests:', err);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     })();
+
+    return () => {
+      cancelled = true;
+      scriptElements.forEach((script) => script.remove());
+      window.__UNCHAINED_PLUGINS__ = {};
+    };
   }, []);
 
   const getComponent = (pluginName: string, componentName: string) => {

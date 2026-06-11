@@ -20,6 +20,7 @@ import OrderDetailHeader from './OrderDetailHeader';
 import useRejectOrder from '../hooks/useRejectOrder';
 import DangerMessage from '../../modal/components/DangerMessage';
 import useAuth from '../../Auth/useAuth';
+import PluginSlot from '../../plugins/PluginSlot';
 
 const isWaitingForConfirmation = (order) => {
   return order?.status === 'PENDING';
@@ -197,6 +198,14 @@ const OrderDetail = ({ order }) => {
           <DiscountList discounts={order?.discounts} />
         </div>
       )}
+
+      <PluginSlot slot="order:tabs" entityId={order._id}>
+        {(Component, config, manifest) => (
+          <div className="mt-10">
+            <Component order={order} entityId={order._id} />
+          </div>
+        )}
+      </PluginSlot>
     </div>
   );
 };
