@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
-import Badge from '../../common/components/Badge';
+import Badge from '../../../components/ui/Badge';
 
 const GateEventList = ({ events, onSelectEvent }) => {
   const { formatMessage } = useIntl();
