@@ -42,13 +42,10 @@ describe('buildFindSelector', () => {
   });
 
   it('Should filter by SUSPENDED status', () => {
-    assert.deepStrictEqual(
-      buildFindSelector({ status: [EnrollmentStatus.SUSPENDED] }),
-      {
-        deleted: null,
-        status: { $in: ['SUSPENDED'] },
-      },
-    );
+    assert.deepStrictEqual(buildFindSelector({ status: [EnrollmentStatus.SUSPENDED] }), {
+      deleted: null,
+      status: { $in: ['SUSPENDED'] },
+    });
   });
 
   it('Should filter by multiple statuses including SUSPENDED', () => {
