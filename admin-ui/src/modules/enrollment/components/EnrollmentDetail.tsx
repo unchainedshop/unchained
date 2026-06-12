@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
@@ -17,12 +18,16 @@ import AlertMessage from '../../modal/components/AlertMessage';
 import useTerminateEnrollment from '../hooks/useTerminateEnrollment';
 import useSuspendEnrollment from '../hooks/useSuspendEnrollment';
 import useSendEnrollmentEmail from '../hooks/useSendEnrollmentEmail';
+import useUpdateEnrollmentPlan from '../hooks/useUpdateEnrollmentPlan';
 import DangerMessage from '../../modal/components/DangerMessage';
 import EnrollmentDetailHeader from './EnrollmentDetailHeader';
 import JSONView from '@/components/ui/JSONView';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import { IEnrollment, IRoleAction } from '../../../gql/types';
+import { IEnrollment, IRoleAction, ISortDirection } from '../../../gql/types';
 import useAuth from '../../Auth/useAuth';
+import useProducts from '../../product/hooks/useProducts';
+import UnchainedSelect from '../../common/components/UnchainedSelect';
+import deBounce from '../../common/utils/deBounce';
 
 const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
   const { formatMessage } = useIntl();
@@ -36,6 +41,29 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
   const { terminateEnrollment } = useTerminateEnrollment();
   const { suspendEnrollment } = useSuspendEnrollment();
   const { sendEnrollmentEmail } = useSendEnrollmentEmail();
+  const { updateEnrollmentPlan } = useUpdateEnrollmentPlan();
+
+  const [productQuery, setProductQuery] = useState('');
+  const debouncedSetProductQuery = useMemo(
+    () => deBounce(200)(setProductQuery),
+    [],
+  );
+  const { products: planProducts, loading: productsLoading } = useProducts({
+    queryString: productQuery,
+    limit: 20,
+    sort: [{ key: 'created', value: ISortDirection.Desc }],
+  });
+
+  const planProductOptions = useMemo(
+    () =>
+      (planProducts || [])
+        .filter((p: any) => p.__typename === 'PlanProduct')
+        .map((p: any) => ({
+          value: p._id,
+          label: p.texts?.title || p._id,
+        })),
+    [planProducts],
+  );
 
   if (!enrollment) return null;
 
@@ -176,6 +204,55 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
       />,
     );
   };
+
+  const onChangePlan = async (option: { value: string; label: string }) => {
+    if (!option) return;
+    await setModal(
+      <AlertMessage
+        buttonText={formatMessage({
+          id: 'change_plan_button',
+          defaultMessage: 'Change Plan',
+        })}
+        headerText={formatMessage({
+          id: 'change_plan_header',
+          defaultMessage: 'Change subscription plan',
+        })}
+        message={formatMessage(
+          {
+            id: 'change_plan_confirmation',
+            defaultMessage:
+              'Change the plan to "{plan}"? Future periods will be regenerated.',
+          },
+          { plan: option.label },
+        )}
+        onOkClick={async () => {
+          setModal('');
+          try {
+            await updateEnrollmentPlan({
+              enrollmentId: enrollment._id,
+              plan: {
+                productId: option.value,
+                quantity: enrollment.plan?.quantity || 1,
+              },
+            });
+            toast.success(
+              formatMessage({
+                id: 'change_plan_success',
+                defaultMessage: 'Plan changed successfully.',
+              }),
+            );
+          } catch (e: any) {
+            toast.error(e.message || 'Plan change failed');
+          }
+        }}
+      />,
+    );
+  };
+
+  const canChangePlan =
+    enrollment.status !== 'INITIAL' &&
+    enrollment.status !== 'TERMINATED' &&
+    hasRole(IRoleAction.UpdateEnrollment);
 
   const timeline = {
     INITIAL: {
@@ -326,7 +403,31 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
                 </div>
               </div>
 
-              <div className="flex-auto border-t border-border-default pt-4 lg:col-span-6 lg:border-0">
+              
+              {canChangePlan && (
+                <div className="flex-auto border-t border-border-default pt-4 lg:col-span-6 lg:border-0">
+                  <dt className="font-medium text-slate-900 mb-2">
+                    {formatMessage({
+                      id: 'change_plan',
+                      defaultMessage: 'Change Plan',
+                    })}
+                  </dt>
+                  <UnchainedSelect
+                    name="planProductId"
+                    placeholder={formatMessage({
+                      id: 'search_plan_product',
+                      defaultMessage: 'Search plan product...',
+                    })}
+                    isLoading={productsLoading}
+                    onChange={onChangePlan}
+                    onInputChange={debouncedSetProductQuery}
+                    options={planProductOptions}
+                    className="w-full text-sm"
+                  />
+                </div>
+              )}
+
+              <div className="flex-auto border-t border-slate-300 dark:border-slate-800 pt-4 lg:col-span-6 lg:border-0">
                 <JSONView
                   disabled
                   className="bg-surface-input dark:text-slate-200 mt-1 block w-full max-w-full rounded-md border-1 resize-none border-border-default shadow-xs sm:text-sm"
