@@ -16,6 +16,7 @@ const EnrollmentFragment = gql`
     status
     created
     expires
+    requestedTerminationDate
     isExpired
     periods {
       start

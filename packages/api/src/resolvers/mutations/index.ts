@@ -129,6 +129,7 @@ import heartbeat from './users/heartbeat.ts';
 import createEnrollment from './enrollments/createEnrollment.ts';
 import terminateEnrollment from './enrollments/terminateEnrollment.ts';
 import activateEnrollment from './enrollments/activateEnrollment.ts';
+import suspendEnrollment from './enrollments/suspendEnrollment.ts';
 import updateEnrollment from './enrollments/updateEnrollment.ts';
 import registerPaymentCredentials from './payment/registerPaymentCredentials.ts';
 import markPaymentCredentialsPreferred from './payment/markPaymentCredentialsPreferred.ts';
@@ -254,6 +255,7 @@ export default {
   createEnrollment: acl(actions.createEnrollment)(createEnrollment),
   terminateEnrollment: acl(actions.updateEnrollment)(terminateEnrollment),
   activateEnrollment: acl(actions.updateEnrollment)(activateEnrollment),
+  suspendEnrollment: acl(actions.updateEnrollment)(suspendEnrollment),
   updateEnrollment: acl(actions.updateEnrollment)(updateEnrollment),
   createPaymentProvider: acl(actions.managePaymentProviders)(createPaymentProvider),
   updatePaymentProvider: acl(actions.managePaymentProviders)(updatePaymentProvider),

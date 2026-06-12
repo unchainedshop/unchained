@@ -215,12 +215,18 @@ export default [
         payment: EnrollmentPaymentInput
         delivery: EnrollmentDeliveryInput
         meta: JSON
+        expires: DateTime
       ): Enrollment!
 
       """
       Activate a enrollment by changing the status to ACTIVE
       """
       activateEnrollment(enrollmentId: ID!): Enrollment!
+
+      """
+      Suspend an actively running enrollment
+      """
+      suspendEnrollment(enrollmentId: ID!): Enrollment!
 
       """
       Terminate an actively running enrollment by changing it's status to TERMINATED

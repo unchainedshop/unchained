@@ -11,6 +11,7 @@ import formatUsername from '../../common/utils/formatUsername';
 const ENROLLMENT_STATUS = {
   INITIAL: 'orange',
   PAUSED: 'yellow',
+  SUSPENDED: 'blue',
   TERMINATED: 'amber',
   ACTIVE: 'emerald',
 };
