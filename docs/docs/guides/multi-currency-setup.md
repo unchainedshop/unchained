@@ -205,7 +205,7 @@ WorkerDirector.configureAutoscheduling({
 Create a worker to fetch rates from your preferred provider:
 
 ```typescript
-import { WorkerDirector, type IWorkerAdapter } from '@unchainedshop/core';
+import { pluginRegistry, WorkerDirector, type IWorkerAdapter } from '@unchainedshop/core';
 
 const ExchangeRateWorker: IWorkerAdapter = {
   key: 'shop.example.worker.exchange-rates',
@@ -239,7 +239,7 @@ const ExchangeRateWorker: IWorkerAdapter = {
   },
 };
 
-WorkerDirector.registerAdapter(ExchangeRateWorker);
+pluginRegistry.register({ key: ExchangeRateWorker.key, label: ExchangeRateWorker.label, version: ExchangeRateWorker.version, adapters: [ExchangeRateWorker] });
 
 // Schedule hourly updates
 WorkerDirector.configureAutoscheduling({
@@ -301,7 +301,7 @@ class CurrencyConversionAdapter extends ProductPricingAdapter {
   }
 }
 
-ProductPricingDirector.registerAdapter(CurrencyConversionAdapter);
+pluginRegistry.register({ key: CurrencyConversionAdapter.key, label: CurrencyConversionAdapter.label, version: CurrencyConversionAdapter.version, adapters: [CurrencyConversionAdapter] });
 ```
 
 ## Querying Prices

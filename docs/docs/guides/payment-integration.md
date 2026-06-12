@@ -275,7 +275,7 @@ DATATRANS_SIGN_KEY=xxx
 Create a custom adapter for payment gateways not covered by built-in plugins:
 
 ```typescript
-import { PaymentDirector, type IPaymentAdapter } from '@unchainedshop/core';
+import { pluginRegistry, type IPaymentAdapter } from '@unchainedshop/core';
 
 const MyPaymentAdapter: IPaymentAdapter = {
   key: 'com.mycompany.payment.custom',
@@ -351,7 +351,7 @@ const MyPaymentAdapter: IPaymentAdapter = {
   },
 };
 
-PaymentDirector.registerAdapter(MyPaymentAdapter);
+pluginRegistry.register({ key: MyPaymentAdapter.key, label: MyPaymentAdapter.label, version: MyPaymentAdapter.version, adapters: [MyPaymentAdapter] });
 ```
 
 ## Testing Payments
@@ -430,7 +430,7 @@ try {
 Add payment processing fees to orders:
 
 ```typescript
-import { PaymentPricingDirector, PaymentPricingAdapter } from '@unchainedshop/core';
+import { pluginRegistry, PaymentPricingAdapter } from '@unchainedshop/core';
 
 class CardFeeAdapter extends PaymentPricingAdapter {
   static key = 'shop.unchained.pricing.card-fee';
@@ -458,7 +458,7 @@ class CardFeeAdapter extends PaymentPricingAdapter {
   }
 }
 
-PaymentPricingDirector.registerAdapter(CardFeeAdapter);
+pluginRegistry.register({ key: CardFeeAdapter.key, label: CardFeeAdapter.label, version: CardFeeAdapter.version, adapters: [CardFeeAdapter] });
 ```
 
 ## Multi-Currency Support

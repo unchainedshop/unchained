@@ -67,9 +67,9 @@ const Heartbeat: IWorkerAdapter<Arg, Result> = {
 Before you can add a worker in the work queue you need to register it to the global Worker director
 
 ```typescript
-import { WorkerDirector } from '@unchainedshop/core-worker';
+import { pluginRegistry } from '@unchainedshop/core-worker';
 
-WorkerDirector.registerAdapter(Heartbeat);
+pluginRegistry.register({ key: Heartbeat.key, label: Heartbeat.label, version: Heartbeat.version, adapters: [Heartbeat] });
 ```
 
 ## Adding work to the work queue

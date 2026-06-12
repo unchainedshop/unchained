@@ -108,7 +108,7 @@ const PrePaidInvoice: IPaymentAdapter = {
 };
 
 // Register the adapter
-PaymentDirector.registerAdapter(PrePaidInvoice);
+pluginRegistry.register({ key: PrePaidInvoice.key, label: PrePaidInvoice.label, version: PrePaidInvoice.version, adapters: [PrePaidInvoice] });
 ```
 
 ## Adapter Methods Reference
@@ -280,7 +280,7 @@ app.post('/webhooks/payment', async (req, res) => {
 
 ```typescript
 import Stripe from 'stripe';
-import { PaymentDirector, type IPaymentAdapter } from '@unchainedshop/core';
+import { pluginRegistry, type IPaymentAdapter } from '@unchainedshop/core';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -359,7 +359,7 @@ const StripePayment: IPaymentAdapter = {
   },
 };
 
-PaymentDirector.registerAdapter(StripePayment);
+pluginRegistry.register({ key: StripePayment.key, label: StripePayment.label, version: StripePayment.version, adapters: [StripePayment] });
 ```
 
 ## Related

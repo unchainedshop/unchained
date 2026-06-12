@@ -178,7 +178,7 @@ const RealStoreAdapter: IWarehousingAdapter = {
   },
 };
 
-WarehousingDirector.registerAdapter(RealStoreAdapter);
+pluginRegistry.register({ key: RealStoreAdapter.key, label: RealStoreAdapter.label, version: RealStoreAdapter.version, adapters: [RealStoreAdapter] });
 ```
 
 ## Integration with Delivery

@@ -204,7 +204,7 @@ configureGenerateOrderAutoscheduling();
 For custom subscription logic:
 
 ```typescript
-import { EnrollmentDirector, EnrollmentAdapter, type IEnrollmentAdapter } from '@unchainedshop/core';
+import { pluginRegistry, EnrollmentAdapter, type IEnrollmentAdapter } from '@unchainedshop/core';
 
 const CustomEnrollmentAdapter: IEnrollmentAdapter = {
   ...EnrollmentAdapter,
@@ -285,7 +285,7 @@ const CustomEnrollmentAdapter: IEnrollmentAdapter = {
   },
 };
 
-EnrollmentDirector.registerAdapter(CustomEnrollmentAdapter);
+pluginRegistry.register({ key: CustomEnrollmentAdapter.key, label: CustomEnrollmentAdapter.label, version: CustomEnrollmentAdapter.version, adapters: [CustomEnrollmentAdapter] });
 ```
 
 ## Adapter Details

@@ -419,7 +419,7 @@ query ImportJobs {
 For systems requiring pull-based sync:
 
 ```typescript
-import { WorkerDirector } from '@unchainedshop/core';
+import { pluginRegistry, WorkerDirector } from '@unchainedshop/core';
 
 const PIMSyncWorker = {
   key: 'shop.example.worker.pim-sync',
@@ -455,7 +455,7 @@ const PIMSyncWorker = {
   },
 };
 
-WorkerDirector.registerAdapter(PIMSyncWorker);
+pluginRegistry.register({ key: PIMSyncWorker.key, label: PIMSyncWorker.label, version: PIMSyncWorker.version, adapters: [PIMSyncWorker] });
 
 // Schedule hourly sync
 WorkerDirector.configureAutoscheduling({

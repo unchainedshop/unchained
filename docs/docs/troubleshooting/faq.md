@@ -101,7 +101,7 @@ See [Extending GraphQL](../extend/graphql) for details.
 Create a payment adapter and register it:
 
 ```typescript
-import { PaymentDirector } from '@unchainedshop/core';
+import { pluginRegistry } from '@unchainedshop/core';
 
 const MyPaymentAdapter = {
   key: 'my-payment',
@@ -113,7 +113,7 @@ const MyPaymentAdapter = {
   }),
 };
 
-PaymentDirector.registerAdapter(MyPaymentAdapter);
+pluginRegistry.register({ key: MyPaymentAdapter.key, label: MyPaymentAdapter.label, version: MyPaymentAdapter.version, adapters: [MyPaymentAdapter] });
 ```
 
 See [Payment Plugins](../extend/order-fulfilment/fulfilment-plugins/payment).
@@ -141,7 +141,7 @@ await startPlatform({ expressApp: app });
 Use the Worker system:
 
 ```typescript
-import { WorkerDirector } from '@unchainedshop/core';
+import { pluginRegistry } from '@unchainedshop/core';
 
 // Schedule a job
 await modules.worker.addWork({
@@ -290,7 +290,7 @@ class MyPricingAdapter extends ProductPricingAdapter {
   }
 }
 
-ProductPricingDirector.registerAdapter(MyPricingAdapter);
+pluginRegistry.register({ key: MyPricingAdapter.key, label: MyPricingAdapter.label, version: MyPricingAdapter.version, adapters: [MyPricingAdapter] });
 ```
 
 ### How do I handle multiple currencies?

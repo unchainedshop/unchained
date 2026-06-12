@@ -141,9 +141,9 @@ In order to make use of the filter we need to register it on the FilterDirector.
 
 ```typescript
 
-import { FilterDirector } from '@unchainedshop/core-filters';
+import { pluginRegistry } from '@unchainedshop/core-filters';
 ...
-FilterDirector.registerAdapter(ShopAttributeFilter);
+pluginRegistry.register({ key: ShopAttributeFilter.key, label: ShopAttributeFilter.label, version: ShopAttributeFilter.version, adapters: [ShopAttributeFilter] });
 
 ```
 
@@ -185,6 +185,6 @@ const ShopAttributeFilter: IFilterAdapter = {
 
 }
 
-FilterDirector.registerAdapter(ShopAttributeFilter);
+pluginRegistry.register({ key: ShopAttributeFilter.key, label: ShopAttributeFilter.label, version: ShopAttributeFilter.version, adapters: [ShopAttributeFilter] });
 
 ```

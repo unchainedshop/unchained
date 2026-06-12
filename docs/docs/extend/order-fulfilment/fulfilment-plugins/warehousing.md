@@ -82,7 +82,7 @@ const Store: IWarehousingAdapter = {
 ## Register warehousing adapter
 
 ```typescript
-import { WarehousingDirector } from '@unchainedshop/core-warehousing';
+import { pluginRegistry } from '@unchainedshop/core-warehousing';
 
-WarehousingDirector.registerAdapter(Store);
+pluginRegistry.register({ key: Store.key, label: Store.label, version: Store.version, adapters: [Store] });
 ```

@@ -144,7 +144,7 @@ mutation SetPickupLocation($deliveryProviderId: ID!, $locationId: ID!) {
 For stores managed in a database or external system:
 
 ```typescript
-import { DeliveryDirector, type IDeliveryAdapter } from '@unchainedshop/core';
+import { pluginRegistry, type IDeliveryAdapter } from '@unchainedshop/core';
 
 const DynamicStoresAdapter: IDeliveryAdapter = {
   key: 'my-shop.dynamic-stores',
@@ -205,7 +205,7 @@ const DynamicStoresAdapter: IDeliveryAdapter = {
   },
 };
 
-DeliveryDirector.registerAdapter(DynamicStoresAdapter);
+pluginRegistry.register({ key: DynamicStoresAdapter.key, label: DynamicStoresAdapter.label, version: DynamicStoresAdapter.version, adapters: [DynamicStoresAdapter] });
 ```
 
 ## Store Locator Integration

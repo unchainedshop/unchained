@@ -205,7 +205,7 @@ const MeteredEnrollmentAdapter: IEnrollmentAdapter = {
   },
 };
 
-EnrollmentDirector.registerAdapter(MeteredEnrollmentAdapter);
+pluginRegistry.register({ key: MeteredEnrollmentAdapter.key, label: MeteredEnrollmentAdapter.label, version: MeteredEnrollmentAdapter.version, adapters: [MeteredEnrollmentAdapter] });
 ```
 
 ## Example: Trial with Grace Period
@@ -275,15 +275,15 @@ const TrialEnrollmentAdapter: IEnrollmentAdapter = {
   },
 };
 
-EnrollmentDirector.registerAdapter(TrialEnrollmentAdapter);
+pluginRegistry.register({ key: TrialEnrollmentAdapter.key, label: TrialEnrollmentAdapter.label, version: TrialEnrollmentAdapter.version, adapters: [TrialEnrollmentAdapter] });
 ```
 
 ## Registering an Enrollment Adapter
 
 ```typescript
-import { EnrollmentDirector } from '@unchainedshop/core';
+import { pluginRegistry } from '@unchainedshop/core';
 
-EnrollmentDirector.registerAdapter(CustomEnrollmentAdapter);
+pluginRegistry.register({ key: CustomEnrollmentAdapter.key, label: CustomEnrollmentAdapter.label, version: CustomEnrollmentAdapter.version, adapters: [CustomEnrollmentAdapter] });
 ```
 
 ## Related

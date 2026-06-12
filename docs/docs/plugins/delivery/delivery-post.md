@@ -69,7 +69,7 @@ Returns a default delivery estimate. Override in configuration or extend the ada
 For production use, extend or replace this adapter with carrier-specific integrations:
 
 ```typescript
-import { DeliveryDirector } from '@unchainedshop/core';
+import { pluginRegistry } from '@unchainedshop/core';
 
 const SwissPostAdapter = {
   key: 'ch.post.delivery',
@@ -110,7 +110,7 @@ const SwissPostAdapter = {
   },
 };
 
-DeliveryDirector.registerAdapter(SwissPostAdapter);
+pluginRegistry.register({ key: SwissPostAdapter.key, label: SwissPostAdapter.label, version: SwissPostAdapter.version, adapters: [SwissPostAdapter] });
 ```
 
 ## Delivery Pricing

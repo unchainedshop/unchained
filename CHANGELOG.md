@@ -61,9 +61,13 @@
 - **REMOVED**: PayPal Checkout plugin entirely (due to deprecated `@paypal/checkout-server-sdk`). Implement a custom PayPal integration using `@paypal/paypal-server-sdk`.
 - **REMOVED**: Braintree payment plugin.
 
-### Dependencies
-- **CHANGED**: ESLint upgraded to v10 (flat config only; the lint script no longer accepts `--ext`).
-- **CHANGED**: `@fastify/multipart` peer raised to `>= 10 < 11`; `@parse/node-apn` to `^8` (ticketing/Apple Wallet); `nodemailer` peer widened to `>= 6.9 < 9`; Stripe SDK peer widened to `>= 19 < 23` (API version `2026-04-22.dahlia`). All major bumps drop Node 18 (the engine already requires Node 22+).
+### Leveled Pricing
+- **CHANGED**: Product catalog price tiers are now keyed by **`minQuantity`** (inclusive lower bound; base tier `= 0`; the highest tier is open-ended) instead of v4's `maxQuantity` (inclusive upper bound). GraphQL: `UpdateProductCommercePricingInput.maxQuantity` **removed** (use `minQuantity`); `PriceLevel.minQuantity` added and `PriceLevel.maxQuantity` is now derived/nullable for display; `ProductCatalogPrice.minQuantity` replaces `maxQuantity`. Bulk-import/export product price columns use `minQuantity`.
+- **AUTOMATIC MIGRATION**: an idempotent startup migration (`20260611120000-pricing-maxquantity-to-minquantity`) converts existing `commerce.pricing` per `(countryCode, currencyCode)` — no operator action required; safe to re-run. **Update any storefront/client/import code that wrote `maxQuantity` to write `minQuantity`.**
+
+### Event System
+- **CHANGED**: the Redis and AWS EventBridge emit adapters no longer self-register on import. Register the transport explicitly before `startPlatform`: `import { setEmitAdapter } from '@unchainedshop/events'; import { RedisEventEmitter } from '@unchainedshop/plugins/events/redis'; setEmitAdapter(RedisEventEmitter());`
+- **NEW**: optional `EmitAdapter.shutdown()` — implemented by the redis/eventbridge adapters to close long-lived connections; called by `startPlatform` on graceful shutdown.
 
 ## New Features & Improvements
 
@@ -75,6 +79,7 @@
 - **CHANGED**: Admin impersonation now travels inside the JWT (`imp` claim) instead of session state.
 
 ### Developer Experience
+- **NEW**: `registerX(...)` plugin authoring factories (re-exported from `@unchainedshop/core`) — author a custom adapter of any director type in one typed call (`registerPaymentProvider`, `registerDeliveryProvider`, `registerProductPricing`, `registerOrderDiscount`, `registerWorker`, `registerFileAdapter`, `registerQuotation`, `registerEnrollment`, …). They build and register the `IPlugin` for you; `pluginRegistry.register()` remains the low-level primitive. See the [Plugin Factories](https://docs.unchained.shop/extend/plugin-factories) docs.
 - **NEW**: `@unchainedshop/client` package — installable React/Apollo GraphQL hooks with per-module subpath imports (e.g. `@unchainedshop/client/product`), generated from the admin-ui hooks, for building custom storefronts and admin tools. Peer dependencies: `@apollo/client` ^4, `graphql` ^16, `react` >=18.
 - **NEW**: Pluggable logger context — `setLogContextProvider()` merges request-scoped fields (e.g. OpenTelemetry `trace_id` / `span_id`) into every JSON log line (prototype-pollution-safe; provider errors are swallowed so telemetry never breaks logging).
 - **NEW**: `Query.registeredEventTypes: [String!]!` lists all registered event type names (gated by `viewEvents`).

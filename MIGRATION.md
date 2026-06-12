@@ -238,6 +238,43 @@ import { PaypalCheckoutPlugin } from '@unchainedshop/plugins/payment/paypal-chec
 
 If you were calling this method, simply remove it. Adapters are now registered via `pluginRegistry.register()` or preset functions.
 
+### Plugin Authoring Factories (new, recommended)
+
+Custom adapters can now be registered with a single typed call instead of a hand-built `IPlugin`. The factories are re-exported from `@unchainedshop/core` (`registerPaymentProvider`, `registerDeliveryProvider`, `registerProductPricing`, `registerOrderDiscount`, `registerWorker`, `registerFileAdapter`, `registerQuotation`, `registerEnrollment`, …). `pluginRegistry.register()` with a hand-built `IPlugin` remains the low-level path for custom keys/versions, routes, modules or lifecycle hooks. See the [Plugin Factories](https://docs.unchained.shop/extend/plugin-factories) documentation.
+
+### Leveled Pricing: `maxQuantity` → `minQuantity`
+
+**BREAKING CHANGE (with automatic data migration).** Product catalog price tiers are now keyed by **`minQuantity`** — an inclusive *lower* bound — instead of v4's `maxQuantity` (inclusive *upper* bound). The base tier is `minQuantity: 0` and the highest tier is open-ended (no upper cap).
+
+- **GraphQL:** `UpdateProductCommercePricingInput.maxQuantity` is removed — use `minQuantity` (omit it for the base tier). `PriceLevel.minQuantity` is added; `PriceLevel.maxQuantity` is now derived (the next tier's floor − 1; `null` on the open-ended tier). `ProductCatalogPrice.minQuantity` replaces `maxQuantity`.
+- **Data:** an idempotent startup migration (`20260611120000-pricing-maxquantity-to-minquantity`) converts existing `commerce.pricing` per `(countryCode, currencyCode)` automatically. **No operator action is required** and re-running is safe.
+- **Action for integrators:** update any storefront query, client codegen, or bulk-import/export payload that wrote `maxQuantity` to write `minQuantity`.
+
+```jsonc
+// commerce.pricing — before (v4)            // after (v5, auto-migrated)
+[                                            [
+  { "amount": 1000, "maxQuantity": 4 },        { "amount": 1000, "minQuantity": 0 },
+  { "amount": 900,  "maxQuantity": 9 },        { "amount": 900,  "minQuantity": 5 },
+  { "amount": 800 }  /* open-ended top */      { "amount": 800,  "minQuantity": 10 }
+]                                            ]
+```
+
+### Events: explicit emit-adapter registration
+
+**BREAKING CHANGE for Redis / AWS EventBridge users.** These transports no longer self-register as a side effect of being imported. Register the emit adapter explicitly before `startPlatform`:
+
+```ts
+// ❌ Before: importing the module had the side effect of registering it
+import '@unchainedshop/plugins/events/redis';
+
+// ✅ After: register explicitly
+import { setEmitAdapter } from '@unchainedshop/events';
+import { RedisEventEmitter } from '@unchainedshop/plugins/events/redis';
+setEmitAdapter(RedisEventEmitter());
+```
+
+The Node.js in-memory emitter is still wired automatically by `registerBasePlugins()`. `EmitAdapter` also gained an optional `shutdown()` (the redis/eventbridge adapters implement it to close connections; `startPlatform` calls it on graceful shutdown).
+
 ---
 
 ## v3 → v4

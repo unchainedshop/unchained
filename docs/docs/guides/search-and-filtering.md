@@ -513,7 +513,7 @@ function useUrlFilters() {
 Create a custom filter adapter for advanced search:
 
 ```typescript
-import { FilterDirector, type IFilterAdapter } from '@unchainedshop/core';
+import { pluginRegistry, type IFilterAdapter } from '@unchainedshop/core';
 
 const ElasticsearchFilter: IFilterAdapter = {
   key: 'shop.example.filter.elasticsearch',
@@ -566,7 +566,7 @@ const ElasticsearchFilter: IFilterAdapter = {
   },
 };
 
-FilterDirector.registerAdapter(ElasticsearchFilter);
+pluginRegistry.register({ key: ElasticsearchFilter.key, label: ElasticsearchFilter.label, version: ElasticsearchFilter.version, adapters: [ElasticsearchFilter] });
 ```
 
 ## Performance Tips

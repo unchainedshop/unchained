@@ -107,7 +107,7 @@ Send order details to:
 Configure the `DELIVERY` template in your messaging setup:
 
 ```typescript
-import { MessagingDirector } from '@unchainedshop/core';
+import { pluginRegistry } from '@unchainedshop/core';
 
 const DeliveryTemplate = {
   key: 'DELIVERY',
@@ -136,7 +136,7 @@ const DeliveryTemplate = {
   }),
 };
 
-MessagingDirector.registerAdapter(DeliveryTemplate);
+pluginRegistry.register({ key: DeliveryTemplate.key, label: DeliveryTemplate.label, version: DeliveryTemplate.version, adapters: [DeliveryTemplate] });
 ```
 
 ## Custom Digital Delivery Adapter
@@ -144,7 +144,7 @@ MessagingDirector.registerAdapter(DeliveryTemplate);
 For more complex digital delivery scenarios:
 
 ```typescript
-import { DeliveryDirector, type IDeliveryAdapter } from '@unchainedshop/core';
+import { pluginRegistry, type IDeliveryAdapter } from '@unchainedshop/core';
 
 const DigitalDeliveryAdapter: IDeliveryAdapter = {
   key: 'my-shop.digital-delivery',
@@ -221,7 +221,7 @@ const DigitalDeliveryAdapter: IDeliveryAdapter = {
   },
 };
 
-DeliveryDirector.registerAdapter(DigitalDeliveryAdapter);
+pluginRegistry.register({ key: DigitalDeliveryAdapter.key, label: DigitalDeliveryAdapter.label, version: DigitalDeliveryAdapter.version, adapters: [DigitalDeliveryAdapter] });
 ```
 
 ## Combining with Physical Delivery

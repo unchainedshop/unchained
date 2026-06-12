@@ -171,7 +171,7 @@ MongoDB applies stemming based on language:
 For external search services:
 
 ```typescript
-import { FilterDirector, FilterAdapter, type IFilterAdapter } from '@unchainedshop/core';
+import { pluginRegistry, FilterAdapter, type IFilterAdapter } from '@unchainedshop/core';
 
 const AlgoliaSearchAdapter: IFilterAdapter = {
   ...FilterAdapter,
@@ -224,7 +224,7 @@ const AlgoliaSearchAdapter: IFilterAdapter = {
   },
 };
 
-FilterDirector.registerAdapter(AlgoliaSearchAdapter);
+pluginRegistry.register({ key: AlgoliaSearchAdapter.key, label: AlgoliaSearchAdapter.label, version: AlgoliaSearchAdapter.version, adapters: [AlgoliaSearchAdapter] });
 ```
 
 ## Performance Considerations

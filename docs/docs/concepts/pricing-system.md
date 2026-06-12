@@ -41,9 +41,9 @@ flowchart LR
 ```
 
 Each adapter:
-1. Receives the current calculation state
-2. Can add items to the calculation
-3. Passes control to the next adapter via `super.calculate()`
+1. Receives the current calculation state (a pricing `sheet`)
+2. Adds items/fees/discounts to the sheet
+3. Hands control to the next adapter in the chain
 
 ### Order Index Guidelines
 
@@ -97,6 +97,67 @@ const payment = pricingSheet.payment();
 // Sum specific items
 const taxableAmount = pricingSheet.sum({ isTaxable: true });
 const baseAmount = pricingSheet.sum({ category: 'BASE' });
+```
+
+## Leveled (Quantity-Tier) Catalog Pricing
+
+A product's catalog price can have several **quantity tiers** per `(countryCode, currencyCode)` — for example a lower unit price when buying 10 or more.
+
+Each tier is keyed by **`minQuantity`**, the *inclusive lower bound* of the quantity range it applies to:
+
+- The **base tier** is `minQuantity: 0` (applies from the first unit).
+- Tiers are sorted ascending by `minQuantity`. The applicable tier for a requested quantity `q` is the **highest tier whose `minQuantity ≤ q`**.
+- The **highest tier is open-ended** — it applies to every quantity at or above its floor (there is no upper cap).
+
+### Example — three tiers (CHF / CH)
+
+| `minQuantity` | `amount` | Applies to |
+|---|---|---|
+| `0` | `1000` | quantity 1–4 → 10.00 each |
+| `5` | `900` | quantity 5–9 → 9.00 each |
+| `10` | `800` | quantity ≥ 10 → 8.00 each |
+
+:::info Upgrading from v4: `maxQuantity` → `minQuantity`
+Before v5, tiers were keyed by `maxQuantity` (an inclusive *upper* bound). v5 uses `minQuantity` (a *lower* bound). An **automatic, idempotent migration runs on startup** and converts existing `commerce.pricing` data per `(countryCode, currencyCode)` — no operator action is required, and re-running is safe. If you write product prices from a storefront, import pipeline, or client codegen, switch those payloads from `maxQuantity` to `minQuantity`.
+:::
+
+### Set tiers (GraphQL)
+
+`UpdateProductCommercePricingInput` takes `minQuantity` (omit it for the base tier):
+
+```graphql
+mutation SetTiers($productId: ID!) {
+  updateProductCommerce(
+    productId: $productId
+    commerce: {
+      pricing: [
+        { amount: 1000, currencyCode: "CHF", countryCode: "CH" }
+        { amount: 900, minQuantity: 5, currencyCode: "CHF", countryCode: "CH" }
+        { amount: 800, minQuantity: 10, currencyCode: "CHF", countryCode: "CH" }
+      ]
+    }
+  ) {
+    _id
+  }
+}
+```
+
+### Read tiers (GraphQL)
+
+`leveledCatalogPrices` returns each tier as a `PriceLevel`. `minQuantity` is the stored floor; `maxQuantity` is **derived for display** (the next tier's floor − 1; `null` on the open-ended top tier):
+
+```graphql
+query Tiers($productId: ID!) {
+  product(productId: $productId) {
+    ... on SimpleProduct {
+      leveledCatalogPrices(currencyCode: "CHF") {
+        minQuantity
+        maxQuantity
+        price { amount currencyCode }
+      }
+    }
+  }
+}
 ```
 
 ## GraphQL Price Fields
@@ -159,18 +220,21 @@ query CartPricing {
 
 ## Best Practices
 
-### 1. Always Call super.calculate()
+### 1. Author with the pricing factories
+
+Use [`registerProductPricing` / `registerOrderPricing` / `registerPaymentPricing` / `registerDeliveryPricing`](../extend/plugin-factories.md#pricing). You push rows onto the `sheet` and the factory continues the chain for you:
 
 ```typescript
-async calculate() {
-  // Your logic here
+import { registerProductPricing } from '@unchainedshop/core';
 
-  // IMPORTANT: Continue the chain
-  return super.calculate();
-}
+registerProductPricing({
+  adapterId: 'my-surcharge',
+  calculate: async (sheet, context) => {
+    sheet.addItem({ amount: 100, isTaxable: true, isNetPrice: true, meta: { adapter: 'my-surcharge' } });
+    // Do NOT continue the chain yourself — the factory does it.
+  },
+});
 ```
-
-Returning without calling `super.calculate()` stops the pricing chain.
 
 ### 2. Handle Currency Properly
 
@@ -189,11 +253,12 @@ const amount = 19.99; // Floating point issues
 Add metadata for debugging and reporting:
 
 ```typescript
-this.result.addItem({
+sheet.addItem({
   amount: 100,
-  category: 'TAX',
+  isTaxable: false,
+  isNetPrice: true,
   meta: {
-    adapter: this.constructor.key,
+    adapter: 'shop.unchained.pricing.product-tax',
     rate: 0.081,
   },
 });

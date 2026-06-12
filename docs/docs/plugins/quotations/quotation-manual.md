@@ -114,7 +114,7 @@ mutation AcceptQuotation {
 For custom quotation logic:
 
 ```typescript
-import { QuotationDirector, QuotationAdapter, type IQuotationAdapter } from '@unchainedshop/core';
+import { pluginRegistry, QuotationAdapter, type IQuotationAdapter } from '@unchainedshop/core';
 
 const CustomQuotationAdapter: IQuotationAdapter = {
   ...QuotationAdapter,
@@ -155,7 +155,7 @@ const CustomQuotationAdapter: IQuotationAdapter = {
   },
 };
 
-QuotationDirector.registerAdapter(CustomQuotationAdapter);
+pluginRegistry.register({ key: CustomQuotationAdapter.key, label: CustomQuotationAdapter.label, version: CustomQuotationAdapter.version, adapters: [CustomQuotationAdapter] });
 ```
 
 ## Adapter Details

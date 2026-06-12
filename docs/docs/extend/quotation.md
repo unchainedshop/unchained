@@ -88,7 +88,7 @@ export const ManualOffering: IQuotationAdapter = {
 ## Registering Quotation Adapter
 
 ```typescript
-import { QuotationDirector } from '@unchainedshop/core-quotations';
+import { pluginRegistry } from '@unchainedshop/core-quotations';
 
-QuotationDirector.registerAdapter(ManualOffering);
+pluginRegistry.register({ key: ManualOffering.key, label: ManualOffering.label, version: ManualOffering.version, adapters: [ManualOffering] });
 ```

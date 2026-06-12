@@ -281,7 +281,7 @@ const CustomMinterAdapter: IWarehousingAdapter = {
   },
 };
 
-WarehousingDirector.registerAdapter(CustomMinterAdapter);
+pluginRegistry.register({ key: CustomMinterAdapter.key, label: CustomMinterAdapter.label, version: CustomMinterAdapter.version, adapters: [CustomMinterAdapter] });
 ```
 
 ## Querying Tokens
