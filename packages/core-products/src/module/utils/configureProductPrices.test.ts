@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { getDecimals, normalizeRate } from '../configureProductPrices.ts';
+import { configureProductPricesModule, getDecimals, normalizeRate } from '../configureProductPrices.ts';
 
 describe('Rate conversion', () => {
   it('getDecimals', () => {
@@ -152,5 +152,94 @@ describe('Rate conversion', () => {
 
     // 1 ETH = 1,000,000,000 GWEI (10^9)
     // 1,000,000,000 GWEI = 1’259’445 CLP
+  });
+});
+
+describe('Catalog price', () => {
+  const createPricesModule = () =>
+    configureProductPricesModule({
+      db: null,
+      proxyProducts: async (product) => [product],
+    } as any);
+
+  const legacyProduct = {
+    _id: 'legacy-product',
+    commerce: {
+      pricing: [
+        {
+          amount: 1000,
+          currencyCode: 'CHF',
+          countryCode: 'CH',
+          isTaxable: true,
+          isNetPrice: false,
+          minQuantity: null,
+          maxQuantity: 4,
+          legacyOnly: true,
+        },
+        {
+          amount: 800,
+          currencyCode: 'CHF',
+          countryCode: 'CH',
+          isTaxable: false,
+          isNetPrice: true,
+          minQuantity: 5,
+          maxQuantity: null,
+          legacyOnly: true,
+        },
+      ],
+    },
+  } as any;
+
+  it('treats null minQuantity as the base tier', async () => {
+    const { price } = createPricesModule();
+
+    assert.deepStrictEqual(
+      await price(legacyProduct, { countryCode: 'CH', currencyCode: 'CHF', quantity: 1 }),
+      {
+        amount: 1000,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+        minQuantity: 0,
+        isTaxable: true,
+        isNetPrice: false,
+      },
+    );
+
+    assert.deepStrictEqual(
+      await price(legacyProduct, { countryCode: 'CH', currencyCode: 'CHF', quantity: 5 }),
+      {
+        amount: 800,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+        minQuantity: 5,
+        isTaxable: false,
+        isNetPrice: true,
+      },
+    );
+  });
+
+  it('normalizes ProductPrice return shapes', async () => {
+    const { catalogPrices, price } = createPricesModule();
+
+    const expectedKeys = [
+      'amount',
+      'countryCode',
+      'currencyCode',
+      'isNetPrice',
+      'isTaxable',
+      'minQuantity',
+    ];
+    const singlePrice = await price(legacyProduct, {
+      countryCode: 'CH',
+      currencyCode: 'CHF',
+      quantity: 1,
+    });
+    const priceList = await catalogPrices(legacyProduct);
+
+    assert.deepStrictEqual(Object.keys(singlePrice!).sort(), expectedKeys);
+    assert.deepStrictEqual(
+      priceList.map((productPrice) => Object.keys(productPrice).sort()),
+      [expectedKeys, expectedKeys],
+    );
   });
 });
