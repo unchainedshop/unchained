@@ -4,11 +4,15 @@ import { processEnrollmentService } from './processEnrollment.ts';
 import { addMessageService } from './addMessage.ts';
 
 export async function activateEnrollmentService(this: Modules, enrollment: Enrollment) {
-  if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;
+  if (enrollment.status === EnrollmentStatus.TERMINATED || enrollment.status === EnrollmentStatus.ACTIVE)
+    return enrollment;
+
+  const info =
+    enrollment.status === EnrollmentStatus.SUSPENDED ? 'resumed from suspension' : 'activated manually';
 
   let updatedEnrollment = (await this.enrollments.updateStatus(enrollment._id, {
     status: EnrollmentStatus.ACTIVE,
-    info: 'activated manually',
+    info,
   })) as Enrollment;
 
   updatedEnrollment = (await processEnrollmentService.bind(this)(updatedEnrollment)) as Enrollment;
