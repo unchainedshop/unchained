@@ -7,85 +7,61 @@ description: Add custom background workers
 
 # Work Queue
 
-## WorkAdapter
+Workers perform background tasks based on input and triggers — a cron job that runs on an interval, sending an email after an operation, syncing with an external system, and so on.
 
-You can add different types of works to perform various task based on different input and triggers. Work can be a cron operation that run on a given interval to do a system backup or send an email to a user after a certain operation.
+## Creating a worker
 
-In order to make use of work to perform any task you need to implement the `IWorkerAdapter` interface and register it to the global WorkDirector which implements the `IWorkerDirector`.
-
-Below is an example of work adapter that checks if all works are healthy and working correctly, runs on the  `wait` interval value passed as input
-
+The recommended way is the [`registerWorker`](./plugin-factories.md#workers) factory. You pass the work `type` and a `process` callback; the factory builds and registers the worker plugin.
 
 ```typescript
-import { IWorkerAdapter } from '@unchainedshop/core-worker';
+import { registerWorker } from '@unchainedshop/core';
 
-const wait = async (time: number) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(true);
-    }, time);
-  });
-};
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-type Arg = {
-  wait?: number;
-  fails?: boolean;
-};
-
-type Result = Arg;
-
-const Heartbeat: IWorkerAdapter<Arg, Result> = {
-
-  key: 'shop.unchained.worker-plugin.heartbeat',
-  label: 'Heartbeat plugin to check if workers are working',
-  version: '1.0.0',
-
+registerWorker<{ wait?: number; fails?: boolean }, { wait?: number }>({
   type: 'HEARTBEAT',
-
-  doWork: async (input: Arg): Promise<{ success: boolean; result: Result }> => {
-    if (input?.wait) {
-      await wait(input.wait);
-    }
-    if (input?.fails) {
-      return {
-        success: false,
-        result: input,
-      };
-    }
-    return {
-      success: true,
-      result: input,
-    };
+  process: async (input) => {
+    if (input?.wait) await wait(input.wait);
+    if (input?.fails) throw new Error('heartbeat failed'); // a thrown error => { success: false }
+    return input; // the resolved value => { success: true, result: input }
   },
-};
-
+});
 ```
-- **type**: type of the worker, this value is used to specify the worker you are targeting when adding a work to a work queue using `WorkerModule.addWork(data: WorkData, userId: string)` function
-- **doWork**: function that defines the actual work that is going to be performed by the work adapter
 
-## Registering Work Adapter
-Before you can add a worker in the work queue you need to register it to the global Worker director
+| Option | Description |
+|---|---|
+| `type` | Work type — passed to `modules.worker.addWork({ type })` to enqueue this work. Keyed `shop.unchained.worker.<type>`. |
+| `process(input, workId)` | The work logic. Return a result (→ `{ success: true, result }`); a thrown error becomes `{ success: false }`. |
+| `external` | `true` if the work is processed outside the engine (default `false`). |
+| `maxParallelAllocations` | Concurrency cap for this work type. |
+
+> For full control (a custom `key`/`version`, or the raw `doWork(input, api, workId)` shape), build an `IWorkerAdapter` and register it via `pluginRegistry.register()` — see [Plugin System](../concepts/director-adapter-pattern.md#adapter-contracts).
+
+## Scheduling recurring work
 
 ```typescript
-import { pluginRegistry } from '@unchainedshop/core-worker';
+import { WorkerDirector } from '@unchainedshop/core';
 
-pluginRegistry.register({ key: Heartbeat.key, label: Heartbeat.label, version: Heartbeat.version, adapters: [Heartbeat] });
+WorkerDirector.configureAutoscheduling({
+  type: 'HEARTBEAT',
+  schedule: '0 * * * *', // every hour (cron syntax)
+  input: () => ({ wait: 1000 }),
+});
 ```
 
-## Adding work to the work queue
+## Adding work to the queue
 
-Triggering a worker is done by adding a work to the work queue using the worker module found on unchained context. below is an example that demonstrate adding the work adapter we have created above
+Enqueue work via the worker module on the Unchained context:
 
-```typescript  
-unchainedAPI.modules.worker.addWork(
-    {
-      type: 'HEARTBEAT',
-      retries: 0,
-      input: {
-        wait: 1000,
-      },
-    },
-  );
-}
-
+```typescript
+await unchainedAPI.modules.worker.addWork({
+  type: 'HEARTBEAT',
+  retries: 0,
+  input: { wait: 1000 },
+});
 ```
+
+## Related
+
+- [Plugin Factories](./plugin-factories.md#workers) — `registerWorker`
+- [Plugin System](../concepts/director-adapter-pattern.md) — the plugin architecture

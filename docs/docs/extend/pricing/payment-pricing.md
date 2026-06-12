@@ -27,18 +27,25 @@ registerPaymentPricing({
 });
 ```
 
-`calculate(sheet, context)` receives the running `sheet` and the payment pricing `context` (`provider`, `order`, `modules`, `currencyCode`).
+`calculate(sheet, context)` receives the running `sheet` and the payment pricing `context` (`provider`, `order`, `currencyCode`).
 
 ## Examples
 
 ### Credit-card fee
 
 ```typescript
+import { OrderPricingSheet, registerPaymentPricing } from '@unchainedshop/core';
+
 registerPaymentPricing({
   adapterId: 'card-fee',
-  isActivatedFor: (context) => ['CARD', 'GENERIC'].includes(context.provider?.type),
+  isActivatedFor: (context) =>
+    context.provider.adapterKey === 'shop.unchained.payment.stripe',
   calculate: async (sheet, context) => {
-    const orderTotal = context.order.pricing().total().amount;
+    const orderPricing = OrderPricingSheet({
+      calculation: context.order?.calculation,
+      currencyCode: context.order?.currencyCode,
+    });
+    const orderTotal = orderPricing.total().amount;
     const fee = Math.round(orderTotal * 0.029 + 30); // 2.9% + 0.30
     sheet.addFee({ amount: fee, isTaxable: false, isNetPrice: true, meta: { rate: 0.029, fixed: 30 } });
   },
@@ -50,9 +57,14 @@ registerPaymentPricing({
 ```typescript
 registerPaymentPricing({
   adapterId: 'tiered-fee',
-  isActivatedFor: (context) => context.provider?.type === 'CARD',
+  isActivatedFor: (context) =>
+    context.provider.adapterKey === 'shop.unchained.payment.stripe',
   calculate: async (sheet, context) => {
-    const orderTotal = context.order.pricing().total().amount;
+    const orderPricing = OrderPricingSheet({
+      calculation: context.order?.calculation,
+      currencyCode: context.order?.currencyCode,
+    });
+    const orderTotal = orderPricing.total().amount;
     const rate = orderTotal >= 50000 ? 0.019 : orderTotal >= 10000 ? 0.025 : 0.029;
     sheet.addFee({ amount: Math.round(orderTotal * rate + 30), isTaxable: false, isNetPrice: true, meta: { rate } });
   },

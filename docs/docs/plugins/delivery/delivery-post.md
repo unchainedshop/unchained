@@ -66,51 +66,23 @@ Returns a default delivery estimate. Override in configuration or extend the ada
 
 ## Extending for Real Carriers
 
-For production use, extend or replace this adapter with carrier-specific integrations:
+For production use, register a carrier-specific shipping provider:
 
 ```typescript
-import { pluginRegistry } from '@unchainedshop/core';
+import { registerShippingDelivery } from '@unchainedshop/core';
 
-const SwissPostAdapter = {
-  key: 'ch.post.delivery',
-  label: 'Swiss Post',
-  version: '1.0.0',
-
-  typeSupported: (type) => type === 'SHIPPING',
-
-  actions(config, context) {
-    return {
-      configurationError() { return null; },
-      isActive() { return true; },
-      isAutoReleaseAllowed() { return true; },
-
-      async send() {
-        const { order } = context;
-
-        // Call Swiss Post API
-        const response = await swissPostApi.createShipment({
-          recipient: order.delivery.address,
-          weight: calculateWeight(order.items),
-        });
-
-        return {
-          trackingNumber: response.trackingNumber,
-          trackingUrl: `https://www.post.ch/track?id=${response.trackingNumber}`,
-        };
-      },
-
-      estimatedDeliveryThroughput(warehousingTime) {
-        // Swiss Post typically delivers in 1-2 days
-        return warehousingTime + (2 * 24 * 60 * 60 * 1000);
-      },
-
-      async pickUpLocations() { return []; },
-      async pickUpLocationById() { return null; },
-    };
+registerShippingDelivery({
+  adapterId: 'swiss-post',
+  estimatedDeliveryThroughput: async (warehousingTime) =>
+    warehousingTime + 2 * 24 * 60 * 60 * 1000,
+  send: async (configuration, { order }) => {
+    await swissPostApi.createShipment({
+      recipient: order.delivery.address,
+      weight: calculateWeight(order.items),
+    });
+    return true;
   },
-};
-
-pluginRegistry.register({ key: SwissPostAdapter.key, label: SwissPostAdapter.label, version: SwissPostAdapter.version, adapters: [SwissPostAdapter] });
+});
 ```
 
 ## Delivery Pricing

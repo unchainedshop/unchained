@@ -211,77 +211,33 @@ for (const token of tokens) {
 
 ## Custom Minting Adapter
 
-For custom blockchain integrations:
+For custom blockchain integrations, use `registerVirtualWarehousing`:
 
 ```typescript
-import {
-  WarehousingDirector,
-  WarehousingAdapter,
-  type IWarehousingAdapter
-} from '@unchainedshop/core';
+import { registerVirtualWarehousing } from '@unchainedshop/core';
 
-const CustomMinterAdapter: IWarehousingAdapter = {
-  ...WarehousingAdapter,
-
-  key: 'my-shop.custom-minter',
-  label: 'Custom NFT Minter',
-  version: '1.0.0',
-
-  typeSupported: (type) => type === 'VIRTUAL',
-
-  actions(configuration, context) {
-    const { product, orderPosition } = context;
-
-    return {
-      ...WarehousingAdapter.actions(configuration, context),
-
-      isActive() {
-        return product?.type === 'TOKENIZED_PRODUCT';
-      },
-
-      configurationError() {
-        if (!process.env.MINTER_PRIVATE_KEY) {
-          return { code: 'MISSING_MINTER_KEY' };
-        }
-        return null;
-      },
-
-      async stock() {
-        // Check on-chain supply
-        const totalSupply = await contract.totalSupply();
-        const maxSupply = await contract.maxSupply();
-        return maxSupply - totalSupply;
-      },
-
-      async tokenize() {
-        const { contractAddress, tokenId } = product.tokenization;
-
-        // Mint on-chain
-        const tx = await contract.mint(
-          orderPosition.quantity,
-          { gasLimit: 500000 }
-        );
-        const receipt = await tx.wait();
-
-        // Extract token IDs from events
-        const mintEvents = receipt.events.filter(e => e.event === 'Transfer');
-
-        return mintEvents.map(event => ({
-          _id: generateDbObjectId(),
-          tokenSerialNumber: event.args.tokenId.toString(),
-          contractAddress,
-          quantity: 1,
-          meta: {
-            txHash: tx.hash,
-            blockNumber: receipt.blockNumber,
-          },
-        }));
-      },
-    };
+registerVirtualWarehousing({
+  adapterId: 'custom-minter',
+  stock: async () => {
+    const totalSupply = await contract.totalSupply();
+    const maxSupply = await contract.maxSupply();
+    return maxSupply - totalSupply;
   },
-};
+  tokenize: async (configuration, { product, orderPosition }) => {
+    const tx = await contract.mint(orderPosition.quantity, { gasLimit: 500000 });
+    const receipt = await tx.wait();
 
-pluginRegistry.register({ key: CustomMinterAdapter.key, label: CustomMinterAdapter.label, version: CustomMinterAdapter.version, adapters: [CustomMinterAdapter] });
+    return receipt.events
+      .filter((event) => event.event === 'Transfer')
+      .map((event) => ({
+        _id: crypto.randomUUID(),
+        tokenSerialNumber: event.args.tokenId.toString(),
+        contractAddress: product.tokenization.contractAddress,
+        quantity: 1,
+        meta: { txHash: tx.hash, blockNumber: receipt.blockNumber },
+      }));
+  },
+});
 ```
 
 ## Querying Tokens

@@ -134,7 +134,11 @@ registerProductPricing({
 The same pattern applies with the matching factory and sheet method:
 
 ```typescript
-import { registerOrderPricing, registerDeliveryPricing, registerPaymentPricing } from '@unchainedshop/core';
+import {
+  OrderPricingSheet,
+  registerDeliveryPricing,
+  registerPaymentPricing,
+} from '@unchainedshop/core';
 
 // Free shipping over 100.00
 registerDeliveryPricing({
@@ -153,7 +157,15 @@ registerPaymentPricing({
   adapterId: 'cash-discount',
   isActivatedFor: (context) => context.provider?.adapterKey === 'shop.unchained.payment.invoice',
   calculate: async (sheet, context) => {
-    sheet.addFee({ amount: -Math.round(context.order.pricing().total().amount * 0.02), isTaxable: false, isNetPrice: true });
+    const orderPricing = OrderPricingSheet({
+      calculation: context.order?.calculation,
+      currencyCode: context.order?.currencyCode,
+    });
+    sheet.addFee({
+      amount: -Math.round(orderPricing.total().amount * 0.02),
+      isTaxable: false,
+      isNetPrice: true,
+    });
   },
 });
 ```

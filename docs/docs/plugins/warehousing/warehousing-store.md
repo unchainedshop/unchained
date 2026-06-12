@@ -92,93 +92,38 @@ For small shops where inventory is managed manually outside the system.
 Where stock is always available from suppliers:
 
 ```typescript
-const DropShipAdapter = {
-  ...StoreAdapter,
-  key: 'my-shop.dropship',
-  label: 'Drop Ship',
+import { registerPhysicalWarehousing } from '@unchainedshop/core';
 
-  actions(config, context) {
-    return {
-      ...StoreAdapter.actions(config, context),
-
-      async stock() {
-        // Always available from supplier
-        return 99999;
-      },
-
-      async commissioningTime() {
-        // Supplier needs 2-3 days to ship
-        return 3 * 24 * 60 * 60 * 1000;
-      },
-    };
-  },
-};
+registerPhysicalWarehousing({
+  adapterId: 'dropship',
+  stock: 99999,
+  commissioningTime: 3 * 24 * 60 * 60 * 1000,
+});
 ```
 
 ## Extending for Real Inventory
 
-For production use, extend with actual inventory tracking:
+For production use, pass inventory callbacks to `registerPhysicalWarehousing`:
 
 ```typescript
-import {
-  WarehousingDirector,
-  WarehousingAdapter,
-  type IWarehousingAdapter
-} from '@unchainedshop/core';
+import { registerPhysicalWarehousing } from '@unchainedshop/core';
 
-const RealStoreAdapter: IWarehousingAdapter = {
-  ...WarehousingAdapter,
-
-  key: 'my-shop.real-store',
-  label: 'Real Store Inventory',
-  version: '1.0.0',
+registerPhysicalWarehousing({
+  adapterId: 'real-store',
   orderIndex: 0,
-
-  typeSupported: (type) => type === 'PHYSICAL',
-
-  actions(configuration, context) {
-    const { product, modules } = context;
-
-    return {
-      ...WarehousingAdapter.actions(configuration, context),
-
-      isActive() {
-        return true;
-      },
-
-      configurationError() {
-        return null;
-      },
-
-      async stock() {
-        // Get stock from product warehousing data
-        const sku = product?.warehousing?.sku;
-        if (!sku) return 0;
-
-        // Query your inventory system
-        const inventory = await db.collection('inventory').findOne({ sku });
-        return inventory?.quantity || 0;
-      },
-
-      async productionTime() {
-        const currentStock = await this.stock();
-        if (currentStock > 0) return 0;
-
-        // Out of stock - check backorder time
-        const sku = product?.warehousing?.sku;
-        const supplier = await getSupplierLeadTime(sku);
-        return supplier.leadTimeDays * 24 * 60 * 60 * 1000;
-      },
-
-      async commissioningTime() {
-        // Standard picking and packing time: 4 hours
-        return 4 * 60 * 60 * 1000;
-      },
-    };
+  stock: async (referenceDate, configuration, { product }) => {
+    const sku = product?.warehousing?.sku;
+    if (!sku) return 0;
+    const inventory = await db.collection('inventory').findOne({ sku });
+    return inventory?.quantity || 0;
   },
-};
-
-pluginRegistry.register({ key: RealStoreAdapter.key, label: RealStoreAdapter.label, version: RealStoreAdapter.version, adapters: [RealStoreAdapter] });
+  productionTime: async (quantity, configuration, { product }) => {
+    const sku = product?.warehousing?.sku;
+    const supplier = await getSupplierLeadTime(sku);
+    return supplier.leadTimeDays * 24 * 60 * 60 * 1000;
+  },
+  commissioningTime: 4 * 60 * 60 * 1000,
+});
 ```
 
 ## Integration with Delivery

@@ -7,184 +7,125 @@ description: Customize filter and search
 
 # Custom Filter Plugins
 
-Filter plugins are useful when you want to have a tailored filter functionality based on some requirements. you can have more than one FilterAdapter implementations and all of them will be executed sequentially based on there `orderIndex` index. Filter adapter with lower `orderIndex` will be first on the execution order and any modifications made on the previous Filter adapter will be available to filter that are executed after it. This is useful when you want to modularize your business logic.
+Filter adapters let you customize catalog search, filter visibility, MongoDB selectors, and sort behavior. Multiple filters can be active; they run in ascending `orderIndex`, and each filter receives the selector or result set produced by earlier filters.
 
-When creating a filter make sure you don't use the same key for different filters.
+## External Search
 
-To implement a custom filter plugin you need to implement `IFilterAdapter`
-and register it on the `FilterDirector`
-
-
-Below is a simple filter plugin that will filter products based on there attribute values.
+Use the search factories when an external engine such as Algolia, Meilisearch, or Elasticsearch should decide the matching ids. The factory builds the adapter and registers it immediately.
 
 ```typescript
+import { registerProductSearchFilter } from '@unchainedshop/core';
 
-import { IFilterAdapter, FilterAdapterActions, FilterContext } from '@unchainedshop/core-filters';
-import { Context } from '../../../context.ts';
+registerProductSearchFilter({
+  adapterId: 'elasticsearch',
+  orderIndex: 5,
+  search: async ({ queryString, locale }) => {
+    const results = await elasticsearch.search({
+      index: 'products',
+      body: buildProductQuery(queryString, locale),
+    });
 
-const ShopAttributeFilter: IFilterAdapter = {
-  key: 'ch.shop.filter',
-  label: 'Filters products by metadata attributes',
-  version: '1.0.0',
-  orderIndex: 10,
-
-  actions: (params: FilterContext & Context): FilterAdapterActions => {
-    return {
-      aggregateProductIds(params: { productIds: Array<string> }) {
-        return productIds;
-      },
-      searchAssortments(
-        params: {
-          assortmentIds: Array<string>;
-        },
-        options?: {
-          filterSelector: Filter;
-          assortmentSelector: Filter;
-          sortStage: FindOptions['sort'];
-        },
-      ) {
-        return assortmentIds;
-      },
-      searchProducts(
-        params: {
-          productIds: Array<string>;
-        },
-        options?: {
-          filterSelector: Query;
-          productSelector: Query;
-          sortStage: FindOptions['sort'];
-        },
-      ) {
-        return productIds;
-      },
-      transformProductSelector(
-        query: Query,
-        options?: { key?: string; value?: any },
-      ) {
-        return {...query, inStock: true};
-      },
-      async transformSortStage(
-        sort: FindOptions['sort'],
-        options?: { key: string; value?: any },
-      ) {
-        return {...sort, created: -1 };
-      },
-      async transformFilterSelector(
-        query: Query,
-        options?: any,
-      ): Promise<Query> {
-        if (!last || Object.keys(last).length === 0) {
-          return null;
-        }
-        return last;
-      },
-
-      async transformProductSelector(
-        query: Query,
-        options?: { key?: string; value?: any },
-      ): Promise<Query> {
-        if (!key) return last;
-        return {
-          status: 'ACTIVE',
-          'shop.attributes': {
-            $elemMatch: {
-              key,
-              value: value !== undefined ? value : { $exists: true },
-            },
-          },
-        };
-      },
-    };
+    return results.hits.hits.map((hit) => hit._id);
   },
-};
-
-
+});
 ```
 
-### Breakdown
-Lets look into each `field` & `function` defined by `IFilterAdapter` and what the function of each.
-- `key`: Unique identification of adapter, identical to ID.
-- `label`: Human readable label of the filter.
-- `version`
-- `orderIndex`: defines the execution order of a particular filter adapter. filter adapters lower value will be executed first
-
-- `transformProductSelector`: modifies selectors that are going to be used to filter products list. it gets filters that are added by filter adapters with lowe `orderIndex` as it's argument and is expected to return valid mongodb selector expression.
-In the above example we are adding `status: 'ACTIVE'` selector if there is any filter configuration key provided on the filter, also expect the attribute value to match the configuration key: value.
-Note: filters with higher `orderIndex` will get this value as there argument
-  default value: `{ status: { '$in': [ 'ACTIVE', null ] } }`
-- `transformFilterSelector`: This transform fn allows you to customize the selector that returns the filters that should show up for a given search query. By default it uses the assortment's filter links to return those filters. Sometimes there is no assortment scope (global search for products) or you want to make a specific filter appear just everywhere. In those cases this can be helpful by returning additional filters through the selector.
-- `transformSortStage`: Used to modify sort options that will to be applied for filter. default sort option value is `{ index: 1 }` which is for mongodb automatically assigned index value, but it can be changed to use any field in a collection.
-in the example above we are adding a sort `{ created: -1 }` to the previous sort option and filter adapters with higher `orderIndex` will get this value as there parameter.
-
-  default value:  `{ _id: { '$in': [] }, isActive: true }`
-
-- `searchAssortments`: Triggered when searching for assortments, It is required to return array of assortment Ids that pass the filter checks or empty array if none is found. it gets `assortmentIds` that have been matched so far by filters with lower `orderIndex`.
-- `searchProducts`: Triggered when searching for products, It is required to return array of product Ids that pass the filter checks or empty array if none is found. it gets `productIds` that have been matched so far by filters with lower `orderIndex`.
-- `aggregateProductIds`: Executed when searching products, it holds array of the final matching productIds found so far. It is required to return array of product ids.
-
-
-
-### Order of execution
-
-1. `transformFilterSelector`
-2. `transformProductSelector` if current operation is search product, else, skip to step 3
-3. `transformSortStage`
-4. `searchProducts` or `searchAssortments` depending on the operation. i.e when searching for products or searching for assortments.
-5. `aggregateProductIds` if current operation is search product
-
-
-
-### Final Step
-
-In order to make use of the filter we need to register it on the FilterDirector.
-
+For assortment search, use `registerAssortmentSearchFilter` with the same callback shape:
 
 ```typescript
+import { registerAssortmentSearchFilter } from '@unchainedshop/core';
 
-import { pluginRegistry } from '@unchainedshop/core-filters';
-...
-pluginRegistry.register({ key: ShopAttributeFilter.key, label: ShopAttributeFilter.label, version: ShopAttributeFilter.version, adapters: [ShopAttributeFilter] });
+registerAssortmentSearchFilter({
+  adapterId: 'elasticsearch',
+  search: async ({ queryString, locale }) => {
+    const results = await elasticsearch.search({
+      index: 'assortments',
+      body: buildAssortmentQuery(queryString, locale),
+    });
 
+    return results.hits.hits.map((hit) => hit._id);
+  },
+});
 ```
 
+`adapterId` is optional for filter factories. If you pass one, the plugin key is stable and duplicate registrations dedupe. If you omit it, Unchained generates a unique key so several instances of the same filter type can run side by side.
 
-### Shorthand
+## Hide Products From Search
 
-Incase you only want to change implementation of only few functions and keep the other default implementation, you can do so by importing `FilterAdapter` from `@unchainedshop/core-filters` and override the that specific functions implementation. 
-
-Below is a simplified implementation of the `ShopAttributeFilter` above, this time it will use the default implantation and override `transformProductSelector` function only.
+Use `registerProductDiscoverabilityFilter` to hide products with a tag from regular search results:
 
 ```typescript
-import { IFilterAdapter, FilterAdapterActions, FilterContext } from '@unchainedshop/core-filters';
-import { Context } from '../../../context.ts';
+import { registerProductDiscoverabilityFilter } from '@unchainedshop/core';
+
+registerProductDiscoverabilityFilter({
+  adapterId: 'hide-internal-products',
+  hiddenTagValue: 'internal',
+});
+```
+
+Register several discoverability filters when different tag conventions should all hide products.
+
+## Custom Selector Logic
+
+Use a hand-written adapter only when you need behavior the factories do not expose, such as changing MongoDB selectors or sort stages. Spread `FilterAdapter`, override the specific methods, then register the resulting plugin.
+
+```typescript
+import { FilterAdapter, pluginRegistry, type IFilterAdapter } from '@unchainedshop/core';
 
 const ShopAttributeFilter: IFilterAdapter = {
   ...FilterAdapter,
-  key: 'ch.shop.filter',
-  label: 'Filters products by metadata attributes',
+
+  key: 'ch.shop.filter.attributes',
+  label: 'Shop attribute filter',
   version: '1.0.0',
   orderIndex: 10,
 
-  actions: (params: FilterContext & Context): FilterAdapterActions => {
-    return {
-      ...FilterAdapter.actions(params),
-      async transformProductSelector(query, options) {
-        if (!key) return last;
-        return {
-          status: 'ACTIVE',
-          'shop.attributes': {
-            $elemMatch: {
-              key,
-              value: value !== undefined ? value : { $exists: true },
-            },
+  actions: (params) => ({
+    ...FilterAdapter.actions(params),
+
+    async transformProductSelector(selector, options) {
+      const { key, value } = options || {};
+      if (!key) return selector;
+
+      return {
+        ...selector,
+        status: 'ACTIVE',
+        'shop.attributes': {
+          $elemMatch: {
+            key,
+            value: value !== undefined ? value : { $exists: true },
           },
-        };
-      },
-    }
-  }
+        },
+      };
+    },
 
-}
+    async transformSortStage(sort) {
+      return { ...sort, created: -1 };
+    },
+  }),
+};
 
-pluginRegistry.register({ key: ShopAttributeFilter.key, label: ShopAttributeFilter.label, version: ShopAttributeFilter.version, adapters: [ShopAttributeFilter] });
-
+pluginRegistry.register({
+  key: ShopAttributeFilter.key,
+  label: ShopAttributeFilter.label,
+  version: ShopAttributeFilter.version,
+  adapters: [ShopAttributeFilter],
+});
 ```
+
+## Callback Reference
+
+| Method | Purpose |
+|---|---|
+| `transformFilterSelector(selector, options)` | changes which filter definitions are available for the current search |
+| `transformProductSelector(selector, options)` | changes the MongoDB product selector |
+| `transformSortStage(sort, options)` | changes the MongoDB sort stage |
+| `searchProducts({ productIds }, options)` | narrows or replaces matching product ids |
+| `searchAssortments({ assortmentIds }, options)` | narrows or replaces matching assortment ids |
+| `aggregateProductIds(params)` | post-processes the final product id set |
+
+## Related
+
+- [Plugin Factories](../plugin-factories.md#filters--search) - search and discoverability factories
+- [Plugin System](../../concepts/director-adapter-pattern.md) - low-level plugin registration
+- [Search and Filtering Guide](../../guides/search-and-filtering.md) - search UX and query examples

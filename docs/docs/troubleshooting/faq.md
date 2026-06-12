@@ -98,22 +98,19 @@ See [Extending GraphQL](../extend/graphql) for details.
 
 ### How do I add a custom payment provider?
 
-Create a payment adapter and register it:
+Use the payment provider factory:
 
 ```typescript
-import { pluginRegistry } from '@unchainedshop/core';
+import { registerPaymentProvider } from '@unchainedshop/core';
 
-const MyPaymentAdapter = {
-  key: 'my-payment',
-  label: 'My Payment',
-  version: '1.0.0',
-  typeSupported: (type) => type === 'CARD',
-  actions: (params) => ({
-    // ... implement methods
-  }),
-};
-
-pluginRegistry.register({ key: MyPaymentAdapter.key, label: MyPaymentAdapter.label, version: MyPaymentAdapter.version, adapters: [MyPaymentAdapter] });
+registerPaymentProvider({
+  adapterId: 'my-payment',
+  type: 'GENERIC',
+  charge: async (configuration, context) => {
+    const result = await gateway.charge(context.order);
+    return { transactionId: result.id };
+  },
+});
 ```
 
 See [Payment Plugins](../extend/order-fulfilment/fulfilment-plugins/payment).
@@ -274,24 +271,21 @@ See [Pricing System](../concepts/pricing-system).
 
 ### How do I implement custom pricing logic?
 
-Create a pricing adapter:
+Use the `registerProductPricing` factory:
 
 ```typescript
-class MyPricingAdapter extends ProductPricingAdapter {
-  static key = 'my-pricing';
-  static orderIndex = 10;
+import { registerProductPricing } from '@unchainedshop/core';
 
-  async calculate() {
-    this.result.addItem({
-      amount: 100,
-      category: 'DISCOUNT',
-    });
-    return super.calculate();
-  }
-}
-
-pluginRegistry.register({ key: MyPricingAdapter.key, label: MyPricingAdapter.label, version: MyPricingAdapter.version, adapters: [MyPricingAdapter] });
+registerProductPricing({
+  adapterId: 'my-pricing',
+  orderIndex: 10,
+  calculate: async (sheet, context) => {
+    sheet.addItem({ amount: -100, isTaxable: true, isNetPrice: true, category: 'DISCOUNT' });
+  },
+});
 ```
+
+See [Custom Pricing](../guides/custom-pricing.md) and [Plugin Factories](../extend/plugin-factories.md#pricing).
 
 ### How do I handle multiple currencies?
 

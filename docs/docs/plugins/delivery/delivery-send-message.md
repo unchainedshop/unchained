@@ -141,87 +141,31 @@ pluginRegistry.register({ key: DeliveryTemplate.key, label: DeliveryTemplate.lab
 
 ## Custom Digital Delivery Adapter
 
-For more complex digital delivery scenarios:
+For more complex digital delivery scenarios, register a shipping provider whose `send` callback prepares the digital assets and queues the message:
 
 ```typescript
-import { pluginRegistry, type IDeliveryAdapter } from '@unchainedshop/core';
+import { registerShippingDelivery } from '@unchainedshop/core';
 
-const DigitalDeliveryAdapter: IDeliveryAdapter = {
-  key: 'my-shop.digital-delivery',
-  label: 'Digital Product Delivery',
-  version: '1.0.0',
+registerShippingDelivery({
+  adapterId: 'digital-delivery',
+  estimatedDeliveryThroughput: async () => 0,
+  send: async (configuration, { order }) => {
+    if (!order) return false;
+    const positions = await orderRepository.findPositions(order._id);
+    const deliveryItems = await createDigitalDeliveryItems(positions, order);
 
-  typeSupported: (type) => type === 'SHIPPING',
-
-  actions(config, context) {
-    return {
-      configurationError() { return null; },
-      isActive() { return true; },
-      isAutoReleaseAllowed() { return true; },
-
-      async send() {
-        const { order, modules } = context;
-        const positions = await modules.orders.positions.findOrderPositions({
-          orderId: order._id,
-        });
-
-        const deliveryItems = [];
-
-        for (const position of positions) {
-          const product = await modules.products.findProduct({
-            productId: position.productId,
-          });
-
-          if (product.type === 'SIMPLE') {
-            // Generate license key
-            const licenseKey = await generateLicenseKey(product, order);
-            deliveryItems.push({
-              product: product.texts?.title,
-              licenseKey,
-            });
-          }
-
-          if (product.meta?.downloadUrl) {
-            // Generate signed download URL
-            const downloadUrl = await generateSignedUrl(
-              product.meta.downloadUrl,
-              { expiresIn: '7d' }
-            );
-            deliveryItems.push({
-              product: product.texts?.title,
-              downloadUrl,
-            });
-          }
-        }
-
-        // Queue delivery email
-        await modules.worker.addWork({
-          type: 'MESSAGE',
-          input: {
-            template: 'DIGITAL_DELIVERY',
-            orderId: order._id,
-            deliveryItems,
-          },
-        });
-
-        return {
-          status: 'DELIVERED',
-          deliveryItems,
-        };
+    await enqueueMessage({
+      type: 'MESSAGE',
+      input: {
+        template: 'DIGITAL_DELIVERY',
+        orderId: order._id,
+        deliveryItems,
       },
+    });
 
-      estimatedDeliveryThroughput() {
-        // Instant delivery
-        return 0;
-      },
-
-      async pickUpLocations() { return []; },
-      async pickUpLocationById() { return null; },
-    };
+    return true;
   },
-};
-
-pluginRegistry.register({ key: DigitalDeliveryAdapter.key, label: DigitalDeliveryAdapter.label, version: DigitalDeliveryAdapter.version, adapters: [DigitalDeliveryAdapter] });
+});
 ```
 
 ## Combining with Physical Delivery

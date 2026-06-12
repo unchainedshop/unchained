@@ -46,7 +46,7 @@ A generic payment provider for any gateway.
 |---|---|---|---|
 | `adapterId` | `string` | ✅ | key `shop.unchained.payment.<adapterId>` |
 | `charge` | `false \| (config, context) => Promise<PaymentChargeActionResult \| false>` | ✅ | `false`/return-`false` = not yet paid; return `{ transactionId }` = paid; throw = abort checkout |
-| `type` | `PaymentProviderType` | | `GENERIC` (default), `CARD`, `INVOICE` |
+| `type` | `PaymentProviderType` | | `GENERIC` (default) or `INVOICE`; card gateways use `GENERIC` |
 | `sign` | `(config, context) => Promise<string \| null>` | | sign a client-side payment intent |
 | `validate` | `(config, context) => Promise<boolean>` | | validate a stored credential |
 | `isActive` | `boolean` | | default `true` |
@@ -61,7 +61,7 @@ registerPaymentProvider({
   adapterId: 'acme-gateway',
   isActive: true,
   charge: async (configuration, context) => {
-    const receipt = await acme.charge(context.order, context.paymentContext);
+    const receipt = await acme.charge(context.order, context.transactionContext);
     return { transactionId: receipt.id };
   },
 });

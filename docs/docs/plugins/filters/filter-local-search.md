@@ -168,63 +168,34 @@ MongoDB applies stemming based on language:
 
 ## Custom Search Adapter
 
-For external search services:
+For external search services, register a search callback instead of building a filter adapter by hand:
 
 ```typescript
-import { pluginRegistry, FilterAdapter, type IFilterAdapter } from '@unchainedshop/core';
+import {
+  registerAssortmentSearchFilter,
+  registerProductSearchFilter,
+} from '@unchainedshop/core';
 
-const AlgoliaSearchAdapter: IFilterAdapter = {
-  ...FilterAdapter,
+const productIndex = algoliaClient.initIndex('products');
+const assortmentIndex = algoliaClient.initIndex('assortments');
 
-  key: 'my-shop.algolia-search',
-  label: 'Algolia Search',
-  version: '1.0.0',
+registerProductSearchFilter({
+  adapterId: 'algolia',
   orderIndex: 10,
-
-  actions: (params) => {
-    const { searchQuery, modules } = params;
-
-    return {
-      ...FilterAdapter.actions(params),
-
-      async searchProducts({ productIds }) {
-        const { queryString } = searchQuery;
-        if (!queryString) return productIds;
-
-        const algoliaClient = algoliasearch(
-          process.env.ALGOLIA_APP_ID,
-          process.env.ALGOLIA_API_KEY
-        );
-        const index = algoliaClient.initIndex('products');
-
-        const { hits } = await index.search(queryString, {
-          filters: productIds
-            ? `productId:${productIds.join(' OR productId:')}`
-            : undefined,
-          hitsPerPage: 1000,
-        });
-
-        return hits.map(hit => hit.productId);
-      },
-
-      async searchAssortments({ assortmentIds }) {
-        const { queryString } = searchQuery;
-        if (!queryString) return assortmentIds;
-
-        const algoliaClient = algoliasearch(
-          process.env.ALGOLIA_APP_ID,
-          process.env.ALGOLIA_API_KEY
-        );
-        const index = algoliaClient.initIndex('assortments');
-
-        const { hits } = await index.search(queryString);
-        return hits.map(hit => hit.assortmentId);
-      },
-    };
+  search: async ({ queryString }) => {
+    const { hits } = await productIndex.search(queryString, { hitsPerPage: 1000 });
+    return hits.map((hit) => hit.productId);
   },
-};
+});
 
-pluginRegistry.register({ key: AlgoliaSearchAdapter.key, label: AlgoliaSearchAdapter.label, version: AlgoliaSearchAdapter.version, adapters: [AlgoliaSearchAdapter] });
+registerAssortmentSearchFilter({
+  adapterId: 'algolia',
+  orderIndex: 10,
+  search: async ({ queryString }) => {
+    const { hits } = await assortmentIndex.search(queryString);
+    return hits.map((hit) => hit.assortmentId);
+  },
+});
 ```
 
 ## Performance Considerations

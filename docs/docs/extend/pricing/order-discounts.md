@@ -57,7 +57,7 @@ registerOrderDiscount({
 registerOrderDiscount({
   adapterId: 'first-order',
   isValidForSystemTriggering: async (context) => {
-    const previous = await context.modules.orders.count({ userId: context.order.userId, status: { $ne: null } });
+    const previous = await ordersRepository.countConfirmedForUser(context.order.userId);
     return previous === 0;
   },
   discountForPricingAdapterKey: ({ pricingAdapterKey }) =>

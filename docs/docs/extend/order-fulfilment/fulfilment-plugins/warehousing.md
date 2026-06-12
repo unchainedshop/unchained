@@ -7,82 +7,58 @@ description: Customize warehousing
 
 # Warehousing Provider Plugins
 
-## WarehousingAdapter
+A warehousing adapter models stock availability and fulfilment timing. A store can have several; they run in ascending `orderIndex`.
 
-You can define a custom Warehousing adapter to simulate the stock availability. In order to define a warehousing adapter you should implement the 
-`IWarehousingAdapter` and register it to the global warehousing director that implements the `IWarehousingDirector` interface. 
+| Factory | For |
+|---|---|
+| [`registerPhysicalWarehousing`](../../plugin-factories.md#warehousing) | physical goods (stock / production / commissioning time) |
+| [`registerVirtualWarehousing`](../../plugin-factories.md#warehousing) | tokenized / NFT products (`tokenize`) |
 
-A store can have multiple Warehousing adapters configured and all of them are executed ordered by there `orderIndex` value. Warehousing adapters with lower `orderIndex` are executed first.
-
-Below is a simple warehousing adapter implementation that will always show a stock is always available for all products.
-
-```typescript
-
-import { WarehousingAdapter, WarehousingProviderType } from '@unchainedshop/core-warehousing';
-import {
-  IWarehousingAdapter,
-  WarehousingError,
-  WarehousingAdapterActions,
-  WarehousingContext,
-  WarehousingProviderType,
-} from '@unchainedshop/core-warehousing';
-import { Context } from '../../../context.ts';
-
-const Store: IWarehousingAdapter = {
-  key: 'shop.unchained.warehousing.store',
-  version: '1.0.0',
-  label: 'Store',
-  orderIndex: 0,
-  initialConfiguration = [{ key: 'name', value: 'Flagship Store' }],
-
-  typeSupported: (type: WarehousingProviderType): boolean => {
-    return type === WarehousingProviderType.PHYSICAL;
-  },
-
-  actions: (
-    config: WarehousingConfiguration,
-    context: WarehousingContext & Context,
-  ): WarehousingAdapterActions => {
-    return {
-      isActive: async (): boolean => {
-        return true;
-      },
-
-      configurationError: async () => {
-        return null;
-      },
-
-      stock: async (referenceDate: Date): Promise<number> => {
-        return 99999;
-      },
-
-      productionTime: async (quantityToProduce: number): Promise<number> => {
-        return 0;
-      },
-
-      commissioningTime: async (quantity: number): Promise<number> => {
-        return 0;
-      },
-    };
-  },
-};
-
-
-```
-
-- **typeSupported(type: WarehousingProviderType)**: Defines the warehousing provider type an adapter is valid for.
-- **isActive**: Defines if the adapter is valid or not based any conditions you set.
-- **configurationError(): WarehousingError**: Any error that occurred during the initialization of an adapter. it can be a missing env or any value missing for a proper functioning of the adapter.
-- **stock(referenceDate: Date)**: It should return the available stock of a product for the provided reference date. in the example above we are simply returning `99999` as stock count.
-- **productionTime(quantityToProduct: number)**: Returns an estimate to produce number of product passed as an argument.
-- **commissioningTime(quantity: number)**: number of days required to product a quantity passed as an argument 
-
-
-
-## Register warehousing adapter
+## Example: physical store stock
 
 ```typescript
-import { pluginRegistry } from '@unchainedshop/core-warehousing';
+import { registerPhysicalWarehousing } from '@unchainedshop/core';
 
-pluginRegistry.register({ key: Store.key, label: Store.label, version: Store.version, adapters: [Store] });
+registerPhysicalWarehousing({
+  adapterId: 'flagship-store',
+  stock: async (referenceDate, configuration, context) => 99999,
+  productionTime: 0,      // ms; made-to-order lead time
+  commissioningTime: 0,   // ms to prepare for shipping
+});
 ```
+
+Each option accepts either a literal value or a `(…args, configuration, context) => Promise<number>` callback.
+
+| Option | Description |
+|---|---|
+| `stock` | available quantity at a reference date |
+| `productionTime` | ms to produce a quantity (made-to-order) |
+| `commissioningTime` | ms to prepare a quantity for shipping |
+| `orderIndex` | execution order (default `0`) |
+
+## Example: tokenized products
+
+```typescript
+import { registerVirtualWarehousing } from '@unchainedshop/core';
+
+registerVirtualWarehousing({
+  adapterId: 'nft-minter',
+  tokenize: async (configuration, context) => {
+    // return the token surrogates to mint for the checked-out position
+    return [{
+      _id: crypto.randomUUID(),
+      quantity: 1,
+      contractAddress: '0x…',
+      tokenSerialNumber: '1',
+      meta: {},
+    }];
+  },
+});
+```
+
+> For full control of every `IWarehousingAdapter` method, build the adapter directly and register it via `pluginRegistry.register()` — see [Plugin System](../../../concepts/director-adapter-pattern.md#adapter-contracts).
+
+## Related
+
+- [Plugin Factories](../../plugin-factories.md#warehousing) — the warehousing factories
+- [Warehousing plugins](../../../plugins/warehousing/warehousing-store) — shipped adapters

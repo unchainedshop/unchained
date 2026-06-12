@@ -419,43 +419,26 @@ query ImportJobs {
 For systems requiring pull-based sync:
 
 ```typescript
-import { pluginRegistry, WorkerDirector } from '@unchainedshop/core';
+import { registerWorker, WorkerDirector } from '@unchainedshop/core';
 
-const PIMSyncWorker = {
-  key: 'shop.example.worker.pim-sync',
-  label: 'PIM Synchronization',
-  version: '1.0.0',
+registerWorker<{ lastSyncDate?: string }, { synced: number }>({
   type: 'PIM_SYNC',
   external: true,
   maxParallelAllocations: 1,
-
-  async doWork(input, unchainedAPI) {
+  process: async (input) => {
     const { lastSyncDate } = input;
 
-    // Fetch changed products from PIM
     const products = await fetchPIMProducts({ since: lastSyncDate });
-
-    // Transform to bulk import format
-    const events = products.map(product => ({
+    const events = products.map((product) => ({
       entity: 'PRODUCT',
       operation: 'UPDATE',
       payload: transformProduct(product),
     }));
 
-    // Queue bulk import
-    await unchainedAPI.modules.worker.addWork({
-      type: 'BULK_IMPORT',
-      input: {
-        events,
-        createShouldUpsertIfIDExists: true,
-      },
-    });
-
-    return { success: true, result: { synced: events.length } };
+    await submitBulkImport(events);
+    return { synced: events.length };
   },
-};
-
-pluginRegistry.register({ key: PIMSyncWorker.key, label: PIMSyncWorker.label, version: PIMSyncWorker.version, adapters: [PIMSyncWorker] });
+});
 
 // Schedule hourly sync
 WorkerDirector.configureAutoscheduling({
