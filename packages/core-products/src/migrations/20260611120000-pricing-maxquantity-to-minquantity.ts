@@ -72,10 +72,7 @@ export default function migrateCommercePricingToMinQuantity(repository: Migratio
         const nextPricing = convertPricingToMinQuantity(
           (product.commerce?.pricing ?? []) as LegacyProductPrice[],
         );
-        await Products.updateOne(
-          { _id: product._id },
-          { $set: { 'commerce.pricing': nextPricing } },
-        );
+        await Products.updateOne({ _id: product._id }, { $set: { 'commerce.pricing': nextPricing } });
         migrated += 1;
       }
 

@@ -70,9 +70,7 @@ export default function registerEnrollment({
         },
 
         nextPeriod: async () => {
-          return nextPeriod
-            ? nextPeriod(context)
-            : EnrollmentAdapter.actions(context).nextPeriod();
+          return nextPeriod ? nextPeriod(context) : EnrollmentAdapter.actions(context).nextPeriod();
         },
       };
     },
