@@ -25,17 +25,35 @@ export const GenerateOrderWorker: IWorkerAdapter<never, any> = {
       await Promise.all(
         enrollments.map(async (enrollment) => {
           try {
-            const product = await unchainedAPI.modules.products.findProduct({
-              productId: enrollment.productId,
+            const processedEnrollment = await services.enrollments.processEnrollment(enrollment);
+
+            if (processedEnrollment.status === EnrollmentStatus.TERMINATED) {
+              return null;
+            }
+
+            if (processedEnrollment.status === EnrollmentStatus.SUSPENDED) {
+              return null;
+            }
+
+            const product = await modules.products.findProduct({
+              productId: processedEnrollment.productId,
             });
             const director = await EnrollmentDirector.actions(
-              { enrollment, product: product! },
+              { enrollment: processedEnrollment, product: product! },
               unchainedAPI,
             );
             const period = await director.nextPeriod();
+
             if (period) {
+              if (
+                processedEnrollment.expires &&
+                period.start.getTime() >= new Date(processedEnrollment.expires).getTime()
+              ) {
+                return null;
+              }
+
               if (period.isTrial) {
-                await modules.enrollments.addEnrollmentPeriod(enrollment._id, {
+                await modules.enrollments.addEnrollmentPeriod(processedEnrollment._id, {
                   ...period,
                 });
                 return null;
@@ -45,11 +63,11 @@ export const GenerateOrderWorker: IWorkerAdapter<never, any> = {
               });
               if (configuration) {
                 const order = await services.enrollments.generateOrderFromEnrollment(
-                  enrollment,
+                  processedEnrollment,
                   configuration,
                 );
                 if (order) {
-                  await modules.enrollments.addEnrollmentPeriod(enrollment._id, {
+                  await modules.enrollments.addEnrollmentPeriod(processedEnrollment._id, {
                     ...period,
                     orderId: order._id,
                   });

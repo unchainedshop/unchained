@@ -19,3 +19,4 @@ fly.toml
 *.db
 dist
 .playwright-mcp/
+ENROLLMENT_ENHANCEMENT_PLAN.md

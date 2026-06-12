@@ -17,6 +17,11 @@ export default [
       PAUSED
 
       """
+      Manually suspended by admin
+      """
+      SUSPENDED
+
+      """
       Terminated / Ended enrollment
       """
       TERMINATED
@@ -56,6 +61,7 @@ export default [
       delivery: EnrollmentDelivery
       enrollmentNumber: String
       expires: DateTime
+      requestedTerminationDate: DateTime
       isExpired(referenceDate: Timestamp): Boolean
       payment: EnrollmentPayment
       periods: [EnrollmentPeriod!]!

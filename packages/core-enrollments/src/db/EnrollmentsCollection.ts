@@ -23,6 +23,7 @@ export const EnrollmentStatus = {
   INITIAL: 'INITIAL',
   ACTIVE: 'ACTIVE',
   PAUSED: 'PAUSED',
+  SUSPENDED: 'SUSPENDED',
   TERMINATED: 'TERMINATED',
 } as const;
 
@@ -52,6 +53,7 @@ export type Enrollment = {
   enrollmentNumber?: string;
   orderIdForFirstPeriod?: string;
   expires?: Date;
+  requestedTerminationDate?: Date;
   meta?: any;
   payment?: {
     paymentProviderId: string;
