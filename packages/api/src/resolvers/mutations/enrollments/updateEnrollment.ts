@@ -13,6 +13,7 @@ interface UpdateEnrollmentParams {
   payment?: Enrollment['payment'];
   delivery?: Enrollment['delivery'];
   meta?: any;
+  expires?: Date;
 }
 export default async function updateEnrollment(
   root: never,
@@ -20,7 +21,7 @@ export default async function updateEnrollment(
   context: Context,
 ) {
   const { modules, services, userId } = context;
-  const { billingAddress, contact, delivery, enrollmentId, meta, payment, plan } = params;
+  const { billingAddress, contact, delivery, enrollmentId, meta, payment, plan, expires } = params;
 
   log('mutation updateEnrollment', { userId });
 
@@ -60,15 +61,19 @@ export default async function updateEnrollment(
     enrollment = (await modules.enrollments.updateDelivery(enrollmentId, delivery)) as Enrollment;
   }
 
+  if (expires !== undefined) {
+    enrollment = (await modules.enrollments.updateExpiry(enrollmentId, expires)) as Enrollment;
+  }
+
   if (plan) {
     if (enrollment.status !== EnrollmentStatus.INITIAL) {
-      // If Enrollment is not initial, forcefully add a new Period that OVERLAPS the existing periods
-      throw new Error(
-        'TODO: Unchained currently does not support order splitting for enrollments, therefore updates to quantity, product and configuration of a enrollment is forbidden for non initial enrollments',
-      );
+      enrollment = await services.enrollments.updateEnrollmentPlan(enrollment, { plan });
+    } else {
+      enrollment = (await modules.enrollments.updatePlan(enrollmentId, plan)) as Enrollment;
+      enrollment = await services.enrollments.initializeEnrollment(enrollment, {
+        reason: 'updated_plan',
+      });
     }
-    enrollment = (await modules.enrollments.updatePlan(enrollmentId, plan)) as Enrollment;
-    enrollment = await services.enrollments.initializeEnrollment(enrollment, { reason: 'updated_plan' });
   }
 
   return enrollment;

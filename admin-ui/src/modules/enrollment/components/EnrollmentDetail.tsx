@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { InboxIcon } from '@heroicons/react/24/outline';
 
+import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import useStatusTypes from '../../common/hooks/useStatusTypes';
 import StatusProgress from '../../common/components/StatusProgress';
 import Accordion from '@/components/ui/Accordion/Accordion';
@@ -14,6 +15,7 @@ import useActivateEnrollment from '../hooks/useActivateEnrollment';
 import useModal from '../../modal/hooks/useModal';
 import AlertMessage from '../../modal/components/AlertMessage';
 import useTerminateEnrollment from '../hooks/useTerminateEnrollment';
+import useSuspendEnrollment from '../hooks/useSuspendEnrollment';
 import useSendEnrollmentEmail from '../hooks/useSendEnrollmentEmail';
 import DangerMessage from '../../modal/components/DangerMessage';
 import EnrollmentDetailHeader from './EnrollmentDetailHeader';
@@ -24,6 +26,7 @@ import useAuth from '../../Auth/useAuth';
 
 const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
   const { formatMessage } = useIntl();
+  const { formatDateTime } = useFormatDateTime();
   const { setModal } = useModal();
   const { hasRole } = useAuth();
 
@@ -31,6 +34,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
     useStatusTypes('EnrollmentStatus');
   const { activateEnrollment } = useActivateEnrollment();
   const { terminateEnrollment } = useTerminateEnrollment();
+  const { suspendEnrollment } = useSuspendEnrollment();
   const { sendEnrollmentEmail } = useSendEnrollmentEmail();
 
   if (!enrollment) return null;
@@ -143,6 +147,36 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
     );
   };
 
+  const onSuspendEnrollment = async () => {
+    await setModal(
+      <AlertMessage
+        buttonText={formatMessage({
+          id: 'suspend_button',
+          defaultMessage: 'Suspend',
+        })}
+        headerText={formatMessage({
+          id: 'suspend_header',
+          defaultMessage: 'Suspend subscription.',
+        })}
+        message={formatMessage({
+          id: 'suspend_confirmation',
+          defaultMessage:
+            'Are you sure you want to suspend this subscription? No new orders will be generated until it is resumed.',
+        })}
+        onOkClick={async () => {
+          setModal('');
+          await suspendEnrollment({ enrollmentId: enrollment?._id });
+          toast.success(
+            formatMessage({
+              id: 'suspend_success',
+              defaultMessage: 'Subscription suspended successfully.',
+            }),
+          );
+        }}
+      />,
+    );
+  };
+
   const timeline = {
     INITIAL: {
       id: 1,
@@ -153,9 +187,36 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
       id: 2,
       content: 'updated',
       visible: true,
+      Component: enrollment?.status === 'ACTIVE' &&
+        hasRole(IRoleAction.UpdateEnrollment) && (
+          <Button
+            text={formatMessage({
+              id: 'suspend',
+              defaultMessage: 'Suspend',
+            })}
+            onClick={onSuspendEnrollment}
+            className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-blue-500 bg-blue-500 px-2 py-1 text-base font-medium text-white hover:bg-blue-700 focus:outline-hidden focus:ring-0"
+          />
+        ),
+    },
+    SUSPENDED: {
+      id: 3,
+      content: 'updated',
+      visible: true,
+      Component: enrollment?.status === 'SUSPENDED' &&
+        hasRole(IRoleAction.UpdateEnrollment) && (
+          <Button
+            text={formatMessage({
+              id: 'resume',
+              defaultMessage: 'Resume',
+            })}
+            onClick={onActivateEnrollment}
+            className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-slate-900 dark:border-slate-600 bg-slate-800 dark:bg-slate-600 px-2 py-1 text-base font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500 focus:outline-hidden focus:ring-0"
+          />
+        ),
     },
     PAUSED: {
-      id: 3,
+      id: 4,
       content: 'updated',
       visible: true,
       Component: enrollment?.status === 'PAUSED' &&
@@ -171,7 +232,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
         ),
     },
     TERMINATED: {
-      id: 4,
+      id: 5,
       content: 'updated',
       visible: true,
       Component: enrollment?.status !== 'TERMINATED' &&
@@ -206,6 +267,23 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
   return (
     <>
       <EnrollmentDetailHeader enrollment={enrollment} />
+      {enrollment?.requestedTerminationDate &&
+        enrollment?.status !== 'TERMINATED' && (
+          <div className="my-2 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+            {formatMessage(
+              {
+                id: 'scheduled_termination',
+                defaultMessage: 'Termination scheduled for {date}',
+              },
+              {
+                date: formatDateTime(enrollment.requestedTerminationDate, {
+                  dateStyle: 'full',
+                  timeStyle: 'short',
+                }),
+              },
+            )}
+          </div>
+        )}
       <StatusProgress
         data={enrollment}
         statusTypes={enrollmentStatusTypes}

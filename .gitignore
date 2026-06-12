@@ -20,3 +20,4 @@ fly.toml
 dist
 .playwright-mcp/
 .unchained-docs/
+ENROLLMENT_ENHANCEMENT_PLAN.md
