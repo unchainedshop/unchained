@@ -11,7 +11,6 @@ import {
   ActiveEnrollment,
   InitialEnrollment,
   TerminatedEnrollment,
-  SuspendedEnrollment,
   ScheduledTerminationEnrollment,
 } from './seeds/enrollments.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
@@ -1061,7 +1060,7 @@ test.describe('Enrollments', () => {
           }
         `,
         variables: {
-          enrollmentId: SuspendedEnrollment._id,
+          enrollmentId: ActiveEnrollment._id,
         },
       });
       assert.strictEqual(suspendEnrollment.status, 'SUSPENDED');
@@ -1080,7 +1079,7 @@ test.describe('Enrollments', () => {
           }
         `,
         variables: {
-          enrollmentId: SuspendedEnrollment._id,
+          enrollmentId: ActiveEnrollment._id,
         },
       });
       assert.strictEqual(activateEnrollment.status, 'ACTIVE');
@@ -1164,6 +1163,69 @@ test.describe('Enrollments', () => {
         },
       });
       assert.ok(enrollment.requestedTerminationDate);
+    });
+  });
+
+  test.describe('Plan change on active enrollment (Feature 5)', () => {
+    test('can change plan on active enrollment when adapter supports it', async () => {
+      const {
+        data: { updateEnrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation updateEnrollment($enrollmentId: ID, $plan: EnrollmentPlanInput) {
+            updateEnrollment(enrollmentId: $enrollmentId, plan: $plan) {
+              _id
+              status
+              plan {
+                product {
+                  _id
+                }
+                quantity
+              }
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: ActiveEnrollment._id,
+          plan: {
+            productId: PlanProduct._id,
+            quantity: 5,
+          },
+        },
+      });
+      assert.strictEqual(updateEnrollment.status, 'ACTIVE');
+      assert.strictEqual(updateEnrollment.plan.product._id, PlanProduct._id);
+      assert.strictEqual(updateEnrollment.plan.quantity, 5);
+    });
+
+    test('plan change on INITIAL enrollment still works', async () => {
+      const {
+        data: { updateEnrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation updateEnrollment($enrollmentId: ID, $plan: EnrollmentPlanInput) {
+            updateEnrollment(enrollmentId: $enrollmentId, plan: $plan) {
+              _id
+              status
+              plan {
+                product {
+                  _id
+                }
+                quantity
+              }
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: InitialEnrollment._id,
+          plan: {
+            productId: PlanProduct._id,
+            quantity: 3,
+          },
+        },
+      });
+      assert.strictEqual(updateEnrollment.plan.product._id, PlanProduct._id);
+      assert.strictEqual(updateEnrollment.plan.quantity, 3);
     });
   });
 });

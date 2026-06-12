@@ -2,7 +2,12 @@ import { log } from '@unchainedshop/logger';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import type { Context } from '../../../context.ts';
 import type { EnrollmentPlan, Enrollment } from '@unchainedshop/core-enrollments';
-import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.ts';
+import {
+  EnrollmentNotFoundError,
+  EnrollmentWrongStatusError,
+  EnrollmentPlanChangeNotSupportedError,
+  InvalidIdError,
+} from '../../../errors.ts';
 import type { Address, Contact } from '@unchainedshop/mongodb';
 
 interface UpdateEnrollmentParams {
@@ -67,7 +72,14 @@ export default async function updateEnrollment(
 
   if (plan) {
     if (enrollment.status !== EnrollmentStatus.INITIAL) {
-      enrollment = await services.enrollments.updateEnrollmentPlan(enrollment, { plan });
+      try {
+        enrollment = await services.enrollments.updateEnrollmentPlan(enrollment, { plan });
+      } catch (e) {
+        if (e.message === 'Plan change is not supported for this enrollment') {
+          throw new EnrollmentPlanChangeNotSupportedError({ enrollmentId });
+        }
+        throw e;
+      }
     } else {
       enrollment = (await modules.enrollments.updatePlan(enrollmentId, plan)) as Enrollment;
       enrollment = await services.enrollments.initializeEnrollment(enrollment, {
