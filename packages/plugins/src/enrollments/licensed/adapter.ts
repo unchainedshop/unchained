@@ -22,8 +22,9 @@ export const LicensedEnrollments: IEnrollmentAdapter = {
 
   actions: (params) => {
     const { enrollment } = params;
+    const baseActions = EnrollmentAdapter.actions(params);
     return {
-      ...EnrollmentAdapter.actions(params),
+      ...baseActions,
 
       isValidForActivation: async () => {
         const periods = enrollment?.periods || [];
@@ -53,6 +54,25 @@ export const LicensedEnrollments: IEnrollmentAdapter = {
           };
         }
         return null;
+      },
+
+      terminationDate: async ({ referenceDate }: { referenceDate: Date }) => {
+        if (!enrollment?.periods?.length) return referenceDate;
+        const earliest = new Date(referenceDate);
+        earliest.setDate(earliest.getDate() + 30);
+        return earliest;
+      },
+
+      transformPlanToNewPlan: async ({ plan, referenceDate }) => {
+        const latestEnd = enrollment?.periods?.reduce<Date | null>((acc, p) => {
+          const end = new Date(p.end);
+          return !acc || end.getTime() > acc.getTime() ? end : acc;
+        }, null);
+
+        return {
+          plan,
+          effectiveDate: latestEnd || referenceDate,
+        };
       },
     };
   },

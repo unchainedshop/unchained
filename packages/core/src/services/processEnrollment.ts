@@ -8,6 +8,19 @@ const findNextStatus = async (
   modules: Modules,
 ): Promise<EnrollmentStatus | null> => {
   let status = enrollment.status;
+
+  if (
+    enrollment.requestedTerminationDate &&
+    new Date().getTime() >= new Date(enrollment.requestedTerminationDate).getTime() &&
+    status !== EnrollmentStatus.TERMINATED
+  ) {
+    return EnrollmentStatus.TERMINATED;
+  }
+
+  if (modules.enrollments.isExpired(enrollment, {})) {
+    return EnrollmentStatus.TERMINATED;
+  }
+
   const product = await modules.products.findProduct({
     productId: enrollment.productId,
   });
@@ -15,6 +28,10 @@ const findNextStatus = async (
   if (!product) throw createServiceError('ProductNotFoundError', 'Product not found for enrollment');
 
   const director = await EnrollmentDirector.actions({ enrollment, product }, { modules });
+
+  if (status === EnrollmentStatus.SUSPENDED) {
+    return status;
+  }
 
   if (status === EnrollmentStatus.INITIAL || status === EnrollmentStatus.PAUSED) {
     if (await director.isValidForActivation()) {
@@ -24,8 +41,6 @@ const findNextStatus = async (
     if (await director.isOverdue()) {
       status = EnrollmentStatus.PAUSED;
     }
-  } else if (modules.enrollments.isExpired(enrollment, {})) {
-    status = EnrollmentStatus.TERMINATED;
   }
 
   return status;

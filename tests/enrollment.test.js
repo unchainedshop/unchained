@@ -7,7 +7,13 @@ import {
 import { SimpleDeliveryProvider } from './seeds/deliveries.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { PlanProduct } from './seeds/products.js';
-import { ActiveEnrollment, InitialEnrollment, TerminatedEnrollment } from './seeds/enrollments.js';
+import {
+  ActiveEnrollment,
+  InitialEnrollment,
+  TerminatedEnrollment,
+  SuspendedEnrollment,
+  ScheduledTerminationEnrollment,
+} from './seeds/enrollments.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -222,7 +228,7 @@ test.describe('Enrollments', () => {
   });
 
   test.describe('Mutation.terminateEnrollment for admin user should', () => {
-    test('change ACTIVE enrollment status to TERMINATED', async () => {
+    test('terminate ACTIVE enrollment with 30-day notice period schedules termination', async () => {
       const {
         data: { terminateEnrollment },
       } = await graphqlFetchAsAdminUser({
@@ -231,38 +237,7 @@ test.describe('Enrollments', () => {
             terminateEnrollment(enrollmentId: $enrollmentId) {
               _id
               status
-              billingAddress {
-                firstName
-                lastName
-                company
-                addressLine
-                postalCode
-                countryCode
-                city
-              }
-              plan {
-                product {
-                  _id
-                }
-                quantity
-              }
-              billingAddress {
-                firstName
-              }
-              contact {
-                emailAddress
-                telNumber
-              }
-              payment {
-                provider {
-                  _id
-                }
-              }
-              delivery {
-                provider {
-                  _id
-                }
-              }
+              requestedTerminationDate
             }
           }
         `,
@@ -270,7 +245,8 @@ test.describe('Enrollments', () => {
           enrollmentId: ActiveEnrollment._id,
         },
       });
-      assert.strictEqual(terminateEnrollment.status, 'TERMINATED');
+      assert.strictEqual(terminateEnrollment.status, 'ACTIVE');
+      assert.ok(terminateEnrollment.requestedTerminationDate);
     });
 
     test('return EnrollmentWrongStatusError when passed terminated enrollment ID', async () => {
@@ -615,12 +591,15 @@ test.describe('Enrollments', () => {
       });
     });
 
-    test('return EnrollmentWrongStatusError error when trying to activate ACTIVE enrollment', async () => {
-      const { errors } = await graphqlFetchAsAdminUser({
+    test('activating an already ACTIVE enrollment returns it unchanged', async () => {
+      const {
+        data: { activateEnrollment },
+      } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation activateEnrollment($enrollmentId: ID!) {
             activateEnrollment(enrollmentId: $enrollmentId) {
               _id
+              status
             }
           }
         `,
@@ -628,7 +607,7 @@ test.describe('Enrollments', () => {
           enrollmentId: 'activeenrollment',
         },
       });
-      assert.strictEqual(errors[0]?.extensions.code, 'EnrollmentWrongStatusError');
+      assert.strictEqual(activateEnrollment.status, 'ACTIVE');
     });
 
     test('return EnrollmentNotFoundError when passed non existing enrollment ID', async () => {
@@ -1065,6 +1044,126 @@ test.describe('Enrollments', () => {
       });
 
       assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+    });
+  });
+
+  test.describe('Mutation.suspendEnrollment for admin user', () => {
+    test('suspend an active enrollment', async () => {
+      const {
+        data: { suspendEnrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation suspendEnrollment($enrollmentId: ID!) {
+            suspendEnrollment(enrollmentId: $enrollmentId) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: SuspendedEnrollment._id,
+        },
+      });
+      assert.strictEqual(suspendEnrollment.status, 'SUSPENDED');
+    });
+
+    test('resume a suspended enrollment via activateEnrollment', async () => {
+      const {
+        data: { activateEnrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation activateEnrollment($enrollmentId: ID!) {
+            activateEnrollment(enrollmentId: $enrollmentId) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: SuspendedEnrollment._id,
+        },
+      });
+      assert.strictEqual(activateEnrollment.status, 'ACTIVE');
+    });
+
+    test('cannot suspend a terminated enrollment', async () => {
+      const {
+        data: { suspendEnrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation suspendEnrollment($enrollmentId: ID!) {
+            suspendEnrollment(enrollmentId: $enrollmentId) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: TerminatedEnrollment._id,
+        },
+      });
+      assert.strictEqual(suspendEnrollment.status, 'TERMINATED');
+    });
+  });
+
+  test.describe('Mutation.suspendEnrollment for anonymous user', () => {
+    test('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          mutation suspendEnrollment($enrollmentId: ID!) {
+            suspendEnrollment(enrollmentId: $enrollmentId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: ActiveEnrollment._id,
+        },
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+    });
+  });
+
+  test.describe('Enrollment expires via updateEnrollment', () => {
+    test('admin can set expires on enrollment', async () => {
+      const expiresDate = new Date('2035/01/01').toISOString();
+      const result = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation updateEnrollment($enrollmentId: ID, $expires: DateTimeISO) {
+            updateEnrollment(enrollmentId: $enrollmentId, expires: $expires) {
+              _id
+              expires
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: InitialEnrollment._id,
+          expires: expiresDate,
+        },
+      });
+      assert.ok(result.data?.updateEnrollment?.expires);
+    });
+  });
+
+  test.describe('Enrollment requestedTerminationDate query', () => {
+    test('requestedTerminationDate is visible on enrollment query', async () => {
+      const {
+        data: { enrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query enrollment($enrollmentId: ID!) {
+            enrollment(enrollmentId: $enrollmentId) {
+              _id
+              requestedTerminationDate
+              status
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: ScheduledTerminationEnrollment._id,
+        },
+      });
+      assert.ok(enrollment.requestedTerminationDate);
     });
   });
 });
