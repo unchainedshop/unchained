@@ -29,7 +29,7 @@ export const PRODUCT_CSV_SCHEMA = {
     'countryCode',
     'isTaxable',
     'isNetPrice',
-    'maxQuantity',
+    'minQuantity',
   ],
   bundleItemHeaders: [
     'productId',

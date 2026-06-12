@@ -122,9 +122,9 @@ export const validateProductCommerce = (currentIndex, values): Validator => {
       const others = values.filter((_, index) => index !== currentIndex);
 
       const isSame = others.every(
-        ({ maxQuantity, countryCode, currencyCode }) => {
+        ({ minQuantity, countryCode, currencyCode }) => {
           return (
-            maxQuantity !== current?.maxQuantity ||
+            minQuantity !== current?.minQuantity ||
             countryCode !== current?.countryCode ||
             currencyCode !== current?.currencyCode
           );
@@ -144,17 +144,16 @@ export const validateProductCommerce = (currentIndex, values): Validator => {
 const isEmpty = (value) =>
   value === null || value === '' || value === undefined;
 
-export const validateProductCommerceOneNull = (values): Validator => {
+export const validateProductCommerceOneZero = (values): Validator => {
   return {
     isValid: () => {
-      if (
-        values?.length &&
-        values?.length === 1 &&
-        !isEmpty(values[0].maxQuantity)
-      )
+      if (!values?.length) return true;
+      const isZeroOrEmpty = (v) => isEmpty(v) || Number(v) === 0;
+      if (values.length === 1 && !isZeroOrEmpty(values[0].minQuantity))
         return false;
       if (
-        values.filter(({ maxQuantity }) => isEmpty(maxQuantity))?.length !== 1
+        values.filter(({ minQuantity }) => isZeroOrEmpty(minQuantity))
+          ?.length !== 1
       )
         return false;
       return true;
@@ -163,7 +162,7 @@ export const validateProductCommerceOneNull = (values): Validator => {
     intlMessageDescriptor: {
       id: 'error_commerce_quantity_null_required',
       defaultMessage:
-        '{label} should have one price with null /empty max quantity',
+        '{label} should have one price with min quantity of 0 or empty',
     },
   };
 };
@@ -237,6 +236,6 @@ const useInitializeDefaultErrorMessages = () => {
   formatMessage({
     id: 'error_commerce_quantity_null_required',
     defaultMessage:
-      '{label} should have one price with null /empty max quantity',
+      '{label} should have one price with min quantity of 0 or empty',
   });
 };

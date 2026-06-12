@@ -301,12 +301,12 @@ const usePrepareProductImport = () => {
       let variations = undefined;
       if (prices.length)
         price = prices.map(
-          ({ amount, maxQuantity, isNetPrice, isTaxable, ...restPrice }) => ({
+          ({ amount, minQuantity, isNetPrice, isTaxable, ...restPrice }) => ({
             ...restPrice,
             amount: parseInt(amount) ?? 0,
             isNetPrice: isNetPrice === 'true',
             isTaxable: isTaxable === 'true',
-            maxQuantity: parseInt(maxQuantity, 2) || 0,
+            minQuantity: parseInt(minQuantity, 10) || 0,
           }),
         );
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { IRoleAction } from '../../../gql/types';
 
 import { FieldArray } from 'formik';
@@ -19,12 +18,11 @@ import Button from '@/components/ui/Button';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import {
   validateProductCommerce,
-  validateProductCommerceOneNull,
+  validateProductCommerceOneZero,
 } from '../../forms/lib/validators';
 import useProductCatalogPrices from '../hooks/useProductCatalogPrices';
 import useUpdateProductCommerce from '../hooks/useUpdateProductCommerce';
 import { fromMinorUnit } from '../utils/price.utils';
-import { has } from 'cypress/types/lodash';
 
 const normalizeCatalogPrices = (prices = [], currencies = []) => {
   if (!currencies.length) return [];
@@ -39,7 +37,7 @@ const normalizeCatalogPrices = (prices = [], currencies = []) => {
       isTaxable: !!price.isTaxable,
       isNetPrice: !!price.isNetPrice,
       amount: fromMinorUnit(price.amount, currency?.decimals),
-      maxQuantity: price.maxQuantity,
+      minQuantity: price.minQuantity,
     };
   });
 };
@@ -80,7 +78,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
           ? normalizedCatalogPrices
           : [
               {
-                maxQuantity: '',
+                minQuantity: '',
                 amount: null,
                 isTaxable: false,
                 isNetPrice: false,
@@ -110,8 +108,8 @@ const CommerceForm = ({ productId, disabled = false }) => {
                 <span className="flex w-full">
                   <span className="w-full">
                     {formatMessage({
-                      id: 'max_quantity',
-                      defaultMessage: 'Max Quantity',
+                      id: 'min_quantity',
+                      defaultMessage: 'Min Quantity',
                     })}
                   </span>
                   <span className="w-full lg:ml-5">
@@ -166,16 +164,16 @@ const CommerceForm = ({ productId, disabled = false }) => {
                               disabled={!hasRole(IRoleAction.ManageProducts)}
                               validators={[
                                 validateProductCommerce(index, pricing),
-                                validateProductCommerceOneNull(pricing),
+                                validateProductCommerceOneZero(pricing),
                               ]}
-                              name={`pricing[${index}].maxQuantity`}
-                              id={`pricing[${index}].maxQuantity`}
+                              name={`pricing[${index}].minQuantity`}
+                              id={`pricing[${index}].minQuantity`}
                               type="number"
                               min={0}
                               hideLabel
                               label={formatMessage({
-                                id: 'max_quantity',
-                                defaultMessage: 'Max Quantity',
+                                id: 'min_quantity',
+                                defaultMessage: 'Min Quantity',
                               })}
                             />
                             <TextField
@@ -306,7 +304,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
                           className="w-full items-center justify-center"
                           onClick={() =>
                             push({
-                              maxQuantity: '',
+                              minQuantity: '',
                               amount: null,
                               isTaxable: false,
                               isNetPrice: false,
@@ -340,7 +338,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
           {formatMessage({
             id: 'product_commerce_info',
             defaultMessage:
-              'One price list should have a max quantity field empty and no price should have the same max quantity along with currency and country specified',
+              'One price should have a min quantity of 0 (or empty) and no two prices should share the same min quantity, currency and country',
           })}
         </p>
       </div>

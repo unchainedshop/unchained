@@ -2564,7 +2564,7 @@ export type IProductCatalogPrice = {
   currency: ICurrency;
   isNetPrice: Scalars['Boolean']['output'];
   isTaxable: Scalars['Boolean']['output'];
-  maxQuantity?: Maybe<Scalars['Int']['output']>;
+  minQuantity?: Maybe<Scalars['Int']['output']>;
 };
 
 export type IProductConfigurationParameter = {
@@ -2886,6 +2886,8 @@ export type IQuery = {
   quotations: Array<IQuotation>;
   /** Returns total number of quotations */
   quotationsCount: Scalars['Int']['output'];
+  /** Get all registered event types */
+  registeredEventTypes: Array<Scalars['String']['output']>;
   /** Search assortments */
   searchAssortments: IAssortmentSearchResult;
   /** Search products */
@@ -3803,7 +3805,7 @@ export type IUpdateProductCommercePricingInput = {
   currencyCode: Scalars['String']['input'];
   isNetPrice?: InputMaybe<Scalars['Boolean']['input']>;
   isTaxable?: InputMaybe<Scalars['Boolean']['input']>;
-  maxQuantity?: InputMaybe<Scalars['Int']['input']>;
+  minQuantity?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type IUpdateProductInput = {
@@ -3977,7 +3979,7 @@ export enum IWarehousingProviderType {
 
 export type IWeb3Address = {
   address: Scalars['String']['output'];
-  nonce?: Maybe<Scalars['Int']['output']>;
+  nonce?: Maybe<Scalars['String']['output']>;
   verified: Scalars['Boolean']['output'];
 };
 
@@ -4253,7 +4255,7 @@ export type IUserFragment = {
   emails?: Array<{ verified: boolean; address: string }> | null;
   web3Addresses: Array<{
     address: string;
-    nonce?: number | null;
+    nonce?: string | null;
     verified: boolean;
   }>;
   webAuthnCredentials: Array<{
@@ -4368,7 +4370,7 @@ export type IAddEmailMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -4477,7 +4479,7 @@ export type IAddWeb3AddressMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -4607,7 +4609,7 @@ export type IAddWebAuthnCredentialsMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     profile?: {
@@ -4730,7 +4732,7 @@ export type ICurrentUserQuery = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -4847,7 +4849,7 @@ export type IEnrollUserMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -4991,7 +4993,7 @@ export type IRemoveEmailMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -5100,7 +5102,7 @@ export type IRemoveWeb3AddressMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -5209,7 +5211,7 @@ export type IRemoveWebAuthCredentialsMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -5336,7 +5338,7 @@ export type ISetPasswordMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -5446,7 +5448,7 @@ export type ISetRolesMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -5565,7 +5567,7 @@ export type ISetUsernameMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -5684,7 +5686,7 @@ export type IUpdateUserProfileMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -5793,7 +5795,7 @@ export type IUserQuery = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -5940,7 +5942,7 @@ export type IUsersQuery = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -6077,7 +6079,7 @@ export type IVerifyEmailMutation = {
       emails?: Array<{ verified: boolean; address: string }> | null;
       web3Addresses: Array<{
         address: string;
-        nonce?: number | null;
+        nonce?: string | null;
         verified: boolean;
       }>;
       webAuthnCredentials: Array<{
@@ -6188,7 +6190,7 @@ export type IVerifyWeb3AddressMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -7623,6 +7625,16 @@ export type IShopInfoQuery = {
   };
 };
 
+export type IStatusTypesQueryVariables = Exact<{
+  enumName: Scalars['String']['input'];
+}>;
+
+export type IStatusTypesQuery = {
+  statusTypes?: {
+    options?: Array<{ value: string; label?: string | null }> | null;
+  } | null;
+};
+
 export type ISystemRolesQueryVariables = Exact<{ [key: string]: never }>;
 
 export type ISystemRolesQuery = {
@@ -7982,16 +7994,6 @@ export type IDeliveryProvidersQuery = {
   >;
 };
 
-export type IOrderDeliveryStatusQueryVariables = Exact<{
-  [key: string]: never;
-}>;
-
-export type IOrderDeliveryStatusQuery = {
-  deliveryStatusType?: {
-    options?: Array<{ value: string; label?: string | null }> | null;
-  } | null;
-};
-
 export type IRemoveDeliveryProviderMutationVariables = Exact<{
   deliveryProviderId: Scalars['ID']['input'];
 }>;
@@ -8316,14 +8318,6 @@ export type IEnrollmentQuery = {
   } | null;
 };
 
-export type IEnrollmentStatusQueryVariables = Exact<{ [key: string]: never }>;
-
-export type IEnrollmentStatusQuery = {
-  enrollmentStatusTypes?: {
-    options?: Array<{ value: string; label?: string | null }> | null;
-  } | null;
-};
-
 export type IEnrollmentsQueryVariables = Exact<{
   offset?: InputMaybe<Scalars['Int']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -8447,12 +8441,12 @@ export type IEventQuery = {
   } | null;
 };
 
-export type IEventsTypeQueryVariables = Exact<{ [key: string]: never }>;
+export type IRegisteredEventTypesQueryVariables = Exact<{
+  [key: string]: never;
+}>;
 
-export type IEventsTypeQuery = {
-  eventTypes?: {
-    options?: Array<{ value: string; label: string }> | null;
-  } | null;
+export type IRegisteredEventTypesQuery = {
+  registeredEventTypes: Array<string>;
 };
 
 export type IEventsQueryVariables = Exact<{
@@ -10036,14 +10030,6 @@ export type IOrderQuery = {
   } | null;
 };
 
-export type IOrderStatusQueryVariables = Exact<{ [key: string]: never }>;
-
-export type IOrderStatusQuery = {
-  orderStatusType?: {
-    options?: Array<{ value: string; label?: string | null }> | null;
-  } | null;
-};
-
 export type IOrdersQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -10261,14 +10247,6 @@ export type IPaymentProvidersQuery = {
       version?: string | null;
     } | null;
   }>;
-};
-
-export type IOrderPaymentStatusQueryVariables = Exact<{ [key: string]: never }>;
-
-export type IOrderPaymentStatusQuery = {
-  paymentStatusTypes?: {
-    options?: Array<{ value: string; label?: string | null }> | null;
-  } | null;
 };
 
 export type IRemovePaymentProviderMutationVariables = Exact<{
@@ -11303,7 +11281,7 @@ export type IProductCatalogPriceFragment = {
   isTaxable: boolean;
   isNetPrice: boolean;
   amount: number;
-  maxQuantity?: number | null;
+  minQuantity?: number | null;
   country: {
     _id: string;
     isoCode?: string | null;
@@ -12824,7 +12802,7 @@ export type IProductCatalogPricesQuery = {
     isTaxable: boolean;
     isNetPrice: boolean;
     amount: number;
-    maxQuantity?: number | null;
+    minQuantity?: number | null;
     country: {
       _id: string;
       isoCode?: string | null;
@@ -14847,7 +14825,7 @@ export type IUserTokensQuery = {
     _id: string;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     tokens: Array<{
@@ -15305,14 +15283,6 @@ export type IQuotationQuery = {
             file?: { _id: string; type: string; url?: string | null } | null;
           }>;
         };
-  } | null;
-};
-
-export type IQuotationStatusQueryVariables = Exact<{ [key: string]: never }>;
-
-export type IQuotationStatusQuery = {
-  quotationStatusType?: {
-    options?: Array<{ value: string; label?: string | null }> | null;
   } | null;
 };
 
@@ -16076,14 +16046,6 @@ export type IAllocateWorkMutationVariables = Exact<{
 }>;
 
 export type IAllocateWorkMutation = { allocateWork?: { _id: string } | null };
-
-export type IWorkTypesQueryVariables = Exact<{ [key: string]: never }>;
-
-export type IWorkTypesQuery = {
-  registeredWorkTypes?: {
-    options?: Array<{ value: string; label: string }> | null;
-  } | null;
-};
 
 export type IRemoveWorkMutationVariables = Exact<{
   workId: Scalars['ID']['input'];
