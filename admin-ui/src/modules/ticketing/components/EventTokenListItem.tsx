@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useIntl } from 'react-intl';
 import Table from '../../common/components/Table';
-import Badge from '../../common/components/Badge';
+import Badge from '../../../components/ui/Badge';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import formatUsername from '../../common/utils/formatUsername';
 import MediaAvatar from '../../common/components/MediaAvatar';

@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 import Table from '../../common/components/Table';
-import Badge from '../../common/components/Badge';
+import Badge from '../../../components/ui/Badge';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import formatUsername from '../../common/utils/formatUsername';
 import useInvalidateTicket from '../../token/hooks/useInvalidateTicket';
