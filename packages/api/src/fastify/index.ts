@@ -22,10 +22,12 @@ import fastifyMultipart from '@fastify/multipart';
 import type { FastifyBaseLogger, FastifyInstance, FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { createLogger } from '@unchainedshop/logger';
 import mcpHandler from './mcpHandler.ts';
+import acpHandler from './acpHandler.ts';
 import tempUploadHandler from './tempUploadHandler.ts';
 import { connectChat } from './chatHandler.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
 import { readFileSync } from 'node:fs';
+import { configureACPWebhooks } from '../acp/webhook.ts';
 export interface AdminUIRouterOptions {
   prefix: string;
   enabled?: boolean;
@@ -44,6 +46,7 @@ const resolveUserRemoteAddress = (req: FastifyRequest) => {
 
 const {
   MCP_API_PATH = '/mcp',
+  ACP_API_PATH = '/acp',
   GRAPHQL_API_PATH = '/graphql',
   BULK_IMPORT_API_PATH = '/bulk-import',
   TEMP_UPLOAD_API_PATH = '/temp-upload',
@@ -239,6 +242,20 @@ export const connect = (
     method: ['GET', 'POST', 'DELETE'],
     handler: mcpHandler,
   });
+
+  fastify.route({
+    url: `${ACP_API_PATH}/*`,
+    method: ['GET', 'POST'],
+    handler: acpHandler,
+  });
+
+  fastify.get('/.well-known/acp.json', async () => ({
+    protocol: 'agentic-commerce-protocol',
+    api_versions: ['2026-04-17'],
+    checkout_endpoint: `${ACP_API_PATH}/checkout_sessions`,
+    capabilities: ['checkout', 'stripe_spt'],
+  }));
+  configureACPWebhooks();
 
   fastify.register((s, opts, registered) => {
     s.register(fastifyMultipart, { throwFileSizeLimit: true, limits: { fileSize: 1024 * 1024 * 35 } }); // 35MB

@@ -22,10 +22,12 @@ import createBulkImportMiddleware from './createBulkImportMiddleware.ts';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.ts';
 import createTempUploadMiddleware from './createTempUploadMiddleware.ts';
 import createMCPMiddleware from './createMCPMiddleware.ts';
+import { createACPMiddleware, wellKnownACPHandler } from './createACPMiddleware.ts';
 import { API_EVENTS } from '../events.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
 import { connectChat } from './chatHandler.ts';
 import type { CipherKey } from 'node:crypto';
+import { configureACPWebhooks } from '../acp/webhook.ts';
 export interface AdminUIRouterOptions {
   prefix: string;
   enabled?: boolean;
@@ -66,6 +68,7 @@ const {
   ERC_METADATA_API_PATH = '/erc-metadata',
   TEMP_UPLOAD_API_PATH = '/temp-upload',
   MCP_API_PATH = '/mcp',
+  ACP_API_PATH = '/acp',
   GRAPHQL_API_PATH = '/graphql',
   UNCHAINED_COOKIE_NAME = 'unchained_token',
   UNCHAINED_COOKIE_PATH = '/',
@@ -271,6 +274,9 @@ export const connect = (
 
   expressApp.use(MCP_API_PATH, e.json({ limit: '10mb' }));
   expressApp.use(MCP_API_PATH, createMCPMiddleware);
+  expressApp.use(ACP_API_PATH, createACPMiddleware);
+  expressApp.get('/.well-known/acp.json', wellKnownACPHandler);
+  configureACPWebhooks();
 
   if (chat) {
     connectChat(expressApp, chat);
