@@ -146,12 +146,12 @@ const createSession = async (context: Context, body: any) => {
   const paymentProvider = await context.modules.payment.paymentProviders.findProvider({
     paymentProviderId: acpConfig.paymentProviderId,
   });
-  if (paymentProvider?.adapterKey !== 'shop.unchained.payment.acp-stripe-spt') {
+  if (paymentProvider?.adapterKey !== 'shop.unchained.payment.stripe') {
     throw new ACPError(
       503,
       'api_error',
       'payment_provider_not_configured',
-      'UNCHAINED_ACP_PAYMENT_PROVIDER_ID must use shop.unchained.payment.acp-stripe-spt',
+      'UNCHAINED_ACP_PAYMENT_PROVIDER_ID must use shop.unchained.payment.stripe',
     );
   }
 

@@ -1,4 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
+import type { Stripe as StripeSDK } from 'stripe';
 import { stripe, createOrderPaymentIntent, createRegistrationIntent } from './stripe.ts';
 import {
   OrderPricingSheet,
@@ -9,6 +10,10 @@ import {
 } from '@unchainedshop/core';
 
 const logger = createLogger('unchained:stripe');
+
+type AcpSharedPaymentMethodData = StripeSDK.PaymentIntentCreateParams.PaymentMethodData & {
+  shared_payment_granted_token: string;
+};
 
 const Stripe: IPaymentAdapter = {
   ...PaymentAdapter,
@@ -103,9 +108,9 @@ const Stripe: IPaymentAdapter = {
         return paymentIntent.client_secret;
       },
 
-      charge: async ({ paymentIntentId, paymentCredentials }) => {
-        if (!paymentIntentId && !paymentCredentials) {
-          throw new Error('You have to provide paymentIntentId or paymentCredentials');
+      charge: async ({ acpToken, paymentIntentId, paymentCredentials }) => {
+        if (!acpToken && !paymentIntentId && !paymentCredentials) {
+          throw new Error('You have to provide acpToken, paymentIntentId or paymentCredentials');
         }
 
         const { order, orderPayment } = context;
@@ -113,12 +118,53 @@ const Stripe: IPaymentAdapter = {
         if (!order) throw new Error('order not found in context');
         if (!orderPayment) throw new Error('orderPayment not found in context');
 
-        const { userId, name, email } = await assertUserData(order?.userId);
         const pricing = OrderPricingSheet({
           calculation: order.calculation,
           currencyCode: order.currencyCode,
         });
 
+        const { currencyCode, amount } = pricing.total({ useNetPrice: false });
+
+        if (acpToken) {
+          const paymentIntentObject = await stripe.paymentIntents.create(
+            {
+              amount: Math.round(amount),
+              currency: currencyCode.toLowerCase(),
+              confirm: true,
+              description: descriptorPrefix || 'Unchained agentic checkout',
+              statement_descriptor_suffix: `${order._id.substring(0, 4)}..${order._id.substring(order._id.length - 4)}`,
+              receipt_email: order.contact?.emailAddress,
+              metadata: {
+                orderPaymentId: orderPayment._id,
+                orderId: order._id,
+                userId: order.userId,
+              },
+              payment_method_data: {
+                shared_payment_granted_token: acpToken,
+              } as AcpSharedPaymentMethodData,
+            },
+            {
+              apiVersion: '2026-04-22.preview',
+              idempotencyKey: `acp-${orderPayment._id}`,
+            },
+          );
+
+          if (paymentIntentObject.status === 'succeeded') {
+            return {
+              transactionId: paymentIntentObject.id,
+              status: paymentIntentObject.status,
+              paymentMethod: paymentIntentObject.payment_method,
+            };
+          }
+
+          logger.info('ACP SPT charge postponed because paymentIntent has wrong status', {
+            orderPaymentId: paymentIntentObject.id,
+          });
+
+          return false;
+        }
+
+        const { userId, name, email } = await assertUserData(order?.userId);
         const paymentIntentObject = paymentIntentId
           ? await stripe.paymentIntents.retrieve(paymentIntentId)
           : await createOrderPaymentIntent(
@@ -131,8 +177,6 @@ const Stripe: IPaymentAdapter = {
                 // payment_method_options: paymentCredentials.meta?.payment_method_options, // eslint-disable-line
               },
             );
-
-        const { currencyCode, amount } = pricing.total({ useNetPrice: false });
 
         if (
           paymentIntentObject.currency !== currencyCode.toLowerCase() ||
