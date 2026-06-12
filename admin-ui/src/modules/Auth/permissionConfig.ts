@@ -51,6 +51,7 @@ const UNRESTRICTED_PAGES = [
   '/403',
   '/500',
   '/external',
+  '/ticketing/gate',
 ];
 
 const PUBLIC_ONLY_PAGES = [
