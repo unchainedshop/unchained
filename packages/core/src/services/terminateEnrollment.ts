@@ -21,10 +21,12 @@ export async function terminateEnrollmentService(this: Modules, enrollment: Enro
   let updatedEnrollment: Enrollment;
 
   if (terminationDate.getTime() > now.getTime()) {
-    updatedEnrollment = (await this.enrollments.updateRequestedTerminationDate(
-      enrollment._id,
-      terminationDate,
-    )) as Enrollment;
+    await this.enrollments.updateRequestedTerminationDate(enrollment._id, terminationDate);
+
+    updatedEnrollment = (await this.enrollments.updateStatus(enrollment._id, {
+      status: enrollment.status as EnrollmentStatus,
+      info: `termination scheduled for ${terminationDate.toISOString()}`,
+    })) as Enrollment;
   } else {
     updatedEnrollment = (await this.enrollments.updateStatus(enrollment._id, {
       status: EnrollmentStatus.TERMINATED,
