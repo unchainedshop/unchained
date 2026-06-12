@@ -1129,7 +1129,7 @@ test.describe('Enrollments', () => {
       const expiresDate = new Date('2035/01/01').toISOString();
       const result = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation updateEnrollment($enrollmentId: ID, $expires: DateTimeISO) {
+          mutation updateEnrollment($enrollmentId: ID, $expires: DateTime) {
             updateEnrollment(enrollmentId: $enrollmentId, expires: $expires) {
               _id
               expires
