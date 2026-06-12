@@ -19,10 +19,10 @@ UNCHAINED_ACP_PAYMENT_PROVIDER_ID=<GENERIC provider id>
 ACP_CHECKOUT_CONTINUE_URL=https://shop.example.com/orders
 ```
 
-The configured payment provider must use adapter key
-`shop.unchained.payment.acp-stripe-spt`. Its optional configuration keys are
-`secret`, `stripeVersion`, and `description`; `STRIPE_SECRET` is used when the
-provider has no `secret`.
+The configured payment provider must be a `GENERIC` provider using the existing
+Stripe adapter key `shop.unchained.payment.stripe`. ACP Shared Payment Token
+charges use `STRIPE_SECRET` and Stripe's `2026-04-22.preview` API version for
+that single charge request.
 
 Product-feed configuration:
 

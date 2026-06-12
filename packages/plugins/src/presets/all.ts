@@ -12,7 +12,6 @@ import '../payment/paypal-checkout.ts';
 import appleTransactionsModules from '../payment/apple-iap/index.ts';
 import saferpayTransactionsModules from '../payment/saferpay/index.ts';
 import '../payment/stripe/index.ts';
-import '../payment/acp-stripe-spt/index.ts';
 import '../payment/postfinance-checkout/index.ts';
 import '../payment/datatrans-v2/index.ts';
 import '../payment/payrexx/index.ts';
