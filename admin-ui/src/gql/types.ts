@@ -651,6 +651,7 @@ export type IEnrollment = {
   payment?: Maybe<IEnrollmentPayment>;
   periods: Array<IEnrollmentPeriod>;
   plan: IEnrollmentPlan;
+  requestedTerminationDate?: Maybe<Scalars['DateTimeISO']['output']>;
   status: IEnrollmentStatus;
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
   user: IUser;
@@ -705,6 +706,8 @@ export enum IEnrollmentStatus {
   Initial = 'INITIAL',
   /** Paused because of overdue payments */
   Paused = 'PAUSED',
+  /** Manually suspended by admin */
+  Suspended = 'SUSPENDED',
   /** Terminated / Ended enrollment */
   Terminated = 'TERMINATED',
 }
@@ -764,6 +767,8 @@ export enum IEventType {
   EnrollmentAddPeriod = 'ENROLLMENT_ADD_PERIOD',
   EnrollmentCreate = 'ENROLLMENT_CREATE',
   EnrollmentRemove = 'ENROLLMENT_REMOVE',
+  EnrollmentResume = 'ENROLLMENT_RESUME',
+  EnrollmentSuspend = 'ENROLLMENT_SUSPEND',
   EnrollmentUpdate = 'ENROLLMENT_UPDATE',
   FileCreate = 'FILE_CREATE',
   FileRemove = 'FILE_REMOVE',
@@ -1271,6 +1276,8 @@ export type IMutation = {
   >;
   /** End customer impersonated user session and resume the impersonator session */
   stopImpersonation?: Maybe<ILoginMethodResponse>;
+  /** Suspend an actively running enrollment */
+  suspendEnrollment: IEnrollment;
   /** Terminate an actively running enrollment by changing it's status to TERMINATED */
   terminateEnrollment: IEnrollment;
   /** Hide the product visible from any shop listings (product queries) */
@@ -1893,6 +1900,10 @@ export type IMutationSignPaymentProviderForCredentialRegistrationArgs = {
   transactionContext?: InputMaybe<Scalars['JSON']['input']>;
 };
 
+export type IMutationSuspendEnrollmentArgs = {
+  enrollmentId: Scalars['ID']['input'];
+};
+
 export type IMutationTerminateEnrollmentArgs = {
   enrollmentId: Scalars['ID']['input'];
 };
@@ -1977,6 +1988,7 @@ export type IMutationUpdateEnrollmentArgs = {
   contact?: InputMaybe<IContactInput>;
   delivery?: InputMaybe<IEnrollmentDeliveryInput>;
   enrollmentId?: InputMaybe<Scalars['ID']['input']>;
+  expires?: InputMaybe<Scalars['DateTimeISO']['input']>;
   meta?: InputMaybe<Scalars['JSON']['input']>;
   payment?: InputMaybe<IEnrollmentPaymentInput>;
   plan?: InputMaybe<IEnrollmentPlanInput>;
@@ -8064,6 +8076,7 @@ export type IEnrollmentDetailFragment = {
   status: IEnrollmentStatus;
   created: any;
   expires?: any | null;
+  requestedTerminationDate?: any | null;
   isExpired?: boolean | null;
   country?: { _id: string; isoCode?: string | null } | null;
   billingAddress?: {
@@ -8172,6 +8185,7 @@ export type IEnrollmentFragment = {
   status: IEnrollmentStatus;
   created: any;
   expires?: any | null;
+  requestedTerminationDate?: any | null;
   isExpired?: boolean | null;
   country?: { _id: string; isoCode?: string | null } | null;
   currency?: { _id: string; isoCode: string } | null;
@@ -8219,6 +8233,7 @@ export type IEnrollmentQuery = {
     status: IEnrollmentStatus;
     created: any;
     expires?: any | null;
+    requestedTerminationDate?: any | null;
     isExpired?: boolean | null;
     country?: { _id: string; isoCode?: string | null } | null;
     billingAddress?: {
@@ -8337,6 +8352,7 @@ export type IEnrollmentsQuery = {
     status: IEnrollmentStatus;
     created: any;
     expires?: any | null;
+    requestedTerminationDate?: any | null;
     isExpired?: boolean | null;
     country?: { _id: string; isoCode?: string | null } | null;
     currency?: { _id: string; isoCode: string } | null;
@@ -8371,12 +8387,38 @@ export type ISendEnrollmentEmailMutation = {
   sendEnrollmentEmail?: { success?: boolean | null } | null;
 };
 
+export type ISuspendEnrollmentMutationVariables = Exact<{
+  enrollmentId: Scalars['ID']['input'];
+}>;
+
+export type ISuspendEnrollmentMutation = { suspendEnrollment: { _id: string } };
+
 export type ITerminateEnrollmentMutationVariables = Exact<{
   enrollmentId: Scalars['ID']['input'];
 }>;
 
 export type ITerminateEnrollmentMutation = {
   terminateEnrollment: { _id: string };
+};
+
+export type IUpdateEnrollmentPlanMutationVariables = Exact<{
+  enrollmentId: Scalars['ID']['input'];
+  plan: IEnrollmentPlanInput;
+}>;
+
+export type IUpdateEnrollmentPlanMutation = {
+  updateEnrollment: {
+    _id: string;
+    status: IEnrollmentStatus;
+    plan: {
+      quantity: number;
+      product: {
+        _id: string;
+        texts?: { _id: string; title?: string | null } | null;
+      };
+      configuration?: Array<{ key: string; value: string }> | null;
+    };
+  };
 };
 
 export type IUserEnrollmentsQueryVariables = Exact<{
@@ -8394,6 +8436,7 @@ export type IUserEnrollmentsQuery = {
       status: IEnrollmentStatus;
       created: any;
       expires?: any | null;
+      requestedTerminationDate?: any | null;
       isExpired?: boolean | null;
       country?: { _id: string; isoCode?: string | null } | null;
       currency?: { _id: string; isoCode: string } | null;
