@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useIntl } from 'react-intl';
-import Loading from '../../common/components/Loading';
-import NoData from '../../common/components/NoData';
+import Loading from '../../../components/ui/Loading';
+import NoData from '../../../components/ui/NoData';
 import useGateEvents from '../hooks/useGateEvents';
 import useGateEventDetail from '../hooks/useGateEventDetail';
 import useIsPassCodeValid from '../hooks/useIsPassCodeValid';

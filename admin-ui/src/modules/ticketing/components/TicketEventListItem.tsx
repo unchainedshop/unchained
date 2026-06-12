@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import Table from '../../common/components/Table';
-import Badge from '../../common/components/Badge';
+import Badge from '../../../components/ui/Badge';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
-import ImageWithFallback from '../../common/components/ImageWithFallback';
+import ImageWithFallback from '../../../components/ui/ImageWithFallback';
 import defaultNextImageLoader from '../../common/utils/defaultNextImageLoader';
 import generateUniqueId from '../../common/utils/getUniqueId';
 
