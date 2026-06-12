@@ -40,4 +40,26 @@ describe('buildFindSelector', () => {
       deleted: null,
     });
   });
+
+  it('Should filter by SUSPENDED status', () => {
+    assert.deepStrictEqual(
+      buildFindSelector({ status: [EnrollmentStatus.SUSPENDED] }),
+      {
+        deleted: null,
+        status: { $in: ['SUSPENDED'] },
+      },
+    );
+  });
+
+  it('Should filter by multiple statuses including SUSPENDED', () => {
+    assert.deepStrictEqual(
+      buildFindSelector({
+        status: [EnrollmentStatus.ACTIVE, EnrollmentStatus.SUSPENDED, EnrollmentStatus.PAUSED],
+      }),
+      {
+        deleted: null,
+        status: { $in: ['ACTIVE', 'SUSPENDED', 'PAUSED'] },
+      },
+    );
+  });
 });
