@@ -53,7 +53,7 @@ export async function processEnrollmentService(this: Modules, enrollment: Enroll
     // TODO: Reactivate!
   }
 
-  if (status) {
+  if (status && status !== enrollment.status) {
     return this.enrollments.updateStatus(enrollment._id, {
       status,
       info: 'enrollment processed',
