@@ -11,8 +11,13 @@ export async function activateEnrollmentService(this: Modules, enrollment: Enrol
   const isResume = enrollment.status === EnrollmentStatus.SUSPENDED;
   const info = isResume ? 'resumed from suspension' : 'activated manually';
 
-  if (isResume && enrollment.requestedTerminationDate) {
-    await this.enrollments.updateRequestedTerminationDate(enrollment._id, null);
+  if (isResume) {
+    if (enrollment.requestedTerminationDate) {
+      await this.enrollments.updateRequestedTerminationDate(enrollment._id, null);
+    }
+    if (enrollment.resumeAt) {
+      await this.enrollments.updateResumeAt(enrollment._id, null);
+    }
   }
 
   let updatedEnrollment = (await this.enrollments.updateStatus(enrollment._id, {

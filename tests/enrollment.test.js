@@ -15,6 +15,7 @@ import {
   ScheduledTerminationEnrollment,
   SuspendedEnrollment,
   PausedEnrollment,
+  ActiveEnrollmentForCancelAtPeriodEnd,
 } from './seeds/enrollments.js';
 import { SimpleProduct, DraftPlanProduct } from './seeds/products.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
@@ -1486,6 +1487,150 @@ test.describe('Enrollments', () => {
         },
       });
       assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+    });
+  });
+
+  test.describe('Termination with cancellation reason and comment', () => {
+    test('terminateEnrollment stores reason and comment', async () => {
+      const {
+        data: { terminateEnrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation terminateEnrollment(
+            $enrollmentId: ID!
+            $reason: EnrollmentTerminationReason
+            $comment: String
+          ) {
+            terminateEnrollment(enrollmentId: $enrollmentId, reason: $reason, comment: $comment) {
+              _id
+              status
+              cancellationReason
+              cancellationComment
+              requestedTerminationDate
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: ActiveEnrollmentForCancelAtPeriodEnd._id,
+          reason: 'USER_REQUESTED',
+          comment: 'Too expensive for my needs',
+        },
+      });
+      assert.ok(terminateEnrollment);
+      assert.strictEqual(terminateEnrollment.cancellationReason, 'USER_REQUESTED');
+      assert.strictEqual(terminateEnrollment.cancellationComment, 'Too expensive for my needs');
+    });
+  });
+
+  test.describe('Suspend with scheduled resumeAt', () => {
+    test('suspendEnrollment with resumeAt stores the date', async () => {
+      const resumeDate = new Date('2030/06/01').toISOString();
+      const {
+        data: { suspendEnrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation suspendEnrollment($enrollmentId: ID!, $resumeAt: DateTime) {
+            suspendEnrollment(enrollmentId: $enrollmentId, resumeAt: $resumeAt) {
+              _id
+              status
+              resumeAt
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: ActiveEnrollment._id,
+          resumeAt: resumeDate,
+        },
+      });
+      assert.strictEqual(suspendEnrollment.status, 'SUSPENDED');
+      assert.ok(suspendEnrollment.resumeAt);
+    });
+
+    test('activateEnrollment clears resumeAt on resume', async () => {
+      const {
+        data: { activateEnrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation activateEnrollment($enrollmentId: ID!) {
+            activateEnrollment(enrollmentId: $enrollmentId) {
+              _id
+              status
+              resumeAt
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: ActiveEnrollment._id,
+        },
+      });
+      assert.strictEqual(activateEnrollment.status, 'ACTIVE');
+      assert.strictEqual(activateEnrollment.resumeAt, null);
+    });
+  });
+
+  test.describe('cancelAtPeriodEnd via updateEnrollment', () => {
+    test('setting cancelAtPeriodEnd sets requestedTerminationDate to current period end', async () => {
+      const {
+        data: { updateEnrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation updateEnrollment($enrollmentId: ID, $cancelAtPeriodEnd: Boolean) {
+            updateEnrollment(enrollmentId: $enrollmentId, cancelAtPeriodEnd: $cancelAtPeriodEnd) {
+              _id
+              requestedTerminationDate
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: ActiveEnrollment._id,
+          cancelAtPeriodEnd: true,
+        },
+      });
+      assert.ok(updateEnrollment.requestedTerminationDate);
+    });
+
+    test('clearing cancelAtPeriodEnd removes requestedTerminationDate', async () => {
+      const {
+        data: { updateEnrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation updateEnrollment($enrollmentId: ID, $cancelAtPeriodEnd: Boolean) {
+            updateEnrollment(enrollmentId: $enrollmentId, cancelAtPeriodEnd: $cancelAtPeriodEnd) {
+              _id
+              requestedTerminationDate
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: ActiveEnrollment._id,
+          cancelAtPeriodEnd: false,
+        },
+      });
+      assert.strictEqual(updateEnrollment.requestedTerminationDate, null);
+    });
+  });
+
+  test.describe('Query enrollment cancellation fields', () => {
+    test('cancellationReason and cancellationComment visible on query', async () => {
+      const {
+        data: { enrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query enrollment($enrollmentId: ID!) {
+            enrollment(enrollmentId: $enrollmentId) {
+              _id
+              cancellationReason
+              cancellationComment
+              resumeAt
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: ActiveEnrollmentForCancelAtPeriodEnd._id,
+        },
+      });
+      assert.strictEqual(enrollment.cancellationReason, 'USER_REQUESTED');
+      assert.strictEqual(enrollment.cancellationComment, 'Too expensive for my needs');
     });
   });
 });

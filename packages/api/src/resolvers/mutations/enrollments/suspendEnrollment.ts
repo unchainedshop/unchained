@@ -5,7 +5,7 @@ import type { Context } from '../../../context.ts';
 
 export default async function suspendEnrollment(
   root: never,
-  { enrollmentId }: { enrollmentId: string },
+  { enrollmentId, resumeAt }: { enrollmentId: string; resumeAt?: Date },
   { modules, services, userId }: Context,
 ) {
   log('mutation suspendEnrollment', { userId });
@@ -25,5 +25,5 @@ export default async function suspendEnrollment(
     throw new EnrollmentWrongStatusError({ status: enrollment.status });
   }
 
-  return services.enrollments.suspendEnrollment(enrollment);
+  return services.enrollments.suspendEnrollment(enrollment, { resumeAt });
 }

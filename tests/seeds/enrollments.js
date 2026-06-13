@@ -162,6 +162,47 @@ export const ScheduledTerminationEnrollment = {
   quantity: 1,
 };
 
+export const ActiveEnrollmentForCancelAtPeriodEnd = {
+  _id: 'activeenrollment-cancel-period-end',
+  status: 'ACTIVE',
+  created: new Date(),
+  enrollmentNumber: 'RANDOM-cancel-period',
+  userId: 'admin',
+  productId: PlanProduct._id,
+  periods: [
+    {
+      orderId: SimpleOrder._id,
+      start: new Date('2024/01/01'),
+      end: new Date('2030/09/10'),
+      isTrial: false,
+    },
+  ],
+  countryCode: 'ch',
+  currencyCode: 'CHF',
+  quantity: 1,
+};
+
+export const SuspendedWithResumeAtEnrollment = {
+  _id: 'suspended-resume-at',
+  status: 'SUSPENDED',
+  created: new Date(),
+  resumeAt: new Date('2020/01/01'),
+  enrollmentNumber: 'RANDOM-resume-at',
+  userId: 'admin',
+  productId: PlanProduct._id,
+  periods: [
+    {
+      orderId: SimpleOrder._id,
+      start: new Date(),
+      end: new Date('2030/09/10'),
+      isTrial: false,
+    },
+  ],
+  countryCode: 'ch',
+  currencyCode: 'CHF',
+  quantity: 1,
+};
+
 export const TerminatedEnrollment = {
   ...ActiveEnrollment,
   _id: 'terminatedenrollment',
@@ -178,6 +219,8 @@ export const AllEnrollmentIds = [
   PausedEnrollment._id,
   InitialEnrollmentForSuspendTest._id,
   ScheduledTerminationEnrollment._id,
+  ActiveEnrollmentForCancelAtPeriodEnd._id,
+  SuspendedWithResumeAtEnrollment._id,
   TerminatedEnrollment._id,
 ];
 
@@ -190,5 +233,7 @@ export default async function seedEnrollment(db) {
   await db.collection('enrollments').findOrInsertOne(PausedEnrollment);
   await db.collection('enrollments').findOrInsertOne(InitialEnrollmentForSuspendTest);
   await db.collection('enrollments').findOrInsertOne(ScheduledTerminationEnrollment);
+  await db.collection('enrollments').findOrInsertOne(ActiveEnrollmentForCancelAtPeriodEnd);
+  await db.collection('enrollments').findOrInsertOne(SuspendedWithResumeAtEnrollment);
   await db.collection('enrollments').findOrInsertOne(TerminatedEnrollment);
 }
