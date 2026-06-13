@@ -57,6 +57,23 @@ export const LicensedEnrollments: IEnrollmentAdapter = {
         return null;
       },
 
+      minimumCommitmentEnd: async ({ referenceDate }: { referenceDate: Date }) => {
+        const { product } = params;
+        const plan = product?.plan;
+        if (!plan?.minimumCommitmentPeriods || !plan?.billingInterval) return null;
+
+        const firstPeriodStart = enrollment?.periods?.reduce<Date | null>((acc, p) => {
+          if (p.isTrial) return acc;
+          const start = new Date(p.start);
+          return !acc || start.getTime() < acc.getTime() ? start : acc;
+        }, null);
+
+        const startDate = firstPeriodStart || referenceDate;
+        const interval = plan.billingInterval.toLowerCase();
+        const totalIntervals = (plan.billingIntervalCount || 1) * plan.minimumCommitmentPeriods;
+        return addToDate(startDate, { [interval]: totalIntervals });
+      },
+
       terminationDate: async ({ referenceDate }: { referenceDate: Date }) => {
         if (!enrollment?.periods?.length) return referenceDate;
         const { product } = params;
@@ -68,17 +85,25 @@ export const LicensedEnrollments: IEnrollmentAdapter = {
           return new Date(p.start).getTime() <= refTime && new Date(p.end).getTime() >= refTime;
         });
 
+        let terminateAt: Date;
         if (currentPeriod) {
-          // Terminate at end of the next billing period after the current one
           const interval = plan.billingInterval.toLowerCase();
-          return addToDate(new Date(currentPeriod.end), {
+          terminateAt = addToDate(new Date(currentPeriod.end), {
             [interval]: plan.billingIntervalCount || 1,
           });
+        } else {
+          const interval = plan.billingInterval.toLowerCase();
+          terminateAt = addToDate(referenceDate, { [interval]: plan.billingIntervalCount || 1 });
         }
 
-        // No active period — one billing interval from now
-        const interval = plan.billingInterval.toLowerCase();
-        return addToDate(referenceDate, { [interval]: plan.billingIntervalCount || 1 });
+        if (enrollment.minimumCommitmentEnd) {
+          const commitmentEnd = new Date(enrollment.minimumCommitmentEnd);
+          if (commitmentEnd.getTime() > terminateAt.getTime()) {
+            return commitmentEnd;
+          }
+        }
+
+        return terminateAt;
       },
 
       transformPlanToNewPlan: async ({ plan, referenceDate }) => {

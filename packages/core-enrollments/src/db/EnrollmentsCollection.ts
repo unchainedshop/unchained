@@ -66,6 +66,8 @@ export type Enrollment = {
   expires?: Date;
   requestedTerminationDate?: Date;
   resumeAt?: Date;
+  contractStartDate?: Date;
+  minimumCommitmentEnd?: Date;
   cancellationReason?: EnrollmentTerminationReason;
   cancellationComment?: string;
   meta?: any;

@@ -43,6 +43,19 @@ export async function initializeEnrollmentService(
     updatedEnrollment = (await this.enrollments.updateExpiry(enrollment._id, expiryDate)) as Enrollment;
   }
 
+  const referenceDate = new Date();
+  const commitmentEnd = await director.minimumCommitmentEnd({ referenceDate });
+  if (commitmentEnd) {
+    updatedEnrollment = (await this.enrollments.updateContractStartDate(
+      enrollment._id,
+      referenceDate,
+    )) as Enrollment;
+    updatedEnrollment = (await this.enrollments.updateMinimumCommitmentEnd(
+      enrollment._id,
+      commitmentEnd,
+    )) as Enrollment;
+  }
+
   const processedEnrollment = await processEnrollmentService.bind(this)(updatedEnrollment);
   const user = await this.users.findUserById(enrollment.userId);
   const locale = this.users.userLocale(user!);

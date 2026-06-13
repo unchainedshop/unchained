@@ -25,6 +25,7 @@ export interface EnrollmentAdapterActions {
   nextPeriod: (params?: { referenceDate?: Date }) => Promise<EnrollmentPeriod | null>;
   terminationDate: (params: { referenceDate: Date }) => Promise<Date | null>;
   expiryDate: () => Promise<Date | null>;
+  minimumCommitmentEnd: (params: { referenceDate: Date }) => Promise<Date | null>;
   initialPeriods: (params: { referenceDate: Date }) => Promise<EnrollmentPeriod[]>;
   transformPlanToNewPlan: (params: {
     plan: EnrollmentPlan;
@@ -124,6 +125,8 @@ export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'vers
       terminationDate: async ({ referenceDate }: { referenceDate: Date }) => referenceDate,
 
       expiryDate: async () => null,
+
+      minimumCommitmentEnd: async () => null,
 
       initialPeriods: async ({ referenceDate }: { referenceDate: Date }) => {
         const period = await baseActions.nextPeriod({ referenceDate });
