@@ -79,7 +79,8 @@ export const configureEnrollmentsModule = async ({
     const enrollment = await Enrollments.findOne(selector, {});
 
     if (!enrollment) return null;
-    if (enrollment.status === status) return enrollment;
+
+    const statusChanged = enrollment.status !== status;
 
     const date = new Date();
     const modifier: {
@@ -96,24 +97,26 @@ export const configureEnrollmentsModule = async ({
       },
     };
 
-    switch (status) {
-      case EnrollmentStatus.ACTIVE:
-        modifier.$set.enrollmentNumber = await findNewEnrollmentNumber(enrollment);
-        break;
-      case EnrollmentStatus.SUSPENDED:
-        break;
-      case EnrollmentStatus.TERMINATED: {
-        if (!enrollment.expires) {
-          const latestEnd = enrollment.periods?.reduce<Date | null>((acc, p) => {
-            const end = new Date(p.end);
-            return !acc || end.getTime() > acc.getTime() ? end : acc;
-          }, null);
-          modifier.$set.expires = latestEnd || new Date();
+    if (statusChanged) {
+      switch (status) {
+        case EnrollmentStatus.ACTIVE:
+          modifier.$set.enrollmentNumber = await findNewEnrollmentNumber(enrollment);
+          break;
+        case EnrollmentStatus.SUSPENDED:
+          break;
+        case EnrollmentStatus.TERMINATED: {
+          if (!enrollment.expires) {
+            const latestEnd = enrollment.periods?.reduce<Date | null>((acc, p) => {
+              const end = new Date(p.end);
+              return !acc || end.getTime() > acc.getTime() ? end : acc;
+            }, null);
+            modifier.$set.expires = latestEnd || new Date();
+          }
+          break;
         }
-        break;
+        default:
+          break;
       }
-      default:
-        break;
     }
 
     const updatedEnrollment = await Enrollments.findOneAndUpdate(selector, modifier, {
@@ -284,7 +287,7 @@ export const configureEnrollmentsModule = async ({
     updateDelivery: updateEnrollmentField<Enrollment['delivery']>('delivery'),
     updatePayment: updateEnrollmentField<Enrollment['payment']>('payment'),
     updateExpiry: updateEnrollmentField<Date>('expires'),
-    updateRequestedTerminationDate: updateEnrollmentField<Date>('requestedTerminationDate'),
+    updateRequestedTerminationDate: updateEnrollmentField<Date | null>('requestedTerminationDate'),
 
     addEnrollmentPeriods: async (enrollmentId: string, periods: EnrollmentPeriod[]) => {
       if (!periods.length) return null;
