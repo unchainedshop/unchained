@@ -21,7 +21,10 @@ export default async function activateEnrollment(
     });
   }
 
-  if (enrollment.status === EnrollmentStatus.TERMINATED) {
+  if (
+    enrollment.status === EnrollmentStatus.TERMINATED ||
+    enrollment.status === EnrollmentStatus.ACTIVE
+  ) {
     throw new EnrollmentWrongStatusError({ status: enrollment.status });
   }
 

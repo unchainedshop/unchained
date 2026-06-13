@@ -590,10 +590,8 @@ test.describe('Enrollments', () => {
       });
     });
 
-    test('activating an already ACTIVE enrollment returns it unchanged', async () => {
-      const {
-        data: { activateEnrollment },
-      } = await graphqlFetchAsAdminUser({
+    test('return EnrollmentWrongStatusError when activating an already ACTIVE enrollment', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation activateEnrollment($enrollmentId: ID!) {
             activateEnrollment(enrollmentId: $enrollmentId) {
@@ -606,7 +604,7 @@ test.describe('Enrollments', () => {
           enrollmentId: 'activeenrollment',
         },
       });
-      assert.strictEqual(activateEnrollment.status, 'ACTIVE');
+      assert.strictEqual(errors[0]?.extensions?.code, 'EnrollmentWrongStatusError');
     });
 
     test('return EnrollmentNotFoundError when passed non existing enrollment ID', async () => {
@@ -1085,10 +1083,8 @@ test.describe('Enrollments', () => {
       assert.strictEqual(activateEnrollment.status, 'ACTIVE');
     });
 
-    test('cannot suspend a terminated enrollment', async () => {
-      const {
-        data: { suspendEnrollment },
-      } = await graphqlFetchAsAdminUser({
+    test('return EnrollmentWrongStatusError when suspending a terminated enrollment', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation suspendEnrollment($enrollmentId: ID!) {
             suspendEnrollment(enrollmentId: $enrollmentId) {
@@ -1101,7 +1097,7 @@ test.describe('Enrollments', () => {
           enrollmentId: TerminatedEnrollment._id,
         },
       });
-      assert.strictEqual(suspendEnrollment.status, 'TERMINATED');
+      assert.strictEqual(errors[0]?.extensions?.code, 'EnrollmentWrongStatusError');
     });
   });
 
