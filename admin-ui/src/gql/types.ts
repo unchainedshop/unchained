@@ -3178,6 +3178,7 @@ export type IQueryProductsArgs = {
   slugs?: InputMaybe<Array<Scalars['String']['input']>>;
   sort?: InputMaybe<Array<ISortOptionInput>>;
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+  types?: InputMaybe<Array<IProductType>>;
 };
 
 export type IQueryProductsCountArgs = {
@@ -3185,6 +3186,7 @@ export type IQueryProductsCountArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
   slugs?: InputMaybe<Array<Scalars['String']['input']>>;
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+  types?: InputMaybe<Array<IProductType>>;
 };
 
 export type IQueryQuotationArgs = {
@@ -13223,6 +13225,7 @@ export type IProductsQueryVariables = Exact<{
   includeDrafts?: InputMaybe<Scalars['Boolean']['input']>;
   sort?: InputMaybe<Array<ISortOptionInput>>;
   forceLocale?: InputMaybe<Scalars['Locale']['input']>;
+  types?: InputMaybe<Array<IProductType>>;
 }>;
 
 export type IProductsQuery = {
