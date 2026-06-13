@@ -25,6 +25,7 @@ import '@unchainedshop/plugins/enrollments/licensed';
 - **Automatic Order Generation**: Orders are created at the beginning of each period
 - **Simple Licensing Model**: One product per enrollment period
 - **Termination Notice Period**: Termination takes effect at the end of the next billing period after the current one
+- **Minimum Commitment Enforcement**: If the plan has `minimumCommitmentPeriods`, termination is deferred until the commitment period ends
 - **Plan Changes**: Supports changing plans on active enrollments, effective after the latest period ends
 - **No Overdue Handling**: Designed for prepaid subscriptions
 
@@ -65,6 +66,43 @@ mutation UpdatePlanData {
         billingInterval
       }
     }
+  }
+}
+```
+
+### Minimum Commitment
+
+To enforce a minimum contract term, set `minimumCommitmentPeriods` on the plan. For example, a 12-month commitment on a monthly plan:
+
+```graphql
+mutation SetMinimumCommitment {
+  updateProductPlan(
+    productId: "product-id"
+    plan: {
+      usageCalculationType: LICENSED
+      billingInterval: MONTHS
+      billingIntervalCount: 1
+      minimumCommitmentPeriods: 12
+    }
+  ) {
+    _id
+    ... on PlanProduct {
+      plan {
+        minimumCommitmentPeriods
+      }
+    }
+  }
+}
+```
+
+When an enrollment is created for this product, `contractStartDate` and `minimumCommitmentEnd` are computed and stored. If a customer tries to terminate before the commitment ends, the termination is deferred to `minimumCommitmentEnd`. The enrollment fields are queryable:
+
+```graphql
+query CheckCommitment {
+  enrollment(enrollmentId: "enrollment-id") {
+    _id
+    contractStartDate
+    minimumCommitmentEnd
   }
 }
 ```

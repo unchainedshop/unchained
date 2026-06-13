@@ -292,6 +292,8 @@ export const configureEnrollmentsModule = async ({
     updateExpiry: updateEnrollmentField<Date>('expires'),
     updateRequestedTerminationDate: updateEnrollmentField<Date | null>('requestedTerminationDate'),
     updateResumeAt: updateEnrollmentField<Date | null>('resumeAt'),
+    updateContractStartDate: updateEnrollmentField<Date | null>('contractStartDate'),
+    updateMinimumCommitmentEnd: updateEnrollmentField<Date | null>('minimumCommitmentEnd'),
 
     updateCancellation: async (
       enrollmentId: string,
