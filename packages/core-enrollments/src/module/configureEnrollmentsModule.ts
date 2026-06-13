@@ -363,7 +363,7 @@ export const configureEnrollmentsModule = async ({
           $pull: {
             periods: {
               start: { $gte: afterDate },
-              orderId: { $in: [null, undefined] },
+              orderId: { $in: [null] },
             },
           } as any,
           $set: { updated: new Date() },
