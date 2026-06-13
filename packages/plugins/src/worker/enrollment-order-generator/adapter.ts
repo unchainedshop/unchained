@@ -5,6 +5,9 @@ import {
   WorkerAdapter,
   type IWorkerAdapter,
 } from '@unchainedshop/core';
+import { emit } from '@unchainedshop/events';
+
+const TRIAL_ENDING_DAYS = 3;
 
 export const GenerateOrderWorker: IWorkerAdapter<never, any> = {
   ...WorkerAdapter,
@@ -18,7 +21,7 @@ export const GenerateOrderWorker: IWorkerAdapter<never, any> = {
     const { modules, services } = unchainedAPI;
 
     const enrollments = await modules.enrollments.findEnrollments({
-      status: [EnrollmentStatus.ACTIVE, EnrollmentStatus.PAUSED],
+      status: [EnrollmentStatus.ACTIVE, EnrollmentStatus.PAUSED, EnrollmentStatus.SUSPENDED],
     });
 
     const errors = (
@@ -56,6 +59,17 @@ export const GenerateOrderWorker: IWorkerAdapter<never, any> = {
                 await modules.enrollments.addEnrollmentPeriod(processedEnrollment._id, {
                   ...period,
                 });
+
+                const trialEndMs = new Date(period.end).getTime();
+                const nowMs = Date.now();
+                const daysUntilEnd = (trialEndMs - nowMs) / (1000 * 60 * 60 * 24);
+                if (daysUntilEnd <= TRIAL_ENDING_DAYS && daysUntilEnd > 0) {
+                  await emit('ENROLLMENT_TRIAL_ENDING', {
+                    enrollment: processedEnrollment,
+                    trialEnd: period.end,
+                  });
+                }
+
                 return null;
               }
               const configuration = await director.configurationForOrder({
