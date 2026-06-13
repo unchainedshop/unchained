@@ -212,6 +212,21 @@ export const PlanProduct = {
   },
 };
 
+export const DraftPlanProduct = {
+  _id: 'draft-plan-product',
+  created: new Date('2019-07-30T09:23:26.253+0000'),
+  type: 'PLAN_PRODUCT',
+  status: null,
+  sequence: 21,
+  slugs: ['draft-plan'],
+  updated: new Date('2019-09-10T14:29:37.015+0000'),
+  plan: {
+    billingInterval: 'WEEKS',
+    billingIntervalCount: 1,
+    usageCalculationType: 'LICENSED',
+  },
+};
+
 export const GermanProductText = {
   _id: 'german',
   locale: 'de',
@@ -629,6 +644,7 @@ export default async function seedProducts(db) {
       ProxyPlanProduct3,
       ProxyProduct,
       PlanProduct,
+      DraftPlanProduct,
       TokenizedProduct1,
       LeveledPricingProduct,
     ]);
