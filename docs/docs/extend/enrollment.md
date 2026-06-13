@@ -123,6 +123,12 @@ const CustomEnrollmentAdapter: IEnrollmentAdapter = {
         return null;
       },
 
+      minimumCommitmentEnd: async ({ referenceDate }) => {
+        // Return the end date of the minimum contract term, or null for no commitment
+        // The licensed adapter computes this from product.plan.minimumCommitmentPeriods
+        return null;
+      },
+
       initialPeriods: async ({ referenceDate }) => {
         // Return the initial periods to create when the enrollment is set up
         // Defaults to delegating to nextPeriod()
@@ -165,6 +171,8 @@ const CustomEnrollmentAdapter: IEnrollmentAdapter = {
 - **terminationDate(\{ referenceDate \})**: Returns the date when termination should take effect. Return `referenceDate` for immediate termination, a future date to schedule termination with a notice period, or `null` to reject the termination request entirely.
 
 - **expiryDate()**: Returns a fixed expiry date for the enrollment, or `null` for no automatic expiry. When set, the enrollment will be terminated automatically when processed after this date.
+
+- **minimumCommitmentEnd(\{ referenceDate \})**: Returns the date when the minimum contract term ends, or `null` for no commitment. When set, the `terminationDate` should enforce that termination cannot happen before this date. Called during enrollment initialization; the result is stored as `minimumCommitmentEnd` on the enrollment.
 
 - **initialPeriods(\{ referenceDate \})**: Returns an array of periods to create when the enrollment is first initialized. By default delegates to `nextPeriod()`. Override to create multiple initial periods (e.g., a trial period followed by a billing period).
 

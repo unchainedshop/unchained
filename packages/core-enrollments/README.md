@@ -64,6 +64,8 @@ const enrollments = await enrollmentsModule.findEnrollments({
 | `updateExpiry` | Set or update the enrollment's expiry date |
 | `updateRequestedTerminationDate` | Set or clear a scheduled termination date |
 | `updateResumeAt` | Set or clear a scheduled resume date |
+| `updateContractStartDate` | Set or clear the contract start date |
+| `updateMinimumCommitmentEnd` | Set or clear the minimum commitment end date |
 | `updateCancellation` | Store cancellation reason and comment |
 
 ### Period Management

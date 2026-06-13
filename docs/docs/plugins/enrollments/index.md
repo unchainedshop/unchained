@@ -101,6 +101,14 @@ The `suspendEnrollment` mutation accepts an optional `resumeAt` date. When set, 
 
 Manually resuming via `activateEnrollment` clears the `resumeAt` date.
 
+### Contract Terms / Minimum Commitments
+
+Plan products can define a `minimumCommitmentPeriods` value (e.g., 12 for a 12-month contract). When an enrollment is initialized for such a product, the adapter computes a `minimumCommitmentEnd` date and stores it alongside a `contractStartDate` on the enrollment.
+
+During termination, the licensed adapter enforces the commitment: if the normal termination date would fall before `minimumCommitmentEnd`, the termination is pushed out to the commitment end date. This means early cancellation is allowed but the subscription stays active until the contract term completes.
+
+Both `contractStartDate` and `minimumCommitmentEnd` are exposed in the GraphQL API and visible in the admin UI.
+
 ### Trial Ending Notification
 
 The enrollment order generator worker emits an `ENROLLMENT_TRIAL_ENDING` event when a trial period is within 3 days of ending. This enables sending reminder emails or triggering conversion flows before the trial expires.
