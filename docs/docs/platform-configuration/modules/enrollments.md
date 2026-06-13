@@ -63,6 +63,7 @@ const options = {
 | `ENROLLMENT_SUSPEND` | `{ enrollment }` | Emitted when an enrollment is suspended |
 | `ENROLLMENT_RESUME` | `{ enrollment }` | Emitted when a suspended enrollment is resumed |
 | `ENROLLMENT_PLAN_CHANGE` | `{ enrollment }` | Emitted when an enrollment's plan is changed |
+| `ENROLLMENT_TRIAL_ENDING` | `{ enrollment, trialEnd }` | Emitted when a trial period ends within 3 days |
 
 ## More Information
 

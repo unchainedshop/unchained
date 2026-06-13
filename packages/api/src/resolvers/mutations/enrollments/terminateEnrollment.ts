@@ -1,5 +1,5 @@
 import type { Context } from '../../../context.ts';
-import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
+import { EnrollmentStatus, type EnrollmentTerminationReason } from '@unchainedshop/core-enrollments';
 import { log } from '@unchainedshop/logger';
 import {
   EnrollmentNotFoundError,
@@ -10,10 +10,11 @@ import {
 
 export default async function terminateEnrollment(
   root: never,
-  { enrollmentId }: { enrollmentId: string },
+  params: { enrollmentId: string; reason?: string; comment?: string },
   context: Context,
 ) {
   const { modules, services, userId } = context;
+  const { enrollmentId, reason, comment } = params;
 
   log('mutation terminateEnrollment', { userId });
 
@@ -31,7 +32,10 @@ export default async function terminateEnrollment(
   }
 
   try {
-    return await services.enrollments.terminateEnrollment(enrollment);
+    return await services.enrollments.terminateEnrollment(enrollment, {
+      reason: reason as EnrollmentTerminationReason,
+      comment,
+    });
   } catch (e) {
     if (e.message === 'Enrollment termination is not allowed at this time') {
       throw new EnrollmentTerminationNotAllowedError({ enrollmentId });

@@ -63,8 +63,9 @@ mutation GenerateEnrollmentOrders {
 3. **Skip Inactive**: Enrollments that are now `TERMINATED` or `SUSPENDED` after processing are skipped
 4. **Check Period**: Uses the Enrollment Director to determine if a new period should start
 5. **Expiry Check**: Skips periods where the start date is at or after the enrollment's `expires` date
-6. **Trial Periods**: If the period is a trial, adds the period without creating an order
-7. **Order Generation**: For billable periods:
+6. **Trial Periods**: If the period is a trial, adds the period without creating an order. If the trial ends within 3 days, emits an `ENROLLMENT_TRIAL_ENDING` event for notification purposes.
+7. **Auto-Resume**: Suspended enrollments with a past `resumeAt` date are automatically resumed to `ACTIVE` during status processing (step 2).
+8. **Order Generation**: For billable periods:
    - Gets configuration from the director
    - Creates an order using the enrollment service
    - Links the order to the enrollment period

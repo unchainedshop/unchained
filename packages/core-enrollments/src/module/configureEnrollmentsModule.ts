@@ -3,6 +3,7 @@ import {
   type Enrollment,
   type EnrollmentPeriod,
   type EnrollmentPlan,
+  type EnrollmentTerminationReason,
   EnrollmentStatus,
 } from '../db/EnrollmentsCollection.ts';
 import { emit, registerEvents } from '@unchainedshop/events';
@@ -32,6 +33,7 @@ const ENROLLMENT_EVENTS: string[] = [
   'ENROLLMENT_SUSPEND',
   'ENROLLMENT_RESUME',
   'ENROLLMENT_PLAN_CHANGE',
+  'ENROLLMENT_TRIAL_ENDING',
 ];
 
 export const buildFindSelector = ({ queryString, status, userId }: EnrollmentQuery) => {
@@ -289,6 +291,26 @@ export const configureEnrollmentsModule = async ({
     updatePayment: updateEnrollmentField<Enrollment['payment']>('payment'),
     updateExpiry: updateEnrollmentField<Date>('expires'),
     updateRequestedTerminationDate: updateEnrollmentField<Date | null>('requestedTerminationDate'),
+    updateResumeAt: updateEnrollmentField<Date | null>('resumeAt'),
+
+    updateCancellation: async (
+      enrollmentId: string,
+      params: { reason?: EnrollmentTerminationReason; comment?: string },
+    ) => {
+      const enrollment = await Enrollments.findOneAndUpdate(
+        generateDbFilterById(enrollmentId),
+        {
+          $set: {
+            updated: new Date(),
+            ...(params.reason && { cancellationReason: params.reason }),
+            ...(params.comment !== undefined && { cancellationComment: params.comment }),
+          },
+        },
+        { returnDocument: 'after' },
+      );
+      await emit('ENROLLMENT_UPDATE', { enrollment, field: 'cancellation' });
+      return enrollment;
+    },
 
     addEnrollmentPeriods: async (enrollmentId: string, periods: EnrollmentPeriod[]) => {
       if (!periods.length) return null;

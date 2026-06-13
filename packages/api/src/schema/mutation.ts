@@ -216,6 +216,7 @@ export default [
         delivery: EnrollmentDeliveryInput
         meta: JSON
         expires: DateTime
+        cancelAtPeriodEnd: Boolean
       ): Enrollment!
 
       """
@@ -224,14 +225,18 @@ export default [
       activateEnrollment(enrollmentId: ID!): Enrollment!
 
       """
-      Suspend an actively running enrollment
+      Suspend an actively running enrollment. Optionally schedule automatic resume.
       """
-      suspendEnrollment(enrollmentId: ID!): Enrollment!
+      suspendEnrollment(enrollmentId: ID!, resumeAt: DateTime): Enrollment!
 
       """
-      Terminate an actively running enrollment by changing it's status to TERMINATED
+      Terminate an actively running enrollment. Optionally provide a cancellation reason and comment for churn analysis.
       """
-      terminateEnrollment(enrollmentId: ID!): Enrollment!
+      terminateEnrollment(
+        enrollmentId: ID!
+        reason: EnrollmentTerminationReason
+        comment: String
+      ): Enrollment!
 
       """
       Update the cart by changing the delivery provider and using a shipping specific configuration

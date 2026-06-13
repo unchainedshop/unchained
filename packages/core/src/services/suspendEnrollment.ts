@@ -3,7 +3,11 @@ import { emit } from '@unchainedshop/events';
 import type { Modules } from '../modules.ts';
 import { addMessageService } from './addMessage.ts';
 
-export async function suspendEnrollmentService(this: Modules, enrollment: Enrollment) {
+export async function suspendEnrollmentService(
+  this: Modules,
+  enrollment: Enrollment,
+  params?: { resumeAt?: Date },
+) {
   if (
     enrollment.status === EnrollmentStatus.TERMINATED ||
     enrollment.status === EnrollmentStatus.INITIAL ||
@@ -11,10 +15,19 @@ export async function suspendEnrollmentService(this: Modules, enrollment: Enroll
   )
     throw new Error(`Cannot suspend enrollment with status ${enrollment.status}`);
 
-  const updatedEnrollment = (await this.enrollments.updateStatus(enrollment._id, {
+  let updatedEnrollment = (await this.enrollments.updateStatus(enrollment._id, {
     status: EnrollmentStatus.SUSPENDED,
-    info: 'suspended manually',
+    info: params?.resumeAt
+      ? `suspended manually, scheduled resume at ${params.resumeAt.toISOString()}`
+      : 'suspended manually',
   })) as Enrollment;
+
+  if (params?.resumeAt) {
+    updatedEnrollment = (await this.enrollments.updateResumeAt(
+      enrollment._id,
+      params.resumeAt,
+    )) as Enrollment;
+  }
 
   await emit('ENROLLMENT_SUSPEND', { enrollment: updatedEnrollment });
 
