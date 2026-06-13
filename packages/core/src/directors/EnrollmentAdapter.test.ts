@@ -91,4 +91,22 @@ describe('EnrollmentAdapter base actions', () => {
     const period = await actions.nextPeriod();
     assert.strictEqual(period, null);
   });
+
+  it('nextPeriod uses provided referenceDate instead of now', async () => {
+    const refDate = new Date('2028-03-15T00:00:00Z');
+    const ctx = makeContext();
+    const actions = EnrollmentAdapter.actions(ctx);
+    const period = await actions.nextPeriod({ referenceDate: refDate });
+    assert.ok(period);
+    assert.strictEqual(period.start.getTime(), refDate.getTime());
+  });
+
+  it('initialPeriods uses referenceDate for period generation', async () => {
+    const refDate = new Date('2028-06-01T00:00:00Z');
+    const ctx = makeContext();
+    const actions = EnrollmentAdapter.actions(ctx);
+    const periods = await actions.initialPeriods({ referenceDate: refDate });
+    assert.strictEqual(periods.length, 1);
+    assert.strictEqual(periods[0].start.getTime(), refDate.getTime());
+  });
 });
