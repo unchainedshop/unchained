@@ -74,6 +74,19 @@ export const resolveEnrollmentStatusTemplate: TemplateResolver = async (
       `Your subscription is scheduled to end on ${formatDate(enrollment.requestedTerminationDate, locale.baseName)}.`,
     );
     sections.push(`You will continue to have access until that date.`);
+    if (enrollment.cancellationReason) {
+      sections.push(`Reason: ${enrollment.cancellationReason}`);
+    }
+    if (enrollment.cancellationComment) {
+      sections.push(`Comment: ${enrollment.cancellationComment}`);
+    }
+  }
+
+  if (enrollment.resumeAt) {
+    sections.push(`\n--- Scheduled Resume ---`);
+    sections.push(
+      `Your subscription will automatically resume on ${formatDate(enrollment.resumeAt, locale.baseName)}.`,
+    );
   }
 
   if (enrollment.expires) {

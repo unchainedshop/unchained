@@ -27,6 +27,14 @@ export default [
       TERMINATED
     }
 
+    enum EnrollmentTerminationReason {
+      USER_REQUESTED
+      PAYMENT_FAILED
+      EXPIRED
+      ADMIN_ACTION
+      OTHER
+    }
+
     type EnrollmentPlan {
       product: PlanProduct!
       quantity: Int!
@@ -62,6 +70,9 @@ export default [
       enrollmentNumber: String
       expires: DateTime
       requestedTerminationDate: DateTime
+      resumeAt: DateTime
+      cancellationReason: EnrollmentTerminationReason
+      cancellationComment: String
       isExpired(referenceDate: Timestamp): Boolean
       payment: EnrollmentPayment
       periods: [EnrollmentPeriod!]!

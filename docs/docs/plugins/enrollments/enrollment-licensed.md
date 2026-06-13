@@ -178,7 +178,7 @@ query CheckAccess {
 
 ### Suspend Enrollment
 
-Suspending an enrollment prevents new orders from being generated. The enrollment remains in `SUSPENDED` status until it is explicitly resumed.
+Suspending an enrollment prevents new orders from being generated. The enrollment remains in `SUSPENDED` status until it is explicitly resumed or until the `resumeAt` date passes.
 
 ```graphql
 mutation SuspendSubscription {
@@ -189,9 +189,26 @@ mutation SuspendSubscription {
 }
 ```
 
+### Suspend with Scheduled Resume
+
+Pass a `resumeAt` date to automatically resume the enrollment after the specified date:
+
+```graphql
+mutation SuspendWithResume {
+  suspendEnrollment(
+    enrollmentId: "enrollment-id"
+    resumeAt: "2026-08-01T00:00:00.000Z"
+  ) {
+    _id
+    status
+    resumeAt
+  }
+}
+```
+
 ### Resume Enrollment
 
-Resume a suspended enrollment by calling `activateEnrollment`. This clears any pending `requestedTerminationDate` and returns the enrollment to `ACTIVE` status.
+Resume a suspended enrollment by calling `activateEnrollment`. This clears any pending `requestedTerminationDate` and `resumeAt` date, returning the enrollment to `ACTIVE` status.
 
 ```graphql
 mutation ResumeSubscription {
@@ -199,6 +216,7 @@ mutation ResumeSubscription {
     _id
     status
     requestedTerminationDate
+    resumeAt
   }
 }
 ```
@@ -207,11 +225,49 @@ mutation ResumeSubscription {
 
 With the licensed adapter, termination includes a notice period. The enrollment stays active until the end of the next billing period after the current one. The `requestedTerminationDate` field shows when termination will take effect.
 
+Optionally provide a cancellation `reason` and `comment` for churn tracking:
+
 ```graphql
 mutation TerminateSubscription {
-  terminateEnrollment(enrollmentId: "enrollment-id") {
+  terminateEnrollment(
+    enrollmentId: "enrollment-id"
+    reason: USER_REQUESTED
+    comment: "Switching to a competitor"
+  ) {
     _id
     status
+    requestedTerminationDate
+    cancellationReason
+    cancellationComment
+  }
+}
+```
+
+### Cancel at Period End
+
+Instead of computing termination via the adapter's notice period, use `cancelAtPeriodEnd` to simply stop renewing at the end of the current billing period:
+
+```graphql
+mutation CancelAtPeriodEnd {
+  updateEnrollment(
+    enrollmentId: "enrollment-id"
+    cancelAtPeriodEnd: true
+  ) {
+    _id
+    requestedTerminationDate
+  }
+}
+```
+
+To undo and continue the subscription:
+
+```graphql
+mutation UndoCancelAtPeriodEnd {
+  updateEnrollment(
+    enrollmentId: "enrollment-id"
+    cancelAtPeriodEnd: false
+  ) {
+    _id
     requestedTerminationDate
   }
 }

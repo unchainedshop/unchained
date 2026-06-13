@@ -23,6 +23,7 @@ interface UpdateEnrollmentParams {
   delivery?: Enrollment['delivery'];
   meta?: any;
   expires?: Date;
+  cancelAtPeriodEnd?: boolean;
 }
 export default async function updateEnrollment(
   root: never,
@@ -30,7 +31,17 @@ export default async function updateEnrollment(
   context: Context,
 ) {
   const { modules, services, userId } = context;
-  const { billingAddress, contact, delivery, enrollmentId, meta, payment, plan, expires } = params;
+  const {
+    billingAddress,
+    contact,
+    delivery,
+    enrollmentId,
+    meta,
+    payment,
+    plan,
+    expires,
+    cancelAtPeriodEnd,
+  } = params;
 
   log('mutation updateEnrollment', { userId });
 
@@ -76,6 +87,25 @@ export default async function updateEnrollment(
 
   if (expires !== undefined) {
     enrollment = (await modules.enrollments.updateExpiry(enrollmentId, expires)) as Enrollment;
+  }
+
+  if (cancelAtPeriodEnd !== undefined) {
+    if (cancelAtPeriodEnd) {
+      const now = Date.now();
+      const currentPeriod = enrollment.periods?.find((p) => {
+        return new Date(p.start).getTime() <= now && new Date(p.end).getTime() >= now;
+      });
+      const terminationDate = currentPeriod ? new Date(currentPeriod.end) : new Date();
+      enrollment = (await modules.enrollments.updateRequestedTerminationDate(
+        enrollmentId,
+        terminationDate,
+      )) as Enrollment;
+    } else {
+      enrollment = (await modules.enrollments.updateRequestedTerminationDate(
+        enrollmentId,
+        null,
+      )) as Enrollment;
+    }
   }
 
   if (plan) {

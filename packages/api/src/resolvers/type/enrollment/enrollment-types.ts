@@ -21,6 +21,18 @@ export const Enrollment = {
     return obj.requestedTerminationDate;
   },
 
+  resumeAt(obj: EnrollmentType) {
+    return obj.resumeAt;
+  },
+
+  cancellationReason(obj: EnrollmentType) {
+    return obj.cancellationReason;
+  },
+
+  cancellationComment(obj: EnrollmentType) {
+    return obj.cancellationComment;
+  },
+
   country: async (obj: EnrollmentType, _: never, { loaders }: Context) =>
     obj.countryCode ? loaders.currencyLoader.load({ isoCode: obj.countryCode }) : null,
   currency: async (obj: EnrollmentType, _: never, { loaders }: Context) =>

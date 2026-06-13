@@ -27,6 +27,9 @@ const findNextStatus = async (
   const director = await EnrollmentDirector.actions({ enrollment, product }, { modules });
 
   if (status === EnrollmentStatus.SUSPENDED) {
+    if (enrollment.resumeAt && new Date().getTime() >= new Date(enrollment.resumeAt).getTime()) {
+      return EnrollmentStatus.ACTIVE;
+    }
     return status;
   }
 
@@ -53,10 +56,20 @@ export async function processEnrollmentService(this: Modules, enrollment: Enroll
   }
 
   if (status && status !== enrollment.status) {
-    return this.enrollments.updateStatus(enrollment._id, {
+    const updatedEnrollment = (await this.enrollments.updateStatus(enrollment._id, {
       status,
       info: 'enrollment processed',
-    }) as Promise<Enrollment>;
+    })) as Enrollment;
+
+    if (
+      enrollment.status === EnrollmentStatus.SUSPENDED &&
+      status === EnrollmentStatus.ACTIVE &&
+      enrollment.resumeAt
+    ) {
+      await this.enrollments.updateResumeAt(enrollment._id, null);
+    }
+
+    return updatedEnrollment;
   }
   return enrollment;
 }

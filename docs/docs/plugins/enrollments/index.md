@@ -77,6 +77,34 @@ When `terminateEnrollment` is called, the enrollment adapter's `terminationDate(
 
 Resuming a suspended enrollment via `activateEnrollment` clears any pending `requestedTerminationDate`.
 
+### Cancellation Reason and Feedback
+
+The `terminateEnrollment` mutation accepts optional `reason` and `comment` parameters for churn analysis:
+
+| Reason | Description |
+|--------|-------------|
+| `USER_REQUESTED` | Customer initiated the cancellation |
+| `PAYMENT_FAILED` | Cancelled due to payment failure |
+| `EXPIRED` | Subscription reached its expiry date |
+| `ADMIN_ACTION` | Cancelled by an administrator |
+| `OTHER` | Other reason (use `comment` for details) |
+
+The `cancellationReason` and `cancellationComment` fields are stored on the enrollment and accessible via the GraphQL API.
+
+### Cancel at Period End
+
+Instead of immediate or adapter-computed termination, you can set `cancelAtPeriodEnd: true` on the `updateEnrollment` mutation. This sets `requestedTerminationDate` to the end of the current billing period — the subscription won't renew but access continues until the period ends. Set `cancelAtPeriodEnd: false` to undo this and continue the subscription.
+
+### Suspend with Scheduled Resume
+
+The `suspendEnrollment` mutation accepts an optional `resumeAt` date. When set, the enrollment will automatically resume to `ACTIVE` status when processed after that date. This enables time-limited pauses (e.g., "pause my subscription for 2 months").
+
+Manually resuming via `activateEnrollment` clears the `resumeAt` date.
+
+### Trial Ending Notification
+
+The enrollment order generator worker emits an `ENROLLMENT_TRIAL_ENDING` event when a trial period is within 3 days of ending. This enables sending reminder emails or triggering conversion flows before the trial expires.
+
 ### Plan Changes
 
 Active enrollments can change their subscription plan via `updateEnrollment` with a new `plan` parameter. The adapter's `transformPlanToNewPlan()` method controls whether the change is allowed and when it takes effect. Future periods without linked orders are removed and new periods are generated based on the new plan.
