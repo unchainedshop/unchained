@@ -52,7 +52,7 @@ export async function processEnrollmentService(this: Modules, enrollment: Enroll
     // status = await findNextStatus(nextEnrollment, unchainedAPI);
   }
 
-  if (status) {
+  if (status && status !== enrollment.status) {
     return this.enrollments.updateStatus(enrollment._id, {
       status,
       info: 'enrollment processed',

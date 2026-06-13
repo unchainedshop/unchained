@@ -22,7 +22,7 @@ export interface EnrollmentAdapterActions {
   } | null>;
   isOverdue: () => Promise<boolean>;
   isValidForActivation: () => Promise<boolean>;
-  nextPeriod: () => Promise<EnrollmentPeriod | null>;
+  nextPeriod: (params?: { referenceDate?: Date }) => Promise<EnrollmentPeriod | null>;
   terminationDate: (params: { referenceDate: Date }) => Promise<Date | null>;
   expiryDate: () => Promise<Date | null>;
   initialPeriods: (params: { referenceDate: Date }) => Promise<EnrollmentPeriod[]>;
@@ -84,11 +84,11 @@ export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'vers
       isOverdue: async () => false,
       isValidForActivation: async () => false,
 
-      nextPeriod: async () => {
+      nextPeriod: async (params?: { referenceDate?: Date }) => {
         const { enrollment, product } = context;
 
         const plan = product?.plan;
-        const referenceDate = new Date();
+        const referenceDate = params?.referenceDate || new Date();
         if (!plan) return null;
 
         if (plan.trialIntervalCount && !enrollment?.periods?.length) {
@@ -125,8 +125,8 @@ export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'vers
 
       expiryDate: async () => null,
 
-      initialPeriods: async () => {
-        const period = await baseActions.nextPeriod();
+      initialPeriods: async ({ referenceDate }: { referenceDate: Date }) => {
+        const period = await baseActions.nextPeriod({ referenceDate });
         return period ? [period] : [];
       },
 
