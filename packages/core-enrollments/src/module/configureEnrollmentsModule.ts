@@ -31,6 +31,7 @@ const ENROLLMENT_EVENTS: string[] = [
   'ENROLLMENT_UPDATE',
   'ENROLLMENT_SUSPEND',
   'ENROLLMENT_RESUME',
+  'ENROLLMENT_PLAN_CHANGE',
 ];
 
 export const buildFindSelector = ({ queryString, status, userId }: EnrollmentQuery) => {
@@ -324,7 +325,7 @@ export const configureEnrollmentsModule = async ({
               start: { $gte: afterDate },
               orderId: { $in: [null] },
             },
-          } as any,
+          } as mongodb.UpdateFilter<Enrollment>,
           $set: { updated: new Date() },
         },
         { returnDocument: 'after' },
