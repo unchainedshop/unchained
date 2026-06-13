@@ -71,20 +71,15 @@ const EnrollmentDetailFragment = gql`
       }
     }
     periods {
+      start
       end
       isTrial
-      start
       order {
         _id
       }
     }
 
     isExpired
-    periods {
-      start
-      end
-      isTrial
-    }
     plan {
       configuration {
         key
