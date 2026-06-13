@@ -25,6 +25,14 @@ export const Enrollment = {
     return obj.resumeAt;
   },
 
+  contractStartDate(obj: EnrollmentType) {
+    return obj.contractStartDate;
+  },
+
+  minimumCommitmentEnd(obj: EnrollmentType) {
+    return obj.minimumCommitmentEnd;
+  },
+
   cancellationReason(obj: EnrollmentType) {
     return obj.cancellationReason;
   },

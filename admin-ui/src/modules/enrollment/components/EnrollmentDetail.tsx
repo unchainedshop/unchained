@@ -367,6 +367,23 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
             )}
           </div>
         )}
+      {enrollment?.minimumCommitmentEnd &&
+        enrollment?.status !== IEnrollmentStatus.Terminated && (
+          <div className="my-2 rounded-md border border-blue-300 bg-blue-50 p-3 text-sm text-blue-800">
+            {formatMessage(
+              {
+                id: 'minimum_commitment',
+                defaultMessage: 'Minimum commitment until {date}',
+              },
+              {
+                date: formatDateTime(enrollment.minimumCommitmentEnd, {
+                  dateStyle: 'full',
+                  timeStyle: 'short',
+                }),
+              },
+            )}
+          </div>
+        )}
       <StatusProgress
         data={enrollment}
         statusTypes={enrollmentStatusTypes}

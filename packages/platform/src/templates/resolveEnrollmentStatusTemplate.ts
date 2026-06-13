@@ -89,6 +89,16 @@ export const resolveEnrollmentStatusTemplate: TemplateResolver = async (
     );
   }
 
+  if (enrollment.minimumCommitmentEnd) {
+    sections.push(`\n--- Contract Terms ---`);
+    if (enrollment.contractStartDate) {
+      sections.push(`Contract start: ${formatDate(enrollment.contractStartDate, locale.baseName)}`);
+    }
+    sections.push(
+      `Minimum commitment until: ${formatDate(enrollment.minimumCommitmentEnd, locale.baseName)}`,
+    );
+  }
+
   if (enrollment.expires) {
     sections.push(`Expires: ${formatDate(enrollment.expires, locale.baseName)}`);
   }

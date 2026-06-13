@@ -27,6 +27,7 @@ const useUpdateProductPlan = () => {
       billingIntervalCount = null,
       trialInterval = null,
       trialIntervalCount = null,
+      minimumCommitmentPeriods = null,
     },
   }: IUpdateProductPlanMutationVariables) => {
     return updateProductPlanMutation({
@@ -38,6 +39,7 @@ const useUpdateProductPlan = () => {
           billingIntervalCount,
           trialInterval,
           trialIntervalCount,
+          minimumCommitmentPeriods,
         },
       },
       refetchQueries: ['Products'],
