@@ -17,6 +17,8 @@ const EnrollmentFragment = gql`
     created
     expires
     requestedTerminationDate
+    contractStartDate
+    minimumCommitmentEnd
     isExpired
     periods {
       start

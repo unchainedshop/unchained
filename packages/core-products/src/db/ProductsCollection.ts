@@ -96,6 +96,7 @@ export interface ProductPlan {
   usageCalculationType?: string;
   trialInterval?: string;
   trialIntervalCount?: number;
+  minimumCommitmentPeriods?: number;
 }
 
 export interface ProductWarehousing {

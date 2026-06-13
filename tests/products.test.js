@@ -47,7 +47,7 @@ test.describe('Products', () => {
         variables: {},
       });
 
-      assert.strictEqual(productsCount, 12);
+      assert.strictEqual(productsCount, 13);
     });
 
     test('return only total number of products that include a slug', async () => {
@@ -211,7 +211,7 @@ test.describe('Products', () => {
         variables: {},
       });
 
-      assert.strictEqual(productsCount, 12);
+      assert.strictEqual(productsCount, 13);
     });
   });
 
@@ -228,7 +228,7 @@ test.describe('Products', () => {
         variables: {},
       });
 
-      assert.strictEqual(productsCount, 12);
+      assert.strictEqual(productsCount, 13);
     });
   });
 

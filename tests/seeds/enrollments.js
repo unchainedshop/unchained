@@ -1,5 +1,5 @@
 import { SimpleOrder } from './orders.js';
-import { PlanProduct } from './products.js';
+import { PlanProduct, CommitmentPlanProduct } from './products.js';
 
 export const ActiveEnrollment = {
   _id: 'activeenrollment',
@@ -203,6 +203,28 @@ export const SuspendedWithResumeAtEnrollment = {
   quantity: 1,
 };
 
+export const CommitmentEnrollment = {
+  _id: 'commitment-enrollment',
+  status: 'ACTIVE',
+  created: new Date(),
+  enrollmentNumber: 'RANDOM-commitment',
+  userId: 'admin',
+  productId: CommitmentPlanProduct._id,
+  contractStartDate: new Date('2026/01/01'),
+  minimumCommitmentEnd: new Date('2027/01/01'),
+  periods: [
+    {
+      orderId: SimpleOrder._id,
+      start: new Date('2026/01/01'),
+      end: new Date('2026/02/01'),
+      isTrial: false,
+    },
+  ],
+  countryCode: 'ch',
+  currencyCode: 'CHF',
+  quantity: 1,
+};
+
 export const TerminatedEnrollment = {
   ...ActiveEnrollment,
   _id: 'terminatedenrollment',
@@ -221,6 +243,7 @@ export const AllEnrollmentIds = [
   ScheduledTerminationEnrollment._id,
   ActiveEnrollmentForCancelAtPeriodEnd._id,
   SuspendedWithResumeAtEnrollment._id,
+  CommitmentEnrollment._id,
   TerminatedEnrollment._id,
 ];
 
@@ -235,5 +258,6 @@ export default async function seedEnrollment(db) {
   await db.collection('enrollments').findOrInsertOne(ScheduledTerminationEnrollment);
   await db.collection('enrollments').findOrInsertOne(ActiveEnrollmentForCancelAtPeriodEnd);
   await db.collection('enrollments').findOrInsertOne(SuspendedWithResumeAtEnrollment);
+  await db.collection('enrollments').findOrInsertOne(CommitmentEnrollment);
   await db.collection('enrollments').findOrInsertOne(TerminatedEnrollment);
 }
