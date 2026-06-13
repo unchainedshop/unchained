@@ -26,7 +26,7 @@ export type Scalars = {
   Int: { input: number; output: number };
   Float: { input: number; output: number };
   Date: { input: any; output: any };
-  DateTimeISO: { input: any; output: any };
+  DateTime: { input: any; output: any };
   JSON: { input: any; output: any };
   Locale: { input: any; output: any };
   LowerCaseString: { input: any; output: any };
@@ -83,8 +83,8 @@ export type IAssortment = {
   assortmentPaths: Array<IAssortmentPath>;
   children?: Maybe<Array<IAssortment>>;
   childrenCount: Scalars['Int']['output'];
-  created?: Maybe<Scalars['DateTimeISO']['output']>;
-  deleted?: Maybe<Scalars['DateTimeISO']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
+  deleted?: Maybe<Scalars['DateTime']['output']>;
   filterAssignments?: Maybe<Array<IAssortmentFilter>>;
   isActive?: Maybe<Scalars['Boolean']['output']>;
   isRoot?: Maybe<Scalars['Boolean']['output']>;
@@ -95,7 +95,7 @@ export type IAssortment = {
   sequence: Scalars['Int']['output'];
   tags?: Maybe<Array<Scalars['LowerCaseString']['output']>>;
   texts?: Maybe<IAssortmentTexts>;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 /** Assortment */
@@ -232,7 +232,7 @@ export type IAssortmentTexts = {
 
 export type IBookmark = {
   _id: Scalars['ID']['output'];
-  created?: Maybe<Scalars['DateTimeISO']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
   product: IProduct;
   user: IUser;
 };
@@ -243,12 +243,12 @@ export type IBundleProduct = IProduct & {
   assortmentPaths: Array<IProductAssortmentPath>;
   bundleItems?: Maybe<Array<IProductBundleItem>>;
   catalogPrice?: Maybe<IPrice>;
-  created?: Maybe<Scalars['DateTimeISO']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
   defaultOrderQuantity?: Maybe<Scalars['Int']['output']>;
   leveledCatalogPrices: Array<IPriceLevel>;
   media: Array<IProductMedia>;
   proxies: Array<IConfigurableOrBundleProduct>;
-  published?: Maybe<Scalars['DateTimeISO']['output']>;
+  published?: Maybe<Scalars['DateTime']['output']>;
   reviews: Array<IProductReview>;
   reviewsCount: Scalars['Int']['output'];
   salesQuantityPerUnit?: Maybe<Scalars['String']['output']>;
@@ -259,7 +259,7 @@ export type IBundleProduct = IProduct & {
   status: IProductStatus;
   tags?: Maybe<Array<Scalars['LowerCaseString']['output']>>;
   texts?: Maybe<IProductTexts>;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 /** A Bundle product consists of multiple products */
@@ -338,12 +338,12 @@ export type IConfigurableProduct = IProduct & {
   assignments: Array<IProductVariationAssignment>;
   assortmentPaths: Array<IProductAssortmentPath>;
   catalogPriceRange?: Maybe<IPriceRange>;
-  created?: Maybe<Scalars['DateTimeISO']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
   media: Array<IProductMedia>;
   /** Reduced list of possible products by key/value combinations */
   products?: Maybe<Array<IProduct>>;
   proxies: Array<IConfigurableOrBundleProduct>;
-  published?: Maybe<Scalars['DateTimeISO']['output']>;
+  published?: Maybe<Scalars['DateTime']['output']>;
   reviews: Array<IProductReview>;
   reviewsCount: Scalars['Int']['output'];
   sequence: Scalars['Int']['output'];
@@ -352,7 +352,7 @@ export type IConfigurableProduct = IProduct & {
   status: IProductStatus;
   tags?: Maybe<Array<Scalars['LowerCaseString']['output']>>;
   texts?: Maybe<IProductTexts>;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
   /** Product's variations (keys) and their options (values) */
   variations?: Maybe<Array<IProductVariation>>;
 };
@@ -513,8 +513,8 @@ export type ICurrency = {
 };
 
 export type IDateFilterInput = {
-  end?: InputMaybe<Scalars['DateTimeISO']['input']>;
-  start?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  end?: InputMaybe<Scalars['DateTime']['input']>;
+  start?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type IDeliveryInterface = {
@@ -527,13 +527,13 @@ export type IDeliveryProvider = {
   _id: Scalars['ID']['output'];
   configuration?: Maybe<Scalars['JSON']['output']>;
   configurationError?: Maybe<IDeliveryProviderError>;
-  created?: Maybe<Scalars['DateTimeISO']['output']>;
-  deleted?: Maybe<Scalars['DateTimeISO']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
+  deleted?: Maybe<Scalars['DateTime']['output']>;
   interface?: Maybe<IDeliveryInterface>;
   isActive?: Maybe<Scalars['Boolean']['output']>;
   simulatedPrice?: Maybe<IPrice>;
   type?: Maybe<IDeliveryProviderType>;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type IDeliveryProviderSimulatedPriceArgs = {
@@ -554,14 +554,14 @@ export type IDeliveryProviderPickUp = IDeliveryProvider & {
   _id: Scalars['ID']['output'];
   configuration?: Maybe<Scalars['JSON']['output']>;
   configurationError?: Maybe<IDeliveryProviderError>;
-  created?: Maybe<Scalars['DateTimeISO']['output']>;
-  deleted?: Maybe<Scalars['DateTimeISO']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
+  deleted?: Maybe<Scalars['DateTime']['output']>;
   interface?: Maybe<IDeliveryInterface>;
   isActive?: Maybe<Scalars['Boolean']['output']>;
   pickUpLocations: Array<IPickUpLocation>;
   simulatedPrice?: Maybe<IPrice>;
   type?: Maybe<IDeliveryProviderType>;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type IDeliveryProviderPickUpSimulatedPriceArgs = {
@@ -575,13 +575,13 @@ export type IDeliveryProviderShipping = IDeliveryProvider & {
   _id: Scalars['ID']['output'];
   configuration?: Maybe<Scalars['JSON']['output']>;
   configurationError?: Maybe<IDeliveryProviderError>;
-  created?: Maybe<Scalars['DateTimeISO']['output']>;
-  deleted?: Maybe<Scalars['DateTimeISO']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
+  deleted?: Maybe<Scalars['DateTime']['output']>;
   interface?: Maybe<IDeliveryInterface>;
   isActive?: Maybe<Scalars['Boolean']['output']>;
   simulatedPrice?: Maybe<IPrice>;
   type?: Maybe<IDeliveryProviderType>;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type IDeliveryProviderShippingSimulatedPriceArgs = {
@@ -631,8 +631,8 @@ export type IDiscountInterface = {
 
 export type IDispatch = {
   deliveryProvider?: Maybe<IDeliveryProvider>;
-  earliestDelivery?: Maybe<Scalars['DateTimeISO']['output']>;
-  shipping?: Maybe<Scalars['DateTimeISO']['output']>;
+  earliestDelivery?: Maybe<Scalars['DateTime']['output']>;
+  shipping?: Maybe<Scalars['DateTime']['output']>;
   warehousingProvider?: Maybe<IWarehousingProvider>;
 };
 
@@ -640,19 +640,25 @@ export type IDispatch = {
 export type IEnrollment = {
   _id: Scalars['ID']['output'];
   billingAddress?: Maybe<IAddress>;
+  cancellationComment?: Maybe<Scalars['String']['output']>;
+  cancellationReason?: Maybe<IEnrollmentTerminationReason>;
   contact?: Maybe<IContact>;
+  contractStartDate?: Maybe<Scalars['DateTime']['output']>;
   country?: Maybe<ICountry>;
-  created: Scalars['DateTimeISO']['output'];
+  created: Scalars['DateTime']['output'];
   currency?: Maybe<ICurrency>;
   delivery?: Maybe<IEnrollmentDelivery>;
   enrollmentNumber?: Maybe<Scalars['String']['output']>;
-  expires?: Maybe<Scalars['DateTimeISO']['output']>;
+  expires?: Maybe<Scalars['DateTime']['output']>;
   isExpired?: Maybe<Scalars['Boolean']['output']>;
+  minimumCommitmentEnd?: Maybe<Scalars['DateTime']['output']>;
   payment?: Maybe<IEnrollmentPayment>;
   periods: Array<IEnrollmentPeriod>;
   plan: IEnrollmentPlan;
+  requestedTerminationDate?: Maybe<Scalars['DateTime']['output']>;
+  resumeAt?: Maybe<Scalars['DateTime']['output']>;
   status: IEnrollmentStatus;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
   user: IUser;
 };
 
@@ -680,10 +686,10 @@ export type IEnrollmentPaymentInput = {
 };
 
 export type IEnrollmentPeriod = {
-  end: Scalars['DateTimeISO']['output'];
+  end: Scalars['DateTime']['output'];
   isTrial: Scalars['Boolean']['output'];
   order?: Maybe<IOrder>;
-  start: Scalars['DateTimeISO']['output'];
+  start: Scalars['DateTime']['output'];
 };
 
 export type IEnrollmentPlan = {
@@ -705,8 +711,18 @@ export enum IEnrollmentStatus {
   Initial = 'INITIAL',
   /** Paused because of overdue payments */
   Paused = 'PAUSED',
+  /** Manually suspended by admin */
+  Suspended = 'SUSPENDED',
   /** Terminated / Ended enrollment */
   Terminated = 'TERMINATED',
+}
+
+export enum IEnrollmentTerminationReason {
+  AdminAction = 'ADMIN_ACTION',
+  Expired = 'EXPIRED',
+  Other = 'OTHER',
+  PaymentFailed = 'PAYMENT_FAILED',
+  UserRequested = 'USER_REQUESTED',
 }
 
 export type IEvent = {
@@ -763,7 +779,11 @@ export enum IEventType {
   DeliveryProviderUpdate = 'DELIVERY_PROVIDER_UPDATE',
   EnrollmentAddPeriod = 'ENROLLMENT_ADD_PERIOD',
   EnrollmentCreate = 'ENROLLMENT_CREATE',
+  EnrollmentPlanChange = 'ENROLLMENT_PLAN_CHANGE',
   EnrollmentRemove = 'ENROLLMENT_REMOVE',
+  EnrollmentResume = 'ENROLLMENT_RESUME',
+  EnrollmentSuspend = 'ENROLLMENT_SUSPEND',
+  EnrollmentTrialEnding = 'ENROLLMENT_TRIAL_ENDING',
   EnrollmentUpdate = 'ENROLLMENT_UPDATE',
   FileCreate = 'FILE_CREATE',
   FileRemove = 'FILE_REMOVE',
@@ -866,13 +886,13 @@ export enum IExternalLinkTarget {
 
 export type IFilter = {
   _id: Scalars['ID']['output'];
-  created?: Maybe<Scalars['DateTimeISO']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
   isActive?: Maybe<Scalars['Boolean']['output']>;
   key?: Maybe<Scalars['String']['output']>;
   options?: Maybe<Array<IFilterOption>>;
   texts?: Maybe<IFilterTexts>;
   type?: Maybe<IFilterType>;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type IFilterTextsArgs = {
@@ -958,7 +978,7 @@ export type ILoginMethodResponse = {
   /** Session ID */
   _id: Scalars['String']['output'];
   /** Expiration date for the token */
-  tokenExpires: Scalars['DateTimeISO']['output'];
+  tokenExpires: Scalars['DateTime']['output'];
   /** The logged in user */
   user?: Maybe<IUser>;
 };
@@ -984,7 +1004,7 @@ export type IMediaUrlArgs = {
 
 export type IMediaUploadTicket = {
   _id: Scalars['ID']['output'];
-  expires: Scalars['DateTimeISO']['output'];
+  expires: Scalars['DateTime']['output'];
   putURL: Scalars['String']['output'];
 };
 
@@ -1271,7 +1291,9 @@ export type IMutation = {
   >;
   /** End customer impersonated user session and resume the impersonator session */
   stopImpersonation?: Maybe<ILoginMethodResponse>;
-  /** Terminate an actively running enrollment by changing it's status to TERMINATED */
+  /** Suspend an actively running enrollment. Optionally schedule automatic resume. */
+  suspendEnrollment: IEnrollment;
+  /** Terminate an actively running enrollment. Optionally provide a cancellation reason and comment for churn analysis. */
   terminateEnrollment: IEnrollment;
   /** Hide the product visible from any shop listings (product queries) */
   unpublishProduct: IProduct;
@@ -1893,8 +1915,15 @@ export type IMutationSignPaymentProviderForCredentialRegistrationArgs = {
   transactionContext?: InputMaybe<Scalars['JSON']['input']>;
 };
 
-export type IMutationTerminateEnrollmentArgs = {
+export type IMutationSuspendEnrollmentArgs = {
   enrollmentId: Scalars['ID']['input'];
+  resumeAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type IMutationTerminateEnrollmentArgs = {
+  comment?: InputMaybe<Scalars['String']['input']>;
+  enrollmentId: Scalars['ID']['input'];
+  reason?: InputMaybe<IEnrollmentTerminationReason>;
 };
 
 export type IMutationUnpublishProductArgs = {
@@ -1974,9 +2003,11 @@ export type IMutationUpdateDeliveryProviderArgs = {
 
 export type IMutationUpdateEnrollmentArgs = {
   billingAddress?: InputMaybe<IAddressInput>;
+  cancelAtPeriodEnd?: InputMaybe<Scalars['Boolean']['input']>;
   contact?: InputMaybe<IContactInput>;
   delivery?: InputMaybe<IEnrollmentDeliveryInput>;
   enrollmentId?: InputMaybe<Scalars['ID']['input']>;
+  expires?: InputMaybe<Scalars['DateTime']['input']>;
   meta?: InputMaybe<Scalars['JSON']['input']>;
   payment?: InputMaybe<IEnrollmentPaymentInput>;
   plan?: InputMaybe<IEnrollmentPlanInput>;
@@ -2083,25 +2114,25 @@ export type IMutationVerifyWeb3AddressArgs = {
 export type IOrder = {
   _id: Scalars['ID']['output'];
   billingAddress?: Maybe<IAddress>;
-  confirmed?: Maybe<Scalars['DateTimeISO']['output']>;
+  confirmed?: Maybe<Scalars['DateTime']['output']>;
   contact?: Maybe<IContact>;
   country?: Maybe<ICountry>;
-  created?: Maybe<Scalars['DateTimeISO']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
   currency?: Maybe<ICurrency>;
   delivery?: Maybe<IOrderDelivery>;
   discounts?: Maybe<Array<IOrderDiscount>>;
   enrollment?: Maybe<IEnrollment>;
-  fulfilled?: Maybe<Scalars['DateTimeISO']['output']>;
+  fulfilled?: Maybe<Scalars['DateTime']['output']>;
   items?: Maybe<Array<IOrderItem>>;
   orderNumber?: Maybe<Scalars['String']['output']>;
-  ordered?: Maybe<Scalars['DateTimeISO']['output']>;
+  ordered?: Maybe<Scalars['DateTime']['output']>;
   payment?: Maybe<IOrderPayment>;
-  rejected?: Maybe<Scalars['DateTimeISO']['output']>;
+  rejected?: Maybe<Scalars['DateTime']['output']>;
   status?: Maybe<IOrderStatus>;
   supportedDeliveryProviders: Array<IDeliveryProvider>;
   supportedPaymentProviders: Array<IPaymentProvider>;
   total?: Maybe<IPrice>;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
   user?: Maybe<IUser>;
 };
 
@@ -2113,7 +2144,7 @@ export type IOrderTotalArgs = {
 
 export type IOrderDelivery = {
   _id: Scalars['ID']['output'];
-  delivered?: Maybe<Scalars['DateTimeISO']['output']>;
+  delivered?: Maybe<Scalars['DateTime']['output']>;
   discounts?: Maybe<Array<IOrderDeliveryDiscount>>;
   fee?: Maybe<IPrice>;
   provider?: Maybe<IDeliveryProvider>;
@@ -2130,7 +2161,7 @@ export type IOrderDeliveryDiscount = IOrderDiscountable & {
 export type IOrderDeliveryPickUp = IOrderDelivery & {
   _id: Scalars['ID']['output'];
   activePickUpLocation?: Maybe<IPickUpLocation>;
-  delivered?: Maybe<Scalars['DateTimeISO']['output']>;
+  delivered?: Maybe<Scalars['DateTime']['output']>;
   discounts?: Maybe<Array<IOrderDeliveryDiscount>>;
   fee?: Maybe<IPrice>;
   provider?: Maybe<IDeliveryProvider>;
@@ -2140,7 +2171,7 @@ export type IOrderDeliveryPickUp = IOrderDelivery & {
 export type IOrderDeliveryShipping = IOrderDelivery & {
   _id: Scalars['ID']['output'];
   address?: Maybe<IAddress>;
-  delivered?: Maybe<Scalars['DateTimeISO']['output']>;
+  delivered?: Maybe<Scalars['DateTime']['output']>;
   discounts?: Maybe<Array<IOrderDeliveryDiscount>>;
   fee?: Maybe<IPrice>;
   provider?: Maybe<IDeliveryProvider>;
@@ -2240,7 +2271,7 @@ export type IOrderPayment = {
   _id: Scalars['ID']['output'];
   discounts?: Maybe<Array<IOrderPaymentDiscount>>;
   fee?: Maybe<IPrice>;
-  paid?: Maybe<Scalars['DateTimeISO']['output']>;
+  paid?: Maybe<Scalars['DateTime']['output']>;
   provider?: Maybe<IPaymentProvider>;
   status?: Maybe<IOrderPaymentStatus>;
 };
@@ -2249,7 +2280,7 @@ export type IOrderPaymentCard = IOrderPayment & {
   _id: Scalars['ID']['output'];
   discounts?: Maybe<Array<IOrderPaymentDiscount>>;
   fee?: Maybe<IPrice>;
-  paid?: Maybe<Scalars['DateTimeISO']['output']>;
+  paid?: Maybe<Scalars['DateTime']['output']>;
   provider?: Maybe<IPaymentProvider>;
   status?: Maybe<IOrderPaymentStatus>;
 };
@@ -2265,7 +2296,7 @@ export type IOrderPaymentGeneric = IOrderPayment & {
   _id: Scalars['ID']['output'];
   discounts?: Maybe<Array<IOrderPaymentDiscount>>;
   fee?: Maybe<IPrice>;
-  paid?: Maybe<Scalars['DateTimeISO']['output']>;
+  paid?: Maybe<Scalars['DateTime']['output']>;
   provider?: Maybe<IPaymentProvider>;
   status?: Maybe<IOrderPaymentStatus>;
 };
@@ -2274,7 +2305,7 @@ export type IOrderPaymentInvoice = IOrderPayment & {
   _id: Scalars['ID']['output'];
   discounts?: Maybe<Array<IOrderPaymentDiscount>>;
   fee?: Maybe<IPrice>;
-  paid?: Maybe<Scalars['DateTimeISO']['output']>;
+  paid?: Maybe<Scalars['DateTime']['output']>;
   provider?: Maybe<IPaymentProvider>;
   status?: Maybe<IOrderPaymentStatus>;
 };
@@ -2353,13 +2384,13 @@ export type IPaymentProvider = {
   _id: Scalars['ID']['output'];
   configuration?: Maybe<Scalars['JSON']['output']>;
   configurationError?: Maybe<IPaymentProviderError>;
-  created?: Maybe<Scalars['DateTimeISO']['output']>;
-  deleted?: Maybe<Scalars['DateTimeISO']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
+  deleted?: Maybe<Scalars['DateTime']['output']>;
   interface?: Maybe<IPaymentInterface>;
   isActive?: Maybe<Scalars['Boolean']['output']>;
   simulatedPrice?: Maybe<IPrice>;
   type?: Maybe<IPaymentProviderType>;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type IPaymentProviderSimulatedPriceArgs = {
@@ -2395,13 +2426,13 @@ export type IPlanProduct = IProduct & {
   _id: Scalars['ID']['output'];
   assortmentPaths: Array<IProductAssortmentPath>;
   catalogPrice?: Maybe<IPrice>;
-  created?: Maybe<Scalars['DateTimeISO']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
   defaultOrderQuantity?: Maybe<Scalars['Int']['output']>;
   leveledCatalogPrices: Array<IPriceLevel>;
   media: Array<IProductMedia>;
   plan?: Maybe<IProductPlanConfiguration>;
   proxies: Array<IConfigurableOrBundleProduct>;
-  published?: Maybe<Scalars['DateTimeISO']['output']>;
+  published?: Maybe<Scalars['DateTime']['output']>;
   reviews: Array<IProductReview>;
   reviewsCount: Scalars['Int']['output'];
   salesQuantityPerUnit?: Maybe<Scalars['String']['output']>;
@@ -2412,7 +2443,7 @@ export type IPlanProduct = IProduct & {
   status: IProductStatus;
   tags?: Maybe<Array<Scalars['LowerCaseString']['output']>>;
   texts?: Maybe<IProductTexts>;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 /** Plan (Virtual Product that somebody can enroll to) */
@@ -2494,10 +2525,10 @@ export type IPriceRange = {
 export type IProduct = {
   _id: Scalars['ID']['output'];
   assortmentPaths: Array<IProductAssortmentPath>;
-  created?: Maybe<Scalars['DateTimeISO']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
   media: Array<IProductMedia>;
   proxies: Array<IConfigurableOrBundleProduct>;
-  published?: Maybe<Scalars['DateTimeISO']['output']>;
+  published?: Maybe<Scalars['DateTime']['output']>;
   reviews: Array<IProductReview>;
   reviewsCount: Scalars['Int']['output'];
   sequence: Scalars['Int']['output'];
@@ -2505,7 +2536,7 @@ export type IProduct = {
   status: IProductStatus;
   tags?: Maybe<Array<Scalars['LowerCaseString']['output']>>;
   texts?: Maybe<IProductTexts>;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 /** Abstract Product */
@@ -2611,6 +2642,7 @@ export type IProductMediaTexts = {
 export type IProductPlanConfiguration = {
   billingInterval: IProductPlanConfigurationInterval;
   billingIntervalCount?: Maybe<Scalars['Int']['output']>;
+  minimumCommitmentPeriods?: Maybe<Scalars['Int']['output']>;
   trialInterval?: Maybe<IProductPlanConfigurationInterval>;
   trialIntervalCount?: Maybe<Scalars['Int']['output']>;
   usageCalculationType: IProductPlanUsageCalculationType;
@@ -2632,14 +2664,14 @@ export enum IProductPlanUsageCalculationType {
 export type IProductReview = {
   _id: Scalars['ID']['output'];
   author: IUser;
-  created?: Maybe<Scalars['DateTimeISO']['output']>;
-  deleted?: Maybe<Scalars['DateTimeISO']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
+  deleted?: Maybe<Scalars['DateTime']['output']>;
   ownVotes: Array<IProductReviewVote>;
   product: IProduct;
   rating?: Maybe<Scalars['Int']['output']>;
   review?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
   voteCount?: Maybe<Scalars['Int']['output']>;
 };
 
@@ -2886,6 +2918,8 @@ export type IQuery = {
   quotations: Array<IQuotation>;
   /** Returns total number of quotations */
   quotationsCount: Scalars['Int']['output'];
+  /** Get all registered event types */
+  registeredEventTypes: Array<Scalars['String']['output']>;
   /** Search assortments */
   searchAssortments: IAssortmentSearchResult;
   /** Search products */
@@ -3164,6 +3198,7 @@ export type IQueryProductsArgs = {
   slugs?: InputMaybe<Array<Scalars['String']['input']>>;
   sort?: InputMaybe<Array<ISortOptionInput>>;
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+  types?: InputMaybe<Array<IProductType>>;
 };
 
 export type IQueryProductsCountArgs = {
@@ -3171,6 +3206,7 @@ export type IQueryProductsCountArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
   slugs?: InputMaybe<Array<Scalars['String']['input']>>;
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+  types?: InputMaybe<Array<IProductType>>;
 };
 
 export type IQueryQuotationArgs = {
@@ -3322,16 +3358,16 @@ export type IQuotation = {
   _id: Scalars['ID']['output'];
   configuration?: Maybe<Array<IProductConfigurationParameter>>;
   country?: Maybe<ICountry>;
-  created: Scalars['DateTimeISO']['output'];
+  created: Scalars['DateTime']['output'];
   currency?: Maybe<ICurrency>;
-  expires?: Maybe<Scalars['DateTimeISO']['output']>;
-  fulfilled?: Maybe<Scalars['DateTimeISO']['output']>;
+  expires?: Maybe<Scalars['DateTime']['output']>;
+  fulfilled?: Maybe<Scalars['DateTime']['output']>;
   isExpired?: Maybe<Scalars['Boolean']['output']>;
   product: IProduct;
   quotationNumber?: Maybe<Scalars['String']['output']>;
-  rejected?: Maybe<Scalars['DateTimeISO']['output']>;
+  rejected?: Maybe<Scalars['DateTime']['output']>;
   status: IQuotationStatus;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
   user: IUser;
 };
 
@@ -3533,13 +3569,13 @@ export type ISimpleProduct = IProduct & {
   assortmentPaths: Array<IProductAssortmentPath>;
   baseUnit?: Maybe<Scalars['String']['output']>;
   catalogPrice?: Maybe<IPrice>;
-  created?: Maybe<Scalars['DateTimeISO']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
   defaultOrderQuantity?: Maybe<Scalars['Int']['output']>;
   dimensions?: Maybe<IDimensions>;
   leveledCatalogPrices: Array<IPriceLevel>;
   media: Array<IProductMedia>;
   proxies: Array<IConfigurableOrBundleProduct>;
-  published?: Maybe<Scalars['DateTimeISO']['output']>;
+  published?: Maybe<Scalars['DateTime']['output']>;
   reviews: Array<IProductReview>;
   reviewsCount: Scalars['Int']['output'];
   salesQuantityPerUnit?: Maybe<Scalars['String']['output']>;
@@ -3553,7 +3589,7 @@ export type ISimpleProduct = IProduct & {
   status: IProductStatus;
   tags?: Maybe<Array<Scalars['LowerCaseString']['output']>>;
   texts?: Maybe<IProductTexts>;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 /** Simple Product */
@@ -3653,8 +3689,8 @@ export type IToken = {
   chainId?: Maybe<Scalars['String']['output']>;
   contractAddress?: Maybe<Scalars['String']['output']>;
   ercMetadata?: Maybe<Scalars['JSON']['output']>;
-  expiryDate?: Maybe<Scalars['DateTimeISO']['output']>;
-  invalidatedDate?: Maybe<Scalars['DateTimeISO']['output']>;
+  expiryDate?: Maybe<Scalars['DateTime']['output']>;
+  invalidatedDate?: Maybe<Scalars['DateTime']['output']>;
   isInvalidateable: Scalars['Boolean']['output'];
   product: ITokenizedProduct;
   quantity: Scalars['Int']['output'];
@@ -3682,11 +3718,11 @@ export type ITokenizedProduct = IProduct & {
   contractAddress?: Maybe<Scalars['String']['output']>;
   contractConfiguration?: Maybe<IContractConfiguration>;
   contractStandard?: Maybe<ISmartContractStandard>;
-  created?: Maybe<Scalars['DateTimeISO']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
   leveledCatalogPrices: Array<IPriceLevel>;
   media: Array<IProductMedia>;
   proxies: Array<IConfigurableOrBundleProduct>;
-  published?: Maybe<Scalars['DateTimeISO']['output']>;
+  published?: Maybe<Scalars['DateTime']['output']>;
   reviews: Array<IProductReview>;
   reviewsCount: Scalars['Int']['output'];
   sequence: Scalars['Int']['output'];
@@ -3698,7 +3734,7 @@ export type ITokenizedProduct = IProduct & {
   texts?: Maybe<IProductTexts>;
   tokens: Array<IToken>;
   tokensCount: Scalars['Int']['output'];
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 /** Tokenized Product (Blockchain materialized Product) */
@@ -3815,6 +3851,7 @@ export type IUpdateProductInput = {
 export type IUpdateProductPlanInput = {
   billingInterval: IProductPlanConfigurationInterval;
   billingIntervalCount?: InputMaybe<Scalars['Int']['input']>;
+  minimumCommitmentPeriods?: InputMaybe<Scalars['Int']['input']>;
   trialInterval?: InputMaybe<IProductPlanConfigurationInterval>;
   trialIntervalCount?: InputMaybe<Scalars['Int']['input']>;
   usageCalculationType: IProductPlanUsageCalculationType;
@@ -3851,8 +3888,8 @@ export type IUser = {
   bookmarks: Array<IBookmark>;
   cart?: Maybe<IOrder>;
   country?: Maybe<ICountry>;
-  created: Scalars['DateTimeISO']['output'];
-  deleted?: Maybe<Scalars['DateTimeISO']['output']>;
+  created: Scalars['DateTime']['output'];
+  deleted?: Maybe<Scalars['DateTime']['output']>;
   emails?: Maybe<Array<IUserEmail>>;
   enrollments: Array<IEnrollment>;
   isGuest: Scalars['Boolean']['output'];
@@ -3873,7 +3910,7 @@ export type IUser = {
   roles?: Maybe<Array<Scalars['String']['output']>>;
   tags?: Maybe<Array<Scalars['LowerCaseString']['output']>>;
   tokens: Array<IToken>;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
   username?: Maybe<Scalars['String']['output']>;
   web3Addresses: Array<IWeb3Address>;
   webAuthnCredentials: Array<IWebAuthnCredentials>;
@@ -3953,12 +3990,12 @@ export type IWarehousingProvider = {
   _id: Scalars['ID']['output'];
   configuration?: Maybe<Scalars['JSON']['output']>;
   configurationError?: Maybe<IWarehousingProviderError>;
-  created?: Maybe<Scalars['DateTimeISO']['output']>;
-  deleted?: Maybe<Scalars['DateTimeISO']['output']>;
+  created?: Maybe<Scalars['DateTime']['output']>;
+  deleted?: Maybe<Scalars['DateTime']['output']>;
   interface?: Maybe<IWarehousingInterface>;
   isActive?: Maybe<Scalars['Boolean']['output']>;
   type?: Maybe<IWarehousingProviderType>;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export enum IWarehousingProviderError {
@@ -3977,7 +4014,7 @@ export enum IWarehousingProviderType {
 
 export type IWeb3Address = {
   address: Scalars['String']['output'];
-  nonce?: Maybe<Scalars['Int']['output']>;
+  nonce?: Maybe<Scalars['String']['output']>;
   verified: Scalars['Boolean']['output'];
 };
 
@@ -3985,7 +4022,7 @@ export type IWebAuthnCredentials = {
   _id: Scalars['ID']['output'];
   aaguid: Scalars['String']['output'];
   counter: Scalars['Int']['output'];
-  created: Scalars['DateTimeISO']['output'];
+  created: Scalars['DateTime']['output'];
   mdsMetadata?: Maybe<IWebAuthnMdSv3Metadata>;
 };
 
@@ -4013,22 +4050,22 @@ export type IWebAuthnMdSv3Metadata = {
 export type IWork = {
   _id: Scalars['ID']['output'];
   autoscheduled?: Maybe<Scalars['Boolean']['output']>;
-  created: Scalars['DateTimeISO']['output'];
-  deleted?: Maybe<Scalars['DateTimeISO']['output']>;
+  created: Scalars['DateTime']['output'];
+  deleted?: Maybe<Scalars['DateTime']['output']>;
   error?: Maybe<Scalars['JSON']['output']>;
-  finished?: Maybe<Scalars['DateTimeISO']['output']>;
+  finished?: Maybe<Scalars['DateTime']['output']>;
   input?: Maybe<Scalars['JSON']['output']>;
   original?: Maybe<IWork>;
   priority: Scalars['Int']['output'];
   result?: Maybe<Scalars['JSON']['output']>;
   retries: Scalars['Int']['output'];
-  scheduled?: Maybe<Scalars['DateTimeISO']['output']>;
-  started?: Maybe<Scalars['DateTimeISO']['output']>;
+  scheduled?: Maybe<Scalars['DateTime']['output']>;
+  started?: Maybe<Scalars['DateTime']['output']>;
   status: IWorkStatus;
   success?: Maybe<Scalars['Boolean']['output']>;
   timeout?: Maybe<Scalars['Int']['output']>;
   type: IWorkType;
-  updated?: Maybe<Scalars['DateTimeISO']['output']>;
+  updated?: Maybe<Scalars['DateTime']['output']>;
   worker?: Maybe<Scalars['String']['output']>;
 };
 
@@ -4253,7 +4290,7 @@ export type IUserFragment = {
   emails?: Array<{ verified: boolean; address: string }> | null;
   web3Addresses: Array<{
     address: string;
-    nonce?: number | null;
+    nonce?: string | null;
     verified: boolean;
   }>;
   webAuthnCredentials: Array<{
@@ -4368,7 +4405,7 @@ export type IAddEmailMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -4477,7 +4514,7 @@ export type IAddWeb3AddressMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -4607,7 +4644,7 @@ export type IAddWebAuthnCredentialsMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     profile?: {
@@ -4730,7 +4767,7 @@ export type ICurrentUserQuery = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -4847,7 +4884,7 @@ export type IEnrollUserMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -4991,7 +5028,7 @@ export type IRemoveEmailMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -5100,7 +5137,7 @@ export type IRemoveWeb3AddressMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -5209,7 +5246,7 @@ export type IRemoveWebAuthCredentialsMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -5336,7 +5373,7 @@ export type ISetPasswordMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -5446,7 +5483,7 @@ export type ISetRolesMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -5565,7 +5602,7 @@ export type ISetUsernameMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -5684,7 +5721,7 @@ export type IUpdateUserProfileMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -5793,7 +5830,7 @@ export type IUserQuery = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -5940,7 +5977,7 @@ export type IUsersQuery = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -6077,7 +6114,7 @@ export type IVerifyEmailMutation = {
       emails?: Array<{ verified: boolean; address: string }> | null;
       web3Addresses: Array<{
         address: string;
-        nonce?: number | null;
+        nonce?: string | null;
         verified: boolean;
       }>;
       webAuthnCredentials: Array<{
@@ -6188,7 +6225,7 @@ export type IVerifyWeb3AddressMutation = {
     emails?: Array<{ verified: boolean; address: string }> | null;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     webAuthnCredentials: Array<{
@@ -7623,6 +7660,16 @@ export type IShopInfoQuery = {
   };
 };
 
+export type IStatusTypesQueryVariables = Exact<{
+  enumName: Scalars['String']['input'];
+}>;
+
+export type IStatusTypesQuery = {
+  statusTypes?: {
+    options?: Array<{ value: string; label?: string | null }> | null;
+  } | null;
+};
+
 export type ISystemRolesQueryVariables = Exact<{ [key: string]: never }>;
 
 export type ISystemRolesQuery = {
@@ -7982,16 +8029,6 @@ export type IDeliveryProvidersQuery = {
   >;
 };
 
-export type IOrderDeliveryStatusQueryVariables = Exact<{
-  [key: string]: never;
-}>;
-
-export type IOrderDeliveryStatusQuery = {
-  deliveryStatusType?: {
-    options?: Array<{ value: string; label?: string | null }> | null;
-  } | null;
-};
-
 export type IRemoveDeliveryProviderMutationVariables = Exact<{
   deliveryProviderId: Scalars['ID']['input'];
 }>;
@@ -8060,6 +8097,9 @@ export type IEnrollmentDetailFragment = {
   status: IEnrollmentStatus;
   created: any;
   expires?: any | null;
+  requestedTerminationDate?: any | null;
+  contractStartDate?: any | null;
+  minimumCommitmentEnd?: any | null;
   isExpired?: boolean | null;
   country?: { _id: string; isoCode?: string | null } | null;
   billingAddress?: {
@@ -8136,9 +8176,9 @@ export type IEnrollmentDetailFragment = {
     } | null;
   } | null;
   periods: Array<{
+    start: any;
     end: any;
     isTrial: boolean;
-    start: any;
     order?: { _id: string } | null;
   }>;
   plan: {
@@ -8168,6 +8208,9 @@ export type IEnrollmentFragment = {
   status: IEnrollmentStatus;
   created: any;
   expires?: any | null;
+  requestedTerminationDate?: any | null;
+  contractStartDate?: any | null;
+  minimumCommitmentEnd?: any | null;
   isExpired?: boolean | null;
   country?: { _id: string; isoCode?: string | null } | null;
   currency?: { _id: string; isoCode: string } | null;
@@ -8215,6 +8258,9 @@ export type IEnrollmentQuery = {
     status: IEnrollmentStatus;
     created: any;
     expires?: any | null;
+    requestedTerminationDate?: any | null;
+    contractStartDate?: any | null;
+    minimumCommitmentEnd?: any | null;
     isExpired?: boolean | null;
     country?: { _id: string; isoCode?: string | null } | null;
     billingAddress?: {
@@ -8294,9 +8340,9 @@ export type IEnrollmentQuery = {
       } | null;
     } | null;
     periods: Array<{
+      start: any;
       end: any;
       isTrial: boolean;
-      start: any;
       order?: { _id: string } | null;
     }>;
     plan: {
@@ -8313,14 +8359,6 @@ export type IEnrollmentQuery = {
       name: string;
       avatar?: { _id: string; url?: string | null } | null;
     };
-  } | null;
-};
-
-export type IEnrollmentStatusQueryVariables = Exact<{ [key: string]: never }>;
-
-export type IEnrollmentStatusQuery = {
-  enrollmentStatusTypes?: {
-    options?: Array<{ value: string; label?: string | null }> | null;
   } | null;
 };
 
@@ -8341,6 +8379,9 @@ export type IEnrollmentsQuery = {
     status: IEnrollmentStatus;
     created: any;
     expires?: any | null;
+    requestedTerminationDate?: any | null;
+    contractStartDate?: any | null;
+    minimumCommitmentEnd?: any | null;
     isExpired?: boolean | null;
     country?: { _id: string; isoCode?: string | null } | null;
     currency?: { _id: string; isoCode: string } | null;
@@ -8375,12 +8416,38 @@ export type ISendEnrollmentEmailMutation = {
   sendEnrollmentEmail?: { success?: boolean | null } | null;
 };
 
+export type ISuspendEnrollmentMutationVariables = Exact<{
+  enrollmentId: Scalars['ID']['input'];
+}>;
+
+export type ISuspendEnrollmentMutation = { suspendEnrollment: { _id: string } };
+
 export type ITerminateEnrollmentMutationVariables = Exact<{
   enrollmentId: Scalars['ID']['input'];
 }>;
 
 export type ITerminateEnrollmentMutation = {
   terminateEnrollment: { _id: string };
+};
+
+export type IUpdateEnrollmentPlanMutationVariables = Exact<{
+  enrollmentId: Scalars['ID']['input'];
+  plan: IEnrollmentPlanInput;
+}>;
+
+export type IUpdateEnrollmentPlanMutation = {
+  updateEnrollment: {
+    _id: string;
+    status: IEnrollmentStatus;
+    plan: {
+      quantity: number;
+      product: {
+        _id: string;
+        texts?: { _id: string; title?: string | null } | null;
+      };
+      configuration?: Array<{ key: string; value: string }> | null;
+    };
+  };
 };
 
 export type IUserEnrollmentsQueryVariables = Exact<{
@@ -8398,6 +8465,9 @@ export type IUserEnrollmentsQuery = {
       status: IEnrollmentStatus;
       created: any;
       expires?: any | null;
+      requestedTerminationDate?: any | null;
+      contractStartDate?: any | null;
+      minimumCommitmentEnd?: any | null;
       isExpired?: boolean | null;
       country?: { _id: string; isoCode?: string | null } | null;
       currency?: { _id: string; isoCode: string } | null;
@@ -8447,12 +8517,12 @@ export type IEventQuery = {
   } | null;
 };
 
-export type IEventsTypeQueryVariables = Exact<{ [key: string]: never }>;
+export type IRegisteredEventTypesQueryVariables = Exact<{
+  [key: string]: never;
+}>;
 
-export type IEventsTypeQuery = {
-  eventTypes?: {
-    options?: Array<{ value: string; label: string }> | null;
-  } | null;
+export type IRegisteredEventTypesQuery = {
+  registeredEventTypes: Array<string>;
 };
 
 export type IEventsQueryVariables = Exact<{
@@ -10036,14 +10106,6 @@ export type IOrderQuery = {
   } | null;
 };
 
-export type IOrderStatusQueryVariables = Exact<{ [key: string]: never }>;
-
-export type IOrderStatusQuery = {
-  orderStatusType?: {
-    options?: Array<{ value: string; label?: string | null }> | null;
-  } | null;
-};
-
 export type IOrdersQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -10261,14 +10323,6 @@ export type IPaymentProvidersQuery = {
       version?: string | null;
     } | null;
   }>;
-};
-
-export type IOrderPaymentStatusQueryVariables = Exact<{ [key: string]: never }>;
-
-export type IOrderPaymentStatusQuery = {
-  paymentStatusTypes?: {
-    options?: Array<{ value: string; label?: string | null }> | null;
-  } | null;
 };
 
 export type IRemovePaymentProviderMutationVariables = Exact<{
@@ -11685,6 +11739,7 @@ export type IProductPlanConfigurationFragment = {
   trialInterval?: IProductPlanConfigurationInterval | null;
   trialIntervalCount?: number | null;
   billingIntervalCount?: number | null;
+  minimumCommitmentPeriods?: number | null;
 };
 
 export type IProductPlanConfigurationFragmentVariables = Exact<{
@@ -12967,6 +13022,7 @@ export type IProductPlanQuery = {
           trialInterval?: IProductPlanConfigurationInterval | null;
           trialIntervalCount?: number | null;
           billingIntervalCount?: number | null;
+          minimumCommitmentPeriods?: number | null;
         } | null;
       }
     | { _id: string }
@@ -13202,6 +13258,7 @@ export type IProductsQueryVariables = Exact<{
   includeDrafts?: InputMaybe<Scalars['Boolean']['input']>;
   sort?: InputMaybe<Array<ISortOptionInput>>;
   forceLocale?: InputMaybe<Scalars['Locale']['input']>;
+  types?: InputMaybe<Array<IProductType>>;
 }>;
 
 export type IProductsQuery = {
@@ -14847,7 +14904,7 @@ export type IUserTokensQuery = {
     _id: string;
     web3Addresses: Array<{
       address: string;
-      nonce?: number | null;
+      nonce?: string | null;
       verified: boolean;
     }>;
     tokens: Array<{
@@ -15305,14 +15362,6 @@ export type IQuotationQuery = {
             file?: { _id: string; type: string; url?: string | null } | null;
           }>;
         };
-  } | null;
-};
-
-export type IQuotationStatusQueryVariables = Exact<{ [key: string]: never }>;
-
-export type IQuotationStatusQuery = {
-  quotationStatusType?: {
-    options?: Array<{ value: string; label?: string | null }> | null;
   } | null;
 };
 
@@ -16076,14 +16125,6 @@ export type IAllocateWorkMutationVariables = Exact<{
 }>;
 
 export type IAllocateWorkMutation = { allocateWork?: { _id: string } | null };
-
-export type IWorkTypesQueryVariables = Exact<{ [key: string]: never }>;
-
-export type IWorkTypesQuery = {
-  registeredWorkTypes?: {
-    options?: Array<{ value: string; label: string }> | null;
-  } | null;
-};
 
 export type IRemoveWorkMutationVariables = Exact<{
   workId: Scalars['ID']['input'];

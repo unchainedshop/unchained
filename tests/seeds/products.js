@@ -211,6 +211,52 @@ export const PlanProduct = {
   },
 };
 
+export const CommitmentPlanProduct = {
+  _id: 'commitment-plan-product',
+  created: new Date('2019-07-30T09:23:26.253+0000'),
+  type: 'PLAN_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 22,
+  slugs: ['commitment-plan'],
+  updated: new Date('2019-09-10T14:29:37.015+0000'),
+  published: new Date('2019-07-30T09:23:57.329+0000'),
+  commerce: {
+    pricing: [
+      {
+        amount: 5000,
+        maxQuantity: 0,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+    ],
+  },
+  plan: {
+    billingInterval: 'MONTHS',
+    billingIntervalCount: 1,
+    usageCalculationType: 'LICENSED',
+    trialInterval: null,
+    trialIntervalCount: null,
+    minimumCommitmentPeriods: 12,
+  },
+};
+
+export const DraftPlanProduct = {
+  _id: 'draft-plan-product',
+  created: new Date('2019-07-30T09:23:26.253+0000'),
+  type: 'PLAN_PRODUCT',
+  status: null,
+  sequence: 21,
+  slugs: ['draft-plan'],
+  updated: new Date('2019-09-10T14:29:37.015+0000'),
+  plan: {
+    billingInterval: 'WEEKS',
+    billingIntervalCount: 1,
+    usageCalculationType: 'LICENSED',
+  },
+};
+
 export const GermanProductText = {
   _id: 'german',
   locale: 'de',
@@ -628,6 +674,8 @@ export default async function seedProducts(db) {
       ProxyPlanProduct3,
       ProxyProduct,
       PlanProduct,
+      CommitmentPlanProduct,
+      DraftPlanProduct,
       TokenizedProduct1,
       LeveledPricingProduct,
     ]);

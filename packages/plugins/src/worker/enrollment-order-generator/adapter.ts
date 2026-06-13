@@ -5,6 +5,9 @@ import {
   WorkerAdapter,
   type IWorkerAdapter,
 } from '@unchainedshop/core';
+import { emit } from '@unchainedshop/events';
+
+const TRIAL_ENDING_DAYS = 3;
 
 export const GenerateOrderWorker: IWorkerAdapter<never, any> = {
   ...WorkerAdapter,
@@ -18,26 +21,55 @@ export const GenerateOrderWorker: IWorkerAdapter<never, any> = {
     const { modules, services } = unchainedAPI;
 
     const enrollments = await modules.enrollments.findEnrollments({
-      status: [EnrollmentStatus.ACTIVE, EnrollmentStatus.PAUSED],
+      status: [EnrollmentStatus.ACTIVE, EnrollmentStatus.PAUSED, EnrollmentStatus.SUSPENDED],
     });
 
     const errors = (
       await Promise.all(
         enrollments.map(async (enrollment) => {
           try {
-            const product = await unchainedAPI.modules.products.findProduct({
-              productId: enrollment.productId,
+            const processedEnrollment = await services.enrollments.processEnrollment(enrollment);
+
+            if (processedEnrollment.status === EnrollmentStatus.TERMINATED) {
+              return null;
+            }
+
+            if (processedEnrollment.status === EnrollmentStatus.SUSPENDED) {
+              return null;
+            }
+
+            const product = await modules.products.findProduct({
+              productId: processedEnrollment.productId,
             });
             const director = await EnrollmentDirector.actions(
-              { enrollment, product: product! },
+              { enrollment: processedEnrollment, product: product! },
               unchainedAPI,
             );
             const period = await director.nextPeriod();
+
             if (period) {
+              if (
+                processedEnrollment.expires &&
+                period.start.getTime() >= new Date(processedEnrollment.expires).getTime()
+              ) {
+                return null;
+              }
+
               if (period.isTrial) {
-                await modules.enrollments.addEnrollmentPeriod(enrollment._id, {
+                await modules.enrollments.addEnrollmentPeriod(processedEnrollment._id, {
                   ...period,
                 });
+
+                const trialEndMs = new Date(period.end).getTime();
+                const nowMs = Date.now();
+                const daysUntilEnd = (trialEndMs - nowMs) / (1000 * 60 * 60 * 24);
+                if (daysUntilEnd <= TRIAL_ENDING_DAYS && daysUntilEnd > 0) {
+                  await emit('ENROLLMENT_TRIAL_ENDING', {
+                    enrollment: processedEnrollment,
+                    trialEnd: period.end,
+                  });
+                }
+
                 return null;
               }
               const configuration = await director.configurationForOrder({
@@ -45,11 +77,11 @@ export const GenerateOrderWorker: IWorkerAdapter<never, any> = {
               });
               if (configuration) {
                 const order = await services.enrollments.generateOrderFromEnrollment(
-                  enrollment,
+                  processedEnrollment,
                   configuration,
                 );
                 if (order) {
-                  await modules.enrollments.addEnrollmentPeriod(enrollment._id, {
+                  await modules.enrollments.addEnrollmentPeriod(processedEnrollment._id, {
                     ...period,
                     orderId: order._id,
                   });

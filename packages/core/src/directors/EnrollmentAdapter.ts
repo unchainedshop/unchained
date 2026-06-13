@@ -8,6 +8,7 @@ import {
 } from '@unchainedshop/core-enrollments';
 import type { Product, ProductPlan } from '@unchainedshop/core-products';
 import type { OrderPosition } from '@unchainedshop/core-orders';
+import type { Modules } from '../modules.ts';
 
 export interface EnrollmentContext {
   enrollment: Enrollment;
@@ -21,7 +22,15 @@ export interface EnrollmentAdapterActions {
   } | null>;
   isOverdue: () => Promise<boolean>;
   isValidForActivation: () => Promise<boolean>;
-  nextPeriod: () => Promise<EnrollmentPeriod | null>;
+  nextPeriod: (params?: { referenceDate?: Date }) => Promise<EnrollmentPeriod | null>;
+  terminationDate: (params: { referenceDate: Date }) => Promise<Date | null>;
+  expiryDate: () => Promise<Date | null>;
+  minimumCommitmentEnd: (params: { referenceDate: Date }) => Promise<Date | null>;
+  initialPeriods: (params: { referenceDate: Date }) => Promise<EnrollmentPeriod[]>;
+  transformPlanToNewPlan: (params: {
+    plan: EnrollmentPlan;
+    referenceDate: Date;
+  }) => Promise<{ plan: EnrollmentPlan; effectiveDate: Date } | null>;
 }
 
 export type IEnrollmentAdapter = IBaseAdapter & {
@@ -32,7 +41,7 @@ export type IEnrollmentAdapter = IBaseAdapter & {
     unchainedAPI,
   ) => Promise<EnrollmentPlan>;
 
-  actions: (params: EnrollmentContext) => EnrollmentAdapterActions;
+  actions: (params: EnrollmentContext & { modules: Modules }) => EnrollmentAdapterActions;
 };
 export const periodForReferenceDate = (referenceDate: Date, intervalCount = 1, interval = 'WEEKS') => {
   const lowerCaseInterval = interval.toLowerCase();
@@ -68,7 +77,7 @@ export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'vers
   },
 
   actions: (context) => {
-    return {
+    const baseActions: EnrollmentAdapterActions = {
       configurationForOrder: async () => {
         throw new Error(`Not implemented on EnrollmentAdapter`);
       },
@@ -76,11 +85,11 @@ export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'vers
       isOverdue: async () => false,
       isValidForActivation: async () => false,
 
-      nextPeriod: async () => {
+      nextPeriod: async (params?: { referenceDate?: Date }) => {
         const { enrollment, product } = context;
 
         const plan = product?.plan;
-        const referenceDate = new Date();
+        const referenceDate = params?.referenceDate || new Date();
         if (!plan) return null;
 
         if (plan.trialIntervalCount && !enrollment?.periods?.length) {
@@ -99,11 +108,33 @@ export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'vers
           return acc;
         }, referenceDate);
 
-        return {
+        const period = {
           ...periodForReferenceDate(lastEnd, plan.billingIntervalCount, plan.billingInterval),
           isTrial: false,
         };
+
+        if (enrollment?.expires) {
+          if (period.start.getTime() >= new Date(enrollment.expires).getTime()) {
+            return null;
+          }
+        }
+
+        return period;
       },
+
+      terminationDate: async ({ referenceDate }: { referenceDate: Date }) => referenceDate,
+
+      expiryDate: async () => null,
+
+      minimumCommitmentEnd: async () => null,
+
+      initialPeriods: async ({ referenceDate }: { referenceDate: Date }) => {
+        const period = await baseActions.nextPeriod({ referenceDate });
+        return period ? [period] : [];
+      },
+
+      transformPlanToNewPlan: async () => null,
     };
+    return baseActions;
   },
 };

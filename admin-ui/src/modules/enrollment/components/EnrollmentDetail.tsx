@@ -1,8 +1,10 @@
+import { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
 import { InboxIcon } from '@heroicons/react/24/outline';
 
+import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import useStatusTypes from '../../common/hooks/useStatusTypes';
 import StatusProgress from '../../common/components/StatusProgress';
 import Accordion from '@/components/ui/Accordion/Accordion';
@@ -14,16 +16,28 @@ import useActivateEnrollment from '../hooks/useActivateEnrollment';
 import useModal from '../../modal/hooks/useModal';
 import AlertMessage from '../../modal/components/AlertMessage';
 import useTerminateEnrollment from '../hooks/useTerminateEnrollment';
+import useSuspendEnrollment from '../hooks/useSuspendEnrollment';
 import useSendEnrollmentEmail from '../hooks/useSendEnrollmentEmail';
+import useUpdateEnrollmentPlan from '../hooks/useUpdateEnrollmentPlan';
 import DangerMessage from '../../modal/components/DangerMessage';
 import EnrollmentDetailHeader from './EnrollmentDetailHeader';
 import JSONView from '@/components/ui/JSONView';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import { IEnrollment, IRoleAction } from '../../../gql/types';
+import {
+  IEnrollment,
+  IEnrollmentStatus,
+  IProductType,
+  IRoleAction,
+  ISortDirection,
+} from '../../../gql/types';
 import useAuth from '../../Auth/useAuth';
+import useProducts from '../../product/hooks/useProducts';
+import UnchainedSelect from '../../common/components/UnchainedSelect';
+import deBounce from '../../common/utils/deBounce';
 
 const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
   const { formatMessage } = useIntl();
+  const { formatDateTime } = useFormatDateTime();
   const { setModal } = useModal();
   const { hasRole } = useAuth();
 
@@ -31,7 +45,30 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
     useStatusTypes('EnrollmentStatus');
   const { activateEnrollment } = useActivateEnrollment();
   const { terminateEnrollment } = useTerminateEnrollment();
+  const { suspendEnrollment } = useSuspendEnrollment();
   const { sendEnrollmentEmail } = useSendEnrollmentEmail();
+  const { updateEnrollmentPlan } = useUpdateEnrollmentPlan();
+
+  const [productQuery, setProductQuery] = useState('');
+  const debouncedSetProductQuery = useMemo(
+    () => deBounce(200)(setProductQuery),
+    [],
+  );
+  const { products: planProducts, loading: productsLoading } = useProducts({
+    queryString: productQuery,
+    limit: 20,
+    sort: [{ key: 'created', value: ISortDirection.Desc }],
+    types: [IProductType.PlanProduct],
+  });
+
+  const planProductOptions = useMemo(
+    () =>
+      (planProducts || []).map((p: any) => ({
+        value: p._id,
+        label: p.texts?.title || p._id,
+      })),
+    [planProducts],
+  );
 
   if (!enrollment) return null;
 
@@ -143,6 +180,86 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
     );
   };
 
+  const onSuspendEnrollment = async () => {
+    await setModal(
+      <AlertMessage
+        buttonText={formatMessage({
+          id: 'suspend_button',
+          defaultMessage: 'Suspend',
+        })}
+        headerText={formatMessage({
+          id: 'suspend_header',
+          defaultMessage: 'Suspend subscription.',
+        })}
+        message={formatMessage({
+          id: 'suspend_confirmation',
+          defaultMessage:
+            'Are you sure you want to suspend this subscription? No new orders will be generated until it is resumed.',
+        })}
+        onOkClick={async () => {
+          setModal('');
+          await suspendEnrollment({ enrollmentId: enrollment?._id });
+          toast.success(
+            formatMessage({
+              id: 'suspend_success',
+              defaultMessage: 'Subscription suspended successfully.',
+            }),
+          );
+        }}
+      />,
+    );
+  };
+
+  const onChangePlan = async (option: { value: string; label: string }) => {
+    if (!option) return;
+    await setModal(
+      <AlertMessage
+        buttonText={formatMessage({
+          id: 'change_plan_button',
+          defaultMessage: 'Change Plan',
+        })}
+        headerText={formatMessage({
+          id: 'change_plan_header',
+          defaultMessage: 'Change subscription plan',
+        })}
+        message={formatMessage(
+          {
+            id: 'change_plan_confirmation',
+            defaultMessage:
+              'Change the plan to "{plan}"? Future periods will be regenerated.',
+          },
+          { plan: option.label },
+        )}
+        onOkClick={async () => {
+          setModal('');
+          try {
+            await updateEnrollmentPlan({
+              enrollmentId: enrollment._id,
+              plan: {
+                productId: option.value,
+                quantity: enrollment.plan?.quantity || 1,
+              },
+            });
+            toast.success(
+              formatMessage({
+                id: 'change_plan_success',
+                defaultMessage: 'Plan changed successfully.',
+              }),
+            );
+          } catch (e: any) {
+            toast.error(e.message || 'Plan change failed');
+          }
+        }}
+      />,
+    );
+  };
+
+  const canChangePlan =
+    enrollment.status !== IEnrollmentStatus.Initial &&
+    enrollment.status !== IEnrollmentStatus.Terminated &&
+    enrollment.status !== IEnrollmentStatus.Suspended &&
+    hasRole(IRoleAction.UpdateEnrollment);
+
   const timeline = {
     INITIAL: {
       id: 1,
@@ -153,12 +270,39 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
       id: 2,
       content: 'updated',
       visible: true,
+      Component: enrollment?.status === IEnrollmentStatus.Active &&
+        hasRole(IRoleAction.UpdateEnrollment) && (
+          <Button
+            text={formatMessage({
+              id: 'suspend',
+              defaultMessage: 'Suspend',
+            })}
+            onClick={onSuspendEnrollment}
+            className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-blue-500 bg-blue-500 px-2 py-1 text-base font-medium text-white hover:bg-blue-700 focus:outline-hidden focus:ring-0"
+          />
+        ),
     },
-    PAUSED: {
+    SUSPENDED: {
       id: 3,
       content: 'updated',
       visible: true,
-      Component: enrollment?.status === 'PAUSED' &&
+      Component: enrollment?.status === IEnrollmentStatus.Suspended &&
+        hasRole(IRoleAction.UpdateEnrollment) && (
+          <Button
+            text={formatMessage({
+              id: 'resume',
+              defaultMessage: 'Resume',
+            })}
+            onClick={onActivateEnrollment}
+            className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-slate-900 dark:border-slate-600 bg-slate-800 dark:bg-slate-600 px-2 py-1 text-base font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500 focus:outline-hidden focus:ring-0"
+          />
+        ),
+    },
+    PAUSED: {
+      id: 4,
+      content: 'updated',
+      visible: true,
+      Component: enrollment?.status === IEnrollmentStatus.Paused &&
         hasRole(IRoleAction.UpdateEnrollment) && (
           <Button
             text={formatMessage({
@@ -166,15 +310,15 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
               defaultMessage: 'Activate',
             })}
             onClick={onActivateEnrollment}
-            className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-slate-900 dark:border-slate-600 bg-slate-800 dark:bg-slate-600 px-2 py-1 text-base font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500  dark:focus:border-slate-400 focus:outline-hidden focus:ring-0 focus:ring-slate-800 dark:focus:ring-slate-400"
+            className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-slate-900 dark:border-slate-600 bg-slate-800 dark:bg-slate-600 px-2 py-1 text-base font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500 focus:outline-hidden focus:ring-0"
           />
         ),
     },
     TERMINATED: {
-      id: 4,
+      id: 5,
       content: 'updated',
       visible: true,
-      Component: enrollment?.status !== 'TERMINATED' &&
+      Component: enrollment?.status !== IEnrollmentStatus.Terminated &&
         hasRole(IRoleAction.UpdateEnrollment) && (
           <Button
             text={formatMessage({
@@ -206,6 +350,40 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
   return (
     <>
       <EnrollmentDetailHeader enrollment={enrollment} />
+      {enrollment?.requestedTerminationDate &&
+        enrollment?.status !== IEnrollmentStatus.Terminated && (
+          <div className="my-2 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+            {formatMessage(
+              {
+                id: 'scheduled_termination',
+                defaultMessage: 'Termination scheduled for {date}',
+              },
+              {
+                date: formatDateTime(enrollment.requestedTerminationDate, {
+                  dateStyle: 'full',
+                  timeStyle: 'short',
+                }),
+              },
+            )}
+          </div>
+        )}
+      {enrollment?.minimumCommitmentEnd &&
+        enrollment?.status !== IEnrollmentStatus.Terminated && (
+          <div className="my-2 rounded-md border border-blue-300 bg-blue-50 p-3 text-sm text-blue-800">
+            {formatMessage(
+              {
+                id: 'minimum_commitment',
+                defaultMessage: 'Minimum commitment until {date}',
+              },
+              {
+                date: formatDateTime(enrollment.minimumCommitmentEnd, {
+                  dateStyle: 'full',
+                  timeStyle: 'short',
+                }),
+              },
+            )}
+          </div>
+        )}
       <StatusProgress
         data={enrollment}
         statusTypes={enrollmentStatusTypes}
@@ -247,6 +425,29 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
                   </dd>
                 </div>
               </div>
+
+              {canChangePlan && (
+                <div className="flex-auto border-t border-slate-300 dark:border-slate-800 pt-4 lg:col-span-6 lg:border-0">
+                  <dt className="font-medium text-slate-900 mb-2">
+                    {formatMessage({
+                      id: 'change_plan',
+                      defaultMessage: 'Change Plan',
+                    })}
+                  </dt>
+                  <UnchainedSelect
+                    name="planProductId"
+                    placeholder={formatMessage({
+                      id: 'search_plan_product',
+                      defaultMessage: 'Search plan product...',
+                    })}
+                    isLoading={productsLoading}
+                    onChange={onChangePlan}
+                    onInputChange={debouncedSetProductQuery}
+                    options={planProductOptions}
+                    className="w-full text-sm"
+                  />
+                </div>
+              )}
 
               <div className="flex-auto border-t border-slate-300 dark:border-slate-800 pt-4 lg:col-span-6 lg:border-0">
                 <JSONView

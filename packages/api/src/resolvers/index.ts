@@ -5,10 +5,16 @@ import {
   GraphQLDate,
   GraphQLLocale,
 } from 'graphql-scalars';
+import { GraphQLScalarType } from 'graphql';
 import Query from './queries/index.ts';
 import Mutation from './mutations/index.ts';
 import Types from './type/index.ts';
 import CustomScalars from './scalars/index.ts';
+
+const GraphQLDateTime = new GraphQLScalarType({
+  ...GraphQLDateTimeISO.toConfig(),
+  name: 'DateTime',
+});
 
 export default {
   ...Types,
@@ -16,7 +22,7 @@ export default {
   JSON: GraphQLJSON,
   Query,
   Mutation,
-  DateTime: GraphQLDateTimeISO,
+  DateTime: GraphQLDateTime,
   Date: GraphQLDate,
   Timestamp: GraphQLTimestamp,
   Locale: GraphQLLocale,

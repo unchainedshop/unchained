@@ -1,8 +1,17 @@
 import { log } from '@unchainedshop/logger';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
+import { ProductStatus, ProductType } from '@unchainedshop/core-products';
 import type { Context } from '../../../context.ts';
 import type { EnrollmentPlan, Enrollment } from '@unchainedshop/core-enrollments';
-import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.ts';
+import {
+  EnrollmentNotFoundError,
+  EnrollmentWrongStatusError,
+  EnrollmentPlanChangeNotSupportedError,
+  InvalidIdError,
+  ProductNotFoundError,
+  ProductWrongStatusError,
+  ProductWrongTypeError,
+} from '../../../errors.ts';
 import type { Address, Contact } from '@unchainedshop/mongodb';
 
 interface UpdateEnrollmentParams {
@@ -13,6 +22,8 @@ interface UpdateEnrollmentParams {
   payment?: Enrollment['payment'];
   delivery?: Enrollment['delivery'];
   meta?: any;
+  expires?: Date;
+  cancelAtPeriodEnd?: boolean;
 }
 export default async function updateEnrollment(
   root: never,
@@ -20,7 +31,17 @@ export default async function updateEnrollment(
   context: Context,
 ) {
   const { modules, services, userId } = context;
-  const { billingAddress, contact, delivery, enrollmentId, meta, payment, plan } = params;
+  const {
+    billingAddress,
+    contact,
+    delivery,
+    enrollmentId,
+    meta,
+    payment,
+    plan,
+    expires,
+    cancelAtPeriodEnd,
+  } = params;
 
   log('mutation updateEnrollment', { userId });
 
@@ -34,6 +55,10 @@ export default async function updateEnrollment(
   }
 
   if (enrollment.status === EnrollmentStatus.TERMINATED) {
+    throw new EnrollmentWrongStatusError({ status: enrollment.status });
+  }
+
+  if (plan && enrollment.status === EnrollmentStatus.SUSPENDED) {
     throw new EnrollmentWrongStatusError({ status: enrollment.status });
   }
 
@@ -60,15 +85,52 @@ export default async function updateEnrollment(
     enrollment = (await modules.enrollments.updateDelivery(enrollmentId, delivery)) as Enrollment;
   }
 
-  if (plan) {
-    if (enrollment.status !== EnrollmentStatus.INITIAL) {
-      // If Enrollment is not initial, forcefully add a new Period that OVERLAPS the existing periods
-      throw new Error(
-        'TODO: Unchained currently does not support order splitting for enrollments, therefore updates to quantity, product and configuration of a enrollment is forbidden for non initial enrollments',
-      );
+  if (expires !== undefined) {
+    enrollment = (await modules.enrollments.updateExpiry(enrollmentId, expires)) as Enrollment;
+  }
+
+  if (cancelAtPeriodEnd !== undefined) {
+    if (cancelAtPeriodEnd) {
+      const now = Date.now();
+      const currentPeriod = enrollment.periods?.find((p) => {
+        return new Date(p.start).getTime() <= now && new Date(p.end).getTime() >= now;
+      });
+      const terminationDate = currentPeriod ? new Date(currentPeriod.end) : new Date();
+      enrollment = (await modules.enrollments.updateRequestedTerminationDate(
+        enrollmentId,
+        terminationDate,
+      )) as Enrollment;
+    } else {
+      enrollment = (await modules.enrollments.updateRequestedTerminationDate(
+        enrollmentId,
+        null,
+      )) as Enrollment;
     }
-    enrollment = (await modules.enrollments.updatePlan(enrollmentId, plan)) as Enrollment;
-    enrollment = await services.enrollments.initializeEnrollment(enrollment, { reason: 'updated_plan' });
+  }
+
+  if (plan) {
+    const planProduct = await modules.products.findProduct({ productId: plan.productId });
+    if (!planProduct) throw new ProductNotFoundError({ productId: plan.productId });
+    if (planProduct.status !== ProductStatus.ACTIVE)
+      throw new ProductWrongStatusError({ status: planProduct.status });
+    if (planProduct.type !== ProductType.PLAN_PRODUCT)
+      throw new ProductWrongTypeError({ type: planProduct.type });
+
+    if (enrollment.status !== EnrollmentStatus.INITIAL) {
+      try {
+        enrollment = await services.enrollments.updateEnrollmentPlan(enrollment, { plan });
+      } catch (e) {
+        if (e.message === 'Plan change is not supported for this enrollment') {
+          throw new EnrollmentPlanChangeNotSupportedError({ enrollmentId });
+        }
+        throw e;
+      }
+    } else {
+      enrollment = (await modules.enrollments.updatePlan(enrollmentId, plan)) as Enrollment;
+      enrollment = await services.enrollments.initializeEnrollment(enrollment, {
+        reason: 'updated_plan',
+      });
+    }
   }
 
   return enrollment;

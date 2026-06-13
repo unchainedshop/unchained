@@ -19,8 +19,11 @@ import '@unchainedshop/plugins/worker/enrollment-order-generator';
 
 This worker processes enrollments (subscriptions) and:
 
-- Checks all `ACTIVE` and `PAUSED` enrollments
+- Checks all `ACTIVE`, `PAUSED`, and `SUSPENDED` enrollments
+- Processes each enrollment's status (handles scheduled terminations, expiry checks)
+- Skips order generation for `TERMINATED` and `SUSPENDED` enrollments
 - Determines if a new period should begin using the Enrollment Director
+- Skips periods that start after the enrollment's `expires` date
 - Creates trial periods without orders
 - Generates orders for billable periods
 - Tracks periods on the enrollment
@@ -55,14 +58,18 @@ mutation GenerateEnrollmentOrders {
 
 ## How It Works
 
-1. **Find Enrollments**: Queries all enrollments with status `ACTIVE` or `PAUSED`
-2. **Check Period**: Uses the Enrollment Director to determine if a new period should start
-3. **Trial Periods**: If the period is a trial, adds the period without creating an order
-4. **Order Generation**: For billable periods:
+1. **Find Enrollments**: Queries all enrollments with status `ACTIVE`, `PAUSED`, or `SUSPENDED`
+2. **Process Status**: Runs `processEnrollment` on each enrollment to handle scheduled terminations and expiry
+3. **Skip Inactive**: Enrollments that are now `TERMINATED` or `SUSPENDED` after processing are skipped
+4. **Check Period**: Uses the Enrollment Director to determine if a new period should start
+5. **Expiry Check**: Skips periods where the start date is at or after the enrollment's `expires` date
+6. **Trial Periods**: If the period is a trial, adds the period without creating an order. If the trial ends within 3 days, emits an `ENROLLMENT_TRIAL_ENDING` event for notification purposes.
+7. **Auto-Resume**: Suspended enrollments with a past `resumeAt` date are automatically resumed to `ACTIVE` during status processing (step 2).
+8. **Order Generation**: For billable periods:
    - Gets configuration from the director
    - Creates an order using the enrollment service
    - Links the order to the enrollment period
-5. **Error Handling**: Collects errors for all enrollments and reports them in the result
+8. **Error Handling**: Collects errors for all enrollments and reports them in the result
 
 ## Result
 
