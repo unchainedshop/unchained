@@ -1,4 +1,5 @@
 import { type Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
+import { emit } from '@unchainedshop/events';
 import type { Modules } from '../modules.ts';
 import { addMessageService } from './addMessage.ts';
 
@@ -14,6 +15,8 @@ export async function suspendEnrollmentService(this: Modules, enrollment: Enroll
     status: EnrollmentStatus.SUSPENDED,
     info: 'suspended manually',
   })) as Enrollment;
+
+  await emit('ENROLLMENT_SUSPEND', { enrollment: updatedEnrollment });
 
   const user = await this.users.findUserById(enrollment.userId);
   const locale = this.users.userLocale(user);

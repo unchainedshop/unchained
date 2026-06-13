@@ -106,6 +106,41 @@ export const SuspendedEnrollment = {
   quantity: 1,
 };
 
+export const PausedEnrollment = {
+  _id: 'pausedenrollment',
+  status: 'PAUSED',
+  created: new Date(),
+  expires: new Date('2030/09/10'),
+  enrollmentNumber: 'RANDOM-paused',
+  userId: 'admin',
+  productId: PlanProduct._id,
+  periods: [
+    {
+      orderId: SimpleOrder._id,
+      start: new Date(),
+      end: new Date('2030/09/10'),
+      isTrial: false,
+    },
+  ],
+  countryCode: 'ch',
+  currencyCode: 'CHF',
+  quantity: 1,
+};
+
+export const InitialEnrollmentForSuspendTest = {
+  _id: 'initialenrollment-suspend-test',
+  status: 'INITIAL',
+  created: new Date(),
+  expires: new Date('2030/09/10'),
+  enrollmentNumber: 'RANDOM-initial-suspend',
+  userId: 'admin',
+  productId: PlanProduct._id,
+  periods: [],
+  countryCode: 'ch',
+  currencyCode: 'CHF',
+  quantity: 1,
+};
+
 export const ScheduledTerminationEnrollment = {
   _id: 'scheduledterminationenrollment',
   status: 'ACTIVE',
@@ -140,6 +175,8 @@ export const AllEnrollmentIds = [
   expiredEnrollment._id,
   InitialEnrollmentWithWrongPlan._id,
   SuspendedEnrollment._id,
+  PausedEnrollment._id,
+  InitialEnrollmentForSuspendTest._id,
   ScheduledTerminationEnrollment._id,
   TerminatedEnrollment._id,
 ];
@@ -150,6 +187,8 @@ export default async function seedEnrollment(db) {
   await db.collection('enrollments').findOrInsertOne(InitialEnrollmentWithWrongPlan);
   await db.collection('enrollments').findOrInsertOne(expiredEnrollment);
   await db.collection('enrollments').findOrInsertOne(SuspendedEnrollment);
+  await db.collection('enrollments').findOrInsertOne(PausedEnrollment);
+  await db.collection('enrollments').findOrInsertOne(InitialEnrollmentForSuspendTest);
   await db.collection('enrollments').findOrInsertOne(ScheduledTerminationEnrollment);
   await db.collection('enrollments').findOrInsertOne(TerminatedEnrollment);
 }
