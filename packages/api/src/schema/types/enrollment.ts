@@ -71,6 +71,8 @@ export default [
       expires: DateTime
       requestedTerminationDate: DateTime
       resumeAt: DateTime
+      contractStartDate: DateTime
+      minimumCommitmentEnd: DateTime
       cancellationReason: EnrollmentTerminationReason
       cancellationComment: String
       isExpired(referenceDate: Timestamp): Boolean

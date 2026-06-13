@@ -13,6 +13,7 @@ import {
   convertSortFieldsToQueryFormat,
   normalizeQuery,
 } from '../../modules/common/utils/utils';
+import { extractQuery } from '../../modules/common/utils/normalizeFilterKeys';
 
 import useStatusTypes from '../../modules/common/hooks/useStatusTypes';
 import StatusFilter from '../../modules/common/components/StatusFilter';
@@ -46,6 +47,7 @@ const EnrollmentListView = () => {
   };
 
   const sortKeys = convertSortFieldsToQueryFormat(sort);
+  const appliedStatuses = extractQuery(query?.status);
 
   const { enrollments, enrollmentsCount, loading, loadMore, hasMore } =
     useEnrollments({
@@ -53,7 +55,7 @@ const EnrollmentListView = () => {
       limit,
       offset,
       sort: sortKeys,
-      status: (query?.status as string)?.split(','),
+      status: appliedStatuses.length ? appliedStatuses : null,
       forceLocale: selectedLocale,
     });
 
@@ -112,7 +114,7 @@ const EnrollmentListView = () => {
           <StatusFilter
             statuses={ENROLLMENT_STATUS}
             onStatusChange={onStatusChange}
-            selectedStatuses={query?.status}
+            selectedStatuses={appliedStatuses}
           />
         </div>
       </div>

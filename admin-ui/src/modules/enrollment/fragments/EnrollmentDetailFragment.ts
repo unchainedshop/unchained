@@ -13,6 +13,8 @@ const EnrollmentDetailFragment = gql`
     created
     expires
     requestedTerminationDate
+    contractStartDate
+    minimumCommitmentEnd
     billingAddress {
       addressLine
       addressLine2

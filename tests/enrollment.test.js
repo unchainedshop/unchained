@@ -16,8 +16,9 @@ import {
   SuspendedEnrollment,
   PausedEnrollment,
   ActiveEnrollmentForCancelAtPeriodEnd,
+  CommitmentEnrollment,
 } from './seeds/enrollments.js';
-import { SimpleProduct, DraftPlanProduct } from './seeds/products.js';
+import { SimpleProduct, DraftPlanProduct, CommitmentPlanProduct } from './seeds/products.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -1631,6 +1632,88 @@ test.describe('Enrollments', () => {
       });
       assert.strictEqual(enrollment.cancellationReason, 'USER_REQUESTED');
       assert.strictEqual(enrollment.cancellationComment, 'Too expensive for my needs');
+    });
+  });
+
+  test.describe('Contract terms and minimum commitments', () => {
+    test('query commitment enrollment shows contractStartDate and minimumCommitmentEnd', async () => {
+      const {
+        data: { enrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query enrollment($enrollmentId: ID!) {
+            enrollment(enrollmentId: $enrollmentId) {
+              _id
+              contractStartDate
+              minimumCommitmentEnd
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: CommitmentEnrollment._id,
+        },
+      });
+      assert.ok(enrollment.contractStartDate);
+      assert.ok(enrollment.minimumCommitmentEnd);
+    });
+
+    test('terminating commitment enrollment schedules termination at commitment end', async () => {
+      const {
+        data: { terminateEnrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation terminateEnrollment($enrollmentId: ID!) {
+            terminateEnrollment(enrollmentId: $enrollmentId) {
+              _id
+              status
+              requestedTerminationDate
+              minimumCommitmentEnd
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: CommitmentEnrollment._id,
+        },
+      });
+      assert.ok(terminateEnrollment.requestedTerminationDate);
+      const terminationDate = new Date(terminateEnrollment.requestedTerminationDate);
+      const commitmentEnd = new Date(terminateEnrollment.minimumCommitmentEnd);
+      assert.ok(
+        terminationDate.getTime() >= commitmentEnd.getTime(),
+        'Termination date should be at or after the minimum commitment end',
+      );
+    });
+
+    test('updateProductPlan with minimumCommitmentPeriods persists the value', async () => {
+      const {
+        data: { updateProductPlan },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation updateProductPlan($productId: ID!, $plan: UpdateProductPlanInput!) {
+            updateProductPlan(productId: $productId, plan: $plan) {
+              _id
+              ... on PlanProduct {
+                plan {
+                  minimumCommitmentPeriods
+                  billingInterval
+                  billingIntervalCount
+                  usageCalculationType
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: CommitmentPlanProduct._id,
+          plan: {
+            usageCalculationType: 'LICENSED',
+            billingInterval: 'MONTHS',
+            billingIntervalCount: 1,
+            minimumCommitmentPeriods: 6,
+          },
+        },
+      });
+      assert.strictEqual(updateProductPlan.plan.minimumCommitmentPeriods, 6);
     });
   });
 });
