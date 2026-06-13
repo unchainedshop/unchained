@@ -145,7 +145,7 @@ export const ScheduledTerminationEnrollment = {
   _id: 'scheduledterminationenrollment',
   status: 'ACTIVE',
   created: new Date(),
-  requestedTerminationDate: new Date('2025/01/01'),
+  requestedTerminationDate: new Date('2030/01/01'),
   enrollmentNumber: 'RANDOM-scheduled',
   userId: 'admin',
   productId: PlanProduct._id,
@@ -153,7 +153,7 @@ export const ScheduledTerminationEnrollment = {
     {
       orderId: SimpleOrder._id,
       start: new Date('2024/01/01'),
-      end: new Date('2025/01/01'),
+      end: new Date('2030/01/01'),
       isTrial: false,
     },
   ],

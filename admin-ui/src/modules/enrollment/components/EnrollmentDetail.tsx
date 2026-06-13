@@ -23,7 +23,13 @@ import DangerMessage from '../../modal/components/DangerMessage';
 import EnrollmentDetailHeader from './EnrollmentDetailHeader';
 import JSONView from '@/components/ui/JSONView';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import { IEnrollment, IRoleAction, ISortDirection } from '../../../gql/types';
+import {
+  IEnrollment,
+  IEnrollmentStatus,
+  IProductType,
+  IRoleAction,
+  ISortDirection,
+} from '../../../gql/types';
 import useAuth from '../../Auth/useAuth';
 import useProducts from '../../product/hooks/useProducts';
 import UnchainedSelect from '../../common/components/UnchainedSelect';
@@ -52,16 +58,15 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
     queryString: productQuery,
     limit: 20,
     sort: [{ key: 'created', value: ISortDirection.Desc }],
+    types: [IProductType.PlanProduct],
   });
 
   const planProductOptions = useMemo(
     () =>
-      (planProducts || [])
-        .filter((p: any) => p.__typename === 'PlanProduct')
-        .map((p: any) => ({
-          value: p._id,
-          label: p.texts?.title || p._id,
-        })),
+      (planProducts || []).map((p: any) => ({
+        value: p._id,
+        label: p.texts?.title || p._id,
+      })),
     [planProducts],
   );
 
@@ -250,8 +255,9 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
   };
 
   const canChangePlan =
-    enrollment.status !== 'INITIAL' &&
-    enrollment.status !== 'TERMINATED' &&
+    enrollment.status !== IEnrollmentStatus.Initial &&
+    enrollment.status !== IEnrollmentStatus.Terminated &&
+    enrollment.status !== IEnrollmentStatus.Suspended &&
     hasRole(IRoleAction.UpdateEnrollment);
 
   const timeline = {
@@ -264,7 +270,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
       id: 2,
       content: 'updated',
       visible: true,
-      Component: enrollment?.status === 'ACTIVE' &&
+      Component: enrollment?.status === IEnrollmentStatus.Active &&
         hasRole(IRoleAction.UpdateEnrollment) && (
           <Button
             text={formatMessage({
@@ -280,7 +286,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
       id: 3,
       content: 'updated',
       visible: true,
-      Component: enrollment?.status === 'SUSPENDED' &&
+      Component: enrollment?.status === IEnrollmentStatus.Suspended &&
         hasRole(IRoleAction.UpdateEnrollment) && (
           <Button
             text={formatMessage({
@@ -296,7 +302,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
       id: 4,
       content: 'updated',
       visible: true,
-      Component: enrollment?.status === 'PAUSED' &&
+      Component: enrollment?.status === IEnrollmentStatus.Paused &&
         hasRole(IRoleAction.UpdateEnrollment) && (
           <Button
             text={formatMessage({
@@ -312,7 +318,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
       id: 5,
       content: 'updated',
       visible: true,
-      Component: enrollment?.status !== 'TERMINATED' &&
+      Component: enrollment?.status !== IEnrollmentStatus.Terminated &&
         hasRole(IRoleAction.UpdateEnrollment) && (
           <Button
             text={formatMessage({
@@ -345,7 +351,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
     <>
       <EnrollmentDetailHeader enrollment={enrollment} />
       {enrollment?.requestedTerminationDate &&
-        enrollment?.status !== 'TERMINATED' && (
+        enrollment?.status !== IEnrollmentStatus.Terminated && (
           <div className="my-2 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
             {formatMessage(
               {
