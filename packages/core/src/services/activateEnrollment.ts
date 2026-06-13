@@ -1,4 +1,5 @@
 import { type Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
+import { emit } from '@unchainedshop/events';
 import type { Modules } from '../modules.ts';
 import { processEnrollmentService } from './processEnrollment.ts';
 import { addMessageService } from './addMessage.ts';
@@ -18,6 +19,10 @@ export async function activateEnrollmentService(this: Modules, enrollment: Enrol
     status: EnrollmentStatus.ACTIVE,
     info,
   })) as Enrollment;
+
+  if (isResume) {
+    await emit('ENROLLMENT_RESUME', { enrollment: updatedEnrollment });
+  }
 
   updatedEnrollment = (await processEnrollmentService.bind(this)(updatedEnrollment)) as Enrollment;
 

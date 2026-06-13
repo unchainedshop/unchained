@@ -1,5 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
+import { ProductStatus, ProductType } from '@unchainedshop/core-products';
 import type { Context } from '../../../context.ts';
 import type { EnrollmentPlan, Enrollment } from '@unchainedshop/core-enrollments';
 import {
@@ -7,6 +8,9 @@ import {
   EnrollmentWrongStatusError,
   EnrollmentPlanChangeNotSupportedError,
   InvalidIdError,
+  ProductNotFoundError,
+  ProductWrongStatusError,
+  ProductWrongTypeError,
 } from '../../../errors.ts';
 import type { Address, Contact } from '@unchainedshop/mongodb';
 
@@ -71,6 +75,13 @@ export default async function updateEnrollment(
   }
 
   if (plan) {
+    const planProduct = await modules.products.findProduct({ productId: plan.productId });
+    if (!planProduct) throw new ProductNotFoundError({ productId: plan.productId });
+    if (planProduct.status !== ProductStatus.ACTIVE)
+      throw new ProductWrongStatusError({ status: planProduct.status });
+    if (planProduct.type !== ProductType.PLAN_PRODUCT)
+      throw new ProductWrongTypeError({ type: planProduct.type });
+
     if (enrollment.status !== EnrollmentStatus.INITIAL) {
       try {
         enrollment = await services.enrollments.updateEnrollmentPlan(enrollment, { plan });
