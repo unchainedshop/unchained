@@ -25,12 +25,10 @@ export async function initializeEnrollmentService(
   if (periods.length > 0) {
     const [firstPeriod, ...remainingPeriods] = periods;
 
-    if (params.orderIdForFirstPeriod || firstPeriod.isTrial) {
-      updatedEnrollment = (await this.enrollments.addEnrollmentPeriod(enrollment._id, {
-        ...firstPeriod,
-        orderId: params.orderIdForFirstPeriod,
-      })) as Enrollment;
-    }
+    updatedEnrollment = (await this.enrollments.addEnrollmentPeriod(enrollment._id, {
+      ...firstPeriod,
+      orderId: params.orderIdForFirstPeriod,
+    })) as Enrollment;
 
     if (remainingPeriods.length > 0) {
       updatedEnrollment = (await this.enrollments.addEnrollmentPeriods(
