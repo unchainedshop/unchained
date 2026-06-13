@@ -1,5 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { EnrollmentNotFoundError, InvalidIdError } from '../../../errors.ts';
+import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
+import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.ts';
 import type { Context } from '../../../context.ts';
 
 export default async function suspendEnrollment(
@@ -15,6 +16,14 @@ export default async function suspendEnrollment(
     enrollmentId,
   });
   if (!enrollment) throw new EnrollmentNotFoundError({ enrollmentId });
+
+  if (
+    enrollment.status === EnrollmentStatus.TERMINATED ||
+    enrollment.status === EnrollmentStatus.INITIAL ||
+    enrollment.status === EnrollmentStatus.SUSPENDED
+  ) {
+    throw new EnrollmentWrongStatusError({ status: enrollment.status });
+  }
 
   return services.enrollments.suspendEnrollment(enrollment);
 }
