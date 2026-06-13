@@ -1,4 +1,5 @@
 import type { Enrollment, EnrollmentPlan } from '@unchainedshop/core-enrollments';
+import { emit } from '@unchainedshop/events';
 import { EnrollmentDirector } from '../core-index.ts';
 import { processEnrollmentService } from './processEnrollment.ts';
 import { addMessageService } from './addMessage.ts';
@@ -55,6 +56,8 @@ export async function updateEnrollmentPlanService(
   }
 
   updatedEnrollment = await processEnrollmentService.bind(this)(updatedEnrollment);
+
+  await emit('ENROLLMENT_PLAN_CHANGE', { enrollment: updatedEnrollment });
 
   const user = await this.users.findUserById(enrollment.userId);
   const locale = this.users.userLocale(user);
