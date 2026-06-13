@@ -1,10 +1,18 @@
-import { type Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
+import {
+  type Enrollment,
+  type EnrollmentTerminationReason,
+  EnrollmentStatus,
+} from '@unchainedshop/core-enrollments';
 import { processEnrollmentService } from './processEnrollment.ts';
 import { addMessageService } from './addMessage.ts';
 import { EnrollmentDirector } from '../core-index.ts';
 import type { Modules } from '../modules.ts';
 
-export async function terminateEnrollmentService(this: Modules, enrollment: Enrollment) {
+export async function terminateEnrollmentService(
+  this: Modules,
+  enrollment: Enrollment,
+  params?: { reason?: EnrollmentTerminationReason; comment?: string },
+) {
   if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;
 
   const product = await this.products.findProduct({ productId: enrollment.productId });
@@ -15,6 +23,13 @@ export async function terminateEnrollmentService(this: Modules, enrollment: Enro
 
   if (terminationDate === null) {
     throw new Error('Enrollment termination is not allowed at this time');
+  }
+
+  if (params?.reason || params?.comment) {
+    await this.enrollments.updateCancellation(enrollment._id, {
+      reason: params.reason,
+      comment: params.comment,
+    });
   }
 
   const now = new Date();

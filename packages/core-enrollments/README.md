@@ -63,6 +63,8 @@ const enrollments = await enrollmentsModule.findEnrollments({
 | `updatePlan` | Change the enrollment's product plan |
 | `updateExpiry` | Set or update the enrollment's expiry date |
 | `updateRequestedTerminationDate` | Set or clear a scheduled termination date |
+| `updateResumeAt` | Set or clear a scheduled resume date |
+| `updateCancellation` | Store cancellation reason and comment |
 
 ### Period Management
 
@@ -85,6 +87,7 @@ const enrollments = await enrollmentsModule.findEnrollments({
 | Export | Description |
 |--------|-------------|
 | `EnrollmentStatus` | Status values (INITIAL, ACTIVE, PAUSED, SUSPENDED, TERMINATED) |
+| `EnrollmentTerminationReason` | Cancellation reason values (USER_REQUESTED, PAYMENT_FAILED, EXPIRED, ADMIN_ACTION, OTHER) |
 
 ### Settings
 
@@ -112,6 +115,7 @@ const enrollments = await enrollmentsModule.findEnrollments({
 | `ENROLLMENT_SUSPEND` | Enrollment suspended |
 | `ENROLLMENT_RESUME` | Suspended enrollment resumed |
 | `ENROLLMENT_PLAN_CHANGE` | Enrollment plan changed |
+| `ENROLLMENT_TRIAL_ENDING` | Trial period ending within 3 days |
 
 ## License
 
