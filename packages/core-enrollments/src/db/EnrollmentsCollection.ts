@@ -27,6 +27,17 @@ export const EnrollmentStatus = {
   TERMINATED: 'TERMINATED',
 } as const;
 
+export const EnrollmentTerminationReason = {
+  USER_REQUESTED: 'USER_REQUESTED',
+  PAYMENT_FAILED: 'PAYMENT_FAILED',
+  EXPIRED: 'EXPIRED',
+  ADMIN_ACTION: 'ADMIN_ACTION',
+  OTHER: 'OTHER',
+} as const;
+
+export type EnrollmentTerminationReason =
+  (typeof EnrollmentTerminationReason)[keyof typeof EnrollmentTerminationReason];
+
 export type EnrollmentStatus = (typeof EnrollmentStatus)[keyof typeof EnrollmentStatus];
 
 export interface EnrollmentOrderPositionTemplate {
@@ -54,6 +65,9 @@ export type Enrollment = {
   orderIdForFirstPeriod?: string;
   expires?: Date;
   requestedTerminationDate?: Date;
+  resumeAt?: Date;
+  cancellationReason?: EnrollmentTerminationReason;
+  cancellationComment?: string;
   meta?: any;
   payment?: {
     paymentProviderId: string;
