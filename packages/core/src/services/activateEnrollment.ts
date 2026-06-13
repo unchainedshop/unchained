@@ -6,7 +6,7 @@ import { addMessageService } from './addMessage.ts';
 
 export async function activateEnrollmentService(this: Modules, enrollment: Enrollment) {
   if (enrollment.status === EnrollmentStatus.TERMINATED || enrollment.status === EnrollmentStatus.ACTIVE)
-    return enrollment;
+    throw new Error(`Cannot activate enrollment with status ${enrollment.status}`);
 
   const isResume = enrollment.status === EnrollmentStatus.SUSPENDED;
   const info = isResume ? 'resumed from suspension' : 'activated manually';

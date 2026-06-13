@@ -47,6 +47,10 @@ export default async function updateEnrollment(
     throw new EnrollmentWrongStatusError({ status: enrollment.status });
   }
 
+  if (plan && enrollment.status === EnrollmentStatus.SUSPENDED) {
+    throw new EnrollmentWrongStatusError({ status: enrollment.status });
+  }
+
   if (meta) {
     enrollment = (await modules.enrollments.updateContext(enrollmentId, meta)) as Enrollment;
   }

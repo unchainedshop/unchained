@@ -9,7 +9,7 @@ export async function suspendEnrollmentService(this: Modules, enrollment: Enroll
     enrollment.status === EnrollmentStatus.INITIAL ||
     enrollment.status === EnrollmentStatus.SUSPENDED
   )
-    return enrollment;
+    throw new Error(`Cannot suspend enrollment with status ${enrollment.status}`);
 
   const updatedEnrollment = (await this.enrollments.updateStatus(enrollment._id, {
     status: EnrollmentStatus.SUSPENDED,
