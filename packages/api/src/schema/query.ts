@@ -49,6 +49,7 @@ export default [
         slugs: [String!]
         includeDrafts: Boolean = false
         queryString: String
+        types: [ProductType!]
       ): Int! @cacheControl(maxAge: 180)
 
       """
@@ -64,6 +65,7 @@ export default [
         offset: Int = 0
         includeDrafts: Boolean = false
         sort: [SortOptionInput!]
+        types: [ProductType!]
       ): [Product!]!
 
       """

@@ -16,7 +16,7 @@ import {
   SuspendedEnrollment,
   PausedEnrollment,
 } from './seeds/enrollments.js';
-import { SimpleProduct } from './seeds/products.js';
+import { SimpleProduct, DraftPlanProduct } from './seeds/products.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -1385,6 +1385,107 @@ test.describe('Enrollments', () => {
         },
       });
       assert.strictEqual(errors[0]?.extensions?.code, 'EnrollmentWrongStatusError');
+    });
+  });
+
+  test.describe('Plan change to draft product', () => {
+    test('plan change to a draft PLAN_PRODUCT returns ProductWrongStatusError', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation updateEnrollment($enrollmentId: ID, $plan: EnrollmentPlanInput) {
+            updateEnrollment(enrollmentId: $enrollmentId, plan: $plan) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: ActiveEnrollment._id,
+          plan: {
+            productId: DraftPlanProduct._id,
+            quantity: 1,
+          },
+        },
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'ProductWrongStatusError');
+    });
+  });
+
+  test.describe('Plan change on SUSPENDED enrollment', () => {
+    test('plan change on SUSPENDED enrollment returns EnrollmentWrongStatusError', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation updateEnrollment($enrollmentId: ID, $plan: EnrollmentPlanInput) {
+            updateEnrollment(enrollmentId: $enrollmentId, plan: $plan) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: PausedEnrollment._id,
+          plan: {
+            productId: PlanProduct._id,
+            quantity: 1,
+          },
+        },
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'EnrollmentWrongStatusError');
+    });
+  });
+
+  test.describe('Resume clears requestedTerminationDate', () => {
+    test('activating a SUSPENDED enrollment with requestedTerminationDate clears it', async () => {
+      // First suspend the ScheduledTerminationEnrollment
+      await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation suspendEnrollment($enrollmentId: ID!) {
+            suspendEnrollment(enrollmentId: $enrollmentId) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: ScheduledTerminationEnrollment._id,
+        },
+      });
+
+      // Now resume it via activateEnrollment
+      const {
+        data: { activateEnrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation activateEnrollment($enrollmentId: ID!) {
+            activateEnrollment(enrollmentId: $enrollmentId) {
+              _id
+              status
+              requestedTerminationDate
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: ScheduledTerminationEnrollment._id,
+        },
+      });
+      assert.strictEqual(activateEnrollment.status, 'ACTIVE');
+      assert.strictEqual(activateEnrollment.requestedTerminationDate, null);
+    });
+  });
+
+  test.describe('Mutation.suspendEnrollment for normal user', () => {
+    test('return NoPermissionError', async () => {
+      const { errors } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation suspendEnrollment($enrollmentId: ID!) {
+            suspendEnrollment(enrollmentId: $enrollmentId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: ActiveEnrollment._id,
+        },
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 });
