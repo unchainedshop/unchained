@@ -93,22 +93,47 @@ const PaypalCheckout: IPaymentAdapter = {
         }
 
         try {
-          const request = new checkoutNodeJssdk.orders.OrdersGetRequest(orderID);
           const client = new checkoutNodeJssdk.core.PayPalHttpClient(environment());
-          const paypalOrder = await client.execute(request);
+
+          // Fetch the current state of the PayPal order.
+          const getRequest = new checkoutNodeJssdk.orders.OrdersGetRequest(orderID);
+          let paypalResult = (await client.execute(getRequest)).result;
+
+          // If the buyer approved the order but funds were not captured yet, capture
+          // them server-side now. Never trust the client to have captured: marking an
+          // order PAID must require that money actually moved.
+          if (paypalResult.status === 'APPROVED') {
+            const captureRequest = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderID);
+            captureRequest.requestBody({});
+            paypalResult = (await client.execute(captureRequest)).result;
+          }
+
+          // Only a fully captured order counts as paid. A merely CREATED/APPROVED/VOIDED
+          // order means no settled funds, so it must never confirm the checkout.
+          if (paypalResult.status !== 'COMPLETED') {
+            throw new Error(`PayPal order not completed (status: ${paypalResult.status})`);
+          }
+
+          // Validate against the actual settled capture, not the requested unit amount.
+          const capture = paypalResult.purchase_units?.[0]?.payments?.captures?.find(
+            (c) => c.status === 'COMPLETED',
+          );
+          if (!capture) {
+            throw new Error('PayPal order has no completed capture');
+          }
 
           const pricing = OrderPricingSheet({
             calculation: order.calculation,
             currencyCode: order.currencyCode,
           });
           const ourTotal = roundToDecimals(pricing.total({ useNetPrice: false }).amount / 100, 2);
-          const paypalTotal = roundToDecimals(paypalOrder.result.purchase_units[0].amount.value, 2);
+          const paidTotal = roundToDecimals(capture.amount.value, 2);
 
-          if (ourTotal === paypalTotal) {
+          if (ourTotal === paidTotal && capture.amount.currency_code === order.currencyCode) {
             return order;
           }
 
-          logger.warn('Missmatch PAYPAL ORDER', JSON.stringify(paypalOrder.result, null, 2));
+          logger.warn('Missmatch PAYPAL ORDER', JSON.stringify(paypalResult, null, 2));
 
           logger.debug('OUR ORDER', order);
           logger.debug('OUR PRICE', pricing);

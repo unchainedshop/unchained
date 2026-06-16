@@ -180,6 +180,28 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     return bookmark.userId === userId;
   };
 
+  // createBookmark targets a userId (there is no bookmark entity yet): a user may only
+  // create a bookmark for themselves. Admins bypass via the admin role.
+  const isOwnBookmarkUser = (
+    obj: any,
+    { userId: bookmarkUserId }: { userId?: string },
+    { userId }: Context,
+  ) => {
+    return !bookmarkUserId || bookmarkUserId === userId;
+  };
+
+  // addCartQuotation mutates the caller's cart with another entity (a quotation), so it
+  // must enforce ownership of BOTH the cart (when an orderId is supplied) and the
+  // quotation it consumes.
+  const isOwnedCartAndQuotation = async (
+    obj: any,
+    params: { orderId?: string; quotationId: string },
+    context: Context,
+  ) => {
+    if (!(await isOwnedOrderOrCart(obj, params, context))) return false;
+    return isOwnedQuotation(obj, params, context);
+  };
+
   const isOwnedPaymentCredential = async (
     obj: any,
     { paymentCredentialsId }: { paymentCredentialsId: string },
@@ -232,6 +254,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.updateOrderPayment, isOwnedOrderPayment);
   role.allow(actions.checkoutCart, isOwnedOrderOrCart);
   role.allow(actions.updateCart, isOwnedOrderOrCart);
+  role.allow(actions.addCartQuotation, isOwnedCartAndQuotation);
   role.allow(actions.createCart, () => true);
   role.allow(actions.viewEnrollment, isOwnedEnrollment);
   role.allow(actions.updateEnrollment, isOwnedEnrollment);
@@ -241,6 +264,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.requestQuotation, () => true);
   role.allow(actions.answerQuotation, isOwnedQuotation);
   role.allow(actions.manageBookmarks, isOwnedBookmark);
+  role.allow(actions.createBookmark, isOwnBookmarkUser);
   role.allow(actions.bookmarkProduct, () => true);
   role.allow(actions.voteProductReview, () => true);
   role.allow(actions.changePassword, () => true);

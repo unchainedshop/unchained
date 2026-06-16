@@ -8,6 +8,7 @@ import {
   type mongodb,
   generateDbObjectId,
   insensitiveTrimmedRegexOperator,
+  escapeRegexString,
 } from '@unchainedshop/mongodb';
 import {
   type User,
@@ -820,8 +821,13 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     markDeleted: async (userId: string) => {
+      // Invalidate every active session belonging to the user so that deletion
+      // immediately revokes access. Sessions are stored as serialized JSON in the
+      // `session` field; the owner id appears as `"user":"<id>"` (express/passport)
+      // or `"userId":"<id>"` (fastify). A substring (non-anchored) match is required
+      // because the id is embedded inside the larger serialized session document.
       await db.collection('sessions').deleteMany({
-        session: insensitiveTrimmedRegexOperator(`"user":"${userId}"`),
+        session: { $regex: `"user(Id)?":"${escapeRegexString(userId)}"` },
       });
       const user = await Users.findOneAndUpdate(
         { _id: userId },
