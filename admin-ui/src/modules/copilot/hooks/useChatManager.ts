@@ -16,7 +16,7 @@ function formatFileLink(url: string): string {
     : `[${url.split('/').pop() || 'file'}](${url})`;
 }
 
-export const useChatManager = () => {
+export const useChatManager = (extraBody?: object) => {
   const intl = useIntl();
   const [chatHistory, setChatHistory] = useLocalStorage(
     'copilot-chat-history',
@@ -37,6 +37,7 @@ export const useChatManager = () => {
     transport: new DefaultChatTransport({
       api: process.env.NEXT_PUBLIC_CHAT_URL || '/chat',
       credentials: 'include',
+      body: extraBody,
     }),
     messages: chatHistory,
     onError: (error) => {

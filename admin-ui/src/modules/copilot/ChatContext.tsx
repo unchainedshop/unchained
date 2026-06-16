@@ -1,6 +1,7 @@
 import React, { createContext, useContext, ReactNode, useMemo } from 'react';
 import { ChatContextType } from './types';
 import { useChatManager } from './hooks/useChatManager';
+import { useMCPServers } from './hooks/useMCPServers';
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
@@ -17,7 +18,18 @@ interface ChatProviderProps {
 }
 
 export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
-  const chatManager = useChatManager();
+  const {
+    servers,
+    mcpServersPayload,
+    addServer,
+    removeServer,
+    toggleServer,
+  } = useMCPServers();
+
+  const extraBody =
+    mcpServersPayload.length > 0 ? { mcpServers: mcpServersPayload } : undefined;
+
+  const chatManager = useChatManager(extraBody);
 
   const value: ChatContextType = useMemo(
     () =>
@@ -32,6 +44,10 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
         reload: chatManager.reload,
         sendMessage: chatManager.sendMessage,
         resumeStream: chatManager.resumeStream,
+        mcpServers: servers,
+        addMCPServer: addServer,
+        removeMCPServer: removeServer,
+        toggleMCPServer: toggleServer,
       }) as any,
     [
       chatManager.messages,
@@ -44,6 +60,10 @@ export const ChatProvider: React.FC<ChatProviderProps> = ({ children }) => {
       chatManager.reload,
       chatManager.sendMessage,
       chatManager.resumeStream,
+      servers,
+      addServer,
+      removeServer,
+      toggleServer,
     ],
   );
 
