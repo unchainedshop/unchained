@@ -235,7 +235,7 @@ export default {
   addCartProduct: acl(actions.updateCart)(addCartProduct),
   addMultipleCartProducts: acl(actions.updateCart)(addMultipleCartProducts),
   addCartDiscount: acl(actions.updateCart)(addCartDiscount),
-  addCartQuotation: acl(actions.updateCart)(addCartQuotation),
+  addCartQuotation: acl(actions.addCartQuotation)(addCartQuotation),
   updateCart: acl(actions.updateCart)(updateCart),
   emptyCart: acl(actions.updateCart)(emptyCart),
   checkoutCart: acl(actions.checkoutCart)(checkoutCart),
@@ -299,7 +299,7 @@ export default {
   verifyQuotation: acl(actions.manageQuotations)(verifyQuotation),
   makeQuotationProposal: acl(actions.manageQuotations)(makeQuotationProposal),
   bookmark: acl(actions.bookmarkProduct)(bookmark),
-  createBookmark: acl(actions.manageBookmarks)(createBookmark),
+  createBookmark: acl(actions.createBookmark)(createBookmark),
   removeBookmark: acl(actions.manageBookmarks)(removeBookmark),
   addWork: acl(actions.manageWorker)(addWork),
   allocateWork: acl(actions.manageWorker)(allocateWork),
@@ -309,8 +309,6 @@ export default {
   signPaymentProviderForCredentialRegistration: acl(actions.registerPaymentCredentials)(
     signPaymentProviderForCredentialRegistration,
   ),
-  signPaymentProviderForCheckout: acl(actions.registerPaymentCredentials)(
-    signPaymentProviderForCheckout,
-  ),
+  signPaymentProviderForCheckout: acl(actions.updateOrderPayment)(signPaymentProviderForCheckout),
   removeUserProductReviews: acl(actions.updateUser)(removeUserProductReviews),
 };
