@@ -29,6 +29,7 @@ import '../events/node-event-emitter.ts';
 // Workers
 import '../worker/bulk-import.ts';
 import '../worker/zombie-killer.ts';
+import '../worker/gc-guests.ts';
 import '../worker/message.ts';
 import '../worker/external.ts';
 import '../worker/http-request.ts';

@@ -273,6 +273,23 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       }).toArray();
     },
 
+    async findGuestUserIds({ before }: { before: Date }): Promise<string[]> {
+      const users = await Users.find(
+        {
+          guest: true,
+          deleted: null as any,
+          // Last activity older than the cutoff. Guests always receive a `lastLogin`
+          // heartbeat today, but fall back to `created` for any legacy/edge rows.
+          $or: [
+            { 'lastLogin.timestamp': { $lte: before } },
+            { 'lastLogin.timestamp': { $exists: false }, created: { $lte: before } },
+          ],
+        },
+        { projection: { _id: 1 } },
+      ).toArray();
+      return users.map((u) => u._id);
+    },
+
     async userExists({ userId }: { userId: string }): Promise<boolean> {
       const userCount = await Users.countDocuments({ _id: userId, deleted: null as any }, { limit: 1 });
       return userCount === 1;
