@@ -8,6 +8,7 @@ import {
   type mongodb,
   generateDbObjectId,
   insensitiveTrimmedRegexOperator,
+  escapeRegexString,
 } from '@unchainedshop/mongodb';
 import {
   type User,
@@ -270,6 +271,42 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         limit,
         sort: buildSortOptions(query.sort || defaultSort),
       }).toArray();
+    },
+
+    async findGuestUserIds({ before }: { before: Date }): Promise<string[]> {
+      const users = await Users.find(
+        {
+          guest: true,
+          deleted: null as any,
+          // Only guests with no activity of any kind since the cutoff. A guest's
+          // `lastLogin` is frozen at creation (it is not re-bumped for a persistent
+          // session) and `updated` is only set when the record is actually changed,
+          // so we require every timestamp the document carries to be older than the
+          // cutoff: `created` (always present), plus `lastLogin`/`updated` when set.
+          // This keeps guests whose record was touched recently (re-login, billing /
+          // contact / profile change). The worker additionally excludes guests whose
+          // cart was updated since the cutoff.
+          created: { $lte: before },
+          $and: [
+            {
+              $or: [
+                { 'lastLogin.timestamp': { $exists: false } },
+                { 'lastLogin.timestamp': { $lte: before } },
+              ],
+            },
+            { $or: [{ updated: { $exists: false } }, { updated: { $lte: before } }] },
+          ],
+        },
+        { projection: { _id: 1 } },
+      ).toArray();
+      return users.map((u) => u._id);
+    },
+
+    async findExistingUserIds({ userIds }: { userIds: string[] }): Promise<string[]> {
+      if (!userIds.length) return [];
+      // Raw existence check by _id, ignoring guest/deleted flags: a soft-deleted user
+      // still has a document, so only hard-deleted (absent) ids are treated as missing.
+      return Users.distinct('_id', { _id: { $in: userIds } });
     },
 
     async userExists({ userId }: { userId: string }): Promise<boolean> {
@@ -820,8 +857,13 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     markDeleted: async (userId: string) => {
+      // Invalidate every active session belonging to the user so that deletion
+      // immediately revokes access. Sessions are stored as serialized JSON in the
+      // `session` field; the owner id appears as `"user":"<id>"` (express/passport)
+      // or `"userId":"<id>"` (fastify). A substring (non-anchored) match is required
+      // because the id is embedded inside the larger serialized session document.
       await db.collection('sessions').deleteMany({
-        session: insensitiveTrimmedRegexOperator(`"user":"${userId}"`),
+        session: { $regex: `"user(Id)?":"${escapeRegexString(userId)}"` },
       });
       const user = await Users.findOneAndUpdate(
         { _id: userId },

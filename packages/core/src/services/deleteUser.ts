@@ -1,4 +1,5 @@
 import type { Modules } from '../modules.ts';
+import { deleteCartService } from './deleteCart.ts';
 
 export async function deleteUserService(this: Modules, { userId }: { userId: string }) {
   const user = await this.users.markDeleted(userId);
@@ -19,11 +20,7 @@ export async function deleteUserService(this: Modules, { userId }: { userId: str
   );
 
   await Array.fromAsync(carts, async (userCart) => {
-    await this.orders.positions.deleteOrderPositions(userCart?._id);
-    await this.orders.payments.deleteOrderPayments(userCart?._id);
-    await this.orders.deliveries.deleteOrderDeliveries(userCart?._id);
-    await this.orders.discounts.deleteOrderDiscounts(userCart?._id);
-    await this.orders.delete(userCart?._id);
+    await deleteCartService.bind(this)(userCart._id);
   });
 
   const ordersCount = await this.orders.count({ userId, includeCarts: true });

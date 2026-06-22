@@ -70,6 +70,7 @@ This document provides a comprehensive list of all environment variables used by
 | `UNCHAINED_DISABLE_WORKER` | - | Disable worker system entirely (set to any truthy value) |
 | `UNCHAINED_DISABLE_PROVIDER_INVALIDATION` | - | Disable provider invalidation on startup (set to any truthy value) |
 | `UNCHAINED_ASSIGN_CART_FOR_USERS` | - | Automatically assign carts for users on startup (set to any truthy value) |
+| `UNCHAINED_GUEST_USER_EXPIRY_DAYS` | `30` | Default retention window (in days) for inactive guest users before the daily guest garbage-collection worker removes them and their abandoned carts. Sets the default for the `guestUserMaxAgeInDays` users-module setting, which can also be configured in code. |
 
 ## Events Configuration
 

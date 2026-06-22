@@ -3,12 +3,12 @@ import {
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   disconnect,
+  waitForWork,
 } from './helpers.js';
 import { AllocatedWork, NewWork } from './seeds/work.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
-import { setTimeout } from 'node:timers/promises';
 
 let graphqlFetchAsAdminUser;
 let graphqlFetchAsNormalUser;
@@ -46,7 +46,9 @@ test.describe('Work Queue', () => {
       assert.strictEqual(addWorkResult.data.addWork.type, 'HEARTBEAT');
       assert.strictEqual(addWorkResult.errors, undefined);
 
-      await setTimeout(1000);
+      await waitForWork(graphqlFetchAsAdminUser, addWorkResult.data.addWork._id, {
+        status: ['SUCCESS'],
+      });
 
       const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -312,23 +314,8 @@ test.describe('Work Queue', () => {
       const createdWorkId = addWorkResult.data.addWork._id;
 
       // Test if work is done eventually
-      await setTimeout(3000);
-
-      const { data: { work } = {} } = await graphqlFetchAsAdminUser({
-        query: /* GraphQL */ `
-          query work($workId: ID!) {
-            work(workId: $workId) {
-              _id
-              status
-              started
-              type
-              worker
-            }
-          }
-        `,
-        variables: {
-          workId: createdWorkId,
-        },
+      const work = await waitForWork(graphqlFetchAsAdminUser, createdWorkId, {
+        status: ['SUCCESS'],
       });
 
       assert.strictEqual(work.status, 'SUCCESS');
@@ -361,8 +348,8 @@ test.describe('Work Queue', () => {
 
       const createdWorkId = addWorkResult.data.addWork._id;
 
-      // Wait for work to fail and be retried - may need more time for retry scheduling
-      await setTimeout(5000);
+      // Wait for the original work to fail; the retry is then scheduled as NEW.
+      await waitForWork(graphqlFetchAsAdminUser, createdWorkId, { status: ['FAILED'] });
 
       // Check for the original work (now FAILED) and its retry (NEW)
       const { data: { workQueue: workQueue } = {} } = await graphqlFetchAsAdminUser({

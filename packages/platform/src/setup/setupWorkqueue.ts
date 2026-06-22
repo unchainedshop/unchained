@@ -59,14 +59,19 @@ export async function setupWorkqueue({
 
   // Invalidate providers on carts
   if (workQueueOptions.invalidateProviders ?? !UNCHAINED_DISABLE_PROVIDER_INVALIDATION) {
-    const orders = await unchainedAPI.modules.orders.findCartsToInvalidate(
+    const orderIds = await unchainedAPI.modules.orders.findCartIdsToInvalidate(
       workQueueOptions.providerInvalidationMaxAgeDays,
     );
-    await Promise.allSettled(
-      orders.map(async (order) => {
-        await unchainedAPI.services.orders.updateCalculation(order._id);
-      }),
-    );
+    // Bound concurrency so a restart on a large DB can't fire updateCalculation for
+    // thousands of carts at once.
+    const BATCH = 50;
+    for (let i = 0; i < orderIds.length; i += BATCH) {
+      await Promise.allSettled(
+        orderIds
+          .slice(i, i + BATCH)
+          .map((orderId) => unchainedAPI.services.orders.updateCalculation(orderId)),
+      );
+    }
   }
 
   // Ensure users have carts

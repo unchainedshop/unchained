@@ -119,17 +119,23 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       return Orders.findOne(selector, options);
     },
 
-    findCartsToInvalidate: async (maxAgeDays = 30) => {
+    // Distinct user ids referenced by open carts. Used to detect dead carts whose
+    // owner no longer exists. Bounded by the number of carts (same 16MB distinct
+    // ceiling caveat as findCartIdsToInvalidate).
+    findCartUserIds: async (): Promise<string[]> => {
+      return Orders.distinct('userId', { status: { $eq: null } });
+    },
+
+    findCartIdsToInvalidate: async (maxAgeDays = 30): Promise<string[]> => {
       const ONE_DAY_IN_MILLISECONDS = 86400000;
 
       const minValidDate = new Date(new Date().getTime() - maxAgeDays * ONE_DAY_IN_MILLISECONDS);
 
-      const orders = await Orders.find({
+      // Only the ids are needed: updateCalculation re-fetches each order by id.
+      return Orders.distinct('_id', {
         status: { $eq: null },
         updated: { $gte: minValidDate },
-      }).toArray();
-
-      return orders;
+      });
     },
 
     findOrders: async (

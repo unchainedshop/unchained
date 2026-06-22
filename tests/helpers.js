@@ -1,3 +1,4 @@
+import { setTimeout } from 'node:timers/promises';
 import { Collection } from 'mongodb';
 import {
   initializeTestPlatform,
@@ -94,6 +95,48 @@ export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
         : headers,
       ...options,
     });
+};
+
+// Poll an already-enqueued work item until it reaches one of `status` (default the
+// terminal states), then return the work object. Use this instead of a fixed sleep:
+// a sleep races real processing, and a worker that outlives the test can race the next
+// test file's reseed (--test-isolation=none shares the process).
+export const waitForWork = async (graphqlFetch, workId, { status = ['SUCCESS', 'FAILED'] } = {}) => {
+  for (let i = 0; i < 100; i++) {
+    const { data: { work } = {} } = await graphqlFetch({
+      query: /* GraphQL */ `
+        query Work($workId: ID!) {
+          work(workId: $workId) {
+            _id
+            status
+            started
+            type
+            worker
+          }
+        }
+      `,
+      variables: { workId },
+    });
+    if (work && status.includes(work.status)) return work;
+    await setTimeout(100);
+  }
+  throw new Error(`Work ${workId} did not reach ${status.join('/')} in time`);
+};
+
+// Enqueue a work item, wait for it to finish, and return its terminal status.
+export const runWorkToCompletion = async (graphqlFetch, type, input) => {
+  const { data } = await graphqlFetch({
+    query: /* GraphQL */ `
+      mutation AddWork($type: WorkType!, $input: JSON) {
+        addWork(type: $type, input: $input) {
+          _id
+        }
+      }
+    `,
+    variables: { type, input },
+  });
+  const work = await waitForWork(graphqlFetch, data.addWork._id);
+  return work.status;
 };
 
 export const putFile = async (file, { url, type }) => {
