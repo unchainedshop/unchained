@@ -81,9 +81,16 @@ export const ZombieKillerWorker: IWorkerAdapter<
       const allFileIdsRelevant = (
         await modules.files.findFiles(
           { paths: ['product-media', 'assortment-media'] },
-          { projection: { _id: 1 } },
+          { projection: { _id: 1, expires: 1 } },
         )
-      ).map((a) => a._id);
+      )
+        // Skip in-progress uploads. A signed-URL upload creates the file with an `expires`
+        // ticket and only links it (products/assortments media.create) once the client calls
+        // confirmMediaUpload -> files.unexpire ($unset expires). Reaping a file whose ticket is
+        // still open would delete it out from under a valid upload. Committed files have `expires`
+        // unset; abandoned tickets are reaped on their own by the TTL index on `expires`.
+        .filter((file) => !file.expires)
+        .map((a) => a._id);
 
       const fileIdsToRemove =
         allFileIdsRelevant.filter((fileId) => {
