@@ -76,6 +76,20 @@ test.describe('Guest Garbage Collection', () => {
       updated: new Date(),
     });
 
+    // Stale guest by lastLogin/created, but whose user document was updated
+    // recently (e.g. billing/contact saved) -> should be preserved.
+    const recentlyUpdatedGuestId = await loginAsGuest();
+    await db.collection('users').updateOne(
+      { _id: recentlyUpdatedGuestId },
+      {
+        $set: {
+          'lastLogin.timestamp': SIXTY_DAYS_AGO,
+          created: SIXTY_DAYS_AGO,
+          updated: new Date(),
+        },
+      },
+    );
+
     // Run the worker through the queue (picked up by the IntervalWorker).
     const addWorkResult = await graphqlFetchAsAdmin({
       query: /* GraphQL */ `
@@ -99,6 +113,7 @@ test.describe('Guest Garbage Collection', () => {
     const staleGuest = await db.collection('users').findOne({ _id: staleGuestId });
     const recentGuest = await db.collection('users').findOne({ _id: recentGuestId });
     const activeCartGuest = await db.collection('users').findOne({ _id: activeCartGuestId });
+    const recentlyUpdatedGuest = await db.collection('users').findOne({ _id: recentlyUpdatedGuestId });
 
     // Stale guest with no orders is permanently deleted by deleteUserService.
     assert.strictEqual(staleGuest, null);
@@ -108,5 +123,8 @@ test.describe('Guest Garbage Collection', () => {
     // Guest with a freshly updated cart survives untouched.
     assert.ok(activeCartGuest);
     assert.strictEqual(activeCartGuest.deleted ?? null, null);
+    // Guest whose user document was updated recently survives untouched.
+    assert.ok(recentlyUpdatedGuest);
+    assert.strictEqual(recentlyUpdatedGuest.deleted ?? null, null);
   });
 });

@@ -278,11 +278,23 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         {
           guest: true,
           deleted: null as any,
-          // Last activity older than the cutoff. Guests always receive a `lastLogin`
-          // heartbeat today, but fall back to `created` for any legacy/edge rows.
-          $or: [
-            { 'lastLogin.timestamp': { $lte: before } },
-            { 'lastLogin.timestamp': { $exists: false }, created: { $lte: before } },
+          // Only guests with no activity of any kind since the cutoff. A guest's
+          // `lastLogin` is frozen at creation (it is not re-bumped for a persistent
+          // session) and `updated` is only set when the record is actually changed,
+          // so we require every timestamp the document carries to be older than the
+          // cutoff: `created` (always present), plus `lastLogin`/`updated` when set.
+          // This keeps guests whose record was touched recently (re-login, billing /
+          // contact / profile change). The worker additionally excludes guests whose
+          // cart was updated since the cutoff.
+          created: { $lte: before },
+          $and: [
+            {
+              $or: [
+                { 'lastLogin.timestamp': { $exists: false } },
+                { 'lastLogin.timestamp': { $lte: before } },
+              ],
+            },
+            { $or: [{ updated: { $exists: false } }, { updated: { $lte: before } }] },
           ],
         },
         { projection: { _id: 1 } },
