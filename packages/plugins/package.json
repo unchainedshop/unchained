@@ -43,6 +43,7 @@
     "@unchainedshop/core-orders": "^4.8.12",
     "@unchainedshop/core-payment": "^4.8.12",
     "@unchainedshop/core-products": "^4.8.12",
+    "@unchainedshop/core-users": "^4.8.12",
     "@unchainedshop/core-warehousing": "^4.8.12",
     "@unchainedshop/core-worker": "^4.8.12",
     "@unchainedshop/events": "^4.8.12",

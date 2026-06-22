@@ -1,4 +1,5 @@
 import { type IWorkerAdapter, WorkerAdapter, WorkerDirector, schedule } from '@unchainedshop/core';
+import { userSettings } from '@unchainedshop/core-users';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:worker:gc-guests');
@@ -19,11 +20,12 @@ export const GCGuestsWorker: IWorkerAdapter<
   version: '1.0.0',
   type: 'GC_GUESTS',
 
-  doWork: async ({ guestUserMaxAgeInDays = 30 } = {}, unchainedAPI) => {
+  doWork: async ({ guestUserMaxAgeInDays } = {}, unchainedAPI) => {
     const { modules, services } = unchainedAPI;
 
     try {
-      const before = new Date(Date.now() - guestUserMaxAgeInDays * ONE_DAY_IN_MILLISECONDS);
+      const maxAgeInDays = guestUserMaxAgeInDays ?? userSettings.guestUserMaxAgeInDays;
+      const before = new Date(Date.now() - maxAgeInDays * ONE_DAY_IN_MILLISECONDS);
 
       const candidateIds = await modules.users.findGuestUserIds({ before });
 
@@ -80,8 +82,6 @@ WorkerDirector.registerAdapter(GCGuestsWorker);
 WorkerDirector.configureAutoscheduling({
   type: GCGuestsWorker.type,
   schedule: everyDayAtHalfPastTwo,
-  input: async () => ({
-    guestUserMaxAgeInDays: Number(process.env.UNCHAINED_GUEST_USER_EXPIRY_DAYS) || 30,
-  }),
+  // No input: doWork falls back to userSettings.guestUserMaxAgeInDays (default 30).
   retries: 2,
 });
