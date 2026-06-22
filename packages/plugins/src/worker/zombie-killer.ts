@@ -1,4 +1,8 @@
-import { type IWorkerAdapter, WorkerAdapter, WorkerDirector } from '@unchainedshop/core';
+import { type IWorkerAdapter, WorkerAdapter, WorkerDirector, schedule } from '@unchainedshop/core';
+
+// Daily, off-peak (a little before the guest GC so dead carts left by other paths
+// are reaped on their own cadence).
+const everyDayAtTwo = schedule.parse.cron('0 2 * * *');
 
 export const ZombieKillerWorker: IWorkerAdapter<
   { bulkImportMaxAgeInDays: number },
@@ -10,6 +14,7 @@ export const ZombieKillerWorker: IWorkerAdapter<
     deletedProductTextsCount: number;
     deletedProductVariationsCount: number;
     deletedAssortmentTextsCount: number;
+    deletedDeadCartsCount: number;
   }
 > = {
   ...WorkerAdapter,
@@ -19,8 +24,10 @@ export const ZombieKillerWorker: IWorkerAdapter<
   version: '1.0.0',
   type: 'ZOMBIE_KILLER',
 
-  doWork: async ({ bulkImportMaxAgeInDays } = { bulkImportMaxAgeInDays: 5 }, unchainedAPI) => {
+  doWork: async (input, unchainedAPI) => {
     const { modules, services } = unchainedAPI;
+    // Autoscheduling enqueues the work without input, so tolerate undefined/null/{}.
+    const { bulkImportMaxAgeInDays = 5 } = input || {};
 
     try {
       const error = false;
@@ -99,6 +106,9 @@ export const ZombieKillerWorker: IWorkerAdapter<
             })
           : 0;
 
+      // Remove dead carts: open carts whose owner no longer exists.
+      const deletedDeadCartsCount = await services.orders.deleteDeadCarts();
+
       // Return delete count
       const result = {
         deletedFilterTextsCount,
@@ -108,6 +118,7 @@ export const ZombieKillerWorker: IWorkerAdapter<
         deletedAssortmentMediaCount,
         deletedAssortmentTextsCount,
         deletedFilesCount,
+        deletedDeadCartsCount,
       };
 
       if (error) {
@@ -137,3 +148,9 @@ export const ZombieKillerWorker: IWorkerAdapter<
 export default ZombieKillerWorker;
 
 WorkerDirector.registerAdapter(ZombieKillerWorker);
+
+WorkerDirector.configureAutoscheduling({
+  type: ZombieKillerWorker.type,
+  schedule: everyDayAtTwo,
+  retries: 2,
+});

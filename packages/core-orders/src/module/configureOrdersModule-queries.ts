@@ -119,6 +119,13 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       return Orders.findOne(selector, options);
     },
 
+    // Distinct user ids referenced by open carts. Used to detect dead carts whose
+    // owner no longer exists. Bounded by the number of carts (same 16MB distinct
+    // ceiling caveat as findCartIdsToInvalidate).
+    findCartUserIds: async (): Promise<string[]> => {
+      return Orders.distinct('userId', { status: { $eq: null } });
+    },
+
     findCartIdsToInvalidate: async (maxAgeDays = 30): Promise<string[]> => {
       const ONE_DAY_IN_MILLISECONDS = 86400000;
 

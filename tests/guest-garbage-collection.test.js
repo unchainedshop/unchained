@@ -90,8 +90,9 @@ test.describe('Guest Garbage Collection', () => {
       },
     );
 
-    // Run the worker through the queue (picked up by the IntervalWorker).
-    const addWorkResult = await graphqlFetchAsAdmin({
+    // Run the worker through the queue and wait until it actually finishes, so the
+    // deletes don't race the next test file's reseed (--test-isolation=none).
+    const { data: addWorkData, errors: addWorkErrors } = await graphqlFetchAsAdmin({
       query: /* GraphQL */ `
         mutation AddWork($type: WorkType!, $input: JSON) {
           addWork(type: $type, input: $input) {
@@ -105,10 +106,28 @@ test.describe('Guest Garbage Collection', () => {
         input: { guestUserMaxAgeInDays: 30 },
       },
     });
-    assert.strictEqual(addWorkResult.errors, undefined);
-    assert.strictEqual(addWorkResult.data.addWork.type, 'GC_GUESTS');
+    assert.strictEqual(addWorkErrors, undefined);
+    assert.strictEqual(addWorkData.addWork.type, 'GC_GUESTS');
+    const workId = addWorkData.addWork._id;
 
-    await setTimeout(2000);
+    let status;
+    for (let i = 0; i < 100; i++) {
+      const { data: { work } = {} } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query Work($workId: ID!) {
+            work(workId: $workId) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: { workId },
+      });
+      status = work?.status;
+      if (status === 'SUCCESS' || status === 'FAILED') break;
+      await setTimeout(100);
+    }
+    assert.strictEqual(status, 'SUCCESS');
 
     const staleGuest = await db.collection('users').findOne({ _id: staleGuestId });
     const recentGuest = await db.collection('users').findOne({ _id: recentGuestId });

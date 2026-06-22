@@ -302,6 +302,13 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       return users.map((u) => u._id);
     },
 
+    async findExistingUserIds({ userIds }: { userIds: string[] }): Promise<string[]> {
+      if (!userIds.length) return [];
+      // Raw existence check by _id, ignoring guest/deleted flags: a soft-deleted user
+      // still has a document, so only hard-deleted (absent) ids are treated as missing.
+      return Users.distinct('_id', { _id: { $in: userIds } });
+    },
+
     async userExists({ userId }: { userId: string }): Promise<boolean> {
       const userCount = await Users.countDocuments({ _id: userId, deleted: null as any }, { limit: 1 });
       return userCount === 1;
