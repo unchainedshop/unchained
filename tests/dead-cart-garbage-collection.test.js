@@ -1,44 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { setTimeout } from 'node:timers/promises';
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  disconnect,
+  runWorkToCompletion,
+} from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 
 let graphqlFetchAsAdmin;
 let db;
-
-// Enqueue a work item and wait until it actually finishes. A fixed sleep is unsafe
-// here: the zombie killer runs DB-wide deletes, and if it outlives the test it races
-// with the next test file's reseed (--test-isolation=none shares the process).
-const runWorkToCompletion = async (type) => {
-  const { data } = await graphqlFetchAsAdmin({
-    query: /* GraphQL */ `
-      mutation AddWork($type: WorkType!) {
-        addWork(type: $type) {
-          _id
-        }
-      }
-    `,
-    variables: { type },
-  });
-  const workId = data.addWork._id;
-  for (let i = 0; i < 100; i++) {
-    const { data: { work } = {} } = await graphqlFetchAsAdmin({
-      query: /* GraphQL */ `
-        query Work($workId: ID!) {
-          work(workId: $workId) {
-            _id
-            status
-          }
-        }
-      `,
-      variables: { workId },
-    });
-    if (work?.status === 'SUCCESS' || work?.status === 'FAILED') return work.status;
-    await setTimeout(100);
-  }
-  throw new Error(`Work ${type} did not finish in time`);
-};
 
 test.describe('Dead Cart Garbage Collection', () => {
   test.before(async () => {
@@ -81,7 +52,7 @@ test.describe('Dead Cart Garbage Collection', () => {
       updated: new Date(),
     });
 
-    const status = await runWorkToCompletion('ZOMBIE_KILLER');
+    const status = await runWorkToCompletion(graphqlFetchAsAdmin, 'ZOMBIE_KILLER');
     assert.strictEqual(status, 'SUCCESS');
 
     // Dead cart and its sub-documents are gone.

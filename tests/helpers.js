@@ -1,3 +1,4 @@
+import { setTimeout } from 'node:timers/promises';
 import { Collection } from 'mongodb';
 import {
   initializeTestPlatform,
@@ -94,6 +95,38 @@ export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
         : headers,
       ...options,
     });
+};
+
+// Enqueue a work item and wait until it actually finishes. A fixed sleep is unsafe:
+// workers like the zombie killer run DB-wide deletes, and if one outlives the test it
+// races the next test file's reseed (--test-isolation=none shares the process).
+export const runWorkToCompletion = async (graphqlFetch, type, input) => {
+  const { data } = await graphqlFetch({
+    query: /* GraphQL */ `
+      mutation AddWork($type: WorkType!, $input: JSON) {
+        addWork(type: $type, input: $input) {
+          _id
+        }
+      }
+    `,
+    variables: { type, input },
+  });
+  const workId = data.addWork._id;
+  for (let i = 0; i < 100; i++) {
+    const { data: { work } = {} } = await graphqlFetch({
+      query: /* GraphQL */ `
+        query Work($workId: ID!) {
+          work(workId: $workId) {
+            status
+          }
+        }
+      `,
+      variables: { workId },
+    });
+    if (work?.status === 'SUCCESS' || work?.status === 'FAILED') return work.status;
+    await setTimeout(100);
+  }
+  throw new Error(`Work ${type} did not finish in time`);
 };
 
 export const putFile = async (file, { url, type }) => {

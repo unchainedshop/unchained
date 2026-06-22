@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { setTimeout } from 'node:timers/promises';
 import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   disconnect,
+  runWorkToCompletion,
 } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 
@@ -92,41 +92,9 @@ test.describe('Guest Garbage Collection', () => {
 
     // Run the worker through the queue and wait until it actually finishes, so the
     // deletes don't race the next test file's reseed (--test-isolation=none).
-    const { data: addWorkData, errors: addWorkErrors } = await graphqlFetchAsAdmin({
-      query: /* GraphQL */ `
-        mutation AddWork($type: WorkType!, $input: JSON) {
-          addWork(type: $type, input: $input) {
-            _id
-            type
-          }
-        }
-      `,
-      variables: {
-        type: 'GC_GUESTS',
-        input: { guestUserMaxAgeInDays: 30 },
-      },
+    const status = await runWorkToCompletion(graphqlFetchAsAdmin, 'GC_GUESTS', {
+      guestUserMaxAgeInDays: 30,
     });
-    assert.strictEqual(addWorkErrors, undefined);
-    assert.strictEqual(addWorkData.addWork.type, 'GC_GUESTS');
-    const workId = addWorkData.addWork._id;
-
-    let status;
-    for (let i = 0; i < 100; i++) {
-      const { data: { work } = {} } = await graphqlFetchAsAdmin({
-        query: /* GraphQL */ `
-          query Work($workId: ID!) {
-            work(workId: $workId) {
-              _id
-              status
-            }
-          }
-        `,
-        variables: { workId },
-      });
-      status = work?.status;
-      if (status === 'SUCCESS' || status === 'FAILED') break;
-      await setTimeout(100);
-    }
     assert.strictEqual(status, 'SUCCESS');
 
     const staleGuest = await db.collection('users').findOne({ _id: staleGuestId });

@@ -106,8 +106,22 @@ export const ZombieKillerWorker: IWorkerAdapter<
             })
           : 0;
 
-      // Remove dead carts: open carts whose owner no longer exists.
-      const deletedDeadCartsCount = await services.orders.deleteDeadCarts();
+      // Remove dead carts: open carts whose owner no longer exists (a user was
+      // hard-deleted by a path that didn't cascade, or legacy data). The user-existence
+      // check crosses collections, so it lives here in the worker.
+      const cartUserIds = (await modules.orders.findCartUserIds()).filter(Boolean);
+      const existingUserIds = new Set(
+        cartUserIds.length ? await modules.users.findExistingUserIds({ userIds: cartUserIds }) : [],
+      );
+      const deadUserIds = cartUserIds.filter((userId) => !existingUserIds.has(userId));
+      const deadCarts = deadUserIds.length
+        ? await modules.orders.findCarts({ userIds: deadUserIds }, { projection: { _id: 1 } })
+        : [];
+      let deletedDeadCartsCount = 0;
+      await Array.fromAsync(deadCarts, async (cart) => {
+        await services.orders.deleteCart(cart._id);
+        deletedDeadCartsCount += 1;
+      });
 
       // Return delete count
       const result = {
