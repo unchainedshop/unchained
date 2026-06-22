@@ -97,9 +97,33 @@ export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
     });
 };
 
-// Enqueue a work item and wait until it actually finishes. A fixed sleep is unsafe:
-// workers like the zombie killer run DB-wide deletes, and if one outlives the test it
-// races the next test file's reseed (--test-isolation=none shares the process).
+// Poll an already-enqueued work item until it reaches one of `status` (default the
+// terminal states), then return the work object. Use this instead of a fixed sleep:
+// a sleep races real processing, and a worker that outlives the test can race the next
+// test file's reseed (--test-isolation=none shares the process).
+export const waitForWork = async (graphqlFetch, workId, { status = ['SUCCESS', 'FAILED'] } = {}) => {
+  for (let i = 0; i < 100; i++) {
+    const { data: { work } = {} } = await graphqlFetch({
+      query: /* GraphQL */ `
+        query Work($workId: ID!) {
+          work(workId: $workId) {
+            _id
+            status
+            started
+            type
+            worker
+          }
+        }
+      `,
+      variables: { workId },
+    });
+    if (work && status.includes(work.status)) return work;
+    await setTimeout(100);
+  }
+  throw new Error(`Work ${workId} did not reach ${status.join('/')} in time`);
+};
+
+// Enqueue a work item, wait for it to finish, and return its terminal status.
 export const runWorkToCompletion = async (graphqlFetch, type, input) => {
   const { data } = await graphqlFetch({
     query: /* GraphQL */ `
@@ -111,22 +135,8 @@ export const runWorkToCompletion = async (graphqlFetch, type, input) => {
     `,
     variables: { type, input },
   });
-  const workId = data.addWork._id;
-  for (let i = 0; i < 100; i++) {
-    const { data: { work } = {} } = await graphqlFetch({
-      query: /* GraphQL */ `
-        query Work($workId: ID!) {
-          work(workId: $workId) {
-            status
-          }
-        }
-      `,
-      variables: { workId },
-    });
-    if (work?.status === 'SUCCESS' || work?.status === 'FAILED') return work.status;
-    await setTimeout(100);
-  }
-  throw new Error(`Work ${type} did not finish in time`);
+  const work = await waitForWork(graphqlFetch, data.addWork._id);
+  return work.status;
 };
 
 export const putFile = async (file, { url, type }) => {
