@@ -14,7 +14,7 @@ export const ZombieKillerWorker: IWorkerAdapter<
     deletedProductTextsCount: number;
     deletedProductVariationsCount: number;
     deletedAssortmentTextsCount: number;
-    deletedDeadCartsCount: number;
+    deletedCartsCount: number;
   }
 > = {
   ...WorkerAdapter,
@@ -117,10 +117,10 @@ export const ZombieKillerWorker: IWorkerAdapter<
       const deadCarts = deadUserIds.length
         ? await modules.orders.findCarts({ userIds: deadUserIds }, { projection: { _id: 1 } })
         : [];
-      let deletedDeadCartsCount = 0;
+      let deletedCartsCount = 0;
       await Array.fromAsync(deadCarts, async (cart) => {
         await services.orders.deleteCart(cart._id);
-        deletedDeadCartsCount += 1;
+        deletedCartsCount += 1;
       });
 
       // Return delete count
@@ -132,7 +132,7 @@ export const ZombieKillerWorker: IWorkerAdapter<
         deletedAssortmentMediaCount,
         deletedAssortmentTextsCount,
         deletedFilesCount,
-        deletedDeadCartsCount,
+        deletedCartsCount,
       };
 
       if (error) {
