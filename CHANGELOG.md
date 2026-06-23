@@ -20,6 +20,7 @@
 - Schedule parser rewritten to a field-advancing algorithm — same `schedule.parse.cron(...)` / `schedule.parse.text(...)` API, dramatically faster for daily and hourly cadences.
 - ESLint upgraded to v10 across the workspace; Stripe SDK updated alongside.
 - Permission resolution refactored for performance (Map-based lookup, early exit).
+- Cart recalculation no longer blocks boot. The startup provider-invalidation sweep, which recalculated every recently-touched cart inline and could spike MongoDB on a cold connection pool after a restart, is replaced by an `INVALIDATE_CARTS` worker (`@unchainedshop/plugins`) that recalculates carts sequentially through the work queue. It is autoscheduled monthly (1st at 00:00 local server time — so the year-boundary run lands at local midnight on Jan 1, when new-year tax rates take effect; keep the server's `TZ` set to the relevant jurisdiction), and `setupWorkqueue` enqueues an immediate, non-blocking, no-retry work item on boot in the cases that previously recalculated inline (gated by `invalidateProviders` / `UNCHAINED_DISABLE_PROVIDER_INVALIDATION` as before).
 
 ## Patch
 - Tokens GraphQL resolver fixed to remove N+1 query pattern.

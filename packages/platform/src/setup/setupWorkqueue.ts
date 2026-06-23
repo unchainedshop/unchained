@@ -57,21 +57,23 @@ export async function setupWorkqueue({
     handler.start();
   });
 
-  // Invalidate providers on carts
+  // Cart recalculation runs through the INVALIDATE_CARTS worker (also autoscheduled
+  // monthly on the 1st at 00:00) instead of blocking boot. In the cases that used to
+  // recalculate inline on startup, enqueue an immediate, non-blocking work item so the
+  // queue drains it one cart at a time rather than spiking Mongo on a cold pool.
   if (workQueueOptions.invalidateProviders ?? !UNCHAINED_DISABLE_PROVIDER_INVALIDATION) {
-    const orderIds = await unchainedAPI.modules.orders.findCartIdsToInvalidate(
-      workQueueOptions.providerInvalidationMaxAgeDays,
+    await unchainedAPI.modules.worker.addWorkIfNotExists(
+      {
+        type: 'INVALIDATE_CARTS',
+        input:
+          workQueueOptions.providerInvalidationMaxAgeDays !== undefined
+            ? { maxAgeDays: workQueueOptions.providerInvalidationMaxAgeDays }
+            : {},
+        // Eventual recalculation: don't retry, the monthly schedule picks up any misses.
+        retries: 0,
+      },
+      () => true,
     );
-    // Bound concurrency so a restart on a large DB can't fire updateCalculation for
-    // thousands of carts at once.
-    const BATCH = 50;
-    for (let i = 0; i < orderIds.length; i += BATCH) {
-      await Promise.allSettled(
-        orderIds
-          .slice(i, i + BATCH)
-          .map((orderId) => unchainedAPI.services.orders.updateCalculation(orderId)),
-      );
-    }
   }
 
   // Ensure users have carts

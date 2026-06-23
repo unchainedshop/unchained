@@ -91,8 +91,8 @@ test.describe('Work Queue', () => {
     test('Work in the queue', async () => {
       const { data: { workQueue } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query workQueue($created: DateFilterInput) {
-            workQueue(created: $created, status: []) {
+          query workQueue($created: DateFilterInput, $limit: Int) {
+            workQueue(created: $created, status: [], limit: $limit) {
               _id
               type
             }
@@ -100,6 +100,10 @@ test.describe('Work Queue', () => {
         `,
         variables: {
           created: { start: new Date(0), end: null },
+          // Explicit high limit: the default page size is 10, and the number of
+          // autoscheduled worker types in the queue would otherwise push EXTERNAL
+          // works off the first page, making this count brittle.
+          limit: 1000,
         },
       });
       assert.strictEqual(workQueue.filter(({ type }) => type === 'EXTERNAL').length, 3);

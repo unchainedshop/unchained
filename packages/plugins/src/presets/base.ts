@@ -30,6 +30,7 @@ import '../events/node-event-emitter.ts';
 import '../worker/bulk-import.ts';
 import '../worker/zombie-killer.ts';
 import '../worker/gc-guests.ts';
+import '../worker/invalidate-carts.ts';
 import '../worker/message.ts';
 import '../worker/external.ts';
 import '../worker/http-request.ts';
