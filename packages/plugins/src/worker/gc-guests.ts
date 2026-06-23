@@ -83,5 +83,5 @@ WorkerDirector.configureAutoscheduling({
   type: GCGuestsWorker.type,
   schedule: everyDayAtHalfPastTwo,
   // No input: doWork falls back to userSettings.guestUserMaxAgeInDays (default 30).
-  retries: 2,
+  retries: 0,
 });

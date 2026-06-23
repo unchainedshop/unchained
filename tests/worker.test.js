@@ -344,7 +344,7 @@ test.describe('Work Queue', () => {
           input: {
             fails: true,
           },
-          retries: 2,
+          retries: 0,
         },
       });
 

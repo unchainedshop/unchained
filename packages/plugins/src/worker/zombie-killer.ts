@@ -173,5 +173,5 @@ WorkerDirector.registerAdapter(ZombieKillerWorker);
 WorkerDirector.configureAutoscheduling({
   type: ZombieKillerWorker.type,
   schedule: everyDayAtTwo,
-  retries: 2,
+  retries: 0,
 });
