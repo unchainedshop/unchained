@@ -44,7 +44,7 @@ test.describe('Guest Garbage Collection', () => {
     await disconnect();
   });
 
-  test('removes stale guests, keeps recent guests and guests with an active cart', async () => {
+  test('removes stale guests (incl. fresh cart / updated doc), keeps recent guests', async () => {
     // Stale guest with no recent activity -> should be garbage-collected.
     const staleGuestId = await loginAsGuest();
     await db
@@ -57,8 +57,9 @@ test.describe('Guest Garbage Collection', () => {
     // Recent guest -> should be preserved (activity newer than cutoff).
     const recentGuestId = await loginAsGuest();
 
-    // Stale guest, but with a cart updated recently -> should be preserved
-    // (persistent session can keep a cart fresh without re-logging-in).
+    // Stale guest whose cart was updated recently -> should STILL be collected.
+    // A fresh cart is no reprieve: INVALIDATE_CARTS keeps cart `updated` artificially
+    // fresh, so it is not a signal of guest presence. The cart is cascade-deleted.
     const activeCartGuestId = await loginAsGuest();
     await db
       .collection('users')
@@ -76,8 +77,8 @@ test.describe('Guest Garbage Collection', () => {
       updated: new Date(),
     });
 
-    // Stale guest by lastLogin/created, but whose user document was updated
-    // recently (e.g. billing/contact saved) -> should be preserved.
+    // Stale guest by lastLogin/created whose user document `updated` is recent
+    // (e.g. billing/contact saved by a system write) -> should STILL be collected.
     const recentlyUpdatedGuestId = await loginAsGuest();
     await db.collection('users').updateOne(
       { _id: recentlyUpdatedGuestId },
@@ -101,17 +102,17 @@ test.describe('Guest Garbage Collection', () => {
     const recentGuest = await db.collection('users').findOne({ _id: recentGuestId });
     const activeCartGuest = await db.collection('users').findOne({ _id: activeCartGuestId });
     const recentlyUpdatedGuest = await db.collection('users').findOne({ _id: recentlyUpdatedGuestId });
+    const activeCart = await db.collection('orders').findOne({ _id: `cart-${activeCartGuestId}` });
 
     // Stale guest with no orders is permanently deleted by deleteUserService.
     assert.strictEqual(staleGuest, null);
     // Recent guest survives.
     assert.ok(recentGuest);
     assert.strictEqual(recentGuest.deleted ?? null, null);
-    // Guest with a freshly updated cart survives untouched.
-    assert.ok(activeCartGuest);
-    assert.strictEqual(activeCartGuest.deleted ?? null, null);
-    // Guest whose user document was updated recently survives untouched.
-    assert.ok(recentlyUpdatedGuest);
-    assert.strictEqual(recentlyUpdatedGuest.deleted ?? null, null);
+    // Guest with a freshly updated cart is collected; its cart is cascade-deleted.
+    assert.strictEqual(activeCartGuest, null);
+    assert.strictEqual(activeCart, null);
+    // Guest whose user document `updated` is recent is collected too (ignored signal).
+    assert.strictEqual(recentlyUpdatedGuest, null);
   });
 });

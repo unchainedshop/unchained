@@ -278,23 +278,20 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         {
           guest: true,
           deleted: null as any,
-          // Only guests with no activity of any kind since the cutoff. A guest's
-          // `lastLogin` is frozen at creation (it is not re-bumped for a persistent
-          // session) and `updated` is only set when the record is actually changed,
-          // so we require every timestamp the document carries to be older than the
-          // cutoff: `created` (always present), plus `lastLogin`/`updated` when set.
-          // This keeps guests whose record was touched recently (re-login, billing /
-          // contact / profile change). The worker additionally excludes guests whose
-          // cart was updated since the cutoff.
+          // Only guests with no sign of presence since the cutoff. `lastLogin.timestamp`
+          // is our activity signal: it is bumped on (re-)login and by the `heartbeat`
+          // mutation, and `created` is the floor for guests that never produced one.
+          // We deliberately ignore `updated` (and cart `updated`) — both are bumped by
+          // background/system writes (billing, contact, address normalisation, and the
+          // INVALIDATE_CARTS recalculation sweep) that do not mean the guest was actually
+          // present, and would otherwise keep dead guests alive indefinitely. Note:
+          // clients that never call `heartbeat` leave `lastLogin.timestamp` frozen at
+          // creation, so a long-lived guest session is treated as stale once `created`
+          // ages past the cutoff — see CHANGELOG.
           created: { $lte: before },
-          $and: [
-            {
-              $or: [
-                { 'lastLogin.timestamp': { $exists: false } },
-                { 'lastLogin.timestamp': { $lte: before } },
-              ],
-            },
-            { $or: [{ updated: { $exists: false } }, { updated: { $lte: before } }] },
+          $or: [
+            { 'lastLogin.timestamp': { $exists: false } },
+            { 'lastLogin.timestamp': { $lte: before } },
           ],
         },
         { projection: { _id: 1 } },

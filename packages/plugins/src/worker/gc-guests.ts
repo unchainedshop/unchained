@@ -27,23 +27,13 @@ export const GCGuestsWorker: IWorkerAdapter<
       const maxAgeInDays = guestUserMaxAgeInDays ?? userSettings.guestUserMaxAgeInDays;
       const before = new Date(Date.now() - maxAgeInDays * ONE_DAY_IN_MILLISECONDS);
 
-      const candidateIds = await modules.users.findGuestUserIds({ before });
-
-      // A guest with a persistent session can keep a cart fresh without re-logging-in,
-      // so `lastLogin` alone is insufficient. Exclude any guest whose cart was updated
-      // at or after the cutoff. This cross-collection check lives in the worker/core
-      // layer to keep the users module free of order dependencies.
-      const recentCarts = candidateIds.length
-        ? await modules.orders.findCarts(
-            { userIds: candidateIds },
-            { projection: { userId: 1, updated: 1 } },
-          )
-        : [];
-      const userIdsWithRecentCart = new Set(
-        recentCarts.filter((cart) => cart.updated && cart.updated >= before).map((c) => c.userId),
-      );
-
-      const userIdsToDelete = candidateIds.filter((id) => !userIdsWithRecentCart.has(id));
+      // Staleness is decided purely on the user document (`created` / `lastLogin`),
+      // see `findGuestUserIds`. Cart freshness is deliberately NOT a reprieve: the
+      // INVALIDATE_CARTS sweep recalculates recently-touched carts on every boot, so
+      // a guest's cart `updated` is kept artificially fresh and would keep dormant
+      // guests alive forever. A collected guest's open carts are cascade-deleted by
+      // deleteUserService, so the stale cart goes with it.
+      const userIdsToDelete = await modules.users.findGuestUserIds({ before });
 
       let deletedGuestCount = 0;
       await Array.fromAsync(userIdsToDelete, async (userId) => {
@@ -58,7 +48,7 @@ export const GCGuestsWorker: IWorkerAdapter<
       return {
         success: true,
         result: {
-          scannedGuestCount: candidateIds.length,
+          scannedGuestCount: userIdsToDelete.length,
           deletedGuestCount,
         },
       };

@@ -72,7 +72,10 @@ export async function setupWorkqueue({
         // Eventual recalculation: don't retry, the monthly schedule picks up any misses.
         retries: 0,
       },
-      () => true,
+      // Only dedup against a previously-enqueued *immediate* sweep. The autoscheduler
+      // keeps a NEW, autoscheduled item permanently parked for the next monthly run, so a
+      // `() => true` predicate would always match it and suppress the boot sweep entirely.
+      (work) => !work.autoscheduled,
     );
   }
 
