@@ -1,5 +1,14 @@
 import { createLogger } from '@unchainedshop/logger';
-import { stripe, createOrderPaymentIntent, createRegistrationIntent } from './stripe.ts';
+import { stripe } from './stripe.ts';
+import { createRegistrationIntent, retrieveSetupIntentCredentials } from './setup-intents.ts';
+import {
+  createAcpSharedPaymentTokenIntent,
+  createOrderPaymentIntent,
+  createStoredCredentialPaymentIntent,
+  retrievePaymentIntent,
+} from './payment-intents.ts';
+import { assertPaymentIntentMatchesOrderPayment } from './metadata.ts';
+import { normalizeStripeChargeRequest } from './charge-request.ts';
 import {
   OrderPricingSheet,
   type IPaymentAdapter,
@@ -61,23 +70,7 @@ const Stripe: IPaymentAdapter = {
       },
 
       register: async ({ setupIntentId }) => {
-        if (!setupIntentId) {
-          throw new Error('You have to provide a setupIntentId');
-        }
-
-        const setupIntent = await stripe.setupIntents.retrieve(setupIntentId);
-        if (setupIntent.status === 'succeeded') {
-          return {
-            token: setupIntent.payment_method,
-            customer: setupIntent.customer,
-            // payment_method_options: setupIntent.payment_method_options,
-            payment_method_types: setupIntent.payment_method_types,
-            usage: setupIntent.usage,
-          };
-        }
-
-        logger.warn('Registration declined', setupIntentId);
-        return null;
+        return retrieveSetupIntentCredentials({ setupIntentId });
       },
 
       sign: async (transactionContext = {}) => {
@@ -103,46 +96,62 @@ const Stripe: IPaymentAdapter = {
         return paymentIntent.client_secret;
       },
 
-      charge: async ({ paymentIntentId, paymentCredentials }) => {
-        if (!paymentIntentId && !paymentCredentials) {
-          throw new Error('You have to provide paymentIntentId or paymentCredentials');
-        }
-
+      charge: async (transactionContext = {}) => {
+        const chargeRequest = normalizeStripeChargeRequest(transactionContext);
         const { order, orderPayment } = context;
 
         if (!order) throw new Error('order not found in context');
         if (!orderPayment) throw new Error('orderPayment not found in context');
 
-        const { userId, name, email } = await assertUserData(order?.userId);
         const pricing = OrderPricingSheet({
           calculation: order.calculation,
           currencyCode: order.currencyCode,
         });
 
-        const paymentIntentObject = paymentIntentId
-          ? await stripe.paymentIntents.retrieve(paymentIntentId)
-          : await createOrderPaymentIntent(
-              { userId, name, email, orderPayment, order, pricing, descriptorPrefix },
-              {
-                customer: paymentCredentials.meta?.customer,
-                confirm: true,
-                payment_method: paymentCredentials.token,
-                payment_method_types: paymentCredentials.meta?.payment_method_types,
-                // payment_method_options: paymentCredentials.meta?.payment_method_options, // eslint-disable-line
-              },
-            );
+        if (chargeRequest.mode === 'acp-spt') {
+          const paymentIntentObject = await createAcpSharedPaymentTokenIntent({
+            acpToken: chargeRequest.acpToken,
+            order,
+            orderPayment,
+            pricing,
+            descriptorPrefix,
+          });
 
-        const { currencyCode, amount } = pricing.total({ useNetPrice: false });
+          if (paymentIntentObject.status === 'succeeded') {
+            return {
+              transactionId: paymentIntentObject.id,
+              status: paymentIntentObject.status,
+              paymentMethod: paymentIntentObject.payment_method,
+            };
+          }
 
-        if (
-          paymentIntentObject.currency !== currencyCode.toLowerCase() ||
-          paymentIntentObject.amount !== Math.round(amount)
-        ) {
-          throw new Error('The price has changed since the intent has been created');
+          logger.info('ACP SPT charge postponed because paymentIntent has wrong status', {
+            orderPaymentId: paymentIntentObject.id,
+          });
+
+          return false;
         }
-        if (paymentIntentObject.metadata?.orderPaymentId !== orderPayment?._id) {
-          throw new Error('The order payment is different from the initiating intent');
-        }
+
+        const { userId, name, email } = await assertUserData(order?.userId);
+        const paymentIntentObject =
+          chargeRequest.mode === 'payment-intent'
+            ? await retrievePaymentIntent(chargeRequest.paymentIntentId)
+            : await createStoredCredentialPaymentIntent({
+                userId,
+                name,
+                email,
+                orderPayment,
+                order,
+                pricing,
+                descriptorPrefix,
+                paymentCredentials: chargeRequest.paymentCredentials,
+              });
+
+        assertPaymentIntentMatchesOrderPayment({
+          paymentIntent: paymentIntentObject,
+          orderPayment,
+          pricing,
+        });
 
         if (paymentIntentObject.status === 'succeeded') {
           return paymentIntentObject;

@@ -276,24 +276,25 @@ test.describe('Plugins: Datatrans', () => {
 
       const { data: { addCartProduct, updateCart, checkoutCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation addAndCheckout($productId: ID!, $paymentContext: JSON) {
-            emptyCart {
+          mutation addAndCheckout($orderId: ID!, $productId: ID!, $paymentContext: JSON) {
+            emptyCart(orderId: $orderId) {
               _id
             }
-            addCartProduct(productId: $productId) {
+            addCartProduct(orderId: $orderId, productId: $productId) {
               _id
             }
-            updateCart(paymentProviderId: "d4d4d4d4d4") {
+            updateCart(orderId: $orderId, paymentProviderId: "d4d4d4d4d4") {
               _id
               status
             }
-            checkoutCart(paymentContext: $paymentContext) {
+            checkoutCart(orderId: $orderId, paymentContext: $paymentContext) {
               _id
               status
             }
           }
         `,
         variables: {
+          orderId: 'simple-order',
           productId: 'simpleproduct',
           paymentContext: {
             paymentCredentials: credentials,
@@ -311,21 +312,25 @@ test.describe('Plugins: Datatrans', () => {
     test('checkout with preferred alias', async () => {
       const { data: { addCartProduct, updateCart, checkoutCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation addAndCheckout($productId: ID!) {
-            addCartProduct(productId: $productId) {
+          mutation addAndCheckout($orderId: ID!, $productId: ID!) {
+            emptyCart(orderId: $orderId) {
               _id
             }
-            updateCart(paymentProviderId: "d4d4d4d4d4") {
+            addCartProduct(orderId: $orderId, productId: $productId) {
+              _id
+            }
+            updateCart(orderId: $orderId, paymentProviderId: "d4d4d4d4d4") {
               _id
               status
             }
-            checkoutCart {
+            checkoutCart(orderId: $orderId) {
               _id
               status
             }
           }
         `,
         variables: {
+          orderId: 'generic-payment-order',
           productId: 'simpleproduct',
         },
       });
