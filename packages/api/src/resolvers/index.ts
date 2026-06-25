@@ -4,6 +4,7 @@ import {
   GraphQLDateTimeISO,
   GraphQLDate,
   GraphQLLocale,
+  GraphQLPhoneNumber,
 } from 'graphql-scalars';
 import Query from './queries/index.ts';
 import Mutation from './mutations/index.ts';
@@ -20,4 +21,5 @@ export default {
   Date: GraphQLDate,
   Timestamp: GraphQLTimestamp,
   Locale: GraphQLLocale,
+  PhoneNumber: GraphQLPhoneNumber,
 } as unknown as Record<string, any>;

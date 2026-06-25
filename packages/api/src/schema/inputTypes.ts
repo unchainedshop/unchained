@@ -8,7 +8,7 @@ export default [
     input UserProfileInput {
       displayName: String
       birthday: Timestamp
-      phoneMobile: String
+      phoneMobile: PhoneNumber
       gender: String
       address: AddressInput
     }
@@ -27,7 +27,7 @@ export default [
 
     input ContactInput {
       emailAddress: String
-      telNumber: String
+      telNumber: PhoneNumber
     }
 
     input CreateLanguageInput {

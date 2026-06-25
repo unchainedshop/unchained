@@ -10,6 +10,10 @@ import type {
 } from './api/types.ts';
 import parseRegistrationData from './parseRegistrationData.ts';
 import roundedAmountFromOrder from './roundedAmountFromOrder.ts';
+import build3DSCardholder, {
+  withCardCardholder,
+  withSecureFieldsCardholder,
+} from './build3DSCardholder.ts';
 import {
   type IPaymentAdapter,
   PaymentAdapter,
@@ -306,22 +310,25 @@ const Datatrans: IPaymentAdapter = {
           ? roundedAmountFromOrder(order)
           : {};
 
+        // Datatrans requires 3DS consumer data (cardholder name, email, phone) in the
+        // init/secureFields request. Derive it from the order; callers can still override.
+        // Placement differs per endpoint: secureFields uses a top-level ['3D'], the
+        // init/redirect endpoint uses card['3D'] (verified against the Datatrans sandbox).
+        const cardholder = build3DSCardholder(order);
+
         if (useSecureFields) {
+          // The secureFields endpoint only accepts currency/amount/returnUrl/3D — it rejects
+          // refno/refno2/customer (those are set later, at the authenticated authorize step).
           const result = await api().secureFields({
-            ...arbitraryFields,
+            ...withSecureFieldsCardholder(arbitraryFields, cardholder),
             currency: price.currencyCode || 'CHF',
-            refno,
-            refno2,
-            customer: {
-              id: userId,
-            },
             amount: price.amount,
           });
           throwIfResponseError(result);
           return JSON.stringify(result as InitResponseSuccess);
         }
         const result = await api().init({
-          ...arbitraryFields,
+          ...withCardCardholder(arbitraryFields, cardholder),
           currency: price.currencyCode || 'CHF',
           refno,
           refno2,
@@ -463,11 +470,20 @@ const Datatrans: IPaymentAdapter = {
         if (status === 'authenticated') {
           if (authorizeAuthenticated) {
             checkIfTransactionAmountValid(transactionId, transaction);
+            // refno/refno2 must be set on the authorize call: secureFields transactions carry
+            // neither (the init endpoint rejects them), so derive them from the order context
+            // (identical to authorize()) and fall back to the transaction for the redirect flow.
+            const { orderPayment, order } = context;
+            const userId = order?.userId || context?.userId;
+            const refno = orderPayment
+              ? Buffer.from(orderPayment._id, 'hex').toString('base64')
+              : transaction.refno;
+            const refno2 = userId || transaction.refno2;
             await authorizeAuth({
               ...(authorizeAuthenticated || {}),
               transactionId,
-              refno: transaction.refno,
-              refno2: transaction.refno2,
+              refno,
+              refno2,
             });
             status = 'authorized';
           } else {

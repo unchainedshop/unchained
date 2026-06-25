@@ -19,7 +19,13 @@ import {
   UsersCollection,
 } from '../db/UsersCollection.ts';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { systemLocale, SortDirection, type SortOption, sha256 } from '@unchainedshop/utils';
+import {
+  systemLocale,
+  SortDirection,
+  type SortOption,
+  sha256,
+  normalizePhoneNumber,
+} from '@unchainedshop/utils';
 import {
   UserAccountAction,
   type UserRegistrationData,
@@ -30,6 +36,7 @@ import { configureUsersWebAuthnModule } from './configureUsersWebAuthnModule.ts'
 import * as pbkdf2 from './pbkdf2.ts';
 import { verifyWeb3Signature } from '../utils/web3-verification.ts';
 import convertUserLocale from '../migrations/20241218092300-convert-locale.ts';
+import normalizeProfilePhone from '../migrations/20260625120200-normalize-profile-phone.ts';
 
 const USER_EVENTS = [
   'USER_ACCOUNT_ACTION',
@@ -121,6 +128,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
 
   // Migration v3 -> v4
   convertUserLocale(migrationRepository);
+  normalizeProfilePhone(migrationRepository);
 
   userSettings.configureSettings(options || {}, db);
   registerEvents(USER_EVENTS);
@@ -906,11 +914,29 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
 
       const modifier = { $set: {} };
 
-      if (profile) {
-        modifier.$set = Object.keys(profile).reduce((acc, profileKey) => {
+      let normalizedProfile = profile;
+      if (profile?.phoneMobile) {
+        let defaultCountry = profile.address?.countryCode;
+        if (!defaultCountry) {
+          const existing = await Users.findOne(userFilter, {
+            projection: { lastBillingAddress: true, profile: true, lastLogin: true },
+          });
+          defaultCountry =
+            existing?.lastBillingAddress?.countryCode ||
+            existing?.profile?.address?.countryCode ||
+            existing?.lastLogin?.countryCode;
+        }
+        normalizedProfile = {
+          ...profile,
+          phoneMobile: normalizePhoneNumber(profile.phoneMobile, defaultCountry) || profile.phoneMobile,
+        };
+      }
+
+      if (normalizedProfile) {
+        modifier.$set = Object.keys(normalizedProfile).reduce((acc, profileKey) => {
           return {
             ...acc,
-            [`profile.${profileKey}`]: profile[profileKey],
+            [`profile.${profileKey}`]: normalizedProfile[profileKey],
           };
         }, {});
       }
@@ -974,16 +1000,28 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       const profile = user.profile || {};
       const isGuest = !!user.guest;
 
+      const defaultCountry =
+        user.lastBillingAddress?.countryCode ||
+        profile.address?.countryCode ||
+        user.lastLogin?.countryCode;
+      const normalizedContact = lastContact?.telNumber
+        ? {
+            ...lastContact,
+            telNumber:
+              normalizePhoneNumber(lastContact.telNumber, defaultCountry) || lastContact.telNumber,
+          }
+        : lastContact;
+
       const modifier = {
         $set: {
           updated: new Date(),
-          lastContact,
+          lastContact: normalizedContact,
         },
       };
 
-      if ((!profile.phoneMobile || isGuest) && lastContact.telNumber) {
+      if ((!profile.phoneMobile || isGuest) && normalizedContact.telNumber) {
         // Backport the contact phone number to the user profile
-        modifier.$set['profile.phoneMobile'] = lastContact.telNumber;
+        modifier.$set['profile.phoneMobile'] = normalizedContact.telNumber;
       }
 
       const updatedUser = await Users.findOneAndUpdate(userFilter, modifier, {

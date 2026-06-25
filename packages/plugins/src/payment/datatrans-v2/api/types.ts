@@ -271,6 +271,7 @@ export interface SecureFieldsRequestPayload {
   currency: string;
   returnUrl?: string;
   amount?: number;
+  // 3DS cardholder data lives here for secureFields (this endpoint rejects a `card` property).
   ['3D']?: Record<string, unknown>;
 }
 

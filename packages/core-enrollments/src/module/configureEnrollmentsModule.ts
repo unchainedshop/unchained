@@ -1,4 +1,4 @@
-import { SortDirection, type SortOption } from '@unchainedshop/utils';
+import { SortDirection, type SortOption, normalizePhoneNumber } from '@unchainedshop/utils';
 import {
   type Enrollment,
   type EnrollmentPeriod,
@@ -17,6 +17,7 @@ import {
 } from '@unchainedshop/mongodb';
 import { EnrollmentsCollection } from '../db/EnrollmentsCollection.ts';
 import { enrollmentsSettings, type EnrollmentsSettingsOptions } from '../enrollments-settings.ts';
+import normalizeContactPhoneMigration from '../migrations/20260625120100-normalize-contact-phone.ts';
 
 export interface EnrollmentQuery {
   status?: EnrollmentStatus[];
@@ -30,6 +31,19 @@ const ENROLLMENT_EVENTS: string[] = [
   'ENROLLMENT_REMOVE',
   'ENROLLMENT_UPDATE',
 ];
+
+// Stores the contact's phone number in normalized E.164 format, falling back to the
+// original value when it cannot be parsed (it has already passed input validation).
+const normalizeContactPhone = <T extends Contact | undefined>(
+  contact: T,
+  defaultCountry?: string,
+): T => {
+  if (!contact?.telNumber) return contact;
+  return {
+    ...contact,
+    telNumber: normalizePhoneNumber(contact.telNumber, defaultCountry) || contact.telNumber,
+  } as T;
+};
 
 export const buildFindSelector = ({ queryString, status, userId }: EnrollmentQuery) => {
   const selector: mongodb.Filter<Enrollment> = {
@@ -46,8 +60,11 @@ export const buildFindSelector = ({ queryString, status, userId }: EnrollmentQue
 
 export const configureEnrollmentsModule = async ({
   db,
+  migrationRepository,
   options: enrollmentOptions = {},
 }: ModuleInput<EnrollmentsSettingsOptions>) => {
+  normalizeContactPhoneMigration(migrationRepository);
+
   registerEvents(ENROLLMENT_EVENTS);
 
   enrollmentsSettings.configureSettings(enrollmentOptions);
@@ -236,6 +253,10 @@ export const configureEnrollmentsModule = async ({
         periods: [],
         currencyCode,
         countryCode,
+        contact: normalizeContactPhone(
+          enrollmentData.contact,
+          enrollmentData.billingAddress?.countryCode || countryCode,
+        ),
         configuration: enrollmentData.configuration || [],
         log: [],
       });
@@ -277,7 +298,16 @@ export const configureEnrollmentsModule = async ({
     },
 
     updateBillingAddress: updateEnrollmentField<Address>('billingAddress'),
-    updateContact: updateEnrollmentField<Contact>('contact'),
+    updateContact: async (enrollmentId: string, contact: Contact) => {
+      const existing = await Enrollments.findOne(generateDbFilterById(enrollmentId), {
+        projection: { billingAddress: true, countryCode: true },
+      });
+      const defaultCountry = existing?.billingAddress?.countryCode || existing?.countryCode;
+      return updateEnrollmentField<Contact>('contact')(
+        enrollmentId,
+        normalizeContactPhone(contact, defaultCountry),
+      );
+    },
     updateContext: updateEnrollmentField<any>('meta'),
     updateDelivery: updateEnrollmentField<Enrollment['delivery']>('delivery'),
     updatePayment: updateEnrollmentField<Enrollment['payment']>('payment'),

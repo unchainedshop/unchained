@@ -10,6 +10,7 @@ export { default as buildObfuscatedFieldsFilter } from './build-obfuscated-field
 export { default as sha256 } from './sha256.ts';
 export { default as sha1 } from './sha1.ts';
 export { timingSafeEqual, timingSafeStringEqual } from './timing-safe-equal.ts';
+export { normalizePhoneNumber, phoneNumberToParts } from './phone-number.ts';
 
 export const SortDirection = {
   ASC: 'ASC',
