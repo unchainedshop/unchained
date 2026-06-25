@@ -312,6 +312,9 @@ test.describe('Plugins: Datatrans', () => {
       const { data: { addCartProduct, updateCart, checkoutCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addAndCheckout($productId: ID!) {
+            emptyCart {
+              _id
+            }
             addCartProduct(productId: $productId) {
               _id
             }
