@@ -29,8 +29,8 @@ export default [
       '*.config.js',
       '*.config.mjs',
       'generate-permissions.js',      
-      'custom-formatter.js',
-      'extract-missing-translation-keys.js',
+      'custom-formatter.cjs',
+      'extract-missing-translation-keys.cjs',
       'loadPermissionConfig.js',
       'possibleTypesGenerator.mjs',
       // JS files in src that should be ignored
