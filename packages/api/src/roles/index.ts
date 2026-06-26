@@ -115,6 +115,8 @@ const actions: Record<string, string> = [
   'downloadFile',
   'uploadUserAvatar',
   'uploadTempFile',
+  'validatePassCode',
+  'gateControl',
 ].reduce((oldValue, actionValue) => {
   const newValue = oldValue;
   newValue[actionValue] = actionValue;
