@@ -3,17 +3,20 @@ import { FilterAdapter, type IPlugin, type IFilterAdapter } from '../core-index.
 import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 
 export default function registerProductSearchFilter({
+  adapterId,
   orderIndex = 0,
   search,
 }: {
+  adapterId?: string;
   orderIndex?: number;
   search: (params: SearchQuery & { queryString: string; locale: Intl.Locale }) => Promise<string[]>;
 }): IPlugin {
+  const id = adapterId ?? crypto.randomUUID();
   const adapter: IFilterAdapter = {
     ...FilterAdapter,
 
-    key: `shop.unchained.filters.product-search-${crypto.randomUUID()}`,
-    label: 'Product Search Filter (auto-generated)',
+    key: `shop.unchained.filters.product-search-${id}`,
+    label: adapterId ? `Product Search Filter: ${adapterId}` : 'Product Search Filter (auto-generated)',
     version: '1.0.0',
     orderIndex,
 

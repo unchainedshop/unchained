@@ -71,7 +71,7 @@ export const PlanProduct = {
   ): Promise<
     {
       minQuantity: number;
-      maxQuantity: number;
+      maxQuantity: number | null;
       price: ProductPrice;
     }[]
   > {

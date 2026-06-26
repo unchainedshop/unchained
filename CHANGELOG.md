@@ -29,14 +29,67 @@
   - `updateOrderPaymentInvoice` → use `updateCartPaymentInvoice`
   - `updateOrderPaymentGeneric` → use `updateCartPaymentGeneric`
 
-- **REMOVED**: `OrderDeliveryPickUp.pickUpLocations` field. Use `DeliveryProvider.pickupLocations` instead.
+- **REMOVED**: `OrderDeliveryPickUp.pickUpLocations` field. Use `DeliveryProviderPickUp.pickUpLocations` instead.
 
 - **REMOVED**: Router export aliases:
   - `expressRouter` → use `adminUIRouter` from `@unchainedshop/api/express`
   - `fastifyRouter` → use `adminUIRouter` from `@unchainedshop/api/fastify`
 
+### Authentication (Stateless JWT)
+- **CHANGED**: Authentication moved from stateful Express/Passport sessions to stateless JWTs (HS256, signed/verified with `jose`). Server-side session storage — `express-session`, `@fastify/session`, `passport`, and the bundled MongoDB session store — has been removed. **All existing sessions are invalidated on upgrade; clients must re-authenticate.**
+- **REMOVED**: `express-session`, `@fastify/session`, `passport`, and `jsonwebtoken` dependencies. `cookie-parser` is now a required peer dependency. The `sessions` collection is no longer used.
+- **NEW (required)**: `UNCHAINED_TOKEN_SECRET` must be set and be at least 32 characters (256 bits) or token signing/verification throws. Optional `UNCHAINED_TOKEN_EXPIRY_SECONDS` (default `3600`, previously effectively 7 days) and `UNCHAINED_TOKEN_ISSUER` (default `unchained-engine`).
+- **CHANGED**: Token revocation is stateless via a `User.tokenVersion` counter — incrementing it invalidates every outstanding token for that user. `modules.users.markDeleted` now bumps `tokenVersion` instead of deleting session rows.
+- **CHANGED**: Default cookie `SameSite` changed from `none` to `lax` (CSRF hardening). Set `UNCHAINED_COOKIE_SAMESITE=none` if you rely on cross-site/embedded auth flows.
+- **CHANGED**: `signAccessToken()` and `verifyLocalToken()` are now async.
+- **CHANGED**: `Mutation.logoutAllSessions` return type changed from `LogoutAllSessionsResponse!` to `SuccessResponse` (no longer exposes `tokenVersion`).
+- **CHANGED**: `changePassword` is no longer self-permitted by the default ACL — review custom roles if you relied on this.
+
+### Roles
+- **CHANGED**: The global `Roles` singleton is replaced by a `createRoles()` factory that returns an isolated instance (removes shared global state across server instances). The `Role` constructor no longer auto-registers into a global registry and no longer throws on duplicate names; register explicitly via `addRole()` / `configureRoles()`. Default `admin` / `__loggedIn__` / `__all__` roles are no longer created at module import. `UnchainedServerOptions.roles` and `Context.roles` are now typed `RolesInterface` (was `any`).
+
+### Admin UI
+- **CHANGED**: Permissions moved from a build-time generated artifact (`generate-permissions.js`, `window.AdminUiPermissions`) to a typed runtime model in `src/modules/Auth/permissionConfig.ts`. The build no longer runs `generate-permissions.js` or emits `public/admin-ui-permissions.js`.
+- **CHANGED**: Access control is now **deny-by-default** — routes absent from `ROUTE_ROLES` are denied. Custom pages must be added to `ROUTE_ROLES` or `UNRESTRICTED_PAGES`. Dashboard widgets, mutating controls, and form fields gate on `hasRole()` / `isAdmin()`, and data hooks skip GraphQL queries the user is not authorized for.
+- **CHANGED**: 54 UI primitives consolidated into a canonical `src/components/ui/` kit (with `@/components/ui` and `@/components/ui/form` barrels). Importing them from the old `**/common/components/*` / `**/forms/components/*` paths is now an ESLint error. `DeleteButton`, `HeaderDeleteButton`, and `EditIcon` were removed (use `<Button>` variants). The per-domain `use*StatusTypes` hooks were replaced by a generic `useStatusTypes(enumName)`. `classnames` was replaced by `clsx`.
+
+### Server Adapters (Express & Fastify)
+- **CHANGED**: `connect()` is now async; its `db` argument and `initPluginMiddlewares` callback were removed in favor of `authConfig` (JWT/OIDC) and `trustProxy` options. Proxy header trust (`x-forwarded-for` / `x-real-ip`) is now opt-in via `trustProxy`. Plugin HTTP routes mount automatically from the plugin registry (`pluginRegistry.getRoutes()`) via WHATWG-Fetch handlers, replacing the per-framework `handler-express.ts` / `handler-fastify.ts` files.
+- **REMOVED**: `GRAPHQL_API_PATH` environment variable is no longer read. Configure the GraphQL endpoint path through Yoga options (`graphqlHandler.graphqlEndpoint`). `MCP_API_PATH` is retained.
+
 ### Plugins
-- **REMOVED**: PayPal Checkout plugin entirely (due to deprecated `@paypal/checkout-server-sdk`). Migrate to Braintree or implement custom PayPal integration using `@paypal/paypal-server-sdk`.
+- **REMOVED**: PayPal Checkout plugin entirely (due to deprecated `@paypal/checkout-server-sdk`). Implement a custom PayPal integration using `@paypal/paypal-server-sdk`.
+- **REMOVED**: Braintree payment plugin.
+
+### Leveled Pricing
+- **CHANGED**: Product catalog price tiers are now keyed by **`minQuantity`** (inclusive lower bound; base tier `= 0`; the highest tier is open-ended) instead of v4's `maxQuantity` (inclusive upper bound). GraphQL: `UpdateProductCommercePricingInput.maxQuantity` **removed** (use `minQuantity`); `PriceLevel.minQuantity` added and `PriceLevel.maxQuantity` is now derived/nullable for display; `ProductCatalogPrice.minQuantity` replaces `maxQuantity`. Bulk-import/export product price columns use `minQuantity`.
+- **AUTOMATIC MIGRATION**: an idempotent startup migration (`20260611120000-pricing-maxquantity-to-minquantity`) converts existing `commerce.pricing` per `(countryCode, currencyCode)` — no operator action required; safe to re-run. **Update any storefront/client/import code that wrote `maxQuantity` to write `minQuantity`.**
+
+### Event System
+- **CHANGED**: the Redis and AWS EventBridge emit adapters no longer self-register on import. Register the transport explicitly before `startPlatform`: `import { setEmitAdapter } from '@unchainedshop/events'; import { RedisEventEmitter } from '@unchainedshop/plugins/events/redis'; setEmitAdapter(RedisEventEmitter());`
+- **NEW**: optional `EmitAdapter.shutdown()` — implemented by the redis/eventbridge adapters to close long-lived connections; called by `startPlatform` on graceful shutdown.
+
+## New Features & Improvements
+
+### Authentication & Security
+- **NEW**: `Mutation.logoutAllSessions` invalidates all of a user's JWTs by bumping the token version.
+- **NEW**: OIDC inbound token verification (remote JWKS) and an OpenID Connect Back-Channel Logout 1.0 endpoint (`POST /backchannel-logout`) with full `logout_token` signature verification.
+- **NEW**: Token-sidejacking protection — a fingerprint hash is embedded in the JWT and matched against a hardened `__Secure-fgp` cookie using a timing-safe compare.
+- **NEW**: Security audit events `ACL_DENIED` and `ACL_GRANTED_SENSITIVE` for monitoring denied and sensitive permission grants.
+- **CHANGED**: Admin impersonation now travels inside the JWT (`imp` claim) instead of session state.
+
+### Developer Experience
+- **NEW**: `registerX(...)` plugin authoring factories (re-exported from `@unchainedshop/core`) — author a custom adapter of any director type in one typed call (`registerPaymentProvider`, `registerDeliveryProvider`, `registerProductPricing`, `registerOrderDiscount`, `registerWorker`, `registerFileAdapter`, `registerQuotation`, `registerEnrollment`, …). They build and register the `IPlugin` for you; `pluginRegistry.register()` remains the low-level primitive. See the [Plugin Factories](https://docs.unchained.shop/extend/plugin-factories) docs.
+- **NEW**: `@unchainedshop/client` package — installable React/Apollo GraphQL hooks with per-module subpath imports (e.g. `@unchainedshop/client/product`), generated from the admin-ui hooks, for building custom storefronts and admin tools. Peer dependencies: `@apollo/client` ^4, `graphql` ^16, `react` >=18.
+- **NEW**: Pluggable logger context — `setLogContextProvider()` merges request-scoped fields (e.g. OpenTelemetry `trace_id` / `span_id`) into every JSON log line (prototype-pollution-safe; provider errors are swallowed so telemetry never breaks logging).
+- **NEW**: `Query.registeredEventTypes: [String!]!` lists all registered event type names (gated by `viewEvents`).
+
+### Admin UI
+- Added Cypress e2e suites for enrollments, quotations, and tokens, and reduced flakiness (lower retries, real support entrypoint, `cy.selectLocale()` command).
+
+### Documentation
+- **NEW**: AI Integration docs section (MCP server reference with 9 tool categories, Admin Copilot setup, AI FAQ) and auto-generated `/llms.txt` + `/llms-full.txt` for LLM/crawler consumption.
+- Added a comprehensive GraphQL API reference and an RBAC permissions reference (126 actions documented), plus server-setup, testing, seed-data, and contributing guides.
 
 ## Migration Guide
 See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migration instructions.

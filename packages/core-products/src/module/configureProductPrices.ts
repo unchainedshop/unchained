@@ -38,6 +38,19 @@ export const normalizeRate = (
   return rate;
 };
 
+const normalizeProductPrice = (priceLevel: ProductPrice): ProductPrice | null => {
+  if (priceLevel.amount === null) return null;
+
+  return {
+    amount: priceLevel.amount,
+    currencyCode: priceLevel.currencyCode,
+    countryCode: priceLevel.countryCode,
+    minQuantity: priceLevel.minQuantity ?? 0,
+    isTaxable: !!priceLevel.isTaxable,
+    isNetPrice: !!priceLevel.isNetPrice,
+  };
+};
+
 export const configureProductPricesModule = ({
   proxyProducts,
   db,
@@ -63,19 +76,14 @@ export const configureProductPricesModule = ({
       countryCode,
     });
 
-    const foundPrice = pricing.find((level) => !level.maxQuantity || level.maxQuantity >= quantity);
+    // Tiers are sorted ascending by minQuantity; the applicable tier is the
+    // highest floor that is <= quantity. The base tier has minQuantity 0, so the
+    // default quantity 0 used by price-range queries resolves to it. Legacy
+    // data without a floor is treated as the base tier until it is migrated.
+    const foundPrice = pricing.filter((level) => (level.minQuantity ?? 0) <= quantity).pop();
     if (!foundPrice) return null;
 
-    const normalizedPrice = {
-      isTaxable: false,
-      isNetPrice: false,
-      ...foundPrice,
-    };
-
-    if (normalizedPrice.amount !== null) {
-      return normalizedPrice;
-    }
-    return null;
+    return normalizeProductPrice(foundPrice);
   };
 
   return {
@@ -84,7 +92,9 @@ export const configureProductPricesModule = ({
     priceRange: getPriceRange,
 
     async catalogPrices(product: Product): Promise<ProductPrice[]> {
-      return (product.commerce && product.commerce.pricing) || [];
+      return ((product.commerce && product.commerce.pricing) || [])
+        .map(normalizeProductPrice)
+        .filter((priceLevel): priceLevel is ProductPrice => Boolean(priceLevel));
     },
 
     catalogPriceRange: async (
@@ -138,36 +148,31 @@ export const configureProductPricesModule = ({
     ): Promise<
       {
         minQuantity: number;
-        maxQuantity: number;
+        maxQuantity: number | null;
         price: ProductPrice;
       }[]
     > => {
-      let previousMax: number | undefined;
-
-      const filteredAndSortedPriceLevels = getPriceLevels({
+      const sortedPriceLevels = getPriceLevels({
         product,
         currencyCode,
         countryCode,
       });
 
-      return filteredAndSortedPriceLevels.map((priceLevel, i) => {
-        const max = priceLevel.maxQuantity || 0;
-        const min = previousMax ? previousMax + 1 : 0;
-        previousMax = priceLevel.maxQuantity;
+      return sortedPriceLevels.flatMap((priceLevel, i) => {
+        const nextLevel = sortedPriceLevels[i + 1];
+        const price = normalizeProductPrice({
+          ...priceLevel,
+          currencyCode,
+          countryCode,
+        });
+        if (!price) return [];
 
+        // Present each tier as [minQuantity .. maxQuantity]. The upper bound is
+        // derived from the next tier's floor; the highest tier is open-ended (null).
         return {
-          minQuantity: min,
-          maxQuantity:
-            i === 0 && priceLevel.maxQuantity && priceLevel.maxQuantity > 0
-              ? priceLevel.maxQuantity
-              : max,
-          price: {
-            isTaxable: !!priceLevel.isTaxable,
-            isNetPrice: !!priceLevel.isNetPrice,
-            amount: priceLevel.amount,
-            currencyCode,
-            countryCode,
-          },
+          minQuantity: priceLevel.minQuantity ?? 0,
+          maxQuantity: nextLevel?.minQuantity != null ? nextLevel.minQuantity - 1 : null,
+          price,
         };
       });
     },

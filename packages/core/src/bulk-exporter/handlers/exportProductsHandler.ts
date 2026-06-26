@@ -33,7 +33,7 @@ const PRODUCT_CSV_SCHEMA = {
     'countryCode',
     'isTaxable',
     'isNetPrice',
-    'maxQuantity',
+    'minQuantity',
   ],
   bundleItemHeaders: ['productId', 'bundleItemProductId', 'quantity', 'configuration'],
   variationItemHeaders: ['productId', 'variationId', 'key', 'type'],
@@ -97,7 +97,7 @@ const buildPriceRows = (productId: string, prices = []) =>
     isTaxable: p.isTaxable ?? '',
     currencyCode: p.currency?.isoCode ?? '',
     countryCode: p.country?.isoCode ?? '',
-    maxQuantity: p.maxQuantity ?? '',
+    minQuantity: p.minQuantity ?? '',
   }));
 
 const buildBundleRows = (productId: string, bundles = []) =>

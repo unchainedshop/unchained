@@ -63,7 +63,10 @@ export interface ProductPrice extends Price {
   isTaxable?: boolean;
   isNetPrice?: boolean;
   countryCode: string;
-  maxQuantity?: number;
+  // Lower bound (inclusive) of the quantity tier this price applies to. `0` (or
+  // absent on legacy data) is the base tier. The tier runs until the next
+  // tier's minQuantity; the highest minQuantity tier is open-ended.
+  minQuantity?: number;
 }
 
 export interface ProductPriceRange {

@@ -141,71 +141,32 @@ mutation SetPickupLocation($deliveryProviderId: ID!, $locationId: ID!) {
 
 ## Extending for Dynamic Stores
 
-For stores managed in a database or external system:
+For stores managed in a database or external system, supply a dynamic `locations` callback:
 
 ```typescript
-import { DeliveryDirector, type IDeliveryAdapter } from '@unchainedshop/core';
+import { registerPickUpDelivery } from '@unchainedshop/core';
 
-const DynamicStoresAdapter: IDeliveryAdapter = {
-  key: 'my-shop.dynamic-stores',
-  label: 'Dynamic Store Locations',
-  version: '1.0.0',
+registerPickUpDelivery({
+  adapterId: 'dynamic-stores',
+  autoReleaseAllowed: false,
+  locations: async () => {
+    const stores = await storeRepository.findActive();
 
-  typeSupported: (type) => type === 'PICKUP',
-
-  actions(config, context) {
-    const { modules } = context;
-
-    return {
-      configurationError() { return null; },
-      isActive() { return true; },
-      isAutoReleaseAllowed() { return false; },
-
-      async pickUpLocations() {
-        // Fetch from database or external API
-        const stores = await modules.warehousing.findWarehouses({
-          type: 'STORE',
-          isActive: true,
-        });
-
-        return stores.map(store => ({
-          _id: store._id,
-          name: store.name,
-          address: store.address,
-          geoPoint: store.coordinates ? {
-            latitude: store.coordinates.lat,
-            longitude: store.coordinates.lng,
-          } : null,
-        }));
-      },
-
-      async pickUpLocationById(locationId) {
-        const store = await modules.warehousing.findWarehouse({ _id: locationId });
-        if (!store) return null;
-
-        return {
-          _id: store._id,
-          name: store.name,
-          address: store.address,
-        };
-      },
-
-      async send() {
-        // Notify store about pickup order
-        const { order } = context;
-        await notifyStore(order);
-        return { status: 'READY_FOR_PICKUP' };
-      },
-
-      estimatedDeliveryThroughput(warehousingTime) {
-        // Pickup ready same day
-        return warehousingTime;
-      },
-    };
+    return stores.map((store) => ({
+      _id: store._id,
+      name: store.name,
+      address: store.address,
+      geoPoint: store.coordinates
+        ? { latitude: store.coordinates.lat, longitude: store.coordinates.lng }
+        : null,
+    }));
   },
-};
-
-DeliveryDirector.registerAdapter(DynamicStoresAdapter);
+  estimatedDeliveryThroughput: async (warehousingTime) => warehousingTime,
+  send: async (configuration, { order }) => {
+    await notifyStore(order);
+    return false;
+  },
+});
 ```
 
 ## Store Locator Integration

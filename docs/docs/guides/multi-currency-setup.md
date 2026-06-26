@@ -205,20 +205,14 @@ WorkerDirector.configureAutoscheduling({
 Create a worker to fetch rates from your preferred provider:
 
 ```typescript
-import { WorkerDirector, type IWorkerAdapter } from '@unchainedshop/core';
+import { registerWorker, WorkerDirector } from '@unchainedshop/core';
 
-const ExchangeRateWorker: IWorkerAdapter = {
-  key: 'shop.example.worker.exchange-rates',
-  label: 'Custom Exchange Rate Worker',
-  version: '1.0.0',
+registerWorker<{ baseCurrency: string }, { updated: number }>({
   type: 'UPDATE_EXCHANGE_RATES',
-  external: false,
   maxParallelAllocations: 1,
-
-  async doWork(input, unchainedAPI) {
+  process: async (input) => {
     const { baseCurrency } = input;
 
-    // Fetch rates from your provider (e.g., Open Exchange Rates, Fixer.io)
     const response = await fetch(
       `https://api.exchangerate-api.com/v4/latest/${baseCurrency}`
     );
@@ -232,14 +226,10 @@ const ExchangeRateWorker: IWorkerAdapter = {
       timestamp: Date.now(),
     }));
 
-    // Update rates in database
-    await unchainedAPI.modules.products.prices.rates.updateRates(rates);
-
-    return { success: true, result: { updated: rates.length } };
+    await updateExchangeRates(rates);
+    return { updated: rates.length };
   },
-};
-
-WorkerDirector.registerAdapter(ExchangeRateWorker);
+});
 
 // Schedule hourly updates
 WorkerDirector.configureAutoscheduling({
@@ -254,55 +244,34 @@ WorkerDirector.configureAutoscheduling({
 Create a pricing adapter for automatic conversion:
 
 ```typescript
-import {
-  ProductPricingAdapter,
-  ProductPricingDirector,
-} from '@unchainedshop/core-pricing';
+import { registerProductPricing } from '@unchainedshop/core';
 
-class CurrencyConversionAdapter extends ProductPricingAdapter {
-  static key = 'shop.unchained.pricing.currency-conversion';
-  static orderIndex = 1; // Run early
-
-  static isActivatedFor({ currencyCode, product }) {
-    // Only if product has no price in requested currency
-    const hasDirectPrice = product.commerce?.pricing?.some(
-      (p) => p.currencyCode === currencyCode
-    );
-    return !hasDirectPrice;
-  }
-
-  async calculate() {
-    const { product, currencyCode, modules } = this.context;
-
-    // Get base price
-    const basePrice = product.commerce?.pricing?.[0];
-    if (!basePrice) return super.calculate();
-
-    // Get exchange rate
-    const rate = await modules.currencies.getExchangeRate(
+registerProductPricing({
+  adapterId: 'currency-conversion',
+  orderIndex: 1, // run early
+  // only when the product has no direct price in the requested currency
+  isActivatedFor: (context) =>
+    !context.product?.commerce?.pricing?.some((p) => p.currencyCode === context.currencyCode),
+  calculate: async (sheet, context) => {
+    const basePrice = context.product?.commerce?.pricing?.[0];
+    if (!basePrice) return;
+    const rate = await exchangeRateProvider.getRate(
       basePrice.currencyCode,
-      currencyCode
+      context.currencyCode,
     );
-
     if (rate) {
-      this.result.addItem({
+      sheet.addItem({
         amount: Math.round(basePrice.amount * rate),
         isTaxable: basePrice.isTaxable,
         isNetPrice: basePrice.isNetPrice,
-        meta: {
-          adapter: this.constructor.key,
-          convertedFrom: basePrice.currencyCode,
-          rate,
-        },
+        meta: { convertedFrom: basePrice.currencyCode, rate },
       });
     }
-
-    return super.calculate();
-  }
-}
-
-ProductPricingDirector.registerAdapter(CurrencyConversionAdapter);
+  },
+});
 ```
+
+> Most stores use the built-in `ProductPriceRateConversion` plugin (in the `crypto` preset) for this — write a custom adapter only for bespoke conversion logic.
 
 ## Querying Prices
 
@@ -506,33 +475,23 @@ mutation CreateCryptoCurrency {
 ### Crypto Pricing
 
 ```typescript
-class CryptoPricingAdapter extends ProductPricingAdapter {
-  static key = 'shop.unchained.pricing.crypto';
-  static orderIndex: 2;
+import { registerProductPricing } from '@unchainedshop/core';
 
-  static isActivatedFor({ currencyCode }) {
-    return ['ETH', 'BTC', 'USDC'].includes(currencyCode);
-  }
-
-  async calculate() {
-    const { currencyCode, modules } = this.context;
-
-    // Get crypto exchange rate
-    const rate = await fetchCryptoRate(currencyCode);
-
-    // Convert from base currency
-    const baseTotal = this.calculation.sum({ category: 'BASE' });
-
-    this.result.addItem({
-      amount: convertToCrypto(baseTotal, rate, currencyCode),
+registerProductPricing({
+  adapterId: 'crypto',
+  orderIndex: 2,
+  isActivatedFor: (context) => ['ETH', 'BTC', 'USDC'].includes(context.currencyCode),
+  calculate: async (sheet, context) => {
+    const rate = await fetchCryptoRate(context.currencyCode);
+    const baseTotal = sheet.sum({ category: 'BASE' });
+    sheet.addItem({
+      amount: convertToCrypto(baseTotal, rate, context.currencyCode),
       isTaxable: false,
       isNetPrice: true,
       meta: { cryptoRate: rate },
     });
-
-    return super.calculate();
-  }
-}
+  },
+});
 ```
 
 ## Best Practices

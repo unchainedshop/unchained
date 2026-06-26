@@ -23,7 +23,19 @@ export default async function updateProductCommerce(
     });
   }
 
-  await modules.products.update(productId, { commerce });
+  // Normalize quantity tiers: an omitted minQuantity is the base tier (0);
+  // an explicit floor must be >= 0.
+  const normalizedCommerce: ProductCommerce = {
+    ...commerce,
+    pricing: commerce?.pricing?.map((priceLevel) => {
+      if (priceLevel.minQuantity != null && priceLevel.minQuantity < 0) {
+        throw new Error('minQuantity must be greater than or equal to 0');
+      }
+      return { ...priceLevel, minQuantity: priceLevel.minQuantity ?? 0 };
+    }),
+  };
+
+  await modules.products.update(productId, { commerce: normalizedCommerce });
 
   return modules.products.findProduct({ productId });
 }

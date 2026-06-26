@@ -201,91 +201,39 @@ configureGenerateOrderAutoscheduling();
 
 ## Extending the Adapter
 
-For custom subscription logic:
+For custom subscription logic, use `registerEnrollment`:
 
 ```typescript
-import { EnrollmentDirector, EnrollmentAdapter, type IEnrollmentAdapter } from '@unchainedshop/core';
+import { registerEnrollment } from '@unchainedshop/core';
 
-const CustomEnrollmentAdapter: IEnrollmentAdapter = {
-  ...EnrollmentAdapter,
+registerEnrollment({
+  adapterId: 'metered',
+  isActivatedFor: (plan) => plan?.usageCalculationType === 'METERED',
 
-  key: 'my-shop.enrollments.custom',
-  version: '1.0.0',
-  label: 'Custom Subscription',
-
-  isActivatedFor: (productPlan) => {
-    return productPlan?.usageCalculationType === 'METERED';
+  isValidForActivation: async ({ enrollment }) => {
+    const now = Date.now();
+    return (enrollment?.periods || []).some(
+      (period) =>
+        new Date(period.start).getTime() <= now &&
+        new Date(period.end).getTime() >= now,
+    );
   },
 
-  actions: (params) => {
-    const { enrollment, modules } = params;
+  configurationForOrder: async ({ period }, { enrollment }) => {
+    if (!enrollment) return null;
+    const usage = await calculateUsage(enrollment._id, period);
 
     return {
-      ...EnrollmentAdapter.actions(params),
-
-      isValidForActivation: async () => {
-        // Custom validation logic
-        const periods = enrollment?.periods || [];
-        const hasActivePeriod = periods.some(p => {
-          const now = Date.now();
-          return new Date(p.start).getTime() <= now &&
-                 new Date(p.end).getTime() >= now;
-        });
-
-        // Also check payment status
-        const latestOrder = await modules.orders.findOrder({
-          enrollmentId: enrollment._id,
-          sort: { created: -1 },
-        });
-
-        return hasActivePeriod && latestOrder?.status === 'CONFIRMED';
-      },
-
-      isOverdue: async () => {
-        // Check if payment is overdue
-        const gracePeriodDays = 7;
-        const periods = enrollment?.periods || [];
-        const currentPeriod = periods.find(p => {
-          const now = Date.now();
-          return new Date(p.start).getTime() <= now;
-        });
-
-        if (!currentPeriod?.orderId) return false;
-
-        const order = await modules.orders.findOrder({
-          orderId: currentPeriod.orderId,
-        });
-
-        if (order?.status !== 'PENDING') return false;
-
-        const dueDate = new Date(currentPeriod.start);
-        dueDate.setDate(dueDate.getDate() + gracePeriodDays);
-
-        return Date.now() > dueDate.getTime();
-      },
-
-      configurationForOrder: async ({ period }) => {
-        // Custom order generation with usage-based pricing
-        const usage = await calculateUsage(enrollment._id, period);
-
-        return {
-          period,
-          orderContext: { usage },
-          orderPositionTemplates: [{
-            quantity: usage.units,
-            productId: enrollment.productId,
-            originalProductId: enrollment.productId,
-            configuration: [
-              { key: 'usageUnits', value: String(usage.units) },
-            ],
-          }],
-        };
-      },
+      orderContext: { usage },
+      orderPositionTemplates: [{
+        quantity: usage.units,
+        productId: enrollment.productId,
+        originalProductId: enrollment.productId,
+        configuration: [{ key: 'usageUnits', value: String(usage.units) }],
+      }],
     };
   },
-};
-
-EnrollmentDirector.registerAdapter(CustomEnrollmentAdapter);
+});
 ```
 
 ## Adapter Details

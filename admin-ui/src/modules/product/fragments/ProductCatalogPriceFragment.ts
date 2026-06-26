@@ -16,7 +16,7 @@ const ProductCatalogPriceFragment = gql`
       isActive
     }
     amount
-    maxQuantity
+    minQuantity
   }
 `;
 

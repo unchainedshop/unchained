@@ -111,51 +111,26 @@ mutation AcceptQuotation {
 
 ## Extending the Adapter
 
-For custom quotation logic:
+For custom quotation logic, use `registerQuotation`:
 
 ```typescript
-import { QuotationDirector, QuotationAdapter, type IQuotationAdapter } from '@unchainedshop/core';
+import { registerQuotation } from '@unchainedshop/core';
 
-const CustomQuotationAdapter: IQuotationAdapter = {
-  ...QuotationAdapter,
-
-  key: 'my-shop.quotations.custom',
-  version: '1.0.0',
-  label: 'Custom Quotations',
-  orderIndex: 0,
-
-  isActivatedFor: (product) => {
-    // Only activate for specific products
-    return product?.meta?.quotationEnabled === true;
-  },
-
-  actions: (params) => {
-    const { quotation, modules } = params;
+registerQuotation({
+  adapterId: 'bulk-pricing',
+  quote: async ({ quotation }) => {
+    if (!quotation) return {};
+    const quantity =
+      Number(quotation.configuration?.find((entry) => entry.key === 'quantity')?.value) || 1;
+    const basePrice = await catalogPriceFor(quotation.productId, quotation.currencyCode);
+    const discount = quantity > 100 ? 0.15 : quantity > 50 ? 0.1 : 0.05;
 
     return {
-      ...QuotationAdapter.actions(params),
-
-      quote: async () => {
-        // Custom logic to calculate quote
-        const product = await modules.products.findProduct({
-          productId: quotation.productId,
-        });
-
-        // Auto-calculate bulk discount
-        const quantity = quotation.configuration?.find(c => c.key === 'quantity')?.value || 1;
-        const basePrice = product?.commerce?.pricing?.[0]?.amount || 0;
-        const discount = quantity > 100 ? 0.15 : quantity > 50 ? 0.10 : 0.05;
-
-        return {
-          expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-          price: Math.round(basePrice * quantity * (1 - discount)),
-        };
-      },
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      price: Math.round(basePrice * quantity * (1 - discount)),
     };
   },
-};
-
-QuotationDirector.registerAdapter(CustomQuotationAdapter);
+});
 ```
 
 ## Adapter Details

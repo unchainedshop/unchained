@@ -11,7 +11,7 @@ export default {
     pricing: [
       {
         amount: 1000,
-        maxQuantity: null,
+        minQuantity: 3,
         isTaxable: false,
         isNetPrice: false,
         currencyCode: 'CHF',
@@ -19,7 +19,7 @@ export default {
       },
       {
         amount: 20000,
-        maxQuantity: 2,
+        minQuantity: 0,
         isTaxable: true,
         isNetPrice: true,
         currencyCode: 'ETB',
@@ -27,7 +27,7 @@ export default {
       },
       {
         amount: 1,
-        maxQuantity: 1,
+        minQuantity: 0,
         isTaxable: false,
         isNetPrice: false,
         currencyCode: 'ETH',
@@ -35,7 +35,7 @@ export default {
       },
       {
         amount: 750,
-        maxQuantity: 2,
+        minQuantity: 0,
         isTaxable: false,
         isNetPrice: false,
         currencyCode: 'CHF',

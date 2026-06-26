@@ -22,10 +22,9 @@ flowchart LR
 
 | Provider | Type | Use Case |
 |----------|------|----------|
-| [Stripe](../plugins/payment/stripe.md) | CARD | Credit/debit cards |
-| [Braintree](../plugins/payment/braintree.md) | CARD | Cards, PayPal |
-| [Datatrans](../plugins/payment/datatrans.md) | CARD | Swiss payment gateway |
-| [Saferpay](../plugins/payment/saferpay.md) | CARD | Swiss payment gateway |
+| [Stripe](../plugins/payment/stripe.md) | GENERIC | Credit/debit cards |
+| [Datatrans](../plugins/payment/datatrans.md) | GENERIC | Swiss payment gateway |
+| [Saferpay](../plugins/payment/saferpay.md) | GENERIC | Swiss payment gateway |
 | [Cryptopay](../plugins/payment/cryptopay.md) | GENERIC | Cryptocurrency |
 | [Invoice](../plugins/payment/invoice.md) | INVOICE | Manual invoicing |
 
@@ -275,83 +274,51 @@ DATATRANS_SIGN_KEY=xxx
 Create a custom adapter for payment gateways not covered by built-in plugins:
 
 ```typescript
-import { PaymentDirector, type IPaymentAdapter } from '@unchainedshop/core';
+import {
+  OrderPricingSheet,
+  PaymentError,
+  registerPaymentProvider,
+} from '@unchainedshop/core';
 
-const MyPaymentAdapter: IPaymentAdapter = {
-  key: 'com.mycompany.payment.custom',
-  label: 'My Payment Gateway',
-  version: '1.0.0',
+registerPaymentProvider({
+  adapterId: 'custom-gateway',
+  type: 'GENERIC',
+  configurationError: process.env.MY_GATEWAY_API_KEY
+    ? null
+    : PaymentError.INCOMPLETE_CONFIGURATION,
 
-  typeSupported(type) {
-    return type === 'CARD';
+  // Create a payment session for the front-end SDK
+  sign: async (configuration, context) => {
+    if (!context.order) return null;
+    const pricing = OrderPricingSheet({
+      calculation: context.order.calculation,
+      currencyCode: context.order.currencyCode,
+    });
+    const session = await myGateway.createSession({
+      amount: pricing.total().amount,
+      currency: context.order.currencyCode,
+      orderId: context.order._id,
+    });
+    return session.clientToken;
   },
 
-  actions(params) {
-    const { paymentContext, context } = params;
-    const { order, orderPayment } = paymentContext;
-
-    return {
-      configurationError() {
-        if (!process.env.MY_GATEWAY_API_KEY) {
-          return { code: 'MISSING_API_KEY' };
-        }
-        return null;
-      },
-
-      isActive() {
-        return true;
-      },
-
-      isPayLaterAllowed() {
-        return false; // Require payment before order confirmation
-      },
-
-      async sign() {
-        // Create payment session with gateway
-        const session = await myGateway.createSession({
-          amount: order.pricing().total().amount,
-          currency: order.currency,
-          orderId: order._id,
-        });
-        return session.clientToken;
-      },
-
-      async charge() {
-        // Check if payment is complete
-        const { transactionId } = orderPayment.context || {};
-        if (transactionId) {
-          const payment = await myGateway.getPayment(transactionId);
-          if (payment.status === 'completed') {
-            return { transactionId };
-          }
-        }
-        return false;
-      },
-
-      async cancel() {
-        const { transactionId } = orderPayment;
-        if (transactionId) {
-          await myGateway.refund(transactionId);
-        }
-        return true;
-      },
-
-      async confirm() {
-        return { transactionId: orderPayment.transactionId };
-      },
-
-      async register() {
-        return { token: '' };
-      },
-
-      async validate() {
-        return true;
-      },
-    };
+  // Confirm the charge (here, completed out of band and recorded on orderPayment.context)
+  charge: async (configuration, context) => {
+    const { transactionId } = context.orderPayment?.context || {};
+    if (transactionId) {
+      const payment = await myGateway.getPayment(transactionId);
+      if (payment.status === 'completed') return { transactionId };
+    }
+    return false; // not complete yet → order stays PENDING
   },
-};
 
-PaymentDirector.registerAdapter(MyPaymentAdapter);
+  cancel: async (configuration, context) => {
+    if (context.orderPayment?.transactionId) {
+      await myGateway.refund(context.orderPayment.transactionId);
+    }
+    return true;
+  },
+});
 ```
 
 ## Testing Payments
@@ -430,35 +397,21 @@ try {
 Add payment processing fees to orders:
 
 ```typescript
-import { PaymentPricingDirector, PaymentPricingAdapter } from '@unchainedshop/core';
+import { OrderPricingSheet, registerPaymentPricing } from '@unchainedshop/core';
 
-class CardFeeAdapter extends PaymentPricingAdapter {
-  static key = 'shop.unchained.pricing.card-fee';
-  static orderIndex = 0;
-
-  static isActivatedFor({ provider }) {
-    return provider.type === 'CARD';
-  }
-
-  async calculate() {
-    const { order } = this.context;
-    const total = order.pricing().total().amount;
-
-    // 2.9% + 30 cents
-    const fee = Math.round(total * 0.029 + 30);
-
-    this.result.addItem({
-      amount: fee,
-      isTaxable: false,
-      isNetPrice: true,
-      category: 'PAYMENT',
+registerPaymentPricing({
+  adapterId: 'card-fee',
+  isActivatedFor: (context) =>
+    context.provider.adapterKey === 'shop.unchained.payment.stripe',
+  calculate: async (sheet, context) => {
+    const pricing = OrderPricingSheet({
+      calculation: context.order?.calculation,
+      currencyCode: context.order?.currencyCode,
     });
-
-    return super.calculate();
-  }
-}
-
-PaymentPricingDirector.registerAdapter(CardFeeAdapter);
+    const total = pricing.total().amount;
+    sheet.addFee({ amount: Math.round(total * 0.029 + 30), isTaxable: false, isNetPrice: true }); // 2.9% + 0.30
+  },
+});
 ```
 
 ## Multi-Currency Support
@@ -466,16 +419,20 @@ PaymentPricingDirector.registerAdapter(CardFeeAdapter);
 Handle multiple currencies:
 
 ```typescript
-async sign() {
-  const { order } = this.paymentContext;
+import { OrderPricingSheet } from '@unchainedshop/core';
 
+async function createCheckoutSession(order) {
+  const pricing = OrderPricingSheet({
+    calculation: order.calculation,
+    currencyCode: order.currencyCode,
+  });
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     line_items: [{
       price_data: {
-        currency: order.currency.toLowerCase(),
+        currency: order.currencyCode.toLowerCase(),
         product_data: { name: `Order ${order.orderNumber}` },
-        unit_amount: order.pricing().total().amount,
+        unit_amount: pricing.total().amount,
       },
       quantity: 1,
     }],

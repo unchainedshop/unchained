@@ -7,88 +7,42 @@ description: Customizing quotation
 
 # Quotation Adapters
 
-## QuotationAdapter
+Accept and process quotation (request-for-quote) requests for shop items, manually or automatically. Several adapters can be active; they run in ascending `orderIndex`.
 
-You can accept quotation requests for a shop items. For every quotation received you can setup a quotation adapter to process this request manually or automatically. In order to process quotation request you need to create a quotation adapter that implements the `IQuotationAdapter` and register the adapter on the global quotation director that implements the `IQuotationDirector`.
+## Creating an adapter
 
-There can be multiple quotation adapters configured and active for a store and all of them will be executed for every quotation requests based on there `orderIndex` value. Quotation adapters that have smaller `orderIndex` value will be executed first.
-
-Below is a sample manual quotation adapter implementation that will mark every quotation request as expired after an hour of request if no quote is given in between by a user that is managing quotation requests. 
+Use the [`registerQuotation`](./plugin-factories.md#quotations) factory. Only `adapterId` is required — every callback has a sensible default. The example below requires manual verification and proposal, and expires a request after an hour if no quote is given.
 
 ```typescript
-import { log, LogLevel } from '@unchainedshop/logger';
+import { registerQuotation } from '@unchainedshop/core';
 
-import { IQuotationAdapter } from '@unchainedshop/core-quotations';
-import { QuotationError } from '@unchainedshop/core-quotations';
-
-export const ManualOffering: IQuotationAdapter = {
-  key: 'shop.unchained.quotations.manual',
-  label: 'Manual quotation'
-  version: '1.0.0',
-  orderIndex: 1,
-
-  isActivatedFor: (quotationContext: QuotationContext, unchainedAPI: UnchainedCore): boolean => {
-    return false;
-  },
-
-  actions: (params: QuotationContext & Context): QuotationAdapterActions => {
-    return {
-      configurationError: () => {
-        return QuotationError.NOT_IMPLEMENTED;
-      },
-
-      isManualRequestVerificationRequired: async (): Promise<boolean> => {
-        return true;
-      },
-
-      isManualProposalRequired: async (): Promise<boolean> => {
-        return true;
-      },
-
-      quote: async (): Promise<QuotationProposal> => {
-      return {
-          expires: new Date(new Date().getTime() + 3600 * 1000),
-        };
-      },
-
-      rejectRequest: async (unchainedAPI?: any): Promise<boolean> => {
-        return true;
-      },
-
-      submitRequest: async (unchainedAPI?: any): Promise<boolean> => {
-        return true;
-      },
-
-      verifyRequest: async (unchainedAPI?: any): Promise<boolean> => {
-        return true;
-      },
-
-      transformItemConfiguration: async (params: QuotationItemConfiguration) => {
-        return { quantity: params.quantity, configuration: params.configuration };
-      },
-    };
-  },
-};
-
+registerQuotation({
+  adapterId: 'manual',
+  isManualRequestVerificationRequired: true,
+  isManualProposalRequired: true,
+  quote: async (context) => ({
+    expires: new Date(Date.now() + 3600 * 1000),
+  }),
+  transformItemConfiguration: async (params, context) => ({
+    quantity: params.quantity,
+    configuration: params.configuration,
+  }),
+});
 ```
 
+## Callback reference
 
-- **isActivatedFor: (quotationContext: QuotationContext, unchainedAPI: UnchainedCore)**: Determines for which type of quotation request an adapter is active for. it can be based on the actual quotation in question or any condition you can think of.
-- **configurationError: QuotationError**: Returns any error that occurred while initializing the adapter. it can be missing environment variable or and other missing required values.
-- **isManualRequestVerificationRequired**: defines if a quotation should be considered valid and ready for quote automatically or should be verified by someone manually.
-- **isManualProposalRequired** Define if a user can respond to quotation request manually or not.
-- **quote**: Responds with the actual quotation request.
-- **rejectRequest** Will mark a quotation as rejected if returned to based on any condition check performed.
-- **submitRequest**: Will approve a quotation request for processing if you return true from this function.
-- **verifyRequest** It will mark the quotation as verified for a certain quotation if this function returns true.
-- **transformItemConfiguration(params: QuotationItemConfiguration)**: A quotation request is submitted as a `JSON` value and there is no predefined format of quotation request. use this function to transform the submitted `JSON` from the front end into a structure that will be best to work with in an adapter.
+| Option | Description |
+|---|---|
+| `quote(context)` | produce the offer (a `QuotationProposal`) |
+| `transformItemConfiguration(params, context)` | normalize the submitted request JSON into a structured item configuration |
+| `isManualRequestVerificationRequired` | a request must be verified by a human before it is valid (boolean) |
+| `isManualProposalRequired` | the quote is created manually rather than automatically (boolean) |
+| `submitRequest` / `verifyRequest` / `rejectRequest` | lifecycle hooks returning a boolean for the corresponding transition |
 
+> For full control of every `IQuotationAdapter` method, build the adapter directly and register it via `pluginRegistry.register()` — see [Plugin System](../concepts/director-adapter-pattern.md#adapter-contracts).
 
+## Related
 
-## Registering Quotation Adapter
-
-```typescript
-import { QuotationDirector } from '@unchainedshop/core-quotations';
-
-QuotationDirector.registerAdapter(ManualOffering);
-```
+- [Plugin Factories](./plugin-factories.md#quotations) — `registerQuotation`
+- [Manual quotation plugin](../plugins/quotations/quotation-manual) — the shipped adapter

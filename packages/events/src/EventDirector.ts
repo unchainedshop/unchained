@@ -8,6 +8,9 @@ export interface RawPayloadType<T> {
 export interface EmitAdapter {
   publish(eventName: string, data: RawPayloadType<Record<string, any>>): void;
   subscribe(eventName: string, callback: (payload: RawPayloadType<Record<string, any>>) => void): void;
+  // Optional teardown for adapters holding long-lived connections (redis,
+  // eventbridge). Called by startPlatform on graceful shutdown.
+  shutdown?(): Promise<void> | void;
 }
 
 const RegisteredEventsSet = new Set();

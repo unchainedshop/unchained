@@ -50,6 +50,9 @@ import { BulkExportPlugin } from '../worker/bulk-export/index.ts';
 
 export function registerBasePlugins() {
   // Files
+  // GridFS is the default storage backend. The S3/Minio backend is opt-in:
+  // register MinioPlugin from '@unchainedshop/plugins/files/minio' *instead of*
+  // GridFSPlugin (getFileAdapter() uses the first registered file adapter).
   pluginRegistry.register(GridFSPlugin);
   pluginRegistry.register(TempUploadPlugin);
 

@@ -23,6 +23,7 @@ import { configureProductReviewsModule } from './configureProductReviewsModule.t
 import { configureProductTextsModule } from './configureProductTextsModule.ts';
 import { configureProductVariationsModule } from './configureProductVariationsModule.ts';
 import { productsSettings, type ProductsSettingsOptions } from '../products-settings.ts';
+import migrateCommercePricingToMinQuantity from '../migrations/20260611120000-pricing-maxquantity-to-minquantity.ts';
 
 export interface ProductQuery {
   queryString?: string;
@@ -126,12 +127,14 @@ export const buildFindSelector = ({
 };
 
 export const configureProductsModule = async (moduleInput: ModuleInput<ProductsSettingsOptions>) => {
-  const { db, options: productsOptions = {} } = moduleInput;
+  const { db, migrationRepository, options: productsOptions = {} } = moduleInput;
 
   registerEvents(PRODUCT_EVENTS);
   await productsSettings.configureSettings(productsOptions);
 
   const { Products, ProductTexts } = await ProductsCollection(db);
+
+  migrateCommercePricingToMinQuantity(migrationRepository);
 
   /*
    * Product sub entities

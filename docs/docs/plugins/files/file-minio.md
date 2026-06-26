@@ -9,25 +9,22 @@ description: S3-compatible file storage with MinIO or Amazon S3
 
 S3-compatible object storage using the MinIO client, supporting both MinIO and Amazon S3.
 
-:::warning GridFS Conflict
-If you're using a preset that includes GridFS (like `base` or `all`), you must unregister the GridFS adapter before using MinIO:
-
-```typescript
-import { FileDirector } from '@unchainedshop/file-upload';
-import '@unchainedshop/plugins/files/minio';
-
-// Unregister GridFS adapter loaded by presets
-FileDirector.unregisterAdapter('shop.unchained.file-upload-plugin.gridfs');
-```
+:::warning One file backend at a time
+The active file backend is the **first registered** file adapter. The `base` / `all` presets register GridFS, so to use Minio/S3 you must register `MinioPlugin` **instead of** GridFS — don't register both. If you rely on `registerBasePlugins()` (which registers GridFS), register your plugins individually instead, omitting `GridFSPlugin`.
 :::
 
 ## Installation
 
+Register the plugin in your boot code, before `startPlatform()`:
+
 ```typescript
-import '@unchainedshop/plugins/files/minio';
+import { pluginRegistry } from '@unchainedshop/core';
+import { MinioPlugin } from '@unchainedshop/plugins/files/minio';
+
+pluginRegistry.register(MinioPlugin);
 ```
 
-The plugin automatically registers when environment variables are configured.
+Configure the backend with the environment variables below.
 
 ## Environment Variables
 

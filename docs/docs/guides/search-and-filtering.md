@@ -508,66 +508,26 @@ function useUrlFilters() {
 }
 ```
 
-## Custom Filter Adapter
+## External search (Elasticsearch, Algolia, …)
 
-Create a custom filter adapter for advanced search:
+To delegate product search to an external engine, use the [`registerProductSearchFilter`](../extend/plugin-factories.md#filters--search) factory — its `search` callback receives the query and returns the matching product ids:
 
 ```typescript
-import { FilterDirector, type IFilterAdapter } from '@unchainedshop/core';
+import { registerProductSearchFilter } from '@unchainedshop/core';
 
-const ElasticsearchFilter: IFilterAdapter = {
-  key: 'shop.example.filter.elasticsearch',
-  label: 'Elasticsearch Filter',
-  version: '1.0.0',
-  orderIndex: 0,
-
-  actions(context) {
-    return {
-      async searchProducts(params, options) {
-        const { queryString, filterQuery } = params;
-
-        // Build Elasticsearch query
-        const esQuery = buildESQuery(queryString, filterQuery);
-
-        // Search Elasticsearch
-        const results = await elasticsearch.search({
-          index: 'products',
-          body: esQuery,
-        });
-
-        return {
-          productIds: results.hits.hits.map((hit) => hit._id),
-          totalCount: results.hits.total.value,
-        };
-      },
-
-      async searchAssortments(params, options) {
-        // Similar implementation for assortments
-        return { assortmentIds: [], totalCount: 0 };
-      },
-
-      async aggregateProductIds(params) {
-        // Return product IDs matching filter
-        return [];
-      },
-
-      transformProductSelector(selector, options) {
-        return selector;
-      },
-
-      transformFilterSelector(selector, options) {
-        return selector;
-      },
-
-      transformSortStage(sort, options) {
-        return sort;
-      },
-    };
+registerProductSearchFilter({
+  adapterId: 'elasticsearch',
+  search: async ({ queryString, locale }) => {
+    const results = await elasticsearch.search({
+      index: 'products',
+      body: buildESQuery(queryString, locale),
+    });
+    return results.hits.hits.map((hit) => hit._id);
   },
-};
-
-FilterDirector.registerAdapter(ElasticsearchFilter);
+});
 ```
+
+For custom MongoDB selector / sort logic (rather than an external engine), build a `FilterAdapter` directly — see [Filters](../extend/catalog/filter.md).
 
 ## Performance Tips
 

@@ -9,211 +9,69 @@ description: Custom delivery pricing adapters
 
 Delivery pricing adapters calculate shipping and handling fees based on order contents, delivery method, and destination.
 
-For conceptual overview, see [Pricing System](../../concepts/pricing-system.md).
+For the conceptual overview, see [Pricing System](../../concepts/pricing-system.md).
 
-## Creating an Adapter
+## Creating an adapter
 
-Extend `DeliveryPricingAdapter` and register it with `DeliveryPricingDirector`:
+Use the [`registerDeliveryPricing`](../plugin-factories.md#pricing) factory. Push fees onto the `sheet` with `addFee(...)`; the factory continues the chain for you.
 
 ```typescript
-import {
-  DeliveryPricingAdapter,
-  DeliveryPricingDirector,
-} from '@unchainedshop/core-pricing';
+import { registerDeliveryPricing } from '@unchainedshop/core';
 
-class MyDeliveryPricing extends DeliveryPricingAdapter {
-  static key = 'my-shop.pricing.delivery';
-  static version = '1.0.0';
-  static label = 'Custom Delivery Pricing';
-  static orderIndex = 0;
-
-  static isActivatedFor({ provider }) {
-    return provider.type === 'SHIPPING';
-  }
-
-  async calculate() {
-    this.result.addItem({
-      amount: 800, // 8.00 flat rate
-      isTaxable: true,
-      isNetPrice: true,
-      category: 'DELIVERY',
-      meta: { adapter: this.constructor.key },
-    });
-
-    return super.calculate();
-  }
-}
-
-DeliveryPricingDirector.registerAdapter(MyDeliveryPricing);
+registerDeliveryPricing({
+  adapterId: 'flat-rate',
+  isActivatedFor: (context) => context.provider?.type === 'SHIPPING',
+  calculate: async (sheet, context) => {
+    sheet.addFee({ amount: 800, isTaxable: true, isNetPrice: true, meta: { adapter: 'flat-rate' } });
+  },
+});
 ```
+
+`calculate(sheet, context)` receives the running `sheet` and the delivery pricing `context` (`provider`, `order`, `modules`, `currencyCode`).
 
 ## Examples
 
-### Weight-Based Shipping
+### Zone-based pricing
 
 ```typescript
-class WeightBasedShipping extends DeliveryPricingAdapter {
-  static key = 'my-shop.pricing.weight-shipping';
-  static orderIndex = 0;
-
-  static isActivatedFor({ provider }) {
-    return provider.type === 'SHIPPING';
-  }
-
-  async calculate() {
-    const { order, modules } = this.context;
-
-    const items = await modules.orders.positions.findOrderPositions({
-      orderId: order._id,
+registerDeliveryPricing({
+  adapterId: 'zone-shipping',
+  isActivatedFor: (context) => context.provider?.type === 'SHIPPING',
+  calculate: async (sheet, context) => {
+    const zoneRates = { CH: 800, DE: 1500, AT: 1500, FR: 1500, IT: 1500, default: 2500 };
+    const countryCode = context.order?.delivery?.address?.countryCode;
+    sheet.addFee({
+      amount: zoneRates[countryCode] ?? zoneRates.default,
+      isTaxable: true,
+      isNetPrice: true,
+      meta: { zone: countryCode },
     });
+  },
+});
+```
 
-    // Calculate total weight
-    let totalWeight = 0;
-    for (const item of items) {
-      const product = await modules.products.findProduct({ productId: item.productId });
-      totalWeight += (product?.warehousing?.weight || 0) * item.quantity;
+### Free-shipping threshold
+
+```typescript
+registerDeliveryPricing({
+  adapterId: 'free-shipping',
+  orderIndex: 10, // after base shipping
+  calculate: async (sheet, context) => {
+    const productTotal = sheet.sum({ category: 'ITEMS' }); // order item total
+    const deliveryTotal = sheet.sum({ category: 'DELIVERY' });
+    if (productTotal >= 10000 && deliveryTotal > 0) {
+      sheet.addDiscount({ amount: -deliveryTotal, isTaxable: true, isNetPrice: true, discountId: 'free-shipping', meta: { threshold: 10000 } });
     }
-
-    // Price: base + per kg
-    const basePrice = 500; // 5.00 base
-    const pricePerKg = 200; // 2.00 per kg
-
-    this.result.addItem({
-      amount: basePrice + Math.round(totalWeight * pricePerKg),
-      isTaxable: true,
-      isNetPrice: true,
-      category: 'DELIVERY',
-      meta: { weight: totalWeight, adapter: this.constructor.key },
-    });
-
-    return super.calculate();
-  }
-}
+  },
+});
 ```
 
-### Zone-Based Pricing
+## Low-level adapter (advanced)
 
-```typescript
-class ZoneBasedShipping extends DeliveryPricingAdapter {
-  static key = 'my-shop.pricing.zone-shipping';
-  static orderIndex = 0;
-
-  static isActivatedFor({ provider }) {
-    return provider.type === 'SHIPPING';
-  }
-
-  async calculate() {
-    const { order } = this.context;
-    const countryCode = order.delivery?.address?.countryCode;
-
-    const zoneRates = {
-      CH: 800,    // 8.00 domestic
-      DE: 1500,   // 15.00 EU neighbor
-      AT: 1500,
-      FR: 1500,
-      IT: 1500,
-      default: 2500, // 25.00 international
-    };
-
-    const amount = zoneRates[countryCode] || zoneRates.default;
-
-    this.result.addItem({
-      amount,
-      isTaxable: true,
-      isNetPrice: true,
-      category: 'DELIVERY',
-      meta: { zone: countryCode, adapter: this.constructor.key },
-    });
-
-    return super.calculate();
-  }
-}
-```
-
-### Free Shipping Threshold
-
-```typescript
-class FreeShippingThreshold extends DeliveryPricingAdapter {
-  static key = 'my-shop.pricing.free-shipping';
-  static orderIndex = 10; // After base shipping
-
-  async calculate() {
-    const { order, modules } = this.context;
-    const threshold = 10000; // Free shipping over 100.00
-
-    // Calculate product total
-    const items = await modules.orders.positions.findOrderPositions({
-      orderId: order._id,
-    });
-    const productTotal = items.reduce((sum, item) => {
-      return sum + (item.calculation?.find(c => c.category === 'BASE')?.amount || 0);
-    }, 0);
-
-    if (productTotal >= threshold) {
-      const deliveryTotal = this.calculation.sum({ category: 'DELIVERY' });
-
-      if (deliveryTotal > 0) {
-        this.result.addItem({
-          amount: -deliveryTotal,
-          isTaxable: true,
-          isNetPrice: true,
-          category: 'DISCOUNT',
-          meta: { type: 'free-shipping', threshold, adapter: this.constructor.key },
-        });
-      }
-    }
-
-    return super.calculate();
-  }
-}
-```
-
-### Express Shipping Option
-
-```typescript
-class ExpressShipping extends DeliveryPricingAdapter {
-  static key = 'my-shop.pricing.express';
-  static orderIndex = 0;
-
-  static isActivatedFor({ provider }) {
-    // Only for express delivery provider
-    return provider.adapterKey === 'my-shop.delivery.express';
-  }
-
-  async calculate() {
-    const { order } = this.context;
-
-    // Express: 2x standard rate
-    const standardRate = 800;
-    const expressMultiplier = 2;
-
-    this.result.addItem({
-      amount: standardRate * expressMultiplier,
-      isTaxable: true,
-      isNetPrice: true,
-      category: 'DELIVERY',
-      meta: { type: 'express', adapter: this.constructor.key },
-    });
-
-    return super.calculate();
-  }
-}
-```
-
-## Context Properties
-
-Available in `this.context`:
-
-| Property | Description |
-|----------|-------------|
-| `provider` | The delivery provider |
-| `order` | The current order |
-| `modules` | Access to all modules |
-| `currency` | Currency code |
+For behavior the factory doesn't expose, build the adapter by spreading `DeliveryPricingAdapter` and registering it via `pluginRegistry.register()`. See [Plugin System](../../concepts/director-adapter-pattern.md#adapter-contracts).
 
 ## Related
 
-- [Pricing System](../../concepts/pricing-system.md) - Conceptual overview
-- [Product Pricing](./product-pricing.md) - Product prices
-- [Payment Pricing](./payment-pricing.md) - Payment fees
-- [Delivery Plugins](../order-fulfilment/fulfilment-plugins/delivery.md) - Delivery adapters
+- [Pricing System](../../concepts/pricing-system.md) — conceptual overview
+- [Plugin Factories](../plugin-factories.md#pricing) — all four pricing factories
+- [Product Pricing](./product-pricing.md) · [Payment Pricing](./payment-pricing.md) · [Delivery Plugins](../order-fulfilment/fulfilment-plugins/delivery.md)

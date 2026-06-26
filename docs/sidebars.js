@@ -101,6 +101,7 @@ const sidebars = {
           items: [
             'extend/graphql',
             'extend/custom-modules',
+            'extend/plugin-factories',
             {
               type: 'category',
               label: 'Order Fulfilment',

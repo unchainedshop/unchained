@@ -2,19 +2,21 @@
  * Redis Event Emitter Adapter
  *
  * NOTE: This file uses a different pattern than the plugin architecture.
- * Events adapters implement EmitAdapter interface and are registered via
- * setEmitAdapter() instead of the standard IPlugin pattern.
+ * Events adapters implement the EmitAdapter interface and are registered
+ * explicitly via setEmitAdapter() instead of the standard IPlugin pattern:
  *
- * This adapter auto-configures itself when REDIS_HOST is set in environment.
+ *   import { setEmitAdapter } from '@unchainedshop/events';
+ *   import { RedisEventEmitter } from '@unchainedshop/plugins/events/redis';
+ *   setEmitAdapter(RedisEventEmitter());
  */
 import { createClient } from '@redis/client';
-import { setEmitAdapter, type EmitAdapter } from '@unchainedshop/events';
+import type { EmitAdapter } from '@unchainedshop/events';
 
 const { REDIS_PORT = '6379', REDIS_HOST, REDIS_DB = '0' } = process.env;
 
 const subscribedEvents = new Set();
 
-const RedisEventEmitter = (): EmitAdapter => {
+export const RedisEventEmitter = (): EmitAdapter => {
   const redisPublisher = createClient({
     url: `redis://${REDIS_HOST}:${REDIS_PORT}`,
     database: parseInt(REDIS_DB, 10),
@@ -35,9 +37,10 @@ const RedisEventEmitter = (): EmitAdapter => {
         subscribedEvents.add(eventName);
       }
     },
+    shutdown: async () => {
+      await Promise.allSettled([redisPublisher.close(), redisSubscriber.close()]);
+    },
   };
 };
 
-if (REDIS_HOST && REDIS_PORT && REDIS_DB) {
-  setEmitAdapter(RedisEventEmitter());
-}
+export default RedisEventEmitter;

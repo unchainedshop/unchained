@@ -20,7 +20,7 @@ export type ProductVariationCSVRow = {
 export type ProductPriceCSVRow = {
   productId: string;
   amount: string;
-  maxQuantity: string;
+  minQuantity: string;
   isTaxable?: string;
   isNetPrice?: string;
   currencyCode: string;

@@ -7,192 +7,90 @@ description: Custom product pricing adapters
 
 # Product Pricing
 
-Product pricing adapters calculate prices when products are queried or added to cart. Use them to implement taxes, discounts, rounding, and currency conversion.
+Product pricing adapters calculate prices when products are queried or added to cart. Use them to implement taxes, surcharges, discounts, rounding, and currency conversion.
 
-For conceptual overview, see [Pricing System](../../concepts/pricing-system.md).
+For the conceptual overview (the pricing chain, categories, and leveled tiers), see [Pricing System](../../concepts/pricing-system.md).
 
-## Creating an Adapter
+## Creating an adapter
 
-Extend `ProductPricingAdapter` and register it with `ProductPricingDirector`:
+The recommended way is the [`registerProductPricing`](../plugin-factories.md#pricing) factory. You push rows onto the `sheet`; the factory continues the pricing chain for you — **don't** call the chain yourself.
 
 ```typescript
-import {
-  ProductPricingAdapter,
-  ProductPricingDirector,
-} from '@unchainedshop/core-pricing';
+import { registerProductPricing } from '@unchainedshop/core';
 
-class MyProductPricing extends ProductPricingAdapter {
-  static key = 'my-shop.pricing.custom';
-  static version = '1.0.0';
-  static label = 'Custom Product Pricing';
-  static orderIndex = 0;
-
-  static isActivatedFor({ product, currencyCode }) {
-    return true; // Activate for all products
-  }
-
-  async calculate() {
-    const { product, quantity, currencyCode } = this.context;
-
-    this.result.addItem({
+registerProductPricing({
+  adapterId: 'custom-base',
+  orderIndex: 0,
+  isActivatedFor: (context) => true, // activate for all products
+  calculate: async (sheet, context) => {
+    sheet.addItem({
       amount: 1000, // 10.00 in cents
       isTaxable: true,
       isNetPrice: true,
-      category: 'BASE',
-      meta: { adapter: this.constructor.key },
+      meta: { adapter: 'custom-base' },
     });
-
-    return super.calculate();
-  }
-}
-
-ProductPricingDirector.registerAdapter(MyProductPricing);
+  },
+});
 ```
+
+`calculate(sheet, context)` receives the running pricing `sheet` and the pricing `context` (`product`, `quantity`, `currencyCode`, `countryCode`, …). Run order is controlled by `orderIndex` (lower runs first).
 
 ## Examples
 
-### Tax Calculation
+### Tax
 
 ```typescript
-class SwissTaxAdapter extends ProductPricingAdapter {
-  static key = 'my-shop.pricing.swiss-tax';
-  static orderIndex = 20; // After base price and discounts
-
-  static isActivatedFor({ country }) {
-    return country === 'CH';
-  }
-
-  async calculate() {
+registerProductPricing({
+  adapterId: 'swiss-tax',
+  orderIndex: 20, // after base price and discounts
+  isActivatedFor: (context) => context.countryCode === 'CH',
+  calculate: async (sheet) => {
     const taxRate = 0.081; // 8.1% Swiss VAT
-    const taxableAmount = this.calculation.sum({ isTaxable: true });
-
-    if (taxableAmount > 0) {
-      this.result.addItem({
-        amount: Math.round(taxableAmount * taxRate),
+    const taxable = sheet.sum({ isTaxable: true });
+    if (taxable > 0) {
+      sheet.addItem({
+        amount: Math.round(taxable * taxRate),
         isTaxable: false,
         isNetPrice: false,
         category: 'TAX',
-        meta: { rate: taxRate, adapter: this.constructor.key },
+        meta: { rate: taxRate },
       });
     }
-
-    return super.calculate();
-  }
-}
+  },
+});
 ```
 
-### Bulk Discount
+### Bulk discount
 
 ```typescript
-class BulkDiscountAdapter extends ProductPricingAdapter {
-  static key = 'my-shop.pricing.bulk-discount';
-  static orderIndex = 10; // After base price, before tax
-
-  async calculate() {
-    const { quantity } = this.context;
-
-    if (quantity >= 10) {
-      const baseTotal = this.calculation.sum({ category: 'BASE' });
-      const discountRate = 0.1; // 10% off
-
-      this.result.addItem({
-        amount: -Math.round(baseTotal * discountRate),
+registerProductPricing({
+  adapterId: 'bulk-discount',
+  orderIndex: 10, // after base price, before tax
+  calculate: async (sheet, context) => {
+    if ((context.quantity ?? 1) >= 10) {
+      const base = sheet.sum({ category: 'BASE' });
+      sheet.addItem({
+        amount: -Math.round(base * 0.1), // 10% off (negative)
         isTaxable: true,
         isNetPrice: true,
         category: 'DISCOUNT',
-        meta: { type: 'bulk', rate: discountRate },
+        meta: { type: 'bulk' },
       });
     }
-
-    return super.calculate();
-  }
-}
+  },
+});
 ```
 
-### Price Rounding
+:::tip Quantity-tier catalog prices
+If you just want different unit prices at different quantities (e.g. cheaper at 10+), you usually don't need a custom adapter — set [leveled catalog prices](../../concepts/pricing-system.md#leveled-quantity-tier-catalog-pricing) (`minQuantity` tiers) on the product instead.
+:::
 
-```typescript
-class PriceRoundingAdapter extends ProductPricingAdapter {
-  static key = 'my-shop.pricing.rounding';
-  static orderIndex = 30; // Run last
+## Low-level adapter (advanced)
 
-  async calculate() {
-    const { calculation = [] } = this;
-
-    if (calculation.length) {
-      const [basePrice] = calculation;
-      const rounded = this.roundToNext(basePrice.amount, 50);
-
-      this.resetCalculation();
-      this.result.addItem({
-        amount: rounded,
-        isTaxable: basePrice.isTaxable,
-        isNetPrice: basePrice.isNetPrice,
-        meta: { adapter: this.constructor.key },
-      });
-    }
-
-    return super.calculate();
-  }
-
-  roundToNext(value: number, precision: number) {
-    const remainder = value % precision;
-    return remainder === 0 ? value : value + (precision - remainder);
-  }
-}
-```
-
-### Currency Conversion
-
-```typescript
-class CurrencyConversionAdapter extends ProductPricingAdapter {
-  static key = 'my-shop.pricing.currency';
-  static orderIndex = 1;
-
-  async calculate() {
-    const { currencyCode, baseCurrencyCode } = this.context;
-
-    if (currencyCode !== baseCurrencyCode) {
-      const rate = await this.getExchangeRate(baseCurrencyCode, currencyCode);
-
-      for (const item of this.calculation) {
-        item.amount = Math.round(item.amount * rate);
-      }
-    }
-
-    return super.calculate();
-  }
-
-  async getExchangeRate(from: string, to: string) {
-    // Fetch from your exchange rate service
-    return 1.1;
-  }
-}
-```
-
-## Adapter Properties
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `key` | string | Unique identifier |
-| `version` | string | Version for tracking |
-| `label` | string | Human-readable name |
-| `orderIndex` | number | Execution order (lower = earlier) |
-
-## Context Properties
-
-Available in `this.context`:
-
-| Property | Description |
-|----------|-------------|
-| `product` | The product being priced |
-| `quantity` | Quantity requested |
-| `currencyCode` | Target currency |
-| `country` | Country code |
+For behavior the factory doesn't expose — e.g. **mutating or resetting** existing rows (price rounding, currency conversion across all items) — build the adapter object directly by spreading `ProductPricingAdapter` and registering it with `pluginRegistry.register()`. Inside `actions(params)` you have the full `resultSheet()` and may call the base `calculate()` yourself. See [Plugin System](../../concepts/director-adapter-pattern.md#adapter-contracts).
 
 ## Related
 
-- [Pricing System](../../concepts/pricing-system.md) - Conceptual overview
-- [Delivery Pricing](./delivery-pricing.md) - Shipping fees
-- [Payment Pricing](./payment-pricing.md) - Payment fees
-- [Order Discounts](./order-discounts.md) - Order-level discounts
+- [Pricing System](../../concepts/pricing-system.md) — conceptual overview and leveled tiers
+- [Plugin Factories](../plugin-factories.md#pricing) — all four pricing factories
+- [Delivery Pricing](./delivery-pricing.md) · [Payment Pricing](./payment-pricing.md) · [Order Discounts](./order-discounts.md)

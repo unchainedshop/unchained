@@ -21,7 +21,7 @@ export const SimpleAssortment = [
       pricing: [
         {
           amount: 10000,
-          maxQuantity: 0,
+          minQuantity: 0,
           isTaxable: true,
           isNetPrice: false,
           currencyCode: 'CHF',

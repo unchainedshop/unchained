@@ -154,12 +154,29 @@ const RedisEventEmitter = (): EmitAdapter => {
         subscribedEvents.add(eventName);
       }
     },
+    // Optional: close long-lived connections on platform shutdown
+    shutdown: async () => {
+      await Promise.allSettled([redisPublisher.close(), redisSubscriber.close()]);
+    },
   };
 };
 
 // Set the adapter before starting the platform
 setEmitAdapter(RedisEventEmitter());
 ```
+
+:::note Built-in transports must be registered explicitly
+Unchained ships Redis and AWS EventBridge transports, but they **do not auto-register on import**. Register them yourself before `startPlatform`:
+
+```typescript
+import { setEmitAdapter } from '@unchainedshop/events';
+import { RedisEventEmitter } from '@unchainedshop/plugins/events/redis';
+
+setEmitAdapter(RedisEventEmitter());
+```
+
+The Node.js in-memory emitter is wired automatically by `registerBasePlugins()`. The optional `EmitAdapter.shutdown()` is called by `startPlatform` on graceful shutdown.
+:::
 
 ## Use Cases
 

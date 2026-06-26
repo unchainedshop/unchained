@@ -2,17 +2,19 @@
  * AWS EventBridge Event Emitter Adapter
  *
  * NOTE: This file uses a different pattern than the plugin architecture.
- * Events adapters implement EmitAdapter interface and are registered via
- * setEmitAdapter() instead of the standard IPlugin pattern.
+ * Events adapters implement the EmitAdapter interface and are registered
+ * explicitly via setEmitAdapter() instead of the standard IPlugin pattern:
  *
- * This adapter auto-configures itself when EVENT_BRIDGE_* env vars are set.
+ *   import { setEmitAdapter } from '@unchainedshop/events';
+ *   import { EventBridgeEventEmitter } from '@unchainedshop/plugins/events/aws-eventbridge';
+ *   setEmitAdapter(await EventBridgeEventEmitter({ region, source, busName }));
  */
-import { type EmitAdapter, setEmitAdapter } from '@unchainedshop/events';
+import type { EmitAdapter } from '@unchainedshop/events';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:eventbridge');
 
-const EventBridgeEventEmitter = async ({ region, source, busName }): Promise<EmitAdapter> => {
+export const EventBridgeEventEmitter = async ({ region, source, busName }): Promise<EmitAdapter> => {
   // eslint-disable-next-line
   // @ts-expect-error
   const { EventBridgeClient, PutEventsCommand } = await import('@aws-sdk/client-eventbridge');
@@ -40,15 +42,10 @@ const EventBridgeEventEmitter = async ({ region, source, busName }): Promise<Emi
     subscribe: () => {
       throw new Error("You can't subscribe to EventBridge connected Events");
     },
+    shutdown: () => {
+      ebClient.destroy();
+    },
   };
 };
 
-const { EVENT_BRIDGE_REGION, EVENT_BRIDGE_SOURCE, EVENT_BRIDGE_BUS_NAME } = process.env;
-if (EVENT_BRIDGE_REGION && EVENT_BRIDGE_SOURCE && EVENT_BRIDGE_BUS_NAME) {
-  const eventBridgeAdapter = await EventBridgeEventEmitter({
-    source: EVENT_BRIDGE_SOURCE,
-    region: EVENT_BRIDGE_REGION,
-    busName: EVENT_BRIDGE_BUS_NAME,
-  });
-  setEmitAdapter(eventBridgeAdapter);
-}
+export default EventBridgeEventEmitter;
