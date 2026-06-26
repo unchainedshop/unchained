@@ -28,5 +28,41 @@ export default [
       assortmentsCount: Int!
       assortments(limit: Int = 10, offset: Int = 0): [Assortment!]!
     }
+
+    enum SearchableEntity {
+      PRODUCT
+      USER
+      ORDER
+      ASSORTMENT
+      FILTER
+      ENROLLMENT
+      QUOTATION
+      WORK
+    }
+
+    union GlobalSearchResult =
+      | SimpleProduct
+      | ConfigurableProduct
+      | BundleProduct
+      | PlanProduct
+      | TokenizedProduct
+      | User
+      | Order
+      | Assortment
+      | Filter
+      | Enrollment
+      | Quotation
+      | Work
+
+    type GlobalSearchTypeCount {
+      type: SearchableEntity!
+      totalCount: Int!
+      authorized: Boolean!
+    }
+
+    type GlobalSearchResponse {
+      results: [GlobalSearchResult!]!
+      counts: [GlobalSearchTypeCount!]!
+    }
   `,
 ];

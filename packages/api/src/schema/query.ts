@@ -416,6 +416,21 @@ export default [
       enrollment(enrollmentId: ID!): Enrollment
 
       """
+      Search across multiple entity types in a single request
+      """
+      globalSearch(
+        query: String!
+        types: [SearchableEntity!]
+        limit: Int = 5
+        typeLimits: [GlobalSearchTypeLimitInput!]
+        includeDraftProducts: Boolean = true
+        includeInactiveAssortments: Boolean = true
+        includeInactiveFilters: Boolean = true
+        includeGuestUsers: Boolean = false
+        includeCarts: Boolean = false
+      ): GlobalSearchResponse! @cacheControl(maxAge: 30)
+
+      """
       Search products
       """
       searchProducts(
