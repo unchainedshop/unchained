@@ -1,8 +1,6 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert';
-import { rm, mkdir, readFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import { tmpdir } from 'node:os';
+import { createDatabaseResource, type DatabaseResource } from '@unchainedshop/mongodb';
 import {
   AuditLog,
   OCSF_CLASS,
@@ -15,19 +13,19 @@ import {
   type OCSFAuthenticationEvent,
 } from './index.ts';
 
-const testDir = join(tmpdir(), `audit-test-${Date.now()}`);
+let dbResource: DatabaseResource;
 
 describe('AuditLog (OCSF Format)', () => {
   let auditLog: AuditLog;
 
   before(async () => {
-    await mkdir(testDir, { recursive: true });
-    auditLog = createAuditLog(testDir);
+    dbResource = await createDatabaseResource({ forceInMemory: true });
+    auditLog = createAuditLog({ db: dbResource.db });
   });
 
   after(async () => {
     await auditLog.close();
-    await rm(testDir, { recursive: true, force: true });
+    await dbResource[Symbol.asyncDispose]();
   });
 
   it('should append a log entry and return an id', async () => {
@@ -43,28 +41,26 @@ describe('AuditLog (OCSF Format)', () => {
     assert.match(id, /^[0-9a-f-]{36}$/);
   });
 
-  it('should write in JSON Lines format', async () => {
+  it('should store events in MongoDB', async () => {
     await auditLog.logAccountChange({
       activity: OCSF_ACCOUNT_ACTIVITY.CREATE,
       userId: 'test-user',
       success: true,
     });
 
-    // Read the file and check format
-    const date = new Date().toISOString().slice(0, 10);
-    const content = await readFile(join(testDir, `audit-${date}.jsonl`), 'utf-8');
-    const lines = content.trim().split('\n');
-    const lastLine = lines[lines.length - 1];
+    const entries = await auditLog.find({
+      classUids: [OCSF_CLASS.ACCOUNT_CHANGE],
+      userId: 'test-user',
+      limit: 1,
+    });
 
-    // Parse as JSON
-    const event = JSON.parse(lastLine);
-
-    // OCSF Account Change class for CREATE
+    assert.ok(entries.length >= 1);
+    const event = entries[0];
     assert.strictEqual(event.class_uid, OCSF_CLASS.ACCOUNT_CHANGE);
-    assert.strictEqual(event.category_uid, 3); // Identity & Access Management
+    assert.strictEqual(event.category_uid, 3);
     assert.strictEqual(event.activity_id, OCSF_ACCOUNT_ACTIVITY.CREATE);
     assert.strictEqual(event.message, 'User Created');
-    assert.strictEqual(event.user?.uid, 'test-user');
+    assert.strictEqual((event as any).user?.uid, 'test-user');
     assert.strictEqual(event.status_id, OCSF_STATUS.SUCCESS);
   });
 
@@ -161,7 +157,6 @@ describe('AuditLog (OCSF Format)', () => {
   });
 
   it('should maintain hash chain integrity', async () => {
-    // Add several entries
     await auditLog.logAccountChange({
       activity: OCSF_ACCOUNT_ACTIVITY.CREATE,
       userId: 'new-user',
@@ -278,7 +273,6 @@ describe('AuditLog (OCSF Format)', () => {
   });
 
   it('should have default messages for e-commerce activities', async () => {
-    // Test checkout activity
     await auditLog.logApiActivity({
       activity: OCSF_API_ACTIVITY.CHECKOUT,
       userId: 'checkout-user',
@@ -293,7 +287,6 @@ describe('AuditLog (OCSF Format)', () => {
     assert.ok(checkoutEntries.length >= 1);
     assert.strictEqual(checkoutEntries[0].message, 'Order Checkout');
 
-    // Test payment activity
     await auditLog.logApiActivity({
       activity: OCSF_API_ACTIVITY.PAYMENT,
       userId: 'payment-user',
@@ -308,7 +301,6 @@ describe('AuditLog (OCSF Format)', () => {
     assert.ok(paymentEntries.length >= 1);
     assert.strictEqual(paymentEntries[0].message, 'Payment Processed');
 
-    // Test access denied (should be high severity)
     await auditLog.logApiActivity({
       activity: OCSF_API_ACTIVITY.ACCESS_DENIED,
       userId: 'denied-user',

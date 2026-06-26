@@ -32,6 +32,7 @@ const BreadCrumbs = ({
     'warehousing-provider': 'warehousing_provider',
     system: 'system',
     account: 'account',
+    'audit-log': 'audit_log',
     new: 'new',
     edit: 'edit',
   };

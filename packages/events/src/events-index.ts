@@ -32,6 +32,8 @@ export {
   // Main class and factory
   AuditLog,
   createAuditLog,
+  setAuditLogInstance,
+  getAuditLogInstance,
   // OCSF constants
   OCSF_CLASS,
   OCSF_CATEGORY,
@@ -63,3 +65,10 @@ export {
 
 // Audit log integration with event system
 export { configureAuditIntegration, AUDITED_EVENTS } from './audit/audit-integration.ts';
+
+// Request context for threading user info through to audit events
+export {
+  runWithAuditContext,
+  getAuditContext,
+  type AuditRequestContext,
+} from './audit/request-context.ts';

@@ -230,6 +230,76 @@ export type IAssortmentTexts = {
   title?: Maybe<Scalars['String']['output']>;
 };
 
+export type IAuditChainError = {
+  message: Scalars['String']['output'];
+  sequenceNumber: Scalars['Int']['output'];
+};
+
+export type IAuditChainStatus = {
+  checkedEntries: Scalars['Int']['output'];
+  errors: Array<IAuditChainError>;
+  firstEntry?: Maybe<Scalars['Float']['output']>;
+  lastEntry?: Maybe<Scalars['Float']['output']>;
+  totalEntries: Scalars['Int']['output'];
+  valid: Scalars['Boolean']['output'];
+};
+
+export type IAuditLogActor = {
+  session?: Maybe<IAuditLogSession>;
+  user?: Maybe<IAuditLogUser>;
+};
+
+export type IAuditLogApi = {
+  operation?: Maybe<Scalars['String']['output']>;
+  request?: Maybe<IAuditLogApiRequest>;
+  response?: Maybe<IAuditLogApiResponse>;
+};
+
+export type IAuditLogApiRequest = {
+  uid?: Maybe<Scalars['String']['output']>;
+};
+
+export type IAuditLogApiResponse = {
+  code?: Maybe<Scalars['Int']['output']>;
+};
+
+export type IAuditLogEndpoint = {
+  ip?: Maybe<Scalars['String']['output']>;
+  port?: Maybe<Scalars['Int']['output']>;
+};
+
+export type IAuditLogEntry = {
+  activityId: Scalars['Int']['output'];
+  activityName?: Maybe<Scalars['String']['output']>;
+  actor?: Maybe<IAuditLogActor>;
+  api?: Maybe<IAuditLogApi>;
+  categoryUid: Scalars['Int']['output'];
+  className: Scalars['String']['output'];
+  classUid: Scalars['Int']['output'];
+  hash?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  message?: Maybe<Scalars['String']['output']>;
+  prevHash?: Maybe<Scalars['String']['output']>;
+  raw?: Maybe<Scalars['JSON']['output']>;
+  sequenceNumber?: Maybe<Scalars['Int']['output']>;
+  severityId: Scalars['Int']['output'];
+  srcEndpoint?: Maybe<IAuditLogEndpoint>;
+  statusDetail?: Maybe<Scalars['String']['output']>;
+  statusId: Scalars['Int']['output'];
+  time: Scalars['Float']['output'];
+  typeUid: Scalars['Int']['output'];
+};
+
+export type IAuditLogSession = {
+  uid?: Maybe<Scalars['String']['output']>;
+};
+
+export type IAuditLogUser = {
+  emailAddr?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  uid?: Maybe<Scalars['String']['output']>;
+};
+
 export type IBookmark = {
   _id: Scalars['ID']['output'];
   created?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -730,6 +800,7 @@ export type IEventStatistics = {
 export enum IEventType {
   AclDenied = 'ACL_DENIED',
   AclGrantedSensitive = 'ACL_GRANTED_SENSITIVE',
+  ApiLoginFailed = 'API_LOGIN_FAILED',
   ApiLoginTokenCreated = 'API_LOGIN_TOKEN_CREATED',
   ApiLogout = 'API_LOGOUT',
   AssortmentAddFilter = 'ASSORTMENT_ADD_FILTER',
@@ -2793,6 +2864,12 @@ export type IQuery = {
   assortments: Array<IAssortment>;
   /** Returns total number of assortments that match a given criteria or all if no criteria is given */
   assortmentsCount: Scalars['Int']['output'];
+  /** Verify tamper-evident hash chain integrity of the audit log */
+  auditChainStatus: IAuditChainStatus;
+  /** Get audit log entries */
+  auditLogs: Array<IAuditLogEntry>;
+  /** Get total count of audit log entries */
+  auditLogsCount: Scalars['Int']['output'];
   /** Get all countries, by default sorted by creation date (ascending) */
   countries: Array<ICountry>;
   /** Returns total number of countries */
@@ -2827,6 +2904,8 @@ export type IQuery = {
   events: Array<IEvent>;
   /** Get total count of all emitted events */
   eventsCount: Scalars['Int']['output'];
+  /** Get count of failed login attempts */
+  failedLoginAttempts: Scalars['Int']['output'];
   /** Get a specific filter by ID */
   filter?: Maybe<IFilter>;
   /** Get all filters, by default sorted by creation date (ascending) */
@@ -2964,6 +3043,26 @@ export type IQueryAssortmentsCountArgs = {
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
 
+export type IQueryAuditLogsArgs = {
+  classUids?: InputMaybe<Array<Scalars['Int']['input']>>;
+  from?: InputMaybe<Scalars['Timestamp']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  queryText?: InputMaybe<Scalars['String']['input']>;
+  success?: InputMaybe<Scalars['Boolean']['input']>;
+  to?: InputMaybe<Scalars['Timestamp']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type IQueryAuditLogsCountArgs = {
+  classUids?: InputMaybe<Array<Scalars['Int']['input']>>;
+  from?: InputMaybe<Scalars['Timestamp']['input']>;
+  queryText?: InputMaybe<Scalars['String']['input']>;
+  success?: InputMaybe<Scalars['Boolean']['input']>;
+  to?: InputMaybe<Scalars['Timestamp']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type IQueryCountriesArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -3053,6 +3152,12 @@ export type IQueryEventsCountArgs = {
   created?: InputMaybe<IDateFilterInput>;
   queryString?: InputMaybe<Scalars['String']['input']>;
   types?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type IQueryFailedLoginAttemptsArgs = {
+  remoteAddress?: InputMaybe<Scalars['String']['input']>;
+  since?: InputMaybe<Scalars['Timestamp']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type IQueryFilterArgs = {
@@ -3449,9 +3554,11 @@ export enum IRoleAction {
   UploadTempFile = 'uploadTempFile',
   UploadUserAvatar = 'uploadUserAvatar',
   UseWebAuthn = 'useWebAuthn',
+  VerifyAuditChain = 'verifyAuditChain',
   VerifyEmail = 'verifyEmail',
   ViewAssortment = 'viewAssortment',
   ViewAssortments = 'viewAssortments',
+  ViewAuditLog = 'viewAuditLog',
   ViewCountries = 'viewCountries',
   ViewCountry = 'viewCountry',
   ViewCurrencies = 'viewCurrencies',
@@ -4058,6 +4165,7 @@ export enum IWorkStatus {
 }
 
 export enum IWorkType {
+  AuditLogPrune = 'AUDIT_LOG_PRUNE',
   Budgetsms = 'BUDGETSMS',
   Bulkgate = 'BULKGATE',
   BulkExport = 'BULK_EXPORT',
@@ -6935,6 +7043,109 @@ export type IUpdateAssortmentTextsMutation = {
     description?: string | null;
   }>;
 };
+
+export type IAuditLogEntryFragment = {
+  id: string;
+  time: number;
+  message?: string | null;
+  classUid: number;
+  className: string;
+  activityId: number;
+  activityName?: string | null;
+  typeUid: number;
+  categoryUid: number;
+  severityId: number;
+  statusId: number;
+  statusDetail?: string | null;
+  sequenceNumber?: number | null;
+  prevHash?: string | null;
+  hash?: string | null;
+  raw?: any | null;
+  actor?: {
+    user?: {
+      uid?: string | null;
+      name?: string | null;
+      emailAddr?: string | null;
+    } | null;
+    session?: { uid?: string | null } | null;
+  } | null;
+  srcEndpoint?: { ip?: string | null; port?: number | null } | null;
+  api?: {
+    operation?: string | null;
+    request?: { uid?: string | null } | null;
+    response?: { code?: number | null } | null;
+  } | null;
+};
+
+export type IAuditLogEntryFragmentVariables = Exact<{ [key: string]: never }>;
+
+export type IAuditChainStatusQueryVariables = Exact<{ [key: string]: never }>;
+
+export type IAuditChainStatusQuery = {
+  auditChainStatus: {
+    valid: boolean;
+    totalEntries: number;
+    checkedEntries: number;
+    firstEntry?: number | null;
+    lastEntry?: number | null;
+    errors: Array<{ sequenceNumber: number; message: string }>;
+  };
+};
+
+export type IAuditLogsQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  classUids?: InputMaybe<Array<Scalars['Int']['input']>>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+  success?: InputMaybe<Scalars['Boolean']['input']>;
+  from?: InputMaybe<Scalars['Timestamp']['input']>;
+  to?: InputMaybe<Scalars['Timestamp']['input']>;
+  queryText?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+export type IAuditLogsQuery = {
+  auditLogsCount: number;
+  auditLogs: Array<{
+    id: string;
+    time: number;
+    message?: string | null;
+    classUid: number;
+    className: string;
+    activityId: number;
+    activityName?: string | null;
+    typeUid: number;
+    categoryUid: number;
+    severityId: number;
+    statusId: number;
+    statusDetail?: string | null;
+    sequenceNumber?: number | null;
+    prevHash?: string | null;
+    hash?: string | null;
+    raw?: any | null;
+    actor?: {
+      user?: {
+        uid?: string | null;
+        name?: string | null;
+        emailAddr?: string | null;
+      } | null;
+      session?: { uid?: string | null } | null;
+    } | null;
+    srcEndpoint?: { ip?: string | null; port?: number | null } | null;
+    api?: {
+      operation?: string | null;
+      request?: { uid?: string | null } | null;
+      response?: { code?: number | null } | null;
+    } | null;
+  }>;
+};
+
+export type IFailedLoginAttemptsQueryVariables = Exact<{
+  userId?: InputMaybe<Scalars['String']['input']>;
+  remoteAddress?: InputMaybe<Scalars['String']['input']>;
+  since?: InputMaybe<Scalars['Timestamp']['input']>;
+}>;
+
+export type IFailedLoginAttemptsQuery = { failedLoginAttempts: number };
 
 export type IAddressFragment = {
   firstName?: string | null;
