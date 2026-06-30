@@ -35,6 +35,8 @@ import DisplayExtendedFields from '../../common/components/DisplayExtendedFields
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import { IProductDetailFragment, IProductStatus } from '../../../gql/types';
 import useApp from '../../common/hooks/useApp';
+import { usePlugins } from '../../plugins/PluginContext';
+import PluginSlot from '../../plugins/PluginSlot';
 
 interface GetCurrentTabProps {
   id: string;
@@ -102,6 +104,18 @@ const GetCurrentTab = ({
   if (selectedView === 'extended') {
     return <DisplayExtendedFields data={extendedData} />;
   }
+  if (selectedView?.startsWith('plugin:')) {
+    const componentName = selectedView.replace('plugin:', '');
+    return (
+      <PluginSlot slot="product:tabs" entityId={id}>
+        {(Component, config) =>
+          config.component === componentName ? (
+            <Component entityId={id} />
+          ) : null
+        }
+      </PluginSlot>
+    );
+  }
   return (
     <LocaleWrapper>
       <ProductTextsForm productId={id} />
@@ -113,6 +127,7 @@ const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
   const { hasRole } = useAuth();
   const { updateProduct } = useUpdateProduct();
   const { shopInfo } = useApp();
+  const { getSlotPlugins } = usePlugins();
   const { __typename } = product || {};
 
   const productOptions = [
@@ -207,6 +222,13 @@ const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
       Icon: <PuzzlePieceIcon className="h-5 w-5" />,
     },
   ].filter((item) => item);
+
+  const pluginTabs = getSlotPlugins('product:tabs').map(({ config }) => ({
+    id: `plugin:${config.component}`,
+    title: config.label,
+    Icon: <PuzzlePieceIcon className="h-5 w-5" />,
+  }));
+  productOptions.push(...pluginTabs);
 
   const onUpdateTags = async ({ tags }) => {
     await updateProduct({ productId: product?._id, product: { tags } });

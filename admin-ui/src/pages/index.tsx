@@ -7,6 +7,7 @@ import useShopConfiguration from '../modules/common/hooks/useShopConfiguration';
 import DashboardMetrics from '../modules/common/components/DashboardMetrics';
 import AnalyticsDashboard from '../modules/common/components/AnalyticsDashboard';
 import { default as packageJson } from '../../package.json' with { type: 'json' };
+import PluginSlot from '../modules/plugins/PluginSlot';
 
 const HomePage = () => {
   const { configuration } = useShopConfiguration();
@@ -35,6 +36,21 @@ const HomePage = () => {
           )}
           <SystemInfoPanel />
         </div>
+        <PluginSlot slot="dashboard:widgets">
+          {(Component, config) => (
+            <div
+              className={`mt-6 ${
+                config.width === 'full'
+                  ? 'w-full'
+                  : config.width === 'third'
+                    ? 'w-full lg:w-1/3'
+                    : 'w-full lg:w-1/2'
+              }`}
+            >
+              <Component />
+            </div>
+          )}
+        </PluginSlot>
       </div>
     </div>
   );

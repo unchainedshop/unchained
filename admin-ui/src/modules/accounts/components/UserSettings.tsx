@@ -12,6 +12,8 @@ import {
 } from '@heroicons/react/20/solid';
 import { useIntl } from 'react-intl';
 import { IRoleAction } from '../../../gql/types';
+import { usePlugins } from '../../plugins/PluginContext';
+import PluginSlot from '../../plugins/PluginSlot';
 
 import DisplayExtendedFields from '../../common/components/DisplayExtendedFields';
 import DisplayUserLastLogs from '../../common/components/DisplayUserLastLogs';
@@ -46,6 +48,18 @@ const GetCurrentTab = ({ user, selectedView, ...extendedData }) => {
   if (selectedView === 'logs') {
     return <DisplayUserLastLogs {...user} />;
   }
+  if (selectedView?.startsWith('plugin:')) {
+    const componentName = selectedView.replace('plugin:', '');
+    return (
+      <PluginSlot slot="user:tabs" entityId={user?._id}>
+        {(Component, config) =>
+          config.component === componentName ? (
+            <Component entityId={user?._id} entity={user} />
+          ) : null
+        }
+      </PluginSlot>
+    );
+  }
   return <ProfileView {...user} />;
 };
 const UserSettings = ({ user, extendedData }) => {
@@ -53,6 +67,7 @@ const UserSettings = ({ user, extendedData }) => {
   const { hasRole } = useAuth();
   const { currentUser } = useCurrentUser();
   const isOwnUser = currentUser?._id === user?._id;
+  const { getSlotPlugins } = usePlugins();
 
   const userProfileSettingOptions = [
     {
@@ -126,6 +141,11 @@ const UserSettings = ({ user, extendedData }) => {
       }),
       Icon: <PuzzlePieceIcon className="h-5 w-5" />,
     },
+    ...getSlotPlugins('user:tabs').map(({ config }) => ({
+      id: `plugin:${config.component}`,
+      title: config.label,
+      Icon: <PuzzlePieceIcon className="h-5 w-5" />,
+    })),
   ].filter(Boolean);
   return (
     <Tab tabItems={userProfileSettingOptions} defaultTab="profile">
