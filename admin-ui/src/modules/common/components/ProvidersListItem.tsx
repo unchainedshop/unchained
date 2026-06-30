@@ -28,7 +28,7 @@ const ProviderListItem = ({
   return (
     <Table.Row>
       <Table.Cell>
-        <div className="text-slate-900 dark:text-slate-200">
+        <div className="text-text-primary">
           <span className="flex items-center">
             <span className="mr-2">
               {getInterfaceLabel(provider?.interface)}

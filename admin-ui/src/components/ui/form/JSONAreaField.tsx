@@ -65,7 +65,7 @@ const JSONAreaField = ({
     <FieldWrapper {...field}>
       <JSONView
         className={clsx(
-          'mt-1 block w-full max-w-full rounded-md border-1 border-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 shadow-xs dark:shadow-none focus:ring-slate-800 sm:text-sm',
+          'mt-1 block w-full max-w-full rounded-md border-1 border-border-default dark:bg-slate-900 dark:text-slate-200 shadow-xs dark:shadow-none focus:ring-focus-ring sm:text-sm',
           {
             'border-rose-300 text-rose-600 focus:border-rose-600 focus:ring-rose-600':
               !!field.error,

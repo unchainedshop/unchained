@@ -61,12 +61,12 @@ const copilotCount = (
       formatMessage({ id: 'items', defaultMessage: 'Items' });
 
     return (
-      <div className="p-6 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 text-center">
+      <div className="p-6 bg-surface rounded-lg shadow-sm border border-border-subtle text-center">
         <dl>
-          <dt className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
+          <dt className="text-sm font-semibold text-text-secondary mb-2">
             {text}
           </dt>
-          <dd className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+          <dd className="text-3xl font-bold text-text-primary">
             {count.toLocaleString()}
           </dd>
         </dl>

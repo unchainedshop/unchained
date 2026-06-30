@@ -27,10 +27,7 @@ const DateInputField: React.FC<DateInputFieldProps> = ({
   return (
     <div className={clsx('flex flex-col gap-1', containerClassName)}>
       {label && (
-        <label
-          htmlFor={id}
-          className="text-sm font-medium text-slate-700 dark:text-slate-300"
-        >
+        <label htmlFor={id} className="text-sm font-medium text-text-secondary">
           {label}
         </label>
       )}
@@ -46,7 +43,7 @@ const DateInputField: React.FC<DateInputFieldProps> = ({
         min={min}
         max={max}
         className={clsx(
-          'w-full rounded-md border-1 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm shadow-xs text-slate-900 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:[color-scheme:dark]',
+          'w-full rounded-md border-1 border-border-default bg-surface-input px-3 py-2 text-sm shadow-xs text-text-primary focus:outline-hidden focus:ring-2 focus:ring-focus-ring dark:[color-scheme:dark]',
           className,
         )}
       />

@@ -136,9 +136,9 @@ describe('Product Assignment', () => {
     });
     it('Should add product variation assignment ', () => {
       const [firstProduct] = SearchProductResponse.data.searchProducts.products;
-      cy.get('.react-select__input-container input').first().clear({ force: true }).type('Salad', { force: true });
+      cy.get('[role="combobox"]').first().clear({ force: true }).type('Salad', { force: true });
 
-      cy.get('[class*="react-select__option"]').first().click();
+      cy.get('[role="option"]').first().click();
       cy.wait(
         fullAliasMutationName(ProductOperations.AddProductAssignment),
       ).then((currentSubject) => {
@@ -151,7 +151,7 @@ describe('Product Assignment', () => {
     });
 
     it('Should [REMOVE productASSIGNMENT ] successfully', () => {
-      cy.get('button.border-rose-500').first().click();
+      cy.get('button.border-danger').first().click();
       cy.get('[aria-modal="true"]').should('exist');
       cy.get('button[type="button"]#danger_continue')
         .should('contain.text', localizations.en.delete_variation_assignment)

@@ -59,7 +59,7 @@ const OrderDetailPayment = ({ order }) => {
   return (
     <div>
       <div className="flex items-baseline gap-2">
-        <h2 className="pt-4 text-2xl text-slate-900 dark:text-slate-200">
+        <h2 className="pt-4 text-2xl text-text-primary">
           {formatMessage({
             id: 'payment',
             defaultMessage: 'Payment',
@@ -89,7 +89,7 @@ const OrderDetailPayment = ({ order }) => {
             </Link>
           )}
         </span>
-        <div className="mt-3 text-sm text-slate-500 dark:text-slate-200">
+        <div className="mt-3 text-sm text-text-muted">
           {formatMessage({
             id: 'method',
             defaultMessage: 'Method',
@@ -112,7 +112,7 @@ const OrderDetailPayment = ({ order }) => {
               />
             ))}
         </span>
-        <div className="mt-3 text-sm text-slate-500 dark:text-slate-200">
+        <div className="mt-3 text-sm text-text-muted">
           {formatMessage({
             id: 'delivery_status',
             defaultMessage: 'Status',
@@ -140,7 +140,7 @@ const OrderDetailPayment = ({ order }) => {
                       id="pay"
                       type="button"
                       onClick={markAsPaid}
-                      className="cursor-pointer my-2 mr-2 inline-flex h-full items-center justify-center rounded-sm border border-transparent bg-slate-800 dark:bg-slate-600 py-1 px-2 text-xs font-semibold text-white shadow-xs hover:bg-slate-950 dark:hover:bg-slate-500 focus:outline-hidden focus:ring-2 focus:ring-slate-700 dark:focus:ring-slate-400 focus:ring-offset-2"
+                      className="cursor-pointer my-2 mr-2 inline-flex h-full items-center justify-center rounded-sm border border-transparent bg-accent py-1 px-2 text-xs font-semibold text-text-on-accent shadow-xs hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-focus-ring dark:focus:ring-focus-ring focus:ring-offset-2"
                     >
                       <span className="mr-1">
                         <PlusIcon className="inline-block h-3 w-3 text-white" />

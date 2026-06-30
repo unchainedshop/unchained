@@ -77,7 +77,7 @@ const AssortmentForm = ({ onSubmit, onSubmitSuccess }) => {
             form.formik.setFieldValue('isRoot', !form.formik.values.isRoot)
           }
         />
-        <span className="block text-sm text-slate-400 dark:text-slate-500 mt-2">
+        <span className="block text-sm text-text-muted mt-2">
           {formatMessage({
             id: 'root_description',
             defaultMessage: 'This makes the assortment a top level category',
@@ -86,7 +86,7 @@ const AssortmentForm = ({ onSubmit, onSubmitSuccess }) => {
       </div>
       <FormErrors />
       {hasRole(IRoleAction.ManageAssortments) && (
-        <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 p-5 text-right">
+        <div className="border-t-slate-100 border-t border-t-border-subtle space-y-6 bg-surface-subtle p-5 text-right">
           <SubmitButton
             label={formatMessage({
               id: 'add_assortment',

@@ -22,7 +22,7 @@ const DashboardMetrics: React.FC = () => {
         defaultMessage: 'Products',
       }),
       value: metrics.products.value,
-      icon: <CubeIcon className="h-6 w-6 text-slate-700 dark:text-slate-300" />,
+      icon: <CubeIcon className="h-6 w-6 text-text-secondary" />,
       loading: metrics.products.loading,
       href: '/products',
     },
@@ -32,9 +32,7 @@ const DashboardMetrics: React.FC = () => {
         defaultMessage: 'Assortments',
       }),
       value: metrics.categories.value,
-      icon: (
-        <RectangleStackIcon className="h-6 w-6 text-slate-700 dark:text-slate-300" />
-      ),
+      icon: <RectangleStackIcon className="h-6 w-6 text-text-secondary" />,
       loading: metrics.categories.loading,
       href: '/assortments',
     },
@@ -44,9 +42,7 @@ const DashboardMetrics: React.FC = () => {
         defaultMessage: 'Customers',
       }),
       value: metrics.customers.value,
-      icon: (
-        <UsersIcon className="h-6 w-6 text-slate-700 dark:text-slate-300" />
-      ),
+      icon: <UsersIcon className="h-6 w-6 text-text-secondary" />,
       loading: metrics.customers.loading,
       href: '/users',
     },

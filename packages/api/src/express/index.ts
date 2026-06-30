@@ -4,6 +4,8 @@ import type { YogaServerInstance } from 'graphql-yoga';
 import type { UnchainedCore } from '@unchainedshop/core';
 import { pluginRegistry } from '@unchainedshop/core';
 
+import { createHash } from 'node:crypto';
+
 import { getCurrentContextResolver } from '../context.ts';
 import { createAuthContext, type AuthContextParams } from '../middleware/createAuthMiddleware.ts';
 import type { AuthConfig } from '../auth.ts';
@@ -12,19 +14,36 @@ import type { ChatConfiguration } from '../chat/utils.ts';
 import { connectChat } from './chatHandler.ts';
 import { mountRoutes } from './mountRoutes.ts';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
+import { generateThemeCSS, type AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
+
+export type { AdminUIThemeTokens, AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
 
 export interface AdminUIRouterOptions {
-  prefix: string;
+  prefix?: string;
   enabled?: boolean;
+  theme?: AdminUIThemeConfig;
 }
 
-export const adminUIRouter = (enabled = true) => {
+export const adminUIRouter = (enabled = true, theme?: AdminUIThemeConfig) => {
   const router = e.Router();
 
   const staticURL = import.meta.resolve('@unchainedshop/admin-ui');
   const staticPath = new URL(staticURL).pathname.split('/').slice(0, -1).join('/');
 
   if (enabled) {
+    const themeCSS = generateThemeCSS(theme);
+    const themeHash = createHash('sha256').update(themeCSS).digest('hex').slice(0, 8);
+    const themeEtag = `"${themeHash}"`;
+    router.get('/admin-ui-theme.css', (req, res) => {
+      if (req.headers['if-none-match'] === themeEtag) {
+        return res.status(304).end();
+      }
+      res
+        .set('Cache-Control', 'public, max-age=0, must-revalidate')
+        .set('ETag', themeEtag)
+        .type('text/css')
+        .send(themeCSS);
+    });
     router.use(e.static(staticPath));
     router.get(/(.*)/, (_, res) => {
       res.sendFile(`${staticPath}/index.html`);
@@ -141,6 +160,8 @@ export const connect = async (
     trustProxy?: boolean;
   } = {},
 ) => {
+  const adminUIOptions = typeof adminUI === 'object' ? adminUI : undefined;
+  const adminUITheme = adminUIOptions?.theme;
   if (allowRemoteToLocalhostSecureCookies) {
     // SECURITY: This mode is for development only - block in production
     if (process.env.NODE_ENV === 'production') {
@@ -200,7 +221,7 @@ export const connect = async (
   mountRoutes(expressApp, unchainedAPI, routes);
 
   if (adminUI) {
-    expressApp.use(typeof adminUI === 'object' ? adminUI.prefix : '/', adminUIRouter(true));
+    expressApp.use(adminUIOptions?.prefix || '/', adminUIRouter(true, adminUITheme));
   }
 };
 

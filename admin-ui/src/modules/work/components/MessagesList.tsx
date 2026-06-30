@@ -111,7 +111,7 @@ const MessageItem = ({
     formatMessage({ id: 'no_retries', defaultMessage: 'No retries' });
   return (
     <>
-      <Table.Row className="bg-slate-50 dark:bg-slate-800/50">
+      <Table.Row className="bg-surface/50">
         <Table.Cell>
           <div className="flex items-center text-sm">
             <button
@@ -126,7 +126,7 @@ const MessageItem = ({
             </button>
             <Link
               href={`/works?workerId=${messageWork._id}`}
-              className="text-slate-900 dark:text-slate-300 font-medium"
+              className="text-text-primary font-medium"
             >
               {messageWork?.input?.template}
             </Link>

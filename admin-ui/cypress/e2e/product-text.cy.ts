@@ -134,7 +134,7 @@ describe('Product Text', () => {
 
   it('Should [ADD TAGS] successfully', () => {
     cy.get('button#add_tag').click();
-    cy.get('form#add_tag_form .react-select__input-container input')
+    cy.get('form#add_tag_form input#tags')
       .type('new{enter}', { force: true });
     cy.get('form#add_tag_form').within(() => {
       cy.get('input[type="submit"]').contains(localizations.en.save).click();

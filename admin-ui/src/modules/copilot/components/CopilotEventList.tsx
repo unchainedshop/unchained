@@ -13,23 +13,19 @@ export const CopilotEventListItem = ({ event: evt }) => {
   return (
     <div
       key={evt._id}
-      className="flex flex-col p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700"
+      className="flex flex-col p-3 bg-surface rounded-lg shadow-sm border border-border-subtle"
     >
       <div className="flex justify-between items-center">
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100">
-            {evt.type}
-          </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-            {evt.payload.type}
-          </p>
+          <h3 className="text-sm font-medium text-text-primary">{evt.type}</h3>
+          <p className="text-xs text-text-muted truncate">{evt.payload.type}</p>
           <CopyableId
             id={evt._id}
-            className="text-[11px] text-slate-400 dark:text-slate-500 break-all"
+            className="text-[11px] text-text-muted break-all"
           />
         </div>
 
-        <div className="text-xs text-slate-500 dark:text-slate-400 text-right whitespace-nowrap mr-4">
+        <div className="text-xs text-text-muted text-right whitespace-nowrap mr-4">
           {formatDateTime(evt.created, {
             year: 'numeric',
             month: 'short',
@@ -43,14 +39,14 @@ export const CopilotEventListItem = ({ event: evt }) => {
         <div className="flex flex-col text-xs items-end space-y-1">
           <Link
             href={`/events?eventId=${evt._id}`}
-            className="px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex-shrink-0"
+            className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary border border-border-default rounded-md hover:bg-surface-raised transition-colors flex-shrink-0"
           >
             {formatMessage({ id: 'view', defaultMessage: 'View' })}
           </Link>
 
           <button
             onClick={() => setShowPayload(!showPayload)}
-            className="px-2 py-1 text-xs border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+            className="px-2 py-1 text-xs border border-border-default rounded-md hover:bg-surface-raised transition-colors"
           >
             {showPayload
               ? formatMessage({

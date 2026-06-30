@@ -41,10 +41,10 @@ const ProductItemWrapperCompact = ({
   const productSlug = generateUniqueId(product);
 
   return (
-    <div className="relative border rounded-xl p-4 shadow-sm bg-white dark:bg-slate-900 space-y-4">
+    <div className="relative border rounded-xl p-4 shadow-sm bg-surface-input space-y-4">
       <Link
         href={`/products?slug=${productSlug}`}
-        className="absolute top-2 right-2 px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+        className="absolute top-2 right-2 px-2 py-1 text-xs font-medium text-text-secondary hover:text-text-primary border border-border-default rounded-md hover:bg-surface-raised transition-colors"
       >
         {formatMessage({ id: 'edit', defaultMessage: 'Edit' })}
       </Link>
@@ -72,21 +72,21 @@ const ProductItemWrapperCompact = ({
         />
 
         <div className="flex-1 space-y-1 overflow-hidden">
-          <div className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+          <div className="text-sm font-semibold text-text-primary truncate">
             {text?.title || 'Untitled Product'}
           </div>
 
           <div className="flex items-center gap-3 mt-1">
             <ProductStatusBadge status={status} />
 
-            <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-600 px-2 py-1 rounded">
+            <span className="text-xs text-text-muted bg-slate-100 dark:bg-slate-600 px-2 py-1 rounded">
               {(product.__typename || type || 'SimpleProduct').replace(
                 '_PRODUCT',
                 '',
               )}
             </span>
 
-            <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+            <span className="text-sm font-medium text-text-primary">
               {price ? (
                 formatPrice(price)
               ) : (
@@ -185,7 +185,7 @@ const ProductItemWrapperCompact = ({
 
       {children && (
         <div className="pt-2">
-          <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg shadow-inner border border-slate-200 dark:border-slate-700">
+          <div className="p-3 bg-surface rounded-lg shadow-inner border border-border-subtle">
             {children}
           </div>
         </div>

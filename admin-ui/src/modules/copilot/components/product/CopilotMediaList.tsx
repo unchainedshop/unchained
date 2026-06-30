@@ -28,9 +28,9 @@ const CopilotMediaList: React.FC<CopilotMediaListProps> = ({ media }) => {
         return (
           <div
             key={m._id}
-            className="flex flex-col items-start gap-2 p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow duration-200 w-full"
+            className="flex flex-col items-start gap-2 p-3 bg-surface rounded-lg shadow-sm border border-border-subtle hover:shadow-md transition-shadow duration-200 w-full"
           >
-            <div className="w-full h-32 flex-shrink-0 bg-slate-50 dark:bg-slate-700 rounded-md overflow-hidden">
+            <div className="w-full h-32 flex-shrink-0 bg-surface rounded-md overflow-hidden">
               {imageUrl ? (
                 <ImageWithFallback
                   src={imageUrl}
@@ -47,11 +47,11 @@ const CopilotMediaList: React.FC<CopilotMediaListProps> = ({ media }) => {
             </div>
 
             <div className="flex-1 w-full">
-              <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+              <h3 className="text-sm font-medium text-text-primary truncate">
                 {m.name}
               </h3>
 
-              <div className="flex items-center gap-3 mt-1 text-xs text-slate-500 dark:text-slate-400 flex-wrap">
+              <div className="flex items-center gap-3 mt-1 text-xs text-text-muted flex-wrap">
                 <span>
                   {formatMessage({ id: 'media.size', defaultMessage: 'Size' })}:{' '}
                   {(m?.file?.size / 1024).toFixed(1)} KB
@@ -63,8 +63,8 @@ const CopilotMediaList: React.FC<CopilotMediaListProps> = ({ media }) => {
               </div>
             </div>
 
-            <div className="flex flex-col items-start text-xs text-slate-500 dark:text-slate-400 mt-2">
-              <span className="text-xs text-slate-500 dark:text-slate-400">
+            <div className="flex flex-col items-start text-xs text-text-muted mt-2">
+              <span className="text-xs text-text-muted">
                 {formatMessage({ id: 'media.id', defaultMessage: 'ID' })}:{' '}
                 {m._id}
               </span>

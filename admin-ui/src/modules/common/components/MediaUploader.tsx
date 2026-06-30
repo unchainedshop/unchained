@@ -53,17 +53,17 @@ const MediaUploader = ({
   return (
     <>
       {!onlyDragAndDrop && (
-        <div className="text-slate-500 dark:text-slate-200">
-          <h3 className="text-lg text-slate-900 dark:text-slate-200">
+        <div className="text-text-muted">
+          <h3 className="text-lg text-text-primary">
             {formatMessage({ id: 'avatar', defaultMessage: 'Avatar' })}
           </h3>
           <div className="my-4 flex items-center">
             <span className="inline-block h-12 w-12 overflow-hidden rounded-full ">
-              <UserCircleIcon className="h-full w-full text-slate-800 dark:text-slate-200" />
+              <UserCircleIcon className="h-full w-full text-text-secondary" />
             </span>
             <button
               type="button"
-              className="ml-5 rounded-md border border-slate-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-slate-700 shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-slate-800 focus:ring-offset-2"
+              className="ml-5 rounded-md border border-slate-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-slate-700 shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
             >
               {text ||
                 formatMessage({
@@ -107,7 +107,7 @@ const MediaUploader = ({
                     strokeLinejoin="round"
                   />
                 </svg>
-                <div className="flex text-sm text-slate-600 dark:text-slate-400">
+                <div className="flex text-sm text-text-secondary">
                   <span className="px-1 font-medium text-slate-950 dark:text-slate-300">
                     {formatMessage({
                       id: 'upload_file',

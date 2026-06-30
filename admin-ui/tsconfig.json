@@ -26,7 +26,7 @@
     "incremental": true,
     "noImplicitAny": false,
     "isolatedModules": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "plugins": [
       {
         "name": "next"
@@ -34,7 +34,8 @@
     ]
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "cypress"
   ],
   "include": [
     "**/*.js",

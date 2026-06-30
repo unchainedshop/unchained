@@ -81,7 +81,7 @@ export const ToolGrid: React.FC<ToolGridProps> = ({
       <div className="space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+            <span className="text-sm font-medium text-text-primary">
               {totalTools} tools available
             </span>
           </div>
@@ -94,7 +94,7 @@ export const ToolGrid: React.FC<ToolGridProps> = ({
               placeholder="Search tools..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400"
+              className="pl-10 pr-4 py-2 text-sm border border-border-subtle rounded-lg bg-surface text-text-primary placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-focus-ring"
             />
           </div>
         </div>
@@ -104,7 +104,7 @@ export const ToolGrid: React.FC<ToolGridProps> = ({
       <div className="space-y-6">
         {Object.entries(filteredGroups).length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-slate-500 dark:text-slate-400">
+            <p className="text-text-muted">
               No tools found matching &quot;{searchTerm}&quot;
             </p>
           </div>
@@ -118,18 +118,18 @@ export const ToolGrid: React.FC<ToolGridProps> = ({
             return (
               <div
                 key={category}
-                className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden"
+                className="border border-border-subtle rounded-lg overflow-hidden"
               >
                 <button
                   onClick={() => toggleCategory(category)}
-                  className="w-full p-4 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left"
+                  className="w-full p-4 bg-surface/50 hover:bg-surface-raised transition-colors text-left"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                      <h3 className="text-sm font-semibold text-text-secondary">
                         {category}
                       </h3>
-                      <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded-full">
+                      <span className="text-xs text-text-muted bg-surface-raised px-2 py-1 rounded-full">
                         {tools.length}
                       </span>
                     </div>
@@ -142,7 +142,7 @@ export const ToolGrid: React.FC<ToolGridProps> = ({
                 </button>
 
                 {isExpanded && (
-                  <div className="p-4 bg-white dark:bg-slate-800">
+                  <div className="p-4 bg-surface">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {tools.map((tool) => (
                         <ToolCard key={tool.name} tool={tool} />
@@ -164,21 +164,18 @@ const ToolGridSkeleton: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="animate-pulse">
-        <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-lg w-48 mb-6"></div>
+        <div className="h-10 bg-surface-raised rounded-lg w-48 mb-6"></div>
         {[1, 2, 3].map((i) => (
           <div key={i} className="mb-6">
-            <div className="h-5 bg-slate-200 dark:bg-slate-700 rounded w-32 mb-3"></div>
+            <div className="h-5 bg-surface-raised rounded w-32 mb-3"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {[1, 2, 3, 4].map((j) => (
-                <div
-                  key={j}
-                  className="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg"
-                >
+                <div key={j} className="p-4 bg-surface-raised rounded-lg">
                   <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+                    <div className="w-9 h-9 bg-surface-raised rounded-lg"></div>
                     <div className="flex-1">
-                      <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-2"></div>
-                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+                      <div className="h-4 bg-surface-raised rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-surface-raised rounded w-full"></div>
                     </div>
                   </div>
                 </div>
@@ -197,7 +194,7 @@ const ToolGridError: React.FC<{ error: string }> = ({ error }) => {
     <div className="text-center py-8">
       <div className="inline-flex items-center justify-center w-16 h-16 bg-rose-100 dark:bg-rose-900/20 rounded-full mb-4">
         <svg
-          className="w-8 h-8 text-rose-600 dark:text-rose-400"
+          className="w-8 h-8 text-danger"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -210,13 +207,11 @@ const ToolGridError: React.FC<{ error: string }> = ({ error }) => {
           />
         </svg>
       </div>
-      <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">
+      <h3 className="text-lg font-medium text-text-primary mb-2">
         Unable to load tools
       </h3>
-      <p className="text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-        {error}
-      </p>
-      <p className="text-xs text-slate-500 dark:text-slate-500 mt-4">
+      <p className="text-sm text-text-secondary max-w-md mx-auto">{error}</p>
+      <p className="text-xs text-text-muted mt-4">
         Using default tool set. Full capabilities will be available when
         connected to the backend.
       </p>

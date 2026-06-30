@@ -34,7 +34,7 @@ const DatePickerField = ({
         name={field.name}
         disabled={field.disabled}
         className={clsx(
-          'relative mt-0 block w-full appearance-none rounded-md rounded-b-md border-1 border-slate-300 dark:border-slate-700 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-200 dark:bg-slate-900 placeholder-slate-400 shadow-xs focus:z-10  focus:outline-hidden focus:ring-2 focus:ring-slate-800',
+          'relative mt-0 block w-full appearance-none rounded-md rounded-b-md border-1 border-border-default px-4 py-2.5 text-sm text-text-primary dark:bg-slate-900 placeholder-slate-400 shadow-xs focus:z-10  focus:outline-hidden focus:ring-2 focus:ring-focus-ring',
           className,
           {
             'border-rose-700 placeholder:text-rose-300': !!field.error,

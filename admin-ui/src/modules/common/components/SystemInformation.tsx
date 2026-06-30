@@ -10,14 +10,14 @@ const ShopInformation = () => {
   if (loading) return <Loading />;
   return (
     <>
-      <h2 className="ml-4 mb-6 text-xl text-slate-900 dark:text-slate-200">
+      <h2 className="ml-4 mb-6 text-xl text-text-primary">
         {formatMessage({
           id: 'system_information',
           defaultMessage: 'System Information',
         })}
       </h2>
       <div className="mt-2 text-right">
-        <div className="bg-white dark:bg-slate-800 p-4 shadow-sm dark:shadow-none sm:rounded-lg sm:px-4">
+        <div className="bg-surface p-4 shadow-sm dark:shadow-none sm:rounded-lg sm:px-4">
           <ul className="-my-3 divide-y divide-slate-200 dark:divide-slate-700">
             <li className="py-4">
               <div className="flex items-center space-x-4">

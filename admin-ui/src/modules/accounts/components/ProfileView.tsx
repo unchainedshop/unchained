@@ -126,11 +126,11 @@ const ProfileView = ({ profile, avatar, _id }) => {
   return (
     <FormWrapper className="shadow-none">
       <Form form={form}>
-        <div className="overflow-hidden rounded-md bg-slate-50 dark:bg-slate-950">
+        <div className="overflow-hidden rounded-md bg-surface-subtle">
           <div className="lg:grid lg:grid-cols-3">
             <div className="mb-5 lg:col-span-1 lg:pr-5">
               <div className="space-y-2">
-                <h3 className="text-lg text-slate-900 dark:text-slate-200">
+                <h3 className="text-lg text-text-primary">
                   {formatMessage({
                     id: 'profile',
                     defaultMessage: 'Profile',
@@ -165,10 +165,10 @@ const ProfileView = ({ profile, avatar, _id }) => {
               )}
             </div>
 
-            <div className="col-span-2 ml-auto rounded-md px-6 shadow-sm dark:shadow-none lg:w-full bg-white dark:bg-slate-800">
+            <div className="col-span-2 ml-auto rounded-md px-6 shadow-sm dark:shadow-none lg:w-full bg-surface">
               <div className="py-4">
                 <div className="py-4 sm:grid sm:py-2">
-                  <label className="text-sm text-slate-400 dark:text-slate-200">
+                  <label className="text-sm text-text-muted">
                     {formatMessage({
                       id: 'photo',
                       defaultMessage: 'Photo',
@@ -208,7 +208,7 @@ const ProfileView = ({ profile, avatar, _id }) => {
                               (fileInputRef?.current as any)?.click();
                           }}
                           type="button"
-                          className="rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-600 py-2 px-3 text-sm font-medium leading-4 text-slate-700 dark:text-slate-200 shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-slate-900 focus:ring-offset-2"
+                          className="rounded-md border border-border-default bg-white dark:bg-slate-600 py-2 px-3 text-sm font-medium leading-4 text-text-secondary shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
                         >
                           {formatMessage({
                             id: 'change',
@@ -221,14 +221,14 @@ const ProfileView = ({ profile, avatar, _id }) => {
                 </div>
 
                 <div className="py-4 sm:grid sm:py-2">
-                  <label className="text-sm text-slate-400 dark:text-slate-200">
+                  <label className="text-sm text-text-muted">
                     {!isEdit &&
                       formatMessage({
                         id: 'displayName',
                         defaultMessage: 'Display Name',
                       })}
                   </label>
-                  <div className="mt-1 flex text-sm text-slate-900 dark:text-slate-200 sm:mt-0">
+                  <div className="mt-1 flex text-sm text-text-primary sm:mt-0">
                     {isEdit ? (
                       <TextField
                         className="mt-0 w-full"
@@ -245,14 +245,14 @@ const ProfileView = ({ profile, avatar, _id }) => {
                 </div>
 
                 <div className="py-4 sm:grid sm:py-2">
-                  <label className="text-sm text-slate-400 dark:text-slate-200">
+                  <label className="text-sm text-text-muted">
                     {!isEdit &&
                       formatMessage({
                         id: 'gender',
                         defaultMessage: 'Gender',
                       })}
                   </label>
-                  <div className="mt-1 flex text-sm text-slate-900 dark:text-slate-200 sm:mt-0">
+                  <div className="mt-1 flex text-sm text-text-primary sm:mt-0">
                     {isEdit ? (
                       <SelectField
                         className="mt-0 w-full"
@@ -282,14 +282,14 @@ const ProfileView = ({ profile, avatar, _id }) => {
                   hasRole(IRoleAction.ViewUserPrivateInfos)) && (
                   <>
                     <div className="py-4 sm:grid sm:py-2">
-                      <label className="text-sm text-slate-400 dark:text-slate-200">
+                      <label className="text-sm text-text-muted">
                         {!isEdit &&
                           formatMessage({
                             id: 'birthday',
                             defaultMessage: 'Birthday',
                           })}
                       </label>
-                      <div className="mt-1 flex text-sm text-slate-900 dark:text-slate-200 sm:mt-0">
+                      <div className="mt-1 flex text-sm text-text-primary sm:mt-0">
                         {isEdit ? (
                           <DatePickerField
                             label={formatMessage({
@@ -311,14 +311,14 @@ const ProfileView = ({ profile, avatar, _id }) => {
                     </div>
 
                     <div className="py-4 sm:grid sm:py-2">
-                      <label className="text-sm text-slate-400 dark:text-slate-200">
+                      <label className="text-sm text-text-muted">
                         {!isEdit &&
                           formatMessage({
                             id: 'mobile_phone',
                             defaultMessage: 'Mobile phone',
                           })}
                       </label>
-                      <div className="mt-1 flex text-sm text-slate-900 dark:text-slate-200 sm:mt-0">
+                      <div className="mt-1 flex text-sm text-text-primary sm:mt-0">
                         {isEdit ? (
                           <TextField
                             className="mt-0 w-full"
@@ -338,7 +338,7 @@ const ProfileView = ({ profile, avatar, _id }) => {
                   </>
                 )}
               </div>
-              <div className="-mx-6 bg-slate-50 dark:bg-slate-800 flex shrink-0 items-center justify-end space-x-4 pr-5">
+              <div className="-mx-6 bg-surface flex shrink-0 items-center justify-end space-x-4 pr-5">
                 {isEdit ? (
                   <SaveAndCancelButtons onCancel={() => setIsEdit(!isEdit)} />
                 ) : null}
@@ -349,7 +349,7 @@ const ProfileView = ({ profile, avatar, _id }) => {
           <div className="my-7 dark:border-t-slate-800 pt-6 lg:grid lg:grid-cols-3">
             <div className="col-span-1 space-y-1 py-3 lg:py-0">
               <div className="space-y-2">
-                <h3 className="text-lg text-slate-900 dark:text-slate-200">
+                <h3 className="text-lg text-text-primary">
                   {formatMessage({
                     id: 'address',
                     defaultMessage: 'Address',
@@ -385,7 +385,7 @@ const ProfileView = ({ profile, avatar, _id }) => {
               )}
             </div>
 
-            <div className="col-span-2 w-full border-slate-300 dark:border-slate-800 px-6 py-6 rounded-md shadow-sm dark:shadow-none lg:ml-auto lg:w-full bg-white dark:bg-slate-800 ">
+            <div className="col-span-2 w-full border-border-default px-6 py-6 rounded-md shadow-sm dark:shadow-none lg:ml-auto lg:w-full bg-surface ">
               <AddressFields
                 isEdit={isEdit}
                 address={address}

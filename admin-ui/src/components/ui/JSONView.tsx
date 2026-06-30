@@ -14,7 +14,7 @@ const JSONView = ({
   return (
     <textarea
       className={clsx(
-        'text-black dark:bg-slate-900 dark:text-slate-200 border-transparent border-t border-t-slate-200 dark:border-t-slate-800 resize-y',
+        'text-black dark:bg-slate-900 dark:text-slate-200 border-transparent border-t border-t-border-subtle resize-y',
         className,
       )}
       value={value}

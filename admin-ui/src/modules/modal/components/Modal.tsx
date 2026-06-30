@@ -1,127 +1,103 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { useIntl } from 'react-intl';
-import ReactDOM from 'react-dom';
+import {
+  Dialog,
+  DialogPanel,
+  Transition,
+  TransitionChild,
+} from '@headlessui/react';
 
-interface ModalInnerProps {
+interface ModalProps {
   onClose?: () => void;
   children?: React.ReactNode;
   visible?: boolean;
   closeOnOutsideClick?: boolean;
 }
 
-const ModalInner: React.FC<ModalInnerProps> = ({ children = null }) => {
-  const elRef = useRef<HTMLDivElement | null>(null);
-  const [, setIsVisible] = useState(false);
-  useEffect(() => {
-    const el = document.createElement('div');
-    elRef.current = el;
-    document.body.appendChild(el);
-    setIsVisible(true);
-    return () => {
-      if (elRef.current) {
-        document.body.removeChild(elRef.current);
-      }
-    };
-  }, []);
-
-  return elRef.current ? ReactDOM.createPortal(children, elRef.current) : null;
-};
-
-const Modal = ({
+const Modal: React.FC<ModalProps> = ({
   onClose: close,
   children,
-  visible,
+  visible = false,
   closeOnOutsideClick = false,
 }) => {
   const intl = useIntl();
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [shouldRender, setShouldRender] = useState(visible);
 
-  useEffect(() => {
-    if (visible) {
-      setShouldRender(true);
-      // Add blur class to body/main content
-      document.body.classList.add('modal-blur-active');
-      setTimeout(() => setIsAnimating(true), 10);
-    } else if (shouldRender) {
-      setIsAnimating(false);
-      setTimeout(() => {
-        setShouldRender(false);
-        // Remove blur class from body/main content
-        document.body.classList.remove('modal-blur-active');
-      }, 200);
-    }
-  }, [visible, shouldRender]);
-
-  const onOverlayClick = (e) => {
-    // Only close if clicking the overlay itself, not propagated from child
-    if (e.target === e.currentTarget && visible) {
+  const handleClose = () => {
+    if (closeOnOutsideClick && close) {
       close();
     }
   };
 
-  return shouldRender ? (
-    <ModalInner>
-      <div className="fixed inset-0 z-50 overflow-y-auto" aria-modal="true">
-        <div
-          className="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0"
-          tabIndex={-1}
-          onClick={onOverlayClick}
+  return (
+    <Transition show={visible}>
+      <Dialog onClose={handleClose} className="relative z-50">
+        <TransitionChild
+          enter="ease-out duration-200"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-150"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
         >
-          <span
-            className="hidden sm:inline-block sm:h-screen sm:align-middle"
-            aria-hidden="true"
-          >
-            &#8203;
-          </span>
           <div
-            className={`inline-block z-50 transform overflow-hidden rounded-lg bg-white dark:bg-slate-800 px-4 pt-5 pb-4 text-left shadow-2xl dark:shadow-2xl transition-all duration-200 ease-out sm:my-8 sm:w-full sm:max-w-lg sm:p-6 sm:align-middle ${
-              isAnimating
-                ? 'opacity-100 scale-100 translate-y-0'
-                : 'opacity-0 scale-95 translate-y-4'
-            }`}
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            <div className="absolute top-0 right-0 pt-4 pr-4 sm:block">
-              <button
-                id="modal_close"
-                type="button"
-                onClick={close}
-                className="rounded-md bg-white dark:bg-slate-900 text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 focus:outline-hidden focus:ring-2 focus:ring-slate-800 focus:ring-offset-2"
-              >
-                <span className="sr-only">
-                  {intl.formatMessage({ id: 'close', defaultMessage: 'Close' })}
-                </span>
+            className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm"
+            aria-hidden="true"
+          />
+        </TransitionChild>
 
-                <svg
-                  className="h-6 w-6"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-            {children && React.isValidElement(children)
-              ? React.cloneElement(children as React.ReactElement<any>, {
-                  close,
-                })
-              : children}
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4">
+            <TransitionChild
+              enter="ease-out duration-200"
+              enterFrom="opacity-0 scale-95 translate-y-4"
+              enterTo="opacity-100 scale-100 translate-y-0"
+              leave="ease-in duration-150"
+              leaveFrom="opacity-100 scale-100 translate-y-0"
+              leaveTo="opacity-0 scale-95 translate-y-4"
+            >
+              <DialogPanel className="relative w-full max-w-lg transform overflow-hidden rounded-lg bg-surface px-4 pt-5 pb-4 text-left shadow-2xl sm:p-6">
+                <div className="absolute top-0 right-0 pt-4 pr-4 sm:block">
+                  <button
+                    id="modal_close"
+                    type="button"
+                    onClick={close}
+                    className="rounded-md bg-surface-input text-text-muted hover:text-text-secondary focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
+                  >
+                    <span className="sr-only">
+                      {intl.formatMessage({
+                        id: 'close',
+                        defaultMessage: 'Close',
+                      })}
+                    </span>
+                    <svg
+                      className="h-6 w-6"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                {children && React.isValidElement(children)
+                  ? React.cloneElement(children as React.ReactElement<any>, {
+                      close,
+                    })
+                  : children}
+              </DialogPanel>
+            </TransitionChild>
           </div>
         </div>
-      </div>
-    </ModalInner>
-  ) : null;
+      </Dialog>
+    </Transition>
+  );
 };
 
 export default Modal;

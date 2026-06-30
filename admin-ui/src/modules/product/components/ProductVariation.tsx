@@ -45,13 +45,13 @@ const ProductVariationModalForm = ({ onSubmit, disabled, formatMessage }) => {
   return (
     <div>
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+        <h3 className="text-lg font-semibold text-text-primary mb-2">
           {formatMessage({
             id: 'product_variations_explanation_title',
             defaultMessage: 'About Product Variations',
           })}
         </h3>
-        <p className="text-sm text-slate-600 dark:text-slate-400">
+        <p className="text-sm text-text-secondary">
           {formatMessage({
             id: 'product_variations_explanation',
             defaultMessage:
@@ -124,7 +124,7 @@ const ProductVariationModalForm = ({ onSubmit, disabled, formatMessage }) => {
         </div>
 
         {hasRole(IRoleAction.ManageProducts) && (
-          <div className="flex justify-end mt-6 py-6 -mb-6 bg-slate-100 -mx-6 pe-5 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+          <div className="flex justify-end mt-6 py-6 -mb-6 bg-slate-100 -mx-6 pe-5 border-t border-border-subtle bg-surface-subtle">
             <SubmitButton
               label={formatMessage({
                 id: 'add_variation',
@@ -190,7 +190,7 @@ const ProductVariation = ({
         />
       </div>
 
-      <div className="flex flex-col border border-slate-200 dark:border-slate-700 rounded-md overflow-x-hidden overflow-y-visible w-full relative">
+      <div className="flex flex-col border border-border-subtle rounded-md overflow-x-hidden overflow-y-visible w-full relative">
         {!variations?.length ? (
           <NoData
             message={formatMessage({

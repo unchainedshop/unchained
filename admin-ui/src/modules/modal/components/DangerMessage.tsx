@@ -17,7 +17,7 @@ const DangerMessage = ({
         {icon || (
           <div className="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-rose-100 dark:bg-rose-900/30 sm:mx-0 sm:h-10 sm:w-10">
             <svg
-              className="h-6 w-6 text-rose-600 dark:text-rose-400"
+              className="h-6 w-6 text-danger"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -34,15 +34,12 @@ const DangerMessage = ({
           </div>
         )}
         <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-          <h3
-            className="text-lg text-slate-900 dark:text-slate-200"
-            id="modal-title"
-          >
+          <h3 className="text-lg text-text-primary" id="modal-title">
             {headerText ||
               formatMessage({ id: 'warning', defaultMessage: 'Warning!' })}
           </h3>
           <div className="mt-2">
-            <p className="text-sm text-slate-500 dark:text-slate-200">
+            <p className="text-sm text-text-muted">
               {message ||
                 formatMessage({
                   id: 'are_you_sure',
@@ -67,7 +64,7 @@ const DangerMessage = ({
           id="danger_cancel"
           onClick={onCancelClick || close}
           type="button"
-          className="mt-3 inline-flex w-full justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-base font-medium text-slate-700 shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-slate-800 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+          className="mt-3 inline-flex w-full justify-center rounded-md border border-border-default bg-surface px-4 py-2 text-base font-medium text-text-secondary shadow-xs hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
         >
           {cancelText ||
             formatMessage({ id: 'cancel', defaultMessage: 'Cancel' })}

@@ -143,7 +143,7 @@ const SupplyForm = ({ productId, disabled = false }) => {
             </div>
           </div>
           {hasRole(IRoleAction.ManageProducts) && (
-            <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 text-right sm:p-6">
+            <div className="border-t-slate-100 border-t border-t-border-subtle space-y-6 bg-surface-subtle text-right sm:p-6">
               <SubmitButton
                 label={formatMessage({
                   id: 'save',

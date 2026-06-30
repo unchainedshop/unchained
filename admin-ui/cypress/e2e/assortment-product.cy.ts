@@ -163,7 +163,7 @@ describe('Assortment Detail Products', () => {
 
     cy.get('input#productId').click({ force: true }).type('f', { delay: 100 });
 
-    cy.get('[class*="react-select__option"]').should('have.length.gte', 1);
+    cy.get('[role="option"]').should('have.length.gte', 1);
   });
 
   it('Should [ADD PRODUCT] successfully', () => {
@@ -171,8 +171,8 @@ describe('Assortment Detail Products', () => {
 
     cy.get('input#productId').click({ force: true }).type('f', { delay: 100 });
 
-    cy.get('[class*="react-select__option"]').should('have.length.gte', 2);
-    cy.get('[class*="react-select__option"]').eq(1).click();
+    cy.get('[role="option"]').should('have.length.gte', 2);
+    cy.get('[role="option"]').eq(1).click();
     cy.get('input[type="submit"]').contains(localizations.en.save).click();
 
     cy.wait(fullAliasMutationName(AssortmentOperation.AddProduct)).then(

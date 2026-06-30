@@ -25,7 +25,7 @@ const BundleItemCompact = ({ product, quantity }) => {
   const tags = product?.tags;
 
   return (
-    <div className="flex items-start gap-4 border rounded-xl p-3 shadow-sm bg-white dark:bg-slate-900 hover:shadow-md transition-shadow relative">
+    <div className="flex items-start gap-4 border rounded-xl p-3 shadow-sm bg-surface-input hover:shadow-md transition-shadow relative">
       <div className="flex-1 flex gap-3 items-start">
         <ImageWithFallback
           src={image}
@@ -35,20 +35,20 @@ const BundleItemCompact = ({ product, quantity }) => {
           className="rounded-md object-cover shrink-0"
         />
         <div className="flex-1 flex flex-col gap-1 overflow-hidden">
-          <div className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+          <div className="text-sm font-semibold text-text-primary truncate">
             {title}
           </div>
 
-          <div className="flex flex-wrap items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+          <div className="flex flex-wrap items-center gap-1 text-xs text-text-muted">
             {type && (
-              <span className="bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-full">
+              <span className="bg-surface-raised px-2 py-0.5 rounded-full">
                 {type}
               </span>
             )}
             {tags?.map((tag, idx) => (
               <span
                 key={idx}
-                className={`px-2 py-0.5 text-xs rounded-full text-slate-700 dark:text-slate-200 truncate bg-blue-100 dark:bg-blue-700`}
+                className={`px-2 py-0.5 text-xs rounded-full text-text-secondary truncate bg-blue-100 dark:bg-blue-700`}
               >
                 {tag}
               </span>
@@ -56,13 +56,13 @@ const BundleItemCompact = ({ product, quantity }) => {
           </div>
 
           <div className="mt-1">
-            <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white">
+            <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-surface-raised text-text-primary">
               {formatMessage({ id: 'quantity', defaultMessage: 'Quantity' })}:{' '}
               {quantity}
             </span>
           </div>
 
-          <div className="flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300 mt-1">
+          <div className="flex flex-wrap gap-2 text-xs text-text-secondary mt-1">
             {sku && (
               <span>
                 {formatMessage({ id: 'sku', defaultMessage: 'SKU' })}:{' '}
@@ -83,11 +83,9 @@ const BundleItemCompact = ({ product, quantity }) => {
         </div>
       </div>
 
-      <div className="flex flex-col text-xs text-slate-600 dark:text-slate-300 items-end min-w-[120px] gap-1">
+      <div className="flex flex-col text-xs text-text-secondary items-end min-w-[120px] gap-1">
         {price && (
-          <div className="text-sm font-semibold text-slate-900 dark:text-white">
-            {price}
-          </div>
+          <div className="text-sm font-semibold text-text-primary">{price}</div>
         )}
         {supply && (
           <div>
@@ -107,7 +105,7 @@ const BundleItemCompact = ({ product, quantity }) => {
 
         <Link
           href={`/products?slug=${generateUniqueId(product)}`}
-          className="mt-1 text-sm px-3 py-1 rounded-md border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-white transition-colors"
+          className="mt-1 text-sm px-3 py-1 rounded-md border border-border-default hover:bg-surface-raised text-slate-700 dark:text-white transition-colors"
         >
           {formatMessage({ id: 'edit', defaultMessage: 'Edit' })}
         </Link>

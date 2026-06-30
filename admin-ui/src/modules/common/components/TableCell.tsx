@@ -91,8 +91,8 @@ const TableCell = ({
     <Td
       className={clsx(
         header
-          ? 'px-4 py-3 text-left text-slate-500 dark:text-slate-200'
-          : 'whitespace-nowrap px-4 py-3 text-slate-500 dark:text-slate-200 border-b dark:border-slate-300 last:border-b-0 sm:border-b-0 text-left flex items-center sm:table-cell',
+          ? 'px-4 py-3 text-left text-text-muted'
+          : 'whitespace-nowrap px-4 py-3 text-text-muted border-b dark:border-slate-300 last:border-b-0 sm:border-b-0 text-left flex items-center sm:table-cell',
         className,
       )}
       {...props}

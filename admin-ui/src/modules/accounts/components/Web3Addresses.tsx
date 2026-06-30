@@ -85,13 +85,13 @@ const Web3Addresses = ({ web3Addresses }) => {
   });
 
   return (
-    <div className="rounded-md shadow-sm px-4 py-5 sm:p-6 bg-white dark:bg-slate-800">
+    <div className="rounded-md shadow-sm px-4 py-5 sm:p-6 bg-surface">
       <ul className="-my-5 divide-y divide-slate-200 dark:divide-slate-700">
         {(web3Addresses || []).map(({ address, verified, nonce }) => (
           <li className="py-4" key={address}>
             <div className="flex flex-wrap items-center justify-between">
               <div className="mr-2 flex max-w-md flex-wrap items-center space-x-2">
-                <div className="truncate text-sm font-medium text-slate-900 dark:text-slate-200">
+                <div className="truncate text-sm font-medium text-text-primary">
                   {address}
                 </div>
                 <ActiveInActive isActive={verified} />
@@ -103,7 +103,7 @@ const Web3Addresses = ({ web3Addresses }) => {
                     onClick={async () => {
                       await onVerifyAddress({ address, nonce });
                     }}
-                    className="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-slate-800 focus:ring-offset-2"
+                    className="inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
                   >
                     {formatMessage({
                       id: 'verification_web3_address',

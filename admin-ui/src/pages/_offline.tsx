@@ -11,7 +11,7 @@ const Offline = () => {
     <div className="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-4 text-center">
         <div>
-          <h2 className="text-center text-3xl text-slate-900 dark:text-slate-200">
+          <h2 className="text-center text-3xl text-text-primary">
             {formatMessage({
               id: 'offline_mode',
               defaultMessage: "You're Offline",
@@ -44,14 +44,14 @@ const Offline = () => {
                   defaultMessage: 'No Connection',
                 })}
               </p>
-              <p className="mt-2 text-base text-slate-500 dark:text-slate-400">
+              <p className="mt-2 text-base text-text-muted">
                 {formatMessage({
                   id: 'no_internet_access',
                   defaultMessage:
                     "You aren't connected to a working internet connection.",
                 })}
               </p>
-              <p className="mt-2 text-sm text-slate-400 dark:text-slate-500">
+              <p className="mt-2 text-sm text-text-muted">
                 {formatMessage({
                   id: 'offline_help_message',
                   defaultMessage: 'Please check your connection and try again.',
@@ -63,7 +63,7 @@ const Offline = () => {
               <button
                 type="button"
                 onClick={() => router.reload()}
-                className="group relative flex w-full justify-center rounded-md border border-transparent bg-slate-800 dark:bg-slate-600 py-2 px-4 text-sm font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500 focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2"
+                className="group relative flex w-full justify-center rounded-md border border-transparent bg-accent py-2 px-4 text-sm font-medium text-text-on-accent hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
               >
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                   <svg
@@ -89,11 +89,11 @@ const Offline = () => {
               <button
                 type="button"
                 onClick={() => window.history.back()}
-                className="group relative flex w-full justify-center rounded-md border border-slate-300 bg-slate-100 dark:bg-slate-700 dark:border-slate-600 py-2 px-4 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 focus:outline-hidden focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 focus:ring-offset-2"
+                className="group relative flex w-full justify-center rounded-md border border-slate-300 bg-surface-raised dark:border-slate-600 py-2 px-4 text-sm font-medium text-text-secondary hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-focus-ring dark:focus:ring-focus-ring focus:ring-offset-2"
               >
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                   <svg
-                    className="h-5 w-5 text-slate-500 dark:text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
+                    className="h-5 w-5 text-text-muted group-hover:text-slate-600 dark:group-hover:text-slate-300"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"

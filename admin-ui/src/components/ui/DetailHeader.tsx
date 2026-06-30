@@ -37,7 +37,7 @@ const DetailHeader = ({ user, contact }) => {
             <h3 className="text-xl font-semibold capitalize">
               <Link
                 href={`/users?userId=${user?._id}`}
-                className="text-slate-800 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-600"
+                className="text-text-secondary hover:text-slate-900 dark:hover:text-slate-600"
               >
                 {formatUsername(user)}
               </Link>

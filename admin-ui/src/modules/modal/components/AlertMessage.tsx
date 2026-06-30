@@ -23,16 +23,11 @@ const AlertMessage = ({
         )}
 
         <div className="mt-3 text-center sm:mt-5">
-          <h3
-            className="text-lg text-slate-900 dark:text-slate-200"
-            id="modal-title"
-          >
+          <h3 className="text-lg text-text-primary" id="modal-title">
             {headerText}
           </h3>
           <div className="mt-2">
-            <p className="text-sm text-slate-500 dark:text-slate-200">
-              {message}
-            </p>
+            <p className="text-sm text-text-muted">{message}</p>
           </div>
         </div>
       </div>
@@ -41,7 +36,7 @@ const AlertMessage = ({
           id="alert_ok"
           onClick={onOkClick}
           type="button"
-          className="inline-flex w-full justify-center rounded-md border border-transparent bg-slate-800 dark:bg-slate-600 px-4 py-2 text-base font-medium text-white shadow-xs hover:bg-slate-950 dark:hover:bg-slate-500 focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2 sm:text-sm"
+          className="inline-flex w-full justify-center rounded-md border border-transparent bg-accent px-4 py-2 text-base font-medium text-text-on-accent shadow-xs hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 sm:text-sm"
         >
           {buttonText}
         </button>

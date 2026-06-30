@@ -232,10 +232,10 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
                 defaultMessage: 'Assortment',
               })}
             />
-            <div className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium leading-5 shadow-sm bg-white dark:bg-slate-800 h-[38px]">
+            <div className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium leading-5 shadow-sm bg-surface h-[38px]">
               <label
                 htmlFor="sequence"
-                className="text-slate-700 dark:text-slate-200 font-medium"
+                className="text-text-secondary font-medium"
               >
                 {formatMessage({
                   id: 'sequence',
@@ -246,7 +246,7 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
                 id="sequence"
                 type="number"
                 disabled={!hasRole(IRoleAction.ManageAssortments)}
-                className="text-center w-12 bg-transparent border border-slate-300 dark:border-slate-600 rounded focus:ring-0 focus:outline-none text-sm font-semibold text-slate-900 dark:text-slate-300 px-2 py-1"
+                className="text-center w-12 bg-transparent border border-border-default rounded focus:ring-0 focus:outline-none text-sm font-semibold text-text-primary px-2 py-1"
                 defaultValue={assortment?.sequence}
                 onBlur={updateAssortmentSequence}
               />
@@ -262,16 +262,14 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-3 gap-x-10 text-slate-600 dark:text-slate-400">
+        <div className="mt-8 flex flex-wrap gap-3 gap-x-10 text-text-secondary">
           <div className="flex items-baseline gap-2">
-            <span className="text-xs text-slate-600 dark:text-slate-400">
-              ID:
-            </span>
+            <span className="text-xs text-text-secondary">ID:</span>
             <span className="text-sm font-mono">{assortment?._id}</span>
           </div>
           {assortment?.created && (
             <div className="flex items-baseline gap-2">
-              <span className="text-xs text-slate-600 dark:text-slate-300">
+              <span className="text-xs text-text-secondary">
                 {formatMessage({ id: 'created', defaultMessage: 'Created' })}:
               </span>
               <span className="text-sm font-mono">
@@ -285,7 +283,7 @@ const AssortmentDetailPage = ({ assortmentSlug }) => {
 
           {assortment?.updated && (
             <div className="flex items-baseline gap-2">
-              <span className="text-xs text-slate-600 dark:text-slate-300">
+              <span className="text-xs text-text-secondary">
                 {formatMessage({ id: 'updated', defaultMessage: 'Updated' })}:
               </span>
               <span className="text-sm font-mono">

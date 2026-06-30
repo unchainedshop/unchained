@@ -269,7 +269,7 @@ describe('Account', () => {
         .contains(localizations.en.send_verification_mail)
         .should('be.visible');
 
-      cy.get('button.border-rose-500').should('be.visible');
+      cy.get('button.border-danger').should('be.visible');
     });
 
     it('Should [SEND VERIFICATION EMAIL] successfully', () => {
@@ -296,7 +296,7 @@ describe('Account', () => {
     it('Should [DELETE EMAIL] successfully', () => {
       const { me: currentUser } = CurrentUserResponse.data;
 
-      cy.get('button.border-rose-500').eq(1).click();
+      cy.get('button.border-danger').eq(1).click();
 
       cy.get('button#danger_continue')
         .contains(localizations.en.delete_email)

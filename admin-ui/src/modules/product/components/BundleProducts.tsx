@@ -8,7 +8,7 @@ const BundleProducts = ({ productId, disabled = false }) => {
         <div className="mb-5 lg:col-span-4 lg:pr-5">
           <BundleProductsForm productId={productId} disabled={disabled} />
         </div>
-        <div className="col-span-5 ml-auto rounded-md bg-white dark:bg-slate-800 px-8 shadow-md dark:shadow-none lg:w-full">
+        <div className="col-span-5 ml-auto rounded-md bg-surface px-8 shadow-md dark:shadow-none lg:w-full">
           <div className="py-4">
             <BundleItemsList productId={productId} />
           </div>

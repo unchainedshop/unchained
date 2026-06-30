@@ -210,8 +210,18 @@ class MyDocument extends Document {
           {(metaLinks || []).map((attr, i) => (
             <link key={`${attr?.href}-${attr.type}-${i}`} {...attr} />
           ))}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `(function(){try{var t=localStorage.getItem('theme');if(t){t=JSON.parse(t)}if(t==='dark'||((!t||t==='system')&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){if(localStorage.theme==='dark')document.documentElement.classList.add('dark')}})()`,
+            }}
+          />
+          <link
+            rel="stylesheet"
+            href={`/admin-ui-theme.css?v=${process.env.npm_package_version}`}
+            id="theme-config-style"
+          />
         </Head>
-        <body className="h-full bg-slate-50 dark:bg-slate-950 dark:text-slate-200">
+        <body className="h-full bg-surface-subtle text-text-primary">
           <noscript
             dangerouslySetInnerHTML={{
               __html: `

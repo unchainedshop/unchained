@@ -96,20 +96,20 @@ const TableActionsMenu: React.FC<TableActionsMenuProps> = ({
         ref={buttonRef}
         type="button"
         onClick={handleButtonClick}
-        className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+        className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-surface-raised transition-colors"
         aria-label={formatMessage({
           id: 'table_actions_menu',
           defaultMessage: 'Actions menu',
         })}
       >
-        <EllipsisHorizontalIcon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+        <EllipsisHorizontalIcon className="w-5 h-5 text-text-muted" />
       </button>
 
       {showMenu && (
         <Portal>
           <div
             ref={menuRef}
-            className="fixed w-48 bg-white dark:bg-slate-800 rounded-md shadow-xl border border-slate-200 dark:border-slate-700 z-[9999]"
+            className="fixed w-48 bg-surface rounded-md shadow-xl border border-border-subtle z-[9999]"
             style={{
               top: menuPosition.top,
               left: menuPosition.left,
@@ -120,7 +120,7 @@ const TableActionsMenu: React.FC<TableActionsMenuProps> = ({
                 <button
                   type="button"
                   onClick={(e) => handleMenuItemClick(e, onEdit)}
-                  className="flex items-center w-full px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                  className="flex items-center w-full px-4 py-2 text-sm text-text-secondary hover:bg-surface-raised transition-colors"
                 >
                   <PencilIcon className="mr-3 h-5 w-5" />
                   {editLabel ||

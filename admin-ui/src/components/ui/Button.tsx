@@ -81,23 +81,23 @@ const Button: React.FC<ButtonProps> = ({
 
   const variantClasses = {
     primary:
-      'border border-slate-800 dark:border-slate-600 bg-slate-800 dark:bg-slate-600 text-white hover:bg-slate-900 dark:hover:bg-slate-500 focus:ring-slate-800 dark:focus:ring-slate-400',
+      'border border-accent bg-accent text-text-on-accent hover:bg-accent-hover focus:ring-focus-ring',
     secondary:
-      'border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 focus:ring-slate-500',
+      'border border-border-default bg-surface text-text-secondary hover:bg-surface-raised focus:ring-focus-ring',
     tertiary:
-      'border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 focus:ring-slate-400',
+      'border border-border-subtle bg-surface text-text-secondary hover:bg-surface-raised focus:ring-focus-ring',
     quaternary:
-      'bg-transparent text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 focus:ring-slate-400',
+      'bg-transparent text-text-secondary hover:bg-surface-raised focus:ring-focus-ring',
     danger:
-      'border border-rose-500 dark:border-rose-400 bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/10 focus:ring-rose-500',
+      'border border-danger bg-surface text-danger hover:bg-rose-50 dark:hover:bg-rose-900/10 focus:ring-rose-500',
     ghost:
-      'bg-transparent border border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 focus:ring-slate-400',
+      'bg-transparent border border-transparent text-text-secondary hover:text-text-primary hover:bg-surface-raised focus:ring-focus-ring',
     success:
       'border border-emerald-500 dark:border-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 focus:ring-emerald-500',
     neutral:
-      'border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 focus:ring-slate-400',
+      'border border-border-default bg-surface-raised text-text-secondary hover:bg-surface-raised focus:ring-focus-ring',
     input:
-      'border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 hover:border-slate-400 dark:hover:border-slate-500 focus:ring-slate-500 focus:border-slate-500',
+      'border border-border-default bg-surface text-text-primary hover:border-slate-400 dark:hover:border-slate-500 focus:ring-focus-ring focus:border-slate-500',
   };
 
   const content = children || text;

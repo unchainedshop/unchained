@@ -7,7 +7,6 @@ export { default as CopyableText } from './CopyableText';
 
 export { default as Loading } from './Loading';
 export { default as NoData } from './NoData';
-export { default as BlockingContent } from './BlockingContent';
 
 export { default as Accordion } from './Accordion/Accordion';
 export { default as AccordionItem } from './Accordion/AccordionItem';

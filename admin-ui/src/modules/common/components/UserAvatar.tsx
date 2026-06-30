@@ -32,7 +32,7 @@ const UserAvatar = ({ avatar, ...user }) => {
     <a
       href="#"
       onClick={onLogout}
-      className="group block shrink-0 focus:outline-hidden focus:ring-2 focus:ring-slate-800 rounded-md"
+      className="group block shrink-0 focus:outline-hidden focus:ring-2 focus:ring-focus-ring rounded-md"
     >
       <div className="flex items-center pl-2">
         {avatar ? (
@@ -49,7 +49,7 @@ const UserAvatar = ({ avatar, ...user }) => {
           />
         ) : (
           <span className="inline-block h-6 w-6 overflow-hidden rounded-full mr-3">
-            <UserCircleIcon className="h-full w-full text-slate-700 dark:text-slate-300" />
+            <UserCircleIcon className="h-full w-full text-text-secondary" />
           </span>
         )}
         <div>

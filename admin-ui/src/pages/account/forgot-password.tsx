@@ -46,7 +46,7 @@ const ForgotPassword = () => {
               defaultMessage: 'Unchained Logo',
             })}
           />
-          <h2 className="text-center text-3xl text-slate-900 dark:text-slate-200">
+          <h2 className="text-center text-3xl text-text-primary">
             {formatMessage({
               id: 'forget_password',
               defaultMessage: 'Forgot your password?',

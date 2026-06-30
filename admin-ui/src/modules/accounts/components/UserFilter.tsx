@@ -39,7 +39,7 @@ const UserFilter: React.FC = () => {
             })}
           </label>
           <select
-            className="w-full p-2 border-1 border-slate-300 rounded-lg dark:bg-slate-700 dark:border-slate-500 focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:outline-hidden"
+            className="w-full p-2 border-1 border-slate-300 rounded-lg dark:bg-slate-700 dark:border-slate-500 focus:ring-2 focus:ring-focus-ring focus:outline-hidden"
             defaultValue={router.query?.emailVerified || ''}
             onChange={(e) => updateQuery('emailVerified', e.target.value)}
           >
@@ -89,7 +89,7 @@ const UserFilter: React.FC = () => {
                   ? parseDate(router.query.start as string)
                   : null
               }
-              containerClassName="w-full  focus:outline-hidden focus:ring-slate-800"
+              containerClassName="w-full  focus:outline-hidden focus:ring-focus-ring"
             />
             <label htmlFor="lastLoginEnd" className="text-sm">
               {formatMessage({ id: 'to', defaultMessage: 'To' })}
@@ -106,7 +106,7 @@ const UserFilter: React.FC = () => {
               value={
                 router.query.end ? parseDate(router.query.end as string) : null
               }
-              containerClassName="w-full  focus:outline-hidden focus:ring-slate-800"
+              containerClassName="w-full  focus:outline-hidden focus:ring-focus-ring"
             />
           </div>
         </div>

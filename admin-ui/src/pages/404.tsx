@@ -9,7 +9,7 @@ const NotFound = () => {
     <div className="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-4 text-center">
         <div>
-          <h2 className="text-center text-3xl text-slate-900 dark:text-slate-200">
+          <h2 className="text-center text-3xl text-text-primary">
             {formatMessage({
               id: 'page_not_found',
               defaultMessage: 'Page Not Found',
@@ -42,7 +42,7 @@ const NotFound = () => {
                   defaultMessage: '404 Error',
                 })}
               </p>
-              <p className="mt-2 text-base text-slate-500 dark:text-slate-400">
+              <p className="mt-2 text-base text-text-muted">
                 {formatMessage({
                   id: 'not_found_message',
                   defaultMessage:
@@ -54,7 +54,7 @@ const NotFound = () => {
             <div className="flex flex-col gap-3 mt-6">
               <Link
                 href="/"
-                className="group relative flex w-full justify-center rounded-md border border-transparent bg-slate-800 dark:bg-slate-600 py-2 px-4 text-sm font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500 focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2"
+                className="group relative flex w-full justify-center rounded-md border border-transparent bg-accent py-2 px-4 text-sm font-medium text-text-on-accent hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
               >
                 {formatMessage({
                   id: 'back_to_home',
@@ -64,7 +64,7 @@ const NotFound = () => {
               <button
                 type="button"
                 onClick={() => window.history.back()}
-                className="group relative flex w-full justify-center rounded-md border border-slate-300 bg-slate-100 dark:bg-slate-700 dark:border-slate-600 py-2 px-4 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 focus:outline-hidden focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 focus:ring-offset-2"
+                className="group relative flex w-full justify-center rounded-md border border-slate-300 bg-surface-raised dark:border-slate-600 py-2 px-4 text-sm font-medium text-text-secondary hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-focus-ring dark:focus:ring-focus-ring focus:ring-offset-2"
               >
                 {formatMessage({
                   id: 'go_back',

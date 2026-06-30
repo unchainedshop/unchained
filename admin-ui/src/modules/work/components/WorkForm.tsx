@@ -136,7 +136,7 @@ const WorkForm = () => {
                 defaultMessage: 'Scheduled',
               })}
               labelClassName="text-sm font-medium text-slate-500 mb-1"
-              className="w-full py-2 text-sm text-slate-900 dark:text-slate-200 dark:bg-slate-900 sm:mt-0 "
+              className="w-full py-2 text-sm text-text-primary dark:bg-slate-900 sm:mt-0 "
               containerClassName="w-full py-2 text-sm text-slate-900 sm:mt-0"
               name="scheduled"
               locale={locale}
@@ -160,7 +160,7 @@ const WorkForm = () => {
         </div>
 
         {hasRole(IRoleAction.ManageWorker) && (
-          <div className="border-t-slate-100 border-t dark:border-t-slate-700 space-y-6 bg-slate-50 dark:bg-slate-900 p-5 text-right">
+          <div className="border-t-slate-100 border-t border-t-border-subtle space-y-6 bg-surface-subtle p-5 text-right">
             <SubmitButton
               label={formatMessage({
                 id: 'add_work',

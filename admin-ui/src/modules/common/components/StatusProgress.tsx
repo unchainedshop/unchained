@@ -47,7 +47,7 @@ const StatusProgress = ({ data, statusTypes, timeline }) => {
                   <div className="ml-4 flex min-w-0 flex-1 items-center justify-between">
                     <div className="flex-auto">
                       <p className="text-sm text-slate-500">
-                        <span className="flex w-full items-center justify-between text-slate-900 dark:text-slate-200">
+                        <span className="flex w-full items-center justify-between text-text-primary">
                           {value}
                           {timeline[value]?.Component &&
                             timeline[value].Component}
@@ -55,7 +55,7 @@ const StatusProgress = ({ data, statusTypes, timeline }) => {
                       </p>
                     </div>
                     {currentId >= timeline[value].id ? (
-                      <div className="whitespace-nowrap text-right text-sm text-slate-500 dark:text-slate-200 ml-4">
+                      <div className="whitespace-nowrap text-right text-sm text-text-muted ml-4">
                         {data[timeline?.[value]?.content]
                           ? formatDateTime(data[timeline?.[value]?.content], {
                               dateStyle: 'short',
@@ -101,7 +101,7 @@ const StatusProgress = ({ data, statusTypes, timeline }) => {
                             : data?.status === 'OPEN'
                               ? 'bg-sky-600'
                               : 'bg-emerald-600'
-                        : 'bg-slate-200 dark:bg-slate-700',
+                        : 'bg-surface-raised',
                       'absolute top-0 left-0 -ml-px h-2 w-full',
                     )}
                     aria-hidden="true"
@@ -145,7 +145,7 @@ const StatusProgress = ({ data, statusTypes, timeline }) => {
                                   })
                                 : value}
                   </span>
-                  <span className="block text-slate-900 dark:text-slate-100">
+                  <span className="block text-text-primary">
                     {currentId >= timeline?.[value]?.id
                       ? formatDateTime(data[timeline?.[value]?.content], {
                           dateStyle: 'short',

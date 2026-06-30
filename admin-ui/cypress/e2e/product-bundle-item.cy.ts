@@ -166,7 +166,7 @@ describe('Product Subscription', () => {
         expect(response.body).to.deep.eq(ProductListResponse);
       },
     );
-    cy.get('[class*="react-select__option"]').eq(1).click();
+    cy.get('[role="option"]').eq(1).click();
 
     cy.get('input[name="quantity"]').clear().type('3');
     cy.get('input[type="submit"]')

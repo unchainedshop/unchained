@@ -36,9 +36,7 @@ const RegisteredWebAuthItem = ({
       )}
       <div className="flex-1 flex items-center justify-between border-t border-r border-b border-slate-300 dark:bg-slate-800 bg-white rounded-r-md truncate dark:text-slate-200">
         <div className="flex-1 px-4 py-2 text-sm truncate">
-          <span className="text-slate-900 dark:text-slate-200 font-medium ">
-            {aaguid}
-          </span>
+          <span className="text-text-primary font-medium ">{aaguid}</span>
           <div className="mt-1 mb-1">{md5Metadata?.description}</div>
           <div>
             <Badge text={counter} />

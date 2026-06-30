@@ -4,7 +4,7 @@ import FieldWrapper from '@/components/ui/form/FieldWrapper';
 import { TextFieldProps } from '@/components/ui/form/TextField';
 import useField from '../../forms/hooks/useField';
 import deBounce from '../utils/deBounce';
-import UnchainedSelect from './UnchainedSelect';
+import Combobox from '@/components/ui/form/Combobox';
 
 interface FilterableData {
   id: string;
@@ -35,22 +35,23 @@ const FilterableDropdown = ({
         >
           <div className="w-full">
             <FieldWrapper {...field}>
-              <UnchainedSelect
-                isDisabled={!!field.disabled}
+              <Combobox
                 id={field.id || field.name}
-                inputId={field.id || field.name}
-                isLoading={props.isLoading}
                 name={field.name}
-                onBlur={field.onBlur}
-                onInputChange={debouncedFilter}
-                onChange={({ value }) => {
-                  field.setValue(value, true);
-                }}
+                disabled={!!field.disabled}
+                isLoading={props.isLoading}
                 placeholder={field.placeholder}
-                options={data?.map((item) => ({
-                  label: item.title,
-                  value: item.id,
-                }))}
+                onSearch={debouncedFilter}
+                options={
+                  data?.map((item) => ({
+                    label: item.title,
+                    value: item.id,
+                  })) || []
+                }
+                value={field.value as string}
+                onChange={(val) => {
+                  field.setValue(val as string, true);
+                }}
               />
             </FieldWrapper>
           </div>

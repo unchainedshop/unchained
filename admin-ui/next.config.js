@@ -1,12 +1,14 @@
 // @ts-check
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const path = require('node:path');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
  * @type {import('next').NextConfig}
  **/
 
-module.exports = {
+export default {
   output: 'export',
   basePath: '',
   trailingSlash: true,

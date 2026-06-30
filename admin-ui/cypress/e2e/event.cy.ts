@@ -60,7 +60,9 @@ describe('Events ', () => {
 
   it('Should support [FILTER] multiple type  value', () => {
     const eventTypes = EventsTypeResponse.data.registeredEventTypes;
-    cy.get('select#tag-input').select(eventTypes[0]);
+    cy.get('input#tag-input').parent().find('button').click();
+    cy.get('[role="option"]').contains(eventTypes[0]).click();
+    cy.get('body').click(0, 0);
     cy.wait(fullAliasName(EventOperations.GetEventList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
@@ -85,7 +87,9 @@ describe('Events ', () => {
       });
     });
 
-    cy.get('select#tag-input').select(eventTypes[1]);
+    cy.get('input#tag-input').parent().find('button').click();
+    cy.get('[role="option"]').contains(eventTypes[1]).click();
+    cy.get('body').click(0, 0);
     cy.wait(fullAliasName(EventOperations.GetEventList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;
@@ -169,7 +173,9 @@ describe('Events ', () => {
   it('Should support by [SEARCHING] and [TYPE]', () => {
     const eventTypes = EventsTypeResponse.data.registeredEventTypes;
 
-    cy.get('select#tag-input').select(eventTypes[0]);
+    cy.get('input#tag-input').parent().find('button').click();
+    cy.get('[role="option"]').contains(eventTypes[0]).click();
+    cy.get('body').click(0, 0);
     cy.wait(fullAliasName(EventOperations.GetEventList)).then(
       (currentSubject) => {
         const { request, response } = currentSubject;

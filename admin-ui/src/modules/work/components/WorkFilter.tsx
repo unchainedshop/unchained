@@ -68,7 +68,7 @@ const WorkFilter = ({ workTypes = [] }) => {
         </div>
       ) : null}
       <div className="mt-5">
-        <div className="text-md text-slate-800 dark:text-slate-200">
+        <div className="text-md text-text-secondary">
           {formatMessage({ id: 'status', defaultMessage: 'Status' })}
         </div>
         <div className="flex flex-wrap gap-5">

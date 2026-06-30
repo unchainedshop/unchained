@@ -125,22 +125,18 @@ describe('WorkQueue', () => {
 
   it('Should [FILTER] with selected [TYPE] only', () => {
     cy.location('pathname').should('eq', '/works/');
-    cy.get('select[id="tag-input"]').then(($select) => {
-      const firstOption = $select.find('option').not(':disabled').first().val() as string;
-      if (firstOption) {
-        cy.get('select[id="tag-input"]').select(firstOption);
-        cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
-          (currentSubject) => {
-            const { request, response } = currentSubject;
-            expect(request.body.variables.types).to.include(firstOption);
-            expect(response.body).to.deep.eq(WorkQueueResponse);
-          },
-        );
-        cy.location().then((current) => {
-          expect(convertURLSearchParamToObj(current.search)).to.have.property('types');
-        });
-      }
+    cy.get('input#tag-input').parent().find('button').click();
+    cy.get('[role="option"]').first().click();
+    cy.get('body').click(0, 0);
+    cy.location().should((current) => {
+      expect(convertURLSearchParamToObj(current.search)).to.have.property('types');
     });
+    cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
+      (currentSubject) => {
+        const { response } = currentSubject;
+        expect(response.body).to.deep.eq(WorkQueueResponse);
+      },
+    );
   });
 
   it('Should [SEARCH] with [QUERY STRING] only', () => {
@@ -149,28 +145,26 @@ describe('WorkQueue', () => {
 
   it('Should [FILTER] with multiple fields [TYPE & STATUS] only', () => {
     cy.location('pathname').should('eq', '/works/');
-    cy.get('select[id="tag-input"]').then(($select) => {
-      const firstOption = $select.find('option').not(':disabled').first().val() as string;
-      if (firstOption) {
-        cy.get('select[id="tag-input"]').select(firstOption);
-        cy.wait(fullAliasName(WorkOperations.GetWorkQueue));
-
-        cy.get(`input[type="checkbox"][value="ALLOCATED"]`).click();
-
-        cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
-          (currentSubject) => {
-            const { request, response } = currentSubject;
-            expect(request.body.variables.status).to.deep.include.members(['ALLOCATED']);
-            expect(response.body).to.deep.eq(WorkQueueResponse);
-          },
-        );
-        cy.location().then((current) => {
-          const params = convertURLSearchParamToObj(current.search);
-          expect(params).to.have.property('types');
-          expect(params).to.have.property('status', 'ALLOCATED');
-        });
-      }
+    cy.get('input#tag-input').parent().find('button').click();
+    cy.get('[role="option"]').first().click();
+    cy.get('body').click(0, 0);
+    cy.location().should((current) => {
+      expect(convertURLSearchParamToObj(current.search)).to.have.property('types');
     });
+    cy.wait(fullAliasName(WorkOperations.GetWorkQueue));
+
+    cy.get(`input[type="checkbox"][value="ALLOCATED"]`).click();
+
+    cy.location().should((current) => {
+      const params = convertURLSearchParamToObj(current.search);
+      expect(params).to.have.property('status', 'ALLOCATED');
+    });
+    cy.wait(fullAliasName(WorkOperations.GetWorkQueue)).then(
+      (currentSubject) => {
+        const { response } = currentSubject;
+        expect(response.body).to.deep.eq(WorkQueueResponse);
+      },
+    );
   });
 
   it('Should Navigate to [WORK DETAIL] page successfully', () => {

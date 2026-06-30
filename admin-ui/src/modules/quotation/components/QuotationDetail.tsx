@@ -139,7 +139,7 @@ const QuotationDetail = ({ quotation }) => {
           <Button
             text="Verify"
             onClick={onVerify}
-            className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-slate-900 dark:border-slate-600 bg-slate-800 dark:bg-slate-600 px-2 py-1 text-base font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500  dark:focus:border-slate-400 focus:outline-hidden focus:ring-0 focus:ring-slate-800 dark:focus:ring-slate-400"
+            className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-accent bg-accent px-2 py-1 text-base font-medium text-text-on-accent hover:bg-accent-hover  dark:focus:border-slate-400 focus:outline-hidden focus:ring-0 focus:ring-focus-ring"
           />
         ),
     },
@@ -152,7 +152,7 @@ const QuotationDetail = ({ quotation }) => {
           <Button
             text="Propose"
             onClick={proposeQuote}
-            className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-slate-900 dark:border-slate-600 bg-slate-800 dark:bg-slate-600 px-2 py-1 text-base font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500  dark:focus:border-slate-400 focus:outline-hidden focus:ring-0 focus:ring-slate-800 dark:focus:ring-slate-400"
+            className="bg-white-300 relative -ml-px inline-flex items-center space-x-2 rounded-md border border-accent bg-accent px-2 py-1 text-base font-medium text-text-on-accent hover:bg-accent-hover  dark:focus:border-slate-400 focus:outline-hidden focus:ring-0 focus:ring-focus-ring"
           />
         ),
     },
@@ -191,7 +191,7 @@ const QuotationDetail = ({ quotation }) => {
         timeline={timeline}
       />
       <section aria-labelledby="products-heading" className="my-6">
-        <div className="rounded-lg border-t border-b border-slate-300 dark:border-slate-800 bg-white shadow-xs sm:border">
+        <div className="rounded-lg border-t border-b border-border-default bg-white shadow-xs sm:border">
           <div className="grid grid-cols-1 text-sm sm:grid-cols-12 sm:grid-rows-1 sm:gap-x-6 md:gap-x-8 lg:gap-x-8">
             <div className="sm:col-span-4 md:col-span-5 md:row-span-2 md:row-end-2">
               <div className="m:col-span-4 rounded-lg bg-slate-50 md:col-span-5 md:row-span-2 md:row-end-2">
@@ -230,7 +230,7 @@ const QuotationDetail = ({ quotation }) => {
                   null,
                   2,
                 )}
-                className="bg-white dark:bg-slate-900 dark:text-slate-200 mt-1 block w-full rounded-md resize-none border-slate-300 dark:border-slate-800 sm:text-sm"
+                className="bg-surface-input dark:text-slate-200 mt-1 block w-full rounded-md resize-none border-border-default sm:text-sm"
               />
             </div>
           </div>

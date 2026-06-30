@@ -13,8 +13,8 @@ const DashboardShortcutCard = () => {
   const router = useRouter();
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6">
-      <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
+    <div className="bg-surface rounded-lg border border-border-subtle p-6">
+      <h3 className="text-lg font-semibold text-text-primary mb-4">
         {formatMessage({ id: 'shortcuts', defaultMessage: 'Shortcuts' })}
       </h3>
       <div className="grid xl:grid-cols-3 gap-3">

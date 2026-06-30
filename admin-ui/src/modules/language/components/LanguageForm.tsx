@@ -85,7 +85,7 @@ const LanguageForm = ({
         )}
       </div>
       {hasRole(IRoleAction.ManageLanguages) && (
-        <div className="border-t-slate-100 border-t dark:border-t-slate-700 mt-5 space-y-6 bg-slate-50 dark:bg-slate-900 p-5 text-right">
+        <div className="border-t-slate-100 border-t border-t-border-subtle mt-5 space-y-6 bg-surface-subtle p-5 text-right">
           <SubmitButton
             label={
               isEdit

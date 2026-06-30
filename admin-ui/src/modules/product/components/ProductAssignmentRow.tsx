@@ -5,7 +5,7 @@ import { useIntl } from 'react-intl';
 import { ISortDirection } from '../../../gql/types';
 import Button from '@/components/ui/Button';
 import { TrashIcon } from '@heroicons/react/20/solid';
-import UnchainedSelect from '../../common/components/UnchainedSelect';
+import Combobox from '@/components/ui/form/Combobox';
 import deBounce from '../../common/utils/deBounce';
 import DangerMessage from '../../modal/components/DangerMessage';
 import useModal from '../../modal/hooks/useModal';
@@ -55,8 +55,10 @@ const ProductAssignmentRow = ({
   );
 
   const handleProductAssignment = useCallback(
-    async ({ value: productId }) => {
-      await addProductAssignment({ proxyId, productId, vectors });
+    async (productId: string | string[] | null) => {
+      if (productId && typeof productId === 'string') {
+        await addProductAssignment({ proxyId, productId, vectors });
+      }
     },
     [vectors, addProductAssignment, proxyId],
   );
@@ -135,18 +137,18 @@ const ProductAssignmentRow = ({
           <div className="relative w-full">
             <div className="flex items-center gap-2">
               <div className="flex-1">
-                <UnchainedSelect
-                  name={`productId`}
+                <Combobox
+                  name="productId"
                   placeholder={formatMessage({
                     id: 'search_product',
                     defaultMessage: 'Search product',
                   })}
                   isLoading={loading}
-                  isDisabled={disabled}
+                  disabled={disabled}
                   onChange={handleProductAssignment}
-                  onInputChange={debouncedQuery}
+                  onSearch={debouncedQuery}
                   options={selectOptions}
-                  className="mt-1 w-full py-2 text-sm font-medium text-slate-500"
+                  className="mt-1 w-full"
                 />
               </div>
               {hasRole(IRoleAction.ManageProducts) && (

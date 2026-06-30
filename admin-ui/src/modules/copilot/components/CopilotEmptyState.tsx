@@ -7,17 +7,17 @@ const CopilotEmptyState = ({ onIntroClick }: { onIntroClick: () => void }) => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
-      <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center">
-        <ChatBubbleLeftRightIcon className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+      <div className="w-16 h-16 bg-surface-raised rounded-full flex items-center justify-center">
+        <ChatBubbleLeftRightIcon className="w-8 h-8 text-text-muted" />
       </div>
       <div className="space-y-3">
-        <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
+        <h2 className="text-2xl font-semibold text-text-primary">
           {formatMessage({
             id: 'copilot_welcome_title',
             defaultMessage: 'Welcome to Unchained Copilot',
           })}
         </h2>
-        <p className="text-slate-600 dark:text-slate-400 max-w-md">
+        <p className="text-text-secondary max-w-md">
           {formatMessage({
             id: 'copilot_welcome_description',
             defaultMessage:

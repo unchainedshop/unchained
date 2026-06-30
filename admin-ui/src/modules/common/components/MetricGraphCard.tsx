@@ -29,7 +29,7 @@ const MetricGraphCard = ({
         </CardDescription>
         <CardTitle className="text-3xl">{value}</CardTitle>
       </div>
-      <div className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+      <div className="inline-flex items-center gap-2 text-sm text-text-secondary">
         <TrendingUp className="h-4 w-4" />
         {dateRange && (
           <span>

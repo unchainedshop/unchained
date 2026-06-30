@@ -16,7 +16,7 @@ const ProductReviews = ({ productId }) => {
 
   return (
     <div className="sm:max-w-full">
-      <div className="text-slate-900 dark:text-slate-200">
+      <div className="text-text-primary">
         <div className="mx-auto p-2 lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-x-8">
           <ProductReviewsReport productReviews={productReviews} />
 

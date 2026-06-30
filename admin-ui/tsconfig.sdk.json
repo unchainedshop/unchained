@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "incremental": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "src/components/ui/**/*.ts",
+    "src/components/ui/**/*.tsx",
+    "src/sdk/**/*.ts",
+    "src/modules/forms/**/*.ts",
+    "src/modules/forms/**/*.tsx",
+    "src/modules/common/hooks/*.ts",
+    "src/modules/common/components/ThemeWrapper.tsx",
+    "src/modules/modal/**/*.ts",
+    "src/modules/modal/**/*.tsx"
+  ],
+  "exclude": ["node_modules", "dist", "out"]
+}

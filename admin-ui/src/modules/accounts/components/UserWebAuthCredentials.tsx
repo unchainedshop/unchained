@@ -89,9 +89,9 @@ const UserWebAuthCredentials = ({ userId }) => {
         type="button"
         disabled={userId !== currentUser?._id}
         className={clsx(
-          'inline-flex cursor-pointer ml-4 justify-center rounded-md border border-transparent px-4 py-2 text-center text-sm font-medium leading-5 text-white shadow-xs focus:ring-slate-800 bg-slate-800 hover:bg-slate-950 focus:outline-hidden focus:ring-2 focus:ring-offset-2',
+          'inline-flex cursor-pointer ml-4 justify-center rounded-md border border-transparent px-4 py-2 text-center text-sm font-medium leading-5 text-white shadow-xs focus:ring-focus-ring bg-slate-800 hover:bg-slate-950 focus:outline-hidden focus:ring-2 focus:ring-offset-2',
           {
-            'focus:ring-slate-300 bg-slate-400 hover:bg-slate-300':
+            'focus:ring-focus-ring bg-slate-400 hover:bg-slate-300':
               userId !== currentUser?._id,
           },
         )}

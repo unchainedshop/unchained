@@ -37,7 +37,7 @@ const CopilotMessageList = ({
               <div className="mb-6">
                 <button
                   onClick={toggleShowTools}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-text-secondary bg-surface border border-border-default rounded-lg hover:bg-surface-raised transition-colors"
                 >
                   {showTools ? (
                     <>

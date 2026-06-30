@@ -142,7 +142,7 @@ const AssortmentTextForm = ({ assortmentId }) => {
               </li>
             ),
             strong: (chunk) => (
-              <strong className="font-semibold text-slate-800 dark:text-slate-200">
+              <strong className="font-semibold text-text-secondary">
                 {chunk}
               </strong>
             ),
@@ -208,7 +208,7 @@ const AssortmentTextForm = ({ assortmentId }) => {
               </div>
             </div>
 
-            <div className="border-t-slate-100 border-t dark:border-t-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-5 text-right sm:px-6">
+            <div className="border-t-slate-100 border-t border-t-border-subtle bg-surface-subtle px-4 py-5 text-right sm:px-6">
               {hasRole(IRoleAction.ManageAssortments) && (
                 <SubmitButton
                   label={formatMessage({

@@ -11,12 +11,17 @@ import mcpHandler from './mcpHandler.ts';
 import { connectChat } from './chatHandler.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
 import { mountRoutes } from './mountRoutes.ts';
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
+import { generateThemeCSS, type AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
+
+export type { AdminUIThemeTokens, AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
 
 export interface AdminUIRouterOptions {
-  prefix: string;
+  prefix?: string;
   enabled?: boolean;
+  theme?: AdminUIThemeConfig;
 }
 
 /**
@@ -210,9 +215,23 @@ export const connect = async (
   mountRoutes(fastify, unchainedAPI, routes);
 
   if (adminUI) {
+    const adminUIOptions = typeof adminUI === 'object' ? adminUI : undefined;
+    const themeCSS = generateThemeCSS(adminUIOptions?.theme);
+    const themeHash = createHash('sha256').update(themeCSS).digest('hex').slice(0, 8);
+    const themeEtag = `"${themeHash}"`;
+    fastify.get('/admin-ui-theme.css', async (request, reply) => {
+      if (request.headers['if-none-match'] === themeEtag) {
+        return reply.code(304).send();
+      }
+      return reply
+        .header('Cache-Control', 'public, max-age=0, must-revalidate')
+        .header('ETag', themeEtag)
+        .type('text/css')
+        .send(themeCSS);
+    });
     fastify.register(adminUIRouter, {
       enabled: true,
-      prefix: typeof adminUI === 'object' ? adminUI.prefix : '/',
+      prefix: adminUIOptions?.prefix || '/',
     });
   }
 };

@@ -27,7 +27,7 @@ const OrderDetailItem = ({ item }) => {
 
           <div className="flex flex-col justify-center sm:mt-0 ml-3 sm:flex-auto">
             <h3
-              className="text-base text-slate-900 dark:text-slate-200 truncate"
+              className="text-base text-text-primary truncate"
               dangerouslySetInnerHTML={{
                 __html:
                   item?.product?.texts?.title || item?.product?.texts?.subtitle,

@@ -55,7 +55,7 @@ const VerifyEmail = () => {
     <div className="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-4 text-center">
         <div>
-          <h2 className="text-center text-3xl text-slate-900 dark:text-slate-200">
+          <h2 className="text-center text-3xl text-text-primary">
             {formatMessage({
               id: 'email_verification_error',
               defaultMessage: 'Verification Error',
@@ -66,22 +66,22 @@ const VerifyEmail = () => {
           <div className="space-y-6 px-4 pb-5 pt-3 sm:rounded-lg sm:px-10">
             <div className="text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 dark:bg-rose-900">
-                <ClockIcon className="h-6 w-6 text-rose-600 dark:text-rose-400" />
+                <ClockIcon className="h-6 w-6 text-danger" />
               </div>
-              <p className="mt-4 text-sm font-semibold uppercase tracking-wide text-rose-600 dark:text-rose-400">
+              <p className="mt-4 text-sm font-semibold uppercase tracking-wide text-danger">
                 {formatMessage({
                   id: 'token_invalid_expired',
                   defaultMessage: 'Token Invalid/Expired',
                 })}
               </p>
-              <p className="mt-2 text-base text-slate-500 dark:text-slate-400">
+              <p className="mt-2 text-base text-text-muted">
                 {formatMessage({
                   id: 'verify_email_token_invalid_error',
                   defaultMessage:
                     'The email verification token is either invalid or expired.',
                 })}
               </p>
-              <p className="mt-2 text-sm text-slate-400 dark:text-slate-500">
+              <p className="mt-2 text-sm text-text-muted">
                 {formatMessage({
                   id: 'use_latest_verification_link',
                   defaultMessage:
@@ -93,7 +93,7 @@ const VerifyEmail = () => {
             <div className="flex flex-col gap-3 mt-6">
               <Link
                 href="/account/forgot-password"
-                className="group relative flex w-full justify-center rounded-md border border-transparent bg-slate-800 dark:bg-slate-600 py-2 px-4 text-sm font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500 focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2"
+                className="group relative flex w-full justify-center rounded-md border border-transparent bg-accent py-2 px-4 text-sm font-medium text-text-on-accent hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
               >
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                   <svg
@@ -118,11 +118,11 @@ const VerifyEmail = () => {
 
               <Link
                 href="/"
-                className="group relative flex w-full justify-center rounded-md border border-slate-300 bg-slate-100 dark:bg-slate-700 dark:border-slate-600 py-2 px-4 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 focus:outline-hidden focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 focus:ring-offset-2"
+                className="group relative flex w-full justify-center rounded-md border border-slate-300 bg-surface-raised dark:border-slate-600 py-2 px-4 text-sm font-medium text-text-secondary hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-focus-ring dark:focus:ring-focus-ring focus:ring-offset-2"
               >
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                   <svg
-                    className="h-5 w-5 text-slate-500 dark:text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
+                    className="h-5 w-5 text-text-muted group-hover:text-slate-600 dark:group-hover:text-slate-300"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
@@ -149,7 +149,7 @@ const VerifyEmail = () => {
     <div className="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-4 text-center">
         <div>
-          <h2 className="text-center text-3xl text-slate-900 dark:text-slate-200">
+          <h2 className="text-center text-3xl text-text-primary">
             {result.success
               ? formatMessage({
                   id: 'email_verified_successfully',
@@ -174,14 +174,14 @@ const VerifyEmail = () => {
                 {result.success ? (
                   <EnvelopeOpenIcon className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                 ) : (
-                  <ClockIcon className="h-6 w-6 text-rose-600 dark:text-rose-400" />
+                  <ClockIcon className="h-6 w-6 text-danger" />
                 )}
               </div>
               <p
                 className={`mt-4 text-sm font-semibold uppercase tracking-wide ${
                   result.success
                     ? 'text-emerald-600 dark:text-emerald-400'
-                    : 'text-rose-600 dark:text-rose-400'
+                    : 'text-danger'
                 }`}
               >
                 {result.success
@@ -194,7 +194,7 @@ const VerifyEmail = () => {
                       defaultMessage: 'Verification Failed',
                     })}
               </p>
-              <p className="mt-2 text-base text-slate-500 dark:text-slate-400">
+              <p className="mt-2 text-base text-text-muted">
                 {result.success
                   ? formatMessage({
                       id: 'thank_you_for_verifying',
@@ -204,7 +204,7 @@ const VerifyEmail = () => {
                   : result.message}
               </p>
               {!result.success && (
-                <p className="mt-2 text-sm text-slate-400 dark:text-slate-500">
+                <p className="mt-2 text-sm text-text-muted">
                   {formatMessage({
                     id: 'use_another_verification_token',
                     defaultMessage:
@@ -217,7 +217,7 @@ const VerifyEmail = () => {
             <div className="flex flex-col gap-3 mt-6">
               <Link
                 href="/"
-                className="group relative flex w-full justify-center rounded-md border border-transparent bg-slate-800 dark:bg-slate-600 py-2 px-4 text-sm font-medium text-white hover:bg-slate-950 dark:hover:bg-slate-500 focus:outline-hidden focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400 focus:ring-offset-2"
+                className="group relative flex w-full justify-center rounded-md border border-transparent bg-accent py-2 px-4 text-sm font-medium text-text-on-accent hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
               >
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                   <svg
@@ -243,11 +243,11 @@ const VerifyEmail = () => {
               {!result.success && (
                 <Link
                   href="/account/forgot-password"
-                  className="group relative flex w-full justify-center rounded-md border border-slate-300 bg-slate-100 dark:bg-slate-700 dark:border-slate-600 py-2 px-4 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 focus:outline-hidden focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 focus:ring-offset-2"
+                  className="group relative flex w-full justify-center rounded-md border border-slate-300 bg-surface-raised dark:border-slate-600 py-2 px-4 text-sm font-medium text-text-secondary hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-focus-ring dark:focus:ring-focus-ring focus:ring-offset-2"
                 >
                   <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                     <svg
-                      className="h-5 w-5 text-slate-500 dark:text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
+                      className="h-5 w-5 text-text-muted group-hover:text-slate-600 dark:group-hover:text-slate-300"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 20 20"
                       fill="currentColor"

@@ -137,10 +137,10 @@ const CopilotInput: React.FC = () => {
   }, [input]);
 
   return (
-    <div className="sticky bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+    <div className="sticky bottom-0 left-0 right-0 bg-surface border-t border-border-subtle">
       <div className="max-w-4xl mx-auto px-4 py-4">
         <form onSubmit={onSubmit} className="relative">
-          <div className="flex items-end bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 focus-within:border-gray-400 dark:focus-within:border-gray-500">
+          <div className="flex items-end bg-surface border border-border-default rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 focus-within:border-gray-400 dark:focus-within:border-gray-500">
             {imageUrls.length > 0 && (
               <div className="p-3 pb-0">
                 <div className="flex gap-2 flex-wrap">
@@ -151,7 +151,7 @@ const CopilotInput: React.FC = () => {
                         alt={`Selected ${i}`}
                         width={48}
                         height={48}
-                        className="h-12 w-12 object-cover rounded-lg border border-gray-200 dark:border-gray-600"
+                        className="h-12 w-12 object-cover rounded-lg border border-border-default"
                       />
                       <button
                         type="button"
@@ -178,7 +178,7 @@ const CopilotInput: React.FC = () => {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Message Copilot..."
-                  className="w-full border-0 bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-0 focus:outline-none resize-none text-base leading-5 overflow-hidden py-1"
+                  className="w-full border-0 bg-transparent text-text-primary placeholder-gray-500 dark:placeholder-gray-400 focus:ring-0 focus:outline-none resize-none text-base leading-5 overflow-hidden py-1"
                   rows={1}
                   style={{
                     height: '20px',
@@ -210,7 +210,7 @@ const CopilotInput: React.FC = () => {
                 />
                 <label
                   htmlFor="image-upload"
-                  className="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-all duration-200"
+                  className="flex items-center justify-center w-8 h-8 text-text-secondary hover:text-text-primary cursor-pointer hover:bg-surface-raised rounded-full transition-all duration-200"
                   title="Attach images"
                   tabIndex={0}
                 >
@@ -221,7 +221,7 @@ const CopilotInput: React.FC = () => {
                   <button
                     type="button"
                     onClick={reload}
-                    className="flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-all duration-200"
+                    className="flex items-center justify-center w-8 h-8 text-text-secondary hover:text-text-primary hover:bg-surface-raised rounded-full transition-all duration-200"
                     title="Regenerate last response"
                   >
                     <ArrowPathIcon className="h-5 w-5" strokeWidth={1.5} />
@@ -254,9 +254,7 @@ const CopilotInput: React.FC = () => {
 
           {uploading && (
             <div className="mt-2 px-2">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Uploading images...
-              </p>
+              <p className="text-sm text-text-muted">Uploading images...</p>
             </div>
           )}
         </form>

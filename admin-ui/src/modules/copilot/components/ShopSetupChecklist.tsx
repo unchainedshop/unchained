@@ -182,15 +182,15 @@ const ShopSetupChecklist: React.FC<ShopSetupChecklistProps> = ({
     const progress = getCategoryProgress(steps);
 
     return (
-      <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+      <div className="border border-border-subtle rounded-lg overflow-hidden">
         <button
           onClick={() => toggleSection(category)}
-          className="w-full p-4 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left"
+          className="w-full p-4 bg-surface/50 hover:bg-surface-raised transition-colors text-left"
         >
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-3">
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                <h3 className="text-sm font-semibold text-text-primary">
                   {getCategoryTitle(category)}
                   {!isComplete && <span className="text-rose-500 ml-1">*</span>}
                 </h3>
@@ -200,7 +200,7 @@ const ShopSetupChecklist: React.FC<ShopSetupChecklistProps> = ({
                   className="w-24"
                 />
               </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-xs text-text-secondary mt-1">
                 {getCategoryDescription(category)}
               </p>
             </div>
@@ -213,7 +213,7 @@ const ShopSetupChecklist: React.FC<ShopSetupChecklistProps> = ({
         </button>
 
         {isExpanded && (
-          <div className="p-4 space-y-3 bg-white dark:bg-slate-800">
+          <div className="p-4 space-y-3 bg-surface">
             {steps.map((step) => (
               <SetupStepCard key={step.icon} step={step} />
             ))}
@@ -226,7 +226,7 @@ const ShopSetupChecklist: React.FC<ShopSetupChecklistProps> = ({
   return (
     <div
       className={clsx(
-        'bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden',
+        'bg-surface rounded-lg border border-border-subtle overflow-hidden',
         className,
       )}
     >
@@ -238,13 +238,13 @@ const ShopSetupChecklist: React.FC<ShopSetupChecklistProps> = ({
             </div>
           </div>
           <div className="flex-1">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+            <h2 className="text-lg font-semibold text-text-primary mb-2">
               {formatMessage({
                 id: 'complete_shop_setup',
                 defaultMessage: 'Complete Your Shop Setup',
               })}
             </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            <p className="text-sm text-text-secondary mb-4">
               {formatMessage({
                 id: 'shop_setup_description',
                 defaultMessage:
@@ -253,13 +253,13 @@ const ShopSetupChecklist: React.FC<ShopSetupChecklistProps> = ({
             </p>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-600 dark:text-slate-400">
+                <span className="text-text-secondary">
                   {formatMessage({
                     id: 'overall_progress',
                     defaultMessage: 'Overall Progress',
                   })}
                 </span>
-                <span className="font-medium text-slate-900 dark:text-slate-100">
+                <span className="font-medium text-text-primary">
                   {configuration.completedSteps.length} of{' '}
                   {Object.keys(configuration.steps).length} complete
                 </span>
@@ -294,8 +294,8 @@ const ShopSetupChecklist: React.FC<ShopSetupChecklistProps> = ({
           )}
 
         {/* Footer note */}
-        <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
-          <p className="text-xs text-slate-500 dark:text-slate-500 flex items-center gap-1">
+        <div className="pt-4 border-t border-border-subtle">
+          <p className="text-xs text-text-muted flex items-center gap-1">
             <span className="inline-block w-2 h-2 bg-rose-500 rounded-full"></span>
             {formatMessage({
               id: 'required_steps_note',

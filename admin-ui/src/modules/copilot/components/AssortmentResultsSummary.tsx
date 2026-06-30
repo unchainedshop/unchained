@@ -40,7 +40,7 @@ const AssortmentResultsSummary: React.FC<AssortmentResultsSummaryProps> = ({
             isActive ? 'bg-emerald-500' : 'bg-slate-400',
           )}
         />
-        <span className="text-sm text-slate-600 dark:text-slate-400">
+        <span className="text-sm text-text-secondary">
           {isActive ? (
             <span className="flex items-center gap-1">
               <EyeIcon className="w-4 h-4" />
@@ -71,8 +71,8 @@ const AssortmentResultsSummary: React.FC<AssortmentResultsSummaryProps> = ({
     >
       {/* Header */}
       <div className="flex items-center gap-2 mb-3">
-        <FolderIcon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-        <h3 className="font-medium text-slate-900 dark:text-slate-100">
+        <FolderIcon className="w-5 h-5 text-text-secondary" />
+        <h3 className="font-medium text-text-primary">
           {formatMessage({
             id: 'assortment_search_results',
             defaultMessage: 'Assortment Search Results',
@@ -83,10 +83,10 @@ const AssortmentResultsSummary: React.FC<AssortmentResultsSummaryProps> = ({
       {/* Statistics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         <div className="text-center">
-          <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+          <div className="text-lg font-semibold text-text-primary">
             {stats.total}
           </div>
-          <div className="text-xs text-slate-500 dark:text-slate-500">
+          <div className="text-xs text-text-muted">
             {formatMessage({ id: 'total', defaultMessage: 'Total' })}
           </div>
         </div>
@@ -95,16 +95,16 @@ const AssortmentResultsSummary: React.FC<AssortmentResultsSummaryProps> = ({
           <div className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
             {stats.active}
           </div>
-          <div className="text-xs text-slate-500 dark:text-slate-500">
+          <div className="text-xs text-text-muted">
             {formatMessage({ id: 'active', defaultMessage: 'Active' })}
           </div>
         </div>
 
         <div className="text-center">
-          <div className="text-lg font-semibold text-slate-600 dark:text-slate-400">
+          <div className="text-lg font-semibold text-text-secondary">
             {stats.inactive}
           </div>
-          <div className="text-xs text-slate-500 dark:text-slate-500">
+          <div className="text-xs text-text-muted">
             {formatMessage({ id: 'inactive', defaultMessage: 'In-Active' })}
           </div>
         </div>
@@ -113,7 +113,7 @@ const AssortmentResultsSummary: React.FC<AssortmentResultsSummaryProps> = ({
           <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">
             {stats.withChildren}
           </div>
-          <div className="text-xs text-slate-500 dark:text-slate-500">
+          <div className="text-xs text-text-muted">
             {formatMessage({
               id: 'with_children',
               defaultMessage: 'With Children',
@@ -131,7 +131,7 @@ const AssortmentResultsSummary: React.FC<AssortmentResultsSummaryProps> = ({
 
         {/* Filters Info */}
         {requestedFilters && (
-          <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-500">
+          <div className="flex items-center gap-1 text-xs text-text-muted">
             <InformationCircleIcon className="w-4 h-4" />
             {formatMessage({
               id: 'filtered_results',
@@ -143,8 +143,8 @@ const AssortmentResultsSummary: React.FC<AssortmentResultsSummaryProps> = ({
 
       {/* Additional Info */}
       {stats.roots > 0 && (
-        <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700">
-          <div className="text-xs text-slate-600 dark:text-slate-400">
+        <div className="mt-2 pt-2 border-t border-border-subtle">
+          <div className="text-xs text-text-secondary">
             {formatMessage(
               {
                 id: 'root_assortments_count',
@@ -159,7 +159,7 @@ const AssortmentResultsSummary: React.FC<AssortmentResultsSummaryProps> = ({
       {/* Empty State Message */}
       {stats.total === 0 && (
         <div className="text-center py-4">
-          <div className="text-slate-500 dark:text-slate-400">
+          <div className="text-text-muted">
             {formatMessage({
               id: 'no_assortments_found',
               defaultMessage: 'No assortments found matching your criteria',

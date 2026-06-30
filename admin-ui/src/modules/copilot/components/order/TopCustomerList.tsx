@@ -12,7 +12,7 @@ const TopCustomerList = ({ customers, dateRange }) => {
   return (
     <div className="space-y-4">
       {(dateRange?.start || dateRange?.end) && (
-        <div className="text-sm text-slate-500 dark:text-slate-400">
+        <div className="text-sm text-text-muted">
           {formatMessage({
             id: 'date_range_prefix',
             defaultMessage: 'Showing data from',
@@ -31,9 +31,9 @@ const TopCustomerList = ({ customers, dateRange }) => {
             return (
               <div
                 key={customer.userId}
-                className="flex items-center gap-4 p-4 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow duration-200"
+                className="flex items-center gap-4 p-4 bg-surface rounded-lg shadow-sm border border-border-subtle hover:shadow-md transition-shadow duration-200"
               >
-                <div className="w-14 h-14 flex-shrink-0 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-700">
+                <div className="w-14 h-14 flex-shrink-0 rounded-full overflow-hidden bg-surface-raised">
                   {avatar ? (
                     <ImageWithFallback
                       src={avatar}
@@ -50,17 +50,17 @@ const TopCustomerList = ({ customers, dateRange }) => {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
+                  <div className="text-sm font-semibold text-text-primary truncate">
                     {customer?.user?.profile?.displayName ||
                       customer?.user?.username ||
                       'Unknown User'}
                   </div>
-                  <div className="text-xs text-slate-400 dark:text-slate-500">
+                  <div className="text-xs text-text-muted">
                     {formatMessage({ id: 'id', defaultMessage: 'ID' })}{' '}
                     {customer.userId}
                   </div>
 
-                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  <div className="text-xs text-text-muted mt-1">
                     {formatMessage({ id: 'orders', defaultMessage: 'Orders' })}:{' '}
                     <strong>{customer.orderCount}</strong> •{' '}
                     {formatMessage({
@@ -88,7 +88,7 @@ const TopCustomerList = ({ customers, dateRange }) => {
                     </strong>
                   </div>
 
-                  <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                  <div className="text-xs text-text-muted mt-0.5">
                     {formatMessage({
                       id: 'last_order_date',
                       defaultMessage: 'Last order',
@@ -98,7 +98,7 @@ const TopCustomerList = ({ customers, dateRange }) => {
                 </div>
                 <Link
                   href={`/users?userId=${customer.userId}`}
-                  className="px-3 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-300 dark:border-slate-600 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex-shrink-0"
+                  className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary border border-border-default rounded-md hover:bg-surface-raised transition-colors flex-shrink-0"
                 >
                   {formatMessage({ id: 'edit', defaultMessage: 'Edit' })}
                 </Link>
@@ -107,7 +107,7 @@ const TopCustomerList = ({ customers, dateRange }) => {
           })}
         </div>
       ) : (
-        <div className="text-sm text-slate-500 dark:text-slate-400">
+        <div className="text-sm text-text-muted">
           {formatMessage({
             id: 'no_customers',
             defaultMessage: 'No top customers found.',

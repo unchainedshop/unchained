@@ -62,7 +62,7 @@ const CreateUserForm = ({ onSubmit, onSubmitSuccess }) => {
       <div className="space-y-4 overflow-hidden rounded-md lg:grid lg:grid-cols-3">
         <div className="flex justify-between pt-5 sm:col-span-1">
           <div className="space-y-1">
-            <h3 className="text-lg text-slate-900 dark:text-slate-200">
+            <h3 className="text-lg text-text-primary">
               {formatMessage({
                 id: 'profile',
                 defaultMessage: 'Profile',
@@ -79,7 +79,7 @@ const CreateUserForm = ({ onSubmit, onSubmitSuccess }) => {
           <span className="ml-4 flex shrink-0 items-start space-x-4" />
         </div>
 
-        <div className="mt-1 rounded-md border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-800 pt-5 shadow-sm dark:shadow-none lg:col-span-2">
+        <div className="mt-1 rounded-md border-border-default bg-surface pt-5 shadow-sm dark:shadow-none lg:col-span-2">
           <div className="px-6 space-y-4">
             <div>
               <EmailField
@@ -157,7 +157,7 @@ const CreateUserForm = ({ onSubmit, onSubmitSuccess }) => {
             </div>
           </div>
 
-          <div className="border-t-slate-100 border-t dark:border-t-slate-700 bg-slate-50 dark:bg-slate-800 mt-5 pr-5">
+          <div className="border-t-slate-100 border-t border-t-border-subtle bg-surface mt-5 pr-5">
             <FormErrors />
             <SaveAndCancelButtons className="justify-end" onCancel={back} />
           </div>
@@ -167,7 +167,7 @@ const CreateUserForm = ({ onSubmit, onSubmitSuccess }) => {
 
         <div className="flex justify-between pt-6 lg:col-span-1">
           <div className="space-y-1">
-            <h3 className="text-lg text-slate-900 dark:text-slate-200">
+            <h3 className="text-lg text-text-primary">
               {formatMessage({
                 id: 'address',
                 defaultMessage: 'Address',
@@ -183,7 +183,7 @@ const CreateUserForm = ({ onSubmit, onSubmitSuccess }) => {
           </div>
         </div>
 
-        <div className="rounded-md bg-white dark:bg-slate-800 pt-5 mb-5 shadow-sm dark:shadow-none lg:col-span-2">
+        <div className="rounded-md bg-surface pt-5 mb-5 shadow-sm dark:shadow-none lg:col-span-2">
           <div className="px-5 space-y-4">
             <div className="mt-1 flex text-sm sm:mt-0">
               <div className="flex w-full">
@@ -282,7 +282,7 @@ const CreateUserForm = ({ onSubmit, onSubmitSuccess }) => {
               </div>
             </div>
           </div>
-          <div className="border-t border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 mt-5 pr-5">
+          <div className="border-t border-border-subtle bg-surface mt-5 pr-5">
             <SaveAndCancelButtons className="justify-end" onCancel={back} />
           </div>
         </div>

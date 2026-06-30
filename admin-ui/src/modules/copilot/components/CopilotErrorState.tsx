@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl';
 const CopilotErrorState = ({ onRetry }: { onRetry: () => void }) => {
   const { formatMessage } = useIntl();
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950 font-sans">
+    <div className="flex flex-col min-h-screen bg-surface-subtle font-sans">
       <div className="py-16 text-center max-w-lg mx-auto">
         <p className="mt-2 text-sm text-rose-400 dark:text-rose-300">
           {formatMessage({

@@ -92,7 +92,7 @@ const AllocateWorkForm = () => {
                       <div className="w-100 relative w-full pl-5 space-y-1 rounded-md sm:pr-2">
                         <div className="max-w-4xl justify-between align-baseline sm:flex">
                           <SelectField
-                            className="w-full py-2 text-sm text-slate-500 dark:text-slate-200 sm:mt-0"
+                            className="w-full py-2 text-sm text-text-muted sm:mt-0"
                             label={formatMessage({
                               id: 'type',
                               defaultMessage: 'Type',
@@ -130,7 +130,7 @@ const AllocateWorkForm = () => {
                     <div className="shrink-0">
                       <button
                         type="button"
-                        className="items-right inline-flex rounded-full border border-transparent bg-slate-800 px-2 py-2 text-sm font-medium text-white shadow-xs bg-slate-950 focus:outline-hidden focus:ring-2 focus:ring-slate-800 focus:ring-offset-2"
+                        className="items-right inline-flex rounded-full border border-transparent bg-slate-800 px-2 py-2 text-sm font-medium text-white shadow-xs bg-slate-950 focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
                         onClick={() => push('')}
                       >
                         <svg
@@ -156,7 +156,7 @@ const AllocateWorkForm = () => {
         </div>
         <FormErrors />
         {hasRole(IRoleAction.ManageWorker) && (
-          <div className="border-t-slate-100 border-t dark:border-slate-700 space-y-6 bg-slate-50 dark:bg-slate-800 px-5 py-6 text-right">
+          <div className="border-t-slate-100 border-t dark:border-slate-700 space-y-6 bg-surface px-5 py-6 text-right">
             <SubmitButton
               label={formatMessage({
                 id: 'allocate_work',

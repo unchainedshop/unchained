@@ -122,12 +122,12 @@ const ProductReviewsItem = ({
     <div
       key={review._id}
       className={clsx(
-        'mb-4 rounded-lg shadow-sm bg-white dark:bg-slate-800 p-4',
+        'mb-4 rounded-lg shadow-sm bg-surface p-4',
         {
           'border-rose-200 bg-rose-50 dark:bg-rose-950': review.deleted,
         },
         {
-          'border-slate-200 dark:border-slate-700': !review.deleted,
+          'border-border-subtle': !review.deleted,
         },
       )}
     >
@@ -150,7 +150,7 @@ const ProductReviewsItem = ({
           />
         )}
         <div className="ml-4 flex-1">
-          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          <h4 className="text-sm font-semibold text-text-primary">
             {showProduct
               ? product?.texts?.title || (
                   <>
@@ -166,7 +166,7 @@ const ProductReviewsItem = ({
                 )
               : formatUsername(review?.author)}
           </h4>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-text-muted">
             <time dateTime={review.updated || review.created}>
               {formatDateTime(review.updated || review.created, {
                 dateStyle: 'short',
@@ -183,21 +183,21 @@ const ProductReviewsItem = ({
             className={`flex items-center gap-1 px-2 py-1 rounded-md transition-colors disabled:opacity-50 ${
               hasAlreadyVoted(voteTypes.UPVOTE)
                 ? 'bg-emerald-100 dark:bg-emerald-900 hover:bg-emerald-200 dark:hover:bg-emerald-800'
-                : 'hover:bg-slate-100 dark:hover:bg-slate-700'
+                : 'hover:bg-surface-raised'
             }`}
           >
             <HandThumbUpIcon
               className={`h-5 w-5 ${
                 hasAlreadyVoted(voteTypes.UPVOTE)
                   ? 'text-emerald-600 dark:text-emerald-400'
-                  : 'text-slate-400 dark:text-slate-500'
+                  : 'text-text-muted'
               }`}
             />
             <span
               className={`text-sm font-medium ${
                 hasAlreadyVoted(voteTypes.UPVOTE)
                   ? 'text-emerald-700 dark:text-emerald-300'
-                  : 'text-slate-700 dark:text-slate-300'
+                  : 'text-text-secondary'
               }`}
             >
               {review.upVote}
@@ -210,21 +210,21 @@ const ProductReviewsItem = ({
             className={`flex items-center gap-1 px-2 py-1 rounded-md transition-colors disabled:opacity-50 ${
               hasAlreadyVoted(voteTypes.DOWNVOTE)
                 ? 'bg-rose-100 dark:bg-rose-900 hover:bg-rose-200 dark:hover:bg-rose-800'
-                : 'hover:bg-slate-100 dark:hover:bg-slate-700'
+                : 'hover:bg-surface-raised'
             }`}
           >
             <HandThumbDownIcon
               className={`h-5 w-5 ${
                 hasAlreadyVoted(voteTypes.DOWNVOTE)
-                  ? 'text-rose-600 dark:text-rose-400'
-                  : 'text-slate-400 dark:text-slate-500'
+                  ? 'text-danger'
+                  : 'text-text-muted'
               }`}
             />
             <span
               className={`text-sm font-medium ${
                 hasAlreadyVoted(voteTypes.DOWNVOTE)
                   ? 'text-rose-700 dark:text-rose-300'
-                  : 'text-slate-700 dark:text-slate-300'
+                  : 'text-text-secondary'
               }`}
             >
               {review.downVote}
@@ -241,7 +241,7 @@ const ProductReviewsItem = ({
               className={`p-2 rounded-md transition-colors disabled:opacity-50 ${
                 hasAlreadyVoted(voteTypes.REPORT)
                   ? 'bg-orange-100 dark:bg-orange-900 hover:bg-orange-200 dark:hover:bg-orange-800'
-                  : 'hover:bg-slate-100 dark:hover:bg-slate-700'
+                  : 'hover:bg-surface-raised'
               }`}
               title="Report review"
             >
@@ -250,9 +250,7 @@ const ProductReviewsItem = ({
                   'text-orange-600 dark:text-orange-400': hasAlreadyVoted(
                     voteTypes.REPORT,
                   ),
-                  'text-slate-400 dark:text-slate-500': !hasAlreadyVoted(
-                    voteTypes.REPORT,
-                  ),
+                  'text-text-muted': !hasAlreadyVoted(voteTypes.REPORT),
                 })}
               />
             </button>
@@ -280,10 +278,10 @@ const ProductReviewsItem = ({
       </div>
 
       <div className="mt-4 space-y-3">
-        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+        <h3 className="text-base font-semibold text-text-primary">
           {review.title}
         </h3>
-        <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+        <p className="text-sm text-text-secondary leading-relaxed">
           {review.review}
         </p>
       </div>
