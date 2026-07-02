@@ -1,7 +1,7 @@
 import Fastify from 'fastify';
 import { startPlatform } from '@unchainedshop/platform';
 import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
-import { connect, unchainedLogger } from '@unchainedshop/api/lib/fastify/index.js';
+import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
 import setupTicketing, { ticketingModules, type TicketingAPI } from '@unchainedshop/ticketing';
 import connectTicketingToFastify from '@unchainedshop/ticketing/lib/fastify.js';
 import ticketingServices from '@unchainedshop/ticketing/lib/services.js';

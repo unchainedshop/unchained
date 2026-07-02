@@ -2,6 +2,9 @@ import { ProductType } from '@unchainedshop/core-products';
 import type { TicketingModule } from './module.ts';
 import type { Bound, UnchainedCore } from '@unchainedshop/core';
 
+type Modules = UnchainedCore['modules'];
+type TicketingModules = Modules & TicketingModule;
+
 interface DiscountOptions {
   generateDiscount?: boolean;
   countryCode?: string;
@@ -9,12 +12,13 @@ interface DiscountOptions {
 }
 
 async function cancelTicketsForProduct(
-  this: TicketingModule & UnchainedCore['modules'],
+  this: Modules,
   productId: string,
   options?: DiscountOptions,
 ): Promise<{
   cancelledCount: number;
 }> {
+  const { passes } = this as unknown as TicketingModules;
   const tokensToCancel = await this.warehousing.findTokens({
     productId,
     'meta.cancelled': null,
@@ -22,7 +26,7 @@ async function cancelTicketsForProduct(
 
   for (const token of tokensToCancel) {
     await this.warehousing.invalidateToken(token._id);
-    await this.passes.cancelTicket(token._id);
+    await passes.cancelTicket(token._id);
   }
 
   await this.products.update(productId, {
@@ -55,7 +59,7 @@ async function cancelTicketsForProduct(
 
       for (const [userId, quantity] of Object.entries(userTokenCounts)) {
         const totalAmount = price.amount * quantity;
-        const discountCode = await this.passes.generateDiscountCode(totalAmount);
+        const discountCode = await passes.generateDiscountCode(totalAmount);
         discountByUser.set(userId, { discountCode, amount: totalAmount });
       }
     }
@@ -81,13 +85,14 @@ async function cancelTicketsForProduct(
 }
 
 async function cancelTicketWithDiscount(
-  this: TicketingModule & UnchainedCore['modules'],
+  this: Modules,
   tokenId: string,
   options?: DiscountOptions,
 ): Promise<{ token: any }> {
+  const { passes } = this as unknown as TicketingModules;
   const token = await this.warehousing.findToken({ tokenId });
   await this.warehousing.invalidateToken(tokenId);
-  const cancelledToken = await this.passes.cancelTicket(tokenId);
+  const cancelledToken = await passes.cancelTicket(tokenId);
 
   let discountCode: string | undefined;
   let discountAmount: number | undefined;
@@ -103,7 +108,7 @@ async function cancelTicketWithDiscount(
 
     if (price?.amount) {
       discountAmount = price.amount;
-      discountCode = await this.passes.generateDiscountCode(discountAmount);
+      discountCode = await passes.generateDiscountCode(discountAmount);
     }
   }
 
@@ -123,11 +128,7 @@ async function cancelTicketWithDiscount(
   return { token: cancelledToken };
 }
 
-async function isPassCodeValid(
-  this: TicketingModule & UnchainedCore['modules'],
-  passCode: string,
-  productId?: string,
-): Promise<boolean> {
+async function isPassCodeValid(this: Modules, passCode: string, productId?: string): Promise<boolean> {
   if (!passCode) return false;
 
   const products = await this.products.findProducts({
@@ -146,10 +147,7 @@ async function isPassCodeValid(
     );
 }
 
-async function productIdsForPassCode(
-  this: TicketingModule & UnchainedCore['modules'],
-  passCode: string,
-): Promise<string[]> {
+async function productIdsForPassCode(this: Modules, passCode: string): Promise<string[]> {
   if (!passCode) return [];
 
   const products = await this.products.findProducts({
