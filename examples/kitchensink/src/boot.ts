@@ -83,7 +83,7 @@ try {
         for (const error of errors) {
           const { code: errorCode } = (error as any).extensions || {};
           if (!errorCode) continue;
-          (error as any).path?.map((path) => {
+          (error as any).path?.map((path: string) => {
             fastify.log.error(`${error.message} (${path} -> ${error.name})`);
           });
         }
@@ -126,11 +126,11 @@ try {
     },
     chat: provider
       ? {
-        model: provider.chat(process.env.OPENAI_MODEL || 'gpt-5.2'),
-        imageGenerationTool: imageProvider
-          ? { model: imageProvider.imageModel('gpt-image-1') }
-          : undefined,
-      }
+          model: provider.chat(process.env.OPENAI_MODEL || 'gpt-5.2'),
+          imageGenerationTool: imageProvider
+            ? { model: imageProvider.imageModel('gpt-image-1') }
+            : undefined,
+        }
       : undefined,
   });
 

@@ -8,23 +8,23 @@
   "exports": {
     ".": "./out/index.html",
     "./ui": {
-      "import": "./dist/ui.mjs",
+      "import": "./dist/ui.js",
       "types": "./dist/components/ui/index.d.ts"
     },
     "./form": {
-      "import": "./dist/form.mjs",
+      "import": "./dist/form.js",
       "types": "./dist/components/ui/form/index.d.ts"
     },
     "./hooks": {
-      "import": "./dist/hooks.mjs",
+      "import": "./dist/hooks.js",
       "types": "./dist/sdk/hooks.d.ts"
     },
     "./providers": {
-      "import": "./dist/providers.mjs",
+      "import": "./dist/providers.js",
       "types": "./dist/sdk/providers.d.ts"
     },
     "./modal": {
-      "import": "./dist/modal.mjs",
+      "import": "./dist/modal.js",
       "types": "./dist/sdk/modal.d.ts"
     },
     "./theme": "./src/sdk/theme.ts",
@@ -35,12 +35,67 @@
     "./tailwind-preset": {
       "import": "./src/sdk/tailwind-preset.mjs"
     },
-    "./styles": "./src/styles/globals.css"
+    "./styles": "./src/styles/globals.css",
+    "./modules/accounts": {
+      "import": "./dist/modules/accounts.js"
+    },
+    "./modules/assortment": {
+      "import": "./dist/modules/assortment.js"
+    },
+    "./modules/country": {
+      "import": "./dist/modules/country.js"
+    },
+    "./modules/currency": {
+      "import": "./dist/modules/currency.js"
+    },
+    "./modules/delivery-provider": {
+      "import": "./dist/modules/delivery-provider.js"
+    },
+    "./modules/enrollment": {
+      "import": "./dist/modules/enrollment.js"
+    },
+    "./modules/event": {
+      "import": "./dist/modules/event.js"
+    },
+    "./modules/filter": {
+      "import": "./dist/modules/filter.js"
+    },
+    "./modules/language": {
+      "import": "./dist/modules/language.js"
+    },
+    "./modules/order": {
+      "import": "./dist/modules/order.js"
+    },
+    "./modules/payment-providers": {
+      "import": "./dist/modules/payment-providers.js"
+    },
+    "./modules/product": {
+      "import": "./dist/modules/product.js"
+    },
+    "./modules/product-review": {
+      "import": "./dist/modules/product-review.js"
+    },
+    "./modules/quotation": {
+      "import": "./dist/modules/quotation.js"
+    },
+    "./modules/token": {
+      "import": "./dist/modules/token.js"
+    },
+    "./modules/warehousing-providers": {
+      "import": "./dist/modules/warehousing-providers.js"
+    },
+    "./modules/work": {
+      "import": "./dist/modules/work.js"
+    }
   },
   "files": [
     "dist",
     "out",
-    "src/styles/globals.css"
+    "src/styles/globals.css",
+    "src/sdk",
+    "src/modules/*/index.ts",
+    "src/modules/*/hooks",
+    "src/modules/*/fragments"
   ],
   "scripts": {
     "prepublishOnly": "npm run build && npm run build:sdk",
