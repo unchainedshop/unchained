@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -330,8 +328,7 @@ export type IColor = {
 };
 
 export type IConfigurableOrBundleProduct =
-  | IBundleProduct
-  | IConfigurableProduct;
+  IBundleProduct | IConfigurableProduct;
 
 /** Configurable Product (Proxy) */
 export type IConfigurableProduct = IProduct & {
@@ -2608,7 +2605,7 @@ export type IProductCatalogPrice = {
   currency: ICurrency;
   isNetPrice: Scalars['Boolean']['output'];
   isTaxable: Scalars['Boolean']['output'];
-  maxQuantity?: Maybe<Scalars['Int']['output']>;
+  minQuantity?: Maybe<Scalars['Int']['output']>;
 };
 
 export type IProductConfigurationParameter = {
@@ -3462,12 +3459,14 @@ export type IReorderProductMediaInput = {
 };
 
 export enum IRoleAction {
+  AddCartQuotation = 'addCartQuotation',
   AnswerQuotation = 'answerQuotation',
   BookmarkProduct = 'bookmarkProduct',
   BulkImport = 'bulkImport',
   ChangePassword = 'changePassword',
   CheckoutCart = 'checkoutCart',
   ConfirmMediaUpload = 'confirmMediaUpload',
+  CreateBookmark = 'createBookmark',
   CreateCart = 'createCart',
   CreateEnrollment = 'createEnrollment',
   CreateUser = 'createUser',
@@ -3884,7 +3883,7 @@ export type IUpdateProductCommercePricingInput = {
   currencyCode: Scalars['String']['input'];
   isNetPrice?: InputMaybe<Scalars['Boolean']['input']>;
   isTaxable?: InputMaybe<Scalars['Boolean']['input']>;
-  maxQuantity?: InputMaybe<Scalars['Int']['input']>;
+  minQuantity?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type IUpdateProductInput = {
@@ -11360,7 +11359,7 @@ export type IProductCatalogPriceFragment = {
   isTaxable: boolean;
   isNetPrice: boolean;
   amount: number;
-  maxQuantity?: number | null;
+  minQuantity?: number | null;
   country: {
     _id: string;
     isoCode?: string | null;
@@ -12919,7 +12918,7 @@ export type IProductCatalogPricesQuery = {
     isTaxable: boolean;
     isNetPrice: boolean;
     amount: number;
-    maxQuantity?: number | null;
+    minQuantity?: number | null;
     country: {
       _id: string;
       isoCode?: string | null;
@@ -16434,4 +16433,3 @@ export type IWorkQueueQuery = {
     original?: { _id: string; retries: number } | null;
   }>;
 };
->>>>>>> 88bb29e0e (Extend erc minter)
