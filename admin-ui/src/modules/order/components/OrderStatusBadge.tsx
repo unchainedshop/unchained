@@ -4,12 +4,7 @@ import Badge from '@/components/ui/Badge';
 import { ORDER_STATUSES } from '../../common/data/miscellaneous';
 
 type OrderStatus =
-  | 'PENDING'
-  | 'CONFIRMED'
-  | 'OPEN'
-  | 'FULFILLED'
-  | 'REJECTED'
-  | string;
+  'PENDING' | 'CONFIRMED' | 'OPEN' | 'FULFILLED' | 'REJECTED' | string;
 
 type OrderStatusBadgeProps = {
   status: OrderStatus;

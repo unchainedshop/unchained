@@ -302,6 +302,17 @@ const LogInForm = () => {
                   })}
                 </Link>
               </div>
+              <div className="text-sm text-slate-400 dark:text-slate-200">
+                <Link
+                  href="/ticketing/gate"
+                  className="font-medium text-slate-950 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300"
+                >
+                  {intl.formatMessage({
+                    id: 'open_gate_control',
+                    defaultMessage: 'Open Gate Control',
+                  })}
+                </Link>
+              </div>
             </Form>
           </FormWrapper>
         </div>

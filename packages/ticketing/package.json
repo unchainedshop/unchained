@@ -5,6 +5,20 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./lib/index.js",
+      "types": "./lib/index.d.ts"
+    },
+    "./lib/*": {
+      "import": "./lib/*",
+      "types": "./lib/*"
+    },
+    "./lib/*.js": {
+      "import": "./lib/*.js",
+      "types": "./lib/*.d.ts"
+    }
+  },
   "scripts": {
     "clean": "tsc -b --clean",
     "build": "tsc -b",
@@ -37,6 +51,7 @@
     "@unchainedshop/api": "^5.0.0-alpha.1",
     "@unchainedshop/core": "^5.0.0-alpha.1",
     "@unchainedshop/core-files": "^5.0.0-alpha.1",
+    "@unchainedshop/core-orders": "^5.0.0-alpha.1",
     "@unchainedshop/core-warehousing": "^5.0.0-alpha.1",
     "@unchainedshop/core-worker": "^5.0.0-alpha.1",
     "@unchainedshop/events": "^5.0.0-alpha.1",
