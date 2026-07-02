@@ -1,5 +1,7 @@
 import { useIntl } from 'react-intl';
 import { IRoleAction } from '../../../gql/types';
+import { usePlugins } from '../../plugins/PluginContext';
+import PluginSlot from '../../plugins/PluginSlot';
 
 import {
   DocumentTextIcon,
@@ -71,6 +73,18 @@ const GetCurrentTab = ({ id, selectedView, ...extendedData }) => {
         <DisplayExtendedFields data={extendedData} />
       </LocaleWrapper>
     );
+  if (selectedView?.startsWith('plugin:')) {
+    const componentName = selectedView.replace('plugin:', '');
+    return (
+      <PluginSlot slot="assortment:tabs" entityId={id}>
+        {(Component, config) =>
+          config.component === componentName ? (
+            <Component entityId={id} />
+          ) : null
+        }
+      </PluginSlot>
+    );
+  }
   return (
     <LocaleWrapper>
       <AssortmentTextForm assortmentId={id} />
@@ -85,6 +99,7 @@ const AssortmentDetail = ({
   const { isActive, isRoot } = assortment || {};
   const { hasRole } = useAuth();
   const { shopInfo } = useApp();
+  const { getSlotPlugins } = usePlugins();
   const { formatMessage } = useIntl();
   const { updateAssortment } = useUpdateAssortment();
   const { removeAssortment } = useRemoveAssortment();
@@ -151,6 +166,11 @@ const AssortmentDetail = ({
       }),
       Icon: <PuzzlePieceIcon className="h-5 w-5" />,
     },
+    ...getSlotPlugins('assortment:tabs').map(({ config }) => ({
+      id: `plugin:${config.component}`,
+      title: config.label,
+      Icon: <PuzzlePieceIcon className="h-5 w-5" />,
+    })),
   ];
 
   const setIsRoot = async (isRoot) => {

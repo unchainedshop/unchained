@@ -5,95 +5,97 @@
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "npx tsc"
   },
   "exports": {
     "./product": {
+      "types": "./dist/modules/product/index.d.ts",
       "import": "./dist/modules/product/index.js",
-      "require": "./dist/modules/product/index.js",
-      "types": "./dist/modules/product/index.d.ts"
+      "require": "./dist/modules/product/index.js"
     },
     "./order": {
+      "types": "./dist/modules/order/index.d.ts",
       "import": "./dist/modules/order/index.js",
-      "require": "./dist/modules/order/index.js",
-      "types": "./dist/modules/order/index.d.ts"
+      "require": "./dist/modules/order/index.js"
     },
     "./accounts": {
+      "types": "./dist/modules/accounts/index.d.ts",
       "import": "./dist/modules/accounts/index.js",
-      "require": "./dist/modules/accounts/index.js",
-      "types": "./dist/modules/accounts/index.d.ts"
+      "require": "./dist/modules/accounts/index.js"
     },
     "./assortment": {
+      "types": "./dist/modules/assortment/index.d.ts",
       "import": "./dist/modules/assortment/index.js",
-      "require": "./dist/modules/assortment/index.js",
-      "types": "./dist/modules/assortment/index.d.ts"
+      "require": "./dist/modules/assortment/index.js"
     },
     "./country": {
+      "types": "./dist/modules/country/index.d.ts",
       "import": "./dist/modules/country/index.js",
-      "require": "./dist/modules/country/index.js",
-      "types": "./dist/modules/country/index.d.ts"
+      "require": "./dist/modules/country/index.js"
     },
     "./currency": {
+      "types": "./dist/modules/currency/index.d.ts",
       "import": "./dist/modules/currency/index.js",
-      "require": "./dist/modules/currency/index.js",
-      "types": "./dist/modules/currency/index.d.ts"
+      "require": "./dist/modules/currency/index.js"
     },
     "./delivery-provider": {
+      "types": "./dist/modules/delivery-provider/index.d.ts",
       "import": "./dist/modules/delivery-provider/index.js",
-      "require": "./dist/modules/delivery-provider/index.js",
-      "types": "./dist/modules/delivery-provider/index.d.ts"
+      "require": "./dist/modules/delivery-provider/index.js"
     },
     "./enrollment": {
+      "types": "./dist/modules/enrollment/index.d.ts",
       "import": "./dist/modules/enrollment/index.js",
-      "require": "./dist/modules/enrollment/index.js",
-      "types": "./dist/modules/enrollment/index.d.ts"
+      "require": "./dist/modules/enrollment/index.js"
     },
     "./event": {
+      "types": "./dist/modules/event/index.d.ts",
       "import": "./dist/modules/event/index.js",
-      "require": "./dist/modules/event/index.js",
-      "types": "./dist/modules/event/index.d.ts"
+      "require": "./dist/modules/event/index.js"
     },
     "./filter": {
+      "types": "./dist/modules/filter/index.d.ts",
       "import": "./dist/modules/filter/index.js",
-      "require": "./dist/modules/filter/index.js",
-      "types": "./dist/modules/filter/index.d.ts"
+      "require": "./dist/modules/filter/index.js"
     },
     "./language": {
+      "types": "./dist/modules/language/index.d.ts",
       "import": "./dist/modules/language/index.js",
-      "require": "./dist/modules/language/index.js",
-      "types": "./dist/modules/language/index.d.ts"
+      "require": "./dist/modules/language/index.js"
     },
     "./payment-providers": {
+      "types": "./dist/modules/payment-providers/index.d.ts",
       "import": "./dist/modules/payment-providers/index.js",
-      "require": "./dist/modules/payment-providers/index.js",
-      "types": "./dist/modules/payment-providers/index.d.ts"
+      "require": "./dist/modules/payment-providers/index.js"
     },
     "./product-review": {
+      "types": "./dist/modules/product-review/index.d.ts",
       "import": "./dist/modules/product-review/index.js",
-      "require": "./dist/modules/product-review/index.js",
-      "types": "./dist/modules/product-review/index.d.ts"
+      "require": "./dist/modules/product-review/index.js"
     },
     "./quotation": {
+      "types": "./dist/modules/quotation/index.d.ts",
       "import": "./dist/modules/quotation/index.js",
-      "require": "./dist/modules/quotation/index.js",
-      "types": "./dist/modules/quotation/index.d.ts"
+      "require": "./dist/modules/quotation/index.js"
     },
     "./token": {
+      "types": "./dist/modules/token/index.d.ts",
       "import": "./dist/modules/token/index.js",
-      "require": "./dist/modules/token/index.js",
-      "types": "./dist/modules/token/index.d.ts"
+      "require": "./dist/modules/token/index.js"
     },
     "./warehousing-providers": {
+      "types": "./dist/modules/warehousing-providers/index.d.ts",
       "import": "./dist/modules/warehousing-providers/index.js",
-      "require": "./dist/modules/warehousing-providers/index.js",
-      "types": "./dist/modules/warehousing-providers/index.d.ts"
+      "require": "./dist/modules/warehousing-providers/index.js"
     },
     "./work": {
+      "types": "./dist/modules/work/index.d.ts",
       "import": "./dist/modules/work/index.js",
-      "require": "./dist/modules/work/index.js",
-      "types": "./dist/modules/work/index.d.ts"
+      "require": "./dist/modules/work/index.js"
     }
   },
   "peerDependencies": {

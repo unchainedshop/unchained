@@ -16,6 +16,8 @@ import useUpdateFilter from '../hooks/useUpdateFilter';
 import DisplayExtendedFields from '../../common/components/DisplayExtendedFields';
 import LocaleWrapper from '../../common/components/LocaleWrapper';
 import useAuth from '../../Auth/useAuth';
+import { usePlugins } from '../../plugins/PluginContext';
+import PluginSlot from '../../plugins/PluginSlot';
 
 const GetCurrentTab = ({ selectedView, id, ...extendedData }) => {
   if (selectedView === 'text')
@@ -33,6 +35,18 @@ const GetCurrentTab = ({ selectedView, id, ...extendedData }) => {
     );
   if (selectedView === 'extended')
     return <DisplayExtendedFields data={extendedData} />;
+  if (selectedView?.startsWith('plugin:')) {
+    const componentName = selectedView.replace('plugin:', '');
+    return (
+      <PluginSlot slot="filter:tabs" entityId={id}>
+        {(Component, config) =>
+          config.component === componentName ? (
+            <Component entityId={id} />
+          ) : null
+        }
+      </PluginSlot>
+    );
+  }
   return (
     <LocaleWrapper>
       <FilterTextForm filterId={id} />
@@ -45,6 +59,7 @@ const FilterDetail = ({ filter, extendedData }) => {
   const { formatMessage, formatDate } = useIntl();
   const { updateFilter } = useUpdateFilter();
   const { hasRole } = useAuth();
+  const { getSlotPlugins } = usePlugins();
 
   const filterOptions = [
     {
@@ -72,6 +87,11 @@ const FilterDetail = ({ filter, extendedData }) => {
       }),
       Icon: <PuzzlePieceIcon className="h-5 w-5" />,
     },
+    ...getSlotPlugins('filter:tabs').map(({ config }) => ({
+      id: `plugin:${config.component}`,
+      title: config.label,
+      Icon: <PuzzlePieceIcon className="h-5 w-5" />,
+    })),
   ].filter(Boolean);
 
   const activeOptions = [

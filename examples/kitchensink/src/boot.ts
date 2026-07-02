@@ -1,3 +1,5 @@
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import Fastify from 'fastify';
 import { createOpenAI } from '@ai-sdk/openai';
 import { startPlatform } from '@unchainedshop/platform';
@@ -10,6 +12,7 @@ import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-h
 import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
 import { registerProductDiscoverabilityFilter, pluginRegistry } from '@unchainedshop/core';
 import type { AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
+import { definePlugin } from '@unchainedshop/admin-ui/plugins';
 
 const adminUITheme: AdminUIThemeConfig = {
   light: {
@@ -45,6 +48,8 @@ const adminUITheme: AdminUIThemeConfig = {
   },
 };
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
   disableRequestLogging: true,
@@ -78,7 +83,7 @@ try {
         for (const error of errors) {
           const { code: errorCode } = (error as any).extensions || {};
           if (!errorCode) continue;
-          (error as any).path?.map((path) => {
+          (error as any).path?.map((path: string) => {
             fastify.log.error(`${error.message} (${path} -> ${error.name})`);
           });
         }
@@ -90,6 +95,34 @@ try {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
     adminUI: {
       theme: adminUITheme,
+      plugins: [
+        definePlugin({
+          name: 'bookmark-manager',
+          version: '1.0.0',
+          bundlePath: resolve(__dirname, '../plugins/bookmark-manager/dist/index.global.js'),
+          slots: {
+            entities: [
+              {
+                path: '/bookmarks',
+                label: 'Bookmarks',
+                requiredRole: 'viewProducts',
+                icon: 'bookmark',
+                components: {
+                  list: 'BookmarkList',
+                  detail: 'BookmarkDetail',
+                  create: 'BookmarkCreate',
+                },
+              },
+            ],
+            'dashboard:widgets': [
+              {
+                component: 'BookmarkWidget',
+                width: 'half',
+              },
+            ],
+          },
+        }),
+      ],
     },
     chat: provider
       ? {
