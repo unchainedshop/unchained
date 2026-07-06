@@ -29,6 +29,10 @@
     },
     "./theme": "./src/sdk/theme.ts",
     "./plugins": "./src/sdk/plugins.ts",
+    "./plugin-runtime": {
+      "types": "./src/sdk/plugin-runtime.d.mts",
+      "import": "./src/sdk/plugin-runtime.mjs"
+    },
     "./plugin-build": {
       "import": "./src/sdk/plugin-build.mjs"
     },

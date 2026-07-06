@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
-import { readFileSync, statSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { join, resolve, sep } from 'node:path';
+import { SHARED_DEP_SHIMS, SDK_MODULE_FILES } from '@unchainedshop/admin-ui/plugin-runtime';
 
 const PLUGIN_NAME_RE = /^[a-z0-9]([a-z0-9_-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9_-]*[a-z0-9])?)*$/i;
 
@@ -83,6 +84,7 @@ interface StaticAsset {
 export interface PreparedPluginAssets {
   routes: Map<string, StaticAsset>;
   validPlugins: AdminUIPluginConfig[];
+  importMapTag: string | null;
 }
 
 export const resolveAdminUIPath = (): string | null => {
@@ -94,47 +96,23 @@ export const resolveAdminUIPath = (): string | null => {
   }
 };
 
-const contentHash = (content: string) => createHash('sha256').update(content).digest('hex').slice(0, 8);
+const contentHash = (content: string) =>
+  createHash('sha256').update(content).digest('hex').slice(0, 8);
 
 /**
- * Extract the entry export names from an IIFE plugin bundle built by
- * @unchainedshop/admin-ui/plugin-build. tsup/esbuild registers the entry's
- * exports as `__export(<var>, { Name: () => ..., ... })` and the IIFE returns
- * that same object via `return __toCommonJS(<var>);`. Returns null when the
- * bundle doesn't match this shape (custom build, minified) so validation is
- * skipped rather than producing false warnings.
+ * Enumerate the prebuilt ESM files of the admin-ui SDK (entries plus their
+ * code-split chunks). Only files discovered here are ever served, so request
+ * paths never touch the filesystem.
  */
-export const parseBundleExports = (bundle: string): Set<string> | null => {
-  const returnMatch = bundle.match(/return __toCommonJS\(([\w$]+)\);/);
-  if (!returnMatch) return null;
-  const blockMatch = bundle.match(
-    new RegExp(`__export\\(${returnMatch[1].replace(/\$/g, '\\$')},\\s*\\{([\\s\\S]*?)\\}\\);`),
-  );
-  if (!blockMatch) return null;
-  const names = new Set<string>();
-  for (const m of blockMatch[1].matchAll(/(?:^|,)\s*(?:"([^"]+)"|([\w$]+)):\s*\(\)\s*=>/g)) {
-    names.add(m[1] ?? m[2]);
+const listSDKDistFiles = (distPath: string): string[] => {
+  try {
+    if (!statSync(distPath).isDirectory()) return [];
+    return readdirSync(distPath, { recursive: true })
+      .map((file) => String(file).split(sep).join('/'))
+      .filter((file) => file.endsWith('.js'));
+  } catch {
+    return [];
   }
-  return names.size > 0 ? names : null;
-};
-
-/** All component names a plugin's slot configuration references. */
-const collectReferencedComponents = (plugin: AdminUIPluginConfig): string[] => {
-  const names = new Set<string>();
-  for (const [slotId, configs] of Object.entries(plugin.slots || {})) {
-    if (!Array.isArray(configs)) continue;
-    for (const config of configs) {
-      if (slotId === 'entities') {
-        const components = (config as AdminUIPluginEntityConfig).components;
-        if (components?.list) names.add(components.list);
-        if (components?.detail) names.add(components.detail);
-        if (components?.create) names.add(components.create);
-      } else if (typeof (config as { component?: unknown }).component === 'string') {
-        names.add((config as { component: string }).component);
-      }
-    }
-  }
-  return [...names];
 };
 
 export function preparePluginAssets(
@@ -185,19 +163,6 @@ export function preparePluginAssets(
   }
 
   const pluginsWithBundles = validPlugins.filter((p) => pluginBundles.has(p.name));
-
-  // Warn early when the config references components the bundle doesn't
-  // export — otherwise the first signal is a runtime "Component not found".
-  for (const plugin of pluginsWithBundles) {
-    const exportNames = parseBundleExports(pluginBundles.get(plugin.name)!.content);
-    if (!exportNames) continue;
-    const missing = collectReferencedComponents(plugin).filter((name) => !exportNames.has(name));
-    if (missing.length > 0) {
-      log.warn(
-        `admin-ui plugin "${plugin.name}" references component(s) not exported by its bundle: ${missing.join(', ')}. Exported: ${[...exportNames].join(', ')}`,
-      );
-    }
-  }
 
   // In dev mode, use mtime-based cache invalidation to avoid re-reading every
   // bundle file on every manifest request. Only re-hash when a file changes.
@@ -258,18 +223,83 @@ export function preparePluginAssets(
     if (devMode) {
       routes.set(`/admin-plugins/${plugin.name}.js`, {
         content: () => readFileSync(bundlePath, 'utf-8'),
-        contentType: 'application/javascript',
+        contentType: 'text/javascript',
         cacheControl: devCacheControl,
       });
     } else {
       const { content } = pluginBundles.get(plugin.name)!;
       routes.set(`/admin-plugins/${plugin.name}.js`, {
         content,
-        contentType: 'application/javascript',
+        contentType: 'text/javascript',
         cacheControl: IMMUTABLE_CACHE,
       });
     }
   }
 
-  return { routes, validPlugins };
+  let importMapTag: string | null = null;
+
+  if (pluginBundles.size > 0) {
+    const adminUIPath = resolveAdminUIPath();
+    const distPath = adminUIPath ? join(adminUIPath, '..', 'dist') : null;
+    const sdkFiles = distPath ? listSDKDistFiles(distPath) : [];
+
+    if (distPath && sdkFiles.length > 0) {
+      // Serve every prebuilt SDK file. Entry URLs get a content-hash query
+      // for cache busting; chunk filenames are content-hashed by the bundler
+      // itself, so immutable caching is safe throughout.
+      const sdkFileHashes = new Map<string, string>();
+      for (const file of sdkFiles) {
+        const filePath = join(distPath, file);
+        if (devMode) {
+          routes.set(`/admin-ui-sdk/${file}`, {
+            content: () => readFileSync(filePath, 'utf-8'),
+            contentType: 'text/javascript',
+            cacheControl: devCacheControl,
+          });
+        } else {
+          const content = readFileSync(filePath, 'utf-8');
+          sdkFileHashes.set(file, contentHash(content));
+          routes.set(`/admin-ui-sdk/${file}`, {
+            content,
+            contentType: 'text/javascript',
+            cacheControl: IMMUTABLE_CACHE,
+          });
+        }
+      }
+
+      const imports: Record<string, string> = {};
+      for (const [specifier, file] of [
+        ...Object.entries(SDK_MODULE_FILES),
+        ...Object.entries(SHARED_DEP_SHIMS),
+      ]) {
+        if (!sdkFiles.includes(file)) {
+          log.warn(
+            `admin-ui plugin runtime: expected SDK file "${file}" for "${specifier}" not found in ${distPath}`,
+          );
+          continue;
+        }
+        const version = sdkFileHashes.get(file);
+        imports[specifier] = `/admin-ui-sdk/${file}${version ? `?v=${version}` : ''}`;
+      }
+
+      const importMapJSON = JSON.stringify({ imports });
+      const importMapHash = contentHash(importMapJSON);
+      routes.set('/admin-ui-importmap.json', {
+        content: importMapJSON,
+        contentType: 'application/json',
+        cacheControl: devMode ? devCacheControl : 'public, max-age=0, must-revalidate',
+        etag: `"${importMapHash}"`,
+      });
+
+      // The marker attribute lets the client plugin loader detect that the
+      // import map is already present (see admin-ui PluginContext.tsx).
+      importMapTag = `<script type="importmap" data-unchained-admin-ui>${importMapJSON}</script>`;
+    } else {
+      log.warn(
+        'admin-ui plugin runtime: SDK dist files not found; plugins depending on shared modules will fail to load',
+      );
+    }
+  }
+
+  return { routes, validPlugins, importMapTag };
 }

@@ -34,6 +34,7 @@ export interface AdminUIRouterOptions {
   enabled?: boolean;
   theme?: AdminUIThemeConfig;
   plugins?: AdminUIPluginConfig[];
+  importMapTag?: string | null;
 }
 
 /**
@@ -245,7 +246,7 @@ export const connect = async (
     });
 
     const devMode = process.env.NODE_ENV !== 'production';
-    const { routes: pluginRoutes } = preparePluginAssets(adminUIPlugins, fastify.log, {
+    const { routes: pluginRoutes, importMapTag } = preparePluginAssets(adminUIPlugins, fastify.log, {
       devMode,
     });
 
@@ -272,6 +273,7 @@ export const connect = async (
       enabled: true,
       prefix: adminUIOptions?.prefix || '/',
       plugins: adminUIPlugins,
+      importMapTag,
     });
   }
 };
@@ -313,26 +315,57 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
         // entity/page routes live under /ext/*, pre-rendered to a dedicated
         // HTML file. Hard loads of /ext/* must get that file, other non-file
         // paths fall back to the root index.html.
-        const indexHtml = readFileSync(join(adminUIPath, 'index.html'), 'utf-8');
-        const extHtmlPath = join(adminUIPath, 'ext', '[[...slug]]', 'index.html');
-        const extHtml = existsSync(extHtmlPath) ? readFileSync(extHtmlPath, 'utf-8') : null;
+        if (opts.importMapTag) {
+          const injectImportMap = (html: string) =>
+            html.replace('</head>', `${opts.importMapTag}</head>`);
 
-        await fastify.register(fastifyStatic, {
-          root: adminUIPath,
-          prefix: opts.prefix || '/',
-          wildcard: false,
-        });
+          const indexHtml = readFileSync(join(adminUIPath, 'index.html'), 'utf-8');
+          const injectedHtml = injectImportMap(indexHtml);
 
-        fastify.setNotFoundHandler(async (request, reply) => {
-          if (request.method === 'GET' && !request.url.includes('.')) {
-            const urlPath = request.url.split('?')[0].replace(/\/+$/, '');
-            if (extHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/'))) {
-              return reply.type('text/html').send(extHtml);
+          const extHtmlPath = join(adminUIPath, 'ext', '[[...slug]]', 'index.html');
+          const extHtml = existsSync(extHtmlPath)
+            ? injectImportMap(readFileSync(extHtmlPath, 'utf-8'))
+            : null;
+
+          await fastify.register(fastifyStatic, {
+            root: adminUIPath,
+            prefix: opts.prefix || '/',
+            wildcard: false,
+            index: false,
+          });
+
+          fastify.setNotFoundHandler(async (request, reply) => {
+            if (request.method === 'GET' && !request.url.includes('.')) {
+              const urlPath = request.url.split('?')[0].replace(/\/+$/, '');
+              if (extHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/'))) {
+                return reply.type('text/html').send(extHtml);
+              }
+              return reply.type('text/html').send(injectedHtml);
             }
-            return reply.type('text/html').send(indexHtml);
-          }
-          return reply.code(404).send({ error: 'Not Found' });
-        });
+            return reply.code(404).send({ error: 'Not Found' });
+          });
+        } else {
+          const indexHtml = readFileSync(join(adminUIPath, 'index.html'), 'utf-8');
+          const extHtmlPath = join(adminUIPath, 'ext', '[[...slug]]', 'index.html');
+          const extHtml = existsSync(extHtmlPath) ? readFileSync(extHtmlPath, 'utf-8') : null;
+
+          await fastify.register(fastifyStatic, {
+            root: adminUIPath,
+            prefix: opts.prefix || '/',
+            wildcard: false,
+          });
+
+          fastify.setNotFoundHandler(async (request, reply) => {
+            if (request.method === 'GET' && !request.url.includes('.')) {
+              const urlPath = request.url.split('?')[0].replace(/\/+$/, '');
+              if (extHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/'))) {
+                return reply.type('text/html').send(extHtml);
+              }
+              return reply.type('text/html').send(indexHtml);
+            }
+            return reply.code(404).send({ error: 'Not Found' });
+          });
+        }
         return;
       }
     }
