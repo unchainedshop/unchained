@@ -10,8 +10,18 @@ async function generateShimSource(specifier: string): Promise<string> {
   let hasDefault = false;
   let named: string[] = [];
 
+  let mod: Record<string, any> | null = null;
   try {
-    const mod = await import(specifier);
+    mod = await import(specifier);
+  } catch {
+    // Some packages (e.g. next/router) need a .js extension in plain Node ESM
+    try {
+      mod = await import(specifier + '.js');
+    } catch {
+      // Fall through — default-only shim
+    }
+  }
+  if (mod) {
     const allKeys = Object.keys(mod);
     hasDefault = allKeys.includes('default');
     named = allKeys.filter(
@@ -21,7 +31,7 @@ async function generateShimSource(specifier: string): Promise<string> {
         !k.startsWith('__') &&
         VALID_IDENT.test(k),
     );
-  } catch {
+  } else {
     hasDefault = true;
   }
 
