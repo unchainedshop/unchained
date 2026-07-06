@@ -1,4 +1,77 @@
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'tsup';
+import { SHARED_DEP_SHIMS } from './src/sdk/plugin-runtime.mjs';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const VALID_IDENT = /^[a-zA-Z$_][a-zA-Z0-9$_]*$/;
+
+async function generateShimSource(specifier: string): Promise<string> {
+  let hasDefault = false;
+  let named: string[] = [];
+
+  try {
+    const mod = await import(specifier);
+    const allKeys = Object.keys(mod);
+    hasDefault = allKeys.includes('default');
+    named = allKeys.filter(
+      (k) =>
+        k !== 'default' &&
+        k !== '__esModule' &&
+        !k.startsWith('__') &&
+        VALID_IDENT.test(k),
+    );
+  } catch {
+    hasDefault = true;
+  }
+
+  const lines = [
+    `import { hostDep } from './host';`,
+    `const dep = hostDep(${JSON.stringify(specifier)});`,
+  ];
+
+  if (hasDefault) {
+    lines.push(`export default dep.default ?? dep;`);
+  }
+
+  for (const name of named) {
+    lines.push(`export const ${name} = dep.${name};`);
+  }
+
+  return lines.join('\n');
+}
+
+const shimDir = resolve(__dirname, 'src/sdk/shims');
+
+const specifierByPath = new Map(
+  Object.entries(SHARED_DEP_SHIMS).map(([specifier, distFile]) => {
+    const tsFile = distFile.replace('shims/', '').replace('.js', '.ts');
+    return [resolve(shimDir, tsFile), specifier];
+  }),
+);
+
+const shimEntries = Object.fromEntries(
+  Object.entries(SHARED_DEP_SHIMS).map(([, distFile]) => {
+    const key = distFile.replace('.js', '');
+    const tsFile = distFile.replace('shims/', '').replace('.js', '.ts');
+    return [key, `src/sdk/shims/${tsFile}`];
+  }),
+);
+
+const shimPlugin = {
+  name: 'unchained-shim-generator',
+  setup(build: any) {
+    build.onLoad(
+      { filter: /src\/sdk\/shims\/.*\.ts$/ },
+      async (args: any) => {
+        const specifier = specifierByPath.get(args.path);
+        if (!specifier) return undefined; // host.ts and unknown files pass through
+        const contents = await generateShimSource(specifier);
+        return { contents, loader: 'ts', resolveDir: shimDir };
+      },
+    );
+  },
+};
 
 export default defineConfig({
   entry: {
@@ -9,20 +82,7 @@ export default defineConfig({
     modal: 'src/sdk/modal.ts',
     theme: 'src/sdk/theme.ts',
     plugins: 'src/sdk/plugins.ts',
-    'shims/react': 'src/sdk/shims/react.ts',
-    'shims/react-jsx-runtime': 'src/sdk/shims/react-jsx-runtime.ts',
-    'shims/react-dom': 'src/sdk/shims/react-dom.ts',
-    'shims/react-dom-client': 'src/sdk/shims/react-dom-client.ts',
-    'shims/apollo-client': 'src/sdk/shims/apollo-client.ts',
-    'shims/apollo-client-react': 'src/sdk/shims/apollo-client-react.ts',
-    'shims/next-router': 'src/sdk/shims/next-router.ts',
-    'shims/next-link': 'src/sdk/shims/next-link.ts',
-    'shims/next-image': 'src/sdk/shims/next-image.ts',
-    'shims/next-head': 'src/sdk/shims/next-head.ts',
-    'shims/react-intl': 'src/sdk/shims/react-intl.ts',
-    'shims/react-toastify': 'src/sdk/shims/react-toastify.ts',
-    'shims/formik': 'src/sdk/shims/formik.ts',
-    'shims/admin-ui-plugins': 'src/sdk/shims/admin-ui-plugins.ts',
+    ...shimEntries,
     'modules/accounts': 'src/modules/accounts/index.ts',
     'modules/assortment': 'src/modules/assortment/index.ts',
     'modules/country': 'src/modules/country/index.ts',
@@ -64,6 +124,7 @@ export default defineConfig({
     'react-toastify',
     'graphql',
   ],
+  esbuildPlugins: [shimPlugin],
   esbuildOptions(options) {
     options.alias = {
       '@/*': './src/*',
