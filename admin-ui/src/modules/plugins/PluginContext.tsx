@@ -6,22 +6,25 @@ import React, {
   type ReactNode,
 } from 'react';
 import * as jsxRuntime from 'react/jsx-runtime';
-import { gql } from '@apollo/client';
-import {
-  useQuery,
-  useMutation,
-  useLazyQuery,
-  useApolloClient,
-} from '@apollo/client/react';
-import { useRouter } from 'next/router';
-import { useIntl, FormattedMessage, defineMessages } from 'react-intl';
-import { toast } from 'react-toastify';
+import * as ReactDOM from 'react-dom';
+import * as ReactDOMClient from 'react-dom/client';
+import * as ApolloClient from '@apollo/client';
+import * as ApolloClientReact from '@apollo/client/react';
+import * as NextRouter from 'next/router';
+import NextLink from 'next/link';
+import NextImage from 'next/image';
+import NextHead from 'next/head';
+import * as ReactIntl from 'react-intl';
+import * as ReactToastify from 'react-toastify';
+import * as Formik from 'formik';
+import { definePlugin } from '../../sdk/plugins';
 import { usePluginRuntime } from './PluginRuntimeContext';
 
 declare global {
   interface Window {
     __UNCHAINED_PLUGIN_DEPS__: Record<string, any>;
-    __UNCHAINED_PLUGINS__: Record<string, Record<string, any>>;
+    /** Legacy registry used by pre-ESM (IIFE) plugin bundles. */
+    __UNCHAINED_PLUGINS__?: Record<string, Record<string, any>>;
   }
 }
 
@@ -73,42 +76,91 @@ const getPluginBaseUrl = () => {
   }
 };
 
+/**
+ * Expose the host app's module instances to plugin bundles. Plugin bundles are
+ * standard ESM with shared dependencies left external; the browser import map
+ * resolves those bare specifiers to shim modules that re-export the instances
+ * registered here, so plugins run on the exact same React/Apollo as the host.
+ */
 const setupPluginRuntime = () => {
   if (typeof window === 'undefined') return;
   if (window.__UNCHAINED_PLUGIN_DEPS__) return;
 
-  window.__UNCHAINED_PLUGINS__ = {};
   window.__UNCHAINED_PLUGIN_DEPS__ = {
     react: React,
     'react/jsx-runtime': jsxRuntime,
-    '@apollo/client': {
-      gql,
-      useQuery,
-      useMutation,
-      useLazyQuery,
-      useApolloClient,
-    },
-    '@apollo/client/react': {
-      useQuery,
-      useMutation,
-      useLazyQuery,
-      useApolloClient,
-    },
-    'next/router': { useRouter },
-    'react-intl': { useIntl, FormattedMessage, defineMessages },
-    'react-toastify': { toast },
-    '@unchainedshop/admin-ui/plugins': { usePluginRuntime },
+    'react-dom': ReactDOM,
+    'react-dom/client': ReactDOMClient,
+    '@apollo/client': ApolloClient,
+    '@apollo/client/react': ApolloClientReact,
+    'next/router': NextRouter,
+    'next/link': { default: NextLink },
+    'next/image': { default: NextImage },
+    'next/head': { default: NextHead },
+    'react-intl': ReactIntl,
+    'react-toastify': ReactToastify,
+    formik: Formik,
+    '@unchainedshop/admin-ui/plugins': { definePlugin, usePluginRuntime },
   };
 };
 
-const loadPluginScript = (url: string): Promise<HTMLScriptElement> => {
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = url;
-    script.onload = () => resolve(script);
-    script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
-    document.head.appendChild(script);
+/**
+ * Make sure an import map covering the shared plugin dependencies is present
+ * before the first plugin module is imported.
+ *
+ * When the engine serves the admin-ui itself, it injects the import map into
+ * the HTML head and this is a no-op. When the admin-ui runs on another origin
+ * (e.g. `next dev`), the map is fetched from the engine and injected with
+ * absolute URLs. Import maps only apply to modules not yet resolved, which is
+ * guaranteed here because plugins are the only native ESM on the page.
+ */
+const ensureImportMap = async (baseUrl: string): Promise<void> => {
+  if (
+    document.querySelector('script[type="importmap"][data-unchained-admin-ui]')
+  )
+    return;
+
+  const res = await fetch(`${baseUrl}/admin-ui-importmap.json`, {
+    cache: 'no-cache',
   });
+  if (!res.ok) {
+    throw new Error(`Failed to fetch import map: HTTP ${res.status}`);
+  }
+  const map = await res.json();
+  const base = baseUrl || window.location.origin;
+  const imports: Record<string, string> = {};
+  for (const [specifier, target] of Object.entries(map?.imports || {})) {
+    if (typeof target !== 'string') continue;
+    imports[specifier] = new URL(target, base).href;
+  }
+  if (Object.keys(imports).length === 0) return;
+
+  const script = document.createElement('script');
+  script.type = 'importmap';
+  script.setAttribute('data-unchained-admin-ui', '');
+  script.textContent = JSON.stringify({ imports });
+  document.head.appendChild(script);
+};
+
+const loadPluginModule = async (
+  manifest: PluginManifest,
+  baseUrl: string,
+): Promise<PluginModule | null> => {
+  const url = new URL(
+    manifest.bundleUrl,
+    baseUrl || window.location.origin,
+  ).href;
+  const mod = await import(/* webpackIgnore: true */ url);
+  if (mod && Object.keys(mod).length > 0) return mod;
+  // Legacy IIFE bundles execute fine as modules but export nothing; they
+  // register themselves on the global registry instead.
+  const legacy = window.__UNCHAINED_PLUGINS__?.[manifest.name];
+  if (legacy) return legacy;
+  console.error(
+    `Plugin "${manifest.name}" loaded but exports no components. ` +
+      'Rebuild it with the current @unchainedshop/admin-ui/plugin-build.',
+  );
+  return null;
 };
 
 export const PluginProvider = ({ children }: { children: ReactNode }) => {
@@ -118,7 +170,6 @@ export const PluginProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     setupPluginRuntime();
-    const scriptElements: HTMLScriptElement[] = [];
     let cancelled = false;
 
     (async () => {
@@ -132,25 +183,21 @@ export const PluginProvider = ({ children }: { children: ReactNode }) => {
           return;
         }
         const data: PluginManifest[] = await res.json();
-        if (cancelled) return;
+        if (cancelled || !Array.isArray(data) || data.length === 0) {
+          setLoading(false);
+          return;
+        }
         setManifests(data);
+
+        await ensureImportMap(baseUrl);
+        if (cancelled) return;
 
         const loaded = new Map<string, PluginModule>();
         await Promise.all(
           data.map(async (manifest) => {
             try {
-              const script = await loadPluginScript(
-                `${baseUrl}${manifest.bundleUrl}`,
-              );
-              scriptElements.push(script);
-              const mod = window.__UNCHAINED_PLUGINS__?.[manifest.name];
-              if (mod) {
-                loaded.set(manifest.name, mod);
-              } else {
-                console.error(
-                  `Plugin "${manifest.name}" loaded but did not register on window.__UNCHAINED_PLUGINS__`,
-                );
-              }
+              const mod = await loadPluginModule(manifest, baseUrl);
+              if (mod) loaded.set(manifest.name, mod);
             } catch (err) {
               console.error(`Failed to load plugin "${manifest.name}":`, err);
             }
@@ -166,8 +213,6 @@ export const PluginProvider = ({ children }: { children: ReactNode }) => {
 
     return () => {
       cancelled = true;
-      scriptElements.forEach((script) => script.remove());
-      window.__UNCHAINED_PLUGINS__ = {};
     };
   }, []);
 
