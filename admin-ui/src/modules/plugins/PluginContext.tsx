@@ -104,16 +104,6 @@ const setupPluginRuntime = () => {
   };
 };
 
-/**
- * Make sure an import map covering the shared plugin dependencies is present
- * before the first plugin module is imported.
- *
- * When the engine serves the admin-ui itself, it injects the import map into
- * the HTML head and this is a no-op. When the admin-ui runs on another origin
- * (e.g. `next dev`), the map is fetched from the engine and injected with
- * absolute URLs. Import maps only apply to modules not yet resolved, which is
- * guaranteed here because plugins are the only native ESM on the page.
- */
 const ensureImportMap = async (baseUrl: string): Promise<void> => {
   if (
     document.querySelector('script[type="importmap"][data-unchained-admin-ui]')
@@ -152,8 +142,6 @@ const loadPluginModule = async (
   ).href;
   const mod = await import(/* webpackIgnore: true */ url);
   if (mod && Object.keys(mod).length > 0) return mod;
-  // Legacy IIFE bundles execute fine as modules but export nothing; they
-  // register themselves on the global registry instead.
   const legacy = window.__UNCHAINED_PLUGINS__?.[manifest.name];
   if (legacy) return legacy;
   console.error(
