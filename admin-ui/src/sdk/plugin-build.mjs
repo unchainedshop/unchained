@@ -96,6 +96,7 @@ export function definePluginConfig(pluginName, entry = 'src/index.tsx') {
     entry: { index: entry },
     format: ['iife'],
     outDir: 'dist',
+    outExtension: () => ({ js: '.global.js' }),
     dts: false,
     splitting: false,
     clean: true,
