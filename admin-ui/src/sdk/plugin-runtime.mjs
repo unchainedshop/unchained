@@ -35,32 +35,42 @@ export const SHARED_DEP_SHIMS = {
   '@unchainedshop/admin-ui/plugins': 'shims/admin-ui-plugins.js',
 };
 
+/**
+ * SDK entry keys built by tsup.config.ts (excluding shim entries). Each key
+ * maps to `@unchainedshop/admin-ui/{key}` as the import specifier and
+ * `{key}.js` as the dist file. Add new SDK entries here — tsup.config.ts
+ * validates that its entry map stays in sync at build time.
+ */
+export const SDK_ENTRY_KEYS = [
+  'ui',
+  'form',
+  'hooks',
+  'providers',
+  'modal',
+  'theme',
+  'modules/accounts',
+  'modules/assortment',
+  'modules/country',
+  'modules/currency',
+  'modules/delivery-provider',
+  'modules/enrollment',
+  'modules/event',
+  'modules/filter',
+  'modules/language',
+  'modules/order',
+  'modules/payment-providers',
+  'modules/product',
+  'modules/product-review',
+  'modules/quotation',
+  'modules/token',
+  'modules/warehousing-providers',
+  'modules/work',
+];
+
 /** SDK subpath exports resolvable from plugin bundles, mapped to their dist file. */
-export const SDK_MODULE_FILES = {
-  '@unchainedshop/admin-ui/ui': 'ui.js',
-  '@unchainedshop/admin-ui/form': 'form.js',
-  '@unchainedshop/admin-ui/hooks': 'hooks.js',
-  '@unchainedshop/admin-ui/providers': 'providers.js',
-  '@unchainedshop/admin-ui/modal': 'modal.js',
-  '@unchainedshop/admin-ui/theme': 'theme.js',
-  '@unchainedshop/admin-ui/modules/accounts': 'modules/accounts.js',
-  '@unchainedshop/admin-ui/modules/assortment': 'modules/assortment.js',
-  '@unchainedshop/admin-ui/modules/country': 'modules/country.js',
-  '@unchainedshop/admin-ui/modules/currency': 'modules/currency.js',
-  '@unchainedshop/admin-ui/modules/delivery-provider': 'modules/delivery-provider.js',
-  '@unchainedshop/admin-ui/modules/enrollment': 'modules/enrollment.js',
-  '@unchainedshop/admin-ui/modules/event': 'modules/event.js',
-  '@unchainedshop/admin-ui/modules/filter': 'modules/filter.js',
-  '@unchainedshop/admin-ui/modules/language': 'modules/language.js',
-  '@unchainedshop/admin-ui/modules/order': 'modules/order.js',
-  '@unchainedshop/admin-ui/modules/payment-providers': 'modules/payment-providers.js',
-  '@unchainedshop/admin-ui/modules/product': 'modules/product.js',
-  '@unchainedshop/admin-ui/modules/product-review': 'modules/product-review.js',
-  '@unchainedshop/admin-ui/modules/quotation': 'modules/quotation.js',
-  '@unchainedshop/admin-ui/modules/token': 'modules/token.js',
-  '@unchainedshop/admin-ui/modules/warehousing-providers': 'modules/warehousing-providers.js',
-  '@unchainedshop/admin-ui/modules/work': 'modules/work.js',
-};
+export const SDK_MODULE_FILES = Object.fromEntries(
+  SDK_ENTRY_KEYS.map((key) => [`@unchainedshop/admin-ui/${key}`, `${key}.js`]),
+);
 
 /** All bare specifiers a plugin bundle may leave external. */
 export const PLUGIN_EXTERNALS = [

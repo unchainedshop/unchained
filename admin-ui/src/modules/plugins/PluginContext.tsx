@@ -132,10 +132,8 @@ const loadPluginModule = async (
   manifest: PluginManifest,
   baseUrl: string,
 ): Promise<PluginModule | null> => {
-  const url = new URL(
-    manifest.bundleUrl,
-    baseUrl || window.location.origin,
-  ).href;
+  const url = new URL(manifest.bundleUrl, baseUrl || window.location.origin)
+    .href;
   const mod = await import(/* webpackIgnore: true */ url);
   if (mod && Object.keys(mod).length > 0) return mod;
   console.error(
@@ -171,7 +169,10 @@ export const PluginProvider = ({ children }: { children: ReactNode }) => {
         }
         setManifests(data);
 
-        checkImportMap();
+        if (!checkImportMap()) {
+          setLoading(false);
+          return;
+        }
         if (cancelled) return;
 
         const loaded = new Map<string, PluginModule>();
