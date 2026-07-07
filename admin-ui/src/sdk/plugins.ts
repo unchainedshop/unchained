@@ -22,6 +22,7 @@ export interface PluginEntityConfig {
   label: string;
   icon?: string;
   requiredRole?: string;
+  sortOrder?: number;
   components: {
     list: string;
     detail: string;
@@ -34,6 +35,7 @@ export interface PluginPageConfig {
   label: string;
   icon?: string;
   requiredRole?: string;
+  sortOrder?: number;
   component: string;
 }
 
@@ -69,6 +71,7 @@ export interface PluginNavigationGroup {
   label: string;
   icon?: string;
   requiredRole?: string;
+  sortOrder?: number;
 }
 
 export interface PluginConfig {

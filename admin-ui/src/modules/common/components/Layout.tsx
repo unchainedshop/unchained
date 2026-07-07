@@ -120,6 +120,7 @@ const Layout = ({
         icon: resolveIcon(entity.icon),
         href: `/ext/${entity.path.replace(/^\//, '')}`,
         requiredRole: entity.requiredRole,
+        _sortOrder: entity.sortOrder as number | undefined,
       });
     });
     manifest.slots.pages?.forEach((page) => {
@@ -128,6 +129,7 @@ const Layout = ({
         icon: resolveIcon(page.icon),
         href: `/ext/${page.path.replace(/^\//, '')}`,
         requiredRole: page.requiredRole,
+        _sortOrder: page.sortOrder as number | undefined,
       });
     });
 
@@ -140,6 +142,7 @@ const Layout = ({
           name: nav.label,
           icon: resolveIcon(nav.icon),
           requiredRole: nav.requiredRole,
+          _sortOrder: nav.sortOrder,
           children,
         },
       ];
@@ -150,6 +153,7 @@ const Layout = ({
 
   const defaultNavigation = [
     {
+      _sortOrder: 0,
       name: showSetupLabel
         ? formatMessage({
             id: 'complete_system_setup',
@@ -160,12 +164,14 @@ const Layout = ({
       href: '/',
     },
     isSystemReady && {
+      _sortOrder: 10,
       name: formatMessage({ id: 'copilot', defaultMessage: 'Copilot' }),
       requiredRole: (user) => user?.roles?.includes('admin'),
       icon: CommandLineIcon,
       href: '/copilot',
     },
     {
+      _sortOrder: 20,
       name: formatMessage({
         id: 'recent_exports',
         defaultMessage: 'Recent exports',
@@ -176,6 +182,7 @@ const Layout = ({
       count: recentExports?.count || '',
     },
     isSystemReady && {
+      _sortOrder: 30,
       name: formatMessage({
         id: 'orders',
         defaultMessage: 'Orders',
@@ -185,6 +192,7 @@ const Layout = ({
       href: '/orders',
     },
     isSystemReady && {
+      _sortOrder: 40,
       name: formatMessage({
         id: 'products',
         defaultMessage: 'Products',
@@ -194,34 +202,38 @@ const Layout = ({
       href: '/products',
     },
     isSystemReady && {
+      _sortOrder: 50,
       name: formatMessage({ id: 'assortments', defaultMessage: 'Assortments' }),
       icon: RectangleStackIcon,
       href: '/assortments',
       requiredRole: 'viewAssortments',
     },
     isSystemReady && {
+      _sortOrder: 60,
       name: formatMessage({ id: 'filters', defaultMessage: 'Filters' }),
       icon: AdjustmentsHorizontalIcon,
       requiredRole: 'viewFilters',
       href: '/filters',
     },
     isSystemReady && {
+      _sortOrder: 70,
       name: formatMessage({ id: 'users', defaultMessage: 'Users' }),
       icon: UsersIcon,
       href: '/users',
       requiredRole: 'viewUsers',
     },
     isSystemReady && {
+      _sortOrder: 80,
       name: formatMessage({
         id: 'enrollments',
         defaultMessage: 'Enrollments',
       }),
-
       href: '/enrollments',
       requiredRole: 'viewEnrollments',
       icon: CalendarIcon,
     },
     isSystemReady && {
+      _sortOrder: 90,
       name: formatMessage({
         id: 'quotations',
         defaultMessage: 'Quotations',
@@ -231,12 +243,14 @@ const Layout = ({
       requiredRole: 'viewQuotations',
     },
     isSystemReady && {
+      _sortOrder: 100,
       name: formatMessage({ id: 'tokens', defaultMessage: 'Tokens' }),
       icon: QrCodeIcon,
       href: '/tokens',
       requiredRole: 'viewTokens',
     },
     {
+      _sortOrder: 110,
       name: formatMessage({ id: 'system', defaultMessage: 'System settings' }),
       icon: Cog8ToothIcon,
       children: [
@@ -285,6 +299,7 @@ const Layout = ({
       ].filter(Boolean),
     },
     {
+      _sortOrder: 120,
       name: formatMessage({ id: 'activities', defaultMessage: 'Activities' }),
       icon: BoltIcon,
       children: [
@@ -304,6 +319,7 @@ const Layout = ({
       ],
     },
     shopInfo?.adminUiConfig?.externalLinks?.length && {
+      _sortOrder: 130,
       name: formatMessage({ id: 'extensions', defaultMessage: 'Extensions' }),
       icon: LinkIcon,
       href: '/',
@@ -319,7 +335,15 @@ const Layout = ({
       }),
     },
     ...pluginNavItems,
-  ].filter(Boolean);
+  ].filter(Boolean)
+    .sort((a, b) => {
+      const aOrder = a?._sortOrder;
+      const bOrder = b?._sortOrder;
+      if (aOrder != null && bOrder != null) return aOrder - bOrder;
+      if (aOrder != null) return -1;
+      if (bOrder != null) return 1;
+      return 0;
+    });
 
   return (
     <AuthWrapper>

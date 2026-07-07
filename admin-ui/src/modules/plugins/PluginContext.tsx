@@ -33,6 +33,7 @@ interface PluginManifest {
     label: string;
     icon?: string;
     requiredRole?: string;
+    sortOrder?: number;
   };
   slots: Record<string, any[]>;
 }

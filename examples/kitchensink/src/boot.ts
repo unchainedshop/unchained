@@ -105,6 +105,7 @@ try {
               {
                 path: '/bookmarks',
                 label: 'Bookmarks',
+                sortOrder: 75,
                 requiredRole: 'viewProducts',
                 icon: 'bookmark',
                 components: {

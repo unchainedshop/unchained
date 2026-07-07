@@ -98,9 +98,9 @@
     "src/modules/*/fragments"
   ],
   "scripts": {
-    "prepublishOnly": "npm run build && npm run build:sdk",
+    "prepublishOnly": "npm run build",
     "dev": "next dev",
-    "build": "NODE_ENV=production next build",
+    "build": "NODE_ENV=production next build && tsup && tsc -p tsconfig.sdk.json",
     "build:sdk": "tsup && tsc -p tsconfig.sdk.json",
     "start": "next start",
     "lint": "eslint .",
