@@ -16,7 +16,12 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
 import { generateThemeCSS, type AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
-import { preparePluginAssets, resolveAdminUIPath, type AdminUIPluginConfig } from '../adminUiPlugins.ts';
+import {
+  preparePluginAssets,
+  buildImportMapTag,
+  resolveAdminUIPath,
+  type AdminUIPluginConfig,
+} from '../adminUiPlugins.ts';
 
 export type {
   AdminUIPluginConfig,
@@ -35,6 +40,7 @@ export interface AdminUIRouterOptions {
   theme?: AdminUIThemeConfig;
   plugins?: AdminUIPluginConfig[];
   importMapTag?: string | null;
+  importMapJSON?: string | null;
 }
 
 /**
@@ -246,7 +252,11 @@ export const connect = async (
     });
 
     const devMode = process.env.NODE_ENV !== 'production';
-    const { routes: pluginRoutes, importMapTag } = preparePluginAssets(adminUIPlugins, fastify.log, {
+    const {
+      routes: pluginRoutes,
+      importMapTag,
+      importMapJSON,
+    } = preparePluginAssets(adminUIPlugins, fastify.log, {
       devMode,
     });
 
@@ -274,6 +284,7 @@ export const connect = async (
       prefix: adminUIOptions?.prefix || '/',
       plugins: adminUIPlugins,
       importMapTag,
+      importMapJSON,
     });
   }
 };
@@ -315,17 +326,14 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
         // entity/page routes live under /ext/*, pre-rendered to a dedicated
         // HTML file. Hard loads of /ext/* must get that file, other non-file
         // paths fall back to the root index.html.
-        if (opts.importMapTag) {
-          const injectImportMap = (html: string) =>
-            html.replace('</head>', `${opts.importMapTag}</head>`);
-
+        if (opts.importMapJSON) {
           const indexHtml = readFileSync(join(adminUIPath, 'index.html'), 'utf-8');
-          const injectedHtml = injectImportMap(indexHtml);
-
           const extHtmlPath = join(adminUIPath, 'ext', '[[...slug]]', 'index.html');
-          const extHtml = existsSync(extHtmlPath)
-            ? injectImportMap(readFileSync(extHtmlPath, 'utf-8'))
-            : null;
+          const extHtmlRaw = existsSync(extHtmlPath) ? readFileSync(extHtmlPath, 'utf-8') : null;
+
+          const defaultTag = opts.importMapTag!;
+          const injectedHtml = indexHtml.replace('</head>', `${defaultTag}</head>`);
+          const extHtml = extHtmlRaw ? extHtmlRaw.replace('</head>', `${defaultTag}</head>`) : null;
 
           await fastify.register(fastifyStatic, {
             root: adminUIPath,
@@ -338,6 +346,17 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
             if (request.method === 'GET' && !request.url.includes('.')) {
               if (process.env.NODE_ENV !== 'production') reply.header('Cache-Control', 'no-cache');
               const urlPath = request.url.split('?')[0].replace(/\/+$/, '');
+
+              const nonce = (reply as any).cspNonce?.script as string | undefined;
+              if (nonce) {
+                const tag = buildImportMapTag(opts.importMapJSON!, nonce);
+                const baseHtml =
+                  extHtmlRaw && (urlPath === '/ext' || urlPath.startsWith('/ext/'))
+                    ? extHtmlRaw
+                    : indexHtml;
+                return reply.type('text/html').send(baseHtml.replace('</head>', `${tag}</head>`));
+              }
+
               if (extHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/'))) {
                 return reply.type('text/html').send(extHtml);
               }

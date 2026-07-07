@@ -16,7 +16,12 @@ import { connectChat } from './chatHandler.ts';
 import { mountRoutes } from './mountRoutes.ts';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
 import { generateThemeCSS, type AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
-import { preparePluginAssets, resolveAdminUIPath, type AdminUIPluginConfig } from '../adminUiPlugins.ts';
+import {
+  preparePluginAssets,
+  buildImportMapTag,
+  resolveAdminUIPath,
+  type AdminUIPluginConfig,
+} from '../adminUiPlugins.ts';
 
 export type {
   AdminUIPluginConfig,
@@ -63,7 +68,11 @@ export const adminUIRouter = (
 
     const log = { info: console.info, warn: console.warn };
     const devMode = process.env.NODE_ENV !== 'production';
-    const { routes: pluginRoutes, importMapTag } = preparePluginAssets(plugins, log, { devMode });
+    const {
+      routes: pluginRoutes,
+      importMapTag,
+      importMapJSON,
+    } = preparePluginAssets(plugins, log, { devMode });
 
     for (const [path, asset] of pluginRoutes) {
       router.get(path, (req, res) => {
@@ -91,20 +100,28 @@ export const adminUIRouter = (
     // entity/page routes live under /ext/*, pre-rendered to a dedicated HTML
     // file. Hard loads of /ext/* must get that file, everything else gets the
     // root index.html.
-    if (importMapTag) {
-      const injectImportMap = (html: string) => html.replace('</head>', `${importMapTag}</head>`);
-
+    if (importMapJSON) {
       const indexHtml = readFileSync(join(adminUIPath, 'index.html'), 'utf-8');
-      const injectedHtml = injectImportMap(indexHtml);
-
       const extHtmlPath = join(adminUIPath, 'ext', '[[...slug]]', 'index.html');
-      const extHtml = existsSync(extHtmlPath)
-        ? injectImportMap(readFileSync(extHtmlPath, 'utf-8'))
-        : null;
+      const extHtmlRaw = existsSync(extHtmlPath) ? readFileSync(extHtmlPath, 'utf-8') : null;
+
+      // Pre-build non-nonce versions for when no CSP nonce is present
+      const defaultTag = importMapTag!;
+      const injectedHtml = indexHtml.replace('</head>', `${defaultTag}</head>`);
+      const extHtml = extHtmlRaw ? extHtmlRaw.replace('</head>', `${defaultTag}</head>`) : null;
 
       router.get(/(.*)/, (req, res) => {
         if (devMode) res.set('Cache-Control', 'no-cache');
         const urlPath = req.path.replace(/\/+$/, '');
+
+        const nonce = (res as any).locals?.cspNonce as string | undefined;
+        if (nonce) {
+          const tag = buildImportMapTag(importMapJSON, nonce);
+          const baseHtml =
+            extHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/')) ? extHtmlRaw! : indexHtml;
+          return res.type('text/html').send(baseHtml.replace('</head>', `${tag}</head>`));
+        }
+
         if (extHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/'))) {
           return res.type('text/html').send(extHtml);
         }

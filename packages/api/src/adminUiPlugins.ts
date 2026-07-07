@@ -85,6 +85,7 @@ export interface PreparedPluginAssets {
   routes: Map<string, StaticAsset>;
   validPlugins: AdminUIPluginConfig[];
   importMapTag: string | null;
+  importMapJSON: string | null;
 }
 
 export const resolveAdminUIPath = (): string | null => {
@@ -236,6 +237,7 @@ export function preparePluginAssets(
   }
 
   let importMapTag: string | null = null;
+  let importMapContent: string | null = null;
 
   if (pluginBundles.size > 0) {
     const adminUIPath = resolveAdminUIPath();
@@ -290,8 +292,7 @@ export function preparePluginAssets(
         etag: `"${importMapHash}"`,
       });
 
-      // The marker attribute lets the client plugin loader detect that the
-      // import map is already present (see admin-ui PluginContext.tsx).
+      importMapContent = importMapJSON;
       importMapTag = `<script type="importmap" data-unchained-admin-ui>${importMapJSON}</script>`;
     } else {
       log.warn(
@@ -300,5 +301,10 @@ export function preparePluginAssets(
     }
   }
 
-  return { routes, validPlugins, importMapTag };
+  return { routes, validPlugins, importMapTag, importMapJSON: importMapContent };
+}
+
+export function buildImportMapTag(importMapJSON: string, nonce?: string): string {
+  const nonceAttr = nonce ? ` nonce="${nonce}"` : '';
+  return `<script type="importmap" data-unchained-admin-ui${nonceAttr}>${importMapJSON}</script>`;
 }
