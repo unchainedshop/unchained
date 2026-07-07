@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'tsup';
@@ -18,7 +19,7 @@ async function generateShimSource(specifier: string): Promise<string> {
     try {
       mod = await import(specifier + '.js');
     } catch {
-      // Fall through — default-only shim
+      // Fall through — try resolving the source file
     }
   }
   if (mod) {
@@ -32,7 +33,20 @@ async function generateShimSource(specifier: string): Promise<string> {
         VALID_IDENT.test(k),
     );
   } else {
-    hasDefault = true;
+    // Last resort: resolve the package entry and extract exports from source
+    try {
+      const resolved = import.meta.resolve(specifier);
+      const source = readFileSync(new URL(resolved).pathname, 'utf-8');
+      const exportRe = /\bexport\s+(?:function|const|let|var|class)\s+([a-zA-Z$_][a-zA-Z0-9$_]*)/g;
+      let m;
+      while ((m = exportRe.exec(source)) !== null) {
+        if (VALID_IDENT.test(m[1])) named.push(m[1]);
+      }
+      hasDefault = /\bexport\s+default\b/.test(source);
+      if (named.length === 0 && !hasDefault) hasDefault = true;
+    } catch {
+      hasDefault = true;
+    }
   }
 
   const lines = [
@@ -132,7 +146,6 @@ export default defineConfig({
     '@apollo/client/react',
     'react-intl',
     'react-toastify',
-    'graphql',
   ],
   esbuildPlugins: [shimPlugin],
   esbuildOptions(options) {
