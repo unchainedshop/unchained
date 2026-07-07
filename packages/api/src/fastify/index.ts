@@ -336,6 +336,7 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
 
           fastify.setNotFoundHandler(async (request, reply) => {
             if (request.method === 'GET' && !request.url.includes('.')) {
+              if (process.env.NODE_ENV !== 'production') reply.header('Cache-Control', 'no-cache');
               const urlPath = request.url.split('?')[0].replace(/\/+$/, '');
               if (extHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/'))) {
                 return reply.type('text/html').send(extHtml);

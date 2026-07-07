@@ -96,8 +96,7 @@ export const resolveAdminUIPath = (): string | null => {
   }
 };
 
-const contentHash = (content: string) =>
-  createHash('sha256').update(content).digest('hex').slice(0, 8);
+const contentHash = (content: string) => createHash('sha256').update(content).digest('hex').slice(0, 8);
 
 /**
  * Enumerate the prebuilt ESM files of the admin-ui SDK (entries plus their

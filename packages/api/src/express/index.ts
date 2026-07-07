@@ -103,6 +103,7 @@ export const adminUIRouter = (
         : null;
 
       router.get(/(.*)/, (req, res) => {
+        if (devMode) res.set('Cache-Control', 'no-cache');
         const urlPath = req.path.replace(/\/+$/, '');
         if (extHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/'))) {
           return res.type('text/html').send(extHtml);

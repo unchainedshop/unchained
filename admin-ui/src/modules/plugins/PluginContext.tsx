@@ -18,13 +18,12 @@ import * as ReactIntl from 'react-intl';
 import * as ReactToastify from 'react-toastify';
 import * as Formik from 'formik';
 import { definePlugin } from '../../sdk/plugins';
+import { SHARED_DEP_SHIMS } from '../../sdk/plugin-runtime.mjs';
 import { usePluginRuntime } from './PluginRuntimeContext';
 
 declare global {
   interface Window {
     __UNCHAINED_PLUGIN_DEPS__: Record<string, any>;
-    /** Legacy registry used by pre-ESM (IIFE) plugin bundles. */
-    __UNCHAINED_PLUGINS__?: Record<string, Record<string, any>>;
   }
 }
 
@@ -102,34 +101,31 @@ const setupPluginRuntime = () => {
     formik: Formik,
     '@unchainedshop/admin-ui/plugins': { definePlugin, usePluginRuntime },
   };
+
+  if (process.env.NODE_ENV !== 'production') {
+    const missing = Object.keys(SHARED_DEP_SHIMS).filter(
+      (k) => !(k in window.__UNCHAINED_PLUGIN_DEPS__),
+    );
+    if (missing.length > 0) {
+      console.warn(
+        `admin-ui plugin runtime: SHARED_DEP_SHIMS has entries not registered in __UNCHAINED_PLUGIN_DEPS__: ${missing.join(', ')}`,
+      );
+    }
+  }
 };
 
-const ensureImportMap = async (baseUrl: string): Promise<void> => {
+const checkImportMap = (): boolean => {
   if (
     document.querySelector('script[type="importmap"][data-unchained-admin-ui]')
   )
-    return;
+    return true;
 
-  const res = await fetch(`${baseUrl}/admin-ui-importmap.json`, {
-    cache: 'no-cache',
-  });
-  if (!res.ok) {
-    throw new Error(`Failed to fetch import map: HTTP ${res.status}`);
-  }
-  const map = await res.json();
-  const base = baseUrl || window.location.origin;
-  const imports: Record<string, string> = {};
-  for (const [specifier, target] of Object.entries(map?.imports || {})) {
-    if (typeof target !== 'string') continue;
-    imports[specifier] = new URL(target, base).href;
-  }
-  if (Object.keys(imports).length === 0) return;
-
-  const script = document.createElement('script');
-  script.type = 'importmap';
-  script.setAttribute('data-unchained-admin-ui', '');
-  script.textContent = JSON.stringify({ imports });
-  document.head.appendChild(script);
+  console.warn(
+    'admin-ui plugin runtime: import map not found in HTML. ' +
+      'The server must inject the import map into <head> before any module scripts run. ' +
+      'Plugins that depend on shared host dependencies will fail to load.',
+  );
+  return false;
 };
 
 const loadPluginModule = async (
@@ -142,8 +138,6 @@ const loadPluginModule = async (
   ).href;
   const mod = await import(/* webpackIgnore: true */ url);
   if (mod && Object.keys(mod).length > 0) return mod;
-  const legacy = window.__UNCHAINED_PLUGINS__?.[manifest.name];
-  if (legacy) return legacy;
   console.error(
     `Plugin "${manifest.name}" loaded but exports no components. ` +
       'Rebuild it with the current @unchainedshop/admin-ui/plugin-build.',
@@ -177,7 +171,7 @@ export const PluginProvider = ({ children }: { children: ReactNode }) => {
         }
         setManifests(data);
 
-        await ensureImportMap(baseUrl);
+        checkImportMap();
         if (cancelled) return;
 
         const loaded = new Map<string, PluginModule>();
