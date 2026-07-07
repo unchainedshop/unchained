@@ -114,18 +114,48 @@ const setupPluginRuntime = () => {
   }
 };
 
-const checkImportMap = (): boolean => {
+const ensureImportMap = async (baseUrl: string): Promise<boolean> => {
   if (
     document.querySelector('script[type="importmap"][data-unchained-admin-ui]')
   )
     return true;
 
-  console.warn(
-    'admin-ui plugin runtime: import map not found in HTML. ' +
-      'The server must inject the import map into <head> before any module scripts run. ' +
-      'Plugins that depend on shared host dependencies will fail to load.',
-  );
-  return false;
+  // Import map not pre-injected (e.g. Next.js dev server on port 3000).
+  // Fetch it from the backend and inject it dynamically. Import maps must be
+  // added before any module scripts run, but since plugin ESM hasn't loaded
+  // yet at this point the timing is safe.
+  try {
+    const res = await fetch(`${baseUrl}/admin-ui-importmap.json`, {
+      cache: 'no-cache',
+    });
+    if (!res.ok) {
+      console.warn(
+        'admin-ui plugin runtime: could not fetch import map from server. ' +
+          'Plugins depending on shared host dependencies will fail to load.',
+      );
+      return false;
+    }
+    const importMap = await res.json();
+    // The import map uses relative URLs (e.g. /admin-ui-sdk/...). When
+    // injected on a different origin (Next.js dev on port 3000 vs backend
+    // on port 4010), rewrite them to absolute URLs pointing at the backend.
+    if (baseUrl && importMap.imports) {
+      for (const [key, value] of Object.entries(importMap.imports)) {
+        if (typeof value === 'string' && value.startsWith('/')) {
+          importMap.imports[key] = `${baseUrl}${value}`;
+        }
+      }
+    }
+    const script = document.createElement('script');
+    script.type = 'importmap';
+    script.setAttribute('data-unchained-admin-ui', '');
+    script.textContent = JSON.stringify(importMap);
+    document.head.appendChild(script);
+    return true;
+  } catch (err) {
+    console.warn('admin-ui plugin runtime: failed to inject import map:', err);
+    return false;
+  }
 };
 
 const loadPluginModule = async (
@@ -169,7 +199,7 @@ export const PluginProvider = ({ children }: { children: ReactNode }) => {
         }
         setManifests(data);
 
-        if (!checkImportMap()) {
+        if (!(await ensureImportMap(baseUrl))) {
           setLoading(false);
           return;
         }
