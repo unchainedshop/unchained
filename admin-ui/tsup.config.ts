@@ -24,7 +24,8 @@ export default defineConfig({
     'modules/product-review': 'src/modules/product-review/index.ts',
     'modules/quotation': 'src/modules/quotation/index.ts',
     'modules/token': 'src/modules/token/index.ts',
-    'modules/warehousing-providers': 'src/modules/warehousing-providers/index.ts',
+    'modules/warehousing-providers':
+      'src/modules/warehousing-providers/index.ts',
     'modules/work': 'src/modules/work/index.ts',
   },
   format: ['esm'],
@@ -41,7 +42,7 @@ export default defineConfig({
     'next/link',
     'next/image',
     'next/router',
-    'formik',
+    'react-hook-form',
     '@apollo/client',
     '@apollo/client/react',
     'react-intl',

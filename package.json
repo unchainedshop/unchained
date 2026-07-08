@@ -97,5 +97,8 @@
   },
   "trustedDependencies": [
     "@mongodb-js/zstd"
-  ]
+  ],
+  "dependencies": {
+    "react-hook-form": "^7.81.0"
+  }
 }

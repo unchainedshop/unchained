@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useFormikContext } from 'formik';
+import { useFormContext as useRHFContext } from 'react-hook-form';
 
 import useFormContext from '../../../modules/forms/hooks/useFormContext';
 
@@ -10,31 +10,21 @@ const SubmitButton = ({
   hidden = false,
   ...props
 }) => {
-  const formik = useFormikContext();
+  const { formState } = useRHFContext();
   const { ...restProps } = props;
 
-  const fieldsMetaProps = Object.fromEntries(
-    Object.keys(formik.initialValues).map((fieldName) => [
-      fieldName,
-      formik.getFieldMeta(fieldName),
-    ]),
-  );
+  const hasError =
+    Object.keys(formState.errors).length > 0 &&
+    Object.values(formState.errors).some((err: any) => !!err);
+
   const { disabled: contextDisabled } = useFormContext();
 
-  const hasError = Object.values(fieldsMetaProps).reduce(
-    (acc, { error, touched }) => {
-      if (acc) return acc;
-      return error && touched;
-    },
-    false,
-  );
-
   const disabled =
-    disabledProp || contextDisabled || formik.isSubmitting || hasError;
+    disabledProp || contextDisabled || formState.isSubmitting || hasError;
 
-  const isSubmitting = formik.isSubmitting && !hasError;
+  const isSubmitting = formState.isSubmitting && !hasError;
   const hasErrorOrDisabled =
-    (disabledProp || contextDisabled || hasError) && !formik.isSubmitting;
+    (disabledProp || contextDisabled || hasError) && !formState.isSubmitting;
   return (
     <input
       className={clsx(

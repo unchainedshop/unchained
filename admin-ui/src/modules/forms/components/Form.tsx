@@ -1,13 +1,13 @@
-import { FormikProvider } from 'formik';
+import { FormProvider } from 'react-hook-form';
 
 import FormContext from '../lib/FormContext';
 
 const Form = ({ form, children, className = '', ...props }) => {
   return (
     <FormContext.Provider value={form}>
-      <FormikProvider value={form.formik}>
+      <FormProvider {...form.rhf}>
         <form
-          onReset={form.formik.handleReset}
+          onReset={() => form.formik.handleReset()}
           onSubmit={form.formik.handleSubmit}
           method="POST"
           className={className}
@@ -15,7 +15,7 @@ const Form = ({ form, children, className = '', ...props }) => {
         >
           {children}
         </form>
-      </FormikProvider>
+      </FormProvider>
     </FormContext.Provider>
   );
 };

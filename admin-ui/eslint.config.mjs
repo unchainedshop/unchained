@@ -15,6 +15,7 @@ export default [
       'cypress/',
       'node_modules/',
       '.next/',
+      '.next-dev/',
       '.github/',
       'dist/',
       'client/dist/',

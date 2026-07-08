@@ -45,6 +45,9 @@ const SHARED_DEPS = {
   'react-toastify': {
     named: ['toast'],
   },
+  'react-hook-form': {
+    named: ['useForm', 'useFormContext', 'useController', 'useFieldArray', 'useWatch', 'FormProvider', 'Controller'],
+  },
   '@unchainedshop/admin-ui/plugins': {
     named: ['usePluginRuntime'],
   },

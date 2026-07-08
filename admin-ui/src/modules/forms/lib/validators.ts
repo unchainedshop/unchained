@@ -49,7 +49,10 @@ export const isContractAddress = (isRequired = false): Validator => ({
 });
 
 export const validateInteger = (): Validator => ({
-  isValid: (value) => !Number.isNaN(value) && Number.isInteger(value),
+  isValid: (value) =>
+    value === null || value === undefined || value === ''
+      ? true
+      : !Number.isNaN(value) && Number.isInteger(Number(value)),
   intlMessageDescriptor: {
     id: 'error_number_not_int',
     defaultMessage: 'Invalid value please provide integer value',
@@ -114,9 +117,13 @@ export const validateRequiredTag = (isRequired): Validator => ({
   },
 });
 
-export const validateProductCommerce = (currentIndex, values): Validator => {
+export const validateProductCommerce = (
+  currentIndex,
+  getValues: () => any[],
+): Validator => {
   return {
     isValid: () => {
+      const values = typeof getValues === 'function' ? getValues() : getValues;
       if (!values?.length || values?.length === 1) return true;
       const current = values[currentIndex];
       const others = values.filter((_, index) => index !== currentIndex);
@@ -144,9 +151,12 @@ export const validateProductCommerce = (currentIndex, values): Validator => {
 const isEmpty = (value) =>
   value === null || value === '' || value === undefined;
 
-export const validateProductCommerceOneZero = (values): Validator => {
+export const validateProductCommerceOneZero = (
+  getValues: () => any[],
+): Validator => {
   return {
     isValid: () => {
+      const values = typeof getValues === 'function' ? getValues() : getValues;
       if (!values?.length) return true;
       const isZeroOrEmpty = (v) => isEmpty(v) || Number(v) === 0;
       if (values.length === 1 && !isZeroOrEmpty(values[0].minQuantity))

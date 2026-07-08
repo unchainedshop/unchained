@@ -335,7 +335,8 @@ const Layout = ({
       }),
     },
     ...pluginNavItems,
-  ].filter(Boolean)
+  ]
+    .filter(Boolean)
     .sort((a, b) => {
       const aOrder = a?._sortOrder;
       const bOrder = b?._sortOrder;
