@@ -13,6 +13,7 @@ import {
   PuzzlePieceIcon,
   LinkIcon,
   StarIcon,
+  TruckIcon,
 } from '@heroicons/react/20/solid';
 import LocaleWrapper from '../../common/components/LocaleWrapper';
 
@@ -23,6 +24,7 @@ import SubscriptionForm from './SubscriptionForm';
 import SupplyForm from './SupplyForm';
 import ProductVariation from './ProductVariation';
 import WarehousingForm from './WarehousingForm';
+import FulfillmentPreview from './FulfillmentPreview';
 import Tab from '@/components/ui/Tab';
 import ProductReviews from '../../product-review/components/ProductReviews';
 import BundleProducts from './BundleProducts';
@@ -76,6 +78,8 @@ const GetCurrentTab = ({
     return <SupplyForm productId={id} disabled={disableAll} />;
   if (selectedView === 'warehousing')
     return <WarehousingForm productId={id} disabled={disableAll} />;
+  if (selectedView === 'fulfillment')
+    return <FulfillmentPreview productId={id} />;
   if (selectedView === 'variations')
     return (
       <LocaleWrapper>
@@ -164,6 +168,14 @@ const ProductDetail = ({ product, extendedData = {} }: ProductDetailProps) => {
         defaultMessage: 'Warehousing',
       }),
       Icon: <ArchiveBoxIcon className="h-5 w-5" />,
+    },
+    __typename === 'SimpleProduct' && {
+      id: 'fulfillment',
+      title: formatMessage({
+        id: 'fulfillment',
+        defaultMessage: 'Fulfillment',
+      }),
+      Icon: <TruckIcon className="h-5 w-5" />,
     },
     __typename === 'ConfigurableProduct' && {
       id: 'variations',

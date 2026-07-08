@@ -1,8 +1,4 @@
 {
-  "EW1jgi": {
-    "defaultMessage": "default_input_name",
-    "description": "DO not translate Skip this as it's the default given label when a component is not provided explicit label"
-  },
   "access_restricted": {
     "defaultMessage": "Access Restricted"
   },
@@ -137,6 +133,9 @@
   },
   "all": {
     "defaultMessage": "All"
+  },
+  "all_types": {
+    "defaultMessage": "All types"
   },
   "all_workers": {
     "defaultMessage": "All Workers"
@@ -347,6 +346,9 @@
   },
   "birthday": {
     "defaultMessage": "Birthday"
+  },
+  "bookmarks": {
+    "defaultMessage": "Bookmarks"
   },
   "brand": {
     "defaultMessage": "Brand"
@@ -936,6 +938,9 @@
   "delivery_status": {
     "defaultMessage": "Status"
   },
+  "delivery_type": {
+    "defaultMessage": "Delivery type"
+  },
   "description": {
     "defaultMessage": "Description"
   },
@@ -956,6 +961,9 @@
   },
   "dismiss": {
     "defaultMessage": "Dismiss"
+  },
+  "dispatch_routes": {
+    "defaultMessage": "dispatch routes"
   },
   "displayName": {
     "defaultMessage": "Display Name"
@@ -986,6 +994,9 @@
   },
   "duration": {
     "defaultMessage": "Duration"
+  },
+  "earliest_delivery": {
+    "defaultMessage": "Earliest delivery"
   },
   "edit": {
     "defaultMessage": "Edit"
@@ -1111,7 +1122,7 @@
     "defaultMessage": "500 Error"
   },
   "error_commerce_quantity_null_required": {
-    "defaultMessage": "{label} should have one price with null /empty max quantity"
+    "defaultMessage": "{label} should have one price with min quantity of 0 or empty"
   },
   "error_contract_address": {
     "defaultMessage": "Invalid contract address"
@@ -1202,6 +1213,9 @@
   },
   "export_completed": {
     "defaultMessage": "Data exported successfully"
+  },
+  "export_failed": {
+    "defaultMessage": "Export failed. Please try again."
   },
   "export_options": {
     "defaultMessage": "Export options"
@@ -1362,11 +1376,17 @@
   "from": {
     "defaultMessage": "From"
   },
-  "from_last_month": {
-    "defaultMessage": "from last month"
-  },
   "fulfilled": {
     "defaultMessage": "Fulfilled"
+  },
+  "fulfillment": {
+    "defaultMessage": "Fulfillment"
+  },
+  "fulfillment_preview_empty_hint": {
+    "defaultMessage": "The engine could not simulate any dispatch for this product. Customers will not see delivery options for it. Verify that at least one delivery provider and one warehousing provider are configured, active and free of configuration errors."
+  },
+  "fulfillment_simulation_error": {
+    "defaultMessage": "Fulfillment simulation failed"
   },
   "fullName": {
     "defaultMessage": "FullName"
@@ -1645,9 +1665,6 @@
   "mark_as_paid_question_header": {
     "defaultMessage": "Mark as paid?"
   },
-  "max_quantity": {
-    "defaultMessage": "Max Quantity"
-  },
   "media": {
     "defaultMessage": "Media"
   },
@@ -1701,6 +1718,9 @@
   },
   "method": {
     "defaultMessage": "Method"
+  },
+  "min_quantity": {
+    "defaultMessage": "Min Quantity"
   },
   "mobile_phone": {
     "defaultMessage": "Mobile phone"
@@ -1767,18 +1787,6 @@
   },
   "no_internet_access": {
     "defaultMessage": "You aren't connected to a working internet connection."
-  },
-  "no_options": {
-    "defaultMessage": "No options found for \"{inputValue}\""
-  },
-  "no_order_products_description": {
-    "defaultMessage": "Once you receive your first orders, your top-selling products will appear here."
-  },
-  "no_orders_description": {
-    "defaultMessage": "Once you receive your first orders, your sales analytics and top-selling products will appear here."
-  },
-  "no_orders_title": {
-    "defaultMessage": "No orders yet"
   },
   "no_payload": {
     "defaultMessage": "Payload"
@@ -2048,7 +2056,7 @@
     "defaultMessage": "Product bundle items CSV (Optional)"
   },
   "product_commerce_info": {
-    "defaultMessage": "One price list should have a max quantity field empty and no price should have the same max quantity along with currency and country specified"
+    "defaultMessage": "One price should have a min quantity of 0 (or empty) and no two prices should share the same min quantity, currency and country"
   },
   "product_creation_failed": {
     "defaultMessage": "Product creation failed"
@@ -2220,9 +2228,6 @@
   },
   "products_count_header": {
     "defaultMessage": "{count} Products"
-  },
-  "products_data_unavailable": {
-    "defaultMessage": "Product data unavailable"
   },
   "products_found": {
     "defaultMessage": "{count} products found"
@@ -2494,9 +2499,6 @@
   "select_language": {
     "defaultMessage": "Select Language"
   },
-  "select_option": {
-    "defaultMessage": "Select an option"
-  },
   "select_options_toggle": {
     "defaultMessage": "Change {type} status"
   },
@@ -2547,6 +2549,9 @@
   },
   "shipping_method": {
     "defaultMessage": "SHIPPING"
+  },
+  "ships": {
+    "defaultMessage": "Ships"
   },
   "shop_info": {
     "defaultMessage": "Shop Info"
@@ -2608,6 +2613,9 @@
   "simple_product_definition": {
     "defaultMessage": "<h3>Simple</h3> <p>Simple product is the most commonly used type of product type. It accepts configuration values for price, dimension and warehousing. Most e-commerce product needs are satisfied by this type </p>"
   },
+  "simulate_as_of": {
+    "defaultMessage": "Simulate as of"
+  },
   "sku": {
     "defaultMessage": "SKU"
   },
@@ -2628,6 +2636,15 @@
   },
   "status": {
     "defaultMessage": "Status"
+  },
+  "stock": {
+    "defaultMessage": "Stock"
+  },
+  "stock_without_dispatch_route": {
+    "defaultMessage": "Stock without a dispatch route"
+  },
+  "stock_without_dispatch_route_hint": {
+    "defaultMessage": "Inventory is reported for these provider combinations, but the engine could not calculate a dispatch for them."
   },
   "submit": {
     "defaultMessage": "Submit"
@@ -2761,9 +2778,6 @@
   "top_selling_no_products": {
     "defaultMessage": "No top selling products found."
   },
-  "top_selling_products": {
-    "defaultMessage": "Top selling products"
-  },
   "total": {
     "defaultMessage": "Total"
   },
@@ -2805,6 +2819,12 @@
   },
   "unit": {
     "defaultMessage": "Unit"
+  },
+  "units_available": {
+    "defaultMessage": "{quantity} units available"
+  },
+  "unknown_delivery_provider": {
+    "defaultMessage": "Unknown delivery provider"
   },
   "untitled_assortment": {
     "defaultMessage": "Untitled Assortment"
@@ -3015,6 +3035,9 @@
   },
   "wallet-address": {
     "defaultMessage": "Wallet {walletAddress}"
+  },
+  "warehouse": {
+    "defaultMessage": "Warehouse"
   },
   "warehouse_detail_title": {
     "defaultMessage": "Warehouse {id}"
