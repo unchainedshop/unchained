@@ -114,6 +114,10 @@ export const adminUIRouter = (
         if (devMode) res.set('Cache-Control', 'no-cache');
         const urlPath = req.path.replace(/\/+$/, '');
 
+        // CSP nonce convention (Express/helmet): a middleware upstream sets
+        // res.locals.cspNonce (see helmet's CSP nonce docs) and references it
+        // as `'nonce-...'` in script-src. When present, the injected import
+        // map tag carries it; without it, strict CSPs will block the tag.
         const nonce = (res as any).locals?.cspNonce as string | undefined;
         if (nonce) {
           const tag = buildImportMapTag(importMapJSON, nonce);

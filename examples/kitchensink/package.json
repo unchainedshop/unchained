@@ -29,9 +29,9 @@
     "lint": "prettier -w .",
     "clean": "tsc -b --clean",
     "build": "tsc -b",
-    "start": "node --no-warnings --env-file=.env.defaults --env-file-if-exists=.env --import ./load_env.js lib/boot.js",
-    "dev": "node --no-warnings --env-file=.env.defaults --env-file-if-exists=.env --import ./load_env.js --watch --experimental-strip-types src/boot.ts",
-    "integration-test": "node --no-warnings --env-file=.env.defaults --env-file ../../.env.tests --env-file-if-exists=../../.env --import ./load_env.js --watch --experimental-strip-types src/boot.ts"
+    "start": "npx -y node@22 --no-warnings --env-file=.env.defaults --env-file-if-exists=.env --import ./load_env.js lib/boot.js",
+    "dev": "npx -y node@22 --no-warnings --env-file=.env.defaults --env-file-if-exists=.env --import ./load_env.js --watch --experimental-strip-types src/boot.ts",
+    "integration-test": "npx -y node@22 --no-warnings --env-file=.env.defaults --env-file ../../.env.tests --env-file-if-exists=../../.env --import ./load_env.js --watch --experimental-strip-types src/boot.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.7",

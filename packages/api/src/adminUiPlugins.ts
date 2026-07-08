@@ -115,6 +115,74 @@ const listSDKDistFiles = (distPath: string): string[] => {
   }
 };
 
+/**
+ * Extract the export names of an ESM plugin bundle built by
+ * @unchainedshop/admin-ui/plugin-build. esbuild consolidates the entry's
+ * exports into `export { local as Name, ... }` statements (plus optional
+ * `export default` / exported declarations). Returns null when no export
+ * statements are found (custom or minified bundle) so validation is skipped
+ * rather than producing false warnings.
+ */
+export const parseEsmBundleExports = (bundle: string): Set<string> | null => {
+  const names = new Set<string>();
+  // `export { a as B, C }` — the exported name is the alias when present.
+  for (const clause of bundle.matchAll(/(?:^|[;\n])\s*export\s*\{([^}]*)\}/g)) {
+    for (const entry of clause[1].split(',')) {
+      const parts = entry.trim().split(/\s+as\s+/);
+      const exported = (parts[1] ?? parts[0]).trim().replace(/^["']|["']$/g, '');
+      if (exported) names.add(exported);
+    }
+  }
+  // `export default ...` and `export const/function/class X`
+  if (/(?:^|[;\n])\s*export\s+default\b/.test(bundle)) names.add('default');
+  for (const decl of bundle.matchAll(
+    /(?:^|[;\n])\s*export\s+(?:async\s+)?(?:const|let|var|function|class)\s+([\w$]+)/g,
+  )) {
+    names.add(decl[1]);
+  }
+  return names.size > 0 ? names : null;
+};
+
+/** All component names a plugin's slot configuration references. */
+const collectReferencedComponents = (plugin: AdminUIPluginConfig): string[] => {
+  const names = new Set<string>();
+  for (const [slotId, configs] of Object.entries(plugin.slots || {})) {
+    if (!Array.isArray(configs)) continue;
+    for (const config of configs) {
+      if (slotId === 'entities') {
+        const components = (config as AdminUIPluginEntityConfig).components;
+        if (components?.list) names.add(components.list);
+        if (components?.detail) names.add(components.detail);
+        if (components?.create) names.add(components.create);
+      } else if (typeof (config as { component?: unknown }).component === 'string') {
+        names.add((config as { component: string }).component);
+      }
+    }
+  }
+  return [...names];
+};
+
+/**
+ * SDK version stamped into the bundle banner by plugin-build.mjs, e.g.
+ * `/* unchained admin-ui plugin: "name" (esm, sdk 5.0.0) *\/`. Returns null
+ * for bundles built before the version stamp existed.
+ */
+const parseBundleSdkVersion = (bundle: string): string | null => {
+  const match = bundle.match(/^\/\* unchained admin-ui plugin: .+? \(esm, sdk ([^)]+)\) \*\//);
+  return match?.[1] ?? null;
+};
+
+const readHostSdkVersion = (): string | null => {
+  const adminUIPath = resolveAdminUIPath();
+  if (!adminUIPath) return null;
+  try {
+    const pkg = JSON.parse(readFileSync(join(adminUIPath, '..', 'package.json'), 'utf-8'));
+    return typeof pkg.version === 'string' ? pkg.version : null;
+  } catch {
+    return null;
+  }
+};
+
 export function preparePluginAssets(
   plugins: AdminUIPluginConfig[],
   log: { info: (...args: any[]) => void; warn: (...args: any[]) => void },
@@ -124,7 +192,7 @@ export function preparePluginAssets(
   const routes = new Map<string, StaticAsset>();
   const devCacheControl = 'no-cache, no-store, must-revalidate';
 
-  const validPlugins = plugins.filter((p) => {
+  const namedPlugins = plugins.filter((p) => {
     if (!PLUGIN_NAME_RE.test(p.name)) {
       log.warn(`Skipping admin-ui plugin with invalid name: "${p.name}"`);
       return false;
@@ -132,13 +200,16 @@ export function preparePluginAssets(
     return true;
   });
 
-  const seenNames = new Set<string>();
-  for (const plugin of validPlugins) {
-    if (seenNames.has(plugin.name)) {
+  // Duplicate names collide on the same manifest entry and bundle route;
+  // keep only the last occurrence so the manifest matches what is served.
+  const validPlugins = namedPlugins.filter((plugin, index) => {
+    const lastIndex = namedPlugins.findLastIndex((p) => p.name === plugin.name);
+    if (index !== lastIndex) {
       log.warn(`Duplicate admin-ui plugin name "${plugin.name}": later entries override earlier ones`);
+      return false;
     }
-    seenNames.add(plugin.name);
-  }
+    return true;
+  });
 
   if (validPlugins.length > 0) {
     const pluginList = validPlugins
@@ -163,6 +234,32 @@ export function preparePluginAssets(
   }
 
   const pluginsWithBundles = validPlugins.filter((p) => pluginBundles.has(p.name));
+
+  // Warn early when the config references components the bundle doesn't
+  // export — otherwise the first signal is a runtime "Component not found"
+  // in the browser. Also surface SDK version skew between the environment
+  // a plugin was built against and the admin-ui actually running.
+  const hostSdkVersion = pluginsWithBundles.length > 0 ? readHostSdkVersion() : null;
+  for (const plugin of pluginsWithBundles) {
+    const bundle = pluginBundles.get(plugin.name)!.content;
+
+    const exportNames = parseEsmBundleExports(bundle);
+    if (exportNames) {
+      const missing = collectReferencedComponents(plugin).filter((name) => !exportNames.has(name));
+      if (missing.length > 0) {
+        log.warn(
+          `admin-ui plugin "${plugin.name}" references component(s) not exported by its bundle: ${missing.join(', ')}. Exported: ${[...exportNames].join(', ')}`,
+        );
+      }
+    }
+
+    const bundleSdkVersion = parseBundleSdkVersion(bundle);
+    if (hostSdkVersion && bundleSdkVersion && bundleSdkVersion !== hostSdkVersion) {
+      log.warn(
+        `admin-ui plugin "${plugin.name}" was built against SDK ${bundleSdkVersion} but the running admin-ui is ${hostSdkVersion}. It may still work, but rebuild it against the current @unchainedshop/admin-ui to be safe.`,
+      );
+    }
+  }
 
   // In dev mode, use mtime-based cache invalidation to avoid re-reading every
   // bundle file on every manifest request. Only re-hash when a file changes.

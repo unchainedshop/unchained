@@ -347,6 +347,10 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
               if (process.env.NODE_ENV !== 'production') reply.header('Cache-Control', 'no-cache');
               const urlPath = request.url.split('?')[0].replace(/\/+$/, '');
 
+              // CSP nonce convention (@fastify/helmet with enableCSPNonces:
+              // true): the plugin decorates reply.cspNonce = { script, style }.
+              // When present, the injected import map tag carries the script
+              // nonce; without it, strict CSPs will block the tag.
               const nonce = (reply as any).cspNonce?.script as string | undefined;
               if (nonce) {
                 const tag = buildImportMapTag(opts.importMapJSON!, nonce);
