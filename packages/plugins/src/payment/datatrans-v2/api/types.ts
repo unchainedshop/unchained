@@ -60,18 +60,7 @@ export interface DT2015Configuration {
 }
 
 export type SupportedLanguage =
-  | 'de'
-  | 'en'
-  | 'fr'
-  | 'it'
-  | 'es'
-  | 'el'
-  | 'no'
-  | 'da'
-  | 'pl'
-  | 'pt'
-  | 'ru'
-  | 'ja';
+  'de' | 'en' | 'fr' | 'it' | 'es' | 'el' | 'no' | 'da' | 'pl' | 'pt' | 'ru' | 'ja';
 
 export type PaymentMethod =
   | 'ACC'

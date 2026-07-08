@@ -37,7 +37,8 @@ async function generateShimSource(specifier: string): Promise<string> {
     try {
       const resolved = import.meta.resolve(specifier);
       const source = readFileSync(new URL(resolved).pathname, 'utf-8');
-      const exportRe = /\bexport\s+(?:function|const|let|var|class)\s+([a-zA-Z$_][a-zA-Z0-9$_]*)/g;
+      const exportRe =
+        /\bexport\s+(?:function|const|let|var|class)\s+([a-zA-Z$_][a-zA-Z0-9$_]*)/g;
       let m;
       while ((m = exportRe.exec(source)) !== null) {
         if (VALID_IDENT.test(m[1])) named.push(m[1]);
@@ -100,15 +101,12 @@ const shimEntries = Object.fromEntries(
 const shimPlugin = {
   name: 'unchained-shim-generator',
   setup(build: any) {
-    build.onLoad(
-      { filter: /src\/sdk\/shims\/.*\.ts$/ },
-      async (args: any) => {
-        const specifier = specifierByPath.get(args.path);
-        if (!specifier) return undefined; // host.ts and unknown files pass through
-        const contents = await generateShimSource(specifier);
-        return { contents, loader: 'ts', resolveDir: shimDir };
-      },
-    );
+    build.onLoad({ filter: /src\/sdk\/shims\/.*\.ts$/ }, async (args: any) => {
+      const specifier = specifierByPath.get(args.path);
+      if (!specifier) return undefined; // host.ts and unknown files pass through
+      const contents = await generateShimSource(specifier);
+      return { contents, loader: 'ts', resolveDir: shimDir };
+    });
   },
 };
 
@@ -141,14 +139,22 @@ const hardcodedSdkEntries: Record<string, string> = {
   'modules/work': 'src/modules/work/index.ts',
 };
 
-const missingFromRuntime = Object.keys(hardcodedSdkEntries).filter((k) => !sdkKeySet.has(k));
-const extraInRuntime = SDK_ENTRY_KEYS.filter((k) => !(k in hardcodedSdkEntries));
+const missingFromRuntime = Object.keys(hardcodedSdkEntries).filter(
+  (k) => !sdkKeySet.has(k),
+);
+const extraInRuntime = SDK_ENTRY_KEYS.filter(
+  (k) => !(k in hardcodedSdkEntries),
+);
 if (missingFromRuntime.length > 0 || extraInRuntime.length > 0) {
   const parts: string[] = [];
   if (missingFromRuntime.length > 0)
-    parts.push(`Missing from SDK_ENTRY_KEYS in plugin-runtime.mjs: ${missingFromRuntime.join(', ')}`);
+    parts.push(
+      `Missing from SDK_ENTRY_KEYS in plugin-runtime.mjs: ${missingFromRuntime.join(', ')}`,
+    );
   if (extraInRuntime.length > 0)
-    parts.push(`In SDK_ENTRY_KEYS but not in tsup entries: ${extraInRuntime.join(', ')}`);
+    parts.push(
+      `In SDK_ENTRY_KEYS but not in tsup entries: ${extraInRuntime.join(', ')}`,
+    );
   throw new Error(`admin-ui SDK entry sync check failed:\n${parts.join('\n')}`);
 }
 

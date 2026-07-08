@@ -29,11 +29,7 @@ export interface ProductLocalizedContent extends LocalizedContent {
 
 // Product Types
 export type ProductType =
-  | 'SIMPLE_PRODUCT'
-  | 'CONFIGURABLE_PRODUCT'
-  | 'BUNDLE_PRODUCT'
-  | 'PLAN_PRODUCT'
-  | 'TOKENIZED_PRODUCT';
+  'SIMPLE_PRODUCT' | 'CONFIGURABLE_PRODUCT' | 'BUNDLE_PRODUCT' | 'PLAN_PRODUCT' | 'TOKENIZED_PRODUCT';
 
 export interface ProductPricing {
   amount: number;
