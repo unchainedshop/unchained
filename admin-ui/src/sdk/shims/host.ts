@@ -5,11 +5,13 @@
  * window.__UNCHAINED_PLUGIN_DEPS__ (see modules/plugins/PluginContext.tsx)
  * before any plugin bundle is imported.
  *
- * Returns a Proxy that defers the underlying lookup until the first property
- * access at call time. This makes shim modules resilient to module-evaluation
- * ordering — the shim's top-level `export const X = dep.X` binds X to a
- * proxy getter, and the real dependency is only resolved when plugin code
- * actually reads or calls X.
+ * Returns a Proxy that defers the registry lookup until the first property
+ * access. Note the generated shims read properties at module-evaluation time
+ * (`export const X = dep.X`), so resolution effectively happens when the
+ * plugin bundle is imported — which the PluginProvider guarantees is after
+ * setupPluginRuntime() has registered the deps. The Proxy's job is to give a
+ * clear error (below) instead of a cryptic undefined when that contract is
+ * violated, e.g. a shim module imported outside the admin-ui.
  */
 export function hostDep(specifier: string): any {
   let resolved: any = undefined;
