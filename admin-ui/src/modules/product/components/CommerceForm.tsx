@@ -53,13 +53,23 @@ const PricingFieldArray = ({
 }) => {
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
-  const { watch } = useRHFContext();
+  const { watch, getValues, trigger } = useRHFContext();
   const { fields, append, remove } = useFieldArray({ name: 'pricing' });
   const pricing = watch('pricing');
+  const getPricing = () => getValues('pricing');
+
+  const revalidateMinQuantities = () => {
+    const names = fields.map((_, i) => `pricing.${i}.minQuantity`);
+    setTimeout(() => trigger(names), 0);
+  };
 
   return (
     <div>
       {fields.map((field, index) => {
+        const minQtyValidators = [validateProductCommerce(index, getPricing)];
+        if (index === 0) {
+          minQtyValidators.push(validateProductCommerceOneZero(getPricing));
+        }
         return (
           <div
             key={field.id}
@@ -69,15 +79,13 @@ const PricingFieldArray = ({
               <TextField
                 className="w-full"
                 disabled={!hasRole(IRoleAction.ManageProducts)}
-                validators={[
-                  validateProductCommerce(index, pricing),
-                  validateProductCommerceOneZero(pricing),
-                ]}
+                validators={minQtyValidators}
                 name={`pricing.${index}.minQuantity`}
                 id={`pricing.${index}.minQuantity`}
                 type="number"
                 min={0}
                 hideLabel
+                onChange={revalidateMinQuantities}
                 label={formatMessage({
                   id: 'min_quantity',
                   defaultMessage: 'Min Quantity',

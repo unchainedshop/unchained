@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { useController } from 'react-hook-form';
 
@@ -81,19 +82,20 @@ const useField = (props: FieldHookProps): ComputedProps => {
     );
   };
 
+  const validateRef = useRef(validate);
+  validateRef.current = validate;
+
   const { field, fieldState, formState } = useController({
     name,
     control: rhf?.control,
     rules: {
       validate: (value) => {
-        const error = validate(value);
+        const error = validateRef.current(value);
         return error || true;
       },
     },
   });
 
-  // Formik marked every field touched on submit; mirror that by also
-  // showing errors once a submit has been attempted.
   const error =
     (fieldState.isTouched || formState.isSubmitted) &&
     fieldState.error?.message;
@@ -102,7 +104,13 @@ const useField = (props: FieldHookProps): ComputedProps => {
     if (props.onChange) {
       props.onChange(event);
     }
-    field.onChange(event);
+    if (props.type === 'number') {
+      const raw = event?.target?.value;
+      const num = raw === '' || raw == null ? null : Number(raw);
+      field.onChange(num);
+    } else {
+      field.onChange(event);
+    }
   };
 
   const isNullOrUndefined = (v) => {

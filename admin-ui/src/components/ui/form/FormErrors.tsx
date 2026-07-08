@@ -56,11 +56,26 @@ const FormErrorsPure = ({ submitError = '', fieldErrors = {} }) => {
   );
 };
 
+// Keep only the first field for each distinct message so cross-field
+// validators that flag several fields (e.g. duplicate price rows) don't
+// repeat the same message once per field.
+const dedupeMessages = (fieldErrors: Record<string, any>) => {
+  const seen = new Set();
+  return Object.fromEntries(
+    Object.entries(fieldErrors).filter(([, message]) => {
+      if (typeof message !== 'string') return true;
+      if (seen.has(message)) return false;
+      seen.add(message);
+      return true;
+    }),
+  );
+};
+
 const FormErrors = ({ displayFieldErrors = false }) => {
   const { submitError, rhf } = useFormContext();
 
   const fieldErrors = displayFieldErrors
-    ? flattenErrors(rhf?.formState?.errors)
+    ? dedupeMessages(flattenErrors(rhf?.formState?.errors))
     : {};
 
   const show = submitError || displayFieldErrors;

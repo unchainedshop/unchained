@@ -76,9 +76,7 @@ const useForm = ({
   const [submitError, setSubmitError] = useState('');
 
   const rhf = useRHF({
-    // Formik validated on change and blur; 'all' matches that and keeps
-    // formState.isValid up to date for consumers like LogInForm.
-    mode: 'all',
+    mode: 'onTouched',
     defaultValues: initialValues,
     values: enableReinitialize ? initialValues : undefined,
     errors: initialErrors
