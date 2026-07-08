@@ -16,7 +16,7 @@ import NextImage from 'next/image';
 import NextHead from 'next/head';
 import * as ReactIntl from 'react-intl';
 import * as ReactToastify from 'react-toastify';
-import * as Formik from 'formik';
+import * as ReactHookForm from 'react-hook-form';
 import { definePlugin } from '../../sdk/plugins';
 import { SHARED_DEP_SHIMS } from '../../sdk/plugin-runtime.mjs';
 import { usePluginRuntime } from './PluginRuntimeContext';
@@ -98,7 +98,7 @@ const setupPluginRuntime = () => {
     'next/head': { default: NextHead },
     'react-intl': ReactIntl,
     'react-toastify': ReactToastify,
-    formik: Formik,
+    'react-hook-form': ReactHookForm,
     '@unchainedshop/admin-ui/plugins': { definePlugin, usePluginRuntime },
   };
 
