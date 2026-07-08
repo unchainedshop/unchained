@@ -60,6 +60,10 @@ const options = {
 | `ENROLLMENT_UPDATE` | `{ enrollment, field }` | Emitted when an enrollment is updated |
 | `ENROLLMENT_REMOVE` | `{ enrollmentId }` | Emitted when an enrollment is removed |
 | `ENROLLMENT_ADD_PERIOD` | `{ enrollment }` | Emitted when a period is added to an enrollment |
+| `ENROLLMENT_SUSPEND` | `{ enrollment }` | Emitted when an enrollment is suspended |
+| `ENROLLMENT_RESUME` | `{ enrollment }` | Emitted when a suspended enrollment is resumed |
+| `ENROLLMENT_PLAN_CHANGE` | `{ enrollment }` | Emitted when an enrollment's plan is changed |
+| `ENROLLMENT_TRIAL_ENDING` | `{ enrollment, trialEnd }` | Emitted when a trial period ends within 3 days |
 
 ## More Information
 

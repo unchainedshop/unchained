@@ -7,13 +7,31 @@ const findNextStatus = async (
   modules: Modules,
 ): Promise<EnrollmentStatus | null> => {
   let status = enrollment.status;
+
+  if (
+    enrollment.requestedTerminationDate &&
+    new Date().getTime() >= new Date(enrollment.requestedTerminationDate).getTime() &&
+    status !== EnrollmentStatus.TERMINATED
+  ) {
+    return EnrollmentStatus.TERMINATED;
+  }
+
+  if (modules.enrollments.isExpired(enrollment, {})) {
+    return EnrollmentStatus.TERMINATED;
+  }
+
   const product = await modules.products.findProduct({
     productId: enrollment.productId,
   });
-
   if (!product) throw new Error('Product not found for enrollment');
-
   const director = await EnrollmentDirector.actions({ enrollment, product }, { modules });
+
+  if (status === EnrollmentStatus.SUSPENDED) {
+    if (enrollment.resumeAt && new Date().getTime() >= new Date(enrollment.resumeAt).getTime()) {
+      return EnrollmentStatus.ACTIVE;
+    }
+    return status;
+  }
 
   if (status === EnrollmentStatus.INITIAL || status === EnrollmentStatus.PAUSED) {
     if (await director.isValidForActivation()) {
@@ -23,8 +41,6 @@ const findNextStatus = async (
     if (await director.isOverdue()) {
       status = EnrollmentStatus.PAUSED;
     }
-  } else if (modules.enrollments.isExpired(enrollment, {})) {
-    status = EnrollmentStatus.TERMINATED;
   }
 
   return status;
@@ -39,11 +55,21 @@ export async function processEnrollmentService(this: Modules, enrollment: Enroll
     // status = await findNextStatus(nextEnrollment, unchainedAPI);
   }
 
-  if (status) {
-    return this.enrollments.updateStatus(enrollment._id, {
+  if (status && status !== enrollment.status) {
+    const updatedEnrollment = (await this.enrollments.updateStatus(enrollment._id, {
       status,
       info: 'enrollment processed',
-    }) as Promise<Enrollment>;
+    })) as Enrollment;
+
+    if (
+      enrollment.status === EnrollmentStatus.SUSPENDED &&
+      status === EnrollmentStatus.ACTIVE &&
+      enrollment.resumeAt
+    ) {
+      await this.enrollments.updateResumeAt(enrollment._id, null);
+    }
+
+    return updatedEnrollment;
   }
   return enrollment;
 }

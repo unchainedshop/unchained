@@ -7,6 +7,7 @@ const ProductPlanConfigurationFragment = gql`
     trialInterval
     trialIntervalCount
     billingIntervalCount
+    minimumCommitmentPeriods
   }
 `;
 
