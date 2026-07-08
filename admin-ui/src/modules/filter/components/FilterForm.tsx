@@ -1,4 +1,4 @@
-import { FieldArray } from 'formik';
+import { useFormContext as useRHFContext } from 'react-hook-form';
 import { IRoleAction } from '../../../gql/types';
 
 import { useIntl } from 'react-intl';
@@ -18,6 +18,85 @@ import useForm, {
 } from '../../forms/hooks/useForm';
 import useFilterTypes from '../hooks/useFilterTypes';
 import useApp from '../../common/hooks/useApp';
+
+const OptionsFieldArray = () => {
+  const { formatMessage } = useIntl();
+  const { watch, setValue, getValues } = useRHFContext();
+  const options = watch('options') || [];
+
+  const append = (value: string) => {
+    setValue('options', [...options, value], { shouldDirty: true });
+  };
+
+  const remove = (index: number) => {
+    const current = getValues('options');
+    setValue(
+      'options',
+      current.filter((_, i) => i !== index),
+      { shouldDirty: true },
+    );
+  };
+
+  return (
+    <div>
+      {options.map((p, index) => {
+        return (
+          <div key={index} className="mb-3 flex justify-between align-baseline">
+            <TextField
+              name={`options.${index}`}
+              id={`options.${index}`}
+              required
+              label={formatMessage({
+                id: 'option',
+                defaultMessage: 'Option',
+              })}
+            />
+            <div className="ml-2 shrink-0 mt-8">
+              <Button
+                variant="danger"
+                size="xs"
+                rounded="full"
+                icon={<TrashIcon className="h-5 w-5" />}
+                onClick={() => remove(index)}
+              />
+            </div>
+          </div>
+        );
+      })}
+      <div className="mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
+        <div className=" mt-2 shrink-0">
+          <div className="shrink-0">
+            <button
+              type="button"
+              className="items-right inline-flex rounded-sm border border-transparent bg-slate-800 px-2 py-2 text-sm font-medium text-white shadow-xs hover:bg-slate-950 focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
+              onClick={() => append('')}
+            >
+              <svg
+                className="h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span className="ml-2">
+                {formatMessage({
+                  id: 'add_option',
+                  defaultMessage: 'Add option',
+                })}{' '}
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const FilterForm = ({
   onSubmit,
@@ -72,8 +151,6 @@ const FilterForm = ({
     },
   });
 
-  const { values } = form.formik;
-
   return (
     <Form form={form}>
       <div className="p-5">
@@ -107,70 +184,7 @@ const FilterForm = ({
           options={convertArrayOfObjectToObject(filterTypes, 'label', 'value')}
         />
 
-        <FieldArray name="options">
-          {({ push, remove: removeConfig }) => (
-            <div>
-              {values.options.map((p, index) => {
-                return (
-                  <div
-                    key={index}
-                    className="mb-3 flex justify-between align-baseline"
-                  >
-                    <TextField
-                      name={`options[${index}]`}
-                      id={`options[${index}]`}
-                      required
-                      label={formatMessage({
-                        id: 'option',
-                        defaultMessage: 'Option',
-                      })}
-                    />
-                    <div className="ml-2 shrink-0 mt-8">
-                      <Button
-                        variant="danger"
-                        size="xs"
-                        rounded="full"
-                        icon={<TrashIcon className="h-5 w-5" />}
-                        onClick={() => removeConfig(index)}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-              <div className="mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
-                <div className=" mt-2 shrink-0">
-                  <div className="shrink-0">
-                    <button
-                      type="button"
-                      className="items-right inline-flex rounded-sm border border-transparent bg-slate-800 px-2 py-2 text-sm font-medium text-white shadow-xs hover:bg-slate-950 focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
-                      onClick={() => push('')}
-                    >
-                      <svg
-                        className="h-5 w-5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <span className="ml-2">
-                        {formatMessage({
-                          id: 'add_option',
-                          defaultMessage: 'Add option',
-                        })}{' '}
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </FieldArray>
+        <OptionsFieldArray />
       </div>
       <FormErrors />
       {hasRole(IRoleAction.ManageFilters) && (

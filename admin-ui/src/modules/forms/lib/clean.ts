@@ -1,4 +1,3 @@
-import { FormikValues } from 'formik';
 import { isObject } from '../../common/utils/normalizeFilterKeys';
 
 const sanitize = (value) => {
@@ -17,7 +16,7 @@ const sanitize = (value) => {
   return value;
 };
 
-const clean = (values: FormikValues): FormikValues =>
+const clean = (values: Record<string, any>): Record<string, any> =>
   Object.fromEntries(
     Object.entries(values).map(([name, value]) => [name, sanitize(value)]),
   );

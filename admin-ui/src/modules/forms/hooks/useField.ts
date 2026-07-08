@@ -1,9 +1,5 @@
 import { useIntl } from 'react-intl';
-import {
-  useField as useFormikField,
-  FormikHandlers,
-  FieldHelperProps,
-} from 'formik';
+import { useController } from 'react-hook-form';
 
 import { Validator, validateRequired } from '../lib/validators';
 import useFormContext from './useFormContext';
@@ -24,10 +20,7 @@ export interface CommonFieldProps {
   inputClassName?: string;
   placeholder?: string;
   hideLabel?: boolean;
-  /**
-   * A second change handler without the possibility to change the value.
-   */
-  onChange?: FormikHandlers['handleChange'];
+  onChange?: (event: any) => void;
   [key: string]: any;
 }
 
@@ -37,24 +30,24 @@ export interface FieldHookProps extends CommonFieldProps {
 
 export interface ComputedProps extends CommonFieldProps {
   error?: string;
-  onChange: FormikHandlers['handleChange'];
-  onBlur: FormikHandlers['handleBlur'];
-  setValue: FieldHelperProps<any>['setValue'];
-  setError: FieldHelperProps<any>['setError'];
-  value: string; // | string[]
+  onChange: (event: any) => void;
+  onBlur: () => void;
+  setValue: (value: any, options?: any) => void;
+  setError: (message: string) => void;
+  setTouched: (touched: boolean) => void;
+  value: string;
 }
 
 const useField = (props: FieldHookProps): ComputedProps => {
   const intl = useIntl();
 
-  const { formik, ...form }: any = useFormContext();
+  const { rhf, ...form }: any = useFormContext();
 
   const {
     name,
     required,
     errorMessage,
-    disabled = form.disabled || formik.isSubmitting,
-    // By default, the label is the translated field name
+    disabled = form.disabled || rhf?.formState?.isSubmitting,
     label = intl.formatMessage({
       id: name,
       defaultMessage: 'default_input_name',
@@ -74,8 +67,6 @@ const useField = (props: FieldHookProps): ComputedProps => {
       (acc: string, { isValid, intlMessageDescriptor, intlMessageValues }) => {
         if (acc) return acc;
 
-        // Do not run validators if field is not required
-
         if (!isValid(value))
           return (
             errorMessage ||
@@ -90,11 +81,22 @@ const useField = (props: FieldHookProps): ComputedProps => {
     );
   };
 
-  const [field, meta, helpers] = useFormikField({
+  const { field, fieldState, formState } = useController({
     name,
-    validate,
+    control: rhf?.control,
+    rules: {
+      validate: (value) => {
+        const error = validate(value);
+        return error || true;
+      },
+    },
   });
-  const error = meta.touched && meta.error;
+
+  // Formik marked every field touched on submit; mirror that by also
+  // showing errors once a submit has been attempted.
+  const error =
+    (fieldState.isTouched || formState.isSubmitted) &&
+    fieldState.error?.message;
 
   const onChange = (event) => {
     if (props.onChange) {
@@ -117,8 +119,24 @@ const useField = (props: FieldHookProps): ComputedProps => {
     onChange,
     onBlur: field.onBlur,
     value: isNullOrUndefined(field.value) ? '' : field.value,
-    setValue: helpers.setValue,
-    ...helpers,
+    setValue: (value: any, shouldValidate?: boolean) => {
+      rhf?.setValue(name, value, {
+        shouldDirty: true,
+        shouldValidate: shouldValidate ?? false,
+      });
+    },
+    setError: (message: string) => {
+      if (message) {
+        rhf?.setError(name, { type: 'manual', message });
+      } else {
+        rhf?.clearErrors(name);
+      }
+    },
+    setTouched: (touched: boolean) => {
+      if (touched) {
+        rhf?.trigger(name);
+      }
+    },
   };
 };
 
