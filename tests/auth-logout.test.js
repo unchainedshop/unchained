@@ -5,7 +5,7 @@ import {
   disconnect,
 } from './helpers.js';
 import { getServerPort, getOidcPrivateKey, TEST_OIDC_ISSUER, TEST_OIDC_AUDIENCE } from './setup.js';
-import { User, USER_TOKEN } from './seeds/users.js';
+import { Admin, User, ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
 import * as jose from 'jose';
@@ -57,6 +57,88 @@ test.describe('Auth: logoutAllSessions Mutation', () => {
 
       const userAfter = await Users.findOne({ _id: User._id });
       assert.strictEqual(userAfter.tokenVersion, tokenVersionBefore + 1);
+    });
+
+    test('user can pass their own userId explicitly', async () => {
+      const { data: { logoutAllSessions } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation LogoutAllSessions($userId: ID) {
+            logoutAllSessions(userId: $userId) {
+              success
+            }
+          }
+        `,
+        variables: { userId: User._id },
+      });
+
+      assert.strictEqual(logoutAllSessions.success, true);
+    });
+
+    test('regular user cannot force-logout another user', async () => {
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation LogoutAllSessions($userId: ID) {
+            logoutAllSessions(userId: $userId) {
+              success
+            }
+          }
+        `,
+        variables: { userId: Admin._id },
+      });
+
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+    });
+
+    test('admin can force-logout another user without ending own session', async () => {
+      const adminFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+      const Users = db.collection('users');
+
+      const userBefore = await Users.findOne({ _id: User._id });
+      const tokenVersionBefore = userBefore?.tokenVersion ?? 0;
+
+      const { data: { logoutAllSessions } = {} } = await adminFetch({
+        query: /* GraphQL */ `
+          mutation LogoutAllSessions($userId: ID) {
+            logoutAllSessions(userId: $userId) {
+              success
+            }
+          }
+        `,
+        variables: { userId: User._id },
+      });
+
+      assert.strictEqual(logoutAllSessions.success, true);
+
+      const userAfter = await Users.findOne({ _id: User._id });
+      assert.strictEqual(userAfter.tokenVersion, tokenVersionBefore + 1);
+
+      // admin session remains usable
+      const { data: { me } = {} } = await adminFetch({
+        query: /* GraphQL */ `
+          query {
+            me {
+              _id
+            }
+          }
+        `,
+      });
+      assert.strictEqual(me._id, Admin._id);
+    });
+
+    test('admin force-logout of unknown user returns UserNotFoundError', async () => {
+      const adminFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+      const { errors } = await adminFetch({
+        query: /* GraphQL */ `
+          mutation LogoutAllSessions($userId: ID) {
+            logoutAllSessions(userId: $userId) {
+              success
+            }
+          }
+        `,
+        variables: { userId: 'does-not-exist' },
+      });
+
+      assert.strictEqual(errors[0]?.extensions?.code, 'UserNotFoundError');
     });
 
     test('anonymous user cannot call logoutAllSessions', async () => {
