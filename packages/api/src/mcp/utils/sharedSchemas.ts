@@ -88,6 +88,7 @@ export function createMcpResponse(response) {
 
 export function createMcpErrorResponse(action: string, error: Error) {
   return {
+    isError: true,
     content: [
       {
         type: 'text' as const,
