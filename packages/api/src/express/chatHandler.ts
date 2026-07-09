@@ -1,13 +1,11 @@
 import express from 'express';
 import type { Express, Request, RequestHandler, Response } from 'express';
 import type * as aiTypes from 'ai';
-import type * as mcpTypes from '@ai-sdk/mcp';
-import type * as mcpSDKClientLibraryTypes from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import type * as mcpSDKClientTypes from '@modelcontextprotocol/sdk/client/index.js';
 import { type ChatConfiguration, errorHandler } from '../chat/utils.ts';
 import generateImageHandler from '../chat/generateImageHandler.ts';
 import defaultSystemPrompt from '../chat/defaultSystemPrompt.ts';
 import normalizeToolsIndex from '../chat/normalizeToolsIndex.ts';
+import { getMCPSession, createMCPClient } from '../chat/mcpChatSession.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api:chat');
@@ -15,22 +13,12 @@ const logger = createLogger('unchained:api:chat');
 let convertToModelMessages: typeof aiTypes.convertToModelMessages;
 let stepCountIs: typeof aiTypes.stepCountIs;
 let streamText: typeof aiTypes.streamText;
-let createMCPClient: typeof mcpTypes.createMCPClient;
-let StreamableHTTPClientTransport: typeof mcpSDKClientLibraryTypes.StreamableHTTPClientTransport;
-let Client: typeof mcpSDKClientTypes.Client;
 
 try {
   const aiTools = await import('ai');
-  const mcpTools = await import('@ai-sdk/mcp');
-  const mcpSDKClientLibrary = await import('@modelcontextprotocol/sdk/client/streamableHttp.js');
-  const mcpSDKClient = await import('@modelcontextprotocol/sdk/client/index.js');
-
-  StreamableHTTPClientTransport = mcpSDKClientLibrary.StreamableHTTPClientTransport;
-  Client = mcpSDKClient.Client;
   convertToModelMessages = aiTools.convertToModelMessages;
   stepCountIs = aiTools.stepCountIs;
   streamText = aiTools.streamText;
-  createMCPClient = mcpTools.createMCPClient;
 } catch {
   logger.warn(
     `optional peer npm packages 'ai', '@ai-sdk/mcp' and '@modelcontextprotocol/sdk' not installed, chat will not work`,
@@ -63,58 +51,13 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
       res.status(405).json({ error: 'Method Not Allowed. Use POST.' });
       return;
     }
-    const resourceTransport = new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
-      requestInit: {
-        headers: {
-          Cookie: req.headers.cookie || '',
-        },
-      },
-    });
-
-    const sdkClient = new Client({ name: 'unchained-chat-client', version: '1.0.0' });
-    await sdkClient.connect(resourceTransport as any);
-    // Use the AI SDK's own streamable-HTTP transport rather than the MCP SDK's
-    // StreamableHTTPClientTransport: @ai-sdk/mcp assigns `transport.protocolVersion`
-    // during init, but the MCP SDK transport exposes that as a getter-only property
-    // (via setProtocolVersion()), which throws. The AI SDK transport has a settable one.
-    const client = await createMCPClient({
-      transport: {
-        type: 'http',
-        url: unchainedMCPUrl,
-        headers: {
-          Cookie: req.headers.cookie || '',
-        },
-      },
-    });
 
     try {
-      const defaultUnchainedTools = await client.tools();
-      let resourceContext = '';
-      try {
-        const resources = await sdkClient.listResources();
-        if (resources?.resources) {
-          const resourceTexts = await Promise.all(
-            resources.resources.map(async (resource) => {
-              try {
-                const content = await sdkClient.readResource({ uri: resource.uri });
-                if ((content?.contents?.[0] as any)?.text) {
-                  return `${resource.name}:\n${(content.contents[0] as any).text}`;
-                }
-              } catch (e) {
-                logger.error(`Failed to read resource ${resource.uri}: ${e.message}`);
-              }
-              return null;
-            }),
-          );
-          resourceContext =
-            '\n\nAVAILABLE SHOP CONFIGURATION:\n' + resourceTexts.filter(Boolean).join('\n\n');
-        }
-      } catch (e) {
-        logger.error(`Failed to fetch MCP resources: ${e.message}`);
-      }
+      const cookie = req.headers.cookie || '';
+      const { tools: mcpTools, resourceContext } = await getMCPSession(unchainedMCPUrl, cookie);
 
       const tools: aiTypes.ToolSet = {
-        ...defaultUnchainedTools,
+        ...mcpTools,
         ...additionalTools,
       };
       if (imageGenerationTool) {
@@ -124,7 +67,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
       if (req.method === 'GET') {
         res.status(200).json({
           tools: normalizeToolsIndex(tools),
-          cached: false,
+          cached: true,
         });
         return;
       }
@@ -164,7 +107,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
       const messagesToInclude = normalizedMessages.slice(startIndex);
 
       const result = streamText({
-        stopWhen: stepCountIs(10),
+        stopWhen: stepCountIs(500),
         maxRetries: 3,
         // No hardcoded temperature: reasoning models (e.g. gpt-5.2) reject it. Callers
         // can set temperature via their chat configuration when using a model that
@@ -173,9 +116,6 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
         system: system + resourceContext,
         model,
         tools: cacheControlledTools,
-        onFinish: async () => {
-          await client?.close();
-        },
         messages: messagesToInclude,
         providerOptions: {
           anthropic: {
@@ -190,8 +130,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
         onError: errorHandler,
       });
     } catch (err) {
-      await client?.close();
-      await sdkClient?.close();
+      logger.error(err);
       res.status(500).json({ error: errorHandler(err) });
     }
   };
