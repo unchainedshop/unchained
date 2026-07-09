@@ -1,12 +1,10 @@
 import type { FastifyInstance, RouteHandlerMethod, FastifyRequest } from 'fastify';
-import type * as mcpSDKClientLibraryTypes from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import type * as mcpSDKClientTypes from '@modelcontextprotocol/sdk/client/index.js';
 import type * as aiTypes from 'ai';
-import type * as mcpTypes from '@ai-sdk/mcp';
 import generateImageHandler from '../chat/generateImageHandler.ts';
 import defaultSystemPrompt from '../chat/defaultSystemPrompt.ts';
 import normalizeToolsIndex from '../chat/normalizeToolsIndex.ts';
 import { type ChatConfiguration, errorHandler } from '../chat/utils.ts';
+import { getMCPSession, createMCPClient } from '../chat/mcpChatSession.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api:chat');
@@ -14,22 +12,12 @@ const logger = createLogger('unchained:api:chat');
 let convertToModelMessages: typeof aiTypes.convertToModelMessages;
 let stepCountIs: typeof aiTypes.stepCountIs;
 let streamText: typeof aiTypes.streamText;
-let createMCPClient: typeof mcpTypes.createMCPClient;
-let StreamableHTTPClientTransport: typeof mcpSDKClientLibraryTypes.StreamableHTTPClientTransport;
-let Client: typeof mcpSDKClientTypes.Client;
 
 try {
   const aiTools = await import('ai');
-  const mcpTools = await import('@ai-sdk/mcp');
-  const mcpSDKClientLibrary = await import('@modelcontextprotocol/sdk/client/streamableHttp.js');
-  const mcpSDKClient = await import('@modelcontextprotocol/sdk/client/index.js');
-
-  StreamableHTTPClientTransport = mcpSDKClientLibrary.StreamableHTTPClientTransport;
-  Client = mcpSDKClient.Client;
   convertToModelMessages = aiTools.convertToModelMessages;
   stepCountIs = aiTools.stepCountIs;
   streamText = aiTools.streamText;
-  createMCPClient = mcpTools.createMCPClient;
 } catch {
   logger.warn(`optional peer npm packages 'ai' and '@ai-sdk/mcp' not installed, chat will not work`);
 }
@@ -49,7 +37,6 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
   const system = chatConfiguration.system ?? defaultSystemPrompt;
 
   const mcpChatHandler: RouteHandlerMethod = async (req: FastifyRequest, res) => {
-    let client;
     try {
       if (req.method === 'OPTIONS') {
         res.headers({
@@ -59,57 +46,11 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
         return res.status(200).send();
       }
 
-      const resourceTransport = new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
-        requestInit: {
-          headers: {
-            Cookie: req.headers.cookie || '',
-          },
-        },
-      });
-
-      const sdkClient = new Client({ name: 'unchained-chat-client', version: '1.0.0' });
-      await sdkClient.connect(resourceTransport as any);
-
-      const transport = new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
-        requestInit: {
-          headers: {
-            Cookie: req.headers.cookie || '',
-          },
-        },
-      });
-
-      client = await createMCPClient({
-        transport,
-      });
-
-      const defaultUnchainedTools = await client.tools();
-
-      let resourceContext = '';
-      try {
-        const resources = await sdkClient.listResources();
-        if (resources?.resources) {
-          const resourceTexts = await Promise.all(
-            resources.resources.map(async (resource) => {
-              try {
-                const content = await sdkClient.readResource({ uri: resource.uri });
-                if ((content?.contents?.[0] as any)?.text) {
-                  return `${resource.name}:\n${(content.contents[0] as any).text}`;
-                }
-              } catch (e) {
-                logger.error(`Failed to read resource ${resource.uri}: ${e.message}`);
-              }
-              return null;
-            }),
-          );
-          resourceContext =
-            '\n\nAVAILABLE SHOP CONFIGURATION:\n' + resourceTexts.filter(Boolean).join('\n\n');
-        }
-      } catch (e) {
-        logger.error(`Failed to fetch MCP resources: ${e.message}`);
-      }
+      const cookie = req.headers.cookie || '';
+      const { tools: mcpTools, resourceContext } = await getMCPSession(unchainedMCPUrl, cookie);
 
       const tools: aiTypes.ToolSet = {
-        ...defaultUnchainedTools,
+        ...mcpTools,
         ...additionalTools,
       };
       if (imageGenerationTool) {
@@ -119,7 +60,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
       if (req.method === 'GET') {
         return res.status(200).send({
           tools: normalizeToolsIndex(tools),
-          cached: false,
+          cached: true,
         });
       }
 
@@ -166,9 +107,6 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
         messages: messagesToInclude,
         system: system + resourceContext,
         tools: cacheControlledTools,
-        onFinish: async () => {
-          await client?.close();
-        },
         providerOptions: {
           anthropic: {
             cacheControl: {
@@ -185,7 +123,6 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
       );
     } catch (err: any) {
       logger.error(err);
-      await client?.close();
       res.status(500);
       return res.send({ error: errorHandler(err) });
     }
