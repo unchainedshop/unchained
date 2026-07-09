@@ -11,6 +11,7 @@ import UserRolesView from './UserRolesView';
 import UserTagsView from './UserTagsView';
 import UserWebAuthCredentials from './UserWebAuthCredentials';
 import Web3Addresses from './Web3Addresses';
+import SessionsView from './SessionsView';
 
 const AccountView = ({
   _id,
@@ -154,6 +155,19 @@ const AccountView = ({
         >
           <div className="text-end overflow-hidden rounded-md border-b bg-surface text-text-primary border-border-default px-4 py-5 shadow-sm sm:p-6">
             <UserWebAuthCredentials userId={_id} />
+          </div>
+        </SelfDocumentingView>
+      )}
+
+      {(currentUser?._id === _id || hasRole(IRoleAction.UpdateUser)) && (
+        <SelfDocumentingView
+          documentationLabel={formatMessage({
+            id: 'sessions',
+            defaultMessage: 'Sessions',
+          })}
+        >
+          <div className="overflow-hidden rounded-md border-b bg-surface text-text-primary border-border-default px-4 py-5 shadow-sm sm:p-6">
+            <SessionsView userId={_id} />
           </div>
         </SelfDocumentingView>
       )}

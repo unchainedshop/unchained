@@ -5,6 +5,7 @@ import {
   LockClosedIcon,
   StarIcon,
   PuzzlePieceIcon,
+  ShoppingBagIcon,
   ShoppingCartIcon,
   UserIcon,
   CurrencyDollarIcon,
@@ -23,6 +24,7 @@ import UserProductReviews from './UserProductReviews';
 import AccountView from './AccountView';
 import PaymentCredentialsView from './PaymentCredentialsView';
 import ProfileView from './ProfileView';
+import UserCart from './UserCart';
 import UserEnrollments from './UserEnrollments';
 import UserOrders from './UserOrders';
 import UserQuotations from './UserQuotations';
@@ -35,6 +37,7 @@ const GetCurrentTab = ({ user, selectedView, ...extendedData }) => {
   if (selectedView === 'profile') return <ProfileView {...user} />;
   if (selectedView === 'account') return <AccountView {...user} />;
   if (selectedView === 'orders') return <UserOrders {...user} />;
+  if (selectedView === 'cart') return <UserCart {...user} />;
   if (selectedView === 'quotations') return <UserQuotations {...user} />;
   if (selectedView === 'enrollments') return <UserEnrollments {...user} />;
   if (selectedView === 'reviews') return <UserProductReviews {...user} />;
@@ -83,6 +86,11 @@ const UserSettings = ({ user, extendedData }) => {
     (isOwnUser || hasRole(IRoleAction.ViewUserOrders)) && {
       id: 'orders',
       title: formatMessage({ id: 'orders', defaultMessage: 'Orders' }),
+      Icon: <ShoppingBagIcon className="h-5 w-5" />,
+    },
+    (isOwnUser || hasRole(IRoleAction.ViewUserOrders)) && {
+      id: 'cart',
+      title: formatMessage({ id: 'cart', defaultMessage: 'Cart' }),
       Icon: <ShoppingCartIcon className="h-5 w-5" />,
     },
     hasRole(IRoleAction.ViewUserQuotations) && {
