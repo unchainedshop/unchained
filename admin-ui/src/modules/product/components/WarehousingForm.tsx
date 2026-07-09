@@ -47,7 +47,7 @@ const WarehousingForm = ({ productId, disabled = false }) => {
 
   useEffect(() => {
     if (Object.keys(product).length) {
-      form.formik.setValues({ ...product });
+      form.api.setValues({ ...product });
     }
   }, [product]);
   return (

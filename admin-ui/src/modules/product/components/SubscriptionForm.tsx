@@ -76,7 +76,7 @@ const SubscriptionForm = ({ productId, disabled = false }) => {
   });
 
   useEffect(() => {
-    if (plan && !loading) form.formik.setValues(plan);
+    if (plan && !loading) form.api.setValues(plan);
   }, [plan]);
 
   return (

@@ -27,7 +27,7 @@ const TagInputField = ({
         className={clsx({
           'border-rose-300': !!field.error,
         })}
-        onChange={(value) => field.setValue(value)}
+        onChange={(value) => field.setValue(value, true)}
         placeholder={field.placeholder}
         tagList={field.value}
         buttonText={buttonText}

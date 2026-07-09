@@ -6,15 +6,9 @@ import useField, {
 import { validateDate } from '../../../modules/forms/lib/validators';
 import FieldWrapper from './FieldWrapper';
 
-const defaultParseDate = (value: string) => {
-  const date = new Date(value);
-  return isNaN(date.getTime()) ? null : date.toISOString().split('T')[0];
-};
-
 const DatePickerField = ({
   validators = [],
   className,
-  parseDate = defaultParseDate,
   ...props
 }: FieldHookProps) => {
   const field = useField({
@@ -40,7 +34,8 @@ const DatePickerField = ({
             'border-rose-700 placeholder:text-rose-300': !!field.error,
           },
         )}
-        onChange={(e) => field.setValue(e.target.value)}
+        onChange={field.onChange}
+        onBlur={field.onBlur}
         value={formattedValue}
         placeholder={field.placeholder}
         autoComplete="off"

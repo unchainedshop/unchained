@@ -15,7 +15,7 @@ export type OnSubmitType = (
 ) => Promise<{ success: boolean; data?: any; error?: any }>;
 
 // Convert react-hook-form's error tree ({ type, message, ref } leaves) into
-// Formik's shape: same nesting, but message strings at the leaves and no refs.
+// plain message strings at the leaves, stripping refs.
 const stripToMessages = (errors: any) => {
   if (!errors || typeof errors !== 'object') return errors;
   if (typeof errors.message === 'string' && errors.message)
@@ -28,7 +28,7 @@ const stripToMessages = (errors: any) => {
   );
 };
 
-export interface FormikCompatAPI {
+export interface FormAPI {
   setFieldError: (name: string, message: string) => void;
   setFieldValue: (name: string, value: any) => void;
   setValues: (values: Record<string, any>) => void;
@@ -152,7 +152,7 @@ const useForm = ({
     ],
   );
 
-  const formik: FormikCompatAPI = useMemo(
+  const api: FormAPI = useMemo(
     () => ({
       setFieldError: (name: string, message: string) => {
         rhf.setError(name, { type: 'manual', message });
@@ -201,7 +201,7 @@ const useForm = ({
 
   return {
     submitError,
-    formik,
+    api,
     rhf,
     setSubmitError,
     disabled,

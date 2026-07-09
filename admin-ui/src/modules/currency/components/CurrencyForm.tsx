@@ -35,7 +35,7 @@ const CurrencyForm = ({
     successMessage: isEdit ? currencyUpdatedMessage : currencyAddedMessage,
     getSubmitErrorMessage: (error) => {
       if (error?.message?.includes('duplicate key')) {
-        form.formik.setFieldError(
+        form.api.setFieldError(
           'isoCode',
           formatMessage({
             id: 'currency_exists',
@@ -103,12 +103,9 @@ const CurrencyForm = ({
                 defaultMessage: 'Active',
               })}
               disabled={!hasRole(IRoleAction.ManageCurrencies)}
-              active={form.formik.values.isActive}
+              active={form.api.values.isActive}
               onToggle={() =>
-                form.formik.setFieldValue(
-                  'isActive',
-                  !form.formik.values.isActive,
-                )
+                form.api.setFieldValue('isActive', !form.api.values.isActive)
               }
             />
           </div>

@@ -38,7 +38,7 @@ const CountryForm = ({
     successMessage: isEdit ? countryUpdatedMessage : countryAddedMessage,
     getSubmitErrorMessage: (error) => {
       if (error?.message?.includes('duplicate key')) {
-        form.formik.setFieldError(
+        form.api.setFieldError(
           'isoCode',
           formatMessage({
             id: 'country_exists',
@@ -94,12 +94,9 @@ const CountryForm = ({
                 defaultMessage: 'Active',
               })}
               disabled={!hasRole(IRoleAction.ManageCountries)}
-              active={form.formik.values.isActive}
+              active={form.api.values.isActive}
               onToggle={() =>
-                form.formik.setFieldValue(
-                  'isActive',
-                  !form.formik.values.isActive,
-                )
+                form.api.setFieldValue('isActive', !form.api.values.isActive)
               }
             />
           </div>

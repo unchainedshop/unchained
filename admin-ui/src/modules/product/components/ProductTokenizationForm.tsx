@@ -59,7 +59,7 @@ const ProductTokenizationForm = ({ productId, disabled = false }) => {
 
   useEffect(() => {
     if (!loading)
-      form.formik.setValues({
+      form.api.setValues({
         contractAddress: product?.contractAddress || '',
         contractStandard: product?.contractStandard || '',
         tokenId: product?.contractConfiguration?.tokenId || '',

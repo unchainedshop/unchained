@@ -43,7 +43,7 @@ const SupplyForm = ({ productId, disabled = false }) => {
         error.message.includes('supply.weightInGram') &&
         error.message.includes('Expected type Int')
       ) {
-        form.formik.setFieldError(
+        form.api.setFieldError(
           'weight',
           'Invalid value, only integer is accepted',
         );
@@ -51,7 +51,7 @@ const SupplyForm = ({ productId, disabled = false }) => {
         error.message.includes('supply.heightInMillimeters') &&
         error.message.includes('Expected type Int')
       ) {
-        form.formik.setFieldError(
+        form.api.setFieldError(
           'height',
           'Invalid value, only integer is accepted',
         );
@@ -59,7 +59,7 @@ const SupplyForm = ({ productId, disabled = false }) => {
         error.message.includes('supply.lengthInMillimeters') &&
         error.message.includes('Expected type Int')
       ) {
-        form.formik.setFieldError(
+        form.api.setFieldError(
           'length',
           'Invalid value, only integer is accepted',
         );
@@ -76,7 +76,7 @@ const SupplyForm = ({ productId, disabled = false }) => {
   });
 
   useEffect(() => {
-    if (Object.keys(dimensions).length) form.formik.setValues(dimensions);
+    if (Object.keys(dimensions).length) form.api.setValues(dimensions);
   }, [dimensions]);
   return (
     <div className="mt-5 md:col-span-2 md:mt-0">

@@ -61,7 +61,7 @@ const FilterTextForm = ({ filterId }) => {
     const value = translatedFilterTexts?.find(
       (text) => text.locale === selectedLocale,
     );
-    form.formik.setValues({ title: '', subtitle: '', ...(value || {}) });
+    form.api.setValues({ title: '', subtitle: '', ...(value || {}) });
   }, [translatedFilterTexts, selectedLocale]);
 
   return (

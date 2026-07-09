@@ -82,7 +82,7 @@ const ProductTextsForm = ({
     const value = translatedTexts?.find(
       (text) => text.locale === selectedLocale,
     );
-    form.formik.setValues({
+    form.api.setValues({
       slug: '',
       title: '',
       subtitle: '',

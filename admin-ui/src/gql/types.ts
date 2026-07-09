@@ -328,8 +328,7 @@ export type IColor = {
 };
 
 export type IConfigurableOrBundleProduct =
-  | IBundleProduct
-  | IConfigurableProduct;
+  IBundleProduct | IConfigurableProduct;
 
 /** Configurable Product (Proxy) */
 export type IConfigurableProduct = IProduct & {

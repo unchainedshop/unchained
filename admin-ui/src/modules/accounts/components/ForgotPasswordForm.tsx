@@ -23,7 +23,7 @@ const ForgotPasswordForm = ({
     submit: onSubmit,
     onSubmitSuccess,
     getSubmitErrorMessage: () => {
-      form.formik.setFieldError(
+      form.api.setFieldError(
         'email',
         formatMessage({
           id: 'email_address_not_exist',

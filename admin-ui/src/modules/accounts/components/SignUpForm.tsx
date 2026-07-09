@@ -26,7 +26,7 @@ const SignUpForm = ({
   const form = useForm({
     getSubmitErrorMessage: (error) => {
       if (error?.message?.toLowerCase().includes('email already exists')) {
-        form.formik.setFieldError(
+        form.api.setFieldError(
           'email',
           formatMessage({
             id: 'email_exists_error',
@@ -42,7 +42,7 @@ const SignUpForm = ({
         error?.message?.includes('challenge mismatch') ||
         error?.message?.includes('already exists')
       ) {
-        form.formik.setFieldError(
+        form.api.setFieldError(
           'username',
           formatMessage({
             id: 'username_or_email_taken',
@@ -56,7 +56,7 @@ const SignUpForm = ({
         });
       }
       if (error?.extensions?.code.includes('PasswordInvalidError')) {
-        form.formik.setFieldError(
+        form.api.setFieldError(
           'plainPassword',
           formatMessage({
             id: 'password_insecure',

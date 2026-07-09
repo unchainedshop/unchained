@@ -36,7 +36,7 @@ npm run compile-translation  # Compile translations
 - **Apollo Client** for GraphQL data management
 - **Tailwind CSS 4** for styling with custom `@apply` classes in `globals.css`
 - **React Intl** for internationalization
-- **Formik** for form management
+- **React Hook Form** for form management
 
 ### GraphQL Integration
 - **Schema Endpoint**: `http://localhost:4010/graphql` (configurable via `NEXT_PUBLIC_GRAPHQL_ENDPOINT`)
@@ -75,7 +75,7 @@ const { updateProduct } = useUpdateProduct();
 const { products } = useProducts({ limit, offset });
 ```
 
-**Form Management**: Formik + custom validation with `useForm` hook
+**Form Management**: React Hook Form + custom validation with `useForm` hook
 ```typescript
 const form = useForm({
   submit: onSubmit,

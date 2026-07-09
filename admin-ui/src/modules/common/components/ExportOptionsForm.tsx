@@ -46,7 +46,7 @@ export default function ExportOptionsForm({
 
   return (
     <Form form={form}>
-      {form.formik.isSubmitting ? (
+      {form.api.isSubmitting ? (
         <div className="flex items-center gap-3 p-4 mb-4 rounded-lg animate-pulse">
           <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
           <span className="text-sm font-medium text-blue-700 dark:text-blue-300">

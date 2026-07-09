@@ -110,8 +110,8 @@ const FilterOptionsListItem = ({ filterId, option, onDelete }) => {
                   />
                   <Button
                     variant="primary"
-                    disabled={!form.formik.isValid}
-                    onClick={form.formik.handleSubmit as any}
+                    disabled={!form.api.isValid}
+                    onClick={form.api.handleSubmit as any}
                     text={formatMessage({
                       id: 'save',
                       defaultMessage: 'Save',

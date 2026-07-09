@@ -101,7 +101,7 @@ const VariationForm = ({ variation, onCancel, onSuccess }) => {
             })}
           />
           <Button
-            onClick={() => form.formik.submitForm()}
+            onClick={() => form.api.submitForm()}
             type="submit"
             variant="primary"
             size="sm"

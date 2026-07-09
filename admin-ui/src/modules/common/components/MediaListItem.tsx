@@ -42,7 +42,7 @@ const MediaListItem = ({
   });
 
   useEffect(() => {
-    if (mediaText) form.formik.setValues(mediaText);
+    if (mediaText) form.api.setValues(mediaText);
   }, [mediaText]);
 
   const { attributes, listeners, setNodeRef, transform, transition } =

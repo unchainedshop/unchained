@@ -7,8 +7,8 @@ const Form = ({ form, children, className = '', ...props }) => {
     <FormContext.Provider value={form}>
       <FormProvider {...form.rhf}>
         <form
-          onReset={() => form.formik.handleReset()}
-          onSubmit={form.formik.handleSubmit}
+          onReset={() => form.api.handleReset()}
+          onSubmit={form.api.handleSubmit}
           method="POST"
           className={className}
           {...props}

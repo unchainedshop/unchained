@@ -30,7 +30,7 @@ const SignWeb3AddressForm = ({ nonce, address, close }) => {
           ?.toLowerCase()
           .includes('signature does not match web3 account')
       )
-        form.formik.setFieldError(
+        form.api.setFieldError(
           'hash',
           formatMessage({
             id: 'signature_not_match_error',
@@ -38,7 +38,7 @@ const SignWeb3AddressForm = ({ nonce, address, close }) => {
           }),
         );
       if (error?.message?.toLowerCase().includes('invalid signature length'))
-        form.formik.setFieldError(
+        form.api.setFieldError(
           'hash',
           formatMessage({
             id: 'invalid_signature_length',

@@ -72,9 +72,9 @@ const AssortmentForm = ({ onSubmit, onSubmitSuccess }) => {
             id: 'root_node',
             defaultMessage: 'Root node',
           })}
-          active={form.formik.values.isRoot}
+          active={form.api.values.isRoot}
           onToggle={() =>
-            form.formik.setFieldValue('isRoot', !form.formik.values.isRoot)
+            form.api.setFieldValue('isRoot', !form.api.values.isRoot)
           }
         />
         <span className="block text-sm text-text-muted mt-2">

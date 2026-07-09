@@ -234,7 +234,7 @@ const LogInForm = () => {
                 <button
                   type="submit"
                   id="submit"
-                  disabled={!form.formik.isValid}
+                  disabled={!form.api.isValid}
                   name="submit"
                   className="group relative flex w-full justify-center rounded-md border border-transparent bg-accent py-2 px-4 text-sm font-medium text-text-on-accent hover:bg-accent-hover focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
                 >

@@ -30,7 +30,7 @@ const ProviderConfigurationForm = ({
           id="configuration"
           name="configuration"
           disabled={disabled}
-          value={form.formik.values.configuration}
+          value={form.api.values.configuration}
           label={formatMessage({
             id: 'configuration',
             defaultMessage: 'Configuration',

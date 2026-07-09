@@ -58,7 +58,7 @@ const BundleProductsForm = ({
     submit: onSubmit,
     successMessage,
     onSubmitSuccess: () => {
-      form.formik.resetForm();
+      form.api.resetForm();
       return null;
     },
     initialValues: {

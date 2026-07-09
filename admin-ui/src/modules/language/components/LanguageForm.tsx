@@ -31,7 +31,7 @@ const LanguageForm = ({
     successMessage: isEdit ? languageUpdatedMessage : languageAddedMessage,
     getSubmitErrorMessage: (error) => {
       if (error?.message?.includes('duplicate')) {
-        form.formik.setFieldError(
+        form.api.setFieldError(
           'isoCode',
           formatMessage({
             id: 'language_exists',
@@ -73,12 +73,9 @@ const LanguageForm = ({
                 defaultMessage: 'Active',
               })}
               disabled={!hasRole(IRoleAction.ManageLanguages)}
-              active={form.formik.values.isActive}
+              active={form.api.values.isActive}
               onToggle={() =>
-                form.formik.setFieldValue(
-                  'isActive',
-                  !form.formik.values.isActive,
-                )
+                form.api.setFieldValue('isActive', !form.api.values.isActive)
               }
             />
           </div>

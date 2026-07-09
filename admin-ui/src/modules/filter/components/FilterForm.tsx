@@ -126,7 +126,7 @@ const FilterForm = ({
     },
     getSubmitErrorMessage: (error) => {
       if (error?.extensions?.code === 'DuplicateFilterKeyError') {
-        form.formik.setFieldError(
+        form.api.setFieldError(
           'key',
           formatMessage({
             id: 'filter_key_already_exists',

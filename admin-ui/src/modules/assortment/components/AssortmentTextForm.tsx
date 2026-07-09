@@ -75,7 +75,7 @@ const AssortmentTextForm = ({ assortmentId }) => {
     const value = translatedAssortmentTexts?.find(
       (text) => text.locale === selectedLocale,
     );
-    form.formik.setValues({
+    form.api.setValues({
       slug: value?.slug || '',
       title: value?.title || '',
       subtitle: value?.subtitle || '',
