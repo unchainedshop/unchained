@@ -34,7 +34,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^5.0.0-alpha.1"
+    "@unchainedshop/logger": "^5.0.0-alpha.1",
+    "@unchainedshop/mongodb": "^5.0.0-alpha.1"
   },
   "devDependencies": {
     "@types/node": "^25.0.0",

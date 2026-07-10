@@ -7,6 +7,7 @@ import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { runWithAuditContext } from '@unchainedshop/events';
 import { getCurrentContextResolver } from '../context.ts';
 import { createAuthContext, type AuthContextParams } from '../middleware/createAuthMiddleware.ts';
 import type { AuthConfig } from '../auth.ts';
@@ -164,7 +165,7 @@ const createAddContextMiddleware = (authConfig?: AuthConfig, trustProxy = false)
       const context = getCurrentContextResolver();
 
       // Build full context
-      (req as any).unchainedContext = await context(
+      const unchainedContext = await context(
         {
           setHeader,
           getHeader,
@@ -180,6 +181,14 @@ const createAddContextMiddleware = (authConfig?: AuthConfig, trustProxy = false)
         req,
         res,
       );
+      (req as any).unchainedContext = unchainedContext;
+      (req as any)._auditContext = {
+        userId: unchainedContext.userId,
+        userName: unchainedContext.user?.username || unchainedContext.user?.emails?.[0]?.address,
+        remoteAddress,
+        sessionId: authContext.accessToken,
+      };
+
       next();
     } catch (error) {
       next(error);
@@ -251,8 +260,15 @@ export const connect = async (
     createAddContextMiddleware(authConfig, trustProxy || allowRemoteToLocalhostSecureCookies),
   );
 
-  // GraphQL endpoint
-  expressApp.use(graphqlHandler.graphqlEndpoint, graphqlHandler.handle);
+  // GraphQL endpoint — wrapped with audit context so all events emitted
+  // during resolver execution carry the authenticated user's identity
+  expressApp.use(graphqlHandler.graphqlEndpoint, (req, res) => {
+    const auditCtx = (req as any)._auditContext;
+    if (auditCtx) {
+      return runWithAuditContext(auditCtx, () => graphqlHandler.handle(req, res));
+    }
+    return graphqlHandler.handle(req, res);
+  });
 
   // MCP endpoint (remains framework-specific due to SDK requirements)
   expressApp.use(MCP_API_PATH, e.json({ limit: '10mb' }));

@@ -26,7 +26,6 @@ export const OCSF_CATEGORY = {
 export const OCSF_CLASS = {
   ACCOUNT_CHANGE: 3001,
   AUTHENTICATION: 3002,
-  AUTHORIZE_SESSION: 3003,
   API_ACTIVITY: 6003,
 } as const;
 

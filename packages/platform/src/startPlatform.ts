@@ -4,6 +4,13 @@ import { initDb, mongodb, stopDb } from '@unchainedshop/mongodb';
 import { defaultLogger } from '@unchainedshop/logger';
 import { getEmitAdapter } from '@unchainedshop/events';
 import type { UnchainedCore } from '@unchainedshop/core';
+import {
+  createAuditLog,
+  configureAuditIntegration,
+  setAuditLogInstance,
+  type AuditLogConfig,
+  type AuditLog,
+} from '@unchainedshop/events';
 import { setupAccounts } from './setup/setupAccounts.ts';
 import { setupUploadHandlers } from './setup/setupUploadHandlers.ts';
 import { setupTemplates, MessageTypes } from './setup/setupTemplates.ts';
@@ -18,8 +25,9 @@ export { MessageTypes };
 export type PlatformOptions = {
   rolesOptions?: IRoleOptionConfig;
   workQueueOptions?: SetupWorkqueueOptions;
+  auditLog?: AuditLogConfig | false;
 } & Omit<UnchainedCoreOptions, 'migrationRepository' | 'db'> &
-  Omit<UnchainedServerOptions, 'roles' | 'unchainedAPI'>;
+  Omit<UnchainedServerOptions, 'roles' | 'unchainedAPI' | 'auditLog'>;
 
 const REQUIRED_ENV_VARIABLES = [
   'EMAIL_WEBSITE_NAME',
@@ -56,6 +64,7 @@ export const startPlatform = async ({
   bulkImporter,
   bulkExporter,
   workQueueOptions,
+  auditLog: auditLogConfig,
   ...arbitraryAPIServerConfiguration
 }: PlatformOptions): Promise<{
   unchainedAPI: UnchainedCore;
@@ -108,6 +117,13 @@ export const startPlatform = async ({
   // Initialize plugins (call onRegister hooks)
   await pluginRegistry.initialize(unchainedAPI);
 
+  // Create audit log instance (integration configured after events are registered)
+  let auditLog: AuditLog | undefined;
+  if (auditLogConfig !== false) {
+    auditLog = createAuditLog(auditLogConfig ? { ...auditLogConfig, db } : { db });
+    setAuditLogInstance(auditLog);
+  }
+
   // Setup Accounts specific extensions and event handlers
   setupAccounts(unchainedAPI);
 
@@ -117,12 +133,18 @@ export const startPlatform = async ({
   // Setup File Upload Handlers
   setupUploadHandlers(unchainedAPI);
 
-  // Start GraphQL Server
+  // Start GraphQL Server (registers API events)
   const graphqlHandler = await startAPIServer({
     unchainedAPI,
     roles: configuredRoles,
+    auditLog,
     ...arbitraryAPIServerConfiguration,
   });
+
+  // Configure audit integration after all events are registered
+  if (auditLog) {
+    configureAuditIntegration(auditLog);
+  }
 
   // Setup Work Queue
   await setupWorkqueue({
@@ -168,6 +190,11 @@ export const startPlatform = async ({
 
       defaultLogger.debug('Stopping GraphQL server', { signal });
       await graphqlHandler.dispose();
+
+      if (auditLog) {
+        defaultLogger.debug('Closing audit log', { signal });
+        await auditLog.close();
+      }
 
       defaultLogger.debug('Stopping DB Connection', { signal });
       await stopDb();
