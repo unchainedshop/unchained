@@ -1128,6 +1128,7 @@ export type IMutation = {
   /**
    * Log the user out of all sessions by invalidating all JWT tokens.
    * This increments the token version, making all existing tokens invalid.
+   * Pass a userId to force-logout another user (requires updateUser permission).
    */
   logoutAllSessions?: Maybe<ISuccessResponse>;
   /** Make a proposal as answer to the RFP by changing its status to PROCESSED */
@@ -1625,6 +1626,10 @@ export type IMutationLoginWithPasswordArgs = {
 
 export type IMutationLoginWithWebAuthnArgs = {
   webAuthnPublicKeyCredentials: Scalars['JSON']['input'];
+};
+
+export type IMutationLogoutAllSessionsArgs = {
+  userId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type IMutationMakeQuotationProposalArgs = {
@@ -4929,6 +4934,14 @@ export type ILoginWithWebAuthnMutationVariables = Exact<{
 
 export type ILoginWithWebAuthnMutation = {
   loginWithWebAuthn?: { _id: string; tokenExpires: any } | null;
+};
+
+export type ILogoutAllSessionsMutationVariables = Exact<{
+  userId?: InputMaybe<Scalars['ID']['input']>;
+}>;
+
+export type ILogoutAllSessionsMutation = {
+  logoutAllSessions?: { success?: boolean | null } | null;
 };
 
 export type IRemoveEmailMutationVariables = Exact<{
@@ -10097,6 +10110,126 @@ export type IRemoveOrderMutationVariables = Exact<{
 }>;
 
 export type IRemoveOrderMutation = { removeOrder: { _id: string } };
+
+export type IUserCartQueryVariables = Exact<{
+  userId?: InputMaybe<Scalars['ID']['input']>;
+}>;
+
+export type IUserCartQuery = {
+  user?: {
+    _id: string;
+    cart?: {
+      _id: string;
+      status?: IOrderStatus | null;
+      created?: any | null;
+      updated?: any | null;
+      ordered?: any | null;
+      orderNumber?: string | null;
+      confirmed?: any | null;
+      fulfilled?: any | null;
+      country?: {
+        _id: string;
+        isoCode?: string | null;
+        flagEmoji?: string | null;
+      } | null;
+      items?: Array<{
+        _id: string;
+        quantity: number;
+        unitPrice?: { amount: number; currencyCode: string } | null;
+        total?: { amount: number; currencyCode: string } | null;
+        product:
+          | {
+              _id: string;
+              texts?: {
+                _id: string;
+                slug?: string | null;
+                title?: string | null;
+                subtitle?: string | null;
+              } | null;
+              media: Array<{
+                _id: string;
+                file?: { _id: string; url?: string | null } | null;
+              }>;
+            }
+          | {
+              _id: string;
+              texts?: {
+                _id: string;
+                slug?: string | null;
+                title?: string | null;
+                subtitle?: string | null;
+              } | null;
+              media: Array<{
+                _id: string;
+                file?: { _id: string; url?: string | null } | null;
+              }>;
+            }
+          | {
+              _id: string;
+              texts?: {
+                _id: string;
+                slug?: string | null;
+                title?: string | null;
+                subtitle?: string | null;
+              } | null;
+              media: Array<{
+                _id: string;
+                file?: { _id: string; url?: string | null } | null;
+              }>;
+            }
+          | {
+              _id: string;
+              texts?: {
+                _id: string;
+                slug?: string | null;
+                title?: string | null;
+                subtitle?: string | null;
+              } | null;
+              media: Array<{
+                _id: string;
+                file?: { _id: string; url?: string | null } | null;
+              }>;
+            }
+          | {
+              _id: string;
+              texts?: {
+                _id: string;
+                slug?: string | null;
+                title?: string | null;
+                subtitle?: string | null;
+              } | null;
+              media: Array<{
+                _id: string;
+                file?: { _id: string; url?: string | null } | null;
+              }>;
+            };
+      }> | null;
+      contact?: {
+        telNumber?: string | null;
+        emailAddress?: string | null;
+      } | null;
+      total?: {
+        isTaxable: boolean;
+        isNetPrice: boolean;
+        amount: number;
+        currencyCode: string;
+      } | null;
+      user?: {
+        _id: string;
+        username?: string | null;
+        isGuest: boolean;
+        avatar?: { _id: string; url?: string | null } | null;
+        profile?: {
+          displayName?: string | null;
+          address?: {
+            firstName?: string | null;
+            lastName?: string | null;
+          } | null;
+        } | null;
+      } | null;
+    } | null;
+  } | null;
+};
 
 export type IUserOrderQueryVariables = Exact<{
   userId?: InputMaybe<Scalars['ID']['input']>;
