@@ -455,6 +455,83 @@ export const configureAssortmentsModule = async (
 
     invalidateCache,
 
+    bulkDelete: async (
+      assortmentIds: string[],
+    ): Promise<{ successIds: string[]; failedIds: string[] }> => {
+      const successIds: string[] = [];
+      const failedIds: string[] = [];
+
+      const results = await Promise.allSettled(
+        assortmentIds.map(async (assortmentId) => {
+          await assortmentLinks.deleteMany(
+            {
+              $or: [{ parentAssortmentId: assortmentId }, { childAssortmentId: assortmentId }],
+            },
+            { skipInvalidation: true },
+          );
+          await assortmentProducts.deleteMany({ assortmentId }, { skipInvalidation: true });
+          await assortmentFilters.deleteMany({ assortmentId });
+          await assortmentTexts.deleteMany({ assortmentId });
+          await assortmentMedia.deleteMediaFiles({ assortmentId });
+
+          const deletedAssortment = await Assortments.findOneAndUpdate(
+            generateDbFilterById(assortmentId),
+            { $set: { deleted: new Date() } },
+            { returnDocument: 'after' },
+          );
+          if (!deletedAssortment) throw new Error('not-found');
+          await emit('ASSORTMENT_REMOVE', { assortmentId });
+          return assortmentId;
+        }),
+      );
+
+      results.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+          successIds.push(result.value);
+        } else {
+          failedIds.push(assortmentIds[index]);
+        }
+      });
+
+      if (successIds.length > 0) {
+        await invalidateCache({}, { skipUpstreamTraversal: true });
+      }
+
+      return { successIds, failedIds };
+    },
+
+    bulkSetActive: async (assortmentIds: string[], isActive: boolean): Promise<number> => {
+      const result = await Assortments.updateMany(
+        { _id: { $in: assortmentIds } },
+        {
+          $set: { isActive, updated: new Date() },
+        },
+      );
+      return result.modifiedCount;
+    },
+
+    bulkAddTags: async (assortmentIds: string[], tags: string[]): Promise<number> => {
+      const result = await Assortments.updateMany(
+        { _id: { $in: assortmentIds } },
+        {
+          $addToSet: { tags: { $each: tags } },
+          $set: { updated: new Date() },
+        },
+      );
+      return result.modifiedCount;
+    },
+
+    bulkRemoveTags: async (assortmentIds: string[], tags: string[]): Promise<number> => {
+      const result = await Assortments.updateMany(
+        { _id: { $in: assortmentIds } },
+        {
+          $pullAll: { tags },
+          $set: { updated: new Date() },
+        },
+      );
+      return result.modifiedCount;
+    },
+
     search: {
       findFilteredAssortments: async ({
         limit,

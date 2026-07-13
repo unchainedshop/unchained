@@ -13,7 +13,13 @@ const FILTER_TYPES = {
   SINGLE_CHOICE: 'lime',
   MULTI_CHOICE: 'cyan',
 };
-const FilterListItem = ({ filter, onRemove }) => {
+const FilterListItem = ({
+  filter,
+  onRemove,
+  isSelected = false,
+  onToggleSelect = undefined,
+  showCheckbox = false,
+}) => {
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
   const router = useRouter();
@@ -31,6 +37,17 @@ const FilterListItem = ({ filter, onRemove }) => {
   };
   return (
     <Table.Row className="group">
+      {showCheckbox && (
+        <Table.Cell>
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={onToggleSelect}
+            className="h-4 w-4 rounded border-slate-300 text-slate-800 focus:ring-slate-800 cursor-pointer"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </Table.Cell>
+      )}
       <Table.Cell>
         <Link
           href={`/filters?filterId=${filter._id}`}

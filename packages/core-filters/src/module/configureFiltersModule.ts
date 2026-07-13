@@ -196,6 +196,16 @@ export const configureFiltersModule = async ({
       return filter;
     },
 
+    bulkSetActive: async (filterIds: string[], isActive: boolean): Promise<number> => {
+      const result = await Filters.updateMany(
+        { _id: { $in: filterIds } },
+        {
+          $set: { isActive, updated: new Date() },
+        },
+      );
+      return result.modifiedCount;
+    },
+
     texts: filterTexts,
   };
 };
