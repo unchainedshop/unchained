@@ -16,7 +16,12 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
 import { generateThemeCSS, type AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
-import { preparePluginAssets, resolveAdminUIPath, type AdminUIPluginConfig } from '../adminUiPlugins.ts';
+import {
+  preparePluginAssets,
+  buildImportMapTag,
+  resolveAdminUIPath,
+  type AdminUIPluginConfig,
+} from '../adminUiPlugins.ts';
 
 export type {
   AdminUIPluginConfig,
@@ -34,6 +39,8 @@ export interface AdminUIRouterOptions {
   enabled?: boolean;
   theme?: AdminUIThemeConfig;
   plugins?: AdminUIPluginConfig[];
+  importMapTag?: string | null;
+  importMapJSON?: string | null;
 }
 
 /**
@@ -245,7 +252,11 @@ export const connect = async (
     });
 
     const devMode = process.env.NODE_ENV !== 'production';
-    const { routes: pluginRoutes } = preparePluginAssets(adminUIPlugins, fastify.log, {
+    const {
+      routes: pluginRoutes,
+      importMapTag,
+      importMapJSON,
+    } = preparePluginAssets(adminUIPlugins, fastify.log, {
       devMode,
     });
 
@@ -272,6 +283,8 @@ export const connect = async (
       enabled: true,
       prefix: adminUIOptions?.prefix || '/',
       plugins: adminUIPlugins,
+      importMapTag,
+      importMapJSON,
     });
   }
 };
@@ -313,26 +326,70 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
         // entity/page routes live under /ext/*, pre-rendered to a dedicated
         // HTML file. Hard loads of /ext/* must get that file, other non-file
         // paths fall back to the root index.html.
-        const indexHtml = readFileSync(join(adminUIPath, 'index.html'), 'utf-8');
-        const extHtmlPath = join(adminUIPath, 'ext', '[[...slug]]', 'index.html');
-        const extHtml = existsSync(extHtmlPath) ? readFileSync(extHtmlPath, 'utf-8') : null;
+        if (opts.importMapJSON) {
+          const indexHtml = readFileSync(join(adminUIPath, 'index.html'), 'utf-8');
+          const extHtmlPath = join(adminUIPath, 'ext', '[[...slug]]', 'index.html');
+          const extHtmlRaw = existsSync(extHtmlPath) ? readFileSync(extHtmlPath, 'utf-8') : null;
 
-        await fastify.register(fastifyStatic, {
-          root: adminUIPath,
-          prefix: opts.prefix || '/',
-          wildcard: false,
-        });
+          const defaultTag = opts.importMapTag!;
+          const injectedHtml = indexHtml.replace('</head>', `${defaultTag}</head>`);
+          const extHtml = extHtmlRaw ? extHtmlRaw.replace('</head>', `${defaultTag}</head>`) : null;
 
-        fastify.setNotFoundHandler(async (request, reply) => {
-          if (request.method === 'GET' && !request.url.includes('.')) {
-            const urlPath = request.url.split('?')[0].replace(/\/+$/, '');
-            if (extHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/'))) {
-              return reply.type('text/html').send(extHtml);
+          await fastify.register(fastifyStatic, {
+            root: adminUIPath,
+            prefix: opts.prefix || '/',
+            wildcard: false,
+            index: false,
+          });
+
+          fastify.setNotFoundHandler(async (request, reply) => {
+            if (request.method === 'GET' && !request.url.includes('.')) {
+              if (process.env.NODE_ENV !== 'production') reply.header('Cache-Control', 'no-cache');
+              const urlPath = request.url.split('?')[0].replace(/\/+$/, '');
+
+              // CSP nonce convention (@fastify/helmet with enableCSPNonces:
+              // true): the plugin decorates reply.cspNonce = { script, style }.
+              // When present, the injected import map tag carries the script
+              // nonce; without it, strict CSPs will block the tag.
+              const nonce = (reply as any).cspNonce?.script as string | undefined;
+              if (nonce) {
+                const tag = buildImportMapTag(opts.importMapJSON!, nonce);
+                const baseHtml =
+                  extHtmlRaw && (urlPath === '/ext' || urlPath.startsWith('/ext/'))
+                    ? extHtmlRaw
+                    : indexHtml;
+                return reply.type('text/html').send(baseHtml.replace('</head>', `${tag}</head>`));
+              }
+
+              if (extHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/'))) {
+                return reply.type('text/html').send(extHtml);
+              }
+              return reply.type('text/html').send(injectedHtml);
             }
-            return reply.type('text/html').send(indexHtml);
-          }
-          return reply.code(404).send({ error: 'Not Found' });
-        });
+            return reply.code(404).send({ error: 'Not Found' });
+          });
+        } else {
+          const indexHtml = readFileSync(join(adminUIPath, 'index.html'), 'utf-8');
+          const extHtmlPath = join(adminUIPath, 'ext', '[[...slug]]', 'index.html');
+          const extHtml = existsSync(extHtmlPath) ? readFileSync(extHtmlPath, 'utf-8') : null;
+
+          await fastify.register(fastifyStatic, {
+            root: adminUIPath,
+            prefix: opts.prefix || '/',
+            wildcard: false,
+          });
+
+          fastify.setNotFoundHandler(async (request, reply) => {
+            if (request.method === 'GET' && !request.url.includes('.')) {
+              const urlPath = request.url.split('?')[0].replace(/\/+$/, '');
+              if (extHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/'))) {
+                return reply.type('text/html').send(extHtml);
+              }
+              return reply.type('text/html').send(indexHtml);
+            }
+            return reply.code(404).send({ error: 'Not Found' });
+          });
+        }
         return;
       }
     }

@@ -29,6 +29,10 @@
     },
     "./theme": "./src/sdk/theme.ts",
     "./plugins": "./src/sdk/plugins.ts",
+    "./plugin-runtime": {
+      "types": "./src/sdk/plugin-runtime.d.mts",
+      "import": "./src/sdk/plugin-runtime.mjs"
+    },
     "./plugin-build": {
       "import": "./src/sdk/plugin-build.mjs"
     },
@@ -100,7 +104,7 @@
   "scripts": {
     "prepublishOnly": "npm run build",
     "dev": "next dev",
-    "build": "NODE_ENV=production next build && tsup && tsc -p tsconfig.sdk.json",
+    "build": "NODE_ENV=production next build && npm run build:sdk",
     "build:sdk": "tsup && tsc -p tsconfig.sdk.json",
     "start": "next start",
     "lint": "eslint .",

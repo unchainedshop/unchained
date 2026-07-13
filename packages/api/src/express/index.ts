@@ -4,7 +4,7 @@ import type { YogaServerInstance } from 'graphql-yoga';
 import type { UnchainedCore } from '@unchainedshop/core';
 import { pluginRegistry } from '@unchainedshop/core';
 import { createHash } from 'node:crypto';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { getCurrentContextResolver } from '../context.ts';
@@ -16,7 +16,12 @@ import { connectChat } from './chatHandler.ts';
 import { mountRoutes } from './mountRoutes.ts';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
 import { generateThemeCSS, type AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
-import { preparePluginAssets, resolveAdminUIPath, type AdminUIPluginConfig } from '../adminUiPlugins.ts';
+import {
+  preparePluginAssets,
+  buildImportMapTag,
+  resolveAdminUIPath,
+  type AdminUIPluginConfig,
+} from '../adminUiPlugins.ts';
 
 export type {
   AdminUIPluginConfig,
@@ -63,7 +68,11 @@ export const adminUIRouter = (
 
     const log = { info: console.info, warn: console.warn };
     const devMode = process.env.NODE_ENV !== 'production';
-    const { routes: pluginRoutes } = preparePluginAssets(plugins, log, { devMode });
+    const {
+      routes: pluginRoutes,
+      importMapTag,
+      importMapJSON,
+    } = preparePluginAssets(plugins, log, { devMode });
 
     for (const [path, asset] of pluginRoutes) {
       router.get(path, (req, res) => {
@@ -83,22 +92,57 @@ export const adminUIRouter = (
       });
     }
 
-    router.use(e.static(adminUIPath));
+    // With an import map to inject, index.html must not be served directly by
+    // the static handler so that / falls through to the injecting catch-all.
+    router.use(e.static(adminUIPath, importMapTag ? { index: false } : undefined));
 
     // SPA fallback: the admin-ui is a Next.js static export where plugin
     // entity/page routes live under /ext/*, pre-rendered to a dedicated HTML
     // file. Hard loads of /ext/* must get that file, everything else gets the
     // root index.html.
-    const extHtmlPath = join(adminUIPath, 'ext', '[[...slug]]', 'index.html');
-    const hasExtHtml = existsSync(extHtmlPath);
+    if (importMapJSON) {
+      const indexHtml = readFileSync(join(adminUIPath, 'index.html'), 'utf-8');
+      const extHtmlPath = join(adminUIPath, 'ext', '[[...slug]]', 'index.html');
+      const extHtmlRaw = existsSync(extHtmlPath) ? readFileSync(extHtmlPath, 'utf-8') : null;
 
-    router.get(/(.*)/, (req, res) => {
-      const urlPath = req.path.replace(/\/+$/, '');
-      if (hasExtHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/'))) {
-        return res.sendFile(extHtmlPath);
-      }
-      return res.sendFile(join(adminUIPath, 'index.html'));
-    });
+      // Pre-build non-nonce versions for when no CSP nonce is present
+      const defaultTag = importMapTag!;
+      const injectedHtml = indexHtml.replace('</head>', `${defaultTag}</head>`);
+      const extHtml = extHtmlRaw ? extHtmlRaw.replace('</head>', `${defaultTag}</head>`) : null;
+
+      router.get(/(.*)/, (req, res) => {
+        if (devMode) res.set('Cache-Control', 'no-cache');
+        const urlPath = req.path.replace(/\/+$/, '');
+
+        // CSP nonce convention (Express/helmet): a middleware upstream sets
+        // res.locals.cspNonce (see helmet's CSP nonce docs) and references it
+        // as `'nonce-...'` in script-src. When present, the injected import
+        // map tag carries it; without it, strict CSPs will block the tag.
+        const nonce = (res as any).locals?.cspNonce as string | undefined;
+        if (nonce) {
+          const tag = buildImportMapTag(importMapJSON, nonce);
+          const baseHtml =
+            extHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/')) ? extHtmlRaw! : indexHtml;
+          return res.type('text/html').send(baseHtml.replace('</head>', `${tag}</head>`));
+        }
+
+        if (extHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/'))) {
+          return res.type('text/html').send(extHtml);
+        }
+        return res.type('text/html').send(injectedHtml);
+      });
+    } else {
+      const extHtmlPath = join(adminUIPath, 'ext', '[[...slug]]', 'index.html');
+      const hasExtHtml = existsSync(extHtmlPath);
+
+      router.get(/(.*)/, (req, res) => {
+        const urlPath = req.path.replace(/\/+$/, '');
+        if (hasExtHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/'))) {
+          return res.sendFile(extHtmlPath);
+        }
+        return res.sendFile(join(adminUIPath, 'index.html'));
+      });
+    }
   }
 
   return router;
