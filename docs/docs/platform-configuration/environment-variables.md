@@ -40,7 +40,7 @@ This document provides a comprehensive list of all environment variables used by
 
 | Variable | Default | Required | Description |
 |----------|---------|----------|-------------|
-| `MAIL_URL` | - | - | SMTP connection URL for sending emails (e.g., `smtp://user:pass@host:port`) |
+| `MAIL_URL` | - | - | One or more whitespace-separated SMTP connection URLs (e.g., `smtp://user:pass@host:port`); additional URLs are used as fallback transports in order |
 | `EMAIL_FROM` | `noreply@unchained.local` | Yes | Default sender email address |
 | `EMAIL_ERROR_REPORT_RECIPIENT` | `support@unchained.local` | - | Email address for error reports |
 | `UNCHAINED_DISABLE_EMAIL_INTERCEPTION` | - | - | Disable email interception in non-production environments (set to any truthy value) |

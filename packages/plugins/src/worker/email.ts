@@ -32,6 +32,66 @@ try {
   logger.warn(`optional peer npm package 'nodemailer' not installed, emails can't be sent`);
 }
 
+export const parseMailUrls = (raw?: string): string[] => raw?.trim().split(/\s+/).filter(Boolean) ?? [];
+
+export const sanitizeMailUrl = (mailUrl: string, index: number): string => {
+  try {
+    const { protocol, host } = new URL(mailUrl);
+    if (!host) throw new Error('no host');
+    return `${protocol}//${host}`;
+  } catch {
+    return `transport #${index + 1}`;
+  }
+};
+
+const cachedTransports = new Map();
+const getCachedTransport = (mailUrl: string) => {
+  if (!cachedTransports.has(mailUrl)) {
+    cachedTransports.set(mailUrl, nodemailer.createTransport(mailUrl));
+  }
+  return cachedTransports.get(mailUrl);
+};
+
+export interface FailedMailAttempt {
+  transport: string;
+  name?: string;
+  message: string;
+  responseCode?: number;
+}
+
+export const sendMailWithFallback = async (
+  mailUrls: string[],
+  sendMailOptions: Record<string, any>,
+  createTransport: (mailUrl: string) => {
+    sendMail: (options: Record<string, any>) => Promise<any>;
+  } = getCachedTransport,
+): Promise<{ info: any; transport: string; failedAttempts: FailedMailAttempt[] }> => {
+  const failedAttempts: FailedMailAttempt[] = [];
+  for (const [index, mailUrl] of mailUrls.entries()) {
+    const transport = sanitizeMailUrl(mailUrl, index);
+    try {
+      const info = await createTransport(mailUrl).sendMail(sendMailOptions);
+      return { info, transport, failedAttempts };
+    } catch (err) {
+      failedAttempts.push({
+        transport,
+        name: err.name,
+        message: err.message,
+        responseCode: err.responseCode,
+      });
+      logger.warn(
+        `sending mail through ${transport} failed${index < mailUrls.length - 1 ? ', trying next transport' : ''}`,
+        { transport, error: err.message },
+      );
+    }
+  }
+  const error = new Error(
+    `Sending mail failed, all ${mailUrls.length} transport(s) errored`,
+  ) as Error & { failedAttempts: FailedMailAttempt[] };
+  error.failedAttempts = failedAttempts;
+  throw error;
+};
+
 const openInBrowser = async (options): Promise<boolean> => {
   const command = {
     darwin: 'open',
@@ -98,7 +158,7 @@ const EmailWorkerPlugin: IWorkerAdapter<
 
   key: 'shop.unchained.worker-plugin.email',
   label: 'Send a Mail through Nodemailer',
-  version: '1.0.0',
+  version: '1.1.0',
   type: 'EMAIL',
 
   doWork: async ({ from, to, subject, ...rest }) => {
@@ -128,10 +188,14 @@ const EmailWorkerPlugin: IWorkerAdapter<
         };
       }
 
-      if (!process.env.MAIL_URL) {
+      const mailUrls = parseMailUrls(process.env.MAIL_URL);
+      if (!mailUrls.length) {
         return {
           success: false,
-          error: { name: 'NO_MAIL_URL_SET', message: 'MAIL_URL is not set' },
+          error: {
+            name: 'NO_MAIL_URL_SET',
+            message: 'MAIL_URL is not set (one or more whitespace-separated SMTP urls)',
+          },
         };
       }
 
@@ -146,9 +210,15 @@ const EmailWorkerPlugin: IWorkerAdapter<
         };
       }
 
-      const transporter = nodemailer.createTransport(process.env.MAIL_URL);
-      const result = await transporter.sendMail(sendMailOptions);
-      return { success: true, result };
+      const { info, transport, failedAttempts } = await sendMailWithFallback(mailUrls, sendMailOptions);
+      return {
+        success: true,
+        result: {
+          ...info,
+          transport,
+          ...(failedAttempts.length ? { failedAttempts } : {}),
+        },
+      };
     } catch (err) {
       return {
         success: false,
@@ -156,6 +226,7 @@ const EmailWorkerPlugin: IWorkerAdapter<
           name: err.name,
           message: err.message,
           stack: err.stack,
+          ...(err.failedAttempts ? { failedAttempts: err.failedAttempts } : {}),
         },
       };
     }
