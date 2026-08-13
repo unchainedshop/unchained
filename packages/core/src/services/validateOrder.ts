@@ -1,25 +1,25 @@
 import { type Order, ordersSettings } from '@unchainedshop/core-orders';
 import type { Modules } from '../modules.ts';
+import { createServiceError } from '../errors.ts';
 
 export async function validateOrderService(this: Modules, order: Order) {
-  if (!order.contact) throw new Error('Contact data not provided');
-  if (!order.billingAddress) throw new Error('Billing address not provided');
+  if (!order.contact) throw createServiceError('ContactMissingError', 'Contact data not provided');
+  if (!order.billingAddress)
+    throw createServiceError('BillingAddressMissingError', 'Billing address not provided');
   if (
     !order.deliveryId ||
     !(await this.orders.deliveries.findDelivery({ orderDeliveryId: order.deliveryId }))
   )
-    throw new Error('No delivery provider selected');
+    throw createServiceError('NoDeliveryProviderError', 'No delivery provider selected');
   if (
     !order.paymentId ||
     !(await this.orders.payments.findOrderPayment({ orderPaymentId: order.paymentId }))
   )
-    throw new Error('No payment provider selected');
+    throw createServiceError('NoPaymentProviderError', 'No payment provider selected');
 
   const orderPositions = await this.orders.positions.findOrderPositions({ orderId: order._id });
   if (orderPositions.length === 0) {
-    const NoItemsError = new Error('No items to checkout');
-    NoItemsError.name = 'NoItemsError';
-    throw NoItemsError;
+    throw createServiceError('NoItemsError', 'No items to checkout');
   }
 
   for (const orderPosition of orderPositions) {
@@ -43,7 +43,10 @@ export async function validateOrderService(this: Modules, order: Order) {
         quotationId: orderPosition.quotationId,
       }));
     if (quotation && !this.quotations.isProposalValid(quotation)) {
-      throw new Error('Quotation expired or fullfiled, please request a new offer');
+      throw createServiceError(
+        'QuotationInvalidError',
+        'Quotation expired or fulfilled, please request a new offer',
+      );
     }
   }
 }

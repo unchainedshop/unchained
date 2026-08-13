@@ -8,6 +8,7 @@ import {
 import { initCartProvidersService } from './initCartProviders.ts';
 import type { Modules } from '../modules.ts';
 import { updateSchedulingService } from './updateScheduling.ts';
+import { createServiceError } from '../errors.ts';
 import {
   OrderDiscountDirector,
   OrderPricingDirector,
@@ -18,7 +19,7 @@ import {
 
 export async function updateCalculationService(this: Modules, orderId: string) {
   let order = await this.orders.findOrder({ orderId });
-  if (!order) throw new Error('Order not found');
+  if (!order) throw createServiceError('OrderNotFoundError', 'Order not found');
 
   // Don't recalculate orders, only carts
   if (order.status !== null) return order;

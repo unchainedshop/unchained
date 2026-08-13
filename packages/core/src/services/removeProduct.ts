@@ -1,6 +1,7 @@
 import { ProductStatus } from '@unchainedshop/core-products';
 import { updateCalculationService } from './updateCalculation.ts';
 import type { Modules } from '../modules.ts';
+import { createServiceError } from '../errors.ts';
 
 export async function removeProductService(
   this: Modules,
@@ -32,7 +33,7 @@ export async function removeProductService(
       // Already deleted
       return false;
     default:
-      throw new Error(`Invalid status: ${product?.status}`);
+      throw createServiceError('ProductWrongStatusError', `Invalid status: ${product?.status}`);
   }
 
   return true;

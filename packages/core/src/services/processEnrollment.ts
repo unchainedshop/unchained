@@ -1,6 +1,7 @@
 import { type Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import type { Modules } from '../modules.ts';
 import { EnrollmentDirector } from '../core-index.ts';
+import { createServiceError } from '../errors.ts';
 
 const findNextStatus = async (
   enrollment: Enrollment,
@@ -11,7 +12,7 @@ const findNextStatus = async (
     productId: enrollment.productId,
   });
 
-  if (!product) throw new Error('Product not found for enrollment');
+  if (!product) throw createServiceError('ProductNotFoundError', 'Product not found for enrollment');
 
   const director = await EnrollmentDirector.actions({ enrollment, product }, { modules });
 

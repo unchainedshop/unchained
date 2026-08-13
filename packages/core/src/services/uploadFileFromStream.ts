@@ -1,6 +1,7 @@
 import { getFileFromFileData, type File } from '@unchainedshop/core-files';
 import { getFileAdapter } from '../utils/getFileAdapter.ts';
 import type { Modules } from '../modules.ts';
+import { createServiceError } from '../errors.ts';
 
 export async function uploadFileFromStreamService(
   this: Modules,
@@ -23,6 +24,6 @@ export async function uploadFileFromStreamService(
   const fileData = getFileFromFileData(uploadFileData, meta);
   const fileId = await this.files.create(fileData);
   const file = await this.files.findFile({ fileId });
-  if (!file) throw new Error('File not found after upload');
+  if (!file) throw createServiceError('FileNotFoundError', 'File not found after upload');
   return file;
 }
