@@ -61,7 +61,7 @@
   "devDependencies": {
     "@noble/curves": "^2.0.0",
     "@noble/hashes": "^2.0.0",
-    "@types/node": "^25.0.0",
+    "@types/node": "^26.2.0",
     "typescript": "^5.8.3"
   }
 }

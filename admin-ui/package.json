@@ -39,7 +39,7 @@
     "Mikael Araya Mengistu <mikael@unchained.shop> (http://www.unchained.shop)"
   ],
   "devDependencies": {
-    "@ai-sdk/react": "^3.0.14",
+    "@ai-sdk/react": "^4.0.61",
     "@apollo/client": "^4.0.11",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
@@ -60,7 +60,7 @@
     "@types/react": "^19.2.7",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.43.0",
-    "ai": "^6.0.14",
+    "ai": "^7.0.58",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "cypress": "^15.0.0",
@@ -70,7 +70,7 @@
     "deepmerge": "^4.3.1",
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-cypress": "^6.0.0",
+    "eslint-plugin-cypress": "^7.0.0",
     "eslint-plugin-formatjs": "^6.0.1",
     "eslint-plugin-prettier": "^5.5.4",
     "formik": "^2.4.9",
