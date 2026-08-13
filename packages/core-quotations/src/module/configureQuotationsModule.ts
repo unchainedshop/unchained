@@ -123,12 +123,16 @@ export const configureQuotationsModule = async ({
   };
 
   const updateQuotationFields = (fieldKeys: string[]) => async (quotationId: string, values: any) => {
-    const quotation = await Quotations.findOneAndUpdate(generateDbFilterById(quotationId), {
-      $set: {
-        updated: new Date(),
-        ...fieldKeys.reduce((set, key) => ({ ...set, [key]: values[key] }), {}),
+    const quotation = await Quotations.findOneAndUpdate(
+      generateDbFilterById(quotationId),
+      {
+        $set: {
+          updated: new Date(),
+          ...fieldKeys.reduce((set, key) => ({ ...set, [key]: values[key] }), {}),
+        },
       },
-    });
+      { returnDocument: 'after' },
+    );
     if (!quotation) return null;
     await emit('QUOTATION_UPDATE', { quotation, fields: fieldKeys });
     return quotation;
