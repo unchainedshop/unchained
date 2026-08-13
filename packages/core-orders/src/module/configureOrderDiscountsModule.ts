@@ -25,7 +25,7 @@ export const configureOrderDiscountsModule = ({
     },
 
     findOrderDiscounts: async ({ orderId }: { orderId: string }): Promise<OrderDiscount[]> => {
-      const discounts = OrderDiscounts.find({ orderId });
+      const discounts = OrderDiscounts.find({ orderId }, { sort: { created: 1 } });
       return discounts.toArray();
     },
 
