@@ -57,7 +57,7 @@
     "minipass-json-stream": "^1.0.2"
   },
   "devDependencies": {
-    "@types/node": "^25.0.0",
+    "@types/node": "^26.2.0",
     "typescript": "^5.8.3"
   }
 }
