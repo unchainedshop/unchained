@@ -1,4 +1,5 @@
 import { emit, registerEvents } from '@unchainedshop/events';
+import { normalizePhoneNumber } from '@unchainedshop/utils';
 import {
   type Address,
   type Contact,
@@ -26,6 +27,19 @@ export const configureOrderModuleMutations = ({
 }) => {
   registerEvents(ORDER_EVENTS);
 
+  // Stores the order contact's phone number in normalized E.164 format, falling back
+  // to the original value when it cannot be parsed (it has already passed input validation).
+  const normalizeContactPhone = <T extends Contact | undefined>(
+    contact: T,
+    defaultCountry?: string,
+  ): T => {
+    if (!contact?.telNumber) return contact;
+    return {
+      ...contact,
+      telNumber: normalizePhoneNumber(contact.telNumber, defaultCountry) || contact.telNumber,
+    } as T;
+  };
+
   return {
     create: async ({
       userId,
@@ -50,7 +64,7 @@ export const configureOrderModuleMutations = ({
         created: new Date(),
         status: null,
         billingAddress,
-        contact,
+        contact: normalizeContactPhone(contact, billingAddress?.countryCode || countryCode),
         userId,
         currencyCode,
         countryCode,
@@ -117,11 +131,15 @@ export const configureOrderModuleMutations = ({
 
     updateContact: async (orderId: string, contact: Contact) => {
       const selector = generateDbFilterById(orderId);
+      const existing = await Orders.findOne(selector, {
+        projection: { billingAddress: true, countryCode: true },
+      });
+      const defaultCountry = existing?.billingAddress?.countryCode || existing?.countryCode;
       const order = await Orders.findOneAndUpdate(
         selector,
         {
           $set: {
-            contact,
+            contact: normalizeContactPhone(contact, defaultCountry),
             updated: new Date(),
           },
         },
@@ -187,7 +205,14 @@ export const configureOrderModuleMutations = ({
         $set.billingAddress = updates.billingAddress;
       }
       if (updates.contact) {
-        $set.contact = updates.contact;
+        let defaultCountry = updates.billingAddress?.countryCode;
+        if (!defaultCountry && updates.contact.telNumber) {
+          const existing = await Orders.findOne(generateDbFilterById(orderId), {
+            projection: { billingAddress: true, countryCode: true },
+          });
+          defaultCountry = existing?.billingAddress?.countryCode || existing?.countryCode;
+        }
+        $set.contact = normalizeContactPhone(updates.contact, defaultCountry);
       }
       if (updates.meta && Object.keys(updates.meta).length > 0) {
         const contextSetters = Object.fromEntries(

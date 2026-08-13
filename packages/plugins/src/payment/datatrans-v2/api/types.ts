@@ -60,18 +60,7 @@ export interface DT2015Configuration {
 }
 
 export type SupportedLanguage =
-  | 'de'
-  | 'en'
-  | 'fr'
-  | 'it'
-  | 'es'
-  | 'el'
-  | 'no'
-  | 'da'
-  | 'pl'
-  | 'pt'
-  | 'ru'
-  | 'ja';
+  'de' | 'en' | 'fr' | 'it' | 'es' | 'el' | 'no' | 'da' | 'pl' | 'pt' | 'ru' | 'ja';
 
 export type PaymentMethod =
   | 'ACC'
@@ -271,6 +260,7 @@ export interface SecureFieldsRequestPayload {
   currency: string;
   returnUrl?: string;
   amount?: number;
+  // 3DS cardholder data lives here for secureFields (this endpoint rejects a `card` property).
   ['3D']?: Record<string, unknown>;
 }
 

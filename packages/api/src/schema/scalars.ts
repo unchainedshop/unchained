@@ -6,5 +6,6 @@ export default [
     scalar Timestamp
     scalar LowerCaseString
     scalar Locale
+    scalar PhoneNumber
   `,
 ];

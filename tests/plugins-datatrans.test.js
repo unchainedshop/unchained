@@ -17,6 +17,14 @@ test.describe('Plugins: Datatrans', () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
 
+    // The checkout tests operate on the user's "most recent" open cart, which is
+    // selected by an `updated` sort where all seeded carts tie. If the seeded
+    // discounted cart (100%-off => total 0) wins the tie-break, checkout charges
+    // 0 while the datatrans transaction fixtures carry 10000, and the mock
+    // declines the payment. This file never tests discounts, so drop that cart
+    // to make cart selection deterministic regardless of test-file ordering.
+    await db.collection('orders').deleteOne({ _id: 'discounted-order' });
+
     // Add a datatrans provider
     await db.collection('payment-providers').findOrInsertOne({
       ...SimplePaymentProvider,
@@ -312,6 +320,9 @@ test.describe('Plugins: Datatrans', () => {
       const { data: { addCartProduct, updateCart, checkoutCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation addAndCheckout($productId: ID!) {
+            emptyCart {
+              _id
+            }
             addCartProduct(productId: $productId) {
               _id
             }
