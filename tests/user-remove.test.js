@@ -300,6 +300,78 @@ test.describe('User Removal', () => {
       assert.ok(errors);
       assert.strictEqual(errors[0]?.extensions?.code, 'ProductReviewNotFoundError');
     });
+
+    // Regression test for the session-invalidation fix (commit 084f25e80): markDeleted
+    // must delete the removed user's active sessions from the `sessions` collection.
+    // Sessions are stored as a serialized JSON blob; the owner id appears as
+    // `"user":"<id>"` (express/passport) or `"userId":"<id>"` (fastify). The pre-fix
+    // anchored regex matched 0 docs, so a deleted user's sessions stayed valid.
+    test('should invalidate the removed user active sessions (both express & fastify shapes)', async () => {
+      const {
+        data: { createUser },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation CreateUser($username: String!, $email: String!, $password: String!) {
+            createUser(username: $username, email: $email, password: $password) {
+              user {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          username: 'sessionuser',
+          email: 'sessionuser@example.com',
+          password: 'password123',
+        },
+      });
+
+      const userId = createUser.user._id;
+      const Sessions = db.collection('sessions');
+      const future = new Date(Date.now() + 60 * 60 * 1000);
+
+      await Sessions.insertMany([
+        {
+          // express/passport serialized shape
+          _id: 'sess-express-victim',
+          session: JSON.stringify({ cookie: {}, passport: { user: userId } }),
+          expires: future,
+        },
+        {
+          // fastify serialized shape
+          _id: 'sess-fastify-victim',
+          session: JSON.stringify({ cookie: {}, userId }),
+          expires: future,
+        },
+        {
+          // control: a session belonging to a *different* user must survive
+          _id: 'sess-bystander',
+          session: JSON.stringify({ cookie: {}, passport: { user: 'admin' } }),
+          expires: future,
+        },
+      ]);
+
+      const {
+        data: { removeUser },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation RemoveUser($userId: ID!) {
+            removeUser(userId: $userId) {
+              _id
+            }
+          }
+        `,
+        variables: { userId },
+      });
+
+      assert.strictEqual(removeUser._id, userId);
+
+      // Both of the deleted user's sessions are gone...
+      assert.strictEqual(await Sessions.countDocuments({ _id: 'sess-express-victim' }), 0);
+      assert.strictEqual(await Sessions.countDocuments({ _id: 'sess-fastify-victim' }), 0);
+      // ...and the unrelated session is untouched.
+      assert.strictEqual(await Sessions.countDocuments({ _id: 'sess-bystander' }), 1);
+    });
   });
 
   test.describe('Mutation.removeUser for normal user', () => {
