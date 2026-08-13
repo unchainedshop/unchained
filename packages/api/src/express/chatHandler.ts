@@ -73,16 +73,18 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
 
     const sdkClient = new Client({ name: 'unchained-chat-client', version: '1.0.0' });
     await sdkClient.connect(resourceTransport as any);
-    const transport = new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
-      requestInit: {
+    // Use the AI SDK's own streamable-HTTP transport rather than the MCP SDK's
+    // StreamableHTTPClientTransport: @ai-sdk/mcp assigns `transport.protocolVersion`
+    // during init, but the MCP SDK transport exposes that as a getter-only property
+    // (via setProtocolVersion()), which throws. The AI SDK transport has a settable one.
+    const client = await createMCPClient({
+      transport: {
+        type: 'http',
+        url: unchainedMCPUrl,
         headers: {
           Cookie: req.headers.cookie || '',
         },
       },
-    });
-
-    const client = await createMCPClient({
-      transport,
     });
 
     try {
@@ -163,8 +165,10 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
 
       const result = streamText({
         stopWhen: stepCountIs(10),
-        temperature: 0.2,
         maxRetries: 3,
+        // No hardcoded temperature: reasoning models (e.g. gpt-5.2) reject it. Callers
+        // can set temperature via their chat configuration when using a model that
+        // supports it.
         ...restChatConfig,
         system: system + resourceContext,
         model,
