@@ -57,6 +57,11 @@ export default [
       country: Country
       currency: Currency
       configuration: [ProductConfigurationParameter!]
+
+      """
+      Proposed unit price (minor units of the quotation's currency), set when the quotation reaches PROPOSED
+      """
+      price: Price
     }
   `,
 ];
