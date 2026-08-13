@@ -272,6 +272,39 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       }).toArray();
     },
 
+    async findGuestUserIds({ before }: { before: Date }): Promise<string[]> {
+      const users = await Users.find(
+        {
+          guest: true,
+          deleted: null as any,
+          // Only guests with no sign of presence since the cutoff. `lastLogin.timestamp`
+          // is our activity signal: it is bumped on (re-)login and by the `heartbeat`
+          // mutation, and `created` is the floor for guests that never produced one.
+          // We deliberately ignore `updated` (and cart `updated`) — both are bumped by
+          // background/system writes (billing, contact, address normalisation, and the
+          // INVALIDATE_CARTS recalculation sweep) that do not mean the guest was actually
+          // present, and would otherwise keep dead guests alive indefinitely. Note:
+          // clients that never call `heartbeat` leave `lastLogin.timestamp` frozen at
+          // creation, so a long-lived guest session is treated as stale once `created`
+          // ages past the cutoff — see CHANGELOG.
+          created: { $lte: before },
+          $or: [
+            { 'lastLogin.timestamp': { $exists: false } },
+            { 'lastLogin.timestamp': { $lte: before } },
+          ],
+        },
+        { projection: { _id: 1 } },
+      ).toArray();
+      return users.map((u) => u._id);
+    },
+
+    async findExistingUserIds({ userIds }: { userIds: string[] }): Promise<string[]> {
+      if (!userIds.length) return [];
+      // Raw existence check by _id, ignoring guest/deleted flags: a soft-deleted user
+      // still has a document, so only hard-deleted (absent) ids are treated as missing.
+      return Users.distinct('_id', { _id: { $in: userIds } });
+    },
+
     async userExists({ userId }: { userId: string }): Promise<boolean> {
       const userCount = await Users.countDocuments({ _id: userId, deleted: null as any }, { limit: 1 });
       return userCount === 1;

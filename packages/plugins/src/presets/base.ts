@@ -40,6 +40,8 @@ import { NodeEventEmitter } from '../events/node-event-emitter.ts';
 // Import plugins - Workers
 import { BulkImportPlugin } from '../worker/bulk-import/index.ts';
 import { ZombieKillerPlugin } from '../worker/zombie-killer/index.ts';
+import { GCGuestsPlugin } from '../worker/gc-guests/index.ts';
+import { InvalidateCartsPlugin } from '../worker/invalidate-carts/index.ts';
 import { MessagePlugin } from '../worker/message/index.ts';
 import { ExternalPlugin } from '../worker/external/index.ts';
 import { HttpRequestPlugin } from '../worker/http-request/index.ts';
@@ -92,6 +94,8 @@ export function registerBasePlugins() {
   // Workers
   pluginRegistry.register(BulkImportPlugin);
   pluginRegistry.register(ZombieKillerPlugin);
+  pluginRegistry.register(GCGuestsPlugin);
+  pluginRegistry.register(InvalidateCartsPlugin);
   pluginRegistry.register(MessagePlugin);
   pluginRegistry.register(ExternalPlugin);
   pluginRegistry.register(HttpRequestPlugin);

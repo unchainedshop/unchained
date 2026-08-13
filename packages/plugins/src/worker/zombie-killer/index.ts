@@ -1,5 +1,5 @@
 import { type IPlugin } from '@unchainedshop/core';
-import { ZombieKillerWorker } from './adapter.ts';
+import { ZombieKillerWorker, configureZombieKillerAutoscheduling } from './adapter.ts';
 
 // Plugin definition
 export const ZombieKillerPlugin: IPlugin = {
@@ -8,6 +8,10 @@ export const ZombieKillerPlugin: IPlugin = {
   version: '1.0.0',
 
   adapters: [ZombieKillerWorker],
+
+  onRegister: () => {
+    configureZombieKillerAutoscheduling();
+  },
 };
 
 export default ZombieKillerPlugin;

@@ -18,6 +18,7 @@ export type UserAccountAction = (typeof UserAccountAction)[keyof typeof UserAcco
 export interface UserSettings {
   mergeUserCartsOnLogin: boolean;
   autoMessagingAfterUserCreation: boolean;
+  guestUserMaxAgeInDays: number;
   earliestValidTokenDate: (
     type: typeof UserAccountAction.VERIFY_EMAIL | typeof UserAccountAction.RESET_PASSWORD,
   ) => Date;
@@ -32,6 +33,9 @@ export type UserSettingsOptions = Omit<Partial<UserSettings>, 'configureSettings
 
 const defaultAutoMessagingAfterUserCreation = true;
 const defaultMergeUserCartsOnLogin = true;
+// Inactive guest users are garbage-collected after this many days. Defaults to 30,
+// overridable via env for ops or via the users module options for code.
+const defaultGuestUserMaxAgeInDays = Number(process.env.UNCHAINED_GUEST_USER_EXPIRY_DAYS) || 30;
 
 const defaultEarliestValidTokenDate = () => {
   // 1 hour ago
@@ -54,6 +58,7 @@ const defaultValidatePassword = async (password: string) => {
 export const userSettings: UserSettings = {
   autoMessagingAfterUserCreation: defaultAutoMessagingAfterUserCreation,
   mergeUserCartsOnLogin: defaultMergeUserCartsOnLogin,
+  guestUserMaxAgeInDays: defaultGuestUserMaxAgeInDays,
   earliestValidTokenDate: defaultEarliestValidTokenDate,
   validateNewUser: defaultValidateNewUser,
   validateEmail: () => Promise.resolve(true),
@@ -64,6 +69,7 @@ export const userSettings: UserSettings = {
     {
       mergeUserCartsOnLogin,
       autoMessagingAfterUserCreation,
+      guestUserMaxAgeInDays,
       earliestValidTokenDate,
       validateEmail,
       validateUsername,
@@ -92,6 +98,7 @@ export const userSettings: UserSettings = {
     userSettings.mergeUserCartsOnLogin = mergeUserCartsOnLogin ?? defaultMergeUserCartsOnLogin;
     userSettings.autoMessagingAfterUserCreation =
       autoMessagingAfterUserCreation ?? defaultAutoMessagingAfterUserCreation;
+    userSettings.guestUserMaxAgeInDays = guestUserMaxAgeInDays ?? defaultGuestUserMaxAgeInDays;
     userSettings.earliestValidTokenDate = earliestValidTokenDate || defaultEarliestValidTokenDate;
     userSettings.validateEmail = validateEmail || defaultValidateEmail;
     userSettings.validateUsername = validateUsername || defaultValidateUsername;

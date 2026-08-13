@@ -15,6 +15,7 @@ import { initCartProvidersService } from './initCartProviders.ts';
 import { updateCalculationService } from './updateCalculation.ts';
 import { supportedDeliveryProvidersService } from './supportedDeliveryProviders.ts';
 import { deleteUserService } from './deleteUser.ts';
+import { deleteCartService } from './deleteCart.ts';
 import { supportedPaymentProvidersService } from './supportedPaymentProviders.ts';
 import { supportedWarehousingProvidersService } from './supportedWarehousingProviders.ts';
 import { createEnrollmentFromCheckoutService } from './createEnrollmentFromCheckout.ts';
@@ -103,6 +104,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
         typeof calculateDiscountTotalService
       >,
       migrateOrderCarts: migrateOrderCartsService as Bound<typeof migrateOrderCartsService>,
+      deleteCart: deleteCartService as Bound<typeof deleteCartService>,
       nextUserCart: nextUserCartService as Bound<typeof nextUserCartService>,
       findOrInitCart: findOrInitCartService as Bound<typeof findOrInitCartService>,
       initCartProviders: initCartProvidersService as Bound<typeof initCartProvidersService>,
