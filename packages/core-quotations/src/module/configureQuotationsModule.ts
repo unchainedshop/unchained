@@ -216,10 +216,15 @@ export const configureQuotationsModule = async ({
       return quotation;
     },
     deleteRequestedUserQuotations: async (userId: string) => {
-      const { deletedCount } = await Quotations.deleteMany({
+      const selector = {
         userId,
         status: { $in: [QuotationStatus.REQUESTED, null] },
-      });
+      };
+      const quotations = await Quotations.find(selector, { projection: { _id: 1 } }).toArray();
+      const { deletedCount } = await Quotations.deleteMany(selector);
+      await Promise.all(
+        quotations.map((quotation) => emit('QUOTATION_REMOVE', { quotationId: quotation._id })),
+      );
       return deletedCount;
     },
     updateContext: updateQuotationFields(['context']),
