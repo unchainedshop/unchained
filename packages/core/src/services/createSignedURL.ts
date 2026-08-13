@@ -1,5 +1,6 @@
 import { getFileFromFileData, getFileAdapter, type SignedFileUpload } from '@unchainedshop/core-files';
 import type { Modules } from '../modules.ts';
+import { createServiceError } from '../errors.ts';
 
 export async function createSignedURLService(
   this: Modules,
@@ -9,7 +10,8 @@ export async function createSignedURLService(
   const preparedFileData = await fileUploadAdapter.createSignedURL(directoryName, fileName, {
     modules: this,
   });
-  if (!preparedFileData) throw new Error('Could not prepare signed URL');
+  if (!preparedFileData)
+    throw createServiceError('SignedURLPreparationError', 'Could not prepare signed URL');
   const fileData = getFileFromFileData(preparedFileData, meta);
   const fileId = await this.files.create(fileData);
   const file = await this.files.findFile({ fileId });

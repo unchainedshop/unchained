@@ -14,6 +14,7 @@ import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { WarehousingDirector, DeliveryDirector, PaymentDirector } from '../directors/index.ts';
 import { fulfillQuotationService } from './fulfillQuotation.ts';
 import { createLogger } from '@unchainedshop/logger';
+import { createServiceError } from '../errors.ts';
 
 const logger = createLogger('unchained:core:processOrder');
 
@@ -35,7 +36,10 @@ const isAutoConfirmationEnabled = async (
       paymentProviderId: orderPayment.paymentProviderId,
     });
     if (!paymentProvider)
-      throw new Error(`Payment provider not found: ${orderPayment.paymentProviderId}`);
+      throw createServiceError(
+        'PaymentProviderNotFoundError',
+        `Payment provider not found: ${orderPayment.paymentProviderId}`,
+      );
     const actions = await PaymentDirector.actions(paymentProvider, {}, { modules });
     if (!actions.isPayLaterAllowed()) return false;
   }
@@ -45,7 +49,10 @@ const isAutoConfirmationEnabled = async (
       deliveryProviderId: orderDelivery.deliveryProviderId,
     });
     if (!deliveryProvider)
-      throw new Error(`Delivery provider not found: ${orderDelivery.deliveryProviderId}`);
+      throw createServiceError(
+        'DeliveryProviderNotFoundError',
+        `Delivery provider not found: ${orderDelivery.deliveryProviderId}`,
+      );
     const director = await DeliveryDirector.actions(deliveryProvider, {}, { modules });
     if (!director.isAutoReleaseAllowed()) return false;
   }

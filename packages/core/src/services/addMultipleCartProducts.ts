@@ -1,6 +1,7 @@
 import type { Modules } from '../modules.ts';
 import type { Order } from '@unchainedshop/core-orders';
 import { ordersSettings } from '@unchainedshop/core-orders';
+import { createServiceError } from '../errors.ts';
 
 export async function addMultipleCartProductsService(
   this: Modules,
@@ -28,11 +29,11 @@ export async function addMultipleCartProductsService(
   for (const { productId, quantity, configuration } of items) {
     const originalProduct = await this.products.findProduct({ productId });
     if (!originalProduct) {
-      throw new Error(`Product not found: ${productId}`);
+      throw createServiceError('ProductNotFoundError', `Product not found: ${productId}`);
     }
 
     if (quantity < 1) {
-      throw new Error(`Invalid quantity for product: ${productId}`);
+      throw createServiceError('InvalidQuantityError', `Invalid quantity for product: ${productId}`);
     }
 
     const product = await this.products.resolveOrderableProduct(originalProduct, { configuration });
