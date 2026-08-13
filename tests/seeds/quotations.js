@@ -60,7 +60,20 @@ export const ProposedQuotation = {
   expires: new Date('2019-10-14T19:08:05.000+0000'),
 };
 
+export const OtherUsersQuotation = {
+  _id: 'other-users-quotation',
+  created: new Date('2019-10-15T08:00:00.000+0000'),
+  status: 'REQUESTED',
+  userId: 'admin',
+  productId: 'simpleproduct',
+  configuration: [],
+  countryCode: 'CH',
+  log: [],
+  quotationNumber: 'A99XY01',
+};
+
 export default async function seedQuotations(db) {
   await db.collection('quotations').findOrInsertOne(ProcessingQuotation);
   await db.collection('quotations').findOrInsertOne(ProposedQuotation);
+  await db.collection('quotations').findOrInsertOne(OtherUsersQuotation);
 }
