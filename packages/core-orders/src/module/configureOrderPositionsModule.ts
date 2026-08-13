@@ -47,10 +47,7 @@ export const configureOrderPositionsModule = ({
     },
 
     findOrderPositions: async ({ orderId }: { orderId: string }): Promise<OrderPosition[]> => {
-      const positions = OrderPositions.find(
-        { orderId, quantity: { $gt: 0 } },
-        { sort: { created: 1 } },
-      );
+      const positions = OrderPositions.find({ orderId, quantity: { $gt: 0 } }, { sort: { created: 1 } });
       return positions.toArray();
     },
 
