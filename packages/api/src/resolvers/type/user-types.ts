@@ -168,9 +168,9 @@ export const User: UserHelperTypes = {
   },
 
   async cart(user, params, context) {
-    const { modules, countryCode } = context;
+    const { loaders, countryCode } = context;
     await checkAction(context, viewUserOrders, [user, params]);
-    return modules.orders.cart({
+    return loaders.cartLoader.load({
       countryCode,
       orderNumber: params.orderNumber,
       userId: user._id,
