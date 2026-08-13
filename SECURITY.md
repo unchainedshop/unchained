@@ -304,6 +304,41 @@ The `escapeRegexString` function escapes all special regex characters (`[-/\\^$*
 
 All query builder functions that accept user input for text search apply proper escaping to prevent injection attacks.
 
+### GraphQL Query Protection (Denial-of-Service)
+
+Unchained does **not** enforce GraphQL query-complexity, depth, alias-count, or rate limits by default. As a headless engine embedded in the integrator's own server process, these edge protections are a **deployment responsibility** — correct thresholds depend on your schema extensions, expected traffic, and infrastructure.
+
+This matters because:
+
+- **Anonymous access is enabled by default** for read-only storefront queries (`assortments`, `products`, `filters`, `languages`, `currencies`, `countries`, `search`), gated in `packages/api/src/roles/all.ts`.
+- **GraphQL alias batching** lets a single unauthenticated request repeat the same field under many aliases. Each aliased list field resolves to an independent database query, so an unbounded query can amplify one HTTP request into thousands of database operations (advisory `GHSA-732q-p8qr-4mcg`).
+
+**Mitigations the integrator should apply:**
+
+1. **In-process query validation.** GraphQL Yoga `plugins` and `validationRules` are forwarded verbatim through `startPlatform` / `startAPIServer` into the underlying Yoga instance (`packages/api/src/createGraphQLServer.ts`). Wire in alias, depth, and token/cost limits — e.g. [GraphQL Armor](https://escape.tech/graphql-armor/):
+
+   ```ts
+   import { startPlatform } from '@unchainedshop/platform';
+   import { maxAliasesPlugin } from '@escape.tech/graphql-armor-max-aliases';
+   import { maxDepthPlugin } from '@escape.tech/graphql-armor-max-depth';
+   import { maxTokensPlugin } from '@escape.tech/graphql-armor-max-tokens';
+
+   await startPlatform({
+     // ...your options
+     plugins: [
+       maxAliasesPlugin({ n: 15 }),
+       maxDepthPlugin({ n: 10 }),
+       maxTokensPlugin({ n: 1000 }),
+     ],
+   });
+   ```
+
+   Build the `plugins` array explicitly; if you merge caller-supplied plugins, append the security plugins **last** so they cannot be silently overridden.
+
+2. **Rate limiting & body-size limits at the edge.** Apply per-IP / per-token rate limits and request-body-size caps at the reverse proxy, API gateway, or WAF in front of the engine. Give anonymous traffic a tighter budget than authenticated traffic.
+
+3. **Pagination clamping.** Clamp `limit` / offset in any custom list resolvers you add, and consider restricting anonymous access to list queries if your storefront does not require it.
+
 ## Audit Logging
 
 Unchained provides append-only, tamper-evident audit logging based on the **OCSF (Open Cybersecurity Schema Framework)**. OCSF is an industry-standard schema developed by 120+ organizations (AWS, Splunk, IBM) and is now a Linux Foundation project. It is natively supported by AWS Security Lake, Google Chronicle, Datadog, Elastic, and other SIEM systems.
