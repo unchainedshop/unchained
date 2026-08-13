@@ -24,11 +24,18 @@ try {
   logger.warn(`optional peer npm package '@modelcontextprotocol/sdk' not installed, mcp will not work`);
 }
 
-// Map of MCP session id -> { transport, userId }. The userId binds a session to the
-// principal that initialized it so a session can never be reused by a different user.
+// Map of MCP session id -> { transport, userId, context }. The userId binds a session
+// to the principal that initialized it so a session can never be reused by a different
+// user. `context` is a mutable holder that the registered tools close over; it is
+// refreshed from each request's unchainedContext so tools never operate on a stale,
+// initialization-time snapshot (loaders, locale, remoteAddress, user document, ...).
 const transports: Record<
   string,
-  { transport: mcpSDKServerLibraryTypes.StreamableHTTPServerTransport; userId: string }
+  {
+    transport: mcpSDKServerLibraryTypes.StreamableHTTPServerTransport;
+    userId: string;
+    context: Context;
+  }
 > = {};
 
 const mcpHandler: RouteHandlerMethod = async (
@@ -80,14 +87,19 @@ const mcpHandler: RouteHandlerMethod = async (
             }),
           );
         }
+        // Refresh the session's context holder with this request's context so the tools
+        // (which close over it) act on current request-scoped data. Same principal,
+        // already enforced above, so this only updates data the caller already has.
+        Object.assign(transports[sessionId].context, req.unchainedContext);
         transport = transports[sessionId].transport;
       } else if (!sessionId && isInitializeRequest(req.body)) {
-        // New initialization request
+        // New initialization request — the tools close over this stable context holder.
+        const contextHolder = req.unchainedContext;
         transport = new StreamableHTTPServerTransport({
           sessionIdGenerator: () => crypto.randomUUID(),
           onsessioninitialized: (sessionId) => {
             // Store the transport bound to the initializing user
-            transports[sessionId] = { transport, userId: currentUserId };
+            transports[sessionId] = { transport, userId: currentUserId, context: contextHolder };
           },
         });
 
@@ -104,7 +116,7 @@ const mcpHandler: RouteHandlerMethod = async (
             name: 'Unchained MCP Server',
             version: '1.0.0',
           }),
-          req.unchainedContext,
+          contextHolder,
           roles,
         );
         await server.connect(transport);
@@ -130,6 +142,8 @@ const mcpHandler: RouteHandlerMethod = async (
         return res.status(400).send('Invalid or missing session ID');
       }
 
+      // Refresh the session's context holder (see the POST branch) before dispatching.
+      Object.assign(transports[sessionId].context, req.unchainedContext);
       const transport = transports[sessionId].transport;
       await transport.handleRequest(req.raw, res.raw);
       return res;
