@@ -182,7 +182,7 @@ export const configureQuotationsModule = async ({
         : (quotation.status as QuotationStatus);
     },
 
-    isExpired(quotation: Quotation, { referenceDate }: { referenceDate: Date }) {
+    isExpired(quotation: Quotation, { referenceDate }: { referenceDate?: Date } = {}) {
       const relevantDate = referenceDate ? new Date(referenceDate) : new Date();
       if (!quotation.expires) return false;
       const expiryDate = new Date(quotation.expires);
