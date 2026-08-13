@@ -4,10 +4,16 @@ import type { Context } from '../../../context.ts';
 
 export default async function createBookmark(
   root: never,
-  { productId, userId, meta }: { productId: string; userId: string; meta?: any },
+  { productId, userId, meta }: { productId: string; userId?: string; meta?: any },
   { modules, userId: currentUserId }: Context,
 ) {
-  log(`mutation createBookmark for ${userId}`, {
+  // Defense-in-depth: bind the bookmark to the authenticated user unless a target
+  // userId is explicitly supplied. Authorization to create a bookmark for a *different*
+  // user is enforced by the createBookmark ACL predicate (self-or-admin); this fallback
+  // also prevents an empty-string userId from creating an owner-less bookmark.
+  const targetUserId = userId || currentUserId;
+
+  log(`mutation createBookmark for ${targetUserId}`, {
     productId,
     userId: currentUserId,
   });
@@ -17,14 +23,14 @@ export default async function createBookmark(
 
   const [bookmark] = await modules.bookmarks.findBookmarks({
     productId,
-    userId,
+    userId: targetUserId,
     meta,
   });
 
   if (bookmark) throw new BookmarkAlreadyExistsError({ bookmarkId: bookmark._id });
 
   const bookmarkId = await modules.bookmarks.create({
-    userId,
+    userId: targetUserId,
     productId,
     meta,
   });

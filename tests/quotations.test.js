@@ -6,8 +6,8 @@ import {
   createAnonymousGraphqlFetch,
   disconnect,
 } from './helpers.js';
-import { ADMIN_TOKEN } from './seeds/users.js';
-import { ProcessingQuotation, ProposedQuotation } from './seeds/quotations.js';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
+import { ProcessingQuotation, ProposedQuotation, OtherUsersQuotation } from './seeds/quotations.js';
 import { SimpleProduct } from './seeds/products.js';
 
 let graphqlFetch;
@@ -65,7 +65,7 @@ test.describe('Quotations', async () => {
         variables: {},
       });
 
-      assert.equal(quotations.length, 2);
+      assert.equal(quotations.length, 3);
       assert.partialDeepStrictEqual(quotations[0], {
         quotationNumber: 'K271P03',
         status: 'PROCESSING',
@@ -132,7 +132,7 @@ test.describe('Quotations', async () => {
         `,
         variables: {},
       });
-      assert.equal(quotationsCount, 2);
+      assert.equal(quotationsCount, 3);
     });
   });
 
@@ -213,6 +213,50 @@ test.describe('Quotations', async () => {
       });
       assert.equal(quotation, null);
       assert.equal(errors[0]?.extensions?.code, 'InvalidIdError');
+    });
+  });
+
+  test.describe('Query.quotation for logged in user should', async () => {
+    test('return own quotation (owner-checked viewQuotation)', async () => {
+      const graphqlUserFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+      const {
+        data: { quotation },
+        errors,
+      } = await graphqlUserFetch({
+        query: /* GraphQL */ `
+          query Quotation($quotationId: ID!) {
+            quotation(quotationId: $quotationId) {
+              _id
+              status
+              user {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          quotationId: ProcessingQuotation._id,
+        },
+      });
+      assert.equal(errors, undefined);
+      assert.equal(quotation._id, ProcessingQuotation._id);
+    });
+
+    test("return NoPermissionError for another user's quotation", async () => {
+      const graphqlUserFetch = createLoggedInGraphqlFetch(USER_TOKEN);
+      const { errors } = await graphqlUserFetch({
+        query: /* GraphQL */ `
+          query Quotation($quotationId: ID!) {
+            quotation(quotationId: $quotationId) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          quotationId: OtherUsersQuotation._id,
+        },
+      });
+      assert.equal(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 });

@@ -263,6 +263,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.updateProductReview, isOwnedProductReview);
   role.allow(actions.requestQuotation, () => true);
   role.allow(actions.answerQuotation, isOwnedQuotation);
+  role.allow(actions.viewQuotation, isOwnedQuotation);
   role.allow(actions.manageBookmarks, isOwnedBookmark);
   role.allow(actions.createBookmark, isOwnBookmarkUser);
   role.allow(actions.bookmarkProduct, () => true);
