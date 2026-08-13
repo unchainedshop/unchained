@@ -9,6 +9,12 @@ export async function proposeQuotationService(
 ) {
   if (quotation.status !== QuotationStatus.PROCESSING) return quotation;
 
+  // persist the proposal context on the quotation so adapters can derive the
+  // proposal from persisted state in quote() (quotation.context)
+  if (quotationContext) {
+    await this.quotations.updateContext(quotation._id, { context: quotationContext });
+  }
+
   const updatedQuotation = (await this.quotations.updateStatus(quotation._id, {
     status: QuotationStatus.PROPOSED,
     info: 'proposed manually',

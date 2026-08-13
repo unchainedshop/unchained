@@ -3,9 +3,11 @@ import type { Modules } from '../modules.ts';
 import { QuotationDirector } from '../core-index.ts';
 import { addMessageService } from './addMessage.ts';
 
-const findNextStatus = async (quotation: Quotation, modules: Modules): Promise<QuotationStatus> => {
+const findNextStatus = async (
+  director: Awaited<ReturnType<typeof QuotationDirector.actions>>,
+  quotation: Quotation,
+): Promise<QuotationStatus> => {
   let status = quotation.status as QuotationStatus;
-  const director = await QuotationDirector.actions({ quotation }, { modules });
 
   if (status === QuotationStatus.REQUESTED) {
     if (!(await director.isManualRequestVerificationRequired())) {
@@ -26,32 +28,34 @@ export async function processQuotationService(
   params: { quotationContext?: any },
 ) {
   const quotationId = initialQuotation._id;
+
+  // The document is threaded through (like processOrder does with orders);
+  // a re-fetch only happens after an adapter hook actually ran, because hooks
+  // are the only channel through which adapters mutate the quotation.
   let quotation = initialQuotation;
-  let nextStatus = await findNextStatus(quotation, this);
   const director = await QuotationDirector.actions({ quotation }, { modules: this });
 
+  const runHook = async (hook: (quotationContext?: any) => Promise<boolean>) => {
+    await hook(params.quotationContext);
+    quotation = (await this.quotations.findQuotation({ quotationId })) as Quotation;
+    return findNextStatus(director, quotation);
+  };
+
+  let nextStatus = await findNextStatus(director, quotation);
+
   if (quotation.status === QuotationStatus.REQUESTED && nextStatus !== QuotationStatus.REQUESTED) {
-    await director.submitRequest(params.quotationContext);
+    nextStatus = await runHook(director.submitRequest);
   }
-
-  quotation = (await this.quotations.findQuotation({ quotationId })) as Quotation;
-  nextStatus = await findNextStatus(quotation, this);
   if (nextStatus !== QuotationStatus.PROCESSING) {
-    await director.verifyRequest(params.quotationContext);
+    nextStatus = await runHook(director.verifyRequest);
   }
-
-  quotation = (await this.quotations.findQuotation({ quotationId })) as Quotation;
-  nextStatus = await findNextStatus(quotation, this);
   if (nextStatus === QuotationStatus.REJECTED) {
-    await director.rejectRequest(params.quotationContext);
+    nextStatus = await runHook(director.rejectRequest);
   }
-
-  quotation = (await this.quotations.findQuotation({ quotationId })) as Quotation;
-  nextStatus = await findNextStatus(quotation, this);
   if (nextStatus === QuotationStatus.PROPOSED) {
     const proposal = await director.quote();
     quotation = (await this.quotations.updateProposal(quotation._id, proposal)) as Quotation;
-    nextStatus = await findNextStatus(quotation, this);
+    nextStatus = await findNextStatus(director, quotation);
   }
 
   const updatedQuotation = (await this.quotations.updateStatus(quotation._id, {

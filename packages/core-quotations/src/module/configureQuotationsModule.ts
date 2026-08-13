@@ -123,12 +123,16 @@ export const configureQuotationsModule = async ({
   };
 
   const updateQuotationFields = (fieldKeys: string[]) => async (quotationId: string, values: any) => {
-    const quotation = await Quotations.findOneAndUpdate(generateDbFilterById(quotationId), {
-      $set: {
-        updated: new Date(),
-        ...fieldKeys.reduce((set, key) => ({ ...set, [key]: values[key] }), {}),
+    const quotation = await Quotations.findOneAndUpdate(
+      generateDbFilterById(quotationId),
+      {
+        $set: {
+          updated: new Date(),
+          ...fieldKeys.reduce((set, key) => ({ ...set, [key]: values[key] }), {}),
+        },
       },
-    });
+      { returnDocument: 'after' },
+    );
     if (!quotation) return null;
     await emit('QUOTATION_UPDATE', { quotation, fields: fieldKeys });
     return quotation;
@@ -182,7 +186,7 @@ export const configureQuotationsModule = async ({
         : (quotation.status as QuotationStatus);
     },
 
-    isExpired(quotation: Quotation, { referenceDate }: { referenceDate: Date }) {
+    isExpired(quotation: Quotation, { referenceDate }: { referenceDate?: Date } = {}) {
       const relevantDate = referenceDate ? new Date(referenceDate) : new Date();
       if (!quotation.expires) return false;
       const expiryDate = new Date(quotation.expires);
@@ -216,10 +220,15 @@ export const configureQuotationsModule = async ({
       return quotation;
     },
     deleteRequestedUserQuotations: async (userId: string) => {
-      const { deletedCount } = await Quotations.deleteMany({
+      const selector = {
         userId,
         status: { $in: [QuotationStatus.REQUESTED, null] },
-      });
+      };
+      const quotations = await Quotations.find(selector, { projection: { _id: 1 } }).toArray();
+      const { deletedCount } = await Quotations.deleteMany(selector);
+      await Promise.all(
+        quotations.map((quotation) => emit('QUOTATION_REMOVE', { quotationId: quotation._id })),
+      );
       return deletedCount;
     },
     updateContext: updateQuotationFields(['context']),
