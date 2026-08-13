@@ -261,6 +261,36 @@ Or enable FIPS mode manually:
 node --enable-fips your-app.js
 ```
 
+### API Hardening (Denial-of-Service Protection)
+
+The GraphQL API does **not** impose query-complexity, depth, alias-count, or rate limits by default. Unchained is a headless engine embedded in your own server process, so where and how these edge protections are enforced is a deployment decision that belongs to the integrator — appropriate thresholds depend on your schema extensions, traffic profile, and infrastructure (CDN, WAF, API gateway, reverse proxy).
+
+Anonymous access is enabled by default for read-only storefront queries (e.g. `assortments`, `products`, `filters`, `languages`, `currencies`, `countries`, `search`). Because GraphQL lets a single request batch many aliased fields, an unbounded query can fan out into many database operations. Bounding this is the operator's responsibility.
+
+**Recommended layers:**
+
+1. **Query validation (in-process).** GraphQL Yoga plugins and validation rules are forwarded straight through `startPlatform` / `startAPIServer` to the underlying Yoga server. For example, using [GraphQL Armor](https://escape.tech/graphql-armor/):
+
+   ```ts
+   import { startPlatform } from '@unchainedshop/platform';
+   import { maxAliasesPlugin } from '@escape.tech/graphql-armor-max-aliases';
+   import { maxDepthPlugin } from '@escape.tech/graphql-armor-max-depth';
+   import { maxTokensPlugin } from '@escape.tech/graphql-armor-max-tokens';
+
+   await startPlatform({
+     // ...your options
+     plugins: [
+       maxAliasesPlugin({ n: 15 }),
+       maxDepthPlugin({ n: 10 }),
+       maxTokensPlugin({ n: 1000 }),
+     ],
+   });
+   ```
+
+2. **Rate limiting & request-size limits (at the edge).** Enforce per-IP / per-token rate limits and body-size caps at your reverse proxy, API gateway, or WAF (e.g. nginx `limit_req`, Cloudflare, AWS WAF). Keep anonymous traffic on a tighter budget than authenticated traffic.
+
+3. **Pagination caps.** If you expose custom list resolvers, clamp `limit` / pagination server-side.
+
 See [SECURITY.md](SECURITY.md) for complete security documentation, compliance details, and deployment recommendations.
 
 ## Resources
