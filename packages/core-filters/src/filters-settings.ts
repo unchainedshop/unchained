@@ -8,6 +8,8 @@ export interface FiltersSettings {
     productIdsMap: Record<string, string[]>,
   ) => Promise<number>;
   getCachedProductIds: (filterId: string) => Promise<[string[], Record<string, string[]>] | null>;
+  /* Drop the whole cache of a filter, used when the filter itself goes away. */
+  purgeCachedProductIds: (filterId: string) => Promise<void>;
   configureSettings: (options: FiltersSettingsOptions, db: mongodb.Db) => void;
 }
 
@@ -16,9 +18,11 @@ export type FiltersSettingsOptions = Omit<Partial<FiltersSettings>, 'configureSe
 export const filtersSettings: FiltersSettings = {
   setCachedProductIds: () => Promise.resolve(0),
   getCachedProductIds: () => Promise.resolve(null),
-  configureSettings: async ({ setCachedProductIds, getCachedProductIds }, db) => {
+  purgeCachedProductIds: () => Promise.resolve(),
+  configureSettings: async ({ setCachedProductIds, getCachedProductIds, purgeCachedProductIds }, db) => {
     const defaultCache = await makeMongoDBCache(db);
     filtersSettings.setCachedProductIds = setCachedProductIds || defaultCache.setCachedProductIds;
     filtersSettings.getCachedProductIds = getCachedProductIds || defaultCache.getCachedProductIds;
+    filtersSettings.purgeCachedProductIds = purgeCachedProductIds || defaultCache.purgeCachedProductIds;
   },
 };

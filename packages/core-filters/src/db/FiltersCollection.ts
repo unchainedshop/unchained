@@ -18,6 +18,14 @@ export type Filter = {
   type: FilterType;
 } & TimestampFields;
 
+/*
+ * The set of values a filter can be queried by, and thus the keys of its product id cache:
+ * a SWITCH is not backed by options but by the two boolean states, every other type is
+ * defined by its options.
+ */
+export const filterOptionValues = (filter: Pick<Filter, 'type' | 'options'>): string[] =>
+  filter.type === FilterType.SWITCH ? ['true', 'false'] : filter.options || [];
+
 export type FilterText = {
   _id: string;
   filterId: string;

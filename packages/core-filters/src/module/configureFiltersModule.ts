@@ -148,6 +148,7 @@ export const configureFiltersModule = async ({
 
     delete: async (filterId: string) => {
       await filterTexts.deleteMany({ filterId });
+      await filtersSettings.purgeCachedProductIds(filterId);
       const { deletedCount } = await Filters.deleteOne({ _id: filterId });
       await emit('FILTER_REMOVE', { filterId });
       return deletedCount;
