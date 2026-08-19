@@ -5,6 +5,7 @@ import { filtersSettings } from '@unchainedshop/core-filters';
 import { FilterDirector } from '@unchainedshop/core';
 import assert from 'node:assert';
 import test from 'node:test';
+import { setTimeout } from 'node:timers/promises';
 
 let db;
 let graphqlFetch;
@@ -34,6 +35,10 @@ const seedFilter = async (options) => {
 };
 
 const resolve = async (value) => {
+  // Cached reads are memoized in process (1ms TTL outside production, 60s in it). Two reads
+  // within the same millisecond both hit that memo, so wait it out - otherwise we assert
+  // against a map built before the prune rather than against the prune itself.
+  await setTimeout(25);
   const filter = await db.collection('filters').findOne({ _id: FILTER_ID });
   const { unchainedAPI } = getTestPlatform();
   return [...(await FilterDirector.filterProductIds(filter, { values: [value] }, unchainedAPI))];
