@@ -25,10 +25,7 @@ describe('resolveDeliveryLocation', () => {
   });
 
   it('lets an explicit countryCode win unless an address overrides it', () => {
-    assert.strictEqual(
-      resolveDeliveryLocation({ countryCode: ' us ', order: null }).countryCode,
-      'US',
-    );
+    assert.strictEqual(resolveDeliveryLocation({ countryCode: ' us ', order: null }).countryCode, 'US');
     assert.strictEqual(
       resolveDeliveryLocation({
         countryCode: 'US',
