@@ -5,11 +5,12 @@ import upsertVariations, { ProductVariationSchema } from './upsertVariations.ts'
 import upsertMedia, { MediaSchema } from './upsertMedia.ts';
 import createProduct, { ProductCreatePayloadSchema } from './create.ts';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.ts';
+import { ProductStatus } from '@unchainedshop/core-products';
 
 export const ProductUpdateSpecificationSchema = z.object({
   type: z.optional(z.string()),
   sequence: z.optional(z.number()),
-  status: z.nullish(z.string()), // or null!
+  status: z.nullish(z.enum(ProductStatus)),
   published: z.nullish(z.iso.datetime()), // or null!
   tags: z.optional(z.array(z.string())),
   commerce: z.optional(
@@ -86,6 +87,9 @@ export const ProductUpdatePayloadSchema = z.object({
   variations: z.optional(z.array(ProductVariationSchema)),
 });
 
+/* See create.ts: draft is null in the database, not the string form of the enum. */
+const normalizeStatus = (status?: string | null) => (status === ProductStatus.DRAFT ? null : status);
+
 const transformSpecification = (specification: z.infer<typeof ProductUpdateSpecificationSchema>) => {
   const {
     variationResolvers: assignments,
@@ -101,6 +105,7 @@ const transformSpecification = (specification: z.infer<typeof ProductUpdateSpeci
   return {
     ...productData,
     published: productData.published ? new Date(productData.published) : undefined,
+    ...(productData.status !== undefined && { status: normalizeStatus(productData.status) }),
     tags,
     warehousing,
     supply,
