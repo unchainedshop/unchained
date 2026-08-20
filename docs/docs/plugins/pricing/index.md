@@ -20,6 +20,9 @@ Calculate prices when products are queried or added to cart.
 | [`shop.unchained.pricing.rate-conversion`](./pricing-product-rate-conversion.md) | 10 | Currency conversion |
 | [`shop.unchained.pricing.product-discount`](./pricing-product-discount.md) | 30 | Apply discounts |
 | [`shop.unchained.pricing.product-swiss-tax`](./pricing-product-swiss-tax.md) | 80 | Swiss VAT |
+| [`shop.unchained.pricing.product-eu-tax`](./pricing-product-eu-tax.md) | 80 | EU VAT (destination-based, 27 member states) |
+| [`shop.unchained.pricing.product-uk-tax`](./pricing-product-uk-tax.md) | 80 | UK VAT |
+| [`shop.unchained.pricing.product-us-sales-tax`](./pricing-product-us-sales-tax.md) | 80 | US statewide sales tax |
 | [`shop.unchained.pricing.product-round`](./pricing-product-round.md) | 90 | Round prices |
 
 ## Delivery Pricing
@@ -30,6 +33,9 @@ Calculate shipping and handling fees.
 |-------------|-------|-------------|
 | [`shop.unchained.pricing.delivery-free`](./pricing-delivery-free.md) | 0 | Zero-cost delivery |
 | [`shop.unchained.pricing.delivery-swiss-tax`](./pricing-delivery-swiss-tax.md) | 80 | Swiss VAT on delivery |
+| [`shop.unchained.pricing.delivery-eu-tax`](./pricing-delivery-eu-tax.md) | 80 | EU VAT on delivery |
+| [`shop.unchained.pricing.delivery-uk-tax`](./pricing-delivery-uk-tax.md) | 80 | UK VAT on delivery |
+| [`shop.unchained.pricing.delivery-us-sales-tax`](./pricing-delivery-us-sales-tax.md) | 80 | US sales tax on delivery |
 
 ## Payment Pricing
 
