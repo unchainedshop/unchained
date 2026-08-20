@@ -34,6 +34,18 @@ const seedFilter = async (options) => {
   });
 };
 
+// Replaces the catalog scan for the duration of one invalidation, so a race that would otherwise
+// need a slow catalog can be staged deterministically.
+const withStubbedBuild = async (buildProductIdMap, run) => {
+  const original = FilterDirector.buildProductIdMap;
+  FilterDirector.buildProductIdMap = buildProductIdMap;
+  try {
+    return await run();
+  } finally {
+    FilterDirector.buildProductIdMap = original;
+  }
+};
+
 const resolve = async (value) => {
   // Cached reads are memoized in process (1ms TTL outside production, 60s in it). Two reads
   // within the same millisecond both hit that memo, so wait it out - otherwise we assert
@@ -84,21 +96,26 @@ test.describe('Filter: product id cache invalidation', () => {
     assert.deepStrictEqual(await resolve('offerable'), ['p1']);
   });
 
-  test('keeps an option that was added while a slow invalidation was still in flight', async () => {
+  test('discards an invalidation that a concurrent option change superseded', async () => {
     await seedFilter(['a', 'b']);
-    // a full invalidation starts here and snapshots [a, b]
-    const staleSnapshot = { a: ['p1'], b: ['p2'] };
+    const snapshot = await db.collection('filters').findOne({ _id: FILTER_ID });
+    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], { a: ['p1'], b: ['p2'] });
 
-    // meanwhile `c` gets added and invalidated on its own
-    await db.collection('filters').updateOne({ _id: FILTER_ID }, { $push: { options: 'c' } });
-    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2', 'p3'], {
-      a: ['p1'],
-      b: ['p2'],
-      c: ['p3'],
-    });
-
-    // the slow invalidation lands last, carrying an option set that predates `c`
-    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], staleSnapshot);
+    // Stands in for a build slow enough that the option set moves underneath it: `c` is added
+    // and invalidated on its own while this one is still scanning, so what it returns describes
+    // a filter that no longer exists. Writing it would retire `c` again.
+    await withStubbedBuild(
+      async () => {
+        await db.collection('filters').updateOne({ _id: FILTER_ID }, { $push: { options: 'c' } });
+        await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2', 'p3'], {
+          a: ['p1'],
+          b: ['p2'],
+          c: ['p3'],
+        });
+        return [['p1', 'p2'], { a: ['p1'], b: ['p2'] }];
+      },
+      () => FilterDirector.invalidateProductIdCache(snapshot, getTestPlatform().unchainedAPI),
+    );
 
     assert.deepStrictEqual(await cacheRowIds(), [
       `${FILTER_ID}:`,
@@ -111,6 +128,7 @@ test.describe('Filter: product id cache invalidation', () => {
 
   test('drops every cache row of a deleted filter, including a late invalidation', async () => {
     await seedFilter(['a', 'b']);
+    const snapshot = await db.collection('filters').findOne({ _id: FILTER_ID });
     await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], { a: ['p1'], b: ['p2'] });
     assert.strictEqual((await cacheRowIds()).length, 3);
 
@@ -127,8 +145,12 @@ test.describe('Filter: product id cache invalidation', () => {
     assert.strictEqual(removeFilter._id, FILTER_ID);
     assert.deepStrictEqual(await cacheRowIds(), []);
 
-    // an invalidation that was already in flight when the filter got deleted
-    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], { a: ['p1'], b: ['p2'] });
+    // An invalidation that was already in flight when the filter got deleted must not put the
+    // rows back.
+    await withStubbedBuild(
+      async () => [['p1', 'p2'], { a: ['p1'], b: ['p2'] }],
+      () => FilterDirector.invalidateProductIdCache(snapshot, getTestPlatform().unchainedAPI),
+    );
     assert.deepStrictEqual(await cacheRowIds(), []);
   });
 

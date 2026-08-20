@@ -3,6 +3,7 @@ import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
 import type { FilterAdapterActions, FilterContext, IFilterAdapter } from './FilterAdapter.ts';
 import {
   type Filter,
+  filterOptionValues,
   filtersSettings,
   FilterType,
   type SearchConfiguration,
@@ -62,6 +63,14 @@ export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
     searchConfiguration: SearchConfiguration,
     unchainedAPI: { modules: Modules },
   ) => Promise<string[]>;
+};
+
+// Compared as a set: reordering options leaves every cache key valid, only losing or gaining
+// one matters.
+const sameOptionSet = (left: string[], right: string[]) => {
+  if (left.length !== right.length) return false;
+  const values = new Set(left);
+  return right.every((value) => values.has(value));
 };
 
 const baseDirector = BaseDirector<IFilterAdapter>('FilterDirector', {
@@ -314,6 +323,15 @@ export const FilterDirector: IFilterDirector = {
     if (!filter) return;
 
     const [productIds, productIdMap] = await this.buildProductIdMap(filter, unchainedAPI);
+
+    // Building the map scans the catalog once per option, so it can be in flight long enough
+    // for the option set to move underneath it. Publishing a superseded result would cache
+    // product ids that were already wrong when they were written, and since the cache replaces
+    // what it is given, it would also retire the options added in the meantime. Whoever changed
+    // the options queues an invalidation of their own, so dropping this one loses nothing.
+    const current = await unchainedAPI.modules.filters.findFilter({ filterId: filter._id });
+    if (!current || !sameOptionSet(filterOptionValues(current), filterOptionValues(filter))) return;
+
     await filtersSettings.setCachedProductIds(filter._id, productIds, productIdMap);
   },
 };
