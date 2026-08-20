@@ -170,7 +170,11 @@ export const FilterDirector: IFilterDirector = {
     // Collected into one object instead of respreading the accumulator per option: that is
     // quadratic, and a filter can carry thousands of options. The lookups stay sequential on
     // purpose, so rebuilding a large filter does not flood the database with parallel scans.
-    const productIdsMap: Record<string, string[]> = {};
+    //
+    // Null-prototyped because option values are arbitrary strings: assigning `__proto__` into a
+    // normal object walks into the prototype setter instead of creating a key, and the option
+    // would then be missing from everything derived from this map.
+    const productIdsMap: Record<string, string[]> = Object.create(null);
     for (const option of filter.options || []) {
       productIdsMap[option] = await this.findProductIds(filter, { value: option }, unchainedAPI);
     }
@@ -197,10 +201,13 @@ export const FilterDirector: IFilterDirector = {
 
     const result = new Set<string>();
     for (const key of filteredKeys as string[]) {
+      // Own properties only. The keys come straight from a user supplied filterQuery, so
+      // asking for `constructor` or `toString` would otherwise reach Object.prototype and
+      // throw while iterating it.
+      if (!Object.hasOwn(keyToProductIdMap, key)) continue;
       const additionalValues = keyToProductIdMap[key];
-      if (additionalValues) {
-        for (const val of additionalValues) result.add(val);
-      }
+      if (!additionalValues) continue;
+      for (const val of additionalValues) result.add(val);
     }
     return result;
   },

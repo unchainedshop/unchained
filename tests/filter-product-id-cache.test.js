@@ -132,6 +132,38 @@ test.describe('Filter: product id cache invalidation', () => {
     assert.deepStrictEqual(await cacheRowIds(), []);
   });
 
+  test('treats inherited property names as ordinary option values', async () => {
+    // The values come from a user supplied filterQuery, so they can name anything on
+    // Object.prototype. Those used to reach the prototype and throw while being iterated.
+    await seedFilter(['__proto__', 'regular']);
+    // Built through fromEntries on purpose: `{ __proto__: value }` in a literal sets the
+    // prototype instead of creating the key, which is the same hazard being tested for.
+    await filtersSettings.setCachedProductIds(
+      FILTER_ID,
+      ['p1', 'p2'],
+      Object.fromEntries([
+        ['__proto__', ['p1']],
+        ['regular', ['p2']],
+      ]),
+    );
+
+    assert.deepStrictEqual(await resolve('regular'), ['p2']);
+    assert.deepStrictEqual(await resolve('__proto__'), ['p1']);
+    for (const inherited of ['constructor', 'toString', 'hasOwnProperty', 'valueOf']) {
+      assert.deepStrictEqual(await resolve(inherited), [], `${inherited} should resolve to nothing`);
+    }
+  });
+
+  test('keeps an option literally named __proto__ when building the map', async () => {
+    await seedFilter(['__proto__', 'regular']);
+    const filter = await db.collection('filters').findOne({ _id: FILTER_ID });
+    const [, productIdsMap] = await FilterDirector.buildProductIdMap(
+      filter,
+      getTestPlatform().unchainedAPI,
+    );
+    assert.deepStrictEqual(Object.keys(productIdsMap).sort(), ['__proto__', 'regular']);
+  });
+
   test('prunes through the removeFilterOption mutation', async () => {
     await seedFilter(['keep', 'retire']);
     await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], {
