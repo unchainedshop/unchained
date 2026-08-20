@@ -34,6 +34,13 @@ const seedFilter = async (options) => {
   });
 };
 
+// Reads without waiting out the in-process memo, so a missing eviction cannot hide behind a sleep.
+const resolveNow = async (value) => {
+  const filter = await db.collection('filters').findOne({ _id: FILTER_ID });
+  const { unchainedAPI } = getTestPlatform();
+  return [...(await FilterDirector.filterProductIds(filter, { values: [value] }, unchainedAPI))];
+};
+
 const resolve = async (value) => {
   // Cached reads are memoized in process (1ms TTL outside production, 60s in it). Two reads
   // within the same millisecond both hit that memo, so wait it out - otherwise we assert
@@ -130,6 +137,49 @@ test.describe('Filter: product id cache invalidation', () => {
     // an invalidation that was already in flight when the filter got deleted
     await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], { a: ['p1'], b: ['p2'] });
     assert.deepStrictEqual(await cacheRowIds(), []);
+  });
+
+  test('a retired option stops resolving immediately, without waiting out the memo', async () => {
+    await seedFilter(['offerable', 'occasion']);
+    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], {
+      offerable: ['p1'],
+      occasion: ['p2'],
+    });
+    assert.deepStrictEqual(await resolveNow('occasion'), ['p2']);
+
+    await db.collection('filters').updateOne({ _id: FILTER_ID }, { $set: { options: ['offerable'] } });
+    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1'], { offerable: ['p1'] });
+
+    // No sleep: a write has to evict the memo, or production serves this for a minute.
+    assert.deepStrictEqual(await resolveNow('occasion'), []);
+    assert.deepStrictEqual(await resolveNow('offerable'), ['p1']);
+  });
+
+  test('removes a filter even when purging its cache fails', async () => {
+    await seedFilter(['a', 'b']);
+    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], { a: ['p1'], b: ['p2'] });
+
+    const purge = filtersSettings.purgeCachedProductIds;
+    filtersSettings.purgeCachedProductIds = async () => {
+      throw new Error('cache backend unavailable');
+    };
+    try {
+      await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation RemoveFilter($filterId: ID!) {
+            removeFilter(filterId: $filterId) {
+              _id
+            }
+          }
+        `,
+        variables: { filterId: FILTER_ID },
+      });
+    } finally {
+      filtersSettings.purgeCachedProductIds = purge;
+    }
+
+    // The canonical record goes even though the derived cache could not be dropped.
+    assert.strictEqual(await db.collection('filters').findOne({ _id: FILTER_ID }), null);
   });
 
   test('treats inherited property names as ordinary option values', async () => {
