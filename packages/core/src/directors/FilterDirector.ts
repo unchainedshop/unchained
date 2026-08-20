@@ -169,19 +169,24 @@ export const FilterDirector: IFilterDirector = {
     unchainedAPI: { modules: Modules },
   ): Promise<[string[], Record<string, string[]>]> {
     const allProductIds = await this.findProductIds(filter, {}, unchainedAPI);
-    const productIdsMap =
-      filter.type === FilterType.SWITCH
-        ? {
-            true: await this.findProductIds(filter, { value: true }, unchainedAPI),
-            false: await this.findProductIds(filter, { value: { $in: [null, false] } }, unchainedAPI),
-          }
-        : await (filter.options || []).reduce(async (accumulatorPromise, option) => {
-            const accumulator = await accumulatorPromise;
-            return {
-              ...accumulator,
-              [option]: await this.findProductIds(filter, { value: option }, unchainedAPI),
-            };
-          }, Promise.resolve({}));
+
+    if (filter.type === FilterType.SWITCH) {
+      return [
+        allProductIds,
+        {
+          true: await this.findProductIds(filter, { value: true }, unchainedAPI),
+          false: await this.findProductIds(filter, { value: { $in: [null, false] } }, unchainedAPI),
+        },
+      ];
+    }
+
+    // Collected into one object instead of respreading the accumulator per option: that is
+    // quadratic, and a filter can carry thousands of options. The lookups stay sequential on
+    // purpose, so rebuilding a large filter does not flood the database with parallel scans.
+    const productIdsMap: Record<string, string[]> = {};
+    for (const option of filter.options || []) {
+      productIdsMap[option] = await this.findProductIds(filter, { value: option }, unchainedAPI);
+    }
 
     return [allProductIds, productIdsMap];
   },
