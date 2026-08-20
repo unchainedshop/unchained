@@ -63,6 +63,14 @@ const InternalProductStatus = {
   DRAFT: null,
 };
 
+/*
+ * A draft is stored as null, but ProductStatus.DRAFT ('DRAFT') exists in the public enum and can
+ * reach the database through the bulk importer. Both spellings have to count as a draft, or a
+ * product can end up in a state that reads as a draft yet refuses to be published.
+ */
+const isDraftStatus = (status: Product['status']) =>
+  status === ProductStatus.DRAFT || status === InternalProductStatus.DRAFT;
+
 export const buildFindSelector = ({
   slugs,
   tags,
@@ -167,7 +175,7 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
   };
 
   const publishProduct = async (product: Product): Promise<boolean> => {
-    if (product.status === InternalProductStatus.DRAFT) {
+    if (isDraftStatus(product.status)) {
       await Products.updateOne(generateDbFilterById(product._id), {
         $set: {
           status: ProductStatus.ACTIVE,
@@ -308,7 +316,7 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
       return product.status === ProductStatus.ACTIVE;
     },
     isDraft: (product: Product) => {
-      return product.status === ProductStatus.DRAFT || product.status === InternalProductStatus.DRAFT;
+      return isDraftStatus(product.status);
     },
     normalizedStatus: (product: Product): ProductStatus => {
       return product.status === null ? ProductStatus.DRAFT : (product.status as ProductStatus);
