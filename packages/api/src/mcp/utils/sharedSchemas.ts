@@ -122,6 +122,10 @@ export function createMcpResponse(response) {
 
 export function createMcpErrorResponse(action: string, error: Error) {
   return {
+    // Without this a failed tool call is indistinguishable from a successful one: the error only
+    // appears inside the text content, so a client - or a model - has to parse prose to notice
+    // that nothing happened.
+    isError: true,
     content: [
       {
         type: 'text' as const,
