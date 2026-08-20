@@ -50,10 +50,9 @@ test.describe('Work Queue: autoscheduled input', () => {
   test('hands an adapter an object even when the stored input is null', async () => {
     // Work queued by an older version still holds a null input, and a `= {}` default parameter
     // only guards undefined - which is what made every GC_GUESTS run fail.
-    const probeKey = 'shop.unchained.worker-plugin.autoschedule-input-probe';
     let destructured = false;
-    WorkerDirector.registerAdapter({
-      key: probeKey,
+    const probe = {
+      key: 'shop.unchained.worker-plugin.autoschedule-input-probe',
       label: 'Autoschedule input probe',
       version: '1.0.0',
       type: 'AUTOSCHEDULE_INPUT_PROBE',
@@ -61,17 +60,21 @@ test.describe('Work Queue: autoscheduled input', () => {
         destructured = true;
         return { success: true, result: { anything: anything ?? null } };
       },
-    });
+    };
 
+    // Stubbed rather than registered: adapter registration is process wide and differs between
+    // branches, and neither offers a clean way to take a single adapter back out again.
+    const getAdapterByType = WorkerDirector.getAdapterByType;
+    WorkerDirector.getAdapterByType = () => probe;
     try {
       const output = await WorkerDirector.doWork(
-        { type: 'AUTOSCHEDULE_INPUT_PROBE', input: null, _id: 'probe-work' },
+        { type: probe.type, input: null, _id: 'probe-work' },
         getTestPlatform().unchainedAPI,
       );
       assert.strictEqual(destructured, true);
       assert.strictEqual(output.success, true);
     } finally {
-      WorkerDirector.unregisterAdapter(probeKey);
+      WorkerDirector.getAdapterByType = getAdapterByType;
     }
   });
 });
