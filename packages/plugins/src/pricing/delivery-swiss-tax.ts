@@ -7,6 +7,7 @@ import {
 
 import { resolveTaxCategoryFromDeliveryProvider, SwissTaxCategories } from './tax/ch.ts';
 import isDeliveryAddressInCountry from './utils/isDeliveryAddressInCountry.ts';
+import { applyTaxRateToTaxableRows } from './tax/applyTaxRateToTaxableRows.ts';
 
 export const DeliverySwissTax: IDeliveryPricingAdapter = {
   ...DeliveryPricingAdapter,
@@ -42,31 +43,12 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
         const taxRate = taxCategory.rate(context.order?.ordered);
 
         DeliveryPricingAdapter.log(`DeliverySwissTax -> Tax Multiplicator: ${taxRate}`);
-        params.calculationSheet.filterBy({ isTaxable: true }).forEach(({ isNetPrice, ...row }) => {
-          if (!isNetPrice) {
-            const taxAmount = row.amount - row.amount / (1 + taxRate);
-            pricingAdapter.resultSheet().calculation.push({
-              ...row,
-              amount: -taxAmount,
-              isTaxable: false,
-              isNetPrice: false,
-              meta: { adapter: DeliverySwissTax.key },
-            });
-            pricingAdapter.resultSheet().addTax({
-              amount: taxAmount,
-              rate: taxRate,
-              baseCategory: DeliveryPricingRowCategory.Delivery,
-              meta: { adapter: DeliverySwissTax.key },
-            });
-          } else {
-            const taxAmount = row.amount * taxRate;
-            pricingAdapter.resultSheet().addTax({
-              amount: taxAmount,
-              rate: taxRate,
-              baseCategory: DeliveryPricingRowCategory.Delivery,
-              meta: { adapter: DeliverySwissTax.key },
-            });
-          }
+        applyTaxRateToTaxableRows({
+          calculationSheet: params.calculationSheet,
+          resultSheet: pricingAdapter.resultSheet(),
+          taxRate,
+          baseCategory: DeliveryPricingRowCategory.Delivery,
+          adapterKey: DeliverySwissTax.key,
         });
 
         return pricingAdapter.calculate();

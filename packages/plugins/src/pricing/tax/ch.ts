@@ -1,44 +1,25 @@
 import type { DeliveryProvider } from '@unchainedshop/core-delivery';
 import type { Product } from '@unchainedshop/core-products';
+import swissTaxRates from './ch-tax-rates.json' with { type: 'json' };
+import { compileEraRates, rateForDate } from './eraRates.ts';
 
-const startOf2024 = new Date('2024-01-01T00:00:00.000+0100');
-
-// https://www.estv.admin.ch/estv/en/home/value-added-tax/vat-rates-switzerland.html
+// Rates are bundled in ch-tax-rates.json and verified against the ESTV
+// (see the json's `source`/`verifiedAt` fields). Update via the
+// `update-tax-rates` skill — never at runtime: VAT rates are legally
+// binding and must be reviewable/versioned, and the applicable rate follows
+// the supply date, so the full era history is required.
 
 export interface SwissTaxCategoryResolver {
   value: string;
   rate: (referenceDate?: Date) => number;
 }
 
-export const SwissTaxCategories: Record<string, SwissTaxCategoryResolver> = {
-  DEFAULT: {
-    value: 'default',
-    rate: (referenceDate = new Date()) => {
-      if (referenceDate.getTime() < startOf2024.getTime()) {
-        return 0.077;
-      }
-      return 0.081;
-    },
-  },
-  REDUCED: {
-    value: 'reduced',
-    rate: (referenceDate = new Date()) => {
-      if (referenceDate.getTime() < startOf2024.getTime()) {
-        return 0.025;
-      }
-      return 0.026;
-    },
-  },
-  SPECIAL: {
-    value: 'special',
-    rate: (referenceDate = new Date()) => {
-      if (referenceDate.getTime() < startOf2024.getTime()) {
-        return 0.037;
-      }
-      return 0.038;
-    },
-  },
-};
+export const SwissTaxCategories: Record<string, SwissTaxCategoryResolver> = Object.fromEntries(
+  Object.entries(swissTaxRates.categories).map(([value, eras]) => [
+    value.toUpperCase(),
+    { value, rate: rateForDate(compileEraRates(eras, swissTaxRates.timezone)) },
+  ]),
+);
 
 export const resolveTaxCategoryFromDeliveryProvider = (
   provider: DeliveryProvider,
