@@ -94,7 +94,9 @@ export const WorkerDirector: IWorkerDirector = {
     }
 
     try {
-      const output = await adapter.doWork(input, unchainedAPI, workId);
+      // Work queued by older versions can still hold a null input, which no default parameter
+      // guards against, so settle it here rather than in every adapter.
+      const output = await adapter.doWork(input ?? {}, unchainedAPI, workId);
       return output;
     } catch (error) {
       // DO not use this as flow control. The adapter should catch expected errors and return status: FAILED

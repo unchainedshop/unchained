@@ -534,7 +534,10 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
           query,
           {
             $set: {
-              input,
+              // Autoscheduled work usually carries no input, and an undefined `$set` value is
+              // stored as null rather than skipped. Keep the same shape `addWork` writes, so
+              // an adapter destructuring its input never faces a null.
+              input: input || {},
               worker: null,
               updated: created,
               retries,
