@@ -4,6 +4,8 @@ import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
 import { filterOptionValues, FiltersCollection } from '../db/FiltersCollection.ts';
 
+const DUPLICATE_KEY = 11000;
+
 const updateIfHashChanged = async (Collection, selector, doc) => {
   const _id = Object.values(selector).join(':');
   try {
@@ -24,8 +26,13 @@ const updateIfHashChanged = async (Collection, selector, doc) => {
       },
       { upsert: true },
     );
-  } catch (e) { } // eslint-disable-line
-  return _id;
+  } catch (e) {
+    // The row already holds this hash, so the upsert collides on _id and there is nothing to
+    // do. Anything else means we did not write, which the caller has to know before it starts
+    // deleting the rows this write was meant to replace.
+    if (e?.code !== DUPLICATE_KEY) return { _id, written: false };
+  }
+  return { _id, written: true };
 };
 
 const CACHE_TTL_MS = parseInt(process.env.UNCHAINED_FILTER_CACHE_TTL_MS || '60000', 10);
@@ -33,6 +40,12 @@ const memoizeCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? CACHE
 
 export default async function mongodbCache(db: mongodb.Db) {
   const { Filters, FilterProductIdCache } = await FiltersCollection(db);
+  // Reads are memoized per process, so a write nobody evicts stays invisible for the whole TTL
+  // - a minute in production. Long enough for a retired option to keep answering and a newly
+  // added one to answer with nothing.
+  const evictFromMemoryCache = (filterId: string) => {
+    memoizeCache.delete(filterId);
+  };
 
   // Drop cache rows of filter options that no longer exist, else an obsolete value keeps
   // resolving to the product ids it had when it was retired.
@@ -44,6 +57,7 @@ export default async function mongodbCache(db: mongodb.Db) {
   // turns a stale row into a missing one - a valid option silently resolving to nothing.
   const purgeCachedProductIds = async (filterId: string) => {
     await FilterProductIdCache.deleteMany({ filterId });
+    evictFromMemoryCache(filterId);
   };
 
   const pruneObsoleteOptions = async (filterId: string) => {
@@ -90,6 +104,7 @@ export default async function mongodbCache(db: mongodb.Db) {
     },
     {
       cache: memoizeCache,
+      cacheKey: ([filterId]) => filterId,
     },
   );
 
@@ -99,12 +114,12 @@ export default async function mongodbCache(db: mongodb.Db) {
     },
     purgeCachedProductIds,
     async setCachedProductIds(filterId, productIds, productIdsMap) {
-      const baseCacheId = await updateIfHashChanged(
+      const baseRecord = await updateIfHashChanged(
         FilterProductIdCache,
         { filterId, filterOptionValue: null },
         { productIds },
       );
-      const cacheIds = await Promise.all(
+      const optionRecords = await Promise.all(
         Object.entries(productIdsMap).map(async ([filterOptionValue, optionProductIds]) =>
           updateIfHashChanged(
             FilterProductIdCache,
@@ -113,8 +128,17 @@ export default async function mongodbCache(db: mongodb.Db) {
           ),
         ),
       );
-      const allCacheRecords = cacheIds.concat([baseCacheId]).filter(Boolean);
-      await pruneObsoleteOptions(filterId);
+      const allCacheRecords = optionRecords.concat([baseRecord]);
+      evictFromMemoryCache(filterId);
+
+      // Only once every row is in place. Retiring the old values while the new ones are missing
+      // would leave a live option resolving to nothing, and the surviving base row would stop
+      // the live fallback from covering for it.
+      if (allCacheRecords.every(({ written }) => written)) {
+        await pruneObsoleteOptions(filterId);
+        evictFromMemoryCache(filterId);
+      }
+
       return allCacheRecords.length;
     },
   };
