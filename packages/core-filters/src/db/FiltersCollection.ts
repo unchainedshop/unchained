@@ -26,6 +26,19 @@ export type Filter = {
 export const filterOptionValues = (filter: Pick<Filter, 'type' | 'options'>): string[] =>
   filter.type === FilterType.SWITCH ? ['true', 'false'] : filter.options || [];
 
+/*
+ * How current a cached result is, taken from the filter itself rather than from a counter of its
+ * own: every mutation stamps `updated`, so a rebuild that started before one has an older
+ * generation than the filter it ends up writing against.
+ *
+ * Deliberately coarse. A change that leaves the cache perfectly valid still moves it, which only
+ * costs a skipped write - and the mutation that moved it queues an invalidation anyway. Being
+ * wrong in the other direction would publish results computed against a filter that no longer
+ * exists in that shape.
+ */
+export const filterCacheGeneration = (filter: Pick<Filter, 'updated' | 'created'>): number =>
+  filter?.updated?.getTime() || filter?.created?.getTime() || 0;
+
 export type FilterText = {
   _id: string;
   filterId: string;
@@ -39,6 +52,8 @@ export interface FilterProductIdCacheRecord {
   filterId: string;
   filterOptionValue: string | null;
   productIds: string[];
+  /* The filter generation this row was computed from, see filterCacheGeneration. */
+  computedAt?: number;
 }
 
 export const FiltersCollection = async (db: mongodb.Db) => {

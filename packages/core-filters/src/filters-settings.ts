@@ -5,10 +5,19 @@ import makeMongoDBCache from './product-cache/mongodb.ts';
 const logger = createLogger('unchained:core-filters');
 
 export interface FiltersSettings {
+  /*
+   * Replaces the cached product ids of a filter. `productIdsMap` is the complete set of values it
+   * can be queried by, so an implementation is expected to retire keys it does not mention.
+   *
+   * `computedAt` is the filter generation the map was built from, see filterCacheGeneration.
+   * Rebuilding is slow enough to be overtaken, so an implementation must not let an older
+   * generation overwrite or retire what a newer one has already written.
+   */
   setCachedProductIds: (
     filterId: string,
     productIds: string[],
     productIdsMap: Record<string, string[]>,
+    computedAt: number,
   ) => Promise<number>;
   getCachedProductIds: (filterId: string) => Promise<[string[], Record<string, string[]>] | null>;
   /* Drop the whole cache of a filter, used when the filter itself goes away. */
