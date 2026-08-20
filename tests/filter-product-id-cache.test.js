@@ -21,7 +21,7 @@ const cacheRowIds = async () =>
       .toArray()
   ).map(({ _id }) => _id);
 
-const seedFilter = async (options) => {
+const seedFilter = async (options, updated = new Date('2020-01-01')) => {
   await db.collection('filters').deleteOne({ _id: FILTER_ID });
   await db.collection('filter_productId_cache').deleteMany({ filterId: FILTER_ID });
   await db.collection('filters').insertOne({
@@ -30,7 +30,8 @@ const seedFilter = async (options) => {
     type: 'MULTI_CHOICE',
     isActive: true,
     options,
-    created: new Date(),
+    created: new Date('2019-01-01'),
+    updated,
   });
 };
 
@@ -59,10 +60,12 @@ test.describe('Filter: product id cache invalidation', () => {
 
   test('drops the cache row of an option that is no longer part of the filter', async () => {
     await seedFilter(['offerable', 'occasion']);
-    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], {
-      offerable: ['p1'],
-      occasion: ['p2'],
-    });
+    await filtersSettings.setCachedProductIds(
+      FILTER_ID,
+      ['p1', 'p2'],
+      { offerable: ['p1'], occasion: ['p2'] },
+      1,
+    );
     assert.deepStrictEqual(await cacheRowIds(), [
       `${FILTER_ID}:`,
       `${FILTER_ID}:occasion`,
@@ -71,41 +74,45 @@ test.describe('Filter: product id cache invalidation', () => {
 
     // `occasion` gets retired, so the next invalidation no longer carries it
     await db.collection('filters').updateOne({ _id: FILTER_ID }, { $set: { options: ['offerable'] } });
-    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1'], { offerable: ['p1'] });
+    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1'], { offerable: ['p1'] }, 2);
 
     assert.deepStrictEqual(await cacheRowIds(), [`${FILTER_ID}:`, `${FILTER_ID}:offerable`]);
   });
 
   test('stops resolving a retired option value instead of returning its frozen product ids', async () => {
     await seedFilter(['offerable', 'occasion']);
-    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], {
-      offerable: ['p1'],
-      occasion: ['p2'],
-    });
+    await filtersSettings.setCachedProductIds(
+      FILTER_ID,
+      ['p1', 'p2'],
+      { offerable: ['p1'], occasion: ['p2'] },
+      1,
+    );
     assert.deepStrictEqual(await resolve('occasion'), ['p2']);
 
     await db.collection('filters').updateOne({ _id: FILTER_ID }, { $set: { options: ['offerable'] } });
-    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1'], { offerable: ['p1'] });
+    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1'], { offerable: ['p1'] }, 2);
 
     assert.deepStrictEqual(await resolve('occasion'), []);
     assert.deepStrictEqual(await resolve('offerable'), ['p1']);
   });
 
-  test('keeps an option that was added while a slow invalidation was still in flight', async () => {
+  test('an overtaken rebuild neither publishes its result nor retires the newer option', async () => {
+    const older = new Date('2020-01-01').getTime();
+    const newer = new Date('2020-06-01').getTime();
     await seedFilter(['a', 'b']);
-    // a full invalidation starts here and snapshots [a, b]
-    const staleSnapshot = { a: ['p1'], b: ['p2'] };
+    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], { a: ['p1'], b: ['p2'] }, older);
 
-    // meanwhile `c` gets added and invalidated on its own
+    // `c` is added and published by a later generation
     await db.collection('filters').updateOne({ _id: FILTER_ID }, { $push: { options: 'c' } });
-    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2', 'p3'], {
-      a: ['p1'],
-      b: ['p2'],
-      c: ['p3'],
-    });
+    await filtersSettings.setCachedProductIds(
+      FILTER_ID,
+      ['p1', 'p2', 'p3'],
+      { a: ['p1'], b: ['p2'], c: ['p3'] },
+      newer,
+    );
 
-    // the slow invalidation lands last, carrying an option set that predates `c`
-    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], staleSnapshot);
+    // only now does the rebuild that started before it get round to writing
+    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], { a: ['p1'], b: ['p2'] }, older);
 
     assert.deepStrictEqual(await cacheRowIds(), [
       `${FILTER_ID}:`,
@@ -114,11 +121,52 @@ test.describe('Filter: product id cache invalidation', () => {
       `${FILTER_ID}:c`,
     ]);
     assert.deepStrictEqual(await resolve('c'), ['p3']);
+    const base = await db
+      .collection('filter_productId_cache')
+      .findOne({ filterId: FILTER_ID, filterOptionValue: null });
+    assert.deepStrictEqual([...base.productIds].sort(), ['p1', 'p2', 'p3']);
+  });
+
+  test('a key rename is caught even though the option values are unchanged', async () => {
+    const older = new Date('2020-01-01').getTime();
+    const newer = new Date('2020-06-01').getTime();
+    await seedFilter(['a']);
+    // the rename bumps the generation, and its rebuild publishes first
+    await filtersSettings.setCachedProductIds(
+      FILTER_ID,
+      ['from-new-key'],
+      { a: ['from-new-key'] },
+      newer,
+    );
+    // the rebuild that ran under the old key has the same options but an older generation
+    await filtersSettings.setCachedProductIds(
+      FILTER_ID,
+      ['from-old-key'],
+      { a: ['from-old-key'] },
+      older,
+    );
+
+    const row = await db
+      .collection('filter_productId_cache')
+      .findOne({ filterId: FILTER_ID, filterOptionValue: 'a' });
+    assert.deepStrictEqual(row.productIds, ['from-new-key']);
+  });
+
+  test('carries the filter generation through invalidateProductIdCache', async () => {
+    await seedFilter(['a'], new Date('2020-06-01'));
+    const filter = await db.collection('filters').findOne({ _id: FILTER_ID });
+    await FilterDirector.invalidateProductIdCache(filter, getTestPlatform().unchainedAPI);
+
+    const row = await db
+      .collection('filter_productId_cache')
+      .findOne({ filterId: FILTER_ID, filterOptionValue: null });
+    assert.strictEqual(row.computedAt, new Date('2020-06-01').getTime());
   });
 
   test('drops every cache row of a deleted filter, including a late invalidation', async () => {
     await seedFilter(['a', 'b']);
-    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], { a: ['p1'], b: ['p2'] });
+    const snapshot = await db.collection('filters').findOne({ _id: FILTER_ID });
+    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], { a: ['p1'], b: ['p2'] }, 1);
     assert.strictEqual((await cacheRowIds()).length, 3);
 
     const { data: { removeFilter } = {} } = await graphqlFetch({
@@ -134,21 +182,30 @@ test.describe('Filter: product id cache invalidation', () => {
     assert.strictEqual(removeFilter._id, FILTER_ID);
     assert.deepStrictEqual(await cacheRowIds(), []);
 
-    // an invalidation that was already in flight when the filter got deleted
-    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], { a: ['p1'], b: ['p2'] });
+    // An invalidation already in flight when the filter got deleted must not rebuild the cache
+    // of something that no longer exists.
+    const original = FilterDirector.buildProductIdMap;
+    FilterDirector.buildProductIdMap = async () => [['p1', 'p2'], { a: ['p1'], b: ['p2'] }];
+    try {
+      await FilterDirector.invalidateProductIdCache(snapshot, getTestPlatform().unchainedAPI);
+    } finally {
+      FilterDirector.buildProductIdMap = original;
+    }
     assert.deepStrictEqual(await cacheRowIds(), []);
   });
 
   test('a retired option stops resolving immediately, without waiting out the memo', async () => {
     await seedFilter(['offerable', 'occasion']);
-    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], {
-      offerable: ['p1'],
-      occasion: ['p2'],
-    });
+    await filtersSettings.setCachedProductIds(
+      FILTER_ID,
+      ['p1', 'p2'],
+      { offerable: ['p1'], occasion: ['p2'] },
+      1,
+    );
     assert.deepStrictEqual(await resolveNow('occasion'), ['p2']);
 
     await db.collection('filters').updateOne({ _id: FILTER_ID }, { $set: { options: ['offerable'] } });
-    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1'], { offerable: ['p1'] });
+    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1'], { offerable: ['p1'] }, 2);
 
     // No sleep: a write has to evict the memo, or production serves this for a minute.
     assert.deepStrictEqual(await resolveNow('occasion'), []);
@@ -157,7 +214,7 @@ test.describe('Filter: product id cache invalidation', () => {
 
   test('removes a filter even when purging its cache fails', async () => {
     await seedFilter(['a', 'b']);
-    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], { a: ['p1'], b: ['p2'] });
+    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], { a: ['p1'], b: ['p2'] }, 1);
 
     const purge = filtersSettings.purgeCachedProductIds;
     filtersSettings.purgeCachedProductIds = async () => {
@@ -195,6 +252,7 @@ test.describe('Filter: product id cache invalidation', () => {
         ['__proto__', ['p1']],
         ['regular', ['p2']],
       ]),
+      1,
     );
 
     assert.deepStrictEqual(await resolve('regular'), ['p2']);
@@ -216,10 +274,12 @@ test.describe('Filter: product id cache invalidation', () => {
 
   test('prunes through the removeFilterOption mutation', async () => {
     await seedFilter(['keep', 'retire']);
-    await filtersSettings.setCachedProductIds(FILTER_ID, ['p1', 'p2'], {
-      keep: ['p1'],
-      retire: ['p2'],
-    });
+    await filtersSettings.setCachedProductIds(
+      FILTER_ID,
+      ['p1', 'p2'],
+      { keep: ['p1'], retire: ['p2'] },
+      1,
+    );
 
     await graphqlFetch({
       query: /* GraphQL */ `

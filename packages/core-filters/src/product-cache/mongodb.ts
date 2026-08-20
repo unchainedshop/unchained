@@ -2,23 +2,40 @@ import { mongodb } from '@unchainedshop/mongodb';
 import { sha256 } from '@unchainedshop/utils';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
-import { filterOptionValues, FiltersCollection } from '../db/FiltersCollection.ts';
+import { FiltersCollection } from '../db/FiltersCollection.ts';
 
 const DUPLICATE_KEY = 11000;
 
-const updateIfHashChanged = async (Collection, selector, doc) => {
+/*
+ * Rebuilding scans the catalog once per option, so on a large catalog a rebuild is in flight long
+ * enough for the filter to change underneath it. Rows record the generation they were computed
+ * from, and neither a write nor a prune touches a row a newer generation already claimed.
+ *
+ * This is what makes replacement safe. Without it an overtaken rebuild publishes ids computed
+ * against a filter that has since been renamed or retyped, and retires the options added while it
+ * was running - a live option silently resolving to nothing, with no later rebuild to restore it.
+ *
+ * Rows written before this field existed carry none, which counts as older than anything.
+ */
+const notNewerThan = (computedAt: number) => ({
+  $or: [{ computedAt: { $lte: computedAt } }, { computedAt: { $exists: false } }],
+});
+
+const updateIfHashChanged = async (Collection, selector, doc, computedAt: number) => {
   const _id = Object.values(selector).join(':');
   try {
     const hash = await sha256(JSON.stringify(doc));
     await Collection.updateOne(
       {
         ...selector,
+        ...notNewerThan(computedAt),
         hash: { $ne: hash },
       },
       {
         $set: {
           ...doc,
           hash,
+          computedAt,
         },
         $setOnInsert: {
           _id,
@@ -27,9 +44,9 @@ const updateIfHashChanged = async (Collection, selector, doc) => {
       { upsert: true },
     );
   } catch (e) {
-    // The row already holds this hash, so the upsert collides on _id and there is nothing to
-    // do. Anything else means we did not write, which the caller has to know before it starts
-    // deleting the rows this write was meant to replace.
+    // The row already holds this hash, or a newer generation already claimed it. Either way the
+    // upsert collides on _id and there is nothing to do. Anything else means we did not write,
+    // which the caller has to know before it starts deleting the rows this was meant to replace.
     if (e?.code !== DUPLICATE_KEY) return { _id, written: false };
   }
   return { _id, written: true };
@@ -39,47 +56,18 @@ const CACHE_TTL_MS = parseInt(process.env.UNCHAINED_FILTER_CACHE_TTL_MS || '6000
 const memoizeCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? CACHE_TTL_MS : 1);
 
 export default async function mongodbCache(db: mongodb.Db) {
-  const { Filters, FilterProductIdCache } = await FiltersCollection(db);
-  // Reads are memoized per process, so a write nobody evicts stays invisible for the whole TTL
-  // - a minute in production. Long enough for a retired option to keep answering and a newly
-  // added one to answer with nothing.
+  const { FilterProductIdCache } = await FiltersCollection(db);
+
+  // Reads are memoized per process, so a write nobody evicts stays invisible for the whole TTL -
+  // a minute in production. Long enough for a retired option to keep answering and a newly added
+  // one to answer with nothing.
   const evictFromMemoryCache = (filterId: string) => {
     memoizeCache.delete(filterId);
   };
 
-  // Drop cache rows of filter options that no longer exist, else an obsolete value keeps
-  // resolving to the product ids it had when it was retired.
-  //
-  // The authoritative set is the filter's *current* options, re-read here and not the
-  // productIdsMap we were handed: a full invalidation scans the catalog once per option and
-  // can be in flight for minutes, so its snapshot may already be outdated by the time it
-  // lands. Pruning against the snapshot would delete options added in the meantime, which
-  // turns a stale row into a missing one - a valid option silently resolving to nothing.
   const purgeCachedProductIds = async (filterId: string) => {
     await FilterProductIdCache.deleteMany({ filterId });
     evictFromMemoryCache(filterId);
-  };
-
-  const pruneObsoleteOptions = async (filterId: string) => {
-    try {
-      const filter = await Filters.findOne({ _id: filterId }, { projection: { options: 1, type: 1 } });
-
-      // The filter is gone, so its whole cache is garbage. Covers an invalidation that was
-      // already in flight when the filter got deleted and wrote its rows back afterwards.
-      if (!filter) {
-        await purgeCachedProductIds(filterId);
-        return;
-      }
-
-      // Normalized to strings: cache rows are keyed by object key, so a numerically typed
-      // option would never match its own row and get re-pruned after every write.
-      const currentValues = filterOptionValues(filter).map(String);
-
-      await FilterProductIdCache.deleteMany({
-        filterId,
-        filterOptionValue: { $nin: [null, ...currentValues] },
-      });
-    } catch { } // eslint-disable-line
   };
 
   const getCachedProductIdsFromMemoryCache = pMemoize(
@@ -113,11 +101,12 @@ export default async function mongodbCache(db: mongodb.Db) {
       return getCachedProductIdsFromMemoryCache(filterId);
     },
     purgeCachedProductIds,
-    async setCachedProductIds(filterId, productIds, productIdsMap) {
+    async setCachedProductIds(filterId, productIds, productIdsMap, computedAt = 0) {
       const baseRecord = await updateIfHashChanged(
         FilterProductIdCache,
         { filterId, filterOptionValue: null },
         { productIds },
+        computedAt,
       );
       const optionRecords = await Promise.all(
         Object.entries(productIdsMap).map(async ([filterOptionValue, optionProductIds]) =>
@@ -125,17 +114,26 @@ export default async function mongodbCache(db: mongodb.Db) {
             FilterProductIdCache,
             { filterId, filterOptionValue },
             { productIds: optionProductIds },
+            computedAt,
           ),
         ),
       );
+
       const allCacheRecords = optionRecords.concat([baseRecord]);
       evictFromMemoryCache(filterId);
 
-      // Only once every row is in place. Retiring the old values while the new ones are missing
-      // would leave a live option resolving to nothing, and the surviving base row would stop
-      // the live fallback from covering for it.
+      // Retire whatever this generation does not mention, leaving alone anything a newer one has
+      // already written.
+      //
+      // Skipped entirely if any row failed to write: retiring the old values while the new ones
+      // are missing would leave a live option resolving to nothing, and the surviving base row
+      // would stop the live fallback from covering for it.
       if (allCacheRecords.every(({ written }) => written)) {
-        await pruneObsoleteOptions(filterId);
+        await FilterProductIdCache.deleteMany({
+          filterId,
+          filterOptionValue: { $nin: [null, ...Object.keys(productIdsMap)] },
+          ...notNewerThan(computedAt),
+        });
         evictFromMemoryCache(filterId);
       }
 

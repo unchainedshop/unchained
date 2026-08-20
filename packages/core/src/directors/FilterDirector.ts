@@ -3,6 +3,7 @@ import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
 import type { FilterAdapterActions, FilterContext, IFilterAdapter } from './FilterAdapter.ts';
 import {
   type Filter,
+  filterCacheGeneration,
   filtersSettings,
   FilterType,
   type SearchConfiguration,
@@ -321,6 +322,20 @@ export const FilterDirector: IFilterDirector = {
     if (!filter) return;
 
     const [productIds, productIdMap] = await this.buildProductIdMap(filter, unchainedAPI);
-    await filtersSettings.setCachedProductIds(filter._id, productIds, productIdMap);
+
+    // A deleted filter has no generation left to be overtaken by, so it needs its own check.
+    // This is about not rebuilding the cache of something that no longer exists rather than
+    // about correctness: a rebuild that slips past it leaves orphan rows, not wrong answers,
+    // because nothing can query a filter that is gone.
+    if (!(await unchainedAPI.modules.filters.filterExists({ filterId: filter._id }))) return;
+
+    // Stamped with the generation this map was built from, so a rebuild that has been overtaken
+    // while it scanned cannot publish ids computed against a filter that has since changed.
+    await filtersSettings.setCachedProductIds(
+      filter._id,
+      productIds,
+      productIdMap,
+      filterCacheGeneration(filter),
+    );
   },
 };
