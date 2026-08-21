@@ -12,8 +12,7 @@ import {
   WarehousingProvidersCollection,
 } from '../db/WarehousingProvidersCollection.ts';
 import { type TokenSurrogate, TokenSurrogateCollection } from '../db/TokenSurrogateCollection.ts';
-import pMemoize from 'p-memoize';
-import ExpiryMap from 'expiry-map';
+import { memoizeWithTTL } from '@unchainedshop/utils';
 
 interface TokenQuery {
   queryString?: string;
@@ -28,8 +27,6 @@ const WAREHOUSING_PROVIDER_EVENTS: string[] = [
   'TOKEN_OWNERSHIP_CHANGED',
   'TOKEN_INVALIDATED',
 ];
-
-const allProvidersCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? 60000 : 1);
 
 export interface WarehousingProviderQuery {
   warehousingProviderIds?: string[];
@@ -77,6 +74,11 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
   registerEvents(WAREHOUSING_PROVIDER_EVENTS);
 
   const WarehousingProviders = await WarehousingProvidersCollection(db);
+
+  const allProviders = memoizeWithTTL(
+    async () => WarehousingProviders.find({ deleted: null }, { sort: { created: 1 } }).toArray(),
+    { ttl: process.env.NODE_ENV === 'production' ? 60000 : 1 },
+  );
   const TokenSurrogates = await TokenSurrogateCollection(db);
 
   return {
@@ -140,14 +142,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
       return providers.toArray();
     },
 
-    allProviders: pMemoize(
-      async function () {
-        return WarehousingProviders.find({ deleted: null }, { sort: { created: 1 } }).toArray();
-      },
-      {
-        cache: allProvidersCache,
-      },
-    ),
+    allProviders,
 
     providerExists: async ({
       warehousingProviderId,
@@ -242,7 +237,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
       const warehousingProvider = (await WarehousingProviders.findOne({
         _id: warehousingProviderId,
       })) as WarehousingProvider;
-      allProvidersCache.clear();
+      allProviders.clear();
       await emit('WAREHOUSING_PROVIDER_CREATE', { warehousingProvider });
       return warehousingProvider;
     },
@@ -259,7 +254,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
         { returnDocument: 'after' },
       );
       if (!warehousingProvider) return null;
-      allProvidersCache.clear();
+      allProviders.clear();
       await emit('WAREHOUSING_PROVIDER_UPDATE', { warehousingProvider });
       return warehousingProvider;
     },
@@ -275,7 +270,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
         { returnDocument: 'after' },
       );
       if (!warehousingProvider) return null;
-      allProvidersCache.clear();
+      allProviders.clear();
       await emit('WAREHOUSING_PROVIDER_REMOVE', { warehousingProvider });
       return warehousingProvider;
     },

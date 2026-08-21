@@ -1,7 +1,5 @@
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
-import { sha256 } from '@unchainedshop/utils';
-import pMemoize from 'p-memoize';
-import ExpiryMap from 'expiry-map';
+import { sha256, memoizeWithTTL } from '@unchainedshop/utils';
 
 export interface FilterProductIdCacheRecord {
   filterId: string;
@@ -60,7 +58,6 @@ const updateIfHashChanged = async (Collection, selector, doc, computedAt: number
 };
 
 const CACHE_TTL_MS = parseInt(process.env.UNCHAINED_FILTER_CACHE_TTL_MS || '60000', 10);
-const memoizeCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? CACHE_TTL_MS : 1);
 
 export default async function mongodbCache(db: mongodb.Db) {
   // This backend owns the cache collection and its indexes, so nothing provisions them unless the
@@ -71,20 +68,8 @@ export default async function mongodbCache(db: mongodb.Db) {
     { index: { filterId: 1, filterOptionValue: 1 } },
   ]);
 
-  // Reads are memoized per process, so a write nobody evicts stays invisible for the whole TTL -
-  // a minute in production. Long enough for a retired option to keep answering and a newly added
-  // one to answer with nothing.
-  const evictFromMemoryCache = (filterId: string) => {
-    memoizeCache.delete(filterId);
-  };
-
-  const purgeCachedProductIds = async (filterId: string) => {
-    await FilterProductIdCache.deleteMany({ filterId });
-    evictFromMemoryCache(filterId);
-  };
-
-  const getCachedProductIdsFromMemoryCache = pMemoize(
-    async function getCachedProductIdsFromDatabase(filterId) {
+  const getCachedProductIdsFromMemoryCache = memoizeWithTTL(
+    async function getCachedProductIdsFromDatabase(filterId: string) {
       const filterProductIdCache = await FilterProductIdCache.find(
         {
           filterId,
@@ -104,10 +89,22 @@ export default async function mongodbCache(db: mongodb.Db) {
       return [allProductIds, productIdsMap] as [string[], Record<string, string[]>];
     },
     {
-      cache: memoizeCache,
+      ttl: process.env.NODE_ENV === 'production' ? CACHE_TTL_MS : 1,
       cacheKey: ([filterId]) => filterId,
     },
   );
+
+  // Reads are memoized per process, so a write nobody evicts stays invisible for the whole TTL -
+  // a minute in production. Long enough for a retired option to keep answering and a newly added
+  // one to answer with nothing.
+  const evictFromMemoryCache = (filterId: string) => {
+    getCachedProductIdsFromMemoryCache.delete(filterId);
+  };
+
+  const purgeCachedProductIds = async (filterId: string) => {
+    await FilterProductIdCache.deleteMany({ filterId });
+    evictFromMemoryCache(filterId);
+  };
 
   return {
     async getCachedProductIds(filterId: string) {
