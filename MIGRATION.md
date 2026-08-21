@@ -4,6 +4,31 @@
 
 ---
 
+## v4.8.x MCP: SDK v2, stateless `/mcp`
+
+The MCP integration migrated from the monolithic MCP TypeScript SDK v1 to the split v2 SDK. The optional peer dependency was **renamed**: `@modelcontextprotocol/sdk` is no longer supported.
+
+**If you have MCP enabled**, swap the peer (this shrinks the installed MCP footprint from ~94 transitive packages to 3):
+
+```bash
+npm uninstall @modelcontextprotocol/sdk
+npm install @modelcontextprotocol/server
+```
+
+**If you have chat enabled**, the chat handlers no longer import any `@modelcontextprotocol/*` client package — the shop-configuration resources are read in-process. Chat deployments need `ai` and `@ai-sdk/mcp` (unchanged) **and** `@modelcontextprotocol/server`, because the chat tools are still derived through the engine's own `/mcp` endpoint. The engine still boots without any of these packages installed; `/mcp` then answers `503` and logs a warning naming the missing package instead of failing.
+
+**Wire-behavior changes** (all spec-conformant; MCP Inspector, `@ai-sdk/mcp` and other current clients handle them transparently):
+
+- `/mcp` is now **stateless**: every request is served by a fresh, per-request MCP server built from that request's authenticated context. No `Mcp-Session-Id` is issued or required, and the endpoint is safe behind load balancers and in multi-replica deployments.
+- `/mcp` validates `Host` and browser `Origin` headers against the hostname in `ROOT_URL` (plus localhost aliases) before SDK dispatch. Set `ROOT_URL` to the public engine URL and configure reverse proxies to preserve the external `Host` header.
+- `GET /mcp` (standalone SSE stream) and `DELETE /mcp` (session termination) now return `405`. The engine never used server-initiated notifications, so no capability is lost.
+- Clients speaking the modern MCP protocol era (revision 2026-07-28, `server/discover`) are now supported in addition to the legacy `initialize` handshake era.
+- Tool input schemas in `tools/list` now declare JSON Schema draft 2020-12 instead of draft-07; the schema content itself (properties, enums, descriptions, required fields) is unchanged.
+
+Auth is unchanged: every request passes the same 401/403 admin wall as before (including the `WWW-Authenticate` / `.well-known/oauth-protected-resource` metadata used by OAuth setups).
+
+The `zod` dependency range of `@unchainedshop/api` and `@unchainedshop/core` narrowed from `^3.25.76 || ^4` to `^4.2.0` (both packages only ever used the zod-4 API).
+
 ## v4.8.x DocumentDB Compatibility Mode Removed
 
 `UNCHAINED_DOCUMENTDB_COMPAT_MODE` is no longer read. The helpers `isDocumentDBCompatModeEnabled` and `assertDocumentDBCompatMode` have been deleted from `@unchainedshop/mongodb`. Text indexes are now created unconditionally on every collection and `$text` queries run unconditionally. **If you still target AWS DocumentDB ≤4.0 or FerretDB 1.x, do not upgrade** — those runtimes do not support text indexes and startup will fail. Supported text-search targets now:

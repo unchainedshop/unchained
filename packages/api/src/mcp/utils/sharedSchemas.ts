@@ -1,4 +1,5 @@
 import { z } from 'zod/v4-mini';
+import type { StandardSchemaWithJSON } from '@modelcontextprotocol/server';
 import { SortDirection } from '@unchainedshop/utils';
 
 const sortDirectionKeys = Object.keys(SortDirection) as [string, ...string[]];
@@ -88,11 +89,31 @@ export interface ManagementParams {
   [key: string]: unknown;
 }
 
-type ManagementSchemaShape = { action: z.core.$ZodType<string> } & Record<string, z.core.$ZodType>;
+// The MCP SDK derives a tool's wire JSON schema through the Standard Schema
+// `~standard.jsonSchema` provider. zod/v4-mini schemas don't carry that provider
+// (only classic zod does), so without it the SDK falls back to converting with its
+// own zod copy and emits a one-time console.warn that bypasses our logger.
+export function withStandardJsonSchema<T extends z.core.$ZodType>(schema: T): T {
+  const standard = (schema as any)['~standard'];
+  if (standard?.jsonSchema) return schema;
+  Object.defineProperty(schema, '~standard', {
+    value: {
+      ...standard,
+      jsonSchema: {
+        input: ({ target }: { target?: 'draft-2020-12' | 'draft-7' } = {}) =>
+          z.toJSONSchema(schema, { io: 'input', ...(target ? { target } : {}) }),
+        output: ({ target }: { target?: 'draft-2020-12' | 'draft-7' } = {}) =>
+          z.toJSONSchema(schema, { io: 'output', ...(target ? { target } : {}) }),
+      },
+    },
+    configurable: true,
+  });
+  return schema;
+}
 
 export function createManagementSchemaFromValidators(
   validators: Record<string, { shape: Record<string, z.core.$ZodType> }>,
-): ManagementSchemaShape {
+): StandardSchemaWithJSON<ManagementParams, ManagementParams> {
   const merged: Record<string, z.core.$ZodType> = {};
   for (const validator of Object.values(validators)) {
     for (const [key, schema] of Object.entries<z.core.$ZodType>(validator.shape)) {
@@ -101,12 +122,14 @@ export function createManagementSchemaFromValidators(
       }
     }
   }
-  return {
-    action: z
-      .enum(Object.keys(validators) as [string, ...string[]])
-      .check(z.describe('Action to perform')),
-    ...merged,
-  };
+  return withStandardJsonSchema(
+    z.object({
+      action: z
+        .enum(Object.keys(validators) as [string, ...string[]])
+        .check(z.describe('Action to perform')),
+      ...merged,
+    }),
+  ) as unknown as StandardSchemaWithJSON<ManagementParams, ManagementParams>;
 }
 
 export function createMcpResponse(response) {

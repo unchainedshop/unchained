@@ -34,11 +34,13 @@
     "integration-test": "node --no-warnings --env-file .env.defaults --env-file ../../.env.tests --env-file-if-exists=../../.env --import ./load_env.js --watch src/boot.ts"
   },
   "dependencies": {
+    "@ai-sdk/mcp": "^2.0.34",
     "@ai-sdk/openai": "^4.0.45",
     "@ai-sdk/openai-compatible": "^3.0.34",
     "@fastify/cookie": "^11.0.2",
     "@fastify/multipart": "^10.1.1",
     "@fastify/session": "^11.1.0",
+    "@modelcontextprotocol/server": "^2.0.0",
     "@scure/bip32": "^2.0.0",
     "@scure/btc-signer": "^2.0.0",
     "@unchainedshop/admin-ui": "^4.8.12",
@@ -48,6 +50,7 @@
     "@unchainedshop/platform": "^4.8.12",
     "@unchainedshop/plugins": "^4.8.12",
     "@unchainedshop/ticketing": "^4.8.12",
+    "ai": "^7.0.73",
     "fastify": "^5.12.1",
     "graphql": "^17.0.2",
     "graphql-yoga": "^5.22.0",

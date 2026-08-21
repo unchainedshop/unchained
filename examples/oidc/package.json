@@ -38,6 +38,7 @@
     "@fastify/multipart": "^10.1.1",
     "@fastify/oauth2": "^8.3.0",
     "@fastify/session": "^11.1.0",
+    "@modelcontextprotocol/server": "^2.0.0",
     "@unchainedshop/admin-ui": "^4.8.12",
     "@unchainedshop/platform": "^4.8.12",
     "@unchainedshop/plugins": "^4.8.12",

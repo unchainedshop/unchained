@@ -1,165 +1,36 @@
-import type * as mcpSDKServerLibraryTypes from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import type * as mcpSDKClientTypes from '@modelcontextprotocol/sdk/types.js';
-import type * as mcpSDKServerTypes from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { Context } from '../context.ts';
 import type { Request, RequestHandler } from 'express';
+import type { Context } from '../context.ts';
 import { createLogger } from '@unchainedshop/logger';
+import handleMcpHttpRequest from '../mcp/handleMcpHttpRequest.ts';
+import { toWebRequest, sendWebResponse } from '../mcp/nodeHttpBridge.ts';
 
 const logger = createLogger('unchained:api:mcp');
 
-let StreamableHTTPServerTransport: typeof mcpSDKServerLibraryTypes.StreamableHTTPServerTransport;
-let isInitializeRequest: typeof mcpSDKClientTypes.isInitializeRequest;
-let McpServer: typeof mcpSDKServerTypes.McpServer;
-
-try {
-  const mcpSDKServerLibrary = await import('@modelcontextprotocol/sdk/server/streamableHttp.js');
-  const mcpSDKClient = await import('@modelcontextprotocol/sdk/types.js');
-  const mcpSDKServer = await import('@modelcontextprotocol/sdk/server/mcp.js');
-
-  McpServer = mcpSDKServer.McpServer;
-  StreamableHTTPServerTransport = mcpSDKServerLibrary.StreamableHTTPServerTransport;
-  isInitializeRequest = mcpSDKClient.isInitializeRequest;
-} catch {
-  logger.warn(`optional peer npm package '@modelcontextprotocol/sdk' not installed, mcp will not work`);
-}
-
-// Map of MCP session id -> { transport, userId, context }. The userId binds a session
-// to the principal that initialized it so a session can never be reused by a different
-// user. `context` is a mutable holder that the registered tools close over; it is
-// refreshed from each request's unchainedContext so tools never operate on a stale,
-// initialization-time snapshot (loaders, locale, remoteAddress, user document, ...).
-const transports: Record<
-  string,
-  {
-    transport: mcpSDKServerLibraryTypes.StreamableHTTPServerTransport;
-    userId: string;
-    context: Context;
-  }
-> = {};
-
-const handlePostRequest: RequestHandler = async (req: Request & { unchainedContext: Context }, res) => {
-  // Check for existing session ID
-
-  const sessionId = req.headers['mcp-session-id'] as string | undefined;
-  const currentUserId = req.unchainedContext.user!._id;
-
-  let transport: mcpSDKServerLibraryTypes.StreamableHTTPServerTransport;
-
-  if (sessionId && transports[sessionId]) {
-    // Reuse existing transport — only by the user that initialized the session.
-    if (transports[sessionId].userId !== currentUserId) {
-      res.status(404).json({
-        jsonrpc: '2.0',
-        error: {
-          code: -32000,
-          message: 'Bad Request: No valid session ID provided',
-        },
-        id: null,
-      });
-      return;
-    }
-    // Refresh the session's context holder with this request's context so the tools
-    // (which close over it) act on current request-scoped data. Same principal, already
-    // enforced above, so this only updates data the caller already has access to.
-    Object.assign(transports[sessionId].context, req.unchainedContext);
-    transport = transports[sessionId].transport;
-  } else if (!sessionId && isInitializeRequest(req.body)) {
-    // New initialization request — the tools close over this stable context holder.
-    const contextHolder = req.unchainedContext;
-    transport = new StreamableHTTPServerTransport({
-      sessionIdGenerator: () => crypto.randomUUID(),
-      onsessioninitialized: (sessionId) => {
-        // Store the transport bound to the initializing user
-        transports[sessionId] = { transport, userId: currentUserId, context: contextHolder };
-      },
-    });
-
-    // Clean up transport when closed
-    transport.onclose = () => {
-      if (transport.sessionId) {
-        delete transports[transport.sessionId];
-      }
-    };
-
-    const roles = contextHolder.user?.roles || [];
-
-    const { default: initMCPServer } = await import('../mcp/index.ts');
-    const server = initMCPServer(
-      new McpServer({
-        name: 'Unchained MCP Server',
-        version: '1.0.0',
-      }),
-      contextHolder,
-      roles,
-    );
-    await server.connect(transport);
-  } else {
-    // Invalid request
-    res.status(400).json({
-      jsonrpc: '2.0',
-      error: {
-        code: -32000,
-        message: 'Bad Request: No valid session ID provided',
-      },
-      id: null,
-    });
-    return;
-  }
-
-  // Handle the request
-  await transport.handleRequest(req, res, req.body);
-};
-
-// Reusable handler for GET and DELETE requests
-const handleSessionRequest: RequestHandler = async (
+const createMCPMiddleware: RequestHandler = async (
   req: Request & { unchainedContext: Context },
   res,
 ) => {
-  const sessionId = req.headers['mcp-session-id'] as string | undefined;
-  if (
-    !sessionId ||
-    !transports[sessionId] ||
-    transports[sessionId].userId !== req.unchainedContext.user!._id
-  ) {
-    res.status(400).send('Invalid or missing session ID');
-    return;
-  }
-
-  // Refresh the session's context holder (see handlePostRequest) before dispatching.
-  Object.assign(transports[sessionId].context, req.unchainedContext);
-  const transport = transports[sessionId].transport;
-  await transport.handleRequest(req, res);
-};
-
-const createMCPMiddleware: RequestHandler = (req, res, next) => {
-  const user = (req as any).unchainedContext.user;
-  if (!user) {
-    res.status(401);
-    res.header(
-      'WWW-Authenticate',
-      `Bearer realm="Unchained MCP", error="invalid_token", resource="${process.env.ROOT_URL || 'http://localhost:4010'}",`,
+  try {
+    if (req.method !== 'POST' && req.method !== 'GET' && req.method !== 'DELETE') {
+      res.status(405).send('Method Not Allowed');
+      return;
+    }
+    const bodyText =
+      req.method === 'POST' && req.body !== undefined ? JSON.stringify(req.body) : undefined;
+    const response = await handleMcpHttpRequest(
+      req.unchainedContext,
+      toWebRequest(req, res, bodyText),
+      req.method === 'POST' ? req.body : undefined,
     );
-    res.json({
-      error: 'invalid_token',
-      resource_metadata: `${process.env.ROOT_URL || 'http://localhost:4010'}/.well-known/oauth-protected-resource`,
-    });
-    return;
+    await sendWebResponse(res, response);
+  } catch (error) {
+    logger.error(error);
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    } else {
+      res.destroy();
+    }
   }
-
-  // The MCP server is an administrative interface. Authorize the admin role on EVERY
-  // request (not only at session initialization), so an authenticated non-admin can
-  // never reach the session-reuse path with someone else's session id.
-  if (!(user.roles || []).includes('admin')) {
-    res.status(403).json({ error: 'forbidden', message: 'MCP requires admin privileges' });
-    return;
-  }
-
-  if (req.method === 'POST') {
-    return handlePostRequest(req, res, next);
-  } else if (req.method === 'GET' || req.method === 'DELETE') {
-    return handleSessionRequest(req, res, next);
-  }
-  res.status(405).send('Method Not Allowed');
 };
 
 export default createMCPMiddleware;

@@ -35,8 +35,10 @@
     "test-mcp": "npx @modelcontextprotocol/inspector"
   },
   "dependencies": {
+    "@ai-sdk/mcp": "^2.0.34",
     "@ai-sdk/openai": "^4.0.45",
     "@ai-sdk/openai-compatible": "^3.0.34",
+    "@modelcontextprotocol/server": "^2.0.0",
     "@scure/bip32": "^2.0.0",
     "@scure/btc-signer": "^2.0.0",
     "@unchainedshop/admin-ui": "^4.8.12",
@@ -45,6 +47,7 @@
     "@unchainedshop/core-payment": "^4.8.12",
     "@unchainedshop/platform": "^4.8.12",
     "@unchainedshop/plugins": "^4.8.12",
+    "ai": "^7.0.73",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
     "graphql": "^17.0.2",
