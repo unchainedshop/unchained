@@ -36,8 +36,13 @@ export const filterOptionValues = (filter: Pick<Filter, 'type' | 'options'>): st
  * wrong in the other direction would publish results computed against a filter that no longer
  * exists in that shape.
  */
-export const filterCacheGeneration = (filter: Pick<Filter, 'updated' | 'created'>): number =>
-  filter?.updated?.getTime() || filter?.created?.getTime() || 0;
+export const filterCacheGeneration = (filter: Pick<Filter, 'updated' | 'created'>): number => {
+  // Documents written outside the module API can carry string timestamps; the ordering is the
+  // same either way, and anything unparseable degrades to generation 0 - always rebuildable.
+  const stamp = filter?.updated ?? filter?.created;
+  const time = stamp ? new Date(stamp).getTime() : 0;
+  return Number.isNaN(time) ? 0 : time;
+};
 
 export type FilterText = {
   _id: string;
