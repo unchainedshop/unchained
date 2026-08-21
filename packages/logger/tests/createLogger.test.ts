@@ -371,7 +371,7 @@ describe('createLogger', () => {
 
       const lastOutput = consoleOutput[consoleOutput.length - 1];
       const parsed = JSON.parse(lastOutput);
-      // NaN and Infinity are serialized as null by safe-stable-stringify
+      // NaN and Infinity are serialized as null by JSON.stringify
       assert(parsed.nan === null);
       assert(parsed.infinity === null);
       assert(parsed.negInfinity === null);
@@ -386,7 +386,7 @@ describe('createLogger', () => {
 
       const lastOutput = consoleOutput[consoleOutput.length - 1];
       const parsed = JSON.parse(lastOutput);
-      // BigInt is serialized as string by safe-stable-stringify
+      // BigInt is serialized as string by safeStringify
       assert(typeof parsed.value === 'string');
       assert(parsed.value === '9007199254740993');
     });
