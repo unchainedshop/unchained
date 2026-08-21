@@ -2,7 +2,7 @@
   "name": "@unchainedshop/example-ticketing",
   "description": "Kitchensink for Unchained Engine",
   "private": true,
-  "version": "4.8.19",
+  "version": "4.8.20",
   "license": "EUPL-1.2",
   "type": "module",
   "homepage": "https://unchained.shop",
@@ -37,12 +37,12 @@
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
-    "@fastify/multipart": "^10.0.0",
+    "@fastify/multipart": "^10.1.1",
     "@fastify/session": "^11.1.0",
     "@unchainedshop/platform": "^4.8.12",
     "@unchainedshop/plugins": "^4.8.12",
     "@unchainedshop/ticketing": "^4.8.12",
-    "fastify": "^5.4.0"
+    "fastify": "^5.12.1"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",

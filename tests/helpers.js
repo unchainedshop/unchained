@@ -21,7 +21,6 @@ import seedEnrollment from './seeds/enrollments.js';
 import seedWorkQueue from './seeds/work.js';
 import seedEvents from './seeds/events.js';
 import seedTokens from './seeds/tokens.js';
-import { GraphQLClient } from 'graphql-request';
 
 // eslint-disable-next-line
 // @ts-expect-error
@@ -80,21 +79,23 @@ export const createAnonymousGraphqlFetch = () => {
 
 export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
   const port = getServerPort();
-  const client = new GraphQLClient(`http://localhost:${port}/graphql`, {
-    errorPolicy: 'all',
-  });
 
-  return async ({ query, headers, ...options }) =>
-    client.rawRequest({
-      query,
-      requestHeaders: token
-        ? {
-            authorization: token,
-            ...(headers || {}),
-          }
-        : headers,
-      ...options,
+  // Never throws on GraphQL errors (like graphql-request's errorPolicy: 'all'):
+  // tests assert on `errors` themselves.
+  return async ({ query, variables, operationName, headers }) => {
+    const response = await fetch(`http://localhost:${port}/graphql`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        accept: 'application/graphql-response+json, application/json',
+        ...(token ? { authorization: token } : {}),
+        ...(headers || {}),
+      },
+      body: JSON.stringify({ query, variables, operationName }),
     });
+    const { data, errors, extensions } = await response.json();
+    return { data, errors, extensions, status: response.status, headers: response.headers };
+  };
 };
 
 // Poll an already-enqueued work item until it reaches one of `status` (default the
