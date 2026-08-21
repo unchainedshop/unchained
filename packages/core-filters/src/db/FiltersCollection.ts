@@ -48,18 +48,9 @@ export type FilterText = {
   title?: string;
 } & TimestampFields;
 
-export interface FilterProductIdCacheRecord {
-  filterId: string;
-  filterOptionValue: string | null;
-  productIds: string[];
-  /* The filter generation this row was computed from, see filterCacheGeneration. */
-  computedAt?: number;
-}
-
 export const FiltersCollection = async (db: mongodb.Db) => {
   const Filters = db.collection<Filter>('filters');
   const FilterTexts = db.collection<FilterText>('filter_texts');
-  const FilterProductIdCache = db.collection<FilterProductIdCacheRecord>('filter_productId_cache');
   await buildDbIndexes(Filters, [
     {
       index: { _id: 'text', key: 'text', options: 'text' },
@@ -92,14 +83,13 @@ export const FiltersCollection = async (db: mongodb.Db) => {
     },
   ]);
 
-  await buildDbIndexes(FilterProductIdCache, [
-    { index: { productIds: 1 } },
-    { index: { filterId: 1, filterOptionValue: 1 } },
-  ]);
+  // The product id cache is the storage of one pluggable cache backend (see filtersSettings), so
+  // its collection and indexes are owned by that backend - product-cache/mongodb.ts - not by this
+  // factory. A shop running a Redis/HTTP backend must not have this Mongo collection provisioned
+  // underneath it.
 
   return {
     Filters,
     FilterTexts,
-    FilterProductIdCache,
   };
 };

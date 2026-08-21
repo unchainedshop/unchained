@@ -1,8 +1,15 @@
-import { mongodb } from '@unchainedshop/mongodb';
+import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 import { sha256 } from '@unchainedshop/utils';
 import pMemoize from 'p-memoize';
 import ExpiryMap from 'expiry-map';
-import { FiltersCollection } from '../db/FiltersCollection.ts';
+
+export interface FilterProductIdCacheRecord {
+  filterId: string;
+  filterOptionValue: string | null;
+  productIds: string[];
+  /* The filter generation this row was computed from, see filterCacheGeneration. */
+  computedAt?: number;
+}
 
 const DUPLICATE_KEY = 11000;
 
@@ -56,7 +63,13 @@ const CACHE_TTL_MS = parseInt(process.env.UNCHAINED_FILTER_CACHE_TTL_MS || '6000
 const memoizeCache = new ExpiryMap(process.env.NODE_ENV === 'production' ? CACHE_TTL_MS : 1);
 
 export default async function mongodbCache(db: mongodb.Db) {
-  const { FilterProductIdCache } = await FiltersCollection(db);
+  // This backend owns the cache collection and its indexes, so nothing provisions them unless the
+  // Mongo cache is actually in use.
+  const FilterProductIdCache = db.collection<FilterProductIdCacheRecord>('filter_productId_cache');
+  await buildDbIndexes(FilterProductIdCache, [
+    { index: { productIds: 1 } },
+    { index: { filterId: 1, filterOptionValue: 1 } },
+  ]);
 
   // Reads are memoized per process, so a write nobody evicts stays invisible for the whole TTL -
   // a minute in production. Long enough for a retired option to keep answering and a newly added

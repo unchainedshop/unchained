@@ -41,9 +41,15 @@ export const filtersSettings: FiltersSettings = {
       );
     }
 
-    const defaultCache = await makeMongoDBCache(db);
-    filtersSettings.setCachedProductIds = setCachedProductIds || defaultCache.setCachedProductIds;
-    filtersSettings.getCachedProductIds = getCachedProductIds || defaultCache.getCachedProductIds;
-    filtersSettings.purgeCachedProductIds = purgeCachedProductIds || defaultCache.purgeCachedProductIds;
+    // Instantiated only when something still needs it. makeMongoDBCache provisions the Mongo
+    // cache collection and its indexes, so a backend that overrides every member must not trigger
+    // it - otherwise a Redis/HTTP shop gets an orphan Mongo collection it never reads.
+    const defaultCache =
+      setCachedProductIds && getCachedProductIds && purgeCachedProductIds
+        ? null
+        : await makeMongoDBCache(db);
+    filtersSettings.setCachedProductIds = setCachedProductIds || defaultCache!.setCachedProductIds;
+    filtersSettings.getCachedProductIds = getCachedProductIds || defaultCache!.getCachedProductIds;
+    filtersSettings.purgeCachedProductIds = purgeCachedProductIds || defaultCache!.purgeCachedProductIds;
   },
 };
