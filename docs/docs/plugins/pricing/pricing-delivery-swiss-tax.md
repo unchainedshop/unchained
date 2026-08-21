@@ -24,11 +24,13 @@ import '@unchainedshop/plugins/pricing/delivery-swiss-tax';
 
 ## Tax Categories
 
-| Category | Rate (2024+) | Rate (pre-2024) |
-|----------|--------------|-----------------|
-| DEFAULT | 8.1% | 7.7% |
-| REDUCED | 2.6% | 2.5% |
-| SPECIAL | 3.8% | 3.7% |
+| Category | 2024+ | 2018–2023 | 2011–2017 | 2001–2010 |
+|----------|-------|-----------|-----------|-----------|
+| DEFAULT | 8.1% | 7.7% | 8.0% | 7.6% |
+| REDUCED | 2.6% | 2.5% | 2.5% | 2.4% |
+| SPECIAL | 3.8% | 3.7% | 3.8% | 3.6% |
+
+Rate data is shared with the [Product Swiss Tax](./pricing-product-swiss-tax.md) adapter (bundled `ch-tax-rates.json`, era-based, ESTV-verified; the rate follows the order date).
 
 ## Configuration
 

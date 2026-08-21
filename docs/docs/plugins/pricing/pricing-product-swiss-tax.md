@@ -26,11 +26,17 @@ import '@unchainedshop/plugins/pricing/product-swiss-tax';
 
 ## Tax Categories
 
-| Category | Rate (2024+) | Rate (pre-2024) | Use Case |
-|----------|--------------|-----------------|----------|
-| DEFAULT | 8.1% | 7.7% | Standard goods and services |
-| REDUCED | 2.6% | 2.5% | Food, books, newspapers, medicines |
-| SPECIAL | 3.8% | 3.7% | Accommodation services |
+| Category | 2024+ | 2018–2023 | 2011–2017 | 2001–2010 | Use Case |
+|----------|-------|-----------|-----------|-----------|----------|
+| DEFAULT | 8.1% | 7.7% | 8.0% | 7.6% | Standard goods and services |
+| REDUCED | 2.6% | 2.5% | 2.5% | 2.4% | Food, books, newspapers, medicines |
+| SPECIAL | 3.8% | 3.7% | 3.8% | 3.6% | Accommodation services |
+
+The rate is selected by the order date (supply date), so historical recalculations stay era-accurate.
+
+## Rate Data
+
+Rates are bundled in [`ch-tax-rates.json`](https://github.com/unchainedshop/unchained/blob/v4.8.x/packages/plugins/src/pricing/tax/ch-tax-rates.json) as era lists (`{ validFrom, rate }`), verified against the [ESTV](https://www.estv.admin.ch/estv/en/home/value-added-tax/vat-rates-switzerland.html). Rates are never fetched at runtime — updates land as reviewed diffs via the repository's `update-tax-rates` skill.
 
 ## Configuration
 
@@ -92,4 +98,7 @@ The adapter handles both net and gross prices:
 ## Related
 
 - [Delivery Swiss Tax](./pricing-delivery-swiss-tax.md) - Swiss VAT for delivery fees
+- [Product EU VAT](./pricing-product-eu-tax.md) - Destination-based EU VAT
+- [Product UK VAT](./pricing-product-uk-tax.md) - UK VAT
+- [Product US Sales Tax](./pricing-product-us-sales-tax.md) - US statewide sales tax
 - [Product Pricing](../../extend/pricing/product-pricing.md) - Custom product pricing

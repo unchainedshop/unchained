@@ -5,20 +5,21 @@ import {
   ProductPricingRowCategory,
 } from '@unchainedshop/core';
 import {
-  resolveTaxCategoryFromDeliveryProvider,
-  resolveTaxCategoryFromProduct,
-  SwissTaxCategories,
-  type SwissTaxCategoryResolver,
-} from './tax/ch.ts';
+  resolveUkTaxCategoryFromDeliveryProvider,
+  resolveUkTaxCategoryFromProduct,
+  UkTaxCategories,
+  UK_VAT_COUNTRY_CODES,
+  type UkTaxCategoryResolver,
+} from './tax/uk.ts';
 import isDeliveryAddressInCountry from './utils/isDeliveryAddressInCountry.ts';
 import { applyTaxRateToTaxableRows } from './tax/applyTaxRateToTaxableRows.ts';
 
-export const ProductSwissTax: IProductPricingAdapter = {
+export const ProductUkTax: IProductPricingAdapter = {
   ...ProductPricingAdapter,
 
-  key: 'shop.unchained.pricing.product-swiss-tax',
+  key: 'shop.unchained.pricing.product-uk-tax',
   version: '1.0.0',
-  label: 'Apply Swiss Tax on Product',
+  label: 'Apply UK VAT on Product',
   orderIndex: 80,
 
   isActivatedFor: () => {
@@ -44,15 +45,13 @@ export const ProductSwissTax: IProductPricingAdapter = {
               ...context,
               orderDelivery,
             },
-            ['CH', 'LI'],
+            UK_VAT_COUNTRY_CODES,
           )
         ) {
           return pricingAdapter.calculate();
         }
 
-        let taxCategory: SwissTaxCategoryResolver | null = resolveTaxCategoryFromProduct(
-          context.product,
-        );
+        let taxCategory: UkTaxCategoryResolver | null = resolveUkTaxCategoryFromProduct(context.product);
         if (!taxCategory) {
           // No special tax category found, use default from delivery provider
           const provider = orderDelivery?.deliveryProviderId
@@ -60,20 +59,20 @@ export const ProductSwissTax: IProductPricingAdapter = {
                 deliveryProviderId: orderDelivery?.deliveryProviderId,
               })
             : null;
-          if (provider) taxCategory = resolveTaxCategoryFromDeliveryProvider(provider);
+          if (provider) taxCategory = resolveUkTaxCategoryFromDeliveryProvider(provider);
         }
         // If still no tax category found, use default
-        if (!taxCategory) taxCategory = SwissTaxCategories.DEFAULT;
+        if (!taxCategory) taxCategory = UkTaxCategories.STANDARD;
 
         const taxRate = taxCategory.rate(context.order?.ordered);
 
-        ProductPricingAdapter.log(`ProductSwissTax -> Tax Multiplicator: ${taxRate}`);
+        ProductPricingAdapter.log(`ProductUkTax -> Tax Multiplicator: ${taxRate}`);
         applyTaxRateToTaxableRows({
           calculationSheet: params.calculationSheet,
           resultSheet: pricingAdapter.resultSheet(),
           taxRate,
           baseCategory: ProductPricingRowCategory.Item,
-          adapterKey: ProductSwissTax.key,
+          adapterKey: ProductUkTax.key,
         });
         return pricingAdapter.calculate();
       },
@@ -81,4 +80,4 @@ export const ProductSwissTax: IProductPricingAdapter = {
   },
 };
 
-ProductPricingDirector.registerAdapter(ProductSwissTax);
+ProductPricingDirector.registerAdapter(ProductUkTax);

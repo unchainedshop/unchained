@@ -1,0 +1,334 @@
+{
+  "source": "https://taxfoundation.org/data/all/state/2026-sales-tax-rates-midyear/",
+  "verifiedAt": "2026-08-20",
+  "timezone": "-06:00",
+  "states": {
+    "AK": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.0
+      }
+    ],
+    "AL": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.04
+      }
+    ],
+    "AR": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.065
+      }
+    ],
+    "AZ": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.056
+      }
+    ],
+    "CA": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.0725,
+        "note": "6.0% state + 1.25% mandatory statewide local"
+      }
+    ],
+    "CO": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.029
+      }
+    ],
+    "CT": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.0635
+      }
+    ],
+    "DC": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.06
+      },
+      {
+        "validFrom": "2026-10-01",
+        "rate": 0.07,
+        "note": "enacted increase per DC OTR notice"
+      }
+    ],
+    "DE": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.0
+      }
+    ],
+    "FL": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.06
+      }
+    ],
+    "GA": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.04
+      }
+    ],
+    "HI": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.04,
+        "note": "general excise tax (GET)"
+      }
+    ],
+    "IA": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.06
+      }
+    ],
+    "ID": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.06
+      }
+    ],
+    "IL": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.0625
+      }
+    ],
+    "IN": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.07
+      }
+    ],
+    "KS": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.065
+      }
+    ],
+    "KY": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.06
+      }
+    ],
+    "LA": [
+      {
+        "validFrom": "2018-07-01",
+        "rate": 0.0445
+      },
+      {
+        "validFrom": "2025-01-01",
+        "rate": 0.05,
+        "note": "Act 11 (2024); scheduled to drop to 4.75% from 2030"
+      }
+    ],
+    "MA": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.0625
+      }
+    ],
+    "MD": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.06
+      }
+    ],
+    "ME": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.055
+      }
+    ],
+    "MI": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.06
+      }
+    ],
+    "MN": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.06875
+      }
+    ],
+    "MO": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.04225
+      }
+    ],
+    "MS": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.07
+      }
+    ],
+    "MT": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.0
+      }
+    ],
+    "NC": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.0475
+      }
+    ],
+    "ND": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.05
+      }
+    ],
+    "NE": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.055
+      }
+    ],
+    "NH": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.0
+      }
+    ],
+    "NJ": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.06625
+      }
+    ],
+    "NM": [
+      {
+        "validFrom": "2022-07-01",
+        "rate": 0.05
+      },
+      {
+        "validFrom": "2023-07-01",
+        "rate": 0.04875,
+        "note": "gross receipts tax (HB 163, 2022)"
+      }
+    ],
+    "NV": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.0685,
+        "note": "includes mandatory statewide-levied components"
+      }
+    ],
+    "NY": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.04
+      }
+    ],
+    "OH": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.0575
+      }
+    ],
+    "OK": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.045
+      }
+    ],
+    "OR": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.0
+      }
+    ],
+    "PA": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.06
+      }
+    ],
+    "RI": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.07
+      }
+    ],
+    "SC": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.06
+      }
+    ],
+    "SD": [
+      {
+        "validFrom": "2023-07-01",
+        "rate": 0.042,
+        "note": "HB 1137 temporary cut; reverts to 4.5% on 2027-07-01 unless extended"
+      }
+    ],
+    "TN": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.07
+      }
+    ],
+    "TX": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.0625
+      }
+    ],
+    "UT": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.061,
+        "note": "includes 1.25% mandatory statewide local add-on"
+      }
+    ],
+    "VA": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.053,
+        "note": "4.3% state + 1% mandatory statewide local"
+      }
+    ],
+    "VT": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.06
+      }
+    ],
+    "WA": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.065
+      }
+    ],
+    "WI": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.05
+      }
+    ],
+    "WV": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.06
+      }
+    ],
+    "WY": [
+      {
+        "validFrom": "2026-07-01",
+        "rate": 0.04
+      }
+    ]
+  }
+}

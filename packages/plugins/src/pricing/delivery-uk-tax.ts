@@ -5,16 +5,20 @@ import {
   DeliveryPricingDirector,
 } from '@unchainedshop/core';
 
-import { resolveTaxCategoryFromDeliveryProvider, SwissTaxCategories } from './tax/ch.ts';
+import {
+  resolveUkTaxCategoryFromDeliveryProvider,
+  UkTaxCategories,
+  UK_VAT_COUNTRY_CODES,
+} from './tax/uk.ts';
 import isDeliveryAddressInCountry from './utils/isDeliveryAddressInCountry.ts';
 import { applyTaxRateToTaxableRows } from './tax/applyTaxRateToTaxableRows.ts';
 
-export const DeliverySwissTax: IDeliveryPricingAdapter = {
+export const DeliveryUkTax: IDeliveryPricingAdapter = {
   ...DeliveryPricingAdapter,
 
-  key: 'shop.unchained.pricing.delivery-swiss-tax',
+  key: 'shop.unchained.pricing.delivery-uk-tax',
   version: '1.0.0',
-  label: 'Apply Swiss Tax on Delivery Fees',
+  label: 'Apply UK VAT on Delivery Fees',
   orderIndex: 80,
 
   isActivatedFor: (context) => {
@@ -26,7 +30,7 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
         orderDelivery: context.orderDelivery,
         countryCode: context.countryCode,
       },
-      ['CH', 'LI'],
+      UK_VAT_COUNTRY_CODES,
     );
   },
 
@@ -39,16 +43,16 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
 
       calculate: async () => {
         const taxCategory =
-          resolveTaxCategoryFromDeliveryProvider(context.provider) || SwissTaxCategories.DEFAULT;
+          resolveUkTaxCategoryFromDeliveryProvider(context.provider) || UkTaxCategories.STANDARD;
         const taxRate = taxCategory.rate(context.order?.ordered);
 
-        DeliveryPricingAdapter.log(`DeliverySwissTax -> Tax Multiplicator: ${taxRate}`);
+        DeliveryPricingAdapter.log(`DeliveryUkTax -> Tax Multiplicator: ${taxRate}`);
         applyTaxRateToTaxableRows({
           calculationSheet: params.calculationSheet,
           resultSheet: pricingAdapter.resultSheet(),
           taxRate,
           baseCategory: DeliveryPricingRowCategory.Delivery,
-          adapterKey: DeliverySwissTax.key,
+          adapterKey: DeliveryUkTax.key,
         });
 
         return pricingAdapter.calculate();
@@ -57,4 +61,4 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
   },
 };
 
-DeliveryPricingDirector.registerAdapter(DeliverySwissTax);
+DeliveryPricingDirector.registerAdapter(DeliveryUkTax);
