@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import type { Filter } from '@unchainedshop/core-filters';
 import type { Context } from '../../../context.ts';
-import { FilterDirector, type FilterInputText } from '@unchainedshop/core';
+import { type FilterInputText } from '@unchainedshop/core';
 import { DuplicateFilterKeyError } from '../../../errors.ts';
 
 export default async function createFilter(
@@ -9,12 +9,10 @@ export default async function createFilter(
   { filter, texts }: { filter: Filter; texts: FilterInputText[] },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   log('mutation createFilter', { userId });
   try {
-    const newFilter = await modules.filters.create(filter);
-
-    await FilterDirector.invalidateProductIdCache(newFilter, context);
+    const newFilter = await services.filters.createFilter(filter);
 
     if (texts) {
       await modules.filters.texts.updateTexts({ filterId: newFilter._id }, texts);

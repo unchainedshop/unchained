@@ -41,6 +41,10 @@ import { verifyQuotationService } from './verifyQuotation.ts';
 import { loadFiltersService } from './loadFilters.ts';
 import { loadFilterOptionsService } from './loadFilterOptions.ts';
 import { removeFilterService } from './removeFilter.ts';
+import { createFilterService } from './createFilter.ts';
+import { updateFilterService } from './updateFilter.ts';
+import { createFilterOptionService } from './createFilterOption.ts';
+import { removeFilterOptionService } from './removeFilterOption.ts';
 import { removeCartDiscountService } from './removeCartDiscount.ts';
 import { addMultipleCartProductsService } from './addMultipleCartProducts.ts';
 import { ercMetadataService } from './ercMetadata.ts';
@@ -183,6 +187,10 @@ export default function initServices(modules: Modules, customServices: CustomSer
       loadFilters: loadFiltersService as Bound<typeof loadFiltersService>,
       loadFilterOptions: loadFilterOptionsService as Bound<typeof loadFilterOptionsService>,
       removeFilter: removeFilterService as Bound<typeof removeFilterService>,
+      createFilter: createFilterService as Bound<typeof createFilterService>,
+      updateFilter: updateFilterService as Bound<typeof updateFilterService>,
+      createFilterOption: createFilterOptionService as Bound<typeof createFilterOptionService>,
+      removeFilterOption: removeFilterOptionService as Bound<typeof removeFilterOptionService>,
     },
     warehousing: {
       ercMetadata: ercMetadataService as Bound<typeof ercMetadataService>,
