@@ -37,14 +37,10 @@
   "dependencies": {
     "@passwordless-id/webauthn": "^2.3.1",
     "@unchainedshop/events": "^4.8.12",
-    "@unchainedshop/file-upload": "^4.8.12",
     "@unchainedshop/logger": "^4.8.12",
     "@unchainedshop/mongodb": "^4.8.12",
-    "@unchainedshop/roles": "^4.8.12",
     "@unchainedshop/utils": "^4.8.12",
-    "bcryptjs": "^3.0.2",
-    "expiry-map": "^2.0.0",
-    "p-memoize": "^8.0.0"
+    "bcryptjs": "^3.0.2"
   },
   "peerDependencies": {
     "@noble/curves": "^2.0.0",

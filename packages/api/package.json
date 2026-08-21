@@ -72,14 +72,21 @@
     "express-session": ">= 1.18 < 2",
     "fastify": ">= 5.2 < 6",
     "graphql-yoga": ">= 5.9 < 6",
+    "mongodb": ">= 7 < 8",
     "multer": ">= 2 < 3",
     "passport": ">= 0.7 < 1"
   },
   "peerDependenciesMeta": {
+    "graphql": {
+      "optional": false
+    },
     "graphql-yoga": {
       "optional": false
     },
     "express-session": {
+      "optional": false
+    },
+    "mongodb": {
       "optional": false
     },
     "@modelcontextprotocol/sdk": {
@@ -119,15 +126,31 @@
   "dependencies": {
     "@envelop/core": "^5.6.0",
     "@unchainedshop/core": "^4.8.12",
+    "@unchainedshop/core-assortments": "^4.8.12",
+    "@unchainedshop/core-bookmarks": "^4.8.12",
+    "@unchainedshop/core-countries": "^4.8.12",
+    "@unchainedshop/core-currencies": "^4.8.12",
+    "@unchainedshop/core-delivery": "^4.8.12",
+    "@unchainedshop/core-enrollments": "^4.8.12",
+    "@unchainedshop/core-events": "^4.8.12",
+    "@unchainedshop/core-files": "^4.8.12",
+    "@unchainedshop/core-filters": "^4.8.12",
+    "@unchainedshop/core-languages": "^4.8.12",
+    "@unchainedshop/core-orders": "^4.8.12",
+    "@unchainedshop/core-payment": "^4.8.12",
+    "@unchainedshop/core-products": "^4.8.12",
+    "@unchainedshop/core-quotations": "^4.8.12",
+    "@unchainedshop/core-users": "^4.8.12",
+    "@unchainedshop/core-warehousing": "^4.8.12",
+    "@unchainedshop/core-worker": "^4.8.12",
     "@unchainedshop/events": "^4.8.12",
     "@unchainedshop/logger": "^4.8.12",
+    "@unchainedshop/mongodb": "^4.8.12",
     "@unchainedshop/roles": "^4.8.12",
     "@unchainedshop/utils": "^4.8.12",
     "dataloader": "^2.2.3",
-    "expiry-map": "^2.0.0",
     "graphql-scalars": "^2.0.0",
     "mime": ">= 4 < 5",
-    "p-memoize": "^8.0.0",
     "zod": "^3.25.76 || ^4"
   },
   "devDependencies": {
@@ -145,6 +168,7 @@
     "express-session": "^1.18.1",
     "fastify": "^5.12.1",
     "graphql": "^17.0.2",
+    "mongodb": "^7.5.0",
     "multer": "^2.0.1",
     "passport": "^0.7.0",
     "typescript": "^5.8.3"

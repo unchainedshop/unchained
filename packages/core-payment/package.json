@@ -36,10 +36,8 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@unchainedshop/events": "^4.8.12",
-    "@unchainedshop/logger": "^4.8.12",
-    "@unchainedshop/utils": "^4.8.12",
-    "expiry-map": "^2.0.0",
-    "p-memoize": "^8.0.0"
+    "@unchainedshop/mongodb": "^4.8.12",
+    "@unchainedshop/utils": "^4.8.12"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",

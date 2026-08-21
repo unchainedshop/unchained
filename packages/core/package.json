@@ -52,9 +52,13 @@
     "@unchainedshop/core-users": "^4.8.12",
     "@unchainedshop/core-warehousing": "^4.8.12",
     "@unchainedshop/core-worker": "^4.8.12",
+    "@unchainedshop/events": "^4.8.12",
+    "@unchainedshop/file-upload": "^4.8.12",
     "@unchainedshop/logger": "^4.8.12",
+    "@unchainedshop/mongodb": "^4.8.12",
     "@unchainedshop/utils": "^4.8.12",
-    "minipass-json-stream": "^1.0.2"
+    "minipass-json-stream": "^1.0.2",
+    "zod": "^3.25.76 || ^4"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",

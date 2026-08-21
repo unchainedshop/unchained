@@ -35,7 +35,6 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^4.8.12",
     "@unchainedshop/utils": "^4.8.12"
   },
   "devDependencies": {

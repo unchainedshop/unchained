@@ -35,9 +35,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@kontsedal/locco": "^1.1.0",
     "@unchainedshop/events": "^4.8.12",
-    "@unchainedshop/logger": "^4.8.12",
+    "@unchainedshop/mongodb": "^4.8.12",
     "@unchainedshop/utils": "^4.8.12"
   },
   "devDependencies": {

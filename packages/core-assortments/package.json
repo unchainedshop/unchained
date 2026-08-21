@@ -36,8 +36,8 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@unchainedshop/events": "^4.8.12",
-    "@unchainedshop/file-upload": "^4.8.12",
     "@unchainedshop/logger": "^4.8.12",
+    "@unchainedshop/mongodb": "^4.8.12",
     "@unchainedshop/utils": "^4.8.12"
   },
   "devDependencies": {

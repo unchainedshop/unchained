@@ -50,7 +50,7 @@
   },
   "peerDependenciesMeta": {
     "@parse/node-apn": {
-      "optional": false
+      "optional": true
     },
     "express": {
       "optional": true
@@ -60,6 +60,7 @@
     }
   },
   "devDependencies": {
+    "@parse/node-apn": "^8.1.0",
     "@types/express": "^5.0.3",
     "@types/node": "^26.2.0",
     "express": "^5.1.0",
