@@ -16,7 +16,7 @@ export const LoadedFilter = {
     return filter;
   },
   isSelected: ({ searchQuery, filter }: LoadedFilterData) => {
-    return searchQuery?.filterQuery?.some((q) => q.key === filter.key);
+    return Boolean(searchQuery?.filterQuery?.some((q) => q.key === filter.key));
   },
   filteredProductsCount: async (
     { filteredByOtherFiltersSet, filteredByThisFilterSet, searchQuery }: LoadedFilterData,

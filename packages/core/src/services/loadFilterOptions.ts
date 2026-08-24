@@ -30,7 +30,7 @@ export async function loadFilterOptionsService(
       const filteredProductIdSet = productIdSet.intersection(filterOptionProductIds);
 
       const normalizedValues = values && this.filters.parse(filter, values, [value]);
-      const isSelected = normalizedValues && normalizedValues.indexOf(value) !== -1;
+      const isSelected = Boolean(normalizedValues && normalizedValues.indexOf(value) !== -1);
 
       if (!filteredProductIdSet.size && !isSelected) {
         return null;
