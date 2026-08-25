@@ -5,12 +5,12 @@ import upsertVariations, { ProductVariationSchema } from './upsertVariations.ts'
 import upsertMedia from './upsertMedia.ts';
 import { MediaSchema } from '../assortment/upsertMedia.ts';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.ts';
-import { ProductType } from '@unchainedshop/core-products';
+import { ProductStatus, ProductType } from '@unchainedshop/core-products';
 
 export const ProductCreateSpecificationSchema = z.object({
   type: z.enum(ProductType),
   sequence: z.optional(z.number()),
-  status: z.nullable(z.optional(z.string())), // or null!
+  status: z.nullish(z.enum(ProductStatus)),
   published: z.nullish(z.iso.datetime()), // or null!
   tags: z.optional(z.array(z.string())),
   commerce: z.optional(
@@ -85,6 +85,13 @@ export const ProductCreatePayloadSchema = z.object({
   variations: z.optional(z.array(ProductVariationSchema)),
 });
 
+/*
+ * Draft is stored as null; the string form of the enum is skipped by productExists and by every
+ * find selector, so importing it produces a document nothing can reach and publishProduct used to
+ * refuse. Accept the enum, store the representation the rest of the engine reads.
+ */
+const normalizeStatus = (status?: string | null) => (status === ProductStatus.DRAFT ? null : status);
+
 const transformSpecification = (specification: z.infer<typeof ProductCreateSpecificationSchema>) => {
   const {
     variationResolvers: assignments,
@@ -102,6 +109,7 @@ const transformSpecification = (specification: z.infer<typeof ProductCreateSpeci
     ...productData,
     ...(sequence != null && { sequence }),
     published: productData.published ? new Date(productData.published) : undefined,
+    ...(productData.status !== undefined && { status: normalizeStatus(productData.status) }),
     tags,
     warehousing,
     supply,
