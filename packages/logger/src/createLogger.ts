@@ -1,5 +1,5 @@
 import { inspect } from 'node:util';
-import { stringify } from 'safe-stable-stringify';
+import { safeStringify } from './safe-stringify.ts';
 import { LogLevel } from './logger.types.ts';
 
 /**
@@ -148,17 +148,6 @@ const formatTimestamp = (): string => {
 };
 
 /**
- * Custom JSON replacer function that handles BigInt values by converting them to strings.
- * This ensures BigInt values can be serialized in JSON logs.
- */
-const bigintReplacer = (_key: string, value: any): any => {
-  if (typeof value === 'bigint') {
-    return value.toString();
-  }
-  return value;
-};
-
-/**
  * A function whose return value is merged into every JSON-formatted log record.
  * Integrators register one to inject request-scoped fields such as `trace_id` and
  * `span_id` from an OpenTelemetry active span.
@@ -267,8 +256,8 @@ export const createLogger = (moduleName: string): Logger => {
         }
       }
 
-      // Use safe-stable-stringify for proper JSON output with BigInt support
-      console.log(stringify(logObject, bigintReplacer));
+      // safeStringify handles circular references and BigInt values
+      console.log(safeStringify(logObject));
     } else {
       // Unchained format (pretty)
       const timestamp = formatTimestamp();
