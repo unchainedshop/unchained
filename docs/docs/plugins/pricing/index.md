@@ -20,6 +20,9 @@ Calculate prices when products are queried or added to cart.
 | [`shop.unchained.pricing.rate-conversion`](./pricing-product-rate-conversion.md) | 10 | Currency conversion | When selling in multiple currencies |
 | [`shop.unchained.pricing.product-discount`](./pricing-product-discount.md) | 30 | Apply discounts | When using product-level discount rules or coupons |
 | [`shop.unchained.pricing.product-swiss-tax`](./pricing-product-swiss-tax.md) | 80 | Swiss VAT | Swiss shops requiring 8.1% / 2.6% VAT calculation |
+| [`shop.unchained.pricing.product-eu-tax`](./pricing-product-eu-tax.md) | 80 | EU VAT (destination-based, 27 member states) | EU shops — the delivery country selects the per-country era-based rate |
+| [`shop.unchained.pricing.product-uk-tax`](./pricing-product-uk-tax.md) | 80 | UK VAT | UK shops (GB, IM, XI) requiring era-based VAT |
+| [`shop.unchained.pricing.product-us-sales-tax`](./pricing-product-us-sales-tax.md) | 80 | US statewide sales tax | US shops — statewide base rate of the delivery state |
 | [`shop.unchained.pricing.product-round`](./pricing-product-round.md) | 90 | Round prices | When prices must be rounded to 0.05 (Swiss rounding) |
 
 ## Delivery Pricing
@@ -30,6 +33,9 @@ Calculate shipping and handling fees.
 |-------------|-------|-------------|-------------|
 | [`shop.unchained.pricing.delivery-free`](./pricing-delivery-free.md) | 0 | Zero-cost delivery | Default — sets delivery cost to zero, replace with custom adapter for fees |
 | [`shop.unchained.pricing.delivery-swiss-tax`](./pricing-delivery-swiss-tax.md) | 80 | Swiss VAT on delivery | Swiss shops requiring VAT on shipping fees |
+| [`shop.unchained.pricing.delivery-eu-tax`](./pricing-delivery-eu-tax.md) | 80 | EU VAT on delivery | EU shops requiring VAT on shipping fees |
+| [`shop.unchained.pricing.delivery-uk-tax`](./pricing-delivery-uk-tax.md) | 80 | UK VAT on delivery | UK shops requiring VAT on shipping fees |
+| [`shop.unchained.pricing.delivery-us-sales-tax`](./pricing-delivery-us-sales-tax.md) | 80 | US sales tax on delivery | US shops whose delivery state taxes shipping fees |
 
 ## Payment Pricing
 
