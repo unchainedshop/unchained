@@ -1,4 +1,5 @@
 import { emit, registerEvents } from '@unchainedshop/events';
+import { createLogger } from '@unchainedshop/logger';
 import { SortDirection, type SortOption } from '@unchainedshop/utils';
 import {
   mongodb,
@@ -16,6 +17,8 @@ import type { FilterQuery } from '../search.ts';
 export type FilterOption = Filter & {
   filterOption: string;
 };
+
+const logger = createLogger('unchained:core-filters');
 
 const FILTER_EVENTS = ['FILTER_CREATE', 'FILTER_REMOVE', 'FILTER_UPDATE'];
 
@@ -149,6 +152,18 @@ export const configureFiltersModule = async ({
     delete: async (filterId: string) => {
       await filterTexts.deleteMany({ filterId });
       const { deletedCount } = await Filters.deleteOne({ _id: filterId });
+
+      // After the filter is gone, and tolerated when it fails: the cache is derived data, so a
+      // backend being unavailable must not leave the filter half deleted with its texts
+      // already removed. Rows that survive belong to a filter nothing can query any more.
+      try {
+        await filtersSettings.purgeCachedProductIds(filterId);
+      } catch (e) {
+        logger.warn(`Failed to purge the product id cache of removed filter ${filterId}`, {
+          error: (e as Error).message,
+        });
+      }
+
       await emit('FILTER_REMOVE', { filterId });
       return deletedCount;
     },

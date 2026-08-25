@@ -1,4 +1,4 @@
-import { FilterType, type Filter, type SearchQuery } from '@unchainedshop/core-filters';
+import { filterOptionValues, type Filter, type SearchQuery } from '@unchainedshop/core-filters';
 import type { Modules } from '../modules.ts';
 import { FilterDirector, parseQueryArray } from '../directors/FilterDirector.ts';
 
@@ -16,7 +16,7 @@ export async function loadFilterOptionsService(
   const filterQueryParsed = parseQueryArray(searchQuery?.filterQuery);
   const values = filterQueryParsed[filter.key];
 
-  const allOptions = (filter.type === FilterType.SWITCH && ['true', 'false']) || filter.options || [];
+  const allOptions = filterOptionValues(filter);
   const mappedOptions = await Promise.all(
     allOptions.map(async (value) => {
       const filterOptionProductIds = await FilterDirector.filterProductIds(
@@ -30,7 +30,7 @@ export async function loadFilterOptionsService(
       const filteredProductIdSet = productIdSet.intersection(filterOptionProductIds);
 
       const normalizedValues = values && this.filters.parse(filter, values, [value]);
-      const isSelected = normalizedValues && normalizedValues.indexOf(value) !== -1;
+      const isSelected = Boolean(normalizedValues && normalizedValues.indexOf(value) !== -1);
 
       if (!filteredProductIdSet.size && !isSelected) {
         return null;

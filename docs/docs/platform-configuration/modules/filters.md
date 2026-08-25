@@ -17,17 +17,41 @@ export interface FilterSettingsOptions {
     filterId: string,
     productIds: string[],
     productIdsMap: Record<string, string[]>,
+    computedAt: number,
   ) => Promise<number>;
   getCachedProductIds?: (filterId: string) => Promise<[string[], Record<string, string[]>] | null>;
+  purgeCachedProductIds?: (filterId: string) => Promise<void>;
 }
 ```
+
+### Cache contract
+
+`setCachedProductIds` **replaces** a filter's cache rather than adding to it. `productIdsMap` is
+the complete set of values the filter can be queried by, so an implementation must retire keys it
+does not mention — otherwise an option that was renamed or removed keeps answering with the
+product ids it held when it disappeared.
+
+`computedAt` is the filter generation the map was built from, taken from the filter's own
+`updated` timestamp. Rebuilding scans the catalog once per option, so on a large catalog a
+rebuild can be overtaken while it runs. **An implementation must not let an older generation
+overwrite or retire what a newer one has already written.** Skipping that turns a stale row into
+a missing one: an option added during the rebuild is retired again and silently resolves to
+nothing, with no later rebuild to restore it.
+
+Storing `computedAt` alongside each cached value and comparing before writing or deleting is
+enough. A generation moving without the cache actually changing is harmless — it costs a skipped
+write, and whatever moved it queues an invalidation anyway.
+
+`purgeCachedProductIds` drops a filter's cache outright and is called when the filter is
+deleted.
 
 ### Default Caching Implementation
 
 - [mongodb](https://github.com/unchainedshop/unchained/blob/master/packages/core-filters/src/product-cache/mongodb.ts)
 
 :::warning
-If you customize `setCachedProductIds`, ensure you also customize `getCachedProductIds`.
+Customize all three together. They fall back to the MongoDB implementation individually, so
+overriding only some of them leaves you reading from one backend and writing to another.
 :::
 
 ## Events
