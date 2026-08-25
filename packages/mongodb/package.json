@@ -33,6 +33,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
+    "@unchainedshop/logger": "^5.0.0-alpha.1",
     "@unchainedshop/utils": "^5.0.0-alpha.1"
   },
   "peerDependencies": {

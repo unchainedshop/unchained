@@ -45,8 +45,7 @@
     "@unchainedshop/mongodb": "^5.0.0-alpha.1",
     "@unchainedshop/plugins": "^5.0.0-alpha.1",
     "@unchainedshop/roles": "^5.0.0-alpha.1",
-    "@unchainedshop/utils": "^5.0.0-alpha.1",
-    "safe-stable-stringify": "^2.5.0"
+    "@unchainedshop/utils": "^5.0.0-alpha.1"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",

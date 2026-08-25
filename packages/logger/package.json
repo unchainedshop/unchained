@@ -36,9 +36,6 @@
     "url": "https://github.com/unchainedshop/unchained/issues"
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
-  "dependencies": {
-    "safe-stable-stringify": "^2.5.0"
-  },
   "devDependencies": {
     "@types/node": "^26.2.0",
     "typescript": "^5.8.3"
