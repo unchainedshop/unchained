@@ -84,6 +84,7 @@ export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
   return async ({ query, variables, headers, ...options }) => {
     const requestHeaders = {
       'Content-Type': 'application/json',
+      accept: 'application/graphql-response+json, application/json',
       ...(token ? { authorization: token } : {}),
       ...(headers || {}),
     };
