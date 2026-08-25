@@ -13,7 +13,7 @@ try {
   tool = aiTools.tool;
   generateImage = aiTools.generateImage;
 } catch {
-  // Already handled
+  // Reported by the chat handlers' loaders; image generation is only reachable when chat is mounted.
 }
 
 const inputSchema = z.object({

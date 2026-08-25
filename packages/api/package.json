@@ -64,7 +64,7 @@
     "@fastify/cookie": ">= 11 < 12",
     "@fastify/multipart": ">= 10 < 11",
     "@fastify/static": ">= 10.1.3 < 11",
-    "@modelcontextprotocol/sdk": ">= 1 < 2",
+    "@modelcontextprotocol/server": ">= 2 < 3",
     "ai": ">= 7 < 8",
     "cookie-parser": ">= 1.4 < 2",
     "express": ">= 5 < 6",
@@ -83,7 +83,7 @@
     "cookie-parser": {
       "optional": false
     },
-    "@modelcontextprotocol/sdk": {
+    "@modelcontextprotocol/server": {
       "optional": true
     },
     "ai": {
@@ -141,18 +141,18 @@
     "graphql-scalars": "^2.0.0",
     "jose": "^6.0.10",
     "mime": ">= 4 < 5",
-    "zod": "^3.25.76 || ^4"
+    "zod": "^4.2.0"
   },
   "devDependencies": {
-    "@ai-sdk/mcp": "^2.0.29",
+    "@ai-sdk/mcp": "^2.0.34",
     "@fastify/cookie": "^11.0.2",
     "@fastify/multipart": "^10.0.0",
     "@fastify/static": "^10.1.3",
-    "@modelcontextprotocol/sdk": "^1.15.1",
+    "@modelcontextprotocol/server": "^2.0.0",
     "@types/cookie-parser": "^1.4.8",
     "@types/express": "^5.0.3",
     "@types/node": "^26.2.0",
-    "ai": "^7.0.58",
+    "ai": "^7.0.73",
     "cookie-parser": "^1.4.7",
     "express": "^5.1.0",
     "fastify": "^5.4.0",
