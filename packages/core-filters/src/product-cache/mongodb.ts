@@ -33,7 +33,7 @@ export default async function mongodbCache(db: mongodb.Db) {
   const { FilterProductIdCache } = await FiltersCollection(db);
 
   const getCachedProductIdsFromMemoryCache = memoizeWithTTL(
-    async function getCachedProductIdsFromDatabase(filterId) {
+    async function getCachedProductIdsFromDatabase(filterId: string) {
       const filterProductIdCache = await FilterProductIdCache.find(
         {
           filterId,
@@ -52,7 +52,7 @@ export default async function mongodbCache(db: mongodb.Db) {
       );
       return [allProductIds, productIdsMap] as [string[], Record<string, string[]>];
     },
-    cacheTtlMs,
+    { ttl: cacheTtlMs },
   );
 
   return {
