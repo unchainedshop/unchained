@@ -50,7 +50,7 @@
   },
   "peerDependenciesMeta": {
     "@parse/node-apn": {
-      "optional": false
+      "optional": true
     },
     "express": {
       "optional": true
