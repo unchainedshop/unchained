@@ -69,6 +69,12 @@
 - **CHANGED**: the Redis and AWS EventBridge emit adapters no longer self-register on import. Register the transport explicitly before `startPlatform`: `import { setEmitAdapter } from '@unchainedshop/events'; import { RedisEventEmitter } from '@unchainedshop/plugins/events/redis'; setEmitAdapter(RedisEventEmitter());`
 - **NEW**: optional `EmitAdapter.shutdown()` — implemented by the redis/eventbridge adapters to close long-lived connections; called by `startPlatform` on graceful shutdown.
 
+### Dependencies & Integrations
+- **CHANGED**: Upgraded to `graphql` ^17 across the workspace, executed through the graphql-js reference engine (`useEngine` inserted as the first Yoga plugin). `@unchainedshop/api` declares a non-optional `graphql` peer `>=16.14 <18`.
+- **CHANGED**: MCP integration migrated to the split `@modelcontextprotocol/server` v2 (optional peer `>=2 <3`, replacing the monolithic v1 SDK). The `/mcp` endpoint is now stateless — a fresh `McpServer` is built per request from the authenticated context.
+- **CHANGED**: `@parse/node-apn` (Apple Wallet push in `@unchainedshop/ticketing`) is now an **optional** peer dependency, loaded via guarded dynamic import. Install it only if you send pass push notifications.
+- **CHANGED**: Dependency cleanup — declared previously-phantom dependencies, and dropped `safe-stable-stringify` (logger now ships its own cycle/BigInt-safe `safeStringify`) and `@kontsedal/locco` (checkout now uses a MongoDB-backed order lock on the same `locco-locks` collection, no migration).
+
 ## New Features & Improvements
 
 ### Authentication & Security
@@ -83,6 +89,10 @@
 - **NEW**: `@unchainedshop/client` package — installable React/Apollo GraphQL hooks with per-module subpath imports (e.g. `@unchainedshop/client/product`), generated from the admin-ui hooks, for building custom storefronts and admin tools. Peer dependencies: `@apollo/client` ^4, `graphql` ^16, `react` >=18.
 - **NEW**: Pluggable logger context — `setLogContextProvider()` merges request-scoped fields (e.g. OpenTelemetry `trace_id` / `span_id`) into every JSON log line (prototype-pollution-safe; provider errors are swallowed so telemetry never breaks logging).
 - **NEW**: `Query.registeredEventTypes: [String!]!` lists all registered event type names (gated by `viewEvents`).
+
+### Tax
+- **NEW**: EU, UK, and US tax plugins with bundled, era-based rate tables and country presets (`registerEuTaxPlugins`, `registerUkTaxPlugins`, `registerUsSalesTaxPlugins`). EU covers destination-based VAT for all 27 member states with per-category rates; categories are selected via a `eu-tax-category:<name>` product tag or delivery provider.
+- **CHANGED**: Swiss VAT rates moved out of code into a bundled `ch-tax-rates.json` table (ESTV source metadata, era history back to 2001), sharing the new era-based tax helpers. See the `update-tax-rates` maintenance workflow.
 
 ### Admin UI
 - Added Cypress e2e suites for enrollments, quotations, and tokens, and reduced flakiness (lower retries, real support entrypoint, `cy.selectLocale()` command).
