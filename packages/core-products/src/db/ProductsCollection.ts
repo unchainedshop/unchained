@@ -157,12 +157,18 @@ export const ProductsCollection = async (db: mongodb.Db) => {
     },
   ]);
 
-  await buildDbIndexes(Products, [
-    { index: { deleted: 1, status: 1, sequence: 1 } },
-    { index: { slugs: 1 } },
-    { index: { tags: 1 } },
-    { index: { 'warehousing.sku': 1 }, options: { sparse: true } },
-  ]);
+  await buildDbIndexes(
+    Products,
+    [
+      { index: { status: 1, sequence: 1, published: -1 } },
+      { index: { slugs: 1 } },
+      { index: { tags: 1 } },
+      { index: { 'warehousing.sku': 1 }, options: { sparse: true } },
+      { index: { 'bundleItems.productId': 1 }, options: { sparse: true } },
+      { index: { 'proxy.assignments.productId': 1 }, options: { sparse: true } },
+    ],
+    { rebuild: false },
+  );
 
   await buildDbIndexes(ProductTexts, [
     { index: { productId: 1 } },

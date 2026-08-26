@@ -7,41 +7,45 @@ export default (unchainedAPI: UnchainedCore) =>
     { parentAssortmentId?: string; childAssortmentId?: string; assortmentId?: string },
     AssortmentLink[]
   >(async (queries) => {
-    const parentAssortmentIds = queries.flatMap((q) => q.parentAssortmentId).filter(Boolean) as string[];
-    const childAssortmentIds = queries.flatMap((q) => q.childAssortmentId).filter(Boolean) as string[];
-    const assortmentIds = queries.flatMap((q) => q.assortmentId).filter(Boolean) as string[];
+    const parentAssortmentIds = [
+      ...new Set(queries.flatMap((q) => q.parentAssortmentId).filter(Boolean) as string[]),
+    ];
+    const childAssortmentIds = [
+      ...new Set(queries.flatMap((q) => q.childAssortmentId).filter(Boolean) as string[]),
+    ];
+    const assortmentIds = [
+      ...new Set(queries.flatMap((q) => q.assortmentId).filter(Boolean) as string[]),
+    ];
 
     const allLinks = await unchainedAPI.modules.assortments.links.findLinks({
-      assortmentIds: [...new Set([...parentAssortmentIds, ...childAssortmentIds, ...assortmentIds])],
+      ...(parentAssortmentIds.length ? { parentAssortmentIds } : {}),
+      ...(childAssortmentIds.length ? { childAssortmentIds } : {}),
+      ...(assortmentIds.length ? { assortmentIds } : {}),
     });
 
-    const parentAssortmentLinkMap = {};
-    const childAssortmentLinkMap = {};
+    const parentAssortmentLinkMap = new Map<string, AssortmentLink[]>();
+    const childAssortmentLinkMap = new Map<string, AssortmentLink[]>();
 
     for (const link of allLinks) {
-      if (!parentAssortmentLinkMap[link.parentAssortmentId]) {
-        parentAssortmentLinkMap[link.parentAssortmentId] = [link];
-      } else {
-        parentAssortmentLinkMap[link.parentAssortmentId].push(link);
-      }
+      const parentLinks = parentAssortmentLinkMap.get(link.parentAssortmentId) || [];
+      parentLinks.push(link);
+      parentAssortmentLinkMap.set(link.parentAssortmentId, parentLinks);
 
-      if (!childAssortmentLinkMap[link.childAssortmentId]) {
-        childAssortmentLinkMap[link.childAssortmentId] = [link];
-      } else {
-        childAssortmentLinkMap[link.childAssortmentId].push(link);
-      }
+      const childLinks = childAssortmentLinkMap.get(link.childAssortmentId) || [];
+      childLinks.push(link);
+      childAssortmentLinkMap.set(link.childAssortmentId, childLinks);
     }
 
     return queries.map((q) => {
       if (q.parentAssortmentId) {
-        return parentAssortmentLinkMap[q.parentAssortmentId] || [];
+        return parentAssortmentLinkMap.get(q.parentAssortmentId) || [];
       } else if (q.childAssortmentId) {
-        return childAssortmentLinkMap[q.childAssortmentId] || [];
+        return childAssortmentLinkMap.get(q.childAssortmentId) || [];
       }
       if (q.assortmentId) {
         return [
-          ...(parentAssortmentLinkMap[q.assortmentId] || []),
-          ...(childAssortmentLinkMap[q.assortmentId] || []),
+          ...(parentAssortmentLinkMap.get(q.assortmentId) || []),
+          ...(childAssortmentLinkMap.get(q.assortmentId) || []),
         ];
       }
       return [];

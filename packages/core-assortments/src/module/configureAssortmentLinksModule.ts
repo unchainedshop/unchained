@@ -43,25 +43,34 @@ export const configureAssortmentLinksModule = ({
         assortmentIds,
         parentAssortmentId,
         parentAssortmentIds,
+        childAssortmentId,
+        childAssortmentIds,
       }: {
         assortmentId?: string;
         assortmentIds?: string[];
         parentAssortmentId?: string;
         parentAssortmentIds?: string[];
+        childAssortmentId?: string;
+        childAssortmentIds?: string[];
       },
       options?: mongodb.FindOptions,
     ): Promise<AssortmentLink[]> => {
-      const selector =
-        parentAssortmentId || parentAssortmentIds
-          ? {
-              parentAssortmentId: parentAssortmentId || { $in: parentAssortmentIds },
-            }
-          : {
-              $or: [
-                { parentAssortmentId: assortmentId || { $in: assortmentIds } },
-                { childAssortmentId: assortmentId || { $in: assortmentIds } },
-              ],
-            };
+      const selectors: mongodb.Filter<AssortmentLink>[] = [];
+      const parentIds = parentAssortmentId || (parentAssortmentIds && { $in: parentAssortmentIds });
+      const childIds = childAssortmentId || (childAssortmentIds && { $in: childAssortmentIds });
+      const bidirectionalIds = assortmentId || (assortmentIds && { $in: assortmentIds });
+
+      if (parentIds) selectors.push({ parentAssortmentId: parentIds });
+      if (childIds) selectors.push({ childAssortmentId: childIds });
+      if (bidirectionalIds) {
+        selectors.push(
+          { parentAssortmentId: bidirectionalIds },
+          { childAssortmentId: bidirectionalIds },
+        );
+      }
+      if (!selectors.length) return [];
+
+      const selector = selectors.length > 1 ? { $or: selectors } : selectors[0];
 
       const links = AssortmentLinks.find(
         selector,
