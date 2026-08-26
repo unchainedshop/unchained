@@ -1,0 +1,16 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "Unchained Engine",
+  "description": "Open-source headless e-commerce framework for Node.js: GraphQL-first API, MongoDB-backed modular core, adapter-based plugin system, built-in MCP server for AI agents, and Admin UI. EUPL-1.2.",
+  "folders": ["packages", "examples", "docs"],
+  "excludeFolders": ["admin-ui", "tests"],
+  "rules": [
+    "Relative imports must include the .ts file extension (import seed from './seed.ts')",
+    "Import workspace packages by name without extensions (import { startPlatform } from '@unchainedshop/platform')",
+    "Import plugin presets and plugin subpaths WITHOUT a file extension — the package exports map appends .js itself",
+    "Register plugins before startPlatform(): presets via registerAllPlugins()/registerBasePlugins()/registerCryptoPlugins(), individual plugins via pluginRegistry.register(SomePlugin) from @unchainedshop/core",
+    "startPlatform({}) needs no modules argument for built-in core modules",
+    "Never import @unchainedshop/mongodb outside core-* and infrastructure packages; the API layer uses module APIs from core packages",
+    "Requires Node.js 22+ and MongoDB"
+  ]
+}

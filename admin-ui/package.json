@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/admin-ui",
   "license": "EUPL-1.2",
-  "version": "5.0.0-alpha.4",
+  "version": "5.0.0-alpha.5",
   "description": "Unchained Commerce Admin UI Template",
   "type": "module",
   "main": "./out/index.html",
@@ -27,8 +27,14 @@
       "import": "./dist/modal.js",
       "types": "./dist/sdk/modal.d.ts"
     },
-    "./theme": "./src/sdk/theme.ts",
-    "./plugins": "./src/sdk/plugins.ts",
+    "./theme": {
+      "import": "./dist/theme.js",
+      "types": "./dist/sdk/theme.d.ts"
+    },
+    "./plugins": {
+      "import": "./dist/plugins.js",
+      "types": "./dist/sdk/plugins.d.ts"
+    },
     "./plugin-build": {
       "import": "./src/sdk/plugin-build.mjs"
     },
