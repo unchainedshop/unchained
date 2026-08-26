@@ -137,7 +137,7 @@
     "minio": "^8.0.5",
     "nodemailer": "^9.0.0",
     "stripe": "^22.5.0",
-    "typescript": "^5.8.3",
+    "typescript": "^6.0.3",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"
   }

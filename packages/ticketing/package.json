@@ -65,6 +65,6 @@
     "@types/node": "^26.2.0",
     "express": "^5.1.0",
     "fastify": "^5.4.0",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }

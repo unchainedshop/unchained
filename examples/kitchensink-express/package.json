@@ -34,8 +34,8 @@
     "test-mcp": "npx @modelcontextprotocol/inspector"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.7",
-    "@ai-sdk/openai-compatible": "^2.0.4",
+    "@ai-sdk/openai": "^4.0.47",
+    "@ai-sdk/openai-compatible": "^3.0.37",
     "@modelcontextprotocol/server": "^2.0.0",
     "@scure/bip32": "^2.0.0",
     "@scure/btc-signer": "^2.0.0",
@@ -61,6 +61,6 @@
     "@types/node": "^26.2.0",
     "mongodb-memory-server": "^11.0.0",
     "prettier": "^3.6.2",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }

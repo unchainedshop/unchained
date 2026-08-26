@@ -3,7 +3,6 @@
     "typeRoots": [
       "src/gql/types"
     ],
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },

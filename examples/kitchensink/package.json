@@ -34,8 +34,8 @@
     "integration-test": "npx -y node@22 --no-warnings --env-file=.env.defaults --env-file ../../.env.tests --env-file-if-exists=../../.env --import ./load_env.js --watch --experimental-strip-types src/boot.ts"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.7",
-    "@ai-sdk/openai-compatible": "^2.0.4",
+    "@ai-sdk/openai": "^4.0.47",
+    "@ai-sdk/openai-compatible": "^3.0.37",
     "@fastify/cookie": "^11.0.2",
     "@fastify/multipart": "^10.0.0",
     "@fastify/session": "^11.1.0",
@@ -64,6 +64,6 @@
     "@types/node": "^26.2.0",
     "mongodb-memory-server": "^11.0.0",
     "prettier": "^3.6.2",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }
