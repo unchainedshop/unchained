@@ -33,7 +33,7 @@ This does not control if a new invoice actually is created, that is based on the
 
 ### Enrollment Number Creation
 
-The `enrollmentNumberHashFn` is used to generate human-readable codes that can be easily spelled out to support staff. The default is a hashids based function that generates an alphanumeric uppercase string with length 6 without the hard to distinguish 0IOl etc. If the number has already been taken, the function gets iteratively called with an increasing `index`.
+The `enrollmentNumberHashFn` is used to generate human-readable codes that can be easily spelled out to support staff. The default generates a random alphanumeric uppercase string with length 6 using an unambiguous charset (no `O`, `0`, `1`). If the number has already been taken, the function gets iteratively called with an increasing `index`.
 
 [Default Random Hash Generator](https://github.com/unchainedshop/unchained/blob/master/packages/utils/src/generate-random-hash.ts)
 
@@ -42,14 +42,16 @@ The `enrollmentNumberHashFn` is used to generate human-readable codes that can b
 ```typescript
 import { schedule } from '@unchainedshop/core';
 
-const options = {
-  modules: {
+await startPlatform({
+  options: {
     enrollments: {
-      autoSchedulingSchedule: schedule.parse.text('every 7 days'),
-      enrollmentNumberHashFn: (enrollment, index) => enrollment.sequence + 300000 + index,
+      // schedule.parse.text supports "every N seconds/minutes/hours",
+      // use schedule.parse.cron for daily or more complex schedules
+      autoSchedulingSchedule: schedule.parse.cron('0 3 * * *'), // every day at 03:00
+      enrollmentNumberHashFn: (enrollment, index) => `${300000 + index}`,
     },
   },
-};
+});
 ```
 
 ## Events

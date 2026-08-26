@@ -7,7 +7,7 @@ description: Complete reference for RBAC permissions, roles, and access control 
 
 # Permissions Reference
 
-Unchained Engine uses a declarative, role-based access control (RBAC) system with 111 permission actions and context-aware evaluation.
+Unchained Engine uses a declarative, role-based access control (RBAC) system with 113 permission actions and context-aware evaluation.
 
 ## Built-in Roles
 
@@ -16,7 +16,7 @@ Unchained Engine uses a declarative, role-based access control (RBAC) system wit
 | `admin` | All actions | Full access to everything |
 | `__loggedIn__` | Own data | Authenticated users can manage their own data |
 | `__all__` | Public data | Public read access to products, assortments, and localization |
-| `__notLoggedIn__` | Auth only | Anonymous users can register and login |
+| `__notLoggedIn__` | No built-in rules | Auto-added for anonymous users; register/login is granted via `__all__` |
 | `__notAdmin__` | Auto-added | Added to all non-admin authenticated users |
 
 Roles `__all__`, `__loggedIn__`, `__notLoggedIn__`, and `__notAdmin__` are **special roles** automatically assigned during permission evaluation. You don't assign them to users manually.
@@ -78,12 +78,14 @@ Roles `__all__`, `__loggedIn__`, `__notLoggedIn__`, and `__notAdmin__` are **spe
 | `updateUser` | Update user profile |
 | `updateUsername` | Change username |
 | `updateCart` | Modify cart contents |
+| `addCartQuotation` | Add a quotation proposal to the cart |
 | `updateOrder` | Modify order details |
 | `updateOrderDelivery` | Update order delivery |
 | `updateOrderPayment` | Update order payment |
 | `updateOrderDiscount` | Manage order discounts |
 | `updateOrderItem` | Modify order items |
 | `updateProductReview` | Edit product reviews |
+| `createEnrollment` | Create enrollments |
 | `updateEnrollment` | Modify enrollments |
 | `updateToken` | Modify tokens |
 
@@ -126,6 +128,7 @@ Roles `__all__`, `__loggedIn__`, `__notLoggedIn__`, and `__notAdmin__` are **spe
 | `requestQuotation` | Submit RFP |
 | `answerQuotation` | Respond to quotation |
 | `bookmarkProduct` | Bookmark/favorite products |
+| `createBookmark` | Create a bookmark |
 | `registerPaymentCredentials` | Save payment methods |
 | `sendEmail` | Send messages |
 | `removeUser` | Delete user account |
@@ -172,17 +175,17 @@ Use `checkTypeResolver` for field-level access control:
 import { acl } from '@unchainedshop/api';
 
 export const OrderType = {
-  deliveries: acl.checkTypeResolver('viewOrder', 'deliveries'),
-  payments: acl.checkTypeResolver('viewOrder', 'payments'),
+  delivery: acl.checkTypeResolver('viewOrder', 'delivery'),
+  payment: acl.checkTypeResolver('viewOrder', 'payment'),
 };
 ```
 
 ### Direct Permission Check
 
-```typescript
-import { Roles } from '@unchainedshop/roles';
+The configured roles instance is available on the resolver context:
 
-const allowed = await Roles.userHasPermission(
+```typescript
+const allowed = await context.roles.userHasPermission(
   context,
   'manageUsers',
   [user, { userId }],
@@ -197,33 +200,37 @@ if (!allowed) {
 
 ### Define a Custom Role
 
+Pass `rolesOptions` to `startPlatform` — the platform configures the roles system with them at boot:
+
 ```typescript
-import { roles } from '@unchainedshop/api';
+import { startPlatform } from '@unchainedshop/platform';
 
-roles.configureRoles({
-  additionalRoles: {
-    support: (role, actions) => {
-      // View all orders
-      role.allow(actions.viewOrder, () => true);
-      role.allow(actions.viewOrders, () => true);
+await startPlatform({
+  rolesOptions: {
+    additionalRoles: {
+      support: (role, actions) => {
+        // View all orders
+        role.allow(actions.viewOrder, () => true);
+        role.allow(actions.viewOrders, () => true);
 
-      // Only confirm/reject pending orders
-      role.allow(actions.markOrderConfirmed, () => true);
-      role.allow(actions.markOrderRejected, () => true);
+        // Only confirm/reject pending orders
+        role.allow(actions.markOrderConfirmed, () => true);
+        role.allow(actions.markOrderRejected, () => true);
 
-      // View users but not modify
-      role.allow(actions.viewUser, () => true);
-      role.allow(actions.viewUsers, () => true);
+        // View users but not modify
+        role.allow(actions.viewUser, () => true);
+        role.allow(actions.viewUsers, () => true);
+      },
+
+      moderator: (role, actions) => {
+        role.allow(actions.manageProductReviews, () => true);
+        role.allow(actions.updateProductReview, () => true);
+      },
     },
 
-    moderator: (role, actions) => {
-      role.allow(actions.manageProductReviews, () => true);
-      role.allow(actions.updateProductReview, () => true);
-    },
+    // Register custom actions
+    additionalActions: ['moderateContent', 'viewAnalytics'],
   },
-
-  // Register custom actions
-  additionalActions: ['moderateContent', 'viewAnalytics'],
 });
 ```
 
@@ -232,15 +239,15 @@ roles.configureRoles({
 ```typescript
 // Via module API
 await modules.users.updateRoles(userId, ['support']);
+```
 
-// Via GraphQL
-await graphqlFetch({
-  query: `
-    mutation {
-      setRoles(userId: "user-123", roles: ["support"])
-    }
-  `,
-});
+```graphql
+mutation {
+  setRoles(userId: "user-123", roles: ["support"]) {
+    _id
+    roles
+  }
+}
 ```
 
 ### Context-Aware Rules
@@ -248,17 +255,15 @@ await graphqlFetch({
 Rules can inspect the user, target object, and parameters:
 
 ```typescript
-roles.configureRoles({
-  additionalRoles: {
-    regionManager: (role, actions) => {
-      // Only view orders from their region
-      role.allow(actions.viewOrder, async (order, params, context) => {
-        const user = await context.modules.users.findUserById(context.userId);
-        return order.countryCode === user.profile?.address?.countryCode;
-      });
-    },
+additionalRoles: {
+  regionManager: (role, actions) => {
+    // Only view orders from their region
+    role.allow(actions.viewOrder, async (order, params, context) => {
+      const user = await context.modules.users.findUserById(context.userId);
+      return order.countryCode === user.profile?.address?.countryCode;
+    });
   },
-});
+},
 ```
 
 ## Permission Evaluation

@@ -9,15 +9,22 @@ description: Workers for updating and refreshing NFT/token ownership
 
 Two workers for managing NFT/token ownership: one for refreshing tokens and one for external ownership updates.
 
-## Installation
+:::info Included in Crypto Preset
+Registered automatically by `registerCryptoPlugins()` / `registerAllPlugins()`.
+:::
+
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/worker/update-token-ownership';
+import { pluginRegistry } from '@unchainedshop/core';
+import { UpdateTokenOwnershipPlugin } from '@unchainedshop/plugins/worker/update-token-ownership';
+
+pluginRegistry.register(UpdateTokenOwnershipPlugin);
 ```
 
 ## Workers Included
 
-This file registers two workers:
+This plugin registers two worker adapters:
 
 ### 1. Refresh Tokens Worker
 
@@ -43,9 +50,9 @@ External worker placeholder for the actual ownership verification process.
 
 ### Refresh Tokens Flow
 
-1. **Auto-scheduled** every minute
-2. **Collects tokens**: Finds all tokens with wallet addresses
-3. **Collects accounts**: Finds all users with verified Web3 addresses
+1. **Auto-scheduled** every minute (configured on registration)
+2. **Collects tokens**: Finds all tokens with wallet addresses (no tokens = no-op)
+3. **Collects accounts**: Finds all verified Web3 addresses of users, plus the token wallet addresses
 4. **Creates work**: Triggers `UPDATE_TOKEN_OWNERSHIP` with the token and account data
 5. **External processing**: An external system processes the ownership verification
 
@@ -85,11 +92,7 @@ await unchainedAPI.modules.worker.addWork({
 
 ### Refresh Tokens
 
-```json
-{
-  "forked": "update-token-ownership-work-id"
-}
-```
+The result contains the created `UPDATE_TOKEN_OWNERSHIP` work item under `forked` (empty result if there are no tokens).
 
 ## Input for UPDATE_TOKEN_OWNERSHIP
 
@@ -119,7 +122,7 @@ await unchainedAPI.modules.worker.addWork({
 
 ### Source
 
-[worker/update-token-ownership.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/worker/update-token-ownership.ts)
+[worker/update-token-ownership](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/worker/update-token-ownership)
 
 ## Related
 

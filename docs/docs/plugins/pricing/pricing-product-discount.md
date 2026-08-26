@@ -10,13 +10,16 @@ description: Apply discounts to product prices
 Applies discounts to product-level pricing. Works in conjunction with discount adapters that provide discount configurations.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.
 :::
 
-## Installation
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/pricing/product-discount';
+import { pluginRegistry } from '@unchainedshop/core';
+import { ProductDiscountPlugin } from '@unchainedshop/plugins/pricing/product-discount';
+
+pluginRegistry.register(ProductDiscountPlugin);
 ```
 
 ## How It Works
@@ -61,10 +64,10 @@ const configuration = {
 | Key | `shop.unchained.pricing.product-discount` |
 | Version | `1.0.0` |
 | Order Index | `30` |
-| Source | [pricing/product-discount.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/pricing/product-discount.ts) |
+| Source | [pricing/product-discount](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/pricing/product-discount) |
 
 ## Related
 
-- [Discount Half Price](./pricing-discount-half-price.md) - Example discount adapter
+- [Discount Half Price Manual](./pricing-discount-half-price-manual.md) - Example discount adapter targeting this pricing adapter
 - [Discount 100 Off](./pricing-discount-100-off.md) - Fixed amount discount
 - [Order Discounts](../../extend/pricing/order-discounts.md) - Creating custom discounts

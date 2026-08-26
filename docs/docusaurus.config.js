@@ -67,6 +67,26 @@ const config = {
   ],
   plugins: [
     [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          // Plugins removed in v5 (pages deleted 2026-08)
+          { from: '/plugins/payment/braintree', to: '/plugins/payment/' },
+          { from: '/plugins/pricing/pricing-order-round', to: '/plugins/pricing/' },
+          { from: '/plugins/pricing/pricing-product-round', to: '/plugins/pricing/' },
+          { from: '/plugins/pricing/pricing-order-items-discount', to: '/plugins/pricing/' },
+          {
+            from: '/plugins/pricing/pricing-discount-half-price',
+            to: '/plugins/pricing/pricing-discount-half-price-manual',
+          },
+          {
+            from: '/plugins/pricing/pricing-product-catalog-price-options',
+            to: '/plugins/pricing/pricing-product-catalog-price',
+          },
+        ],
+      },
+    ],
+    [
       'docusaurus-plugin-llms',
       {
         generateLLMsTxt: true,
@@ -88,7 +108,7 @@ Unchained Engine is an open-source, headless, code-first e-commerce SDK for Node
 - **@unchainedshop/core** — Business logic coordination across all domain modules
 - **core-*** — Domain modules: orders, products, users, payment, delivery, assortments, filters, enrollments, warehousing, worker, files, events, countries, currencies, languages
 - **@unchainedshop/plugins** — Payment, delivery, pricing, and warehousing adapters (Stripe, Datatrans, Cryptopay, etc.)
-- **Infrastructure** — mongodb, events, logger, utils, roles, file-upload
+- **Infrastructure** — mongodb, events, logger, utils, roles
 
 ### Key Entry Points
 
@@ -104,7 +124,7 @@ Plugins follow a Director/Adapter pattern: Directors manage collections of Adapt
 
 - **Products**: CRUD, pricing, media, variations (configurable/bundle/plan types)
 - **Orders**: Cart management, checkout, payment & delivery processing, lifecycle hooks
-- **Payments**: Pluggable providers (Stripe, Datatrans, Braintree, Apple IAP, Cryptopay, Invoice)
+- **Payments**: Pluggable providers (Stripe, Datatrans, Saferpay, Payrexx, PostFinance Checkout, Apple IAP, Cryptopay, Invoice)
 - **Delivery**: Pluggable providers (Post, Send-Message, Stores)
 - **Pricing**: Layered pricing pipeline with discount support
 - **Assortments**: Hierarchical product categories with filters`,

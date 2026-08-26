@@ -9,10 +9,17 @@ description: Send SMS messages through BulkGate
 
 Send transactional and promotional SMS messages through the BulkGate service.
 
-## Installation
+:::info Included in All Preset
+Registered automatically by `registerAllPlugins()`.
+:::
+
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/worker/bulkgate';
+import { pluginRegistry } from '@unchainedshop/core';
+import { BulkGatePlugin } from '@unchainedshop/plugins/worker/bulkgate';
+
+pluginRegistry.register(BulkGatePlugin);
 ```
 
 ## Environment Variables
@@ -97,7 +104,7 @@ Note: Use semicolon-separated numbers for multiple recipients with `promotional:
 |----------|-------|
 | Key | `shop.unchained.worker-plugin.bulkgate` |
 | Type | `BULKGATE` |
-| Source | [worker/bulkgate.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/worker/bulkgate.ts) |
+| Source | [worker/bulkgate](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/worker/bulkgate) |
 
 ## External Resources
 

@@ -9,7 +9,11 @@ description: Apply Swiss VAT to delivery fees
 
 Applies Swiss VAT rates to delivery fees. Only activates for orders with delivery addresses in Switzerland (CH) or Liechtenstein (LI).
 
-## Installation
+:::info Included in All Preset
+Registered automatically by `registerAllPlugins()` (via `registerSwissTaxPlugins()` from `@unchainedshop/plugins/presets/countries/ch`).
+:::
+
+## Registration
 
 ```typescript
 import { pluginRegistry } from '@unchainedshop/core';

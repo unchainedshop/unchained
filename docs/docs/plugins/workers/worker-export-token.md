@@ -9,10 +9,17 @@ description: External worker for NFT/token minting and export processes
 
 An external worker placeholder for managing NFT/token minting and export processes.
 
-## Installation
+:::info Included in Crypto Preset
+Registered automatically by `registerCryptoPlugins()` / `registerAllPlugins()`.
+:::
+
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/worker/export-token';
+import { pluginRegistry } from '@unchainedshop/core';
+import { ExportTokenPlugin } from '@unchainedshop/plugins/worker/export-token';
+
+pluginRegistry.register(ExportTokenPlugin);
 ```
 
 ## Purpose
@@ -21,19 +28,7 @@ The Export Token Worker:
 
 - Acts as a placeholder for external token minting systems
 - Tracks the state of token export/minting processes
-- Automatically updates token ownership when work completes successfully
-- Listens for work completion events to trigger ownership updates
-
-## Configuration
-
-To enable automatic ownership updates, configure the worker in your platform setup:
-
-```typescript
-import { configureExportToken } from '@unchainedshop/plugins/worker/export-token';
-
-// Pass the unchained API to enable event listeners
-configureExportToken(unchainedAPI);
-```
+- Automatically updates token ownership when work completes successfully — the event listener is wired on registration
 
 ## How It Works
 
@@ -98,7 +93,7 @@ When a work item of type `EXPORT_TOKEN` completes successfully, the worker:
 | Key | `shop.unchained.worker-plugin.export-token` |
 | Type | `EXPORT_TOKEN` |
 | External | `true` |
-| Source | [worker/export-token.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/worker/export-token.ts) |
+| Source | [worker/export-token](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/worker/export-token) |
 
 ## Related
 

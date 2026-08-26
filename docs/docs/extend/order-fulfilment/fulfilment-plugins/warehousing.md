@@ -7,7 +7,7 @@ description: Customize warehousing
 
 # Warehousing Provider Plugins
 
-A warehousing adapter models stock availability and fulfilment timing. A store can have several; they run in ascending `orderIndex`.
+A warehousing adapter models stock availability and fulfilment timing. A store can have several; each warehousing provider invokes the adapter it is configured with.
 
 | Factory | For |
 |---|---|

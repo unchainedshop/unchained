@@ -1,6 +1,12 @@
 import { offsetLimitPagination } from '@apollo/client/utilities';
 
 const keyMappings: any = {
+  // UserEmail has no id, so it is stored non-normalized inside User. Different
+  // queries select it with different fields (e.g. with/without `verified`);
+  // merge them field-wise so cached data is not dropped on partial refetches.
+  UserEmail: {
+    merge: true,
+  },
   Query: {
     fields: {
       assortments: {

@@ -9,13 +9,21 @@ description: Apply UK VAT to delivery fees
 
 Applies UK VAT rates to delivery fees. Only activates for orders with delivery addresses in the UK VAT area (GB, IM).
 
-## Installation
+## Registration
 
 ```typescript
 import { pluginRegistry } from '@unchainedshop/core';
 import { DeliveryUkTaxPlugin } from '@unchainedshop/plugins/pricing/delivery-uk-tax';
 
 pluginRegistry.register(DeliveryUkTaxPlugin);
+```
+
+Or register both UK tax adapters (product + delivery) via the country preset:
+
+```typescript
+import { registerUkTaxPlugins } from '@unchainedshop/plugins/presets/countries/uk';
+
+registerUkTaxPlugins();
 ```
 
 ## How It Works

@@ -21,7 +21,7 @@ Every time the order processor persists an order status in the DB (think "auto-s
 
 ### `OPEN` (Cart)
 
-An Order starts it's life with a status of `null` indicating it's a cart. A cart always has a userId, thus when a client wants to add something to a cart through the GraphQL API, the user has to be either logged in or have used `Mutation.loginAsGuest` to start a guest user session.
+An Order starts its life with a status of `null` indicating it's a cart. A cart always has a userId, thus when a client wants to add something to a cart through the GraphQL API, the user has to be either logged in or have used `Mutation.loginAsGuest` to start a guest user session.
 
 Carts by default only exist when at least one cart mutation has been called (created and re-used on demand), before that `Query.me.cart` is `null`. This behavior can be customized.
 
@@ -62,9 +62,9 @@ A pay by invoice pre-paid plugin would usually block the order confirmation.
 
 If order confirmation is blocked, checkout ends here and the cart transitions to a persisted order with status `PENDING` waiting for events or manual confirmation to proceed.
 
-If an order confirmation is not beeing blocked by the plugins, Unchained will do some last actions:
+If order confirmation is not being blocked by the plugins, Unchained will do some last actions:
 1. Tell the payment plugin it can confirm the payment (payment could have been only reserved until now).
-3. Finally, the order will go into status `CONFIRMED` and also persist this status in the db.
+2. Finally, the order will go into status `CONFIRMED` and also persist this status in the db.
  
 
 ### `PENDING` => `REJECTED` (Rejection)

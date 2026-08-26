@@ -10,13 +10,16 @@ description: Placeholder for external workers that interact via GraphQL
 A placeholder adapter for workers that are processed by external systems and interact with Unchained only via GraphQL.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.
 :::
 
-## Installation
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/worker/external';
+import { pluginRegistry } from '@unchainedshop/core';
+import { ExternalPlugin } from '@unchainedshop/plugins/worker/external';
+
+pluginRegistry.register(ExternalPlugin);
 ```
 
 ## Purpose
@@ -70,7 +73,7 @@ mutation FinishExternalWork {
 | Key | `shop.unchained.worker-plugin.external` |
 | Type | `EXTERNAL` |
 | External | `true` |
-| Source | [worker/external.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/worker/external.ts) |
+| Source | [worker/external](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/worker/external) |
 
 ## Related
 

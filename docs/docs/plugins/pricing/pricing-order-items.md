@@ -10,13 +10,16 @@ description: Sum product prices into order total
 Sums up all product item prices and taxes from order positions into the order total. This is the foundation of order-level pricing.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.
 :::
 
-## Installation
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/pricing/order-items';
+import { pluginRegistry } from '@unchainedshop/core';
+import { OrderItemsPlugin } from '@unchainedshop/plugins/pricing/order-items';
+
+pluginRegistry.register(OrderItemsPlugin);
 ```
 
 ## How It Works
@@ -33,7 +36,7 @@ import '@unchainedshop/plugins/pricing/order-items';
 | Key | `shop.unchained.pricing.order-items` |
 | Version | `1.0.0` |
 | Order Index | `0` |
-| Source | [pricing/order-items.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/pricing/order-items.ts) |
+| Source | [pricing/order-items](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/pricing/order-items) |
 
 ## Related
 

@@ -7,12 +7,19 @@ description: MongoDB full-text search filter adapter
 
 # Local Search Filter
 
-The Local Search filter provides full-text search using MongoDB's built-in text search capabilities.
+Full-text product and assortment search using MongoDB `$text` queries against the text collections. No external search service required.
 
-## Installation
+:::info Included in All Preset
+Registered automatically by `registerAllPlugins()`.
+:::
+
+If you use the `base` preset or register plugins individually:
 
 ```typescript
-import '@unchainedshop/plugins/filters/local-search';
+import { pluginRegistry } from '@unchainedshop/core';
+import { LocalSearchPlugin } from '@unchainedshop/plugins/filters/local-search';
+
+pluginRegistry.register(LocalSearchPlugin);
 ```
 
 ## Adapter Details
@@ -21,60 +28,25 @@ import '@unchainedshop/plugins/filters/local-search';
 |----------|-------|
 | Key | `shop.unchained.filters.local-search` |
 | Order Index | `10` |
-| Version | `1.0.0` |
-| Source | [filters/local-search.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/filters/local-search.ts) |
-
-## Requirements
-
-- MongoDB text indexes on product and assortment text collections
-- Supported runtimes: MongoDB 4.4+, AWS DocumentDB 5.0+, AWS DocumentDB 8.0, FerretDB 2.x. AWS DocumentDB ≤4.0 and FerretDB 1.x are not supported.
+| Source | [filters/local-search](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/filters/local-search) |
 
 ## Behavior
 
-### `searchProducts()`
+- `searchProducts()` resolves `queryString` against the product texts collection via `$text: { $search }`, restricted to the already-selected product IDs when present.
+- `searchAssortments()` does the same against the assortment texts collection.
+- `transformFilterSelector()`: for global searches (a `queryString` without explicit `filterIds`), all active filters are returned instead of only assortment-linked ones.
 
-Searches product text fields using MongoDB `$text` operator:
+The required text indexes are created automatically at startup:
 
-```typescript
-// Search in product texts (title, description, etc.)
-const selector = {
-  $text: { $search: queryString },
-};
+| Collection | Indexed fields (weight) |
+|------------|-------------------------|
+| `product_texts` | `title` (8), `subtitle` (6), `vendor` (5), `brand` (4) |
+| `products` | `warehousing.sku`, `slugs` |
+| `assortment_texts` | `title` (8), `subtitle` (6) |
 
-// If productIds provided, filter to those products
-if (productIds) {
-  selector.productId = { $in: productIds };
-}
-```
-
-### `searchAssortments()`
-
-Searches assortment/category text fields:
-
-```typescript
-const selector = {
-  $text: { $search: queryString },
-};
-
-if (assortmentIds) {
-  selector.assortmentId = { $in: assortmentIds };
-}
-```
-
-### `transformFilterSelector()`
-
-For global searches (no specific assortment), returns all active filters:
-
-```typescript
-// When searching globally, show all filters
-if (queryString && !filterIds) {
-  return { isActive: true };
-}
-```
+Query strings follow MongoDB `$text` semantics (stemming, `"exact phrase"`, `-negation`).
 
 ## Query Examples
-
-### Basic Text Search
 
 ```graphql
 query SearchProducts {
@@ -87,8 +59,6 @@ query SearchProducts {
   }
 }
 ```
-
-### Combined Search and Filter
 
 ```graphql
 query SearchWithFilters {
@@ -115,8 +85,6 @@ query SearchWithFilters {
 }
 ```
 
-### Search Assortments
-
 ```graphql
 query SearchCategories {
   searchAssortments(queryString: "summer collection") {
@@ -128,56 +96,15 @@ query SearchCategories {
 }
 ```
 
-## Text Index Configuration
+## External Search Services
 
-MongoDB text indexes are created automatically. The default indexes search:
-
-**Product Texts:**
-- `title`
-- `subtitle`
-- `description`
-- `vendor`
-- `brand`
-- `labels`
-
-**Assortment Texts:**
-- `title`
-- `subtitle`
-- `description`
-
-## Search Features
-
-### Phrase Search
-
-```
-# Exact phrase
-searchProducts(queryString: "\"running shoes\"")
-```
-
-### Negation
-
-```
-# Exclude terms
-searchProducts(queryString: "shoes -sandals")
-```
-
-### Stemming
-
-MongoDB applies stemming based on language:
-- "running" matches "run", "runs", "runner"
-
-## Custom Search Adapter
-
-For external search services, register a search callback instead of building a filter adapter by hand:
+For Algolia, Elasticsearch, etc., register a search callback with the factory functions instead of building a filter adapter by hand:
 
 ```typescript
 import {
   registerAssortmentSearchFilter,
   registerProductSearchFilter,
 } from '@unchainedshop/core';
-
-const productIndex = algoliaClient.initIndex('products');
-const assortmentIndex = algoliaClient.initIndex('assortments');
 
 registerProductSearchFilter({
   adapterId: 'algolia',
@@ -198,16 +125,8 @@ registerAssortmentSearchFilter({
 });
 ```
 
-## Performance Considerations
-
-1. **Index optimization**: Ensure text indexes exist and are properly configured
-2. **Query limits**: Use pagination for large result sets
-3. **Projection**: Only request needed fields
-4. **Caching**: Consider caching frequent searches
-
 ## Related
 
-- [Plugins Overview](./) - All available plugins
 - [Strict Equal Filter](./filter-strict-equal.md) - Exact matching
 - [Search and Filtering Guide](../../guides/search-and-filtering.md) - Implementation guide
 - [Custom Filter Plugins](../../extend/catalog/filter.md) - Write your own

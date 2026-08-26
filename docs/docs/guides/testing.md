@@ -57,6 +57,8 @@ Unit tests validate the behavior callbacks passed to the registration factories.
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
+const gateway = { charge: async (order) => ({ id: '' }) }; // your gateway SDK client
+
 export const charge = async (configuration, context) => {
   const result = await gateway.charge(context.order);
   return { transactionId: result.id };
@@ -105,33 +107,43 @@ Integration tests run against a live Unchained instance with MongoDB.
 
 ### Test Setup
 
-Integration tests use the kitchensink example as the test harness. The global setup in `tests/helpers.js` bootstraps the platform.
+Integration tests run against a dedicated test harness, not an example app: the global setup in `tests/helpers.js` bootstraps a Fastify instance and `startPlatform()` (via `tests/setup.js`) with all plugins registered, mirroring the kitchensink configuration.
 
 ### Environment
 
-Create a `.env.tests` file:
+Integration tests load `.env.tests` with `.env` as an optional fallback (see the command above). The monorepo's `.env.tests` intentionally sets **no `MONGO_URL`** — the engine starts a `mongodb-memory-server` instance automatically when the variable is absent. A minimal `.env.tests`:
 
 ```bash
-MONGO_URL=mongodb://localhost:27017/unchained-tests
-UNCHAINED_TOKEN_SECRET=test-secret-minimum-32-characters-long
+NODE_ENV=test
+UNCHAINED_TOKEN_SECRET=random-token-that-is-not-secret-at-all  # must be at least 32 characters
+# No MONGO_URL: mongodb-memory-server is started automatically
 ```
+
+Set `MONGO_URL` only if you want to run tests against a real MongoDB instance.
 
 ### Writing an Integration Test
 
 ```typescript
-import { describe, it, assert } from 'node:test';
+import assert from 'node:assert/strict';
+import { describe, it, before } from 'node:test';
+import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 
 describe('Order Checkout Flow', () => {
   let graphqlFetch;
 
-  // Use the admin client from test helpers
+  before(async () => {
+    await setupDatabase();
+    graphqlFetch = createLoggedInGraphqlFetch(); // admin client
+  });
+
   it('should create and checkout an order', async () => {
-    // Create a product
+    // Create a product (title/slug live on the texts argument, not the product input)
     const { data: { createProduct } } = await graphqlFetch({
       query: `
         mutation {
           createProduct(
-            product: { type: SIMPLE_PRODUCT, title: "Test Product" }
+            product: { type: SIMPLE_PRODUCT }
+            texts: [{ locale: "en", title: "Test Product" }]
           ) {
             _id
           }
@@ -158,15 +170,20 @@ describe('Order Checkout Flow', () => {
 
 ### GraphQL Test Client
 
-The test helpers provide authenticated GraphQL clients:
+The test helpers provide authenticated GraphQL clients. `createLoggedInGraphqlFetch(token)` takes a bearer token string and defaults to the seeded admin token:
 
 ```typescript
-import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+} from './helpers.js';
 
-const adminGraphqlFetch = await createLoggedInGraphqlFetch({
-  email: 'admin@unchained.local',
-  password: 'password',
-});
+await setupDatabase(); // wipes and reseeds all collections
+
+const adminGraphqlFetch = createLoggedInGraphqlFetch(); // defaults to ADMIN_TOKEN
+const userGraphqlFetch = createLoggedInGraphqlFetch('Bearer user-secret'); // seeded regular user
+const anonymousGraphqlFetch = createAnonymousGraphqlFetch();
 
 // Use for admin operations
 const result = await adminGraphqlFetch({
@@ -177,7 +194,8 @@ const result = await adminGraphqlFetch({
 ## Testing Custom Modules
 
 ```typescript
-import { describe, it, assert } from 'node:test';
+import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 import { startPlatform } from '@unchainedshop/platform';
 
 describe('Custom Module', () => {

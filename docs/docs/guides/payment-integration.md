@@ -7,56 +7,62 @@ description: Guide to integrating payment providers with Unchained Engine
 
 # Payment Integration
 
-This guide covers setting up payment processing in Unchained Engine, from configuring built-in providers to creating custom integrations.
-
-## Overview
-
-Unchained Engine supports multiple payment providers through the plugin system:
-
-```mermaid
-flowchart LR
-    S[Storefront] <--> U[Unchained Engine<br/>PaymentDirector] <--> P[Payment Gateway<br/>Stripe, etc.]
-```
+Getting a payment provider live takes three steps: register the plugin at boot, create a provider instance via GraphQL, and wire the checkout flow (`signPaymentProviderForCheckout` → `checkoutCart`). Webhook routes are registered automatically by the plugin.
 
 ## Built-in Payment Providers
 
-| Provider | Type | Use Case |
-|----------|------|----------|
-| [Stripe](../plugins/payment/stripe.md) | GENERIC | Credit/debit cards |
-| [Datatrans](../plugins/payment/datatrans.md) | GENERIC | Swiss payment gateway |
-| [Saferpay](../plugins/payment/saferpay.md) | GENERIC | Swiss payment gateway |
-| [Cryptopay](../plugins/payment/cryptopay.md) | GENERIC | Cryptocurrency |
-| [Invoice](../plugins/payment/invoice.md) | INVOICE | Manual invoicing |
+| Provider | Adapter Key | Type | Preset |
+|----------|-------------|------|--------|
+| [Invoice](../plugins/payment/invoice.md) | `shop.unchained.invoice` | INVOICE | base |
+| [Invoice Prepaid](../plugins/payment/invoice-prepaid.md) | `shop.unchained.invoice-prepaid` | INVOICE | all |
+| [Stripe](../plugins/payment/stripe.md) | `shop.unchained.payment.stripe` | GENERIC | all |
+| [Datatrans](../plugins/payment/datatrans.md) | `shop.unchained.datatrans` | GENERIC | all |
+| [Saferpay](../plugins/payment/saferpay.md) | `shop.unchained.payment.saferpay` | GENERIC | all |
+| [Payrexx](../plugins/payment/payrexx.md) | `shop.unchained.payment.payrexx` | GENERIC | all |
+| [PostFinance Checkout](../plugins/payment/postfinance-checkout.md) | `shop.unchained.payment.postfinance-checkout` | GENERIC | all |
+| [Apple In-App Purchase](../plugins/payment/apple-iap.md) | `shop.unchained.apple-iap` | GENERIC | all |
+| [Cryptopay](../plugins/payment/cryptopay.md) | `shop.unchained.payment.cryptopay` | GENERIC | crypto, all |
 
-## Quick Start: Stripe
+Each plugin page documents its environment variables, webhook path, and provider configuration.
 
-### 1. Install and Configure
+## 1. Register the Plugin
 
-```bash
-npm install stripe
+Register plugins before `startPlatform()` — either via a preset or individually:
+
+```typescript
+// Preset: registers all built-in plugins (includes Stripe)
+import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
+
+registerAllPlugins();
 ```
 
 ```typescript
-// boot.ts
-import '@unchainedshop/plugins/payment/stripe';
+// Or cherry-pick a single plugin
+import { pluginRegistry } from '@unchainedshop/core';
+import { StripePlugin } from '@unchainedshop/plugins/payment/stripe';
+
+pluginRegistry.register(StripePlugin);
 ```
+
+A registered plugin brings its payment adapter *and* its webhook route — no manual HTTP wiring needed.
+
+For Stripe, set the environment variables before boot — without `STRIPE_SECRET`, `startPlatform()` skips the plugin with a warning and neither its adapter nor its webhook route is registered:
 
 ```bash
-# .env
-STRIPE_SECRET_KEY=sk_test_xxx
-STRIPE_WEBHOOK_SECRET=whsec_xxx
+STRIPE_SECRET=sk_test_xxx           # required
+STRIPE_ENDPOINT_SECRET=whsec_xxx    # required for webhooks
+# STRIPE_WEBHOOK_PATH defaults to /payment/stripe/webhook
 ```
 
-### 2. Create Payment Provider
+## 2. Create a Payment Provider
 
-Create a payment provider in the Admin UI or via GraphQL:
+Registering an adapter only makes it *available* — create a provider instance to activate it (Admin UI: **Settings → Payment Providers**, or GraphQL):
 
 ```graphql
 mutation CreateStripeProvider {
-  createPaymentProvider(paymentProvider: {
-    type: GENERIC
-    adapterKey: "shop.unchained.payment.stripe"
-  }) {
+  createPaymentProvider(
+    paymentProvider: { type: GENERIC, adapterKey: "shop.unchained.payment.stripe" }
+  ) {
     _id
     type
     interface {
@@ -67,131 +73,23 @@ mutation CreateStripeProvider {
 }
 ```
 
-### 3. Frontend Integration
+`type` is `GENERIC` or `INVOICE` — it must match what the adapter supports (see the table above).
 
-```tsx
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
-
-const stripePromise = loadStripe('pk_test_xxx');
-
-function CheckoutForm() {
-  const stripe = useStripe();
-  const elements = useElements();
-  const [signPayment] = useMutation(SIGN_PAYMENT);
-  const [checkout] = useMutation(CHECKOUT);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Get client secret from Unchained
-    const { data } = await signPayment({
-      variables: { orderPaymentId: cart.payment._id },
-    });
-
-    // Confirm payment with Stripe
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/checkout/complete`,
-      },
-      redirect: 'if_required',
-    });
-
-    if (error) {
-      setError(error.message);
-    } else if (paymentIntent.status === 'succeeded') {
-      // Complete checkout
-      await checkout({
-        variables: {
-          paymentContext: { paymentIntentId: paymentIntent.id },
-        },
-      });
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <PaymentElement />
-      <button type="submit" disabled={!stripe}>Pay</button>
-    </form>
-  );
-}
-
-function PaymentPage() {
-  const { data } = useQuery(GET_CART);
-  const clientSecret = data?.me?.cart?.payment?.clientSecret;
-
-  if (!clientSecret) return <div>Loading...</div>;
-
-  return (
-    <Elements stripe={stripePromise} options={{ clientSecret }}>
-      <CheckoutForm />
-    </Elements>
-  );
-}
-```
-
-### 4. Webhook Handler
-
-```typescript
-// api/webhooks/stripe.ts
-import Stripe from 'stripe';
-import { buffer } from 'micro';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-export const config = { api: { bodyParser: false } };
-
-export default async function handler(req, res) {
-  const sig = req.headers['stripe-signature'];
-  const buf = await buffer(req);
-
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(
-      buf,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
-  } catch (err) {
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  switch (event.type) {
-    case 'payment_intent.succeeded':
-      // Payment successful - order will auto-confirm
-      console.log('Payment succeeded:', event.data.object.id);
-      break;
-    case 'payment_intent.payment_failed':
-      // Payment failed
-      console.log('Payment failed:', event.data.object.id);
-      break;
-  }
-
-  res.json({ received: true });
-}
-```
-
-## Payment Flow
-
-### Standard Flow
+## 3. Checkout Flow
 
 ```mermaid
 flowchart TD
-    A[1. User selects payment provider] --> B[2. Initialize payment - get client token]
-    B --> C[3. User completes payment on frontend]
-    C --> D[4. Checkout order]
-    D --> E[5. Webhook confirms payment]
-    E --> F[Order CONFIRMED]
+    A[updateCartPaymentGeneric: select provider] --> B[signPaymentProviderForCheckout: get client secret]
+    B --> C[Complete payment client-side, e.g. Stripe.js]
+    C --> D[checkoutCart with paymentContext]
+    D --> E[Webhook / charge confirms payment]
 ```
 
-### GraphQL Mutations
+### Select the payment provider
 
 ```graphql
-# Step 1: Set payment provider
-mutation SetPaymentProvider($orderId: ID!, $paymentProviderId: ID!) {
-  setOrderPaymentProvider(orderId: $orderId, paymentProviderId: $paymentProviderId) {
+mutation SelectPayment($paymentProviderId: ID!) {
+  updateCartPaymentGeneric(paymentProviderId: $paymentProviderId) {
     _id
     payment {
       _id
@@ -204,15 +102,44 @@ mutation SetPaymentProvider($orderId: ID!, $paymentProviderId: ID!) {
     }
   }
 }
+```
 
-# Step 2: Sign payment (get client token)
-mutation SignPayment($orderPaymentId: ID!) {
+For invoice-type providers use `updateCartPaymentInvoice` instead; `updateCart(paymentProviderId: ...)` also works for a plain provider switch. Query available providers with `paymentProviders(type: GENERIC)` or per-order via `order.supportedPaymentProviders`.
+
+### Sign the payment
+
+`signPaymentProviderForCheckout` returns the gateway's client token as a string — for Stripe, a PaymentIntent `client_secret`:
+
+```graphql
+mutation SignPayment($orderPaymentId: ID) {
   signPaymentProviderForCheckout(orderPaymentId: $orderPaymentId)
 }
+```
 
-# Step 4: Checkout
-mutation Checkout($orderId: ID, $paymentContext: JSON) {
-  checkoutCart(orderId: $orderId, paymentContext: $paymentContext) {
+Get `orderPaymentId` from `me { cart { payment { _id } } }`. The `OrderPayment` type itself exposes only `_id`, `provider`, `status`, `fee`, `paid`, and `discounts` — the client secret exists solely in the mutation result.
+
+### Complete payment client-side
+
+Use the returned secret with the gateway SDK. For Stripe:
+
+```typescript
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripe = await loadStripe('pk_test_xxx');
+// clientSecret = result of signPaymentProviderForCheckout
+const { error, paymentIntent } = await stripe.confirmPayment({
+  elements, // Stripe Elements initialized with { clientSecret }
+  redirect: 'if_required',
+});
+```
+
+See the [Stripe.js docs](https://stripe.com/docs/js) for Elements setup.
+
+### Checkout
+
+```graphql
+mutation Checkout($paymentContext: JSON) {
+  checkoutCart(paymentContext: $paymentContext) {
     _id
     status
     orderNumber
@@ -223,71 +150,33 @@ mutation Checkout($orderId: ID, $paymentContext: JSON) {
 }
 ```
 
-## Payment Provider Configuration
+For Stripe, pass `paymentContext: { paymentIntentId }` — the adapter retrieves the intent, verifies amount, currency and order payment, and marks the order paid if the intent succeeded. If the charge is not yet confirmed, the order stays `PENDING` until the webhook arrives.
 
-### Configure via Admin UI
+## 4. Webhooks
 
-1. Go to **Settings > Payment Providers**
-2. Click **Create Provider**
-3. Select adapter (e.g., Stripe)
-4. Set configuration values
-5. Save and activate
+Payment plugins self-register their webhook route when you register them — there is no handler to import. For Stripe the route is `POST /payment/stripe/webhook` (override with `STRIPE_WEBHOOK_PATH`); it verifies signatures with `STRIPE_ENDPOINT_SECRET` and processes `payment_intent.succeeded` and `setup_intent.succeeded`.
 
-### Configure via GraphQL
-
-```graphql
-mutation ConfigureStripe {
-  createPaymentProvider(paymentProvider: {
-    type: GENERIC
-    adapterKey: "shop.unchained.payment.stripe"
-  }) {
-    _id
-  }
-}
-```
-
-Configure `merchantCountry` via the Admin UI after creation.
-
-### Environment Variables
-
-Most payment adapters use environment variables:
+Test locally with the Stripe CLI:
 
 ```bash
-# Stripe
-STRIPE_SECRET_KEY=sk_xxx
-STRIPE_PUBLISHABLE_KEY=pk_xxx
-STRIPE_WEBHOOK_SECRET=whsec_xxx
-
-# PayPal
-PAYPAL_CLIENT_ID=xxx
-PAYPAL_CLIENT_SECRET=xxx
-PAYPAL_ENVIRONMENT=sandbox  # or production
-
-# Datatrans
-DATATRANS_MERCHANT_ID=xxx
-DATATRANS_PASSWORD=xxx
-DATATRANS_SIGN_KEY=xxx
+stripe listen --forward-to localhost:4010/payment/stripe/webhook
 ```
+
+Webhook paths for the other gateways are listed on their [plugin pages](../plugins/payment/index.md).
 
 ## Custom Payment Adapter
 
-Create a custom adapter for payment gateways not covered by built-in plugins:
+For gateways without a built-in plugin, use the `registerPaymentProvider` factory from `@unchainedshop/core`:
 
 ```typescript
-import {
-  OrderPricingSheet,
-  PaymentError,
-  registerPaymentProvider,
-} from '@unchainedshop/core';
+import { OrderPricingSheet, PaymentError, registerPaymentProvider } from '@unchainedshop/core';
 
 registerPaymentProvider({
-  adapterId: 'custom-gateway',
+  adapterId: 'custom-gateway', // key becomes shop.unchained.payment.custom-gateway
   type: 'GENERIC',
-  configurationError: process.env.MY_GATEWAY_API_KEY
-    ? null
-    : PaymentError.INCOMPLETE_CONFIGURATION,
+  configurationError: process.env.MY_GATEWAY_API_KEY ? null : PaymentError.INCOMPLETE_CONFIGURATION,
 
-  // Create a payment session for the front-end SDK
+  // Create a payment session for the front-end SDK (result of signPaymentProviderForCheckout)
   sign: async (configuration, context) => {
     if (!context.order) return null;
     const pricing = OrderPricingSheet({
@@ -302,107 +191,35 @@ registerPaymentProvider({
     return session.clientToken;
   },
 
-  // Confirm the charge (here, completed out of band and recorded on orderPayment.context)
+  // Called during checkoutCart; return a result = paid, false = not yet paid, throw = abort
   charge: async (configuration, context) => {
-    const { transactionId } = context.orderPayment?.context || {};
+    const { transactionId } = context.transactionContext || {};
     if (transactionId) {
       const payment = await myGateway.getPayment(transactionId);
       if (payment.status === 'completed') return { transactionId };
     }
-    return false; // not complete yet → order stays PENDING
+    return false; // order stays PENDING
   },
 
   cancel: async (configuration, context) => {
-    if (context.orderPayment?.transactionId) {
-      await myGateway.refund(context.orderPayment.transactionId);
-    }
+    await myGateway.refund(context.orderPayment?._id);
     return true;
   },
 });
 ```
 
-## Testing Payments
-
-### Test Mode
-
-Most payment providers have test/sandbox modes:
-
-```bash
-# Stripe test keys
-STRIPE_SECRET_KEY=sk_test_xxx
-STRIPE_PUBLISHABLE_KEY=pk_test_xxx
-
-# PayPal sandbox
-PAYPAL_ENVIRONMENT=sandbox
-```
-
-### Test Card Numbers
-
-| Provider | Card Number | Description |
-|----------|-------------|-------------|
-| Stripe | 4242 4242 4242 4242 | Successful payment |
-| Stripe | 4000 0000 0000 0002 | Declined |
-| Stripe | 4000 0025 0000 3155 | Requires 3DS |
-| PayPal | N/A | Use sandbox accounts |
-
-### Testing Webhooks Locally
-
-Use Stripe CLI or ngrok for local webhook testing:
-
-```bash
-# Stripe CLI
-stripe listen --forward-to localhost:3000/api/webhooks/stripe
-
-# ngrok
-ngrok http 3000
-# Configure webhook URL in Stripe dashboard
-```
-
-## Error Handling
-
-### Common Payment Errors
-
-| Error | Cause | User Message |
-|-------|-------|--------------|
-| `card_declined` | Card was declined | "Your card was declined" |
-| `insufficient_funds` | Not enough funds | "Insufficient funds" |
-| `expired_card` | Card expired | "Card has expired" |
-| `incorrect_cvc` | Wrong CVC | "Invalid security code" |
-| `processing_error` | Gateway error | "Please try again" |
-
-### Error Handling in Frontend
-
-```typescript
-try {
-  const { error } = await stripe.confirmPayment({ /* ... */ });
-  if (error) {
-    switch (error.code) {
-      case 'card_declined':
-        setError('Your card was declined. Please try another card.');
-        break;
-      case 'expired_card':
-        setError('Your card has expired. Please use a different card.');
-        break;
-      default:
-        setError('Payment failed. Please try again.');
-    }
-  }
-} catch (err) {
-  setError('An unexpected error occurred.');
-}
-```
+See [Plugin Factories](../extend/plugin-factories.md) for the full option reference.
 
 ## Payment Fees
 
-Add payment processing fees to orders:
+Add processing fees with a payment pricing adapter:
 
 ```typescript
 import { OrderPricingSheet, registerPaymentPricing } from '@unchainedshop/core';
 
 registerPaymentPricing({
   adapterId: 'card-fee',
-  isActivatedFor: (context) =>
-    context.provider.adapterKey === 'shop.unchained.payment.stripe',
+  isActivatedFor: (context) => context.provider.adapterKey === 'shop.unchained.payment.stripe',
   calculate: async (sheet, context) => {
     const pricing = OrderPricingSheet({
       calculation: context.order?.calculation,
@@ -414,39 +231,9 @@ registerPaymentPricing({
 });
 ```
 
-## Multi-Currency Support
-
-Handle multiple currencies:
-
-```typescript
-import { OrderPricingSheet } from '@unchainedshop/core';
-
-async function createCheckoutSession(order) {
-  const pricing = OrderPricingSheet({
-    calculation: order.calculation,
-    currencyCode: order.currencyCode,
-  });
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    line_items: [{
-      price_data: {
-        currency: order.currencyCode.toLowerCase(),
-        product_data: { name: `Order ${order.orderNumber}` },
-        unit_amount: pricing.total().amount,
-      },
-      quantity: 1,
-    }],
-    mode: 'payment',
-    success_url: `${process.env.ROOT_URL}/checkout/success`,
-    cancel_url: `${process.env.ROOT_URL}/checkout/cancel`,
-  });
-
-  return session.id;
-}
-```
-
 ## Related
 
-- [Stripe Plugin](../plugins/payment/stripe.md) - Stripe payment adapter
-- [Director/Adapter Pattern](../concepts/director-adapter-pattern.md) - Plugin architecture
+- [Payment Plugins](../plugins/payment/index.md) - Per-plugin configuration reference
+- [Plugin Factories](../extend/plugin-factories.md) - Custom adapter registration
 - [Checkout Implementation](./checkout-implementation.md) - Full checkout flow
+- [Director/Adapter Pattern](../concepts/director-adapter-pattern.md) - Plugin architecture

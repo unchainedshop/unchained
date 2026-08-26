@@ -7,21 +7,22 @@ description: Physical inventory management adapter
 
 # Store Warehousing Adapter
 
-The Store adapter provides basic physical inventory management for simple use cases.
+Basic physical warehousing that always reports stock as available. Use it when inventory is managed outside the system, for drop-shipping, or during development.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` and `registerAllPlugins()`.
 :::
 
-## Installation
+If you register plugins individually instead of using a preset:
 
 ```typescript
-import '@unchainedshop/plugins/warehousing/store';
+import { pluginRegistry } from '@unchainedshop/core';
+import { StorePlugin } from '@unchainedshop/plugins/warehousing/store';
+
+pluginRegistry.register(StorePlugin);
 ```
 
-## Configuration
-
-Create a warehousing provider:
+## Setup
 
 ```graphql
 mutation CreateStoreWarehousing {
@@ -34,15 +35,6 @@ mutation CreateStoreWarehousing {
 }
 ```
 
-Configure the `name` via the Admin UI after creation.
-
-## Features
-
-- Physical inventory management
-- Unlimited stock (returns 99999)
-- Zero production/commissioning time
-- Simple drop-in for development
-
 ## Adapter Details
 
 | Property | Value |
@@ -50,8 +42,7 @@ Configure the `name` via the Admin UI after creation.
 | Key | `shop.unchained.warehousing.store` |
 | Type | `PHYSICAL` |
 | Order Index | `0` |
-| Default Stock | `99999` |
-| Source | [warehousing/store.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/warehousing/store.ts) |
+| Source | [warehousing/store](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/warehousing/store) |
 
 ## Configuration Options
 
@@ -61,82 +52,28 @@ Configure the `name` via the Admin UI after creation.
 
 ## Behavior
 
-### `isActive()`
-Always returns `true`.
+- `isActive()` returns `true`
+- `stock()` returns `99999` (effectively unlimited)
+- `productionTime()` returns `0`
+- `commissioningTime()` returns `0`
 
-### `stock()`
-Returns `99999` - effectively unlimited stock.
+## Real Inventory
 
-### `productionTime()`
-Returns `0` - no production delay.
-
-### `commissioningTime()`
-Returns `0` - no preparation delay.
-
-## Use Cases
-
-### Development & Testing
-
-Use the Store adapter during development when you don't need real inventory tracking:
-
-```typescript
-import '@unchainedshop/plugins/warehousing/store';
-```
-
-### Simple Stores
-
-For small shops where inventory is managed manually outside the system.
-
-### Drop-shipping
-
-Where stock is always available from suppliers:
-
-```typescript
-import { registerPhysicalWarehousing } from '@unchainedshop/core';
-
-registerPhysicalWarehousing({
-  adapterId: 'dropship',
-  stock: 99999,
-  commissioningTime: 3 * 24 * 60 * 60 * 1000,
-});
-```
-
-## Extending for Real Inventory
-
-For production use, pass inventory callbacks to `registerPhysicalWarehousing`:
+For production inventory tracking, register a custom adapter with the `registerPhysicalWarehousing` factory. `stock`, `productionTime`, and `commissioningTime` accept either a constant or a callback:
 
 ```typescript
 import { registerPhysicalWarehousing } from '@unchainedshop/core';
 
 registerPhysicalWarehousing({
   adapterId: 'real-store',
-  orderIndex: 0,
   stock: async (referenceDate, configuration, { product }) => {
     const sku = product?.warehousing?.sku;
     if (!sku) return 0;
-    const inventory = await db.collection('inventory').findOne({ sku });
+    const inventory = await inventoryDb.findOne({ sku });
     return inventory?.quantity || 0;
-  },
-  productionTime: async (quantity, configuration, { product }) => {
-    const sku = product?.warehousing?.sku;
-    const supplier = await getSupplierLeadTime(sku);
-    return supplier.leadTimeDays * 24 * 60 * 60 * 1000;
   },
   commissioningTime: 4 * 60 * 60 * 1000,
 });
-```
-
-## Integration with Delivery
-
-Warehousing time affects delivery estimates:
-
-```typescript
-// In delivery adapter
-async estimatedDeliveryThroughput(warehousingTime) {
-  // warehousingTime = productionTime + commissioningTime
-  const shippingTime = 3 * 24 * 60 * 60 * 1000; // 3 days shipping
-  return warehousingTime + shippingTime;
-}
 ```
 
 ## Query Stock Status
@@ -159,6 +96,5 @@ query ProductAvailability($productId: ID!) {
 
 ## Related
 
-- [Plugins Overview](./) - All available plugins
 - [ETH Minter](./warehousing-eth-minter.md) - Virtual/NFT inventory
 - [Custom Warehousing Plugins](../../extend/order-fulfilment/fulfilment-plugins/warehousing.md) - Write your own

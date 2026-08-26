@@ -7,53 +7,100 @@ description: Understanding authentication patterns in Unchained Engine
 
 # Authentication
 
-Unchained Engine supports multiple authentication patterns to accommodate different user flows and integration requirements.
+Unchained Engine uses stateless JWT sessions. On login, the engine signs an HS256 JWT and delivers it as an HTTP-only cookie — the token never appears in the GraphQL response. Machine clients authenticate through the `Authorization` header with an opaque access token or an OIDC bearer token.
 
-## Authentication Strategies
+| Strategy | Use Case | Entry Point |
+|----------|----------|-------------|
+| Guest | Anonymous cart & checkout | `loginAsGuest` |
+| Email/Password | Traditional registration | `createUser`, `loginWithPassword` |
+| WebAuthn | Passkeys, biometrics, security keys | `loginWithWebAuthn` |
+| OIDC | External identity providers | `authConfig.oidcProviders` + bearer token |
+| Access Token | Machine-to-machine | `modules.users.createAccessToken` |
 
-| Strategy | Use Case |
-|----------|----------|
-| **Guest** | Anonymous browsing and checkout |
-| **Email/Password** | Traditional user registration |
-| **WebAuthn** | Passwordless authentication |
-| **OIDC** | External identity providers (Google, Keycloak, etc.) |
-| **API Token** | Machine-to-machine authentication |
+## Session Tokens
 
-## Anonymous vs Guest Users
+On every successful login (`loginWithPassword`, `loginAsGuest`, `createUser`, `loginWithWebAuthn`, `resetPassword`, `verifyEmail`, `impersonate`), the engine:
 
-Unchained distinguishes between anonymous visitors and guest users:
+1. Signs a JWT (HS256, via [jose](https://github.com/panva/jose)) with `sub` (user ID), `ver` (token version), `jti`, and `iss` claims.
+2. Sets it as an HTTP-only cookie (`unchained_token` by default).
+3. Sets a second hardened fingerprint cookie (`__Secure-fgp` by default, always `SameSite=Strict`) with a random value whose SHA-256 hash is embedded in the JWT as the `fgp` claim. Requests are only authenticated when cookie and claim match — a stolen JWT is useless without the fingerprint cookie (OWASP token-sidejacking protection).
+
+The mutation response only exposes the expiry, not the token:
+
+```graphql
+mutation Login {
+  loginWithPassword(email: "user@example.com", password: "securepassword") {
+    _id
+    tokenExpires
+    user {
+      _id
+      primaryEmail {
+        address
+      }
+    }
+  }
+}
+```
+
+Send subsequent requests with cookies included (`credentials: 'include'` with `fetch`).
+
+### Configuration
+
+| Environment Variable | Default | Description |
+|----------------------|---------|-------------|
+| `UNCHAINED_TOKEN_SECRET` | — (required) | HS256 signing secret, minimum 32 characters |
+| `UNCHAINED_TOKEN_EXPIRY_SECONDS` | `3600` | JWT and cookie lifetime |
+| `UNCHAINED_TOKEN_ISSUER` | `unchained-engine` | `iss` claim, validated on verification |
+| `UNCHAINED_COOKIE_NAME` | `unchained_token` | JWT cookie name |
+| `UNCHAINED_COOKIE_PATH` | `/` | Cookie path |
+| `UNCHAINED_COOKIE_DOMAIN` | — | Cookie domain |
+| `UNCHAINED_COOKIE_SAMESITE` | `lax` | `strict`, `lax`, `none`, `1` (true) or `0` (false) |
+| `UNCHAINED_COOKIE_INSECURE` | — | Set to drop the `Secure` flag (development only) |
+| `UNCHAINED_FINGERPRINT_COOKIE_NAME` | `__Secure-fgp` | Fingerprint cookie name |
+
+Generate a secret:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
+
+For local storefront development against a remote engine, the server adapters accept a dev-only escape hatch (it throws if `NODE_ENV=production`):
+
+```typescript
+connect(fastify, platform, {
+  allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
+});
+```
+
+### Logout
+
+`logout` clears both cookies, but the JWT itself stays cryptographically valid until it expires. `logoutAllSessions` increments the user's server-side token version, immediately invalidating every JWT ever issued to that user:
+
+```graphql
+mutation {
+  logout {
+    success
+  }
+}
+```
+
+```graphql
+mutation {
+  logoutAllSessions {
+    success
+  }
+}
+```
+
+## Guest Users
 
 | Type | Can Browse | Can Add to Cart | Can Checkout |
 |------|-----------|-----------------|--------------|
-| **Anonymous** | Yes | No | No |
-| **Guest** | Yes | Yes | Yes |
-| **Registered** | Yes | Yes | Yes |
+| Anonymous | Yes | No | No |
+| Guest | Yes | Yes | Yes |
+| Registered | Yes | Yes | Yes |
 
-Anonymous users can browse products and assortments without authentication. To perform state-changing operations (cart, checkout), a guest or registered user session is required.
-
-### Flow
-
-```mermaid
-flowchart TD
-    subgraph Anonymous["Anonymous Visitor"]
-        B1[Browse Products]
-        B1 -->|Add to Cart?| AUTH[Requires Auth]
-    end
-
-    AUTH --> LG[loginAsGuest]
-
-    LG --> Guest
-
-    subgraph Guest["Guest User"]
-        B2[Browse]
-        C[Add to Cart]
-        CO[Checkout]
-        REG[Register? - Optional]
-        B2 --> C --> CO --> REG
-    end
-```
-
-### Implementation
+Anonymous visitors can browse products and assortments without any session. State-changing operations (cart, checkout) require at least a guest session:
 
 ```graphql
 mutation LoginAsGuest {
@@ -64,93 +111,39 @@ mutation LoginAsGuest {
 }
 ```
 
-The session token is set as an HTTP-only cookie automatically. For subsequent requests, ensure cookies are sent with your requests.
+`loginAsGuest` creates an anonymous user (flagged `guest: true`) and logs it in like any other user. From there, `addCartProduct` and `checkoutCart` work normally — the cart itself is created on the first cart mutation.
 
-```graphql
-mutation AddToCart {
-  addCartProduct(productId: "...", quantity: 1) {
-    _id
-  }
-}
-```
+Note that `createUser` always creates a fresh account: registering during a guest session does not carry the guest's cart or order history over to the new account.
 
-```graphql
-mutation Checkout {
-  checkoutCart {
-    _id
-    orderNumber
-  }
-}
-```
+## Email/Password
 
-### Guest to Registered Conversion
-
-Guests can register without losing their cart or order history:
+### Registration
 
 ```graphql
 mutation CreateUser {
   createUser(
     email: "user@example.com"
     password: "securepassword"
-  ) {
-    _id
-    tokenExpires
-  }
-}
-```
-
-The new account inherits:
-- Current cart
-- Order history
-- Bookmarks
-- Preferences
-
-## Email/Password Authentication
-
-Traditional authentication with email and password.
-
-### Registration
-
-```graphql
-mutation CreateUserWithProfile {
-  createUser(
-    email: "user@example.com"
-    password: "securepassword"
-    profile: {
-      displayName: "John Doe"
-    }
+    profile: { displayName: "John Doe" }
   ) {
     _id
     tokenExpires
     user {
       _id
-      primaryEmail {
-        address
-      }
-      profile {
-        displayName
-      }
     }
   }
 }
 ```
+
+Either `username` or `email` is required, plus either `password` or `webAuthnPublicKeyCredentials`. The very first user created on an empty system automatically gets the `admin` role.
 
 ### Login
 
 ```graphql
 mutation Login {
-  loginWithPassword(
-    email: "user@example.com"
-    password: "securepassword"
-  ) {
+  loginWithPassword(email: "user@example.com", password: "securepassword") {
     _id
     tokenExpires
-    user {
-      _id
-      primaryEmail {
-        address
-      }
-    }
   }
 }
 ```
@@ -158,21 +151,16 @@ mutation Login {
 ### Password Reset
 
 ```graphql
-mutation ForgotPassword {
+mutation {
   forgotPassword(email: "user@example.com") {
     success
   }
 }
 ```
 
-Reset with token (from email):
-
 ```graphql
-mutation ResetPassword {
-  resetPassword(
-    token: "reset-token-from-email"
-    newPassword: "newpassword"
-  ) {
+mutation {
+  resetPassword(token: "reset-token-from-email", newPassword: "newpassword") {
     _id
     tokenExpires
   }
@@ -183,10 +171,7 @@ mutation ResetPassword {
 
 ```graphql
 mutation {
-  changePassword(
-    oldPassword: "currentpassword"
-    newPassword: "newpassword"
-  ) {
+  changePassword(oldPassword: "currentpassword", newPassword: "newpassword") {
     success
   }
 }
@@ -194,27 +179,27 @@ mutation {
 
 ## WebAuthn (Passwordless)
 
-Unchained Engine supports WebAuthn for passwordless authentication using biometrics or security keys.
+The relying party ID and origin are derived from `ROOT_URL` (default `http://localhost:4010`); the display name comes from `EMAIL_WEBSITE_NAME` (default `Unchained`).
 
 ### Registration Flow
 
-1. Get registration options (returns JSON with challenge, rp, user, pubKeyCredParams, etc.):
+1. Get creation options (returns JSON with challenge, rp, user, pubKeyCredParams):
 
 ```graphql
-mutation GetCredentialCreationOptions {
+mutation {
   createWebAuthnCredentialCreationOptions(username: "user@example.com")
 }
 ```
 
-2. Create credential with browser WebAuthn API using the returned options:
+2. Create the credential with the browser WebAuthn API:
 
 ```javascript
 const credential = await navigator.credentials.create({
-  publicKey: creationOptions
+  publicKey: creationOptions,
 });
 ```
 
-3. Store the credential:
+3. Store it:
 
 ```graphql
 mutation AddWebAuthnCredentials($credentials: JSON!) {
@@ -227,31 +212,92 @@ mutation AddWebAuthnCredentials($credentials: JSON!) {
 }
 ```
 
-### Authentication Flow
+### Login Flow
 
-1. Get authentication options (returns JSON with challenge, rpId, allowCredentials, etc.):
+1. Get request options:
 
 ```graphql
-mutation GetCredentialRequestOptions {
+mutation {
   createWebAuthnCredentialRequestOptions(username: "user@example.com")
 }
 ```
 
-2. Authenticate with browser WebAuthn API:
+2. Authenticate with the browser WebAuthn API:
 
 ```javascript
 const credential = await navigator.credentials.get({
-  publicKey: requestOptions
+  publicKey: requestOptions,
 });
 ```
 
-3. Verify and login:
+3. Verify and log in:
 
 ```graphql
 mutation LoginWithWebAuthn($credentials: JSON!) {
   loginWithWebAuthn(webAuthnPublicKeyCredentials: $credentials) {
     _id
     tokenExpires
+  }
+}
+```
+
+## OIDC (External Identity Providers)
+
+Register trusted providers when connecting the server adapter. Bearer JWTs issued by those providers are then verified against the provider's JWKS (issuer and optional audience validation) and mapped to a user:
+
+```typescript
+import { connect } from '@unchainedshop/api/lib/fastify/index.js';
+
+connect(fastify, platform, {
+  authConfig: {
+    oidcProviders: [
+      {
+        issuer: 'https://auth.example.com',
+        // optional, defaults to `${issuer}/.well-known/jwks.json`
+        jwksUri: 'https://auth.example.com/.well-known/jwks.json',
+        // optional audience validation
+        audience: 'my-client-id',
+      },
+    ],
+  },
+});
+```
+
+When `oidcProviders` is configured, an OIDC back-channel logout route is mounted automatically.
+
+The browser-facing login flow (authorization redirect, code exchange, user provisioning) is implemented with custom resolvers via `startPlatform`'s `context` parameter. See the [OIDC example](https://github.com/unchainedshop/unchained/tree/master/examples/oidc) for complete Keycloak and Zitadel setups.
+
+## Access Tokens (Machine-to-Machine)
+
+For server-to-server access, create an opaque access token programmatically (for example in your boot script):
+
+```typescript
+const result = await platform.unchainedAPI.modules.users.createAccessToken('admin');
+if (result) {
+  console.log(result.token); // only available at creation time
+}
+```
+
+Only the SHA-256 hash of the token is stored (`services.token.secret`). Use it as a bearer token:
+
+```http
+Authorization: Bearer <token>
+```
+
+A user has at most one access token; calling `createAccessToken` again replaces it.
+
+:::note
+`me { tokens }` and the `invalidateToken` mutation in the GraphQL API refer to tokenized products (warehousing/NFT domain), not authentication tokens.
+:::
+
+## Impersonation
+
+Users with the `admin` role can impersonate non-admin users (impersonating another admin is rejected):
+
+```graphql
+mutation {
+  impersonate(userId: "user-id") {
+    _id
     user {
       _id
     }
@@ -259,234 +305,34 @@ mutation LoginWithWebAuthn($credentials: JSON!) {
 }
 ```
 
-## OIDC (External Identity Providers)
-
-Integrate with external identity providers using OpenID Connect.
-
-### Supported Providers
-
-Any OIDC-compliant provider:
-- Google
-- Apple
-- Keycloak
-- Zitadel
-- Auth0
-- Azure AD
-- Custom providers
-
-### Configuration
-
-OIDC integration is configured through the GraphQL context. See the [OIDC Example](https://github.com/unchainedshop/unchained/tree/master/examples/oidc) for a complete implementation using `startPlatform`'s `context` parameter to add custom authentication logic.
-
-### Login Flow
-
-OIDC authentication is implemented via custom GraphQL resolvers. The flow typically involves:
-
-1. **Get authorization URL**: Custom query that returns the provider's OAuth URL
-2. **User redirected to provider**: User authenticates with the identity provider
-3. **Exchange code for token**: Custom mutation that validates the authorization code and creates a session
-
-See the [OIDC Example](https://github.com/unchainedshop/unchained/tree/master/examples/oidc) for a complete implementation showing how to add custom OIDC queries and mutations.
-
-## API Token Authentication
-
-For server-to-server or automated access.
-
-### Using Tokens
-
-Unchained users have a `tokens` field that stores authentication tokens. You can query a user's tokens:
-
-```graphql
-query MyTokens {
-  me {
-    tokens {
-      _id
-    }
-  }
-}
-```
-
-### Invalidating Tokens
-
-To invalidate a token:
-
-```graphql
-mutation InvalidateToken {
-  invalidateToken(tokenId: "token-id") {
-    _id
-  }
-}
-```
-
-### Including Token in Requests
-
-Include the token in the Authorization header:
-
-```http
-Authorization: Bearer <token>
-```
-
-## Session Management
-
-### Token Format
-
-Unchained uses JWT tokens for authentication. Configure the token secret via environment variable:
-
-```bash
-UNCHAINED_TOKEN_SECRET=your-32-character-minimum-secret-here
-```
-
-### Logout
+While impersonating, `impersonator { _id }` returns the acting admin. End the impersonation and resume the admin session with:
 
 ```graphql
 mutation {
-  logout {
-    success
-  }
-}
-```
-
-### Current User
-
-```graphql
-query CurrentUser {
-  me {
+  stopImpersonation {
     _id
-    primaryEmail {
-      address
-    }
-    username
-    profile {
-      displayName
-      address {
-        firstName
-        lastName
-        company
-        city
-        postalCode
-        countryCode
-      }
-    }
-    roles
-    cart {
+    user {
       _id
     }
   }
 }
 ```
 
-## Role-Based Access Control
+## Cryptography
 
-Unchained uses RBAC for authorization:
+| Operation | Algorithm |
+|-----------|-----------|
+| Password hashing | PBKDF2-SHA512, 300,000 iterations, 16-byte random salt |
+| Session tokens | HS256 JWT (jose) + SHA-256 fingerprint cookie |
+| Access token storage | SHA-256 hash of a CSPRNG-generated token |
 
-### Built-in Roles
-
-| Role | Description |
-|------|-------------|
-| `admin` | Full access to all operations |
-| `user` | Authenticated user with standard permissions |
-
-### Checking Permissions
-
-```typescript
-import { checkAction } from '@unchainedshop/roles';
-
-// In a resolver
-if (!checkAction(context, 'manageOrders')) {
-  throw new Error('Permission denied');
-}
-```
-
-### Custom Roles
-
-```typescript
-import { Roles, Role } from '@unchainedshop/roles';
-
-// Define custom role
-const supportRole = new Role('support');
-
-supportRole.allow('viewOrders', () => true);
-supportRole.allow('updateOrderStatus', (context, { order }) => {
-  // Only pending orders
-  return order.status === 'PENDING';
-});
-
-Roles.registerRole(supportRole);
-
-// Assign role to user
-await modules.users.updateRoles(userId, ['support']);
-```
-
-## Security Best Practices
-
-For comprehensive security documentation, see the [Security Guide](../deployment/security).
-
-### Cryptographic Standards
-
-Unchained uses industry-standard cryptography for authentication:
-
-| Operation | Algorithm | Details |
-|-----------|-----------|---------|
-| Password Hashing | PBKDF2-SHA512 | 300,000 iterations, 16-byte salt |
-| Token Storage | SHA-256 | Tokens hashed before database storage |
-| Token Generation | CSPRNG | `crypto.randomUUID()` |
-| Session Encryption | AES-256-GCM | Optional, via kruptein |
-
-### 1. Token Secret
-
-Use a strong, unique secret:
-
-```bash
-UNCHAINED_TOKEN_SECRET=your-32-character-minimum-secret-here
-```
-
-### 2. HTTPS Only
-
-Always use HTTPS in production. When connecting Unchained to your web server framework, configure secure cookies:
-
-```typescript
-// When using Fastify
-connect(fastify, platform, {
-  allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
-});
-```
-
-### 3. Rate Limiting
-
-Implement rate limiting for authentication endpoints:
-
-```typescript
-import rateLimit from 'express-rate-limit';
-
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 attempts
-  message: 'Too many login attempts',
-});
-
-app.use('/graphql', authLimiter);
-```
-
-### 4. Password Requirements
-
-Configure password validation through the users module options:
+Enforce a custom password policy through the users module options:
 
 ```typescript
 await startPlatform({
   options: {
     users: {
-      validatePassword: async (password: string) => {
-        if (password.length < 8) {
-          throw new Error('Password must be at least 8 characters');
-        }
-        if (!/[A-Z]/.test(password)) {
-          throw new Error('Password must contain an uppercase letter');
-        }
-        if (!/[0-9]/.test(password)) {
-          throw new Error('Password must contain a number');
-        }
-        return true;
-      },
+      validatePassword: async (password) => password.length >= 12,
     },
   },
 });
@@ -494,6 +340,7 @@ await startPlatform({
 
 ## Related
 
+- [Permissions Reference](./permissions.md) - Roles, permission actions, and custom roles
 - [Security Guide](../deployment/security) - Security features and compliance
 - [Users Module](../platform-configuration/modules/users.md) - User configuration options
 - [Admin UI](../admin-ui/overview.md) - Admin UI overview

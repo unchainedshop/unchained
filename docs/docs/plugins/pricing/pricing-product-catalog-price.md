@@ -10,13 +10,16 @@ description: Base product pricing from catalog prices
 Adds the gross price from the product catalog to the pricing calculation. This is typically the first adapter in the product pricing chain.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.
 :::
 
-## Installation
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/pricing/product-catalog-price';
+import { pluginRegistry } from '@unchainedshop/core';
+import { ProductPricePlugin } from '@unchainedshop/plugins/pricing/product-catalog-price';
+
+pluginRegistry.register(ProductPricePlugin);
 ```
 
 ## How It Works
@@ -36,10 +39,9 @@ If a product is a `BUNDLE_PRODUCT` and has no direct price configured, the adapt
 | Key | `shop.unchained.pricing.product-price` |
 | Version | `1.0.0` |
 | Order Index | `0` |
-| Source | [pricing/product-catalog-price.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/pricing/product-catalog-price.ts) |
+| Source | [pricing/product-catalog-price](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/pricing/product-catalog-price) |
 
 ## Related
 
-- [Product Catalog Price Options](./pricing-product-catalog-price-options.md) - Add prices for product options
 - [Product Discount](./pricing-product-discount.md) - Apply discounts to product prices
 - [Product Swiss Tax](./pricing-product-swiss-tax.md) - Apply Swiss VAT

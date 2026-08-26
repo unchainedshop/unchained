@@ -9,7 +9,11 @@ description: Apply Swiss VAT to product prices
 
 Applies Swiss VAT rates to product prices. Only activates for deliveries to Switzerland (CH) or Liechtenstein (LI).
 
-## Installation
+:::info Included in All Preset
+Registered automatically by `registerAllPlugins()` (via `registerSwissTaxPlugins()` from `@unchainedshop/plugins/presets/countries/ch`).
+:::
+
+## Registration
 
 ```typescript
 import { pluginRegistry } from '@unchainedshop/core';

@@ -69,10 +69,10 @@ const resolvers = {
 };
 
 // In custom code after platform start
-const { modules } = await startPlatform({ ... });
+const { unchainedAPI } = await startPlatform({ ... });
 
-const products = await modules.products.findProducts({
-  status: 'ACTIVE',
+const products = await unchainedAPI.modules.products.findProducts({
+  includeDrafts: false,
   limit: 10,
 });
 ```
@@ -87,10 +87,10 @@ Most modules follow a consistent pattern:
 modules.products.findProduct({ productId });
 
 // Find multiple entities
-modules.products.findProducts({ status: 'ACTIVE', limit: 10 });
+modules.products.findProducts({ tags: ['featured'], limit: 10 });
 
 // Count entities
-modules.products.count({ status: 'ACTIVE' });
+modules.products.count({ tags: ['featured'] });
 
 // Check existence
 modules.products.productExists({ productId });
@@ -99,13 +99,13 @@ modules.products.productExists({ productId });
 ### Mutation Methods
 ```typescript
 // Create
-const productId = await modules.products.create({ type: 'SIMPLE' });
+const product = await modules.products.create({ type: 'SIMPLE_PRODUCT' });
 
 // Update
-await modules.products.update(productId, { status: 'ACTIVE' });
+await modules.products.update(product._id, { tags: ['featured'] });
 
 // Delete (usually soft delete)
-await modules.products.delete(productId);
+await modules.products.delete(product._id);
 ```
 
 ## Events
@@ -113,14 +113,14 @@ await modules.products.delete(productId);
 Modules emit events for important operations. Subscribe to events for custom logic:
 
 ```typescript
-import { emit, registerEvents } from '@unchainedshop/events';
+import { subscribe, registerEvents } from '@unchainedshop/events';
 
-// Register custom event handlers
+// Register custom event types before emitting them
 registerEvents(['CUSTOM_EVENT']);
 
 // Subscribe to events
-events.on('PRODUCT_CREATE', async ({ payload }) => {
-  console.log('Product created:', payload.productId);
+subscribe('PRODUCT_CREATE', async ({ payload }) => {
+  console.log('Product created:', payload.product._id);
 });
 ```
 

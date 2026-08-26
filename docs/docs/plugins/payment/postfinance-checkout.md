@@ -7,37 +7,35 @@ description: Swiss PostFinance payment service integration
 
 # PostFinance Checkout
 
-The Unchained plugin implements the PostFinance Checkout payment service with support for all payment methods, different integration modes (payment page, lightbox, and iFrame), deferred settlements, and refunds.
-
-- [PostFinance Checkout Documentation](https://checkout.postfinance.ch/de-ch/doc/api/web-service)
-- [PostFinance Checkout Integration Guide](https://checkout.postfinance.ch/de-ch/doc/payment-integration)
+Payment plugin for [PostFinance Checkout](https://checkout.postfinance.ch/de-ch/doc/api/web-service) with support for all payment methods, three integration modes (payment page, lightbox, iFrame), deferred settlements, and refunds.
 
 ## Installation
 
-**Express:**
+Included in the [`all` preset](../../platform-configuration/plugin-presets.md) — `registerAllPlugins()` registers the plugin together with its webhook route.
+
+To register it individually:
+
 ```typescript
-import express from 'express';
-import '@unchainedshop/plugins/payment/postfinance-checkout';
-import { postfinanceCheckoutHandler } from '@unchainedshop/plugins/payment/postfinance-checkout/handler-express';
+import { pluginRegistry } from '@unchainedshop/core';
+import { PostfinanceCheckoutPlugin } from '@unchainedshop/plugins/payment/postfinance-checkout';
 
-const { PFCHECKOUT_WEBHOOK_PATH = '/payment/postfinance-checkout' } = process.env;
-
-app.use(PFCHECKOUT_WEBHOOK_PATH, express.json(), postfinanceCheckoutHandler);
+pluginRegistry.register(PostfinanceCheckoutPlugin);
 ```
 
-**Fastify:**
-```typescript
-import '@unchainedshop/plugins/payment/postfinance-checkout';
-import { postfinanceCheckoutHandler } from '@unchainedshop/plugins/payment/postfinance-checkout/handler-fastify';
+Register before `startPlatform()`. Registration mounts the webhook route `POST /payment/postfinance-checkout` (path configurable via `PFCHECKOUT_WEBHOOK_PATH`) on the Unchained HTTP server. Registration throws unless `PFCHECKOUT_SPACE_ID`, `PFCHECKOUT_USER_ID`, `PFCHECKOUT_SECRET`, `PFCHECKOUT_SUCCESS_URL`, and `PFCHECKOUT_FAILED_URL` are all set.
 
-const { PFCHECKOUT_WEBHOOK_PATH = '/payment/postfinance-checkout' } = process.env;
+Configure [webhook listeners](https://checkout.postfinance.ch/space/select?target=/webhook/listener/list) in the PostFinance Checkout web interface for successful and failed transaction completion ("Verbuchung der Transaktion" → "Erfolgreich" / "Fehlgeschlagen").
 
-fastify.route({
-  url: PFCHECKOUT_WEBHOOK_PATH,
-  method: 'POST',
-  handler: postfinanceCheckoutHandler,
-});
-```
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PFCHECKOUT_SPACE_ID` | - | PostFinance Checkout space ID (required) |
+| `PFCHECKOUT_USER_ID` | - | PostFinance API user ID (required) |
+| `PFCHECKOUT_SECRET` | - | PostFinance API secret (required) |
+| `PFCHECKOUT_SUCCESS_URL` | - | URL for successful payment redirect, appends `?order_id=<id>` (required) |
+| `PFCHECKOUT_FAILED_URL` | - | URL for failed payment redirect, appends `?order_id=<id>` (required) |
+| `PFCHECKOUT_WEBHOOK_PATH` | `/payment/postfinance-checkout` | Webhook endpoint path |
 
 ## Create Provider
 
@@ -52,115 +50,64 @@ mutation CreatePostFinanceProvider {
     _id
   }
 }
+```
 
-mutation ConfigurePostFinanceProvider {
-  updatePaymentProvider(
-    paymentProviderId: "provider-id"
-    paymentProvider: {
-      configuration: [
-        { key: "completionMode", value: "Immediate" }
-      ]
-    }
-  ) {
+Provider configuration (via `updatePaymentProvider`):
+
+| Key | Description |
+|-----|-------------|
+| `completionMode` | `Deferred` (default) — only create a reservation to be completed/voided later, or `Immediate` — complete transactions right away. Not all payment methods support deferred settlement. |
+
+## Payment Flow
+
+Follows the standard [checkout flow](./index.md#checkout-flow). PostFinance specifics:
+
+`signPaymentProviderForCheckout` accepts an `integrationMode` in the `transactionContext` — `PaymentPage` (default), `Lightbox`, or `iFrame`:
+
+```graphql
+mutation {
+  signPaymentProviderForCheckout(
+    orderPaymentId: "order-payment-id"
+    transactionContext: { integrationMode: "Lightbox" }
+  )
+}
+```
+
+It returns a JSON string:
+
+```json
+{
+  "transactionId": 424242,
+  "location": "https://checkout.postfinance.ch/s/25563/payment/transaction/pay/424242?securityToken=<token>"
+}
+```
+
+For `PaymentPage`, `location` is the URL to redirect the user to. For `Lightbox` and `iFrame`, it is the JavaScript URL to embed (e.g. `.../assets/payment/lightbox-checkout-handler.js?spaceId=...`). The URL is fetched from the PostFinance API — don't construct it yourself, the schema could change.
+
+After successful payment, the webhook marks the order as paid. Fallback — call `checkoutCart` and the plugin re-checks the transaction:
+
+```graphql
+mutation {
+  checkoutCart(orderId: "order id from query parameter") {
     _id
+    status
   }
 }
 ```
 
-## Configure PostFinance Checkout Webhooks
+## Deferred Completion, Cancellation, Refunds
 
-Configure the [webhooks](https://checkout.postfinance.ch/space/select?target=/webhook/listener/list) in the PostFinance Checkout web interface for:
-- Accepted payments ("Verbuchung der Transaktion" → "Erfolgreich")
-- Failed payments ("Verbuchung der Transaktion" → "Fehlgeschlagen")
+With `completionMode: Deferred`, only a reservation is created — confirming the order (e.g. from an ERP that handles payment flows) is your responsibility.
 
-## Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PFCHECKOUT_SPACE_ID` | - | PostFinance Checkout space ID (required) |
-| `PFCHECKOUT_USER_ID` | - | PostFinance API user ID (required) |
-| `PFCHECKOUT_SECRET` | - | PostFinance API secret (required) |
-| `PFCHECKOUT_WEBHOOK_PATH` | `/payment/postfinance-checkout` | Webhook endpoint path |
-| `PFCHECKOUT_SUCCESS_URL` | - | URL for successful payment redirect (appends `?order_id=<id>`) |
-| `PFCHECKOUT_FAILED_URL` | - | URL for failed payment redirect (appends `?order_id=<id>`) |
-
-## Provider Configuration
-
-| Key | Description |
-|-----|-------------|
-| `completionMode` | `Immediate` (default) or `Deferred` for pre-authorization |
-
-# Usage
-
-To start a new PostFinance Checkout transaction, the mutation `signPaymentProviderForCheckout` is used. The plugin accepts two parameters in the `transactionContext` which control the behavior of the transaction: `integrationMode` and `completionMode`.
-
-## Integration Mode
-You can specify the integration mode in the `transactionContext` of `signPaymentProviderForCheckout` with the parameter `integrationMode`. Valid values are `PaymentPage` (default value if nothing is specified), `Lightbox`, or `iFrame`:
-```/*graphql*/
-signPaymentProviderForCheckout(
-    orderPaymentId: "order payment id of the cart you want to checkout",
-    transactionContext: {integrationMode: "Lightbox"}
-)
-```
-
-*To get the order payment id of the current active cart of the logged in user you can*
-```/*graphql*/
-me {
-    cart {
-        payment {
-            _id
-        }
-    }
-} 
-```
-
-The mutation returns a stringified JSON object with the transaction ID and the location:
-```json
-{
-    "transactionId": 424242,
-    "location": "https://checkout.postfinance.ch/s/25563/payment/transaction/pay/424242?securityToken=<token>"
-}
-```
-Depending on the `integrationMode`, `location` needs to be handled differently at the client side. For `PaymentPage` (as in the example above), it contains the URL that the user should be redirected to. For `Lightbox` and `iFrame`, it contains the JavaScript-URL, e.g. `https://checkout.postfinance.ch/assets/payment/lightbox-checkout-handler.js?spaceId=25563&transactionId=424242&securityToken=<token>`.
-*Note that although the URL always follows the same schema (and therefore could be constructed from the space ID, transaction ID, and security token), it is fetched from a PostFinance API endpoint and the schema could in theory change.*
-
-After the successful payment, the web hook will be called and the order will be marked as paid.
-If the web hook was not called for some reason or a different error happened during the processing, you can also manually call `checkoutCart` and the system will check if the transaction was paid:
-
-```/*graphql*/
-checkoutCart(
-    orderId: "order id from query parameter" ) { 
-    _id, 
-    status
-}
-```
-
-This gives Unchained Engine a (second) chance to process and settle the payment.
-
-## Completion Mode
-The completion mode that is configured when instantiating a provider (see above for details) determines if transactions are completed immediately (default behavior if nothing is specified explicitly, value `Immediate`) or if only a reservation is created (`Deferred`) that can be voided / completed later.
-*Note that not all payment methods support deferred settlements. Alternatively, you can also use refunds.*
-
-When you use deferred completion, it's your responsibility to confirm the order (e.g., in an ERP system that handles the payment flows).
-
-## Cancellation / Refunds
-
-An order payment can be cancelled in two cases:
-1. A transaction was started with deferred settlement (i.e., only a reservation was created) and it should not be completed.
-2. A transaction completed successfully, but there should be a refund to the user for some reason.
-
-In both cases, this is initiated when the order is rejected via `rejectOrder`.
+`rejectOrder` cancels the payment in both cases: it voids an uncompleted reservation, or refunds a completed transaction.
 
 ## Saved Payment Methods
 
-The tokenization mode is set to `ALLOW_ONE_CLICK_PAYMENT` and the Unchained customer ID is passed to the PostFinance API.
-This gives the user the option to save a payment method. When he does this and orders for a second time, the saved method can be directly selected.
+Tokenization mode is set to `ALLOW_ONE_CLICK_PAYMENT` and the Unchained customer ID is passed to the PostFinance API — returning users can select their saved payment method directly.
 
-# Testing
+## Testing
 
-For testing purposes, you can create a dedicated space in the PostFinance Checkout web interface and set it to testing mode.
-In this mode, transactions can be paid with test payment methods that appear in the web interface.
-`PFCHECKOUT_SPACE_ID` needs to be set to the id of this space (for unit tests or when running end user tests on a dev / staging environment).
+Create a dedicated space in the PostFinance Checkout web interface, set it to testing mode, and point `PFCHECKOUT_SPACE_ID` at it. Test payment methods appear in the web interface.
 
 ## Adapter Details
 
@@ -168,10 +115,5 @@ In this mode, transactions can be paid with test payment methods that appear in 
 |----------|-------|
 | Key | `shop.unchained.payment.postfinance-checkout` |
 | Type | `GENERIC` |
-| Source | [payment/postfinance-checkout/](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/payment/postfinance-checkout/) |
-
-## Related
-
-- [Plugins Overview](./) - All available plugins
-- [Payment Integration Guide](../../guides/payment-integration.md) - Payment setup guide
-- [Checkout Implementation](../../guides/checkout-implementation.md) - Complete checkout flow
+| Version | `1.0.0` |
+| Source | [payment/postfinance-checkout/](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/payment/postfinance-checkout) |

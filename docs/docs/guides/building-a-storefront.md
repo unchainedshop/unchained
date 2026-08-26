@@ -301,6 +301,10 @@ query Cart {
           currencyCode
         }
       }
+      itemsTotal: total(category: ITEMS) {
+        amount
+        currencyCode
+      }
       total {
         amount
         currencyCode
@@ -309,6 +313,8 @@ query Cart {
   }
 }
 ```
+
+The `total` field takes an optional `category` argument (`ITEMS`, `DELIVERY`, `PAYMENT`, `TAXES`, `DISCOUNTS`) — use aliases to fetch several categories in one query.
 
 ### Cart Mutations
 
@@ -470,73 +476,31 @@ function Cart() {
 
 ## Authentication Flow
 
-### Login Component
-
-```tsx
-import { useMutation } from '@apollo/client';
-import { LOGIN, LOGIN_AS_GUEST, GET_ME } from './queries';
-
-function LoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const [login] = useMutation(LOGIN, {
-    refetchQueries: [{ query: GET_ME }],
-  });
-
-  const [loginAsGuest] = useMutation(LOGIN_AS_GUEST, {
-    refetchQueries: [{ query: GET_ME }],
-  });
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const { data } = await login({
-        variables: { email, password },
-      });
-      // Token is set as HTTP-only cookie automatically
-      // The _id is the session ID for reference
-      console.log('Logged in, session:', data.loginWithPassword._id);
-    } catch (error) {
-      console.error('Login failed:', error);
+```graphql
+mutation Login($email: String, $password: String!) {
+  loginWithPassword(email: $email, password: $password) {
+    _id
+    user {
+      _id
+      username
     }
-  };
+  }
+}
 
-  const handleGuestCheckout = async () => {
-    try {
-      const { data } = await loginAsGuest();
-      // Token is set as HTTP-only cookie automatically
-      console.log('Guest session:', data.loginAsGuest._id);
-    } catch (error) {
-      console.error('Guest login failed:', error);
+mutation LoginAsGuest {
+  loginAsGuest {
+    _id
+    user {
+      _id
+      isGuest
     }
-  };
-
-  return (
-    <div>
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-        />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-        />
-        <button type="submit">Login</button>
-      </form>
-
-      <button onClick={handleGuestCheckout}>
-        Continue as Guest
-      </button>
-    </div>
-  );
+  }
 }
 ```
+
+Both mutations set the session token as an HTTP-only cookie automatically — no token handling in the frontend. If the storefront runs on a different origin than the engine, configure your GraphQL client with `credentials: 'include'` so the cookie is sent along. After login, refetch `me` to update the UI.
+
+See [Checkout Implementation](./checkout-implementation) for how guest login fits into the checkout flow and [Authentication](../concepts/authentication) for the underlying concepts.
 
 ## Utility Functions
 
@@ -560,74 +524,27 @@ export function productUrl(product: { texts?: { slug?: string }; _id: string }):
 }
 ```
 
-## Next.js Integration
+## Server-Side Rendering
 
-### API Route for Server-Side Queries
+Unchained is a plain GraphQL-over-HTTP API, so any SSR/SSG framework works without special integration. Two things are Unchained-specific:
 
-```typescript
-// pages/api/products.ts
-import { client } from '@/lib/apollo-client';
-import { PRODUCTS_QUERY } from '@/queries';
-
-export default async function handler(req, res) {
-  const { data } = await client.query({
-    query: PRODUCTS_QUERY,
-    variables: { limit: 20 },
-  });
-
-  res.json(data.products);
-}
-```
-
-### Server-Side Rendering
+- **Catalog data** (products, assortments, texts, `simulatedPrice` with an explicit `currencyCode`) can be fetched server-side and cached/prerendered — resolve routes via `product(slug: ...)` and use `texts.slug` for paths.
+- **Session-bound data** (`me`, cart, user-specific prices) depends on the session cookie and `Accept-Language` header. When querying from the server, forward the incoming request's `Cookie` and `Accept-Language` headers to the engine; never cache these responses across users.
 
 ```typescript
-// pages/products/[slug].tsx
-import { client } from '@/lib/apollo-client';
-import { PRODUCT_QUERY } from '@/queries';
-
-export async function getServerSideProps({ params }) {
-  const { data } = await client.query({
-    query: PRODUCT_QUERY,
-    variables: { slug: params.slug },
-  });
-
-  if (!data.product) {
-    return { notFound: true };
-  }
-
-  return {
-    props: { product: data.product },
-  };
-}
+// Any server runtime: forward context headers to the engine
+const response = await fetch(`${UNCHAINED_URL}/graphql`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    cookie: incomingRequest.headers.cookie ?? '',
+    'accept-language': incomingRequest.headers['accept-language'] ?? '',
+  },
+  body: JSON.stringify({ query: PRODUCT_QUERY, variables: { slug } }),
+});
 ```
 
-### Static Generation
-
-```typescript
-// pages/products/[slug].tsx
-export async function getStaticPaths() {
-  const { data } = await client.query({ query: ALL_PRODUCT_SLUGS });
-
-  const paths = data.products.map((product) => ({
-    params: { slug: product.texts?.slug || product._id },
-  }));
-
-  return { paths, fallback: 'blocking' };
-}
-
-export async function getStaticProps({ params }) {
-  const { data } = await client.query({
-    query: PRODUCT_QUERY,
-    variables: { slug: params.slug },
-  });
-
-  return {
-    props: { product: data.product },
-    revalidate: 60, // Regenerate every 60 seconds
-  };
-}
-```
+For framework-specific data fetching (`getServerSideProps`, React Server Components, load functions, …) refer to your framework's documentation.
 
 ## Related
 

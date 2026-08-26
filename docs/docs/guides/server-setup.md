@@ -7,28 +7,15 @@ description: Choose and configure Express or Fastify as your HTTP server framewo
 
 # Server Setup
 
-Unchained Engine supports both Express and Fastify as HTTP server frameworks. Both provide identical functionality through the `connect()` function from `@unchainedshop/api`.
-
-## Quick Comparison
-
-| Aspect | Express | Fastify |
-|--------|---------|---------|
-| Performance | Good | Better (2-3x faster) |
-| Async Support | Callback-based | Native async/await |
-| Plugin System | Middleware | Hooks and decorators |
-| TypeScript | Good | Excellent |
-| Ecosystem | Largest | Growing |
-| Recommended | Teams familiar with Express | New projects |
+Unchained Engine supports both Express and Fastify as HTTP server frameworks, with identical functionality through the `connect()` function from `@unchainedshop/api/express` or `@unchainedshop/api/fastify`. Fastify is used by the default [kitchensink example](https://github.com/unchainedshop/unchained/tree/master/examples/kitchensink) and recommended for new projects; the [kitchensink-express example](https://github.com/unchainedshop/unchained/tree/master/examples/kitchensink-express) shows the Express equivalent.
 
 ## Fastify Setup (Recommended)
-
-Fastify is the recommended choice for new projects. It's used by the default kitchensink example.
 
 ```typescript
 import Fastify from 'fastify';
 import { startPlatform } from '@unchainedshop/platform';
 import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
-import defaultModules, { registerAllPlugins } from '@unchainedshop/plugins/presets/all.js';
+import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
 
 registerAllPlugins();
 
@@ -38,9 +25,7 @@ const fastify = Fastify({
   trustProxy: true,
 });
 
-const platform = await startPlatform({
-  modules: defaultModules,
-});
+const platform = await startPlatform({});
 
 connect(fastify, platform, {
   allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
@@ -60,23 +45,26 @@ import express from 'express';
 import http from 'node:http';
 import { startPlatform } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/express';
-import defaultModules, { registerAllPlugins } from '@unchainedshop/plugins/presets/all.js';
+import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
 
 registerAllPlugins();
 
 const app = express();
 const httpServer = http.createServer(app);
 
-const platform = await startPlatform({
-  modules: defaultModules,
-});
+const platform = await startPlatform({});
 
 connect(app, platform, {
   allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
+  adminUI: true,
 });
 
 await httpServer.listen({ port: process.env.PORT || 3000 });
 ```
+
+:::note
+Import the preset without a file extension (`@unchainedshop/plugins/presets/all`) — the package exports map appends `.js` itself. `startPlatform({})` needs no `modules` argument for the built-in core modules.
+:::
 
 ## Connect Options
 
@@ -84,19 +72,21 @@ Both adapters accept the same options in the third argument:
 
 ```typescript
 connect(server, platform, {
-  // Allow secure cookies over HTTP in development (blocked in production)
+  // Allow secure cookies over HTTP for development;
+  // connect() throws if this is enabled with NODE_ENV=production
   allowRemoteToLocalhostSecureCookies: boolean,
 
-  // Enable the Admin UI at the root path or configure with prefix
-  adminUI: boolean | { prefix: string },
+  // Serve the Admin UI: true, or an options object
+  adminUI: boolean | { prefix?: string; theme?: AdminUIThemeConfig; plugins?: AdminUIPluginConfig[] },
 
-  // AI chat configuration (requires OpenAI-compatible provider)
-  chat: { model: ChatModel, imageGeneration?: ImageModel },
+  // AI chat endpoint (Vercel AI SDK model instances)
+  chat: { model: LanguageModel; imageGenerationTool?: { model: ImageModel; uploadUrl?: string } },
 
   // OIDC/OAuth authentication configuration
   authConfig: AuthConfig,
 
-  // Trust X-Forwarded-* headers from reverse proxy
+  // Trust X-Forwarded-For / X-Real-IP headers from a reverse proxy
+  // (implied automatically when allowRemoteToLocalhostSecureCookies is set)
   trustProxy: boolean,
 });
 ```
@@ -132,7 +122,7 @@ const fastify = Fastify({
 });
 ```
 
-### Adding Custom Middleware
+### Adding Custom Routes
 
 ```typescript
 // Express - standard middleware
@@ -152,19 +142,21 @@ fastify.route({
 
 ## Admin UI
 
-Both adapters support serving the Admin UI. Enable it via the `adminUI` option:
+Enable the Admin UI via the `adminUI` option:
 
 ```typescript
-// Enable at root path
+// Serve at the root path
 connect(server, platform, { adminUI: true });
 
-// Enable with custom prefix
+// Serve under a prefix
 connect(server, platform, { adminUI: { prefix: '/admin' } });
 ```
 
+The options object also accepts `theme` (design token overrides) and `plugins` (custom Admin UI extensions) — see the kitchensink examples for a full configuration.
+
 ## OIDC Authentication
 
-For enterprise authentication with external identity providers, pass the `authConfig` option. See the [OIDC example](https://github.com/unchainedshop/unchained/tree/master/examples/oidc) for a complete implementation.
+For authentication with external identity providers, pass the `authConfig` option. See the [OIDC example](https://github.com/unchainedshop/unchained/tree/master/examples/oidc) for a complete implementation.
 
 ## Related
 

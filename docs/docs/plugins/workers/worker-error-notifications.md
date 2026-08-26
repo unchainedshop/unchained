@@ -10,27 +10,29 @@ description: Send daily reports about permanently failed work items
 Sends daily reports about work items that have permanently failed (exhausted all retries).
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.
 :::
 
-## Installation
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/worker/error-notifications';
+import { pluginRegistry } from '@unchainedshop/core';
+import { ErrorNotificationsPlugin } from '@unchainedshop/plugins/worker/error-notifications';
+
+pluginRegistry.register(ErrorNotificationsPlugin);
 ```
 
 ## Purpose
 
 The Error Notifications Worker helps you stay informed about system issues by:
 
-- Running automatically every day at 3 AM UTC
-- Collecting all permanently failed work items from the past 24 hours
+- Collecting permanently failed work items (no retries left) from the look-back window
 - Triggering a MESSAGE work item with the `ERROR_REPORT` template
 - Excluding its own failures to prevent notification loops
 
 ## Auto-Scheduling
 
-When imported, this worker automatically schedules itself to run daily at 03:00 UTC.
+Runs automatically every day at 03:00 (configured on registration) with `secondsPassed: 86400` — a 24-hour look-back.
 
 ## Manual Trigger
 
@@ -50,24 +52,28 @@ mutation SendErrorReport {
 }
 ```
 
-Note: `secondsPassed` is optional and defaults to 24 hours (86400 seconds).
-
 ## Input Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `secondsPassed` | Number | `86400` | Seconds to look back for failed work items |
+| `secondsPassed` | Number | `60` | Seconds to look back (before the work item's scheduled time) for failed work items. The auto-scheduled run passes `86400`. |
 
-## Setting Up the Template
+## The ERROR_REPORT Template
 
-To receive error notifications, you need to register an `ERROR_REPORT` template:
+The platform registers a default `ERROR_REPORT` template that emails a plain-text report. Configure it via environment variables:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `EMAIL_ERROR_REPORT_RECIPIENT` | `support@unchained.local` | Recipient of the error report |
+| `EMAIL_FROM` | `noreply@unchained.local` | Sender address |
+| `EMAIL_WEBSITE_NAME` | `Unchained` | Shop name used in the subject and body |
+
+To customize the report, re-register the template after `startPlatform`:
 
 ```typescript
 import { MessagingDirector } from '@unchainedshop/core';
 
-MessagingDirector.registerTemplate('ERROR_REPORT', async ({ workItems }, context) => {
-  const adminEmail = 'admin@example.com';
-
+MessagingDirector.registerTemplate('ERROR_REPORT', async ({ workItems }) => {
   const summary = workItems.map(work =>
     `- ${work.type}: ${work.error?.message || 'Unknown error'}`
   ).join('\n');
@@ -75,7 +81,7 @@ MessagingDirector.registerTemplate('ERROR_REPORT', async ({ workItems }, context
   return [{
     type: 'EMAIL',
     input: {
-      to: adminEmail,
+      to: 'admin@example.com',
       subject: `[Unchained] ${workItems.length} failed work items`,
       text: `The following work items have permanently failed:\n\n${summary}`,
     },
@@ -99,9 +105,9 @@ If no failed work items are found, the result will be empty and no message is se
 |----------|-------|
 | Key | `shop.unchained.worker.error-notifications` |
 | Type | `ERROR_NOTIFICATIONS` |
-| Auto-Schedule | Daily at 03:00 UTC |
+| Auto-Schedule | Daily at 03:00 |
 | Retries | 0 |
-| Source | [worker/error-notifications.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/worker/error-notifications.ts) |
+| Source | [worker/error-notifications](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/worker/error-notifications) |
 
 ## Related
 

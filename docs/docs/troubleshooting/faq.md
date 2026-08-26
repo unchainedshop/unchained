@@ -17,42 +17,28 @@ Unchained Engine is a headless, code-first e-commerce platform built with Node.j
 
 - **Code-first**: Configure through code, not control panels
 - **Headless**: Decoupled from any specific UI
-- **Plugin architecture**: Extensible via Director/Adapter pattern
+- **Plugin architecture**: Extensible via plugins and adapter factories
 - **Open source**: EUPL-1.2 licensed
 - **MongoDB-based**: Flexible document storage
 
 ### What frontend frameworks can I use?
 
-Any framework that can make HTTP requests:
-- Next.js (most common)
-- React
-- Vue.js / Nuxt
-- Svelte / SvelteKit
-- Mobile apps (React Native, Flutter)
+Any framework that can make HTTP requests: Next.js, React, Vue/Nuxt, Svelte/SvelteKit, mobile apps (React Native, Flutter), etc. See [Building a Storefront](../guides/building-a-storefront).
 
 ### Is Unchained suitable for large-scale deployments?
 
-Yes. Unchained is designed to scale horizontally and has been used in production by businesses processing significant order volumes. Key features for scale:
-- Stateless architecture
-- Distributed event system (Redis)
-- Background job processing
-- External file storage (S3)
+Yes. Unchained scales horizontally: stateless API (JWT auth), distributed event system (Redis adapter), background job queue, and external file storage (S3/MinIO).
 
 ## Setup & Installation
 
 ### What are the system requirements?
 
 - Node.js 22+
-- MongoDB 6+
-- 1GB+ RAM (2GB+ recommended for production)
+- MongoDB (optional in development — the engine boots an in-memory server when `MONGO_URL` is unset)
 
 ### Do I need MongoDB Atlas or can I use local MongoDB?
 
-Both work. For development, local MongoDB is fine. For production, MongoDB Atlas is recommended for:
-- Automatic backups
-- High availability
-- Monitoring
-- Security
+Both work. For development, local MongoDB (or the built-in in-memory server) is fine. For production, a managed service like MongoDB Atlas gives you backups, high availability, and monitoring.
 
 ### Can I use PostgreSQL instead of MongoDB?
 
@@ -61,36 +47,33 @@ No. Unchained is designed around MongoDB's document model. The flexible schema i
 ### How do I update Unchained?
 
 ```bash
-# Update all packages
-npm update @unchainedshop/platform
-
-# Check for breaking changes in MIGRATION.md
+npm update @unchainedshop/platform @unchainedshop/api @unchainedshop/plugins
 ```
+
+Check [MIGRATION.md](https://github.com/unchainedshop/unchained/blob/master/MIGRATION.md) for breaking changes between major versions. Database migrations run automatically when the platform boots.
 
 ## Development
 
 ### How do I extend the GraphQL schema?
 
-Use type extensions and custom resolvers:
+Pass `typeDefs` and `resolvers` directly to `startPlatform` — they are appended to the built-in schema:
 
 ```typescript
-const customTypeDefs = `
-  extend type Product {
-    customField: String
-  }
-`;
-
-const customResolvers = {
-  Product: {
-    customField: (product) => product.meta?.customField,
-  },
-};
-
 await startPlatform({
-  modules: {
-    customTypeDefs,
-    customResolvers,
-  },
+  typeDefs: [
+    /* GraphQL */ `
+      extend type Product {
+        customField: String
+      }
+    `,
+  ],
+  resolvers: [
+    {
+      SimpleProduct: {
+        customField: ({ meta }) => meta?.customField,
+      },
+    },
+  ],
 });
 ```
 
@@ -98,14 +81,13 @@ See [Extending GraphQL](../extend/graphql) for details.
 
 ### How do I add a custom payment provider?
 
-Use the payment provider factory:
+Use the payment provider factory — it registers the adapter for you:
 
 ```typescript
 import { registerPaymentProvider } from '@unchainedshop/core';
 
 registerPaymentProvider({
   adapterId: 'my-payment',
-  type: 'GENERIC',
   charge: async (configuration, context) => {
     const result = await gateway.charge(context.order);
     return { transactionId: result.id };
@@ -113,40 +95,30 @@ registerPaymentProvider({
 });
 ```
 
-See [Payment Plugins](../extend/order-fulfilment/fulfilment-plugins/payment).
+See [Plugin Factories](../extend/plugin-factories#payment).
 
 ### How do I handle webhooks?
 
-Add custom routes to your server:
+Built-in payment plugins register their webhook routes automatically when registered (e.g. the Stripe plugin listens on `/payment/stripe/webhook`). For custom webhooks, you own the HTTP server — add routes to your Fastify (or Express) instance in your boot file:
 
 ```typescript
-import express from 'express';
-
-const app = express();
-
-app.post('/webhooks/stripe', async (req, res) => {
-  // Handle Stripe webhook
+fastify.post('/webhooks/my-gateway', async (request, reply) => {
+  // verify signature, then act on request.body
+  return reply.send({ received: true });
 });
-
-// Use with Unchained
-import { startPlatform } from '@unchainedshop/platform';
-await startPlatform({ expressApp: app });
 ```
 
 ### How do I run background jobs?
 
-Use the Worker system:
+Register a worker via the [`registerWorker` factory](../extend/plugin-factories#workers), then schedule work through the worker module:
 
 ```typescript
-import { pluginRegistry } from '@unchainedshop/core';
-
-// Schedule a job
-await modules.worker.addWork({
+await unchainedAPI.modules.worker.addWork({
   type: 'MY_JOB_TYPE',
   input: { /* data */ },
+  scheduled: new Date(),
+  retries: 5,
 });
-
-// Jobs are processed automatically
 ```
 
 See [Worker](../extend/worker).
@@ -155,61 +127,13 @@ See [Worker](../extend/worker).
 
 ### What product types are supported?
 
-- **Simple**: Basic products with price
-- **Configurable**: Products with variations (size, color)
-- **Bundle**: Collections of products
-- **Plan**: Subscription products
-- **Tokenized**: NFT/token-backed products
+`SIMPLE_PRODUCT`, `CONFIGURABLE_PRODUCT` (variants), `BUNDLE_PRODUCT`, `PLAN_PRODUCT` (subscriptions), and `TOKENIZED_PRODUCT` (NFT/token-backed).
 
 ### How do I handle product variants?
 
-Use ConfigurableProduct with linked SimpleProducts:
-
-```graphql
-mutation CreateConfigurableProduct {
-  createProduct(product: { type: CONFIGURABLE_PRODUCT }) {
-    _id
-  }
-}
-```
-
-```graphql
-mutation CreateVariant {
-  createProduct(product: { type: SIMPLE_PRODUCT }) {
-    _id
-  }
-}
-```
-
-```graphql
-mutation LinkVariant {
-  addProductAssignment(
-    proxyId: "configurable-id"
-    productId: "simple-id"
-    vectors: [
-      { key: "size", value: "M" }
-      { key: "color", value: "blue" }
-    ]
-  ) {
-    _id
-  }
-}
-```
+Create a `CONFIGURABLE_PRODUCT`, link `SIMPLE_PRODUCT`s to it with `addProductAssignment` and variation vectors. See [Create your first Product](../quick-start/first-product) for the full walkthrough.
 
 ### How do I implement product search?
-
-Use the built-in search or integrate external search:
-
-```graphql
-query SearchProducts {
-  searchProducts(queryString: "t-shirt", filterQuery: [
-    { key: "category", value: "clothing" }
-  ]) {
-    products { _id }
-    filteredProductsCount
-  }
-}
-```
 
 See [Search and Filtering](../guides/search-and-filtering).
 
@@ -217,15 +141,7 @@ See [Search and Filtering](../guides/search-and-filtering).
 
 ### How does the checkout flow work?
 
-1. User authenticates (guest or registered)
-2. Add products to cart
-3. Set delivery provider and address
-4. Set payment provider
-5. Call `checkoutCart`
-6. Payment webhook confirms payment
-7. Order transitions to CONFIRMED
-
-See [Order Lifecycle](../concepts/order-lifecycle).
+Cart → delivery/payment provider selection → `checkoutCart` → payment confirmation → order `CONFIRMED`. See [Order Lifecycle](../concepts/order-lifecycle) and the [Checkout Implementation guide](../guides/checkout-implementation).
 
 ### Can customers checkout as guests?
 
@@ -244,109 +160,27 @@ Guests can later convert to registered users without losing their order history.
 
 ### How do I implement subscriptions?
 
-Use Plan products with the Enrollment system:
-
-```graphql
-mutation CreatePlanProduct {
-  createProduct(product: { type: PLAN_PRODUCT }) {
-    _id
-  }
-}
-```
-
-When ordered, an Enrollment is created that generates recurring orders.
+Use `PLAN_PRODUCT`s. When ordered, an Enrollment is created that generates recurring orders. See [Enrollments](../extend/enrollment).
 
 ## Pricing
 
 ### How is pricing calculated?
 
-Through a chain of pricing adapters:
-1. Base price
-2. Discounts
-3. Tax
-4. Delivery fees
-5. Payment fees
+Through a chain of pricing adapters (base price, discounts, tax, delivery and payment fees). See [Pricing System](../concepts/pricing-system), [Custom Pricing](../guides/custom-pricing), and [Plugin Factories](../extend/plugin-factories#pricing).
 
-See [Pricing System](../concepts/pricing-system).
+### How do I handle multiple currencies and languages?
 
-### How do I implement custom pricing logic?
-
-Use the `registerProductPricing` factory:
-
-```typescript
-import { registerProductPricing } from '@unchainedshop/core';
-
-registerProductPricing({
-  adapterId: 'my-pricing',
-  orderIndex: 10,
-  calculate: async (sheet, context) => {
-    sheet.addItem({ amount: -100, isTaxable: true, isNetPrice: true, category: 'DISCOUNT' });
-  },
-});
-```
-
-See [Custom Pricing](../guides/custom-pricing.md) and [Plugin Factories](../extend/plugin-factories.md#pricing).
-
-### How do I handle multiple currencies?
-
-1. Configure currencies in Admin UI
-2. Set prices per currency or use exchange rates
-3. Query with desired currency:
-
-```graphql
-query ProductPrice {
-  product(productId: "...") {
-    ... on SimpleProduct {
-      simulatedPrice(currencyCode: "EUR") {
-        amount
-        currencyCode
-      }
-    }
-  }
-}
-```
-
-See [Multi-Currency Setup](../guides/multi-currency-setup).
-
-## Internationalization
-
-### How do I support multiple languages?
-
-1. Configure languages in Admin UI
-2. Add translations to entities
-3. Query with Accept-Language header
-
-```graphql
-# Headers: Accept-Language: de
-query {
-  product(productId: "...") {
-    texts {
-      title  # Returns German title
-    }
-  }
-}
-```
-
-See [Multi-Language Setup](../guides/multi-language-setup).
+See [Multi-Currency Setup](../guides/multi-currency-setup) and [Multi-Language Setup](../guides/multi-language-setup).
 
 ## Deployment
 
 ### Where can I host Unchained?
 
-- Railway (easiest)
-- Docker on any cloud (AWS, GCP, Azure)
-- Kubernetes
-- Vercel (for storefront, not engine)
+- Railway (easiest, one-click template)
+- Docker on any cloud or Kubernetes
+- Any Node.js 22+ host with MongoDB access
 
-### What's the recommended production setup?
-
-- Node.js 22+ on container platform
-- MongoDB Atlas for database
-- S3/MinIO for file storage
-- Redis for distributed events
-- CDN for static assets
-
-See platform-specific documentation for deployment guides.
+See [Deployment](../deployment/index.md).
 
 ### How do I handle database migrations?
 
@@ -356,29 +190,33 @@ Migrations run automatically on startup when the Unchained platform boots. The m
 
 ### How is authentication handled?
 
-- JWT tokens for API authentication
-- Session cookies optional
+- Access tokens are HS256-signed JWTs, delivered as an `httpOnly` cookie or accepted via `Authorization: Bearer <token>`
 - WebAuthn for passwordless auth
 - OIDC for external identity providers
 
+See [Authentication](../concepts/authentication).
+
 ### How do I implement role-based access?
 
-Use the built-in roles system:
+Define custom roles at boot via `rolesOptions`:
 
 ```typescript
-import { Roles, Role } from '@unchainedshop/roles';
-
-const customRole = new Role('support');
-customRole.allow('viewOrders', () => true);
-Roles.registerRole(customRole);
-
-// Assign to user
-await modules.users.updateRoles(userId, ['support']);
+await startPlatform({
+  rolesOptions: {
+    additionalRoles: {
+      support: (role, actions) => {
+        role.allow(actions.viewOrders, () => true);
+      },
+    },
+  },
+});
 ```
+
+Assign the role with `modules.users.updateRoles(userId, ['support'])`. See [Permissions](../concepts/permissions).
 
 ### Is Unchained PCI compliant?
 
-Unchained doesn't store card data directly. Use payment providers (Stripe, PayPal) that handle PCI compliance. Payment adapter integrations use tokens, not card numbers.
+Unchained doesn't store card data. The bundled payment integrations (Stripe, Datatrans, PostFinance Checkout, Saferpay, Payrexx, and others) reference provider-side transactions and tokens, not card numbers. See [Security](../deployment/security#payment-security).
 
 ## Troubleshooting
 
@@ -390,7 +228,6 @@ npm run dev  # Console output
 
 # Production
 docker logs -f container-name
-pm2 logs
 
 # Debug mode
 DEBUG=unchained:* npm run dev

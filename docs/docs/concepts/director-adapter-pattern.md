@@ -32,7 +32,7 @@ There are three ways, recommended-first:
 | **`registerX(...)` factories** | Your own custom adapters (**recommended**) | `registerPaymentProvider({ … })` etc. — see [Plugin Factories](../extend/plugin-factories.md) |
 | **Hand-built `IPlugin`** | Custom key/version, HTTP routes, a module, lifecycle hooks | `pluginRegistry.register(MyPlugin)` |
 
-All three are imported from `@unchainedshop/core`. Register **before** calling `startPlatform()`.
+The preset functions are imported from `@unchainedshop/plugins/presets/base` / `@unchainedshop/plugins/presets/all`; the `registerX()` factories and `pluginRegistry` from `@unchainedshop/core`. Register **before** calling `startPlatform()`.
 
 ```ts
 import { registerPaymentProvider, pluginRegistry } from '@unchainedshop/core';
@@ -111,7 +111,8 @@ Return a `configurationError()` for missing configuration rather than throwing �
 
 ```typescript
 configurationError() {
-  if (!process.env.API_KEY) return { code: 'MISSING_API_KEY', message: 'API key required' };
+  // one of: ADAPTER_NOT_FOUND | NOT_IMPLEMENTED | INCOMPLETE_CONFIGURATION | WRONG_CREDENTIALS
+  if (!process.env.API_KEY) return 'INCOMPLETE_CONFIGURATION';
   return null;
 }
 ```
@@ -129,7 +130,7 @@ async send() {
 ```
 
 ### 4. Mind the pricing `orderIndex`
-Pricing/discount adapters run in ascending `orderIndex`: base price (0–9) → discounts (10–19) → tax (20–29) → adjustments (30+).
+Pricing/discount adapters run in ascending `orderIndex`. The built-ins use: base price (0) → conversions/discounts (10–40) → taxes (80). See [Order Index Guidelines](./pricing-system.md#order-index-guidelines).
 
 ## Related
 

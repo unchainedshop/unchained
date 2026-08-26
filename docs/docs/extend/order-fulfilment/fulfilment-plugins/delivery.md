@@ -7,7 +7,7 @@ description: Customize delivery
 
 # Delivery Provider Plugins
 
-Register custom delivery options by using a delivery factory. There can be multiple delivery adapters; they run in ascending `orderIndex`.
+Register custom delivery options by using a delivery factory. There can be multiple delivery adapters; for a given order, only the adapter of the configured delivery provider is invoked.
 
 The factories are:
 
@@ -32,7 +32,7 @@ registerPickUpDelivery({
       geoPoint: { latitude: 47.3769, longitude: 8.5417 },
     },
   ],
-  // Trigger fulfilment; return a Work item to defer to the work queue
+  // Trigger fulfilment; return false to keep the delivery OPEN
   send: async (configuration, context) => {
     await enqueueDeliveryWork({
       type: 'MARK_ORDER_DELIVERED',
@@ -64,7 +64,7 @@ registerShippingDelivery({
 
 | Option | Behavior |
 |---|---|
-| `send` | `true` → delivery status becomes **DELIVERED**; `false` → stays **PENDING** (order can still progress); throwing → the order is cancelled. Return a `Work` item to defer to the work queue. |
+| `send` | any truthy result (`true` or a `Work` item) → delivery status becomes **DELIVERED**; `false` → stays **OPEN** (the order can still progress); throwing → the process is interrupted and the order stays `CONFIRMED` (avoid — see [Fulfilment Process](../index.md)) |
 | `active` | enable/disable the adapter (default `true`) |
 | `autoReleaseAllowed` | auto-advance status vs require manual delivery confirmation |
 | `estimatedDeliveryThroughput` | estimated delivery time in ms |

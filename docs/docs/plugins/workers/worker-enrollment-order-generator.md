@@ -9,10 +9,17 @@ description: Automatically generate orders from active enrollments
 
 Automatically generates orders from active and paused enrollments based on their configured periods.
 
-## Installation
+:::info Included in All Preset
+Registered automatically by `registerAllPlugins()`.
+:::
+
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/worker/enrollment-order-generator';
+import { pluginRegistry } from '@unchainedshop/core';
+import { EnrollmentOrderGeneratorPlugin } from '@unchainedshop/plugins/worker/enrollment-order-generator';
+
+pluginRegistry.register(EnrollmentOrderGeneratorPlugin);
 ```
 
 ## Purpose
@@ -27,18 +34,7 @@ This worker processes enrollments (subscriptions) and:
 
 ## Auto-Scheduling
 
-To enable automatic order generation, configure the scheduling in your platform setup:
-
-```typescript
-import { configureGenerateOrderAutoscheduling } from '@unchainedshop/plugins/worker/enrollment-order-generator';
-import { enrollmentsSettings } from '@unchainedshop/core-enrollments';
-
-// Configure the schedule (e.g., daily at midnight)
-enrollmentsSettings.autoSchedulingSchedule = later.parse.cron('0 0 * * *');
-
-// Enable auto-scheduling
-configureGenerateOrderAutoscheduling();
-```
+Auto-scheduling is configured on registration from `enrollmentsSettings.autoSchedulingSchedule` (from `@unchainedshop/core-enrollments`), which defaults to an hourly schedule.
 
 ## Manual Trigger
 
@@ -96,7 +92,7 @@ mutation GenerateEnrollmentOrders {
 | Key | `shop.unchained.worker-plugin.generate-enrollment-orders` |
 | Type | `ENROLLMENT_ORDER_GENERATOR` |
 | Retries | 5 (when auto-scheduled) |
-| Source | [worker/enrollment-order-generator.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/worker/enrollment-order-generator.ts) |
+| Source | [worker/enrollment-order-generator](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/worker/enrollment-order-generator) |
 
 ## Related
 

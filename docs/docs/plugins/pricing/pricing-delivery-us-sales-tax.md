@@ -9,13 +9,21 @@ description: Apply US statewide base sales tax to delivery fees
 
 Applies the statewide base sales tax rate to delivery fees for US orders. Shares its rate data and the statewide-only approximation with the [Product US Sales Tax](./pricing-product-us-sales-tax.md) adapter.
 
-## Installation
+## Registration
 
 ```typescript
 import { pluginRegistry } from '@unchainedshop/core';
 import { DeliveryUsSalesTaxPlugin } from '@unchainedshop/plugins/pricing/delivery-us-sales-tax';
 
 pluginRegistry.register(DeliveryUsSalesTaxPlugin);
+```
+
+Or register both US sales tax adapters (product + delivery) via the country preset:
+
+```typescript
+import { registerUsSalesTaxPlugins } from '@unchainedshop/plugins/presets/countries/us';
+
+registerUsSalesTaxPlugins();
 ```
 
 ## How It Works

@@ -9,10 +9,17 @@ description: Send SMS messages through BudgetSMS
 
 Send SMS messages through the BudgetSMS service with support for test mode.
 
-## Installation
+:::info Included in All Preset
+Registered automatically by `registerAllPlugins()`.
+:::
+
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/worker/budgetsms';
+import { pluginRegistry } from '@unchainedshop/core';
+import { BudgetSMSPlugin } from '@unchainedshop/plugins/worker/budgetsms';
+
+pluginRegistry.register(BudgetSMSPlugin);
 ```
 
 ## Environment Variables
@@ -130,7 +137,7 @@ BudgetSMS returns error 1001 for both authentication failures AND when you have 
 |----------|-------|
 | Key | `shop.unchained.worker-plugin.budgetsms` |
 | Type | `BUDGETSMS` |
-| Source | [worker/budgetsms.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/worker/budgetsms.ts) |
+| Source | [worker/budgetsms](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/worker/budgetsms) |
 
 ## External Resources
 

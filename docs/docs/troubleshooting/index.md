@@ -56,16 +56,9 @@ mongosh "mongodb://localhost:27017/unchained" --eval "db.getCollectionNames()"
 Error: listen EADDRINUSE: address already in use :::4010
 ```
 
-**Solution:**
+**Solution:** stop the other process, or start on a different port:
 
 ```bash
-# Find process using port
-lsof -i :4010
-
-# Kill the process
-kill -9 <PID>
-
-# Or use a different port
 PORT=4011 npm run dev
 ```
 
@@ -96,16 +89,22 @@ MONGO_URL=mongodb://localhost:27017/unchained
 #### Missing Environment Variables
 
 ```
-Error: UNCHAINED_TOKEN_SECRET is required
+Missing required environment variables at boot time: EMAIL_WEBSITE_NAME, ...
 ```
 
 **Solution:**
 
-Create `.env` file with required variables:
+`startPlatform` exits unless all required variables are set. Create a `.env` file with:
+
 ```bash
-UNCHAINED_TOKEN_SECRET=your-secret-at-least-32-characters
 ROOT_URL=http://localhost:4010
+UNCHAINED_TOKEN_SECRET=your-secret-at-least-32-characters
+EMAIL_WEBSITE_NAME=My Shop
+EMAIL_WEBSITE_URL=http://localhost:4010
+EMAIL_FROM=noreply@localhost
 ```
+
+`UNCHAINED_TOKEN_SECRET` must be at least 32 characters — boot fails otherwise.
 
 ### Authentication Issues
 
@@ -251,8 +250,8 @@ mutation UpdateProductPricing {
 
 **Solutions:**
 
-1. Verify engine is running on correct port
-2. Check CORS settings allow Admin UI origin
+1. Verify the engine is running and `adminUI: true` (or an options object) is passed to `connect()`
+2. Verify the port and the `prefix` if you configured one
 3. Clear browser cache/cookies
 
 #### Login Not Working
@@ -269,24 +268,29 @@ mutation UpdateProductPricing {
 
 **Solutions:**
 
-1. Ensure a file storage plugin is imported in your entry file:
-```typescript
-// GridFS (MongoDB built-in)
-import '@unchainedshop/plugins/files/gridfs';
+1. Ensure a file storage plugin is registered before `startPlatform`. The presets register GridFS; for MinIO/S3 register `MinioPlugin` first (the first registered file adapter wins):
 
-// Or MinIO/S3
-import '@unchainedshop/plugins/files/minio';
+```typescript
+import { pluginRegistry } from '@unchainedshop/core';
+import { MinioPlugin } from '@unchainedshop/plugins/files/minio';
+import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
+
+pluginRegistry.register(MinioPlugin); // must come before the preset
+registerBasePlugins();
 ```
 
-2. For MinIO/S3, verify credentials:
+2. For MinIO/S3, verify credentials (`MINIO_ENDPOINT` must be a full URL):
+
 ```bash
-MINIO_ENDPOINT=...
+MINIO_ENDPOINT=https://minio.example.com
 MINIO_ACCESS_KEY=...
 MINIO_SECRET_KEY=...
-MINIO_BUCKET=...
+MINIO_BUCKET_NAME=...
 ```
 
-3. Check file size limits
+3. For GridFS PUT uploads and signed downloads, set `UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET`
+
+See [File Uploads](../guides/file-uploads) for details.
 
 #### Images Not Loading
 
@@ -322,11 +326,7 @@ await db.collection('products').createIndex({ 'meta.customField': 1 });
 NODE_OPTIONS="--max-old-space-size=4096" npm start
 ```
 
-2. Check for memory leaks
-3. Monitor with:
-```bash
-node --inspect lib/index.js
-```
+2. In development without `MONGO_URL`, remember the in-memory MongoDB also lives in your process
 
 ### Email Issues
 
@@ -339,9 +339,8 @@ node --inspect lib/index.js
 MAIL_URL=smtp://user:pass@smtp.example.com:587
 ```
 
-2. Verify SMTP credentials
-3. Check spam folder
-4. Test with email preview (development only)
+2. Outside production (`NODE_ENV !== 'production'`), emails are intercepted and logged instead of sent unless `UNCHAINED_DISABLE_EMAIL_INTERCEPTION` is set
+3. Verify SMTP credentials and check the spam folder
 
 #### Email Template Errors
 
@@ -366,63 +365,6 @@ DEBUG=unchained:api:* npm run dev
 
 ## Getting Help
 
-### Before Asking for Help
-
-1. Check this troubleshooting guide
-2. Search [GitHub Issues](https://github.com/unchainedshop/unchained/issues)
-3. Review [GitHub Discussions](https://github.com/unchainedshop/unchained/discussions)
-
-### Providing Information
-
-When reporting issues, include:
-
-1. **Environment**:
-   - Node.js version (`node --version`)
-   - Unchained version (`npm list @unchainedshop/platform`)
-   - Operating system
-
-2. **Error message**: Full error with stack trace
-
-3. **Steps to reproduce**: Minimal example
-
-4. **Relevant configuration**: (sanitize secrets)
-
-5. **Logs**: Recent log output
-
-### Example Issue Report
-
-````markdown
-## Environment
-- Node.js: 22.0.0
-- Unchained: 3.0.0
-- OS: macOS 14.0
-
-## Description
-Checkout fails with "Payment provider not found" error
-
-## Steps to Reproduce
-1. Create cart
-2. Add product
-3. Set delivery provider
-4. Call checkoutCart
-
-## Error
-```
-Error: Payment provider not found for order xyz
-    at PaymentDirector.resolve (...)
-```
-
-## Configuration
-```typescript
-await startPlatform({
-  // ... config
-});
-```
-
-## Expected Behavior
-Checkout should complete using default payment provider
-````
-
-## Related Documentation
-
-- [FAQ](./faq) - Frequently asked questions
+1. Check this troubleshooting guide and the [FAQ](./faq)
+2. Search [GitHub Issues](https://github.com/unchainedshop/unchained/issues) and [Discussions](https://github.com/unchainedshop/unchained/discussions)
+3. When reporting an issue, include the Node.js version, the Unchained version (`npm list @unchainedshop/platform`), the full error with stack trace, and minimal steps to reproduce (sanitize secrets)

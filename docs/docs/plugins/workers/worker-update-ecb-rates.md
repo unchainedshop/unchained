@@ -7,20 +7,19 @@ description: Automatically update currency exchange rates from European Central 
 
 # ECB Exchange Rate Worker
 
-Automatically fetches and updates EUR-based currency exchange rates from the European Central Bank.
+Automatically fetches and updates EUR-based currency exchange rates from the European Central Bank. Requires the optional `xml-js` package (`npm install xml-js`).
 
-## Installation
+:::info Included in Crypto Preset
+Registered automatically by `registerCryptoPlugins()` / `registerAllPlugins()`.
+:::
+
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/worker/update-ecb-rates';
-```
+import { pluginRegistry } from '@unchainedshop/core';
+import { UpdateECBRatesPlugin } from '@unchainedshop/plugins/worker/update-ecb-rates';
 
-### Peer Dependency
-
-This worker requires the `xml-js` package:
-
-```bash
-npm install xml-js
+pluginRegistry.register(UpdateECBRatesPlugin);
 ```
 
 ## Purpose
@@ -28,12 +27,11 @@ npm install xml-js
 The ECB publishes daily reference exchange rates for major currencies against EUR. This worker:
 
 - Fetches the latest rates from the ECB XML feed
-- Updates product price rates in the database
-- Automatically schedules itself daily at 15:00 UTC (4 PM CET)
+- Updates product price rates in the database (rates expire after 24 hours)
 
 ## Auto-Scheduling
 
-When imported, this worker automatically schedules itself to run daily at 15:00 UTC, which is after the ECB publishes new rates (around 16:00 CET).
+On registration, this worker schedules itself to run daily at 15:00 (4 PM CET), after the ECB publishes new rates.
 
 ## Manual Trigger
 
@@ -55,13 +53,7 @@ The ECB provides rates for approximately 30 currencies including:
 - SEK, NOK, DKK, PLN, CZK, HUF
 - And many more
 
-Only currencies that are enabled in your Unchained configuration will be updated.
-
-## Requirements
-
-- EUR must be an enabled currency in your system
-- Target currencies must also be enabled
-- The `xml-js` npm package must be installed
+Only currencies that exist in your Unchained system (active or inactive) are updated, and EUR itself must be one of them — otherwise the run is a no-op.
 
 ## Result
 
@@ -78,9 +70,9 @@ Only currencies that are enabled in your Unchained configuration will be updated
 |----------|-------|
 | Key | `shop.unchained.worker.update-ecb-rates` |
 | Type | `UPDATE_ECB_RATES` |
-| Auto-Schedule | Daily at 15:00 UTC |
+| Auto-Schedule | Daily at 15:00 |
 | Retries | 5 |
-| Source | [worker/update-ecb-rates.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/worker/update-ecb-rates.ts) |
+| Source | [worker/update-ecb-rates](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/worker/update-ecb-rates) |
 
 ## Related
 

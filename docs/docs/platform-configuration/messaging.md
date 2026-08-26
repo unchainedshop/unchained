@@ -35,7 +35,7 @@ Unchained registers 7 default message templates:
 | `ACCOUNT_ACTION` | User registration, password reset, email verification | Account lifecycle emails with action URLs |
 | `ORDER_CONFIRMATION` | `ORDER_CHECKOUT`, `ORDER_CONFIRMED` events | Order confirmation sent to the customer |
 | `ORDER_REJECTION` | `ORDER_REJECTED` event | Order rejection notification |
-| `DELIVERY` | `ORDER_CONFIRMED` event | Forwards order details to internal recipients (warehouse, support) |
+| `DELIVERY` | `send-message` delivery provider sends | Forwards order details to internal recipients (warehouse, support) |
 | `QUOTATION_STATUS` | Quotation status changes | Quotation update notification |
 | `ENROLLMENT_STATUS` | Enrollment status changes | Subscription status notification |
 | `ERROR_REPORT` | Worker failures | Sends failed work items to support team |
@@ -49,19 +49,18 @@ Handles all user account lifecycle emails:
 | `enroll-account` | New user enrollment | Welcome email with setup link |
 | `reset-password` | Password reset request | Reset link with token |
 | `verify-email` | Email verification | Verification link |
-| *(empty)* | Password changed | Confirmation notice |
 
 Input: `{ userId, action, recipientEmail, token }`
 
 ### ORDER_CONFIRMATION
 
-Sent when an order transitions past PENDING status. Includes order details, items, pricing, and delivery info.
+Sent after checkout (while the order is `PENDING`) or when the order is confirmed. Includes order details, items, pricing, and delivery info.
 
 Input: `{ orderId, locale }`
 
 ### DELIVERY
 
-Forwards order information to internal recipients (e.g., warehouse staff). Configured via the delivery provider's configuration keys:
+Forwards order information to internal recipients (e.g., warehouse staff). Configured via the delivery provider's configuration keys — create the provider first, then set the configuration via `updateDeliveryProvider`:
 
 ```graphql
 mutation {
@@ -69,6 +68,16 @@ mutation {
     deliveryProvider: {
       type: SHIPPING
       adapterKey: "shop.unchained.delivery.send-message"
+    }
+  ) { _id }
+}
+```
+
+```graphql
+mutation {
+  updateDeliveryProvider(
+    deliveryProviderId: "..."
+    deliveryProvider: {
       configuration: [
         { key: "from", value: "shop@example.com" }
         { key: "to", value: "warehouse@example.com" }
@@ -81,7 +90,7 @@ mutation {
 
 ### ERROR_REPORT
 
-Automatically sends failed work items to the address configured in `ERROR_REPORT_RECIPIENT` environment variable.
+Automatically sends failed work items to the address configured in the `EMAIL_ERROR_REPORT_RECIPIENT` environment variable (default: `support@unchained.local`).
 
 ## Custom Templates
 
@@ -204,8 +213,14 @@ return [
 A single template can return multiple work items for different channels:
 
 ```typescript
+import { OrderPricingSheet } from '@unchainedshop/core';
+
 const orderAlert: TemplateResolver = async ({ orderId }, api) => {
   const order = await api.modules.orders.findOrder({ orderId });
+  const total = OrderPricingSheet({
+    calculation: order.calculation,
+    currencyCode: order.currencyCode,
+  }).total();
 
   return [
     {
@@ -213,7 +228,7 @@ const orderAlert: TemplateResolver = async ({ orderId }, api) => {
       input: {
         to: 'admin@example.com',
         subject: `New order #${order.orderNumber}`,
-        text: `Order total: ${order.pricing?.total}`,
+        text: `Order total: ${total.amount} ${total.currencyCode}`,
       },
     },
     {

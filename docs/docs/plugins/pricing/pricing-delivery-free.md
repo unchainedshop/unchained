@@ -10,25 +10,21 @@ description: Zero-cost delivery pricing adapter
 A simple delivery pricing adapter that sets delivery fees to zero. Use as a starting point or for delivery methods that don't charge shipping.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.
 :::
 
-## Installation
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/pricing/free-delivery';
+import { pluginRegistry } from '@unchainedshop/core';
+import { DeliveryFreePricePlugin } from '@unchainedshop/plugins/pricing/free-delivery';
+
+pluginRegistry.register(DeliveryFreePricePlugin);
 ```
 
 ## How It Works
 
 Adds a delivery fee of 0 to the calculation, with no tax implications.
-
-## Use Cases
-
-- Digital products / downloads
-- Local pickup
-- Free shipping promotions (when combined with conditional logic)
-- Development and testing
 
 ## Adapter Details
 
@@ -37,7 +33,7 @@ Adds a delivery fee of 0 to the calculation, with no tax implications.
 | Key | `shop.unchained.pricing.delivery-free` |
 | Version | `1.0.0` |
 | Order Index | `0` |
-| Source | [pricing/free-delivery.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/pricing/free-delivery.ts) |
+| Source | [pricing/free-delivery](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/pricing/free-delivery) |
 
 ## Related
 

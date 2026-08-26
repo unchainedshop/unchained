@@ -9,13 +9,21 @@ description: Apply destination-based EU VAT to delivery fees
 
 Applies destination-based EU VAT to delivery fees. Only activates for orders whose resolved destination is an EU member state.
 
-## Installation
+## Registration
 
 ```typescript
 import { pluginRegistry } from '@unchainedshop/core';
 import { DeliveryEuTaxPlugin } from '@unchainedshop/plugins/pricing/delivery-eu-tax';
 
 pluginRegistry.register(DeliveryEuTaxPlugin);
+```
+
+Or register both EU tax adapters (product + delivery) via the country preset:
+
+```typescript
+import { registerEuTaxPlugins } from '@unchainedshop/plugins/presets/countries/eu';
+
+registerEuTaxPlugins();
 ```
 
 ## How It Works

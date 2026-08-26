@@ -33,61 +33,65 @@ registerProductPricing({
 });
 ```
 
-`calculate(sheet, context)` receives the running pricing `sheet` and the pricing `context` (`product`, `quantity`, `currencyCode`, `countryCode`, …). Run order is controlled by `orderIndex` (lower runs first).
+`calculate(sheet, context)` receives a fresh result sheet for this adapter — it contains only the rows *you* add (`amount` is the total for `context.quantity`) — and the pricing `context` (`product`, `quantity`, `currencyCode`, `countryCode`, …). Adapters run in plugin registration order (`orderIndex` is currently not used for ordering).
 
-## Examples
-
-### Tax
-
-```typescript
-registerProductPricing({
-  adapterId: 'swiss-tax',
-  orderIndex: 20, // after base price and discounts
-  isActivatedFor: (context) => context.countryCode === 'CH',
-  calculate: async (sheet) => {
-    const taxRate = 0.081; // 8.1% Swiss VAT
-    const taxable = sheet.sum({ isTaxable: true });
-    if (taxable > 0) {
-      sheet.addItem({
-        amount: Math.round(taxable * taxRate),
-        isTaxable: false,
-        isNetPrice: false,
-        category: 'TAX',
-        meta: { rate: taxRate },
-      });
-    }
-  },
-});
-```
-
-### Bulk discount
-
-```typescript
-registerProductPricing({
-  adapterId: 'bulk-discount',
-  orderIndex: 10, // after base price, before tax
-  calculate: async (sheet, context) => {
-    if ((context.quantity ?? 1) >= 10) {
-      const base = sheet.sum({ category: 'BASE' });
-      sheet.addItem({
-        amount: -Math.round(base * 0.1), // 10% off (negative)
-        isTaxable: true,
-        isNetPrice: true,
-        category: 'DISCOUNT',
-        meta: { type: 'bulk' },
-      });
-    }
-  },
-});
-```
+`addItem` always writes an `ITEM` row; the other row categories (`DISCOUNT`, `TAX`) have their own methods (`addDiscount`, `addTax`).
 
 :::tip Quantity-tier catalog prices
 If you just want different unit prices at different quantities (e.g. cheaper at 10+), you usually don't need a custom adapter — set [leveled catalog prices](../../concepts/pricing-system.md#leveled-quantity-tier-catalog-pricing) (`minQuantity` tiers) on the product instead.
 :::
 
-## Low-level adapter (advanced)
+## Reading rows of earlier adapters (taxes, discounts)
 
-For behavior the factory doesn't expose — e.g. **mutating or resetting** existing rows (price rounding, currency conversion across all items) — build the adapter object directly by spreading `ProductPricingAdapter` and registering it with `pluginRegistry.register()`. Inside `actions(params)` you have the full `resultSheet()` and may call the base `calculate()` yourself. See [Plugin System](../../concepts/director-adapter-pattern.md#adapter-contracts).
+Adapters that derive rows from what the chain has produced so far — taxes on the taxable total, a percentage off the base price — can't use the factory: its `sheet` never contains other adapters' rows. Build the adapter object directly; inside `actions(params)` you get the running `params.calculationSheet` (all rows from earlier adapters) alongside your own `resultSheet()`:
+
+```typescript
+import {
+  ProductPricingAdapter,
+  pluginRegistry,
+  type IProductPricingAdapter,
+} from '@unchainedshop/core';
+
+const SwissTax: IProductPricingAdapter = {
+  ...ProductPricingAdapter,
+
+  key: 'com.example.pricing.swiss-tax',
+  label: 'Swiss VAT (simplified)',
+  version: '1.0.0',
+  orderIndex: 20, // after base price and discounts
+
+  isActivatedFor: (context) => context.countryCode === 'CH',
+
+  actions: (params) => {
+    const pricingAdapter = ProductPricingAdapter.actions(params);
+
+    return {
+      ...pricingAdapter,
+      calculate: async () => {
+        const taxRate = 0.081; // 8.1% Swiss VAT
+        // sum the taxable rows added by earlier adapters
+        const taxable = params.calculationSheet.sum({ isTaxable: true });
+        if (taxable !== 0) {
+          pricingAdapter.resultSheet().addTax({
+            amount: Math.round(taxable * taxRate),
+            rate: taxRate,
+          });
+        }
+        return pricingAdapter.calculate();
+      },
+    };
+  },
+};
+
+pluginRegistry.register({
+  key: SwissTax.key,
+  label: SwissTax.label,
+  version: SwissTax.version,
+  adapters: [SwissTax],
+});
+```
+
+This example assumes net prices. The shipped country tax plugins (`product-swiss-tax`, `product-eu-tax`, …) implement the full net/gross handling and per-product tax categories — prefer them over rolling your own.
 
 ## Related
 

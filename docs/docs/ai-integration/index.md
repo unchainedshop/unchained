@@ -11,9 +11,9 @@ Unchained Engine provides first-class AI integration through three complementary
 
 | Surface | Who uses it | Protocol | Auth | Endpoint |
 |---------|-------------|----------|------|----------|
-| [MCP Server](./mcp-server) | AI agents & IDEs (Claude Desktop, Cursor, Claude Code) | Streamable HTTP (MCP) | Admin bearer token | `/mcp` |
-| [Admin Copilot](./admin-copilot) | Store operators via Admin UI chat | HTTP streaming (Vercel AI SDK) | Session cookie | `/chat` |
-| `llms.txt` | LLMs & web crawlers | Static files | None | `/llms.txt`, `/llms-full.txt` |
+| [MCP Server](./mcp-server) | AI agents & IDEs (Claude Desktop, Cursor, Claude Code) | Streamable HTTP (MCP) | Admin bearer token | `/mcp` on the engine |
+| [Admin Copilot](./admin-copilot) | Store operators via Admin UI chat | HTTP streaming (Vercel AI SDK) | Session cookie | `/chat` on the engine |
+| `llms.txt` | LLMs & web crawlers | Static files | None | [docs.unchained.shop/llms.txt](https://docs.unchained.shop/llms.txt) |
 
 ## Architecture
 
@@ -57,4 +57,4 @@ The MCP server exposes the full commerce API as AI-callable tools. The Chat API 
 
 ## llms.txt
 
-This documentation site publishes [`/llms.txt`](https://docs.unchained.shop/llms.txt) and [`/llms-full.txt`](https://docs.unchained.shop/llms-full.txt) following the [llms.txt standard](https://llmstxt.org/). These files help AI models discover and navigate the documentation efficiently.
+This documentation site (not the engine) publishes [`/llms.txt`](https://docs.unchained.shop/llms.txt) and [`/llms-full.txt`](https://docs.unchained.shop/llms-full.txt) following the [llms.txt standard](https://llmstxt.org/). These files help AI models discover and navigate the documentation efficiently.

@@ -16,14 +16,12 @@ Calculate prices when products are queried or added to cart.
 | Adapter Key | Order | Description | When to Use |
 |-------------|-------|-------------|-------------|
 | [`shop.unchained.pricing.product-price`](./pricing-product-catalog-price.md) | 0 | Base catalog price | Always — provides the base price from the product catalog |
-| [`shop.unchained.pricing.product-price-options`](./pricing-product-catalog-price-options.md) | 1 | Add-on option prices | When products have configurable options with price modifiers |
 | [`shop.unchained.pricing.rate-conversion`](./pricing-product-rate-conversion.md) | 10 | Currency conversion | When selling in multiple currencies |
 | [`shop.unchained.pricing.product-discount`](./pricing-product-discount.md) | 30 | Apply discounts | When using product-level discount rules or coupons |
 | [`shop.unchained.pricing.product-swiss-tax`](./pricing-product-swiss-tax.md) | 80 | Swiss VAT | Swiss shops requiring 8.1% / 2.6% VAT calculation |
 | [`shop.unchained.pricing.product-eu-tax`](./pricing-product-eu-tax.md) | 80 | EU VAT (destination-based, 27 member states) | EU shops — the delivery country selects the per-country era-based rate |
-| [`shop.unchained.pricing.product-uk-tax`](./pricing-product-uk-tax.md) | 80 | UK VAT | UK shops (GB, IM, XI) requiring era-based VAT |
+| [`shop.unchained.pricing.product-uk-tax`](./pricing-product-uk-tax.md) | 80 | UK VAT | UK shops (GB, IM) requiring era-based VAT |
 | [`shop.unchained.pricing.product-us-sales-tax`](./pricing-product-us-sales-tax.md) | 80 | US statewide sales tax | US shops — statewide base rate of the delivery state |
-| [`shop.unchained.pricing.product-round`](./pricing-product-round.md) | 90 | Round prices | When prices must be rounded to 0.05 (Swiss rounding) |
 
 ## Delivery Pricing
 
@@ -54,9 +52,7 @@ Aggregate prices into order totals.
 | [`shop.unchained.pricing.order-items`](./pricing-order-items.md) | 0 | Sum product totals | Always — aggregates product line items into order total |
 | [`shop.unchained.pricing.order-delivery`](./pricing-order-delivery.md) | 10 | Add delivery fees | Always — adds delivery costs to order total |
 | [`shop.unchained.pricing.order-payment`](./pricing-order-payment.md) | 10 | Add payment fees | Always — adds payment surcharges to order total |
-| [`shop.unchained.pricing.order-items-discount`](./pricing-order-items-discount.md) | 30 | Items-only discounts | When applying discounts that only affect product line items |
 | [`shop.unchained.pricing.order-discount`](./pricing-order-discount.md) | 40 | Full order discounts | When applying discounts across the entire order total |
-| [`shop.unchained.pricing.order-round`](./pricing-order-round.md) | 90 | Round order totals | When final order totals need rounding (Swiss 0.05 rounding) |
 
 ## Discount Adapters
 
@@ -65,7 +61,6 @@ Define discount rules and coupon codes.
 | Adapter Key | Description |
 |-------------|-------------|
 | [`shop.unchained.discount.100-off`](./pricing-discount-100-off.md) | 100 CHF off coupon |
-| [`shop.unchained.discount.half-price`](./pricing-discount-half-price.md) | Auto 50% for tagged users |
 | [`shop.unchained.discount.half-price-manual`](./pricing-discount-half-price-manual.md) | 50% off coupon |
 
 ## Creating Custom Pricing Plugins

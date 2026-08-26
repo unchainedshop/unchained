@@ -36,7 +36,8 @@ The user-land app is where your project-specific code lives. Unchained Engine is
 ```typescript
 import { startPlatform } from '@unchainedshop/platform';
 
-// Your app boots the platform
+// Your app boots the platform. All arguments are optional —
+// the core modules are loaded by default.
 const engine = await startPlatform({
   modules: { /* custom modules */ },
   services: { /* custom services */ },
@@ -63,14 +64,7 @@ In rare cases, you might skip this layer to directly access core modules for:
 
 ## Service Gateway Layer
 
-The service gateway composes functions from multiple modules to enable complex workflows:
-
-| Service | Description |
-|---------|-------------|
-| `orders` | Checkout workflow, order pricing sheets |
-| `products` | Product pricing calculations |
-| `users` | User-related operations |
-| `files` | File operations with storage adapters |
+The service gateway (`services` on the Unchained API object) composes functions from multiple modules to enable complex workflows. Services are grouped by domain: `bookmarks`, `delivery`, `enrollments`, `files`, `filters`, `orders`, `payment`, `products`, `quotations`, `users`, `warehousing`, `worker` — e.g. `services.orders.checkoutOrder` or `services.products.simulateProductPricing`.
 
 You can modify services by:
 1. Using existing plugins
@@ -107,6 +101,9 @@ Core modules contain business logic and database abstractions. Each module is re
 | Worker | `@unchainedshop/core-worker` | Background jobs |
 | Files | `@unchainedshop/core-files` | File metadata |
 | Events | `@unchainedshop/core-events` | Event history |
+| Countries | `@unchainedshop/core-countries` | Countries |
+| Currencies | `@unchainedshop/core-currencies` | Currencies |
+| Languages | `@unchainedshop/core-languages` | Languages |
 
 You can modify modules through:
 1. Configuration options at startup
@@ -149,22 +146,14 @@ Foundation utilities used across all layers:
 ```mermaid
 flowchart TD
     platform["@unchainedshop/platform"] --> api["@unchainedshop/api"]
+    platform --> plugins["@unchainedshop/plugins"]
     api --> core["@unchainedshop/core"]
-    core --> products["core-products"]
-    core --> orders["core-orders"]
-    core --> users["core-users"]
-    core --> payment["core-payment"]
-    core --> delivery["core-delivery"]
-    core --> assortments["core-assortments"]
-    core --> filters["core-filters"]
-    core --> warehousing["core-warehousing"]
-    core --> enrollments["core-enrollments"]
-    core --> quotations["core-quotations"]
-    core --> bookmarks["core-bookmarks"]
-    core --> worker["core-worker"]
-    core --> files["core-files"]
-    core --> events["core-events"]
+    api --> coremods["core-* modules<br/><i>core-products, core-orders, core-users, …</i>"]
+    core --> coremods
+    coremods --> infra["infrastructure<br/><i>mongodb, events, logger, utils, roles, file-upload</i>"]
 ```
+
+Note that `@unchainedshop/api` depends on `@unchainedshop/core` **and** directly on every `core-*` package — the GraphQL resolvers use the module APIs and types of the individual domain modules, not just the `core` orchestration layer.
 
 ## Next Steps
 

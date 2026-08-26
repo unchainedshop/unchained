@@ -22,7 +22,7 @@ The Chat API uses the [Vercel AI SDK](https://ai-sdk.dev/) to stream responses. 
 
 ## Setup
 
-To enable the Copilot, pass a `chat` configuration when connecting your server framework. You need to install a model provider from the [AI SDK providers list](https://ai-sdk.dev/providers/ai-sdk-providers).
+To enable the Copilot, pass a `chat` configuration when connecting your server framework. Install the optional peer packages `ai` and `@ai-sdk/mcp` plus a model provider from the [AI SDK providers list](https://ai-sdk.dev/providers/ai-sdk-providers).
 
 ### Self-hosted LLM (OpenAI-compatible)
 
@@ -64,8 +64,8 @@ import { openai } from '@ai-sdk/openai';
 if (process.env.OPENAI_API_KEY) {
   connect(fastify, engine, {
     chat: {
-      model: openai('gpt-4-turbo'),
-      imageGenerationTool: { model: openai.image('gpt-image-1') },
+      model: openai('gpt-5.2'),
+      imageGenerationTool: { model: openai.imageModel('gpt-image-1') },
     },
   });
 }
@@ -82,7 +82,7 @@ import { anthropic } from '@ai-sdk/anthropic';
 if (process.env.ANTHROPIC_API_KEY) {
   connect(fastify, engine, {
     chat: {
-      model: anthropic('claude-sonnet-4-20250514'),
+      model: anthropic('claude-sonnet-5'),
     },
   });
 }
@@ -94,13 +94,14 @@ The `chat` object extends the Vercel AI SDK's `streamText` parameters (minus `me
 
 | Option | Type | Required | Description |
 |--------|------|----------|-------------|
-| `model` | `LanguageModelV1` | Yes | AI model instance from any Vercel AI SDK provider |
+| `model` | `LanguageModel` | Yes | AI model instance from any Vercel AI SDK provider |
 | `system` | `string` | No | Custom system prompt (a sensible default is built in) |
 | `tools` | `Record<string, Tool>` | No | Additional custom tools beyond MCP tools |
-| `temperature` | `number` | No | Model temperature (default: `0.2`) |
 | `maxRetries` | `number` | No | Retry count on failure (default: `3`) |
 | `unchainedMCPUrl` | `string` | No | MCP server URL, defaults to `${ROOT_URL}/mcp` |
 | `imageGenerationTool` | `{ model, uploadUrl? }` | No | Enable image generation in the Copilot |
+
+No temperature is set by default — reasoning models reject the parameter. If your model supports it, pass `temperature` explicitly in the chat configuration.
 
 ### Image generation
 
@@ -120,11 +121,11 @@ import { z } from 'zod';
 
 connect(fastify, engine, {
   chat: {
-    model: openai('gpt-4-turbo'),
+    model: openai('gpt-5.2'),
     tools: {
       checkInventory: tool({
         description: 'Check real-time inventory for a SKU',
-        parameters: z.object({ sku: z.string() }),
+        inputSchema: z.object({ sku: z.string() }),
         execute: async ({ sku }) => {
           // Your inventory check logic
           return { sku, available: 42 };
@@ -155,8 +156,7 @@ Streams AI responses with automatic tool execution.
 
 The chat handler:
 - Keeps the last 10 messages for context
-- Executes up to 500 tool calls per request (Fastify) or 10 (Express)
-- Uses temperature `0.2` for deterministic responses
+- Executes up to 500 tool-calling steps per request
 - Injects shop configuration (languages, currencies, countries) into the system prompt automatically
 
 ### GET /chat/tools

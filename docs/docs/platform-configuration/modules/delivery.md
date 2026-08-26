@@ -12,7 +12,7 @@ The delivery module manages delivery provider selection and configuration.
 ## Configuration Options
 
 ```typescript
-export type FilterProvider = (
+export type FilterProviders = (
   params: {
     providers: DeliveryProvider[];
     order: Order;
@@ -37,10 +37,10 @@ export interface DeliverySettingsOptions {
 ### Custom Filtering
 
 ```typescript
-const options = {
-  modules: {
+await startPlatform({
+  options: {
     delivery: {
-      filterSupportedProviders: ({ order, providers }) => {
+      filterSupportedProviders: async ({ order, providers }) => {
         return providers
           .toSorted((left, right) => {
             return new Date(left.created).getTime() - new Date(right.created).getTime();
@@ -51,7 +51,7 @@ const options = {
       },
     },
   },
-};
+});
 ```
 
 By default we return all providers based on the creation date and don't filter any. You can't return inactive delivery providers in general.
@@ -59,15 +59,15 @@ By default we return all providers based on the creation date and don't filter a
 ### Default Provider Selection for New Orders
 
 ```typescript
-const options = {
-  modules: {
+await startPlatform({
+  options: {
     delivery: {
-      determineDefaultProvider: ({ order, providers }) => {
-        return providers?.find(({ _id }) => _id === 'this-id-always-default');
+      determineDefaultProvider: async ({ order, providers }) => {
+        return providers?.find(({ _id }) => _id === 'this-id-always-default') || null;
       },
     },
   },
-};
+});
 ```
 
 By default the default provider is defined as first in list of providers (transformed by `filterSupportedProviders` first).

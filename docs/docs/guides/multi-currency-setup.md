@@ -9,28 +9,16 @@ description: Configure multiple currencies in Unchained Engine
 
 This guide covers configuring multiple currencies and handling currency conversion in Unchained Engine.
 
-## Overview
-
-Unchained Engine supports multiple currencies with automatic conversion:
-
-```
-┌─────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│   Product   │────▶│  Pricing System  │────▶│ Converted Price │
-│ (Base: CHF) │     │ (Exchange Rates) │     │ (Display: EUR)  │
-└─────────────┘     └──────────────────┘     └─────────────────┘
-```
-
 ## Configuration
 
 ### 1. Set Up Currencies
 
-Create currencies in the system:
+Create currencies via GraphQL:
 
 ```graphql
 mutation CreateCurrency {
   createCurrency(currency: {
     isoCode: "EUR"
-    contractAddress: null  # For crypto currencies
   }) {
     _id
     isoCode
@@ -39,40 +27,22 @@ mutation CreateCurrency {
 }
 ```
 
-Or seed currencies at startup:
+Or seed them at startup (`create` uppercases the ISO code):
 
 ```typescript
-// seed/currencies.ts
-export const currencies = [
-  { isoCode: 'CHF', isActive: true },
-  { isoCode: 'EUR', isActive: true },
-  { isoCode: 'USD', isActive: true },
-  { isoCode: 'GBP', isActive: true },
-  { isoCode: 'ETH', isActive: true, contractAddress: '0x...' }, // Crypto
-];
-
-// In your boot script
-for (const currency of currencies) {
-  await modules.currencies.create(currency);
+// In your boot script, after startPlatform()
+for (const isoCode of ['CHF', 'EUR', 'USD']) {
+  await platform.unchainedAPI.modules.currencies.create({ isoCode, isActive: true });
 }
 ```
 
-### 2. Configure Default Currency
+### 2. Link Currencies to Countries
 
-Set the default currency via environment variable:
-
-```bash
-# .env
-CURRENCY=CHF  # Default currency
-```
-
-### 3. Set Country Defaults
-
-Link currencies to countries:
+Each country carries a `defaultCurrencyCode`:
 
 ```graphql
 mutation UpdateCountry {
-  updateCountry(countryId: "CH", country: {
+  updateCountry(countryId: "country-id", country: {
     isoCode: "CH"
     defaultCurrencyCode: "CHF"
   }) {
@@ -84,39 +54,21 @@ mutation UpdateCountry {
 }
 ```
 
+### 3. How the Request Currency Is Resolved
+
+There is no currency environment variable that sets the request currency. Per request (`packages/api/src/locale-context.ts`):
+
+1. The locale (and thus the country) is resolved from the `Accept-Language` and `x-shop-country` headers — see [Multi-Language Setup](./multi-language-setup#server-side-language-resolution).
+2. The resolved country's `defaultCurrencyCode` becomes the request currency if that currency is active (`resolveBestCurrency`).
+3. Otherwise the fallback applies: the currency from `UNCHAINED_CURRENCY` (default `CHF`) if active, else the first active currency.
+
+Carts are created with the currency resolved for the request; `simulatedPrice(currencyCode: ...)` lets the storefront query any currency explicitly.
+
 ## Product Pricing
 
-### Set Base Prices
+### Set Prices Per Currency
 
-Products store prices in a base currency:
-
-```graphql
-mutation SetProductPrice {
-  updateProductCommerce(productId: "product-123", commerce: {
-    pricing: [
-      {
-        currencyCode: "CHF"
-        countryCode: "CH"
-        amount: 4900  # 49.00 CHF in cents
-        isTaxable: true
-        isNetPrice: true
-      }
-    ]
-  }) {
-    _id
-    ... on SimpleProduct {
-      simulatedPrice(currencyCode: "CHF") {
-        amount
-        currencyCode
-      }
-    }
-  }
-}
-```
-
-### Multi-Currency Prices
-
-You can set different prices per currency:
+Catalog prices are stored per currency/country pair:
 
 ```graphql
 mutation SetMultiCurrencyPrices {
@@ -132,146 +84,116 @@ mutation SetMultiCurrencyPrices {
 }
 ```
 
+Amounts are integers in the currency's smallest unit (cents).
+
 ## Exchange Rates
 
-Unchained has a generic currency conversion system that allows you to integrate rate feeds from external sources.
+For currencies without an explicit catalog price, Unchained can convert from a stored price using exchange rates in the `product_rates` collection.
 
-### Product Price Rates API
-
-To insert or update rates programmatically:
+### Rates API
 
 ```typescript
-// Insert/update rates
-await modules.products.prices.rates.updateRates(productPriceRates);
+const { modules } = platform.unchainedAPI;
 
-// Get a rate for a currency pair
-const rate = await modules.products.prices.rates.getRate(
-  baseCurrency,    // e.g., 'CHF'
-  quoteCurrency,   // e.g., 'EUR'
-  referenceDate    // Maximum age of rate
-);
-```
-
-The `timestamp` field in rate entries determines freshness:
-- When set to a UNIX timestamp, only rates within the specified maximum age are returned
-- When set to `null`, the rate is always returned regardless of age
-
-The system automatically handles inverse rates - if you have `CHF/EUR`, querying `EUR/CHF` returns the inverse.
-
-### Rate Conversion Plugin
-
-The built-in `shop.unchained.pricing.rate-conversion` plugin consumes these rates. Configure the maximum rate age:
-
-```bash
-# Maximum age in seconds (default: 600 = 10 minutes)
-CRYPTOPAY_MAX_RATE_AGE=600
-```
-
-### Manual Exchange Rates
-
-Set exchange rates manually via the API:
-
-```typescript
-// Update exchange rates programmatically
+// Insert/update rates. Rates carry an explicit validity window.
+const timestamp = new Date();
 await modules.products.prices.rates.updateRates([
   {
     baseCurrency: 'CHF',
     quoteCurrency: 'EUR',
     rate: 0.92,
-    timestamp: Date.now(),
+    timestamp,
+    expiresAt: new Date(timestamp.getTime() + 60 * 60 * 1000), // valid 1 hour
   },
 ]);
+
+// Get the most recent valid rate for a currency pair
+const rateData = await modules.products.prices.rates.getRate(
+  { isoCode: 'CHF' }, // base currency ({ isoCode, decimals? })
+  { isoCode: 'EUR' }, // quote currency
+); // -> { rate: number, expiresAt?: Date } | null
 ```
 
-### Automatic Exchange Rate Updates
+Only rates whose `timestamp`–`expiresAt` window covers the reference date (default: now) are returned. Inverse pairs are handled automatically — if you store `CHF/EUR`, querying `EUR/CHF` returns the inverse, adjusted for the currencies' `decimals`.
 
-Use a worker to fetch rates periodically:
+### Rate Conversion Plugin
+
+The built-in `shop.unchained.pricing.rate-conversion` product pricing adapter consumes these rates. It only runs when no other adapter has produced a price for the requested currency, and then converts the product's stored catalog price using the stored rate. It is registered by the `crypto` preset (and therefore also by `registerAllPlugins`):
 
 ```typescript
-import '@unchainedshop/plugins/worker/update-coinbase-rates';
+import { pluginRegistry } from '@unchainedshop/core';
+import { ProductPriceRateConversionPlugin } from '@unchainedshop/plugins/pricing/product-price-rateconversion';
 
-// Configure the worker
-WorkerDirector.configureAutoscheduling({
-  type: 'UPDATE_COINBASE_RATES',
-  input: {
-    baseCurrency: 'CHF',
-  },
-  schedule: '0 0 * * *', // Daily at midnight
-});
+pluginRegistry.register(ProductPriceRateConversionPlugin);
 ```
+
+For bespoke conversion logic, write a custom adapter with `registerProductPricing` — see [Custom Pricing](./custom-pricing).
+
+### Built-In Rate Updater Workers
+
+The `crypto` preset (included in `registerAllPlugins`) registers two worker plugins that keep rates fresh and auto-schedule themselves:
+
+| Plugin | Work type | Schedule | Source | Rate validity |
+|--------|-----------|----------|--------|---------------|
+| `UpdateCoinbaseRatesPlugin` | `UPDATE_COINBASE_RATES` | every minute | Coinbase (base = fallback currency) | 5 minutes |
+| `UpdateECBRatesPlugin` | `UPDATE_ECB_RATES` | daily | European Central Bank (base = EUR, requires an active `EUR` currency) | 24 hours |
+
+Both only store rates for currencies that exist in your system.
 
 ### Custom Exchange Rate Provider
 
-Create a worker to fetch rates from your preferred provider:
+To pull rates from another source, register a worker plugin that writes rates via the module API:
 
 ```typescript
-import { registerWorker, WorkerDirector } from '@unchainedshop/core';
+import {
+  WorkerAdapter,
+  WorkerDirector,
+  pluginRegistry,
+  schedule,
+  type IWorkerAdapter,
+} from '@unchainedshop/core';
 
-registerWorker<{ baseCurrency: string }, { updated: number }>({
-  type: 'UPDATE_EXCHANGE_RATES',
-  maxParallelAllocations: 1,
-  process: async (input) => {
-    const { baseCurrency } = input;
+const UpdateFiatRates: IWorkerAdapter<unknown, { ratesUpdated: number }> = {
+  ...WorkerAdapter,
+  key: 'com.example.worker.update-fiat-rates',
+  label: 'Update fiat exchange rates',
+  version: '1.0.0',
+  type: 'UPDATE_FIAT_RATES',
 
-    const response = await fetch(
-      `https://api.exchangerate-api.com/v4/latest/${baseCurrency}`
-    );
+  doWork: async (input, unchainedAPI) => {
+    const response = await fetch('https://api.exchangerate-api.com/v4/latest/CHF');
     const data = await response.json();
 
-    // Convert to rate entries with timestamps
-    const rates = Object.entries(data.rates).map(([currency, rate]) => ({
-      baseCurrency,
-      quoteCurrency: currency,
-      rate: rate as number,
-      timestamp: Date.now(),
-    }));
-
-    await updateExchangeRates(rates);
-    return { updated: rates.length };
-  },
-});
-
-// Schedule hourly updates
-WorkerDirector.configureAutoscheduling({
-  type: 'UPDATE_EXCHANGE_RATES',
-  input: { baseCurrency: 'CHF' },
-  schedule: '0 * * * *',
-});
-```
-
-## Currency Conversion Pricing Adapter
-
-Create a pricing adapter for automatic conversion:
-
-```typescript
-import { registerProductPricing } from '@unchainedshop/core';
-
-registerProductPricing({
-  adapterId: 'currency-conversion',
-  orderIndex: 1, // run early
-  // only when the product has no direct price in the requested currency
-  isActivatedFor: (context) =>
-    !context.product?.commerce?.pricing?.some((p) => p.currencyCode === context.currencyCode),
-  calculate: async (sheet, context) => {
-    const basePrice = context.product?.commerce?.pricing?.[0];
-    if (!basePrice) return;
-    const rate = await exchangeRateProvider.getRate(
-      basePrice.currencyCode,
-      context.currencyCode,
+    const timestamp = new Date();
+    const expiresAt = new Date(timestamp.getTime() + 60 * 60 * 1000);
+    const rates = Object.entries(data.rates as Record<string, number>).map(
+      ([quoteCurrency, rate]) => ({
+        baseCurrency: 'CHF',
+        quoteCurrency,
+        rate,
+        timestamp,
+        expiresAt,
+      }),
     );
-    if (rate) {
-      sheet.addItem({
-        amount: Math.round(basePrice.amount * rate),
-        isTaxable: basePrice.isTaxable,
-        isNetPrice: basePrice.isNetPrice,
-        meta: { convertedFrom: basePrice.currencyCode, rate },
-      });
-    }
+
+    const success = await unchainedAPI.modules.products.prices.rates.updateRates(rates);
+    return { success, result: { ratesUpdated: rates.length } };
+  },
+};
+
+pluginRegistry.register({
+  key: UpdateFiatRates.key,
+  label: UpdateFiatRates.label,
+  version: UpdateFiatRates.version,
+  adapters: [UpdateFiatRates],
+  onRegister: () => {
+    WorkerDirector.configureAutoscheduling({
+      type: UpdateFiatRates.type,
+      schedule: schedule.parse.cron('0 * * * *'), // hourly
+    });
   },
 });
 ```
-
-> Most stores use the built-in `ProductPriceRateConversion` plugin (in the `crypto` preset) for this — write a custom adapter only for bespoke conversion logic.
 
 ## Querying Prices
 
@@ -306,135 +228,12 @@ query ProductMultiPrices($productId: ID!) {
         amount
         currencyCode
       }
-      usdPrice: simulatedPrice(currencyCode: "USD") {
-        amount
-        currencyCode
-      }
     }
   }
 }
 ```
 
-### Cart in User's Currency
-
-```graphql
-query CartTotal {
-  me {
-    cart {
-      currency {
-        isoCode
-      }
-      total {
-        amount
-        currencyCode
-      }
-      items {
-        total {
-          amount
-          currencyCode
-        }
-      }
-    }
-  }
-}
-```
-
-## Frontend Implementation
-
-### Currency Selector
-
-```tsx
-import { useQuery, useMutation } from '@apollo/client';
-
-const CURRENCIES = gql`
-  query Currencies {
-    currencies(includeInactive: false) {
-      _id
-      isoCode
-    }
-  }
-`;
-
-function CurrencySelector() {
-  const { data } = useQuery(CURRENCIES);
-  const [currentCurrency, setCurrentCurrency] = useState('CHF');
-
-  const handleChange = (currency: string) => {
-    // Store preference
-    localStorage.setItem('currency', currency);
-
-    // Update state
-    setCurrentCurrency(currency);
-
-    // Trigger refetch of prices
-    apolloClient.resetStore();
-  };
-
-  return (
-    <select
-      value={currentCurrency}
-      onChange={(e) => handleChange(e.target.value)}
-    >
-      {data?.currencies.map((currency) => (
-        <option key={currency.isoCode} value={currency.isoCode}>
-          {currency.isoCode}
-        </option>
-      ))}
-    </select>
-  );
-}
-```
-
-### Format Currency
-
-```typescript
-export function formatPrice(amount: number, currency: string): string {
-  const formatter = new Intl.NumberFormat(getLocale(), {
-    style: 'currency',
-    currency,
-  });
-
-  // Unchained stores amounts in cents
-  return formatter.format(amount / 100);
-}
-
-// Currency-specific formatting
-const formatters: Record<string, Intl.NumberFormat> = {
-  CHF: new Intl.NumberFormat('de-CH', { style: 'currency', currency: 'CHF' }),
-  EUR: new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }),
-  USD: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }),
-};
-
-export function formatCurrency(amount: number, currency: string): string {
-  const formatter = formatters[currency] || formatters.CHF;
-  return formatter.format(amount / 100);
-}
-```
-
-### Price Component
-
-```tsx
-function Price({ amount, currency, className }: {
-  amount: number;
-  currency: string;
-  className?: string;
-}) {
-  return (
-    <span className={className}>
-      {formatCurrency(amount, currency)}
-    </span>
-  );
-}
-
-// Usage
-<Price amount={product.simulatedPrice.amount} currency="CHF" />
-```
-
-## Order Currency Handling
-
-### Set Order Currency
-
-When a cart is created, it uses the user's default currency based on their country:
+### Cart Currency
 
 ```graphql
 query CartCurrency {
@@ -446,16 +245,18 @@ query CartCurrency {
       country {
         isoCode
       }
+      total {
+        amount
+        currencyCode
+      }
     }
   }
 }
 ```
 
-The cart currency is automatically determined by the user's country and its default currency setting. To change the effective currency for pricing, you would typically update the user's country or configure the order's context.
-
 ## Cryptocurrency Support
 
-### Configure Crypto Currency
+Currencies can carry a token contract address and custom decimals:
 
 ```graphql
 mutation CreateCryptoCurrency {
@@ -467,105 +268,23 @@ mutation CreateCryptoCurrency {
     _id
     isoCode
     contractAddress
-    isActive
+    decimals
   }
 }
 ```
 
-### Crypto Pricing
-
-```typescript
-import { registerProductPricing } from '@unchainedshop/core';
-
-registerProductPricing({
-  adapterId: 'crypto',
-  orderIndex: 2,
-  isActivatedFor: (context) => ['ETH', 'BTC', 'USDC'].includes(context.currencyCode),
-  calculate: async (sheet, context) => {
-    const rate = await fetchCryptoRate(context.currencyCode);
-    const baseTotal = sheet.sum({ category: 'BASE' });
-    sheet.addItem({
-      amount: convertToCrypto(baseTotal, rate, context.currencyCode),
-      isTaxable: false,
-      isNetPrice: true,
-      meta: { cryptoRate: rate },
-    });
-  },
-});
-```
+The rate conversion described above works for crypto pairs too — the Coinbase worker delivers crypto rates, and `decimals` is respected when normalizing rates. Payment via cryptocurrencies is handled by the Cryptopay plugin in the `crypto` preset.
 
 ## Best Practices
 
-### 1. Store Amounts in Smallest Unit
-
-Always use the smallest unit (cents, wei, etc.):
-
-```typescript
-// Good
-const price = 4999; // 49.99 CHF
-
-// Bad
-const price = 49.99; // Floating point issues
-```
-
-### 2. Handle Rounding
-
-Be consistent with rounding:
-
-```typescript
-// Round to nearest cent
-const converted = Math.round(basePrice * exchangeRate);
-```
-
-### 3. Cache Exchange Rates
-
-Don't fetch rates on every request:
-
-```typescript
-// Cache rates for 1 hour
-const rateCache = new Map<string, { rate: number; expires: number }>();
-
-async function getExchangeRate(from: string, to: string): Promise<number> {
-  const key = `${from}-${to}`;
-  const cached = rateCache.get(key);
-
-  if (cached && cached.expires > Date.now()) {
-    return cached.rate;
-  }
-
-  const rate = await fetchRate(from, to);
-  rateCache.set(key, { rate, expires: Date.now() + 3600000 });
-
-  return rate;
-}
-```
-
-### 4. Show Original and Converted Prices
-
-For transparency, show both prices:
-
-```tsx
-function ProductPrice({ product, displayCurrency }) {
-  const basePrice = product.commerce?.pricing?.[0];
-  const displayPrice = product.simulatedPrice;
-
-  return (
-    <div>
-      <span className="main-price">
-        {formatCurrency(displayPrice.amount, displayCurrency)}
-      </span>
-      {basePrice.currencyCode !== displayCurrency && (
-        <span className="original-price">
-          (≈ {formatCurrency(basePrice.amount, basePrice.currencyCode)})
-        </span>
-      )}
-    </div>
-  );
-}
-```
+- **Store amounts as integers** in the smallest unit (`4999` = 49.99 CHF) — never floats. For display, divide by `10^decimals` (2 by default) and format with `Intl.NumberFormat`.
+- **Round consistently** — `Math.round()` after conversion, as the built-in rate conversion adapter does.
+- **Give rates a realistic validity window** — expired rates are ignored, so a stale feed makes conversion-priced products unavailable rather than mispriced.
+- **Prefer explicit catalog prices** for your main currencies; use rate conversion for the long tail.
 
 ## Related
 
 - [Currencies Module](../platform-configuration/modules/currencies) - Currency configuration
 - [Pricing System](../concepts/pricing-system) - Pricing architecture
+- [Custom Pricing](./custom-pricing) - Custom pricing adapters
 - [Multi-Language Setup](./multi-language-setup) - Language configuration

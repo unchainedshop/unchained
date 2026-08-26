@@ -13,13 +13,21 @@ Applies the **statewide base** sales tax rate to product prices for the 50 US st
 This adapter covers the statewide rate only (including mandatory statewide local components where a state levies them, e.g. California's 7.25%). It does **not** model county/city add-ons, per-category taxability (groceries etc.), nexus thresholds or origin-vs-destination sourcing rules. For full US sales-tax compliance, integrate a tax service (Avalara, TaxJar, …) as a custom pricing adapter.
 :::
 
-## Installation
+## Registration
 
 ```typescript
 import { pluginRegistry } from '@unchainedshop/core';
 import { ProductUsSalesTaxPlugin } from '@unchainedshop/plugins/pricing/product-us-sales-tax';
 
 pluginRegistry.register(ProductUsSalesTaxPlugin);
+```
+
+Or register both US sales tax adapters (product + delivery) via the country preset:
+
+```typescript
+import { registerUsSalesTaxPlugins } from '@unchainedshop/plugins/presets/countries/us';
+
+registerUsSalesTaxPlugins();
 ```
 
 ## How It Works

@@ -10,13 +10,16 @@ description: Test worker to verify the worker system is functioning
 A simple test worker used to verify that the worker system is functioning correctly.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.
 :::
 
-## Installation
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/worker/heartbeat';
+import { pluginRegistry } from '@unchainedshop/core';
+import { HeartbeatPlugin } from '@unchainedshop/plugins/worker/heartbeat';
+
+pluginRegistry.register(HeartbeatPlugin);
 ```
 
 ## Purpose
@@ -62,7 +65,7 @@ Note: `wait` is milliseconds to wait before completing, `fails: true` simulates 
 | Key | `shop.unchained.worker-plugin.heartbeat` |
 | Type | `HEARTBEAT` |
 | Max Parallel | 1 |
-| Source | [worker/heartbeat.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/worker/heartbeat.ts) |
+| Source | [worker/heartbeat](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/worker/heartbeat) |
 
 ## Related
 

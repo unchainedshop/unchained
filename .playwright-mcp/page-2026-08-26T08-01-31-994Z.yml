@@ -1,0 +1,72 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - 'link "Read our latest blog post: Context7 vs. web search — 34% cheaper, 37% fewer tokens" [ref=e4] [cursor=pointer]':
+      - /url: https://upstash.com/blog/context7-vs-web-search-benchmark
+      - generic [ref=e5]: "Read our latest blog post:"
+      - generic [ref=e6]: Context7 vs. web search — 34% cheaper, 37% fewer tokens
+    - button "Dismiss announcement" [ref=e10] [cursor=pointer]
+  - banner [ref=e14]:
+    - generic [ref=e15]:
+      - generic [ref=e17]:
+        - link [ref=e18] [cursor=pointer]:
+          - /url: /
+          - img "Context7 Logo" [ref=e20]
+        - navigation [ref=e21]:
+          - link "Guides" [ref=e22] [cursor=pointer]:
+            - /url: https://context7.com/docs
+          - link "Pricing" [ref=e24] [cursor=pointer]:
+            - /url: /plans
+          - link "Enterprise" [ref=e26] [cursor=pointer]:
+            - /url: /enterprise
+          - button "More" [ref=e29] [cursor=pointer]
+      - generic [ref=e33]:
+        - link "Add Docs" [ref=e34] [cursor=pointer]:
+          - /url: /add-library
+        - button "Sign in" [ref=e36] [cursor=pointer]
+  - main [ref=e40]:
+    - main [ref=e43]:
+      - generic [ref=e44]:
+        - generic [ref=e45]:
+          - heading "Add Libraries" [level=2] [ref=e46]
+          - paragraph [ref=e47]: Choose a documentation source to add to Context7.
+        - generic [ref=e48]:
+          - generic [ref=e49]:
+            - button "GitHub" [disabled] [ref=e50]
+            - button "GitLab" [disabled] [ref=e58]
+            - button "Bitbucket" [disabled] [ref=e66]
+            - button "Other Git" [disabled] [ref=e75]
+            - button "Confluence" [disabled] [ref=e88]
+            - button "Notion" [disabled] [ref=e97]
+            - button "PDF" [disabled] [ref=e107]
+            - button "OpenAPI" [disabled] [ref=e119]
+            - button "Website" [disabled] [ref=e132]
+            - button "LLMs.txt" [disabled] [ref=e142]
+          - alert [ref=e154]:
+            - generic [ref=e155]: Please sign in to add libraries.
+      - link "View the wait list" [ref=e164] [cursor=pointer]:
+        - /url: /tasklist
+        - generic [ref=e165]: See Tasks in Progress
+  - contentinfo [ref=e168]:
+    - generic [ref=e169]:
+      - generic [ref=e170]:
+        - generic [ref=e171]:
+          - text: © 2026, Context7 is an
+          - link "Upstash" [ref=e172] [cursor=pointer]:
+            - /url: https://upstash.com
+          - text: project
+        - link [ref=e173] [cursor=pointer]:
+          - /url: https://status.upstash.com/
+      - generic [ref=e177]:
+        - link "About" [ref=e178] [cursor=pointer]:
+          - /url: /about
+        - link "Learn" [ref=e179] [cursor=pointer]:
+          - /url: /learn
+        - link "Contact" [ref=e180] [cursor=pointer]:
+          - /url: /contact
+        - link "Legal" [ref=e181] [cursor=pointer]:
+          - /url: https://upstash.com/docs/common/help/legal
+        - link "Follow on X" [ref=e182] [cursor=pointer]:
+          - /url: https://x.com/Context7AI
+  - button "Open support" [ref=e184] [cursor=pointer]
+  - region "Notifications alt+T"
+  - alert [ref=e190]

@@ -10,13 +10,16 @@ description: Add delivery fees to order total
 Adds the calculated delivery fees and taxes to the order total.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.
 :::
 
-## Installation
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/pricing/order-delivery';
+import { pluginRegistry } from '@unchainedshop/core';
+import { OrderDeliveryPlugin } from '@unchainedshop/plugins/pricing/order-delivery';
+
+pluginRegistry.register(OrderDeliveryPlugin);
 ```
 
 ## How It Works
@@ -38,7 +41,7 @@ import '@unchainedshop/plugins/pricing/order-delivery';
 | Key | `shop.unchained.pricing.order-delivery` |
 | Version | `1.0.0` |
 | Order Index | `10` |
-| Source | [pricing/order-delivery.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/pricing/order-delivery.ts) |
+| Source | [pricing/order-delivery](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/pricing/order-delivery) |
 
 ## Related
 

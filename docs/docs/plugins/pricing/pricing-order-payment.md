@@ -10,13 +10,16 @@ description: Add payment fees to order total
 Adds the calculated payment fees and taxes to the order total.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.
 :::
 
-## Installation
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/pricing/order-payment';
+import { pluginRegistry } from '@unchainedshop/core';
+import { OrderPaymentPlugin } from '@unchainedshop/plugins/pricing/order-payment';
+
+pluginRegistry.register(OrderPaymentPlugin);
 ```
 
 ## How It Works
@@ -38,7 +41,7 @@ import '@unchainedshop/plugins/pricing/order-payment';
 | Key | `shop.unchained.pricing.order-payment` |
 | Version | `1.0.0` |
 | Order Index | `10` |
-| Source | [pricing/order-payment.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/pricing/order-payment.ts) |
+| Source | [pricing/order-payment](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/pricing/order-payment) |
 
 ## Related
 

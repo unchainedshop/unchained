@@ -1,0 +1,71 @@
+- generic [active] [ref=e1]:
+  - main [ref=e40]:
+    - generic [ref=e192]:
+      - generic [ref=e193]:
+        - generic [ref=e197]:
+          - generic [ref=e198]:
+            - generic [ref=e199]:
+              - link [ref=e201] [cursor=pointer]:
+                - /url: https://context7.com/
+                - img "Context7" [ref=e202]
+              - generic [ref=e203]:
+                - heading "Sign in to Context7" [level=1] [ref=e204]
+                - paragraph [ref=e205]: Welcome back! Please sign in to continue
+            - generic [ref=e206]:
+              - generic [ref=e208]:
+                - button "Sign in with GitHub GitHub" [ref=e209] [cursor=pointer]:
+                  - generic [ref=e210]:
+                    - generic "Sign in with GitHub" [ref=e212]
+                    - generic [ref=e213]: GitHub
+                - button "Sign in with Google Google" [ref=e214] [cursor=pointer]:
+                  - generic [ref=e215]:
+                    - generic "Sign in with Google" [ref=e217]
+                    - generic [ref=e218]: Google
+              - paragraph [ref=e221]: or
+              - generic [ref=e223]:
+                - generic [ref=e224]:
+                  - generic [ref=e227]:
+                    - generic [ref=e228]: Email address
+                    - textbox "Email address" [ref=e230]:
+                      - /placeholder: Enter your email address
+                  - generic:
+                    - generic: Password
+                    - generic:
+                      - textbox:
+                        - /placeholder: Enter your password
+                      - button
+                - button "Continue" [ref=e233] [cursor=pointer]
+          - generic [ref=e238]:
+            - generic [ref=e239]: Don’t have an account?
+            - link "Sign up" [ref=e240] [cursor=pointer]:
+              - /url: https://context7.com/sign-up#/?redirect_url=https%3A%2F%2Fcontext7.com%2Fdashboard
+        - paragraph [ref=e243]:
+          - text: By continuing, you agree to our
+          - link "Terms of Service" [ref=e244] [cursor=pointer]:
+            - /url: https://upstash.com/trust/terms.pdf
+          - text: ","
+          - link "Privacy Policy" [ref=e245] [cursor=pointer]:
+            - /url: https://upstash.com/trust/privacy.pdf
+          - text: and
+          - link "Context7 Addendum" [ref=e246] [cursor=pointer]:
+            - /url: https://upstash.com/trust/context7addendum.pdf
+          - text: .
+      - generic [ref=e248]:
+        - generic [ref=e249]:
+          - heading "Join Context7 for Free" [level=2] [ref=e250]
+          - generic [ref=e251]: No credit card required
+        - list [ref=e255]:
+          - listitem [ref=e256]:
+            - generic [ref=e261]: Index/Sync documentation repositories
+          - listitem [ref=e262]:
+            - generic [ref=e266]: Customize LLM context delivery
+          - listitem [ref=e267]:
+            - generic [ref=e270]: Advanced security controls
+          - listitem [ref=e271]:
+            - generic [ref=e274]: Higher rate limits
+          - listitem [ref=e275]:
+            - generic [ref=e279]: Complete API access
+  - region "Notifications alt+T"
+  - alert [ref=e190]: Sign In | Context7
+  - iframe [ref=e191]:
+    

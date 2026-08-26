@@ -49,7 +49,7 @@ providers, available payment methods can be made dependendent on that data.
 
 ## Payment Provider configuration
 
-If you want to show available payment options, use `Order.supportedPaymentProvider` of a cart to get a
+If you want to show available payment options, use `Order.supportedPaymentProviders` of a cart to get a
 list of payment providers available for that cart and `Order.payment` to get the current payment option
 set on the cart.
 
@@ -87,7 +87,7 @@ To set payment provider related options, use `Mutation.updateCartPaymentInvoice`
 
 ## Delivery Provider configuration
 
-If you want to show available delivery options, use `Order.supportedDeliveryProvider` of a cart to get a
+If you want to show available delivery options, use `Order.supportedDeliveryProviders` of a cart to get a
 list of delivery providers available for that cart and `Order.delivery` to get the current delivery
 option set on the cart.
 
@@ -147,7 +147,7 @@ maintaining a reference for UX purposes.
 
 **Quotations:** When adding a Quotation to the cart, the actual product is resolved and added. The
 quotation plugin system transforms a `quotationConfiguration` into a `productConfiguration`, and the
-source quotationId is saved in `orderPosition.originalProductId`.
+source quotationId is saved in `orderPosition.quotationId`.
 
 **Chaining Operations:**
 
@@ -161,4 +161,10 @@ The cart then looks like this: 1 x Bundle Z (e.g., a piece of furniture)
 ## Pricing and Delivery Date Invalidation
 
 With every cart mutation, Unchained Engine recomputes the cart in those steps:
+
+1. Validates existing discounts and applies eligible system discounts
+2. Recalculates the pricing of every order position, the delivery fees, and the payment fees
+3. Updates scheduling (dispatch and delivery estimates) for the order positions
+4. Rebuilds the order calculation (totals)
+5. Re-initializes cart providers in case the current delivery or payment provider became unsupported by the new totals
 

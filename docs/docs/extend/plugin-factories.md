@@ -91,7 +91,7 @@ A generic delivery provider; choose the `type`.
 | Option | Type | Required | Notes |
 |---|---|---|---|
 | `adapterId` | `string` | ✅ | key `shop.unchained.delivery.<adapterId>` |
-| `send` | `boolean \| (config, context) => Promise<boolean \| Work>` | ✅ | trigger fulfilment; return a `Work` item to defer to the work queue |
+| `send` | `boolean \| (config, context) => Promise<boolean \| Work>` | ✅ | trigger fulfilment; any truthy result (incl. a `Work` item) marks the delivery `DELIVERED` |
 | `type` | `DeliveryProviderType` | | `SHIPPING` (default), `PICKUP` |
 | `active` | `boolean` | | default `true` |
 | `autoReleaseAllowed` | `boolean` | | default `true` |
@@ -142,7 +142,7 @@ Tokenized / NFT products. `tokenize` is required.
 | Option | Type | Required | Notes |
 |---|---|---|---|
 | `adapterId` | `string` | ✅ | key `shop.unchained.warehousing.virtual.<adapterId>` |
-| `tokenize` | `(config, context) => Promise<TokenSurrogate[]>` | ✅ | mint tokens for a checked-out position |
+| `tokenize` | `(config, context) => Promise<Omit<TokenSurrogate, 'userId' \| 'productId' \| 'orderPositionId'>[]>` | ✅ | mint tokens for a checked-out position |
 | `stock` | `number \| fn` | | |
 | `tokenMetadata` | `(serial, date, config, context) => Promise<Metadata>` | | ERC metadata |
 | `isInvalidateable` | `(serial, date, config, context) => Promise<boolean>` | | |
@@ -161,7 +161,7 @@ The four pricing factories share the **same signature**: `{ adapterId, orderInde
 | `adapterId` | `string` | ✅ | key `shop.unchained.pricing.<domain>-<adapterId>` |
 | `calculate` | `(sheet, context) => Promise<void>` | ✅ | push rows onto `sheet`; the factory continues the chain for you |
 | `isActivatedFor` | `(context) => boolean` | | default `true` |
-| `orderIndex` | `number` | | chain order, default `0` |
+| `orderIndex` | `number` | | default `0`; currently not used for ordering — the chain runs in plugin registration order |
 
 :::warning Do not call the base `calculate()` yourself
 The factory wraps your `calculate` and continues the pricing chain automatically. Just push rows onto the `sheet` — **do not** call `super.calculate()` / `pricingAdapter.calculate()` (that was the old class-based API).
@@ -211,7 +211,7 @@ registerOrderDiscount({
   adapterId: 'promo10',
   isValidForCodeTriggering: async (code) => code === 'PROMO10',
   discountForPricingAdapterKey: ({ pricingAdapterKey }) =>
-    pricingAdapterKey === 'shop.unchained.pricing.order-items' ? { rate: 0.1 } : null,
+    pricingAdapterKey === 'shop.unchained.pricing.order-discount' ? { rate: 0.1 } : null,
 });
 ```
 
@@ -250,7 +250,7 @@ A background job type. **Keyed by `type`** — there is no `adapterId`.
 
 | Option | Type | Required | Notes |
 |---|---|---|---|
-| `type` | `string` | ✅ | work type; key `shop.unchained.worker.<type>` |
+| `type` | `string` | ✅ | work type; key `shop.unchained.worker.<type lower-cased>` |
 | `process` | `(input, workId) => Promise<Result>` | | your job logic; a thrown error becomes `{ success: false }` |
 | `external` | `boolean` | | default `false` |
 | `maxParallelAllocations` | `number` | | concurrency cap |

@@ -44,11 +44,11 @@ For tokenized products (NFTs, digital assets):
 | `findToken` | `{ tokenId }, options?` | Get a specific token |
 | `findTokens` | `selector, options?` | List tokens |
 | `tokensCount` | `selector?` | Count tokens |
-| `findTokensForUser` | `{ userId, limit?, offset? }` | Get user's tokens |
+| `findTokensForUser` | `{ userId } \| { walletAddresses }, options?` | Get user's tokens |
 | `createTokens` | `tokens` | Batch create tokens |
-| `updateTokenOwnership` | `tokenId, { userId, originalProductId? }` | Transfer token ownership |
+| `updateTokenOwnership` | `{ tokenId, userId } \| { tokenId, walletAddress }` | Transfer token ownership |
 | `invalidateToken` | `tokenId` | Revoke a token |
-| `buildAccessKeyForToken` | `tokenId` | Generate an access key |
+| `buildAccessKeyFromToken` | `token` | Generate an access key for a token |
 
 ### Usage
 
@@ -63,11 +63,11 @@ await modules.warehousing.create({
 // Find tokens for a user
 const tokens = await modules.warehousing.findTokensForUser({
   userId: 'user-123',
-  limit: 10,
 });
 
 // Transfer token ownership
-await modules.warehousing.updateTokenOwnership('token-id', {
+await modules.warehousing.updateTokenOwnership({
+  tokenId: 'token-id',
   userId: 'new-owner-id',
 });
 ```

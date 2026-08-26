@@ -9,13 +9,21 @@ description: Apply destination-based EU VAT to product prices
 
 Applies destination-based EU VAT to product prices for all 27 member states. Only activates when the resolved delivery destination is an EU member state.
 
-## Installation
+## Registration
 
 ```typescript
 import { pluginRegistry } from '@unchainedshop/core';
 import { ProductEuTaxPlugin } from '@unchainedshop/plugins/pricing/product-eu-tax';
 
 pluginRegistry.register(ProductEuTaxPlugin);
+```
+
+Or register both EU tax adapters (product + delivery) via the country preset:
+
+```typescript
+import { registerEuTaxPlugins } from '@unchainedshop/plugins/presets/countries/eu';
+
+registerEuTaxPlugins();
 ```
 
 ## How It Works

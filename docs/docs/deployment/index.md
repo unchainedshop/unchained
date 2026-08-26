@@ -17,62 +17,44 @@ This section covers deploying Unchained Engine to production environments.
 | [Docker](./docker) | Medium | Custom infrastructure, Kubernetes |
 | [Manual](./production-checklist) | High | Full control, existing infrastructure |
 
-## Quick Start: Railway
-
-The fastest way to deploy Unchained Engine:
-
-```bash
-# Create project and deploy to Railway
-npm init @unchainedshop -- --template railway
-```
-
-See [Railway Deployment](../quick-start/run-railway) for details.
-
-## Docker Deployment
-
-For container-based deployments:
-
-```bash
-# Build and run with Docker
-docker build -t my-shop .
-docker run -p 4010:4010 my-shop
-```
-
-See [Docker Deployment](./docker) for details.
+The fastest path is the [Railway template](../quick-start/run-railway), which deploys the [unchained-app](https://github.com/unchainedshop/unchained-app) starter together with a MongoDB service via a one-click deploy button. For container-based deployments on your own infrastructure, see [Docker Deployment](./docker).
 
 ## Production Requirements
 
 ### Infrastructure
 
 - **Node.js 22+** - Runtime environment
-- **MongoDB 6+** - Primary database
-- **File Storage** - S3, MinIO, or GridFS for media
-- **Redis** (optional) - For distributed events and caching
+- **MongoDB** - Primary database (`MONGO_URL`; in development the engine falls back to an in-memory server when unset)
+- **File Storage** - MinIO/S3 or GridFS (MongoDB built-in) for media
+- **Redis** (optional) - For distributed events
 
 ### Environment Variables
 
-Essential production variables:
+`startPlatform` exits at boot if any of these are missing:
 
 ```bash
-# Required
-NODE_ENV=production
 ROOT_URL=https://api.myshop.com
-MONGO_URL=mongodb://...
 UNCHAINED_TOKEN_SECRET=your-32-char-secret-minimum
-
-# File Storage (when using MinIO plugin)
-MINIO_ENDPOINT=s3.amazonaws.com
-MINIO_ACCESS_KEY=...
-MINIO_SECRET_KEY=...
-MINIO_BUCKET=my-shop-files
-
-# Email
-MAIL_URL=smtp://...
-EMAIL_FROM=noreply@myshop.com
 EMAIL_WEBSITE_NAME=My Shop
+EMAIL_WEBSITE_URL=https://myshop.com
+EMAIL_FROM=noreply@myshop.com
 ```
 
-See [Environment Variables](../platform-configuration/environment-variables) for complete list.
+Additionally for production:
+
+```bash
+NODE_ENV=production
+MONGO_URL=mongodb://...
+MAIL_URL=smtp://...          # emails cannot be sent without it
+
+# File storage (when using the MinIO plugin)
+MINIO_ENDPOINT=https://s3.amazonaws.com   # full URL
+MINIO_ACCESS_KEY=...
+MINIO_SECRET_KEY=...
+MINIO_BUCKET_NAME=my-shop-files
+```
+
+See [Environment Variables](../platform-configuration/environment-variables) for the canonical reference; plugin-specific variables (MinIO, Stripe, ...) are documented with their plugins.
 
 ## Architecture Recommendations
 
@@ -80,7 +62,7 @@ See [Environment Variables](../platform-configuration/environment-variables) for
 
 ```mermaid
 flowchart LR
-    S[Storefront<br/>Vercel] --> E[Engine<br/>Railway] --> D[(MongoDB<br/>Atlas)]
+    S[Storefront<br/>Vercel] --> E[Engine + Admin UI<br/>Railway] --> D[(MongoDB<br/>Atlas)]
 ```
 
 ### Production Setup
@@ -90,18 +72,19 @@ flowchart TD
     CDN[CDN<br/>Cloudflare]
 
     CDN --> Storefront[Storefront<br/>Vercel]
-    CDN --> Engine[Engine<br/>Container]
-    CDN --> Admin[Admin UI<br/>Vercel]
+    CDN --> Engine[Engine + Admin UI<br/>Container]
 
     Engine --> MongoDB[(MongoDB<br/>Atlas)]
     Engine --> Redis[(Redis<br/>Events)]
     Engine --> S3[(S3<br/>Files)]
 ```
 
+The Admin UI is served by the engine itself (`connect(fastify, platform, { adminUI: true })`) — it needs no separate deployment.
+
 ## Guides
 
 - [Railway Deployment](../quick-start/run-railway) - Deploy with Railway
 - [Docker Deployment](./docker) - Container deployment
 - [Production Checklist](./production-checklist) - Pre-launch checklist
-- [Security](./security) - Security features and compliance
+- [Security](./security) - Security features and practices
 - [Environment Variables](../platform-configuration/environment-variables) - Configuration reference

@@ -9,10 +9,17 @@ description: Send SMS messages through Twilio
 
 Send SMS messages through the Twilio messaging service.
 
-## Installation
+:::info Included in All Preset
+Registered automatically by `registerAllPlugins()`.
+:::
+
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/worker/twilio';
+import { pluginRegistry } from '@unchainedshop/core';
+import { TwilioPlugin } from '@unchainedshop/plugins/worker/twilio';
+
+pluginRegistry.register(TwilioPlugin);
 ```
 
 ## Usage
@@ -59,7 +66,7 @@ Additional Twilio API parameters can be passed and will be forwarded to the API.
 |----------|-------|
 | Key | `shop.unchained.worker-plugin.twilio` |
 | Type | `TWILIO` |
-| Source | [worker/twilio.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/worker/twilio.ts) |
+| Source | [worker/twilio](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/worker/twilio) |
 
 ## External Resources
 

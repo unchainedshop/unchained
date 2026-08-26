@@ -166,8 +166,9 @@ mutation CreateConfigurableProduct {
 
 # Note: Variations are managed through product assignments and vectors.
 # The variations field is not directly settable on updateProduct.
-# Instead, you define variation options on child products and link them
-# to the parent configurable product using addProductAssignment with vectors.
+# Instead, you define variations (and their options) on the configurable
+# product itself via createProductVariation / createProductVariationOption,
+# then link child products to a vector combination using addProductAssignment.
 
 # Link variant products
 mutation LinkVariant {

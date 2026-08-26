@@ -82,15 +82,15 @@ This creates a deterministic but mixed ordering across all child assortments.
 To order products sequentially by assortment instead, use `zipTreeBySimplyFlattening`:
 
 ```typescript
-import zipTreeBySimplyFlattening from "@unchainedshop/core-assortments/tree-zipper/zipTreeBySimplyFlattening";
+import zipTreeBySimplyFlattening from "@unchainedshop/core-assortments/lib/utils/tree-zipper/zipTreeBySimplyFlattening.js";
 
-const options = {
-  modules: {
+await startPlatform({
+  options: {
     assortments: {
       zipTree: zipTreeBySimplyFlattening,
     },
   },
-};
+});
 ```
 
 This produces sequential ordering:
@@ -127,7 +127,7 @@ If you customize `setCachedProductIds`, ensure you also customize `getCachedProd
 | `ASSORTMENT_ADD_MEDIA` | `{ assortmentMedia }` | Emitted when media is added |
 | `ASSORTMENT_REMOVE_MEDIA` | `{ assortmentMediaId }` | Emitted when media is removed |
 | `ASSORTMENT_REORDER_MEDIA` | `{ assortmentMedias }` | Emitted when media is reordered |
-| `ASSORTMENT_UPDATE_TEXT` | `{ assortmentId, locale }` | Emitted when text is updated |
+| `ASSORTMENT_UPDATE_TEXT` | `{ assortmentId, text }` | Emitted when text is updated |
 | `ASSORTMENT_UPDATE_MEDIA_TEXT` | `{ assortmentMediaId }` | Emitted when media text is updated |
 
 ## More Information

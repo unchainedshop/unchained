@@ -444,7 +444,7 @@ query OrderStatus {
 
 | Status | Meaning |
 |--------|---------|
-| `null` | Cart (not checked out) |
+| `OPEN` | Open order / cart (not checked out) |
 | `PENDING` | Checked out, awaiting payment |
 | `CONFIRMED` | Payment confirmed, ready for delivery |
 | `FULFILLED` | Order delivered and complete |

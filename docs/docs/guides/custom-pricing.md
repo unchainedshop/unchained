@@ -174,12 +174,17 @@ See [Order Pricing / Delivery Pricing / Payment Pricing](../extend/pricing/produ
 
 ## Registration
 
-Factories register the plugin when called — just import the module that calls them in your boot file, before `startPlatform()`:
+Calling a `register*Pricing()` factory registers the adapter immediately. Make sure the calls run before `startPlatform({})` — either directly in your boot file or in a module it imports:
 
 ```typescript
 // boot.ts
-import './pricing/weather-based';
-import './pricing/volume-discount';
+import { startPlatform } from '@unchainedshop/platform';
+import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
+import './pricing/weather-based.ts'; // calls registerProductPricing(...)
+import './pricing/volume-discount.ts';
+
+registerAllPlugins();
+const platform = await startPlatform({});
 ```
 
 ## Testing

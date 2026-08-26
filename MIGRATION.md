@@ -151,14 +151,16 @@ import { StripePlugin } from '@unchainedshop/plugins/payment/stripe/index.js';
 PaymentDirector.registerAdapter(StripePlugin);
 
 // ✅ USE - Register via preset functions
-import { registerAllPlugins } from '@unchainedshop/plugins/presets/all.js';
+import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
 registerAllPlugins(); // Registers all plugins including Stripe
 
 // ✅ OR USE - Direct plugin registry for custom setups
 import { pluginRegistry } from '@unchainedshop/core';
-import { StripePlugin } from '@unchainedshop/plugins/payment/stripe/index.js';
+import { StripePlugin } from '@unchainedshop/plugins/payment/stripe';
 pluginRegistry.register(StripePlugin);
 ```
+
+Note: import plugin subpaths WITHOUT a file extension. The package `exports` map (e.g. `"./presets/*": "./lib/presets/*.js"`) appends `.js` itself, so `presets/all.js` would resolve to `all.js.js` and fail.
 
 **Affected Directors:**
 - PaymentDirector
@@ -185,15 +187,15 @@ Default exports from preset modules have been removed. Use named registration fu
 import defaultModules from '@unchainedshop/plugins/presets/base.js';
 
 // ✅ USE - Import named registration function
-import { registerBasePlugins } from '@unchainedshop/plugins/presets/base.js';
+import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
 registerBasePlugins();
 ```
 
 #### Available Registration Functions
 
-- `registerBasePlugins()` - Essential plugins (from `@unchainedshop/plugins/presets/base.js`)
-- `registerAllPlugins()` - All available plugins (from `@unchainedshop/plugins/presets/all.js`)
-- `registerCryptoPlugins()` - Cryptocurrency plugins (from `@unchainedshop/plugins/presets/crypto.js`)
+- `registerBasePlugins()` - Essential plugins (from `@unchainedshop/plugins/presets/base`)
+- `registerAllPlugins()` - All available plugins (from `@unchainedshop/plugins/presets/all`)
+- `registerCryptoPlugins()` - Cryptocurrency plugins (from `@unchainedshop/plugins/presets/crypto`)
 
 ### GraphQL API Breaking Changes
 
@@ -252,10 +254,11 @@ import { adminUIRouter } from '@unchainedshop/api/fastify';
 import { PaypalCheckoutPlugin } from '@unchainedshop/plugins/payment/paypal-checkout-plugin.ts';
 ```
 
+The Braintree plugin was also dropped in v5 (it only exists on the v4.8.x branch), so it is not a migration target.
+
 **Migration Options:**
-- Use Braintree plugin (supports PayPal via Braintree)
-- Implement custom PayPal integration using `@paypal/paypal-server-sdk` (new official SDK)
-- Use alternative payment providers
+- Implement a custom PayPal integration using `@paypal/paypal-server-sdk` (new official SDK) via `registerPaymentProvider()`
+- Use alternative payment providers (Stripe, Datatrans, Saferpay, Payrexx, PostFinance Checkout)
 
 ### PluginRegistry Internal Changes
 

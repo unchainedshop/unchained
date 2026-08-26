@@ -13,7 +13,7 @@ Unchained Engine uses a plugin architecture to extend functionality. Plugins are
 
 | Category | Description |
 |----------|-------------|
-| [Payment](./payment/) | Payment service provider integrations (Stripe, PayPal, etc.) |
+| [Payment](./payment/) | Payment service provider integrations (Stripe, Datatrans, Payrexx, etc.) |
 | [Delivery](./delivery/) | Shipping and fulfillment methods |
 | [Pricing](./pricing/) | Price calculation, taxes, discounts, and rounding |
 | [Warehousing](./warehousing/) | Inventory management and stock handling |

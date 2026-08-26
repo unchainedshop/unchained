@@ -37,7 +37,7 @@ Adapters execute in order of their `orderIndex` (ascending). Lower numbers run f
 
 ```mermaid
 flowchart LR
-    BP[Base Price<br/>orderIndex: 0] --> D[Discount<br/>orderIndex: 10] --> T[Tax<br/>orderIndex: 20]
+    BP[Base Price<br/>orderIndex: 0] --> D[Discount<br/>orderIndex: 30] --> T[Tax<br/>orderIndex: 80]
 ```
 
 Each adapter:
@@ -47,56 +47,55 @@ Each adapter:
 
 ### Order Index Guidelines
 
-| Range | Purpose | Examples |
-|-------|---------|----------|
-| 0-9 | Base price calculation | Catalog price, ERP integration |
-| 10-19 | Discounts | Member discounts, bulk pricing |
-| 20-29 | Tax calculation | VAT, sales tax |
-| 30+ | Final adjustments | Rounding, currency conversion |
+The built-in plugins use these slots — place your own adapters relative to them:
+
+| `orderIndex` | Purpose | Built-in examples |
+|--------------|---------|-------------------|
+| 0 | Base price | `product-catalog-price`, `order-items` |
+| 10–40 | Conversions, composition, discounts | `product-price-rateconversion` (10), `product-discount` (30), `order-discount` (40) |
+| 80 | Taxes | `product-swiss-tax`, `delivery-eu-tax` |
 
 ## Pricing Categories
 
-| Category | Description | Typical Use |
-|----------|-------------|-------------|
-| `BASE` | Base product/service price | Initial price calculation |
-| `DISCOUNT` | Price reduction (negative amount) | Coupons, promotions |
-| `TAX` | Tax amount | VAT, sales tax |
-| `DELIVERY` | Shipping fees | Delivery pricing |
-| `PAYMENT` | Payment processing fees | Card fees, invoice fees |
+Each calculation row has a `category`. The categories differ per pricing sheet type:
+
+| Sheet | Categories |
+|-------|-----------|
+| Product | `ITEM`, `DISCOUNT`, `TAX` |
+| Delivery | `DELIVERY`, `DISCOUNT`, `TAX` |
+| Payment | `PAYMENT`, `DISCOUNT`, `TAX` |
+| Order | `ITEMS`, `DISCOUNTS`, `TAXES`, `DELIVERY`, `PAYMENT` |
 
 ## Price Item Properties
 
-When adding items to the calculation, each item has:
+When adding rows to a product pricing sheet with `sheet.addItem()`:
 
 | Property | Type | Description |
 |----------|------|-------------|
 | `amount` | number | Price in smallest currency unit (cents) |
 | `isTaxable` | boolean | Should tax be calculated on this amount? |
 | `isNetPrice` | boolean | Is this a net price (excluding tax)? |
-| `category` | string | Price category (BASE, TAX, DISCOUNT, etc.) |
 | `meta` | object | Additional metadata |
+
+The category is set implicitly by the method you call: `addItem` → `ITEM`, `addDiscount` → `DISCOUNT`, `addTax` → `TAX`.
 
 ## Pricing Sheet
 
-Access calculated prices via the pricing sheet:
+An order's persisted `calculation` can be read through a pricing sheet:
 
 ```typescript
-const pricingSheet = await modules.orders.pricingSheet(order);
+import { OrderPricingSheet } from '@unchainedshop/core';
 
-// Get totals
-const total = pricingSheet.total(); // { amount, currency }
-const gross = pricingSheet.gross(); // Before discounts
-const net = pricingSheet.net(); // After discounts, before tax
-const taxes = pricingSheet.taxes(); // Tax breakdown
+const pricing = OrderPricingSheet({
+  calculation: order.calculation,
+  currencyCode: order.currencyCode,
+});
 
-// Get items by category
-const discounts = pricingSheet.discounts();
-const delivery = pricingSheet.delivery();
-const payment = pricingSheet.payment();
-
-// Sum specific items
-const taxableAmount = pricingSheet.sum({ isTaxable: true });
-const baseAmount = pricingSheet.sum({ category: 'BASE' });
+pricing.total();                         // { amount, currencyCode } — grand total
+pricing.total({ category: 'DELIVERY' }); // total of a single category
+pricing.gross();                         // total including taxes
+pricing.net();                           // total excluding taxes
+pricing.taxSum();                        // tax portion
 ```
 
 ## Leveled (Quantity-Tier) Catalog Pricing
@@ -218,9 +217,7 @@ query CartPricing {
 }
 ```
 
-## Best Practices
-
-### 1. Author with the pricing factories
+## Authoring Custom Pricing
 
 Use [`registerProductPricing` / `registerOrderPricing` / `registerPaymentPricing` / `registerDeliveryPricing`](../extend/plugin-factories.md#pricing). You push rows onto the `sheet` and the factory continues the chain for you:
 
@@ -232,34 +229,6 @@ registerProductPricing({
   calculate: async (sheet, context) => {
     sheet.addItem({ amount: 100, isTaxable: true, isNetPrice: true, meta: { adapter: 'my-surcharge' } });
     // Do NOT continue the chain yourself — the factory does it.
-  },
-});
-```
-
-### 2. Handle Currency Properly
-
-Always work in smallest currency units (cents) to avoid floating-point errors:
-
-```typescript
-// Good
-const amount = 1999; // $19.99 in cents
-
-// Bad
-const amount = 19.99; // Floating point issues
-```
-
-### 3. Include Metadata
-
-Add metadata for debugging and reporting:
-
-```typescript
-sheet.addItem({
-  amount: 100,
-  isTaxable: false,
-  isNetPrice: true,
-  meta: {
-    adapter: 'shop.unchained.pricing.product-tax',
-    rate: 0.081,
   },
 });
 ```

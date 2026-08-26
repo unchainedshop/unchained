@@ -7,47 +7,38 @@ description: Swiss payment service provider with multiple payment methods
 
 # Datatrans
 
-Unchained payment plugin for Datatrans, a Swiss payment service provider supporting multiple payment methods.
-
-- [Datatrans API Documentation](https://docs.datatrans.ch/docs/home)
-- [Datatrans Payment Process](https://docs.datatrans.ch/docs/payment-process-overview)
-- [Datatrans Webhooks](https://docs.datatrans.ch/docs/webhook)
+Payment plugin for [Datatrans](https://docs.datatrans.ch/docs/home), a Swiss payment service provider supporting redirect, lightbox, secure fields, and mobile SDK integrations.
 
 ## Installation
 
-**Express:**
+Included in the [`all` preset](../../platform-configuration/plugin-presets.md) — `registerAllPlugins()` registers the plugin together with its webhook route.
+
+To register it individually:
+
 ```typescript
-import express from 'express';
-import '@unchainedshop/plugins/payment/datatrans-v2';
-import { datatransHandler } from '@unchainedshop/plugins/payment/datatrans-v2/handler-express';
+import { pluginRegistry } from '@unchainedshop/core';
+import { DatatransPlugin } from '@unchainedshop/plugins/payment/datatrans-v2';
 
-const { DATATRANS_WEBHOOK_PATH = '/payment/datatrans/webhook' } = process.env;
-
-// IMPORTANT: Use express.text for Datatrans signature verification
-app.use(DATATRANS_WEBHOOK_PATH, express.text({ type: 'application/json' }), datatransHandler);
+pluginRegistry.register(DatatransPlugin);
 ```
 
-**Fastify:**
-```typescript
-import '@unchainedshop/plugins/payment/datatrans-v2';
-import { datatransHandler } from '@unchainedshop/plugins/payment/datatrans-v2/handler-fastify';
+Register before `startPlatform()`. Registration mounts the webhook route `POST /payment/datatrans/webhook` (path configurable via `DATATRANS_WEBHOOK_PATH`) on the Unchained HTTP server. Registration throws if neither `DATATRANS_SIGN_KEY` nor `DATATRANS_SIGN2_KEY` is set.
 
-const { DATATRANS_WEBHOOK_PATH = '/payment/datatrans/webhook' } = process.env;
+## Environment Variables
 
-fastify.register((s, opts, registered) => {
-  s.addContentTypeParser(
-    'application/json',
-    { parseAs: 'string', bodyLimit: 1024 * 1024 },
-    s.defaultTextParser,
-  );
-  s.route({
-    url: DATATRANS_WEBHOOK_PATH,
-    method: 'POST',
-    handler: datatransHandler,
-  });
-  registered();
-});
-```
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `DATATRANS_SECRET` | - | API secret (required) |
+| `DATATRANS_SIGN_KEY` | - | Signing key (required — without it every Datatrans provider reports `INCOMPLETE_CONFIGURATION`) |
+| `DATATRANS_SIGN2_KEY` | - | Secondary signing key, takes precedence for webhook verification |
+| `DATATRANS_SECURITY` | `dynamic-sign` | `''`, `'static-sign'`, or `'dynamic-sign'` |
+| `DATATRANS_API_ENDPOINT` | `https://api.sandbox.datatrans.com` | API endpoint (use non-sandbox for production) |
+| `DATATRANS_WEBHOOK_PATH` | `/payment/datatrans/webhook` | Webhook endpoint path |
+| `DATATRANS_SUCCESS_PATH` | `/datatrans/success` | Success redirect path (relative to `EMAIL_WEBSITE_URL`) |
+| `DATATRANS_ERROR_PATH` | `/datatrans/error` | Error redirect path (relative to `EMAIL_WEBSITE_URL`) |
+| `DATATRANS_CANCEL_PATH` | `/datatrans/cancel` | Cancel redirect path (relative to `EMAIL_WEBSITE_URL`) |
+| `DATATRANS_RETURN_PATH` | `/datatrans/return` | Return redirect path (relative to `EMAIL_WEBSITE_URL`) |
+| `DATATRANS_MERCHANT_ID` | - | Default merchant ID (fallback if not set in provider config) |
 
 ## Create Provider
 
@@ -56,7 +47,7 @@ mutation CreateDatatransProvider {
   createPaymentProvider(
     paymentProvider: {
       type: GENERIC
-      adapterKey: "shop.unchained.payment.datatrans"
+      adapterKey: "shop.unchained.datatrans"
     }
   ) {
     _id
@@ -77,140 +68,84 @@ mutation ConfigureDatatransProvider {
 }
 ```
 
-## Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DATATRANS_SECRET` | - | API secret (required) |
-| `DATATRANS_SIGN_KEY` | - | Signing key (required) |
-| `DATATRANS_SIGN2_KEY` | `{DATATRANS_SIGN_KEY}` | Secondary signing key |
-| `DATATRANS_SECURITY` | `dynamic-sign` | `''`, `'static-sign'`, `'dynamic-sign'` |
-| `DATATRANS_API_ENDPOINT` | `https://api.sandbox.datatrans.com` | API endpoint (use non-sandbox for production) |
-| `DATATRANS_WEBHOOK_PATH` | `/payment/datatrans/webhook` | Webhook endpoint path |
-| `DATATRANS_SUCCESS_PATH` | `/payment/datatrans/success` | Success redirect path |
-| `DATATRANS_ERROR_PATH` | `/payment/datatrans/error` | Error redirect path |
-| `DATATRANS_CANCEL_PATH` | `/payment/datatrans/cancel` | Cancel redirect path |
-| `DATATRANS_RETURN_PATH` | `/payment/datatrans/return` | Return redirect path |
-| `DATATRANS_MERCHANT_ID` | - | Default merchant ID (fallback if not set in provider config) |
-
-## Provider Configuration
+Provider configuration:
 
 | Key | Default | Description |
 |-----|---------|-------------|
-| `merchantId` | - | Datatrans merchant ID (required) |
-| `settleInUnchained` | `1` | Enable settlement in Unchained (`"1"` or `""`) |
-| `marketplaceSplit` | - | Marketplace split config: `"SUBMERCHANTID;DISCOUNT_ADAPTER_KEY;SHARE_PERCENTAGE"` |
+| `merchantId` | `DATATRANS_MERCHANT_ID` | Datatrans merchant ID |
+| `settleInUnchained` | enabled | Settlement in Unchained: `"1"` to enable, `""` to disable |
+| `marketplaceSplit` | - | Marketplace split config: `"SUBMERCHANTID;STATIC_DISCOUNT_ID;SHARE_PERCENTAGE"` — the middle field is an OrderDiscount `_id` whose payment-pricing discount rows determine the commission; repeatable for multi-merchant splits; requires `settleInUnchained` = `1` and a custom discount adapter for commissions. See [Datatrans Marketplace docs](https://docs.datatrans.ch/docs/marketplace-payments#section-settlement-splits). |
 
-### Marketplace Integration
+## Payment Flow
 
-Unchained supports Datatrans Marketplace payments. See [Datatrans Marketplace docs](https://docs.datatrans.ch/docs/marketplace-payments#section-settlement-splits) for details.
+Follows the standard [checkout flow](./index.md#checkout-flow). Datatrans specifics:
 
-- Add multiple `marketplaceSplit` entries for multi-merchant splits
-- `settleInUnchained` must be `1` for marketplace features
-- The marketplace feature requires a custom discount adapter to pre-calculate commissions
+`signPaymentProviderForCheckout` (checkout) and `signPaymentProviderForCredentialRegistration` (credential registration without checkout) return a JSON string:
 
-# Usage in the Frontend
-
-You can easily follow the documentation on [redirect lightbox](https://docs.datatrans.ch/docs/redirect-lightbox) and [secure fields](https://docs.datatrans.ch/docs/secure-fields).
-
-## Mode: Redirect / Lightbox Instructions
-
-Follow [secure fields](https://docs.datatrans.ch/docs/secure-fields) and where it says you have to initialize a transaction you have to call one of these mutations:
-
-**Cart Checkout**:
-
-```/*graphql*/
-signPaymentProviderForCheckout(
-    orderPaymentId: "order payment id of the cart you want to checkout"
-)
-```
-
-_To get the order payment id of the current active cart of the logged in user you can_
-
-```/*graphql*/
-me {
-    cart {
-        payment {
-            _id
-        }
-    }
-}
-```
-
-**Payment credentials registration (without payment/checkout)**:
-
-```/*graphql*/
-signPaymentProviderForCredentialRegistration(
-    paymentProviderId: "payment provider id that you instantiated before"
-)
-```
-
-For both `signPaymentProviderForCheckout` and `signPaymentProviderForCredentialRegistration` you will receive a JSON stringified object that looks like:
-
-```
+```json
 {
-    location: "https://pay.sandbox.datatrans.com/v1/start/xyz1234..",
-    transactionId: "xyz1234.."
+  "location": "https://pay.sandbox.datatrans.com/v1/start/xyz1234..",
+  "transactionId": "xyz1234.."
 }
 ```
 
-That's when you can either redirect to the location for "Redirect" mode or use the transactionId with the "Lightbox" mode to finalize the Payment as shown here: https://docs.datatrans.ch/docs/redirect-lightbox#section-redirect-integration and https://docs.datatrans.ch/docs/redirect-lightbox#section-lightbox-integration.
+### Redirect / Lightbox
 
-When a successful payment is finished, Datatrans will call the Datatrans webhook of Unchained Engine server-side (`DATATRANS_WEBHOOK_PATH`), Unchained Engine will look up the transaction, do some validity checks and then call `checkoutCart` for you, At `checkoutCart` stage, Unchained Engine will settle the payment and also store the payment credential alias for convenience (fast) in further checkouts. Datatrans will also almost immediately redirect to `DATATRANS_SUCCESS_PATH` with the transactionId and in the query parameter.
+Redirect to `location` ("Redirect" mode) or use `transactionId` with the "Lightbox" mode as shown in the [Datatrans redirect/lightbox docs](https://docs.datatrans.ch/docs/redirect-lightbox).
 
-If for some reason the webhook has not been called at all or failed a checkout server-side at a very early stage, it could happen that when success path is loaded, the cart is not checked out yet but the payment is already authorized and authenticated (not settled). In those cases you should fallback to client-side cart checkout by calling:
+On successful payment, Datatrans calls the webhook (`DATATRANS_WEBHOOK_PATH`); Unchained validates the transaction, checks out the cart, settles the payment, and stores the payment credential alias for faster future checkouts. Datatrans then redirects the user to `DATATRANS_SUCCESS_PATH` with the `transactionId` in the query parameters.
 
-```/*graphql*/
-checkoutCart(
-    orderId: "order id from query parameter",
-    paymentContext: { transactionId: "transaction id from query parameter" }) {
-    _id,
+If the webhook has not completed the checkout by the time the success page loads, fall back to client-side checkout:
+
+```graphql
+mutation {
+  checkoutCart(
+    orderId: "order id from query parameter"
+    paymentContext: { transactionId: "transaction id from query parameter" }
+  ) {
+    _id
     status
+  }
 }
 ```
 
-This gives Unchained Engine a (second) chance to process and settle the payment. That's how you build rock-solid payment flows in shaky networks.
+:::warning Asynchronous webhook
+Don't enable Datatrans' [asynchronous webhook](https://docs.datatrans.ch/docs/redirect-lightbox#section-webhook) option — you'd have to poll the order status after checkout and would miss a whole category of errors to save ~1s of processing time.
+:::
 
-# Mode: Secure Fields
+### Secure Fields
 
-To let Unchained call the `secureFieldsInit` method during transaction creation, provide `{ "useSecureFields": true }` via the `transactionContext` field to `signPaymentProviderForCheckout` or `signPaymentProviderForCredentialRegistration`. Also you will have to `authorize-split` a secure fields transaction in order to checkout, for that you will have to call `checkoutCart` after form submission with a special object `authorizeAuthenticated`:
+Pass `{ "useSecureFields": true }` as `transactionContext` to `signPaymentProviderForCheckout` or `signPaymentProviderForCredentialRegistration` so Unchained initializes the transaction via `/v1/transactions/secureFields`. Secure-fields transactions need an authorize step at checkout — pass `authorizeAuthenticated` (an empty object if you have no `CDM`/`3D` props):
 
-```/*graphql*/
-checkoutCart(
-    orderId: "order id from query parameter",
-    paymentContext: { transactionId: "transaction id from query parameter", "authorizeAuthenticated": { "CDM": "...", "3D": "..." } }) {
-    _id,
+```graphql
+mutation {
+  checkoutCart(
+    orderId: "order id from query parameter"
+    paymentContext: {
+      transactionId: "transaction id from query parameter"
+      authorizeAuthenticated: {}
+    }
+  ) {
+    _id
     status
+  }
 }
 ```
 
-This will instruct Unchained to authorize an unauthorized transaction before trying to settle it. If you don't have CDM or 3D props to send along, just send an empty object.
+### Mobile SDK
 
-# Mode: Mobile SDK
+To receive [mobile tokens](https://docs.datatrans.ch/docs/mobile-sdk#section-initializing-transactions), pass `{ "option": { "returnMobileToken": true } }` as `transactionContext` to `signPaymentProviderForCheckout`.
 
-To enable mobile tokens during checkout as stated [here](https://docs.datatrans.ch/docs/mobile-sdk#section-initializing-transactions), send a special `transactionContext` to `signPaymentProviderForCheckout`: `{ "option": { "returnMobileToken": true } }`
+### Advanced
 
-# Advanced integration features
-
-**Restrict payment method selection in redirect:**
-You can send any additional properties to /v1/transactions/init by setting properties on the context input fields for eg. if you want to restrict payment methods during checkout you could send `{ "paymentMethods": ["VIS"] }` as value for `transactionContext` in `signPaymentProviderForCheckout` to restrict checkout with that provider to VISA credit cards,
-
-**Checkout with alias:**
-Just simply do `checkoutCart` without initializing a transactionId. If the user has valid stored payment credentials for the datatrans payment provider, the plugin will try to use that information and directly checkout and settle the payment.
-
-**Asynchronous Webhook:**
-As stated [here](https://docs.datatrans.ch/docs/redirect-lightbox#section-webhook) there is the possibility of asynchronous webhooks. Don't enable this, else you will have to "poll" the order status after checkout as webhook-based checkout could still be in-flight and you will miss out on a whole category of errors for the sake of speeding up 1s of processing time.
+- **Restrict payment methods:** arbitrary `transactionContext` fields are forwarded to the `/v1/transactions` init request, e.g. `{ "paymentMethods": ["VIS"] }` restricts checkout to VISA.
+- **Checkout with alias:** call `checkoutCart` without signing first — if the user has stored payment credentials for the Datatrans provider, the plugin charges them directly.
 
 ## Adapter Details
 
 | Property | Value |
 |----------|-------|
-| Key | `shop.unchained.payment.datatrans` |
+| Key | `shop.unchained.datatrans` |
 | Type | `GENERIC` |
-| Source | [payment/datatrans-v2/](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/payment/datatrans-v2/) |
-
-## Related
-
-- [Plugins Overview](./) - All available plugins
-- [Payment Integration Guide](../../guides/payment-integration.md) - Payment setup guide
-- [Checkout Implementation](../../guides/checkout-implementation.md) - Complete checkout flow
+| Version | `2.0.0` |
+| Source | [payment/datatrans-v2/](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/payment/datatrans-v2) |

@@ -9,15 +9,11 @@ description: Quotation/offering plugins for Unchained Engine
 
 Quotation plugins handle the creation and management of price quotations and custom offerings for products.
 
-## Available Plugins
-
-| Adapter Key | Description | Base Preset |
-|-------------|-------------|-------------|
-| [`shop.unchained.quotations.manual`](./quotation-manual.md) | Manual quotation handling with 1-hour expiry | Yes |
+| Adapter Key | Description | Preset |
+|-------------|-------------|--------|
+| [`shop.unchained.quotations.manual`](./quotation-manual.md) | Manual quotation handling with 1-hour expiry | `base` |
 
 ## How Quotations Work
-
-Quotations in Unchained allow customers to request custom prices for products. The flow is:
 
 1. Customer requests a quotation for a product
 2. The quotation adapter processes the request

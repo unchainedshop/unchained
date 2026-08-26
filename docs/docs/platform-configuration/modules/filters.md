@@ -12,7 +12,7 @@ The filters module manages product filtering and faceted search capabilities.
 ## Configuration Options
 
 ```typescript
-export interface FilterSettingsOptions {
+export type FiltersSettingsOptions = {
   setCachedProductIds?: (
     filterId: string,
     productIds: string[],
@@ -21,7 +21,7 @@ export interface FilterSettingsOptions {
   ) => Promise<number>;
   getCachedProductIds?: (filterId: string) => Promise<[string[], Record<string, string[]>] | null>;
   purgeCachedProductIds?: (filterId: string) => Promise<void>;
-}
+};
 ```
 
 ### Cache contract
@@ -61,7 +61,7 @@ overriding only some of them leaves you reading from one backend and writing to 
 | `FILTER_CREATE` | `{ filter }` | Emitted when a filter is created |
 | `FILTER_UPDATE` | `{ filterId, options, updated }` | Emitted when a filter is updated |
 | `FILTER_REMOVE` | `{ filterId }` | Emitted when a filter is removed |
-| `FILTER_UPDATE_TEXT` | `{ filterId, locale }` | Emitted when filter text is updated |
+| `FILTER_UPDATE_TEXT` | `{ filterId, filterOptionValue, text }` | Emitted when filter text is updated |
 
 ## More Information
 
