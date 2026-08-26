@@ -40,7 +40,7 @@ export interface AdminUIRouterOptions {
   plugins?: AdminUIPluginConfig[];
 }
 
-export const adminUIRouter = async (
+export const adminUIRouter = (
   enabled = true,
   theme?: AdminUIThemeConfig,
   plugins: AdminUIPluginConfig[] = [],
@@ -52,29 +52,34 @@ export const adminUIRouter = async (
 
   if (enabled) {
     // generateThemeCSS without a theme yields the same default, so the optional
-    // @unchainedshop/admin-ui dependency is only resolved when a theme is set
-    let themeCSS = '/* default theme */';
-    if (theme) {
-      try {
-        const { generateThemeCSS } = await import('@unchainedshop/admin-ui/theme');
-        themeCSS = generateThemeCSS(theme);
-      } catch {
-        console.warn(
-          "npm dependency @unchainedshop/admin-ui is not installed, can't apply admin-ui theme",
-        );
+    // @unchainedshop/admin-ui dependency is only resolved when a theme is set.
+    // Resolution happens lazily on first request so this router stays synchronous.
+    let themePromise: Promise<{ css: string; etag: string }> | undefined;
+    const resolveThemeCSS = async () => {
+      let css = '/* default theme */';
+      if (theme) {
+        try {
+          const { generateThemeCSS } = await import('@unchainedshop/admin-ui/theme');
+          css = generateThemeCSS(theme);
+        } catch {
+          console.warn(
+            "npm dependency @unchainedshop/admin-ui is not installed, can't apply admin-ui theme",
+          );
+        }
       }
-    }
-    const themeHash = createHash('sha256').update(themeCSS).digest('hex').slice(0, 8);
-    const themeEtag = `"${themeHash}"`;
-    router.get('/admin-ui-theme.css', (req, res) => {
-      if (req.headers['if-none-match'] === themeEtag) {
+      const etag = `"${createHash('sha256').update(css).digest('hex').slice(0, 8)}"`;
+      return { css, etag };
+    };
+    router.get('/admin-ui-theme.css', async (req, res) => {
+      const { css, etag } = await (themePromise ||= resolveThemeCSS());
+      if (req.headers['if-none-match'] === etag) {
         return res.status(304).end();
       }
       res
         .set('Cache-Control', 'public, max-age=0, must-revalidate')
-        .set('ETag', themeEtag)
+        .set('ETag', etag)
         .type('text/css')
-        .send(themeCSS);
+        .send(css);
     });
 
     const log = { info: console.info, warn: console.warn };
@@ -289,10 +294,7 @@ export const connect = async (
   mountRoutes(expressApp, unchainedAPI, routes);
 
   if (adminUI) {
-    expressApp.use(
-      adminUIOptions?.prefix || '/',
-      await adminUIRouter(true, adminUITheme, adminUIPlugins),
-    );
+    expressApp.use(adminUIOptions?.prefix || '/', adminUIRouter(true, adminUITheme, adminUIPlugins));
   }
 };
 

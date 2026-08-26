@@ -108,7 +108,7 @@ const cryptopay = await configureCryptopayModule({ db });
 
 ### Saferpay env vars renamed
 
-`SAFERPAY_USER`, `SAFERPAY_PW` → `SAFERPAY_API_USER`, `SAFERPAY_API_PASSWORD`. The old names are still read as deprecated fallbacks. Plugin registration additionally requires `SAFERPAY_CUSTOMER_ID` and `SAFERPAY_TERMINAL_ID` to be set, otherwise the plugin is skipped at boot.
+`SAFERPAY_USER`, `SAFERPAY_PW` → `SAFERPAY_API_USER`, `SAFERPAY_API_PASSWORD`. The old names are still read as deprecated fallbacks, but the new names take precedence — if you ever set placeholder `SAFERPAY_API_*` values (early v5 alphas required them to pass the boot guard), remove them or set the real credentials there, otherwise the placeholders now win. Plugin registration additionally requires `SAFERPAY_CUSTOMER_ID` and `SAFERPAY_TERMINAL_ID`; without valid credentials the plugin's adapter and webhook route are skipped at boot (a warning is logged).
 
 ### Breaking: Stripe API + SDK version
 

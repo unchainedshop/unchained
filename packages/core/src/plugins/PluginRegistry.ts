@@ -187,7 +187,7 @@ class PluginRegistry {
       }
     }
 
-    // Store skipped plugins for logging purposes
+    // Skipped plugins are excluded from getAdapters() and getRoutes()
     this.skippedPlugins = skippedPlugins;
   }
 
@@ -286,6 +286,8 @@ class PluginRegistry {
 
     for (const plugin of this.plugins.values()) {
       if (!plugin.adapters) continue;
+      // Plugins whose onRegister failed are skipped entirely, like their routes
+      if (this.skippedPlugins.has(plugin.key)) continue;
 
       for (const adapter of plugin.adapters) {
         if (adapter.adapterType === adapterType) {

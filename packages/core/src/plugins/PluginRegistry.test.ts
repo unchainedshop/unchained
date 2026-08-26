@@ -59,5 +59,22 @@ describe('PluginRegistry', () => {
       const keys = pluginRegistry.getAdapters(adapterType).map((adapter) => adapter.key);
       assert.deepStrictEqual(keys, ['matching']);
     });
+
+    it('should exclude adapters of plugins skipped during initialize', async () => {
+      pluginRegistry.register({
+        key: 'plugin.skipped',
+        label: 'plugin.skipped',
+        version: '1.0.0',
+        adapters: [createAdapter('skipped')],
+        onRegister: () => {
+          throw new Error('missing configuration');
+        },
+      });
+      registerPluginWithAdapters('plugin.kept', [createAdapter('kept')]);
+      await pluginRegistry.initialize({} as any);
+
+      const keys = pluginRegistry.getAdapters(adapterType).map((adapter) => adapter.key);
+      assert.deepStrictEqual(keys, ['kept']);
+    });
   });
 });

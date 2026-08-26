@@ -235,29 +235,35 @@ export const connect = async (
     const adminUIPlugins: AdminUIPluginConfig[] = adminUIOptions?.plugins || [];
 
     // generateThemeCSS without a theme yields the same default, so the optional
-    // @unchainedshop/admin-ui dependency is only resolved when a theme is set
-    let themeCSS = '/* default theme */';
-    if (adminUIOptions?.theme) {
-      try {
-        const { generateThemeCSS } = await import('@unchainedshop/admin-ui/theme');
-        themeCSS = generateThemeCSS(adminUIOptions.theme);
-      } catch {
-        fastify.log.warn(
-          "npm dependency @unchainedshop/admin-ui is not installed, can't apply admin-ui theme",
-        );
+    // @unchainedshop/admin-ui dependency is only resolved when a theme is set.
+    // Resolution happens lazily on first request: connect() is not awaited by
+    // callers, so nothing may suspend here before the routes are registered.
+    let themePromise: Promise<{ css: string; etag: string }> | undefined;
+    const resolveThemeCSS = async () => {
+      let css = '/* default theme */';
+      if (adminUIOptions?.theme) {
+        try {
+          const { generateThemeCSS } = await import('@unchainedshop/admin-ui/theme');
+          css = generateThemeCSS(adminUIOptions.theme);
+        } catch {
+          fastify.log.warn(
+            "npm dependency @unchainedshop/admin-ui is not installed, can't apply admin-ui theme",
+          );
+        }
       }
-    }
-    const themeHash = createHash('sha256').update(themeCSS).digest('hex').slice(0, 8);
-    const themeEtag = `"${themeHash}"`;
+      const etag = `"${createHash('sha256').update(css).digest('hex').slice(0, 8)}"`;
+      return { css, etag };
+    };
     fastify.get('/admin-ui-theme.css', async (request, reply) => {
-      if (request.headers['if-none-match'] === themeEtag) {
+      const { css, etag } = await (themePromise ||= resolveThemeCSS());
+      if (request.headers['if-none-match'] === etag) {
         return reply.code(304).send();
       }
       return reply
         .header('Cache-Control', 'public, max-age=0, must-revalidate')
-        .header('ETag', themeEtag)
+        .header('ETag', etag)
         .type('text/css')
-        .send(themeCSS);
+        .send(css);
     });
 
     const devMode = process.env.NODE_ENV !== 'production';

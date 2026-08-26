@@ -84,7 +84,9 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
           type: 'http',
           url: unchainedMCPUrl,
           headers: {
+            // Forward both auth mechanisms accepted by /mcp: cookie sessions and bearer tokens
             Cookie: req.headers.cookie || '',
+            ...(req.headers.authorization ? { Authorization: req.headers.authorization } : {}),
           },
         },
         initializationOptions: { signal: lifecycle.signal },
