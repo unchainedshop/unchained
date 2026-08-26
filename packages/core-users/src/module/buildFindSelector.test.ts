@@ -29,6 +29,21 @@ describe('buildFindSelector', () => {
     assert.ok(result.username);
   });
 
+  it('Should use Mongo-compatible regular expressions for usernames and emails', () => {
+    assert.deepStrictEqual(
+      buildFindSelector({
+        usernames: [' Mikael ', 'user+tag'],
+        emails: [' Test+tag@example.com '],
+      }),
+      {
+        deleted: null,
+        guest: { $ne: true },
+        username: { $in: [/^Mikael$/i, /^user\+tag$/i] },
+        'emails.address': { $in: [/^Test\+tag@example\.com$/i] },
+      },
+    );
+  });
+
   it('Should include web3Verified filter when passed', () => {
     assert.deepStrictEqual(buildFindSelector({ web3Verified: true }), {
       deleted: null,
