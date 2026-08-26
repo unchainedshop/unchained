@@ -36,7 +36,7 @@ When a checkout is initiated, in a first step the order gets validated. This is 
 2. Order has a delivery provider set
 3. At least one order position present
 4. Checks every order position by calling `validateOrderPosition` which can be customized by providing an own implementation through the platform settings for orders. By default it just checks if the product is still active.
-5. If the order position is a quotation proposal, we additionally ask the Quotation plugin in charge if the proposal is still valid.
+5. If the order position references a quotation, we additionally check that the quotation is still a valid proposal (status `PROPOSED` and not expired) — the quotation plugin is not consulted for this.
 
 The Order validation step **DOES NOT** recalculate the order, so prices and delivery dates could have been changed since the last cart mutation. If you need such behavior, throw an Error in `validateOrderPosition` and let the client application fix the problem.
 

@@ -136,7 +136,7 @@ The `crypto` preset (included in `registerAllPlugins`) registers two worker plug
 | Plugin | Work type | Schedule | Source | Rate validity |
 |--------|-----------|----------|--------|---------------|
 | `UpdateCoinbaseRatesPlugin` | `UPDATE_COINBASE_RATES` | every minute | Coinbase (base = fallback currency) | 5 minutes |
-| `UpdateECBRatesPlugin` | `UPDATE_ECB_RATES` | daily | European Central Bank (base = EUR, requires an active `EUR` currency) | 24 hours |
+| `UpdateECBRatesPlugin` | `UPDATE_ECB_RATES` | daily | European Central Bank (base = EUR, requires the `EUR` currency to exist — active or not) | 24 hours |
 
 Both only store rates for currencies that exist in your system.
 

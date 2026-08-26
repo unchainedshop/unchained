@@ -14,7 +14,7 @@ Use this checklist to ensure your Unchained Engine deployment is production-read
 - [ ] **`NODE_ENV=production`** - Enables production behavior across the engine (and turns off email interception, see below)
 - [ ] **Required boot variables set** - `startPlatform` exits if `ROOT_URL`, `UNCHAINED_TOKEN_SECRET`, `EMAIL_WEBSITE_NAME`, `EMAIL_WEBSITE_URL`, or `EMAIL_FROM` are missing
 - [ ] **`UNCHAINED_TOKEN_SECRET`** - Strong, unique, minimum 32 characters (boot fails otherwise)
-- [ ] **`MONGO_URL` set** - Without it, the engine boots an in-memory MongoDB that loses all data on restart
+- [ ] **`MONGO_URL` set** - Without it, the engine spawns a local `mongod` (via `mongodb-memory-server`) that stores its data in `./.db`. Data does survive restarts, but this is not production-appropriate: an unmanaged, single-node local mongod with no backups, replication, or authentication
 - [ ] **No secrets in code or images** - All secrets from environment
 - [ ] **Seed/admin credentials rotated** - Don't ship `UNCHAINED_SEED_PASSWORD`-style development passwords
 

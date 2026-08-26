@@ -9,7 +9,7 @@ description: Deploying Unchained Engine with Docker
 
 An Unchained project is a small Node.js app that consumes the `@unchainedshop/*` packages from npm (see [Server Setup](../guides/server-setup)). It runs TypeScript directly via Node's type stripping — there is no build step, so a single-stage image is all you need.
 
-The Dockerfile below is the one used by the official starter, [unchainedshop/unchained-app](https://github.com/unchainedshop/unchained-app):
+The Dockerfile below is adapted from the one used by the official starter, [unchainedshop/unchained-app](https://github.com/unchainedshop/unchained-app):
 
 ```dockerfile
 FROM node:24-alpine
@@ -38,7 +38,7 @@ CMD ["npm", "start"]
 `npm start` in the starter runs the entry file directly:
 
 ```json
-"start": "node --no-warnings --experimental-strip-types --env-file .env.defaults --env-file-if-exists=.env ./src/boot.ts"
+"start": "node --no-warnings --experimental-strip-types --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js ./src/boot.ts"
 ```
 
 :::note Monorepo Dockerfile

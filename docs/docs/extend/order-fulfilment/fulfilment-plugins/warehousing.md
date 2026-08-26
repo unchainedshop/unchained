@@ -34,7 +34,7 @@ Each option accepts either a literal value or a `(…args, configuration, contex
 | `stock` | available quantity at a reference date |
 | `productionTime` | ms to produce a quantity (made-to-order) |
 | `commissioningTime` | ms to prepare a quantity for shipping |
-| `orderIndex` | execution order (default `0`) |
+| `orderIndex` | adapter metadata (default `0`); currently not consulted — each provider invokes a single adapter |
 
 ## Example: tokenized products
 

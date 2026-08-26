@@ -292,7 +292,7 @@ For custom MongoDB selector / sort logic (rather than an external engine), build
 Filtering is not computed per request. Each filter's matching product ids are precomputed and served from a cache (MongoDB-backed by default). The cache is rebuilt automatically:
 
 - **On startup** — unless you pass `workQueueOptions: { skipInvalidationOnStartup: true }` to `startPlatform`
-- **On filter changes** — creating, updating, or removing filters and filter options triggers `FilterDirector.invalidateProductIdCache` for the affected filter
+- **On filter changes** — creating or updating filters and adding/removing filter options triggers `FilterDirector.invalidateProductIdCache` for the affected filter; removing a whole filter just purges its cached product ids
 - **After a bulk import** — unless the import sets `skipCacheInvalidation` (see [Bulk Import](./bulk-import))
 
 To swap the cache backend (e.g. Redis), provide `setCachedProductIds`, `getCachedProductIds`, and `purgeCachedProductIds` together in the filters module options — see [Filters Module](../platform-configuration/modules/filters.md).

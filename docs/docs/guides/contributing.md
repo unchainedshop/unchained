@@ -30,7 +30,7 @@ npm run dev
 ```
 
 `npm run dev` starts:
-- The kitchensink example on port 3000
+- The kitchensink example on port 4010
 - Admin UI
 - Watch mode for all packages
 
@@ -115,7 +115,7 @@ import { startPlatform } from '@unchainedshop/platform';
 npm run test
 
 # Single unit test
-node --test packages/core-orders/src/orders.test.ts
+node --test packages/core-orders/src/module/buildFindSelector.test.ts
 
 # Single integration test (from monorepo root)
 node --no-warnings \

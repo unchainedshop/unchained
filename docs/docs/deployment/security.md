@@ -20,7 +20,7 @@ For detailed security documentation including compliance information and deploym
 - **Algorithm**: PBKDF2 with SHA-512
 - **Iterations**: 300,000 (exceeds OWASP recommendation of 210,000)
 - **Salt**: 16 bytes, cryptographically random
-- **Key Length**: 256 bytes
+- **Key Length**: 256 bits (32 bytes)
 - **Implementation**: Web Crypto API (`crypto.subtle`)
 
 ### Access Tokens (Sessions)

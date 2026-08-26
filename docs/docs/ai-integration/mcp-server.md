@@ -45,19 +45,20 @@ Full product lifecycle including media, variations, bundles, and pricing.
 | Assignments | `ADD_ASSIGNMENT`, `REMOVE_ASSIGNMENT`, `GET_ASSIGNMENTS`, `GET_VARIATION_PRODUCTS` |
 | Bundles | `ADD_BUNDLE_ITEM`, `REMOVE_BUNDLE_ITEM`, `GET_BUNDLE_ITEMS` |
 | Pricing | `SIMULATE_PRICE`, `SIMULATE_PRICE_RANGE`, `GET_CATALOG_PRICE` |
-| Text | `GET_PRODUCT_TEXTS`, `GET_MEDIA_TEXTS`, `GET_VARIATION_TEXTS` |
+| Text | `UPDATE_PRODUCT_TEXTS`, `GET_PRODUCT_TEXTS`, `GET_MEDIA_TEXTS`, `GET_VARIATION_TEXTS` |
 | Reviews | `GET_REVIEWS`, `COUNT_REVIEWS` |
 | Other | `GET_SIBLINGS` |
 
-Supported product types: `SIMPLE`, `CONFIGURABLE`, `BUNDLE`, `PLAN`, `TOKENIZED`.
+Supported product types: `SIMPLE_PRODUCT`, `CONFIGURABLE_PRODUCT`, `BUNDLE_PRODUCT`, `PLAN_PRODUCT`, `TOKENIZED_PRODUCT`.
 
 ### 2. Order Management (`order_management`)
 
-Read-only order listing and analytics.
+Order queries, fulfillment actions, and analytics.
 
 | Operation group | Actions |
 |----------------|---------|
-| Queries | `LIST` |
+| Queries | `LIST`, `GET`, `GET_CART` |
+| Fulfillment | `CONFIRM_ORDER`, `PAY_ORDER`, `DELIVER_ORDER`, `REJECT_ORDER` |
 | Analytics | `SALES_SUMMARY` (daily), `MONTHLY_BREAKDOWN` (12 months), `TOP_CUSTOMERS`, `TOP_PRODUCTS` |
 
 Supports date-range filtering and provider-based segmentation.
@@ -74,20 +75,21 @@ Category trees with products, filters, links, and media.
 | Products | `ADD_PRODUCT`, `REMOVE_PRODUCT`, `GET_PRODUCTS`, `REORDER_PRODUCTS` |
 | Filters | `ADD_FILTER`, `REMOVE_FILTER`, `GET_FILTERS`, `REORDER_FILTERS` |
 | Links | `ADD_LINK`, `REMOVE_LINK`, `GET_LINKS`, `REORDER_LINKS` |
-| Navigation | `GET_CHILDREN`, `SET_BASE` |
+| Navigation | `GET_CHILDREN` |
 | Search | `SEARCH_PRODUCTS` |
+| Text | `GET_TEXTS`, `GET_MEDIA_TEXTS` |
 
 ### 4. User Management (`users_management`)
 
-Full user lifecycle, roles, emails, and related data.
+Full user lifecycle, tags, emails, and related data.
 
 | Operation group | Actions |
 |----------------|---------|
 | CRUD | `LIST`, `GET`, `CREATE`, `UPDATE`, `REMOVE`, `COUNT` |
 | Enrollment | `ENROLL`, `SEND_ENROLLMENT_EMAIL`, `SEND_VERIFICATION_EMAIL` |
-| Admin | `SET_ROLES`, `SET_TAGS`, `SET_PASSWORD`, `SET_USERNAME` |
+| Admin | `SET_TAGS`, `SET_USERNAME`, `REMOVE_PRODUCT_REVIEWS` |
 | Email | `ADD_EMAIL`, `REMOVE_EMAIL` |
-| Data access | `GET_ORDERS`, `GET_ENROLLMENTS`, `GET_QUOTATIONS`, `GET_BOOKMARKS`, `GET_CART`, `GET_PAYMENT_CREDENTIALS`, `GET_AVATAR`, `GET_REVIEWS`, `GET_REVIEWS_COUNT` |
+| Data access | `GET_ORDERS`, `GET_ENROLLMENTS`, `GET_QUOTATIONS`, `GET_BOOKMARKS`, `GET_PAYMENT_CREDENTIALS`, `GET_AVATAR`, `GET_REVIEWS`, `GET_REVIEWS_COUNT` |
 | Current user | `GET_CURRENT_USER` |
 
 ### 5. Filter Management (`filter_management`)
@@ -116,7 +118,7 @@ Countries, currencies, and languages.
 
 | Operation group | Actions |
 |----------------|---------|
-| All entities | `CREATE`, `UPDATE`, `REMOVE` |
+| All entities | `CREATE`, `UPDATE`, `REMOVE`, `GET`, `LIST`, `COUNT` |
 
 Countries use 2-letter ISO codes, currencies use 3-letter ISO codes, languages use BCP 47 locale codes.
 
@@ -136,7 +138,7 @@ Request-for-quote lifecycle.
 | Operation group | Actions |
 |----------------|---------|
 | Queries | `LIST`, `GET`, `COUNT` |
-| Lifecycle | `REQUEST`, `VERIFY`, `MAKE_PROPOSAL`, `REJECT` |
+| Lifecycle | `VERIFY`, `MAKE_PROPOSAL`, `REJECT` |
 
 ## Resources
 

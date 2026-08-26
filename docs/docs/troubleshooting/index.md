@@ -108,10 +108,10 @@ EMAIL_FROM=noreply@localhost
 
 ### Authentication Issues
 
-#### "Unauthorized" Error
+#### "Not authorized" Error
 
 ```json
-{"errors":[{"message":"Unauthorized"}]}
+{"errors":[{"message":"Not authorized"}]}
 ```
 
 **Solutions:**
@@ -163,7 +163,7 @@ query {
 #### Checkout Fails
 
 ```
-Error: No delivery provider set
+No delivery provider selected
 ```
 
 **Solutions:**
@@ -326,7 +326,7 @@ await db.collection('products').createIndex({ 'meta.customField': 1 });
 NODE_OPTIONS="--max-old-space-size=4096" npm start
 ```
 
-2. In development without `MONGO_URL`, remember the in-memory MongoDB also lives in your process
+2. Note: the fallback MongoDB used without `MONGO_URL` runs as a separate `mongod` child process with on-disk storage in `./.db` — it does not add to the Node.js process memory
 
 ### Email Issues
 

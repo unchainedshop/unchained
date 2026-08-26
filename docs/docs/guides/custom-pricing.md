@@ -42,7 +42,7 @@ registerProductPricing({
 });
 ```
 
-`calculate(sheet, context)` receives the running `sheet` and the pricing `context` (`product`, `quantity`, `currencyCode`, `countryCode`, `user`, `modules`, …).
+`calculate(sheet, context)` receives a fresh result sheet for this adapter — it contains only the rows *you* add — and the pricing `context` (`product`, `quantity`, `currencyCode`, `countryCode`, `user`, `modules`, …). To read rows produced by earlier adapters, build the adapter object directly and use the running `params.calculationSheet` — see [reading rows of earlier adapters](../extend/pricing/product-pricing.md#reading-rows-of-earlier-adapters-taxes-discounts).
 
 ## Example: weather-based pricing
 
@@ -73,7 +73,15 @@ registerProductPricing({
 
 ## Example: volume discounts
 
+A percentage off the base price needs the rows of earlier adapters, which the factory's `sheet` never contains — build the adapter object directly and read the running `params.calculationSheet`:
+
 ```typescript
+import {
+  ProductPricingAdapter,
+  pluginRegistry,
+  type IProductPricingAdapter,
+} from '@unchainedshop/core';
+
 const VOLUME_TIERS = [
   { minQuantity: 100, discount: 0.2 },
   { minQuantity: 50, discount: 0.15 },
@@ -81,23 +89,43 @@ const VOLUME_TIERS = [
   { minQuantity: 10, discount: 0.05 },
 ];
 
-registerProductPricing({
-  adapterId: 'volume-discount',
-  orderIndex: 20, // after base price
+const VolumeDiscount: IProductPricingAdapter = {
+  ...ProductPricingAdapter,
+
+  key: 'com.example.pricing.volume-discount',
+  label: 'Volume Discount',
+  version: '1.0.0',
+  orderIndex: 20, // informational — run order follows registration order
+
   isActivatedFor: (context) => context.product?.meta?.allowVolumeDiscount === true,
-  calculate: async (sheet, context) => {
-    const tier = VOLUME_TIERS.find((t) => (context.quantity ?? 1) >= t.minQuantity);
-    if (tier) {
-      const subtotal = sheet.sum();
-      sheet.addItem({
-        amount: -Math.round(subtotal * tier.discount), // negative = discount
-        isTaxable: true,
-        isNetPrice: true,
-        category: 'DISCOUNT',
-        meta: { tier: tier.minQuantity, discountPercent: tier.discount * 100 },
-      });
-    }
+
+  actions: (params) => {
+    const pricingAdapter = ProductPricingAdapter.actions(params);
+    return {
+      ...pricingAdapter,
+      calculate: async () => {
+        const tier = VOLUME_TIERS.find((t) => (params.context.quantity ?? 1) >= t.minQuantity);
+        if (tier) {
+          // rows added by earlier adapters (e.g. the base price)
+          const subtotal = params.calculationSheet.sum({ category: 'ITEM' });
+          pricingAdapter.resultSheet().addItem({
+            amount: -Math.round(subtotal * tier.discount), // negative = discount
+            isTaxable: true,
+            isNetPrice: true,
+            meta: { tier: tier.minQuantity, discountPercent: tier.discount * 100 },
+          });
+        }
+        return pricingAdapter.calculate();
+      },
+    };
   },
+};
+
+pluginRegistry.register({
+  key: VolumeDiscount.key,
+  label: VolumeDiscount.label,
+  version: VolumeDiscount.version,
+  adapters: [VolumeDiscount],
 });
 ```
 
@@ -107,27 +135,49 @@ For plain "cheaper at 10+" unit prices, set [leveled catalog prices](../concepts
 
 ## Example: customer-specific (B2B) pricing
 
+Computing the delta against the running subtotal again needs `params.calculationSheet`, so this is a direct adapter too:
+
 ```typescript
-registerProductPricing({
-  adapterId: 'b2b',
-  orderIndex: 5,
-  isActivatedFor: (context) => context.user?.tags?.includes('b2b'),
-  calculate: async (sheet, context) => {
-    const customerPrice = await getCustomerPrice(context.product, context.user);
-    if (customerPrice) {
-      // Adjust toward the negotiated price (delta vs the current subtotal)
-      sheet.addItem({
-        amount: customerPrice.amount - sheet.sum(),
-        isTaxable: true,
-        isNetPrice: true,
-        meta: { priceListId: customerPrice.priceListId },
-      });
-    }
+const B2BPricing: IProductPricingAdapter = {
+  ...ProductPricingAdapter,
+
+  key: 'com.example.pricing.b2b',
+  label: 'B2B Price Lists',
+  version: '1.0.0',
+  orderIndex: 10,
+
+  isActivatedFor: (context) => Boolean(context.user?.tags?.includes('b2b')),
+
+  actions: (params) => {
+    const pricingAdapter = ProductPricingAdapter.actions(params);
+    return {
+      ...pricingAdapter,
+      calculate: async () => {
+        const customerPrice = await getCustomerPrice(params.context.product, params.context.user);
+        if (customerPrice) {
+          // Adjust toward the negotiated price (delta vs the current subtotal)
+          pricingAdapter.resultSheet().addItem({
+            amount: customerPrice.amount - params.calculationSheet.sum(),
+            isTaxable: true,
+            isNetPrice: true,
+            meta: { priceListId: customerPrice.priceListId },
+          });
+        }
+        return pricingAdapter.calculate();
+      },
+    };
   },
+};
+
+pluginRegistry.register({
+  key: B2BPricing.key,
+  label: B2BPricing.label,
+  version: B2BPricing.version,
+  adapters: [B2BPricing],
 });
 ```
 
-> To **replace** rather than adjust the base price (reset the sheet), build a low-level adapter — see [Plugin System](../concepts/director-adapter-pattern.md#adapter-contracts).
+> To **replace** rather than adjust the base price, first invert the earlier rows with `pricingAdapter.resultSheet().resetCalculation(params.calculationSheet)` before adding your own — see [Plugin System](../concepts/director-adapter-pattern.md#adapter-contracts).
 
 ## Order, delivery & payment pricing
 
@@ -140,14 +190,19 @@ import {
   registerPaymentPricing,
 } from '@unchainedshop/core';
 
-// Free shipping over 100.00
+// Free shipping over 100.00 — the delivery sheet starts empty too, so this
+// adapter is the fee source itself and reads the item total from the order's
+// last calculation (see Delivery Pricing for details)
 registerDeliveryPricing({
   adapterId: 'free-shipping',
   orderIndex: 10,
-  calculate: async (sheet) => {
-    const delivery = sheet.sum({ category: 'DELIVERY' });
-    if (sheet.sum({ category: 'ITEMS' }) >= 10000 && delivery > 0) {
-      sheet.addDiscount({ amount: -delivery, isTaxable: false, isNetPrice: true, discountId: 'free-shipping' });
+  calculate: async (sheet, context) => {
+    const itemsTotal = OrderPricingSheet({
+      calculation: context.order?.calculation ?? [],
+      currencyCode: context.currencyCode,
+    }).total({ category: 'ITEMS' }).amount;
+    if (itemsTotal < 10000) {
+      sheet.addFee({ amount: 800, isTaxable: true, isNetPrice: true, meta: { threshold: 10000 } });
     }
   },
 });
@@ -155,7 +210,7 @@ registerDeliveryPricing({
 // 2% discount for invoice payment
 registerPaymentPricing({
   adapterId: 'cash-discount',
-  isActivatedFor: (context) => context.provider?.adapterKey === 'shop.unchained.payment.invoice',
+  isActivatedFor: (context) => context.provider?.adapterKey === 'shop.unchained.invoice',
   calculate: async (sheet, context) => {
     const orderPricing = OrderPricingSheet({
       calculation: context.order?.calculation,
@@ -170,20 +225,23 @@ registerPaymentPricing({
 });
 ```
 
-See [Order Pricing / Delivery Pricing / Payment Pricing](../extend/pricing/product-pricing.md) for details.
+See [Delivery Pricing](../extend/pricing/delivery-pricing.md) and [Payment Pricing](../extend/pricing/payment-pricing.md) for details.
 
 ## Registration
 
-Calling a `register*Pricing()` factory registers the adapter immediately. Make sure the calls run before `startPlatform({})` — either directly in your boot file or in a module it imports:
+Calling a `register*Pricing()` factory (or `pluginRegistry.register()`) registers the adapter immediately. Make sure the calls run before `startPlatform({})`.
+
+Adapters run in plugin **registration order** (`orderIndex` is currently informational). Adapters that read the running calculation sheet must therefore register *after* the preset plugins, so the base-price rows exist — use dynamic imports (static imports are hoisted above the `registerAllPlugins()` call):
 
 ```typescript
 // boot.ts
 import { startPlatform } from '@unchainedshop/platform';
 import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
-import './pricing/weather-based.ts'; // calls registerProductPricing(...)
-import './pricing/volume-discount.ts';
 
 registerAllPlugins();
+await import('./pricing/weather-based.ts'); // calls registerProductPricing(...)
+await import('./pricing/volume-discount.ts'); // calls pluginRegistry.register(...)
+
 const platform = await startPlatform({});
 ```
 
@@ -201,7 +259,7 @@ query TestPricing {
 
 ## Best practices
 
-1. **Order index** — base price (0–9) → customer/volume pricing (10–19) → tax (20–29) → adjustments (30+).
+1. **Registration order** — adapters run in the order their plugins were registered: base price first, then customer/volume pricing, then taxes and adjustments.
 2. **Meta for transparency** — record the reason/rate/source in `meta` for debugging and reporting.
 3. **Fail gracefully** — wrap external calls in `try/catch`; never let a pricing adapter throw and break checkout. (For missing configuration, surface it rather than throwing.)
 4. **Cache external lookups** — memoize slow rate/price-list lookups per `(product, currencyCode)`.

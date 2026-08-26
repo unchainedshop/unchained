@@ -58,7 +58,7 @@ const SwissTax: IProductPricingAdapter = {
   key: 'com.example.pricing.swiss-tax',
   label: 'Swiss VAT (simplified)',
   version: '1.0.0',
-  orderIndex: 20, // after base price and discounts
+  orderIndex: 20, // informational — run order follows registration order
 
   isActivatedFor: (context) => context.countryCode === 'CH',
 

@@ -118,6 +118,10 @@ Stripe SDK peer range widened from `>=19 <21` to `>=19 <23`. The plugin now uses
 
 ## v4 → v5 (Breaking Changes)
 
+### Index Conflicts on v4.8-era Databases (Ops Note)
+
+Some indexes changed shape without changing name (e.g. `orders.orderNumber_1` and `products.warehousing.sku_1` are now `sparse`). On databases created by v4.8, boot logs `MongoServerError: An existing index has the same name as the requested index` for these — the engine continues and the old index stays in place. To adopt the new index shape, drop the conflicting index once (`db.orders.dropIndex('orderNumber_1')`, `db.products.dropIndex('warehousing.sku_1')`) and restart; `buildDbIndexes` recreates them.
+
 ### Plugin System Modernization
 
 **BREAKING CHANGE:** All deprecated adapter exports and registration methods have been removed. You must use the new unified plugin architecture.
