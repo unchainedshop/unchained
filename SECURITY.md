@@ -256,8 +256,8 @@ type PaymentCredentials = {
 {
   httpOnly: true,           // Prevent XSS access
   secure: true,             // HTTPS only (unless explicitly disabled)
-  sameSite: 'none',         // Configurable
-  maxAge: 604800,           // 7 days
+  sameSite: 'lax',          // OWASP: CSRF protection
+  maxAge: 3600 * 1000,      // follows UNCHAINED_TOKEN_EXPIRY_SECONDS (1 hour default)
 }
 ```
 
@@ -268,8 +268,8 @@ type PaymentCredentials = {
 | `UNCHAINED_TOKEN_SECRET` | Session encryption (min 32 chars) | Required |
 | `UNCHAINED_COOKIE_NAME` | Cookie name | `unchained_token` |
 | `UNCHAINED_COOKIE_DOMAIN` | Cookie domain restriction | - |
-| `UNCHAINED_COOKIE_SAMESITE` | SameSite attribute | `none` |
-| `UNCHAINED_COOKIE_INSECURE` | Disable secure flag | `false` |
+| `UNCHAINED_COOKIE_SAMESITE` | SameSite attribute | `lax` |
+| `UNCHAINED_COOKIE_INSECURE` | Disable secure flag (development only) | `false` |
 
 ## Error Handling
 

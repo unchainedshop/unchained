@@ -1,12 +1,6 @@
 import type { User } from '@unchainedshop/core-users';
 import { emit } from '@unchainedshop/events';
-import {
-  signAccessToken,
-  createAuthHandler,
-  generateFingerprint,
-  verifyFingerprint,
-  type AuthConfig,
-} from '../auth.ts';
+import { signAccessToken, createAuthHandler, type AuthConfig } from '../auth.ts';
 import type { LoginFn, LogoutFn } from '../context.ts';
 import { API_EVENTS } from '../events.ts';
 import { createLogger } from '@unchainedshop/logger';
@@ -19,7 +13,6 @@ const {
   UNCHAINED_COOKIE_DOMAIN,
   UNCHAINED_COOKIE_SAMESITE = 'lax', // OWASP: Changed from 'none' to 'lax' for CSRF protection
   UNCHAINED_COOKIE_INSECURE,
-  UNCHAINED_FINGERPRINT_COOKIE_NAME = '__Secure-fgp', // OWASP: Use __Secure- prefix
   UNCHAINED_TOKEN_EXPIRY_SECONDS = '3600', // Match auth.ts default
 } = process.env;
 
@@ -94,25 +87,6 @@ function getTokenCookieOptions(expires?: Date): CookieOptions {
 }
 
 /**
- * Get cookie options for the fingerprint cookie (hardened)
- * OWASP: Fingerprint cookie should be HttpOnly, Secure, SameSite=Strict
- */
-function getFingerprintCookieOptions(expires?: Date): CookieOptions {
-  const secure = !UNCHAINED_COOKIE_INSECURE;
-  const expirySeconds = parseInt(UNCHAINED_TOKEN_EXPIRY_SECONDS, 10);
-
-  return {
-    domain: UNCHAINED_COOKIE_DOMAIN,
-    path: UNCHAINED_COOKIE_PATH,
-    secure,
-    httpOnly: true, // OWASP: Prevent JavaScript access
-    sameSite: 'strict', // OWASP: Strict for fingerprint to prevent cross-site token theft
-    maxAge: expires ? undefined : expirySeconds * 1000,
-    expires,
-  };
-}
-
-/**
  * Extract Bearer token from Authorization header
  * OWASP: Validate that the scheme is actually "Bearer" (case-insensitive per RFC 7235)
  */
@@ -148,36 +122,11 @@ export async function createAuthContext(
   const cookieToken = getCookie(UNCHAINED_COOKIE_NAME);
   const token = headerToken || cookieToken;
 
-  // Get fingerprint cookie for sidejacking protection
-  const fingerprintCookie = getCookie(UNCHAINED_FINGERPRINT_COOKIE_NAME);
-
   // Create auth handler with configured providers
   const verifyToken = createAuthHandler(authConfig);
 
   // Verify the token
   const authResult = token ? await verifyToken(token) : {};
-
-  // OWASP: Verify fingerprint if present in token
-  if (authResult.fingerprintHash && fingerprintCookie) {
-    const fingerprintValid = verifyFingerprint(fingerprintCookie, authResult.fingerprintHash);
-    if (!fingerprintValid) {
-      logger.warn('Token sidejacking detected: fingerprint mismatch', {
-        userId: authResult.userId,
-      });
-      // Invalidate the authentication
-      authResult.userId = undefined;
-      authResult.tokenVersion = undefined;
-      authResult.impersonatorId = undefined;
-    }
-  } else if (authResult.fingerprintHash && !fingerprintCookie) {
-    // Token has fingerprint but cookie is missing - potential theft
-    logger.warn('Token sidejacking detected: fingerprint cookie missing', {
-      userId: authResult.userId,
-    });
-    authResult.userId = undefined;
-    authResult.tokenVersion = undefined;
-    authResult.impersonatorId = undefined;
-  }
 
   // Create login function
   const login: LoginFn = async (user: User, options = {}) => {
@@ -186,20 +135,12 @@ export async function createAuthContext(
     // Get current token version, defaulting to 1
     const tokenVersion = user.tokenVersion ?? 1;
 
-    // Generate fingerprint for sidejacking protection
-    const { raw: fingerprintRaw, hash: fingerprintHash } = generateFingerprint();
-
-    // Sign new JWT with fingerprint hash
     const { token: newToken, expires } = await signAccessToken(user._id, tokenVersion, {
       impersonatorId: impersonator?._id,
-      fingerprintHash,
     });
 
     // Set JWT cookie
     setCookie(UNCHAINED_COOKIE_NAME, newToken, getTokenCookieOptions(expires));
-
-    // Set fingerprint cookie (hardened - SameSite=Strict)
-    setCookie(UNCHAINED_FINGERPRINT_COOKIE_NAME, fingerprintRaw, getFingerprintCookieOptions(expires));
 
     const tokenObject = {
       _id: crypto.randomUUID(), // Session ID equivalent
@@ -218,9 +159,7 @@ export async function createAuthContext(
   // cryptographically valid until expiration. For immediate revocation of all
   // tokens, use the logoutAllSessions mutation which increments tokenVersion.
   const logout: LogoutFn = async () => {
-    // Clear both cookies
     clearCookie(UNCHAINED_COOKIE_NAME, getTokenCookieOptions());
-    clearCookie(UNCHAINED_FINGERPRINT_COOKIE_NAME, getFingerprintCookieOptions());
 
     if (authResult.userId) {
       const tokenObject = {

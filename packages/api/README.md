@@ -168,8 +168,8 @@ The API layer implements comprehensive security controls.
 |----------|---------|---------|
 | `UNCHAINED_TOKEN_SECRET` | Session encryption (min 32 chars) | Required |
 | `UNCHAINED_COOKIE_NAME` | Cookie name | `unchained_token` |
-| `UNCHAINED_COOKIE_SAMESITE` | SameSite attribute | `none` |
-| `UNCHAINED_COOKIE_INSECURE` | Disable secure flag | `false` |
+| `UNCHAINED_COOKIE_SAMESITE` | SameSite attribute | `lax` |
+| `UNCHAINED_COOKIE_INSECURE` | Disable secure flag (development only) | `false` |
 
 Cookies are `httpOnly` and `secure` by default.
 

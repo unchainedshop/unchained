@@ -23,7 +23,6 @@ On every successful login (`loginWithPassword`, `loginAsGuest`, `createUser`, `l
 
 1. Signs a JWT (HS256, via [jose](https://github.com/panva/jose)) with `sub` (user ID), `ver` (token version), `jti`, and `iss` claims.
 2. Sets it as an HTTP-only cookie (`unchained_token` by default).
-3. Sets a second hardened fingerprint cookie (`__Secure-fgp` by default, always `SameSite=Strict`) with a random value whose SHA-256 hash is embedded in the JWT as the `fgp` claim. Requests are only authenticated when cookie and claim match — a stolen JWT is useless without the fingerprint cookie (OWASP token-sidejacking protection).
 
 The mutation response only exposes the expiry, not the token:
 
@@ -56,7 +55,6 @@ Send subsequent requests with cookies included (`credentials: 'include'` with `f
 | `UNCHAINED_COOKIE_DOMAIN` | — | Cookie domain |
 | `UNCHAINED_COOKIE_SAMESITE` | `lax` | `strict`, `lax`, `none`, `1` (true) or `0` (false) |
 | `UNCHAINED_COOKIE_INSECURE` | — | Set to drop the `Secure` flag (development only) |
-| `UNCHAINED_FINGERPRINT_COOKIE_NAME` | `__Secure-fgp` | Fingerprint cookie name |
 
 Generate a secret:
 
@@ -323,7 +321,7 @@ mutation {
 | Operation | Algorithm |
 |-----------|-----------|
 | Password hashing | PBKDF2-SHA512, 300,000 iterations, 16-byte random salt |
-| Session tokens | HS256 JWT (jose) + SHA-256 fingerprint cookie |
+| Session tokens | HS256 JWT (jose) in an HttpOnly cookie |
 | Access token storage | SHA-256 hash of a CSPRNG-generated token |
 
 Enforce a custom password policy through the users module options:

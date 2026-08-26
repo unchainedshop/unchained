@@ -8,8 +8,6 @@ const TEST_SECRET = 'test-secret-that-is-at-least-32-characters-long-for-securit
 // Store auth module functions for use in tests
 let signAccessToken: typeof import('./auth.ts').signAccessToken;
 let verifyLocalToken: typeof import('./auth.ts').verifyLocalToken;
-let generateFingerprint: typeof import('./auth.ts').generateFingerprint;
-let verifyFingerprint: typeof import('./auth.ts').verifyFingerprint;
 let createAuthHandler: typeof import('./auth.ts').createAuthHandler;
 
 // Set environment variables and load module before all tests
@@ -23,50 +21,7 @@ before(async () => {
   const auth = await import('./auth.ts');
   signAccessToken = auth.signAccessToken;
   verifyLocalToken = auth.verifyLocalToken;
-  generateFingerprint = auth.generateFingerprint;
-  verifyFingerprint = auth.verifyFingerprint;
   createAuthHandler = auth.createAuthHandler;
-});
-
-describe('generateFingerprint', () => {
-  it('returns raw and hash values', () => {
-    const { raw, hash } = generateFingerprint();
-
-    assert.ok(raw, 'raw should be defined');
-    assert.ok(hash, 'hash should be defined');
-    assert.ok(raw.length >= 70, 'raw should be at least 70 characters');
-    assert.strictEqual(hash.length, 64, 'hash should be 64 characters (SHA256 hex)');
-  });
-
-  it('generates unique values each call', () => {
-    const fp1 = generateFingerprint();
-    const fp2 = generateFingerprint();
-
-    assert.notStrictEqual(fp1.raw, fp2.raw, 'raw values should be unique');
-    assert.notStrictEqual(fp1.hash, fp2.hash, 'hash values should be unique');
-  });
-});
-
-describe('verifyFingerprint', () => {
-  it('validates matching fingerprints', () => {
-    const { raw, hash } = generateFingerprint();
-    const result = verifyFingerprint(raw, hash);
-    assert.strictEqual(result, true);
-  });
-
-  it('rejects non-matching fingerprints', () => {
-    const { raw } = generateFingerprint();
-    const { hash } = generateFingerprint(); // Different hash
-    const result = verifyFingerprint(raw, hash);
-    assert.strictEqual(result, false);
-  });
-
-  it('rejects modified raw value', () => {
-    const { raw, hash } = generateFingerprint();
-    const modifiedRaw = 'x' + raw.slice(1);
-    const result = verifyFingerprint(modifiedRaw, hash);
-    assert.strictEqual(result, false);
-  });
 });
 
 describe('signAccessToken', () => {
@@ -91,15 +46,6 @@ describe('signAccessToken', () => {
     assert.ok(payload.iat, 'iat claim should be present');
     assert.ok(payload.exp, 'exp claim should be present');
     assert.ok(payload.jti, 'jti claim should be present');
-  });
-
-  it('includes fingerprint hash when provided', async () => {
-    const { hash } = generateFingerprint();
-    const { token } = await signAccessToken('user-123', 1, { fingerprintHash: hash });
-
-    const parts = token.split('.');
-    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
-    assert.strictEqual(payload.fgp, hash, 'fgp claim should match fingerprint hash');
   });
 
   it('includes impersonator ID when provided', async () => {
@@ -174,19 +120,14 @@ describe('verifyLocalToken', () => {
     assert.strictEqual(result, null, 'token with wrong issuer should return null');
   });
 
-  it('preserves fingerprint and impersonator claims', async () => {
-    const { hash } = generateFingerprint();
+  it('preserves impersonator claim', async () => {
     const impersonatorId = 'admin-456';
 
-    const { token } = await signAccessToken('user-123', 1, {
-      fingerprintHash: hash,
-      impersonatorId,
-    });
+    const { token } = await signAccessToken('user-123', 1, { impersonatorId });
 
     const result = await verifyLocalToken(token);
 
     assert.ok(result, 'result should not be null');
-    assert.strictEqual(result.fgp, hash, 'fgp should be preserved');
     assert.strictEqual(result.imp, impersonatorId, 'imp should be preserved');
   });
 });
@@ -223,19 +164,14 @@ describe('createAuthHandler', () => {
     assert.strictEqual(result.userId, undefined);
   });
 
-  it('passes through fingerprint and impersonator', async () => {
+  it('passes through impersonator', async () => {
     const handler = createAuthHandler();
-    const { hash } = generateFingerprint();
     const impersonatorId = 'admin-456';
 
-    const { token } = await signAccessToken('user-123', 1, {
-      fingerprintHash: hash,
-      impersonatorId,
-    });
+    const { token } = await signAccessToken('user-123', 1, { impersonatorId });
 
     const result = await handler(token);
 
-    assert.strictEqual(result.fingerprintHash, hash);
     assert.strictEqual(result.impersonatorId, impersonatorId);
   });
 });

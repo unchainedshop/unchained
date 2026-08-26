@@ -28,7 +28,6 @@ For detailed security documentation including compliance information and deploym
 - **Format**: JWT, signed with HS256 (`jose`)
 - **Secret**: `UNCHAINED_TOKEN_SECRET`, minimum 32 characters (enforced at boot)
 - **Expiry**: `UNCHAINED_TOKEN_EXPIRY_SECONDS`, default 3600 (1 hour)
-- **Sidejacking protection**: a hardened fingerprint cookie (`__Secure-fgp`, `SameSite=Strict`, `httpOnly`) is bound to the JWT; a token presented without its matching fingerprint is rejected
 
 ### Verification & Reset Tokens
 
@@ -127,7 +126,6 @@ The JWT is delivered as an `httpOnly` cookie with these defaults:
 | `UNCHAINED_COOKIE_DOMAIN` | Cookie domain restriction | - |
 | `UNCHAINED_COOKIE_SAMESITE` | SameSite attribute (`strict`, `lax`, `none`) | `lax` |
 | `UNCHAINED_COOKIE_INSECURE` | Disable secure flag (development only) | - |
-| `UNCHAINED_FINGERPRINT_COOKIE_NAME` | Fingerprint cookie name | `__Secure-fgp` |
 
 ## Error Handling
 

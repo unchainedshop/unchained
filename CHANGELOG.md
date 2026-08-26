@@ -80,7 +80,6 @@
 ### Authentication & Security
 - **NEW**: `Mutation.logoutAllSessions` invalidates all of a user's JWTs by bumping the token version.
 - **NEW**: OIDC inbound token verification (remote JWKS) and an OpenID Connect Back-Channel Logout 1.0 endpoint (`POST /backchannel-logout`) with full `logout_token` signature verification.
-- **NEW**: Token-sidejacking protection — a fingerprint hash is embedded in the JWT and matched against a hardened `__Secure-fgp` cookie using a timing-safe compare.
 - **NEW**: Security audit events `ACL_DENIED` and `ACL_GRANTED_SENSITIVE` for monitoring denied and sensitive permission grants.
 - **CHANGED**: Admin impersonation now travels inside the JWT (`imp` claim) instead of session state.
 

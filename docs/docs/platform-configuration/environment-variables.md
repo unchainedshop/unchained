@@ -37,7 +37,6 @@ Variables marked as **Required** are validated at boot by `startPlatform` — th
 | `UNCHAINED_COOKIE_DOMAIN` | - | No | Cookie domain restriction |
 | `UNCHAINED_COOKIE_SAMESITE` | `lax` | No | SameSite cookie attribute (`strict`, `lax`, `none`, `1`, `0`) |
 | `UNCHAINED_COOKIE_INSECURE` | - | No | Allow insecure cookies (set to any truthy value, defaults to secure) |
-| `UNCHAINED_FINGERPRINT_COOKIE_NAME` | `__Secure-fgp` | No | Name of the token-sidejacking-protection fingerprint cookie |
 
 ## Web Configuration
 
