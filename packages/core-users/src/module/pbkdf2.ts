@@ -2,7 +2,7 @@ import { timingSafeStringEqual } from '@unchainedshop/utils';
 
 // https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#pbkdf2
 const PBKDF2_ITERATIONS = 300000; // Iterations, > 210'000
-const PBKDF2_KEY_LENGTH = 256; // Bytes
+const PBKDF2_KEY_LENGTH = 256; // Bits, deriveBits takes bits (= 32-byte key)
 const PBKDF2_SALT_LENGTH = 16; // Bytes
 
 export function generateSalt(saltLength = PBKDF2_SALT_LENGTH) {

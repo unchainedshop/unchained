@@ -44,18 +44,23 @@ export const WordlineSaferpay: IPaymentAdapter = {
       SAFERPAY_RETURN_PATH = '/saferpay/return',
       ROOT_URL = 'http://localhost:4010',
       EMAIL_WEBSITE_URL,
+      SAFERPAY_API_USER,
+      SAFERPAY_API_PASSWORD,
+      // Deprecated v4.8 names, kept as fallback so existing configurations keep working
       SAFERPAY_USER,
       SAFERPAY_PW,
     } = process.env;
 
+    const apiUser = SAFERPAY_API_USER || SAFERPAY_USER;
+    const apiPassword = SAFERPAY_API_PASSWORD || SAFERPAY_PW;
+
     const createSaferPayClient = () => {
-      if (!SAFERPAY_CUSTOMER_ID || !SAFERPAY_USER || !SAFERPAY_PW)
-        throw new Error('Credentials not Set');
+      if (!SAFERPAY_CUSTOMER_ID || !apiUser || !apiPassword) throw new Error('Credentials not Set');
       const saferpayClient = new SaferpayClient(
         SAFERPAY_BASE_URL,
         SAFERPAY_CUSTOMER_ID,
-        SAFERPAY_USER,
-        SAFERPAY_PW,
+        apiUser,
+        apiPassword,
       );
       return saferpayClient;
     };
@@ -71,8 +76,8 @@ export const WordlineSaferpay: IPaymentAdapter = {
         if (
           !SAFERPAY_BASE_URL ||
           !SAFERPAY_CUSTOMER_ID ||
-          !SAFERPAY_USER ||
-          !SAFERPAY_PW ||
+          !apiUser ||
+          !apiPassword ||
           !adapter.getTerminalId()
         ) {
           return PaymentError.INCOMPLETE_CONFIGURATION;

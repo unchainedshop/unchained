@@ -30,19 +30,15 @@ Register before `startPlatform()`. Registration mounts the webhook route `GET /p
 |----------|---------|-------------|
 | `SAFERPAY_CUSTOMER_ID` | - | Saferpay customer ID (required at registration and by the API client) |
 | `SAFERPAY_TERMINAL_ID` | - | Saferpay terminal ID (required at registration; the adapter itself reads the `terminalId` provider configuration) |
-| `SAFERPAY_API_USER` | - | API username (required at registration) |
-| `SAFERPAY_API_PASSWORD` | - | API password (required at registration) |
-| `SAFERPAY_USER` | - | API username — currently read by the API client (see note below) |
-| `SAFERPAY_PW` | - | API password — currently read by the API client and webhook signature (see note below) |
+| `SAFERPAY_API_USER` | - | API username (required at registration and by the API client) |
+| `SAFERPAY_API_PASSWORD` | - | API password (required at registration, by the API client, and for webhook signatures) |
 | `SAFERPAY_BASE_URL` | `https://test.saferpay.com/api` | API base URL. Production: `https://www.saferpay.com/api` |
 | `SAFERPAY_WEBHOOK_PATH` | `/payment/saferpay/webhook` | Webhook endpoint path |
 | `SAFERPAY_RETURN_PATH` | `/saferpay/return` | User return URL path after payment |
 | `ROOT_URL` | `http://localhost:4010` | Base URL for webhook notifications |
 | `EMAIL_WEBSITE_URL` | - | Base URL for user redirects (falls back to `ROOT_URL`) |
 
-:::warning SAFERPAY_USER / SAFERPAY_PW
-Plugin registration validates `SAFERPAY_API_USER` / `SAFERPAY_API_PASSWORD`, but the adapter's API client and webhook signature currently read `SAFERPAY_USER` / `SAFERPAY_PW`. Until this is unified, set **both** pairs to the same credentials.
-:::
+The v4.8 names `SAFERPAY_USER` / `SAFERPAY_PW` are still read as deprecated fallbacks for `SAFERPAY_API_USER` / `SAFERPAY_API_PASSWORD`.
 
 ## Create Provider
 

@@ -34,6 +34,28 @@ after(async () => {
   );
 });
 
+const adminContext = { user: { _id: 'admin', roles: ['admin'] } } as unknown as Context;
+
+const expressChatApp = async (chatConfiguration: any, context: Context | null = adminContext) => {
+  const app = express();
+  app.use((req, _res, next) => {
+    (req as any).unchainedContext = context;
+    next();
+  });
+  connectExpressChat(app, chatConfiguration);
+  return listen(app);
+};
+
+const fastifyChatApp = async (chatConfiguration: any, context: Context | null = adminContext) => {
+  const app = Fastify();
+  fastifyApps.push(app);
+  app.addHook('onRequest', async (req) => {
+    (req as any).unchainedContext = context;
+  });
+  connectFastifyChat(app, chatConfiguration);
+  return app.listen({ port: 0, host: '127.0.0.1' });
+};
+
 const unavailableMcpServer = () =>
   listen((_req, res) => {
     res.writeHead(503, { 'content-type': 'application/json' });
@@ -41,7 +63,7 @@ const unavailableMcpServer = () =>
   });
 
 const availableMcpServer = () => {
-  const context = { user: { _id: 'admin', roles: ['admin'] } } as unknown as Context;
+  const context = adminContext;
   return listen(async (req, res) => {
     const chunks: Buffer[] = [];
     for await (const chunk of req) chunks.push(chunk as Buffer);
@@ -140,12 +162,48 @@ const assertDisconnectAbortsGeneration = async (
   }
 };
 
+describe('chat auth gating', () => {
+  // The MCP endpoint is never contacted on rejected requests, so a dead URL suffices.
+  const deadMcpConfig = { model: {}, unchainedMCPUrl: 'http://127.0.0.1:9/mcp' } as any;
+  const nonAdminContext = { user: { _id: 'shopper', roles: ['consumer'] } } as unknown as Context;
+
+  it('rejects anonymous requests with 401 in the Express chat adapter', async () => {
+    const chatUrl = await expressChatApp(deadMcpConfig, null);
+    const response = await fetch(`${chatUrl}/chat/tools`);
+    assert.strictEqual(response.status, 401);
+  });
+
+  it('rejects anonymous requests with 401 in the Fastify chat adapter', async () => {
+    const chatUrl = await fastifyChatApp(deadMcpConfig, null);
+    const response = await fetch(`${chatUrl}/chat/tools`);
+    assert.strictEqual(response.status, 401);
+  });
+
+  it('rejects non-admin requests with 403 in the Express chat adapter', async () => {
+    const chatUrl = await expressChatApp(deadMcpConfig, nonAdminContext);
+    const response = await fetch(`${chatUrl}/chat`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ messages: [] }),
+    });
+    assert.strictEqual(response.status, 403);
+  });
+
+  it('rejects non-admin requests with 403 in the Fastify chat adapter', async () => {
+    const chatUrl = await fastifyChatApp(deadMcpConfig, nonAdminContext);
+    const response = await fetch(`${chatUrl}/chat`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ messages: [] }),
+    });
+    assert.strictEqual(response.status, 403);
+  });
+});
+
 describe('chat MCP failure handling', () => {
   it('preserves an MCP 503 through the Express chat adapter', async () => {
     const mcpUrl = await unavailableMcpServer();
-    const app = express();
-    connectExpressChat(app, { model: {}, unchainedMCPUrl: `${mcpUrl}/mcp` } as any);
-    const chatUrl = await listen(app);
+    const chatUrl = await expressChatApp({ model: {}, unchainedMCPUrl: `${mcpUrl}/mcp` });
 
     const response = await fetch(`${chatUrl}/chat/tools`);
     assert.strictEqual(response.status, 503);
@@ -153,10 +211,7 @@ describe('chat MCP failure handling', () => {
 
   it('preserves an MCP 503 through the Fastify chat adapter', async () => {
     const mcpUrl = await unavailableMcpServer();
-    const app = Fastify();
-    fastifyApps.push(app);
-    connectFastifyChat(app, { model: {}, unchainedMCPUrl: `${mcpUrl}/mcp` } as any);
-    const chatUrl = await app.listen({ port: 0, host: '127.0.0.1' });
+    const chatUrl = await fastifyChatApp({ model: {}, unchainedMCPUrl: `${mcpUrl}/mcp` });
 
     const response = await fetch(`${chatUrl}/chat/tools`);
     assert.strictEqual(response.status, 503);
@@ -167,19 +222,14 @@ describe('chat disconnect handling', () => {
   it('aborts Express model generation when the HTTP client disconnects', async () => {
     const mcpUrl = await availableMcpServer();
     const state = slowModel();
-    const app = express();
-    connectExpressChat(app, { model: state.model, unchainedMCPUrl: `${mcpUrl}/mcp` } as any);
-    const chatUrl = await listen(app);
+    const chatUrl = await expressChatApp({ model: state.model, unchainedMCPUrl: `${mcpUrl}/mcp` });
     await assertDisconnectAbortsGeneration(chatUrl, state);
   });
 
   it('aborts Fastify model generation when the HTTP client disconnects', async () => {
     const mcpUrl = await availableMcpServer();
     const state = slowModel();
-    const app = Fastify();
-    fastifyApps.push(app);
-    connectFastifyChat(app, { model: state.model, unchainedMCPUrl: `${mcpUrl}/mcp` } as any);
-    const chatUrl = await app.listen({ port: 0, host: '127.0.0.1' });
+    const chatUrl = await fastifyChatApp({ model: state.model, unchainedMCPUrl: `${mcpUrl}/mcp` });
     await assertDisconnectAbortsGeneration(chatUrl, state);
   });
 });

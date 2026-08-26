@@ -33,7 +33,7 @@ registerProductPricing({
 });
 ```
 
-`calculate(sheet, context)` receives a fresh result sheet for this adapter — it contains only the rows *you* add (`amount` is the total for `context.quantity`) — and the pricing `context` (`product`, `quantity`, `currencyCode`, `countryCode`, …). Adapters run in plugin registration order (`orderIndex` is currently not used for ordering).
+`calculate(sheet, context)` receives a fresh result sheet for this adapter — it contains only the rows *you* add (`amount` is the total for `context.quantity`) — and the pricing `context` (`product`, `quantity`, `currencyCode`, `countryCode`, …). Adapters run in ascending `orderIndex`; registration order only breaks ties.
 
 `addItem` always writes an `ITEM` row; the other row categories (`DISCOUNT`, `TAX`) have their own methods (`addDiscount`, `addTax`).
 
@@ -58,7 +58,7 @@ const SwissTax: IProductPricingAdapter = {
   key: 'com.example.pricing.swiss-tax',
   label: 'Swiss VAT (simplified)',
   version: '1.0.0',
-  orderIndex: 20, // informational — run order follows registration order
+  orderIndex: 20, // after the catalog price (0), before the built-in taxes (80)
 
   isActivatedFor: (context) => context.countryCode === 'CH',
 

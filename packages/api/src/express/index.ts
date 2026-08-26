@@ -15,8 +15,12 @@ import type { ChatConfiguration } from '../chat/utils.ts';
 import { connectChat } from './chatHandler.ts';
 import { mountRoutes } from './mountRoutes.ts';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
-import { generateThemeCSS, type AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
-import { preparePluginAssets, resolveAdminUIPath, type AdminUIPluginConfig } from '../adminUiPlugins.ts';
+import {
+  preparePluginAssets,
+  resolveAdminUIPath,
+  type AdminUIPluginConfig,
+  type AdminUIThemeConfig,
+} from '../adminUiPlugins.ts';
 
 export type {
   AdminUIPluginConfig,
@@ -25,9 +29,9 @@ export type {
   AdminUIPluginTabConfig,
   AdminUIPluginWidgetConfig,
   AdminUIPluginSlotConfig,
+  AdminUIThemeTokens,
+  AdminUIThemeConfig,
 } from '../adminUiPlugins.ts';
-
-export type { AdminUIThemeTokens, AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
 
 export interface AdminUIRouterOptions {
   prefix?: string;
@@ -36,7 +40,7 @@ export interface AdminUIRouterOptions {
   plugins?: AdminUIPluginConfig[];
 }
 
-export const adminUIRouter = (
+export const adminUIRouter = async (
   enabled = true,
   theme?: AdminUIThemeConfig,
   plugins: AdminUIPluginConfig[] = [],
@@ -47,7 +51,19 @@ export const adminUIRouter = (
   if (!adminUIPath) return router;
 
   if (enabled) {
-    const themeCSS = generateThemeCSS(theme);
+    // generateThemeCSS without a theme yields the same default, so the optional
+    // @unchainedshop/admin-ui dependency is only resolved when a theme is set
+    let themeCSS = '/* default theme */';
+    if (theme) {
+      try {
+        const { generateThemeCSS } = await import('@unchainedshop/admin-ui/theme');
+        themeCSS = generateThemeCSS(theme);
+      } catch {
+        console.warn(
+          "npm dependency @unchainedshop/admin-ui is not installed, can't apply admin-ui theme",
+        );
+      }
+    }
     const themeHash = createHash('sha256').update(themeCSS).digest('hex').slice(0, 8);
     const themeEtag = `"${themeHash}"`;
     router.get('/admin-ui-theme.css', (req, res) => {
@@ -273,7 +289,10 @@ export const connect = async (
   mountRoutes(expressApp, unchainedAPI, routes);
 
   if (adminUI) {
-    expressApp.use(adminUIOptions?.prefix || '/', adminUIRouter(true, adminUITheme, adminUIPlugins));
+    expressApp.use(
+      adminUIOptions?.prefix || '/',
+      await adminUIRouter(true, adminUITheme, adminUIPlugins),
+    );
   }
 };
 

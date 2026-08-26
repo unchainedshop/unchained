@@ -69,6 +69,19 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
       return;
     }
 
+    // Chat proxies the admin-gated /mcp surface: enforce the same auth wall up front
+    // instead of letting the downstream MCP 401 surface as a 500.
+    const unchainedContext = (req as Request & { unchainedContext?: Context }).unchainedContext;
+    const user = unchainedContext?.user;
+    if (!user) {
+      res.status(401).json({ error: 'unauthorized' });
+      return;
+    }
+    if (!(user.roles || []).includes('admin')) {
+      res.status(403).json({ error: 'forbidden', message: 'Chat requires admin privileges' });
+      return;
+    }
+
     let client: Awaited<ReturnType<typeof createMCPClient>> | undefined;
     const lifecycle = createChatRequestLifecycle(res, configuredAbortSignal);
     try {
@@ -88,9 +101,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
 
       // Shop configuration is read in-process from the same data the MCP resources serve
       // (admin-gated inside the builder, mirroring the /mcp auth wall).
-      const resourceContext = await buildChatResourceContext(
-        (req as Request & { unchainedContext: Context }).unchainedContext,
-      );
+      const resourceContext = await buildChatResourceContext(unchainedContext);
 
       const tools: aiTypes.ToolSet = {
         ...defaultUnchainedTools,

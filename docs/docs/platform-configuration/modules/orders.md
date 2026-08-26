@@ -163,7 +163,6 @@ Access via `modules.orders` in the Unchained API context.
 | `ORDER_DELIVER` | `{ orderDelivery }` | Emitted when order is delivered |
 | `ORDER_PAY` | `{ orderPayment }` | Emitted when an order payment is marked as paid |
 | `ORDER_UPDATE_PAYMENT` | `{ orderPayment }` | Emitted when an order payment is updated |
-| `ORDER_SIGN_PAYMENT` | — | Registered payment-signing event (currently not emitted by core) |
 | `ORDER_CREATE_DISCOUNT` | `{ discount }` | Emitted when a discount is created |
 | `ORDER_UPDATE_DISCOUNT` | `{ discount }` | Emitted when a discount is updated |
 | `ORDER_REMOVE_DISCOUNT` | `{ discount }` | Emitted when a discount is removed |

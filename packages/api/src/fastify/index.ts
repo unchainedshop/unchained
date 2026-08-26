@@ -15,8 +15,12 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
-import { generateThemeCSS, type AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
-import { preparePluginAssets, resolveAdminUIPath, type AdminUIPluginConfig } from '../adminUiPlugins.ts';
+import {
+  preparePluginAssets,
+  resolveAdminUIPath,
+  type AdminUIPluginConfig,
+  type AdminUIThemeConfig,
+} from '../adminUiPlugins.ts';
 
 export type {
   AdminUIPluginConfig,
@@ -25,9 +29,9 @@ export type {
   AdminUIPluginTabConfig,
   AdminUIPluginWidgetConfig,
   AdminUIPluginSlotConfig,
+  AdminUIThemeTokens,
+  AdminUIThemeConfig,
 } from '../adminUiPlugins.ts';
-
-export type { AdminUIThemeTokens, AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
 
 export interface AdminUIRouterOptions {
   prefix?: string;
@@ -230,7 +234,19 @@ export const connect = async (
     const adminUIOptions = typeof adminUI === 'object' ? adminUI : undefined;
     const adminUIPlugins: AdminUIPluginConfig[] = adminUIOptions?.plugins || [];
 
-    const themeCSS = generateThemeCSS(adminUIOptions?.theme);
+    // generateThemeCSS without a theme yields the same default, so the optional
+    // @unchainedshop/admin-ui dependency is only resolved when a theme is set
+    let themeCSS = '/* default theme */';
+    if (adminUIOptions?.theme) {
+      try {
+        const { generateThemeCSS } = await import('@unchainedshop/admin-ui/theme');
+        themeCSS = generateThemeCSS(adminUIOptions.theme);
+      } catch {
+        fastify.log.warn(
+          "npm dependency @unchainedshop/admin-ui is not installed, can't apply admin-ui theme",
+        );
+      }
+    }
     const themeHash = createHash('sha256').update(themeCSS).digest('hex').slice(0, 8);
     const themeEtag = `"${themeHash}"`;
     fastify.get('/admin-ui-theme.css', async (request, reply) => {

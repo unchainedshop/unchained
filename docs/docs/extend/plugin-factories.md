@@ -161,7 +161,7 @@ The four pricing factories share the **same signature**: `{ adapterId, orderInde
 | `adapterId` | `string` | ✅ | key `shop.unchained.pricing.<domain>-<adapterId>` |
 | `calculate` | `(sheet, context) => Promise<void>` | ✅ | push rows onto `sheet`; the factory continues the chain for you |
 | `isActivatedFor` | `(context) => boolean` | | default `true` |
-| `orderIndex` | `number` | | default `0`; currently not used for ordering — the chain runs in plugin registration order |
+| `orderIndex` | `number` | | default `0`; the chain runs in ascending order, ties keep registration order |
 
 :::warning Do not call the base `calculate()` yourself
 The factory wraps your `calculate` and continues the pricing chain automatically. Just push rows onto the `sheet` — **do not** call `super.calculate()` / `pricingAdapter.calculate()` (that was the old class-based API).

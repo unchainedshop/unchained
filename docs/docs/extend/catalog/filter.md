@@ -7,7 +7,7 @@ description: Customize filter and search
 
 # Custom Filter Plugins
 
-Filter adapters let you customize catalog search, filter visibility, MongoDB selectors, and sort behavior. Multiple filters can be active; they run in plugin registration order (`orderIndex` is currently not used for ordering), and each filter receives the selector or result set produced by earlier filters.
+Filter adapters let you customize catalog search, filter visibility, MongoDB selectors, and sort behavior. Multiple filters can be active; they run in ascending `orderIndex` (registration order breaks ties), and each filter receives the selector or result set produced by earlier filters.
 
 ## External Search
 

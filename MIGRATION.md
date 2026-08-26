@@ -106,6 +106,10 @@ const cryptopay = await configureCryptopayModule({ db });
 
 `DATATRANS_SUCCESS_PATH`, `DATATRANS_ERROR_PATH`, `DATATRANS_CANCEL_PATH` → `PAYREXX_SUCCESS_PATH`, `PAYREXX_ERROR_PATH`, `PAYREXX_CANCEL_PATH`.
 
+### Saferpay env vars renamed
+
+`SAFERPAY_USER`, `SAFERPAY_PW` → `SAFERPAY_API_USER`, `SAFERPAY_API_PASSWORD`. The old names are still read as deprecated fallbacks. Plugin registration additionally requires `SAFERPAY_CUSTOMER_ID` and `SAFERPAY_TERMINAL_ID` to be set, otherwise the plugin is skipped at boot.
+
 ### Breaking: Stripe API + SDK version
 
 Stripe SDK peer range widened from `>=19 <21` to `>=19 <23`. The plugin now uses Stripe API version `2026-03-25.dahlia`. Upgrade your installed `stripe` package to v22 to match the devDependency.

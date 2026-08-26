@@ -15,7 +15,7 @@ Unchained uses a pricing pipeline where multiple adapters contribute to the fina
 
 ```mermaid
 flowchart LR
-    BP[Base Price] --> TA[Tax] --> DA[Discount] --> FP[Final Price]
+    BP[Base Price] --> DA[Discount] --> TA[Tax] --> FP[Final Price]
 ```
 
 ### Key principles
@@ -95,7 +95,7 @@ const VolumeDiscount: IProductPricingAdapter = {
   key: 'com.example.pricing.volume-discount',
   label: 'Volume Discount',
   version: '1.0.0',
-  orderIndex: 20, // informational — run order follows registration order
+  orderIndex: 20, // after the catalog price (0), before taxes (80)
 
   isActivatedFor: (context) => context.product?.meta?.allowVolumeDiscount === true,
 
@@ -231,16 +231,16 @@ See [Delivery Pricing](../extend/pricing/delivery-pricing.md) and [Payment Prici
 
 Calling a `register*Pricing()` factory (or `pluginRegistry.register()`) registers the adapter immediately. Make sure the calls run before `startPlatform({})`.
 
-Adapters run in plugin **registration order** (`orderIndex` is currently informational). Adapters that read the running calculation sheet must therefore register *after* the preset plugins, so the base-price rows exist — use dynamic imports (static imports are hoisted above the `registerAllPlugins()` call):
+Adapters run in ascending **`orderIndex`**; registration order only breaks ties. Give adapters that read the running calculation sheet a higher `orderIndex` than the adapters whose rows they need (the base price runs at `0`, taxes at `80`):
 
 ```typescript
 // boot.ts
 import { startPlatform } from '@unchainedshop/platform';
 import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
+import './pricing/weather-based.ts'; // calls registerProductPricing(...)
+import './pricing/volume-discount.ts'; // calls pluginRegistry.register(...)
 
 registerAllPlugins();
-await import('./pricing/weather-based.ts'); // calls registerProductPricing(...)
-await import('./pricing/volume-discount.ts'); // calls pluginRegistry.register(...)
 
 const platform = await startPlatform({});
 ```
@@ -259,7 +259,7 @@ query TestPricing {
 
 ## Best practices
 
-1. **Registration order** — adapters run in the order their plugins were registered: base price first, then customer/volume pricing, then taxes and adjustments.
+1. **Order index** — pick an `orderIndex` that places your adapter correctly in the chain: base price (0), customer/volume pricing and discounts (10–40), taxes (80).
 2. **Meta for transparency** — record the reason/rate/source in `meta` for debugging and reporting.
 3. **Fail gracefully** — wrap external calls in `try/catch`; never let a pricing adapter throw and break checkout. (For missing configuration, surface it rather than throwing.)
 4. **Cache external lookups** — memoize slow rate/price-list lookups per `(product, currencyCode)`.

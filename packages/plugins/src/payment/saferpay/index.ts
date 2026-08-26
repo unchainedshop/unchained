@@ -26,10 +26,22 @@ export const SaferpayPlugin: IPlugin = {
   ],
 
   onRegister: () => {
-    const { SAFERPAY_CUSTOMER_ID, SAFERPAY_TERMINAL_ID, SAFERPAY_API_USER, SAFERPAY_API_PASSWORD } =
-      process.env;
+    const {
+      SAFERPAY_CUSTOMER_ID,
+      SAFERPAY_TERMINAL_ID,
+      SAFERPAY_API_USER,
+      SAFERPAY_API_PASSWORD,
+      // Deprecated v4.8 names, kept as fallback so existing configurations keep working
+      SAFERPAY_USER,
+      SAFERPAY_PW,
+    } = process.env;
 
-    if (!SAFERPAY_CUSTOMER_ID || !SAFERPAY_TERMINAL_ID || !SAFERPAY_API_USER || !SAFERPAY_API_PASSWORD) {
+    if (
+      !SAFERPAY_CUSTOMER_ID ||
+      !SAFERPAY_TERMINAL_ID ||
+      !(SAFERPAY_API_USER || SAFERPAY_USER) ||
+      !(SAFERPAY_API_PASSWORD || SAFERPAY_PW)
+    ) {
       throw new Error('Saferpay environment variables not fully configured');
     }
   },
