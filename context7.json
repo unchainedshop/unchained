@@ -2,8 +2,7 @@
   "$schema": "https://context7.com/schema/context7.json",
   "projectTitle": "Unchained Engine",
   "description": "Open-source headless e-commerce framework for Node.js: GraphQL-first API, MongoDB-backed modular core, adapter-based plugin system, built-in MCP server for AI agents, and Admin UI. EUPL-1.2.",
-  "folders": ["packages", "examples", "docs"],
-  "excludeFolders": ["admin-ui", "tests"],
+  "excludeFolders": ["admin-ui/src", "admin-ui/cypress", "tests"],
   "rules": [
     "Relative imports must include the .ts file extension (import seed from './seed.ts')",
     "Import workspace packages by name without extensions (import { startPlatform } from '@unchainedshop/platform')",
