@@ -86,13 +86,13 @@ export const buildFindSelector = ({
   }
   if (usernames?.length) {
     selector.username = {
-      $in: usernames.map((u) => insensitiveTrimmedRegexOperator(u)),
-    } as any;
+      $in: usernames.map((u) => insensitiveTrimmedRegexOperator(u).$regex),
+    };
   }
   if (emails?.length) {
     selector['emails.address'] = {
-      $in: emails.map((e) => insensitiveTrimmedRegexOperator(e)),
-    } as any;
+      $in: emails.map((e) => insensitiveTrimmedRegexOperator(e).$regex),
+    };
   }
   if (emailVerified === true) {
     selector['emails.verified'] = true;
