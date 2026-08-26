@@ -112,21 +112,29 @@ export const AssortmentsCollection = async (db: mongodb.Db) => {
   ]);
 
   // AssortmentProducts indexes
-  await buildDbIndexes(AssortmentProducts, [
-    { index: { assortmentId: 1 } },
-    { index: { productId: 1 } },
-    { index: { tags: 1 } },
-    { index: { assortmentId: 1, sortKey: 1 } },
-  ]);
+  await buildDbIndexes(
+    AssortmentProducts,
+    [
+      { index: { assortmentId: 1, productId: 1 } },
+      { index: { productId: 1 } },
+      { index: { tags: 1 } },
+      { index: { assortmentId: 1, sortKey: 1 } },
+    ],
+    { rebuild: false },
+  );
 
   // AssortmentLinks indices
-  await buildDbIndexes(AssortmentLinks, [
-    { index: { parentAssortmentId: 1 } },
-    { index: { childAssortmentId: 1 } },
-    { index: { tags: 1 } },
-    { index: { parentAssortmentId: 1, sortKey: 1 } },
-    { index: { childAssortmentId: 1, parentAssortmentId: 1, sortKey: 1 } },
-  ]);
+  await buildDbIndexes(
+    AssortmentLinks,
+    [
+      { index: { parentAssortmentId: 1 } },
+      { index: { childAssortmentId: 1, sortKey: 1, parentAssortmentId: 1 } },
+      { index: { tags: 1 } },
+      { index: { parentAssortmentId: 1, sortKey: 1 } },
+      { index: { childAssortmentId: 1, parentAssortmentId: 1, sortKey: 1 } },
+    ],
+    { rebuild: false },
+  );
 
   // AssortmentFilter indices
   await buildDbIndexes(AssortmentFilters, [
