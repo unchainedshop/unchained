@@ -29,10 +29,17 @@ const gridfsHandler = async (
     const fileName = decodeURIComponent(fileNameRaw);
 
     /* This is a file upload endpoint, and thus we need to allow CORS.
-    else we'd need proxies for all kinds of things for storefronts */
+    else we'd need proxies for all kinds of things for storefronts.
+    Reflect the preflight-requested headers: RUM/tracing instrumentations
+    (e.g. Grafana Faro) inject headers like traceparent, and access is
+    guarded by the URL signature, not by request headers. */
     res.setHeader('Access-Control-Allow-Methods', 'GET, PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      req.get('Access-Control-Request-Headers') || 'Content-Type',
+    );
     res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Vary', 'Access-Control-Request-Headers');
 
     if (req.method === 'OPTIONS') {
       res.status(200).end();

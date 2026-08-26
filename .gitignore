@@ -19,3 +19,4 @@ fly.toml
 *.db
 dist
 .unchained-docs
+.playwright-mcp

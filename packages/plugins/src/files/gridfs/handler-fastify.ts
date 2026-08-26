@@ -26,10 +26,17 @@ const gridfsHandler: RouteHandlerMethod = async (
     const { directoryName, fileName } = req.params as any;
 
     /* This is a file upload endpoint, and thus we need to allow CORS.
-    else we'd need proxies for all kinds of things for storefronts */
+    else we'd need proxies for all kinds of things for storefronts.
+    Reflect the preflight-requested headers: RUM/tracing instrumentations
+    (e.g. Grafana Faro) inject headers like traceparent, and access is
+    guarded by the URL signature, not by request headers. */
     reply.header('Access-Control-Allow-Methods', 'GET, PUT');
-    reply.header('Access-Control-Allow-Headers', 'content-type');
+    reply.header(
+      'Access-Control-Allow-Headers',
+      (req.headers['access-control-request-headers'] as string) || 'content-type',
+    );
     reply.header('Access-Control-Allow-Origin', '*');
+    reply.header('Vary', 'Access-Control-Request-Headers');
 
     if (req.method === 'OPTIONS') {
       reply.status(200);
