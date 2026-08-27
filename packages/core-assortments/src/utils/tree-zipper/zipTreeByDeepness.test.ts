@@ -118,6 +118,46 @@ describe('zipTreeByDeepness (full pipeline)', () => {
     const result = zipTreeByDeepness([]);
     assert.deepStrictEqual(result, []);
   });
+
+  it('should preserve level order: an assortment own products come before descendants', () => {
+    // Regression: an iterative flatten must keep level 0 (own products) first,
+    // then level 1 (child), then level 2 (grandchild). A stack seeded without
+    // reversing inverts the levels and pushes own products behind descendants.
+    const tree: Tree<string> = ['root-p1', 'root-p2', ['child-p1', 'child-p2', ['grandchild-p1']]];
+    const result = zipTreeByDeepness(tree);
+
+    assert.deepStrictEqual(result, [
+      'root-p1',
+      'root-p2',
+      'child-p1',
+      'child-p2',
+      'grandchild-p1',
+    ]);
+  });
+
+  it('should keep sibling branches in left-to-right order', () => {
+    const tree: Tree<string> = ['root', ['branch-a', ['a1', 'a2']], ['branch-b', ['b1', 'b2']]];
+    const result = zipTreeByDeepness(tree);
+
+    // Level order is preserved (0 before 1 before 2); within a level the
+    // sibling branches are interleaved by the zip step (a1,b1 then a2,b2).
+    assert.deepStrictEqual(result, ['root', 'branch-a', 'branch-b', 'a1', 'b1', 'a2', 'b2']);
+  });
+
+  it('should not overflow on a very deep tree', () => {
+    // Build a tree ~5,000 levels deep. shuffleEachLevel nests the shuffled
+    // items roughly as deep as the number of levels, which overflows the
+    // recursive Array.prototype.flat(Infinity) this function replaced.
+    let tree: Tree<string> = ['leaf'];
+    for (let i = 0; i < 5_000; i++) {
+      tree = [`p${i}`, tree];
+    }
+
+    assert.doesNotThrow(() => zipTreeByDeepness(tree));
+    const result = zipTreeByDeepness(tree);
+    assert.ok(result.includes('leaf'));
+    assert.ok(result.includes('p0'));
+  });
 });
 
 describe('fillUp', () => {
