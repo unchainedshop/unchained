@@ -259,7 +259,7 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
           },
     ): Promise<Product | null> => {
       if ('sku' in params) {
-        return Products.findOne({ 'warehousing.sku': params.sku }, { sort: { sequence: 1 } });
+        return Products.findOne({ 'warehousing.sku': params.sku }, { sort: { sequence: 1, _id: 1 } });
       }
       if ('slug' in params && params.slug != null) {
         return Products.findOne({ slugs: params.slug }, {});

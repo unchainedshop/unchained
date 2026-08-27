@@ -95,7 +95,7 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
       const mediaList = ProductMedias.find(selector, {
         skip: offset,
         limit,
-        sort: { sortKey: 1 },
+        sort: { sortKey: 1, _id: 1 },
         ...options,
       });
 
@@ -115,7 +115,7 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
             productId: doc.productId,
           },
           {
-            sort: { sortKey: -1 },
+            sort: { sortKey: -1, _id: -1 },
           },
         )) || { sortKey: 0 };
         sortKey = lastProductMedia.sortKey + 1;
@@ -223,7 +223,7 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
         {
           _id: { $in: changedProductMediaIds },
         },
-        { sort: { sortKey: 1 } },
+        { sort: { sortKey: 1, _id: 1 } },
       ).toArray();
 
       await emit('PRODUCT_REORDER_MEDIA', { productMedias });

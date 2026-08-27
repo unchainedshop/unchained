@@ -81,8 +81,12 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
       }
 
       const options: mongodb.FindOptions = {
+        // `_id` is a stable secondary key so cart selection is deterministic when
+        // several open carts share the same `updated` timestamp (e.g. seeded test
+        // fixtures) instead of falling to Mongo's undefined tie-break order.
         sort: {
           updated: -1,
+          _id: -1,
         },
       };
       return Orders.findOne(selector, options);
@@ -97,7 +101,9 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
     ): Promise<Order[]> => {
       return Orders.find(
         { status: { $eq: null }, userId: { $in: userIds } },
-        { sort: { updated: -1 }, ...options },
+        // `_id` gives a stable tie-break so the loader mirrors `cart`'s deterministic
+        // selection when multiple open carts share the same `updated` timestamp.
+        { sort: { updated: -1, _id: -1 }, ...options },
       ).toArray();
     },
 

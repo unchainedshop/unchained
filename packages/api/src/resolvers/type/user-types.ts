@@ -238,6 +238,7 @@ export const User: UserHelperTypes = {
       {
         sort: {
           created: -1,
+          _id: -1,
         },
       },
     );

@@ -102,7 +102,7 @@ export const configureAssortmentsModule = async (
         $or: [{ parentAssortmentId: assortment._id }, { childAssortmentId: assortment._id }],
       },
       {
-        sort: { sortKey: 1 },
+        sort: { sortKey: 1, _id: 1 },
       },
     ).toArray();
   };
@@ -111,7 +111,7 @@ export const configureAssortmentsModule = async (
     return AssortmentProducts.find(
       { assortmentId },
       {
-        sort: { sortKey: 1 },
+        sort: { sortKey: 1, _id: 1 },
       },
     ).toArray();
   };
@@ -306,7 +306,7 @@ export const configureAssortmentsModule = async (
         { parentAssortmentId: assortmentId },
         {
           projection: { childAssortmentId: 1 },
-          sort: { sortKey: 1 },
+          sort: { sortKey: 1, _id: 1 },
         },
       ).toArray();
 
@@ -345,7 +345,7 @@ export const configureAssortmentsModule = async (
             { childAssortmentId: id },
             {
               projection: { _id: 1, childAssortmentId: 1, parentAssortmentId: 1 },
-              sort: { sortKey: 1, parentAssortmentId: 1 },
+              sort: { sortKey: 1, parentAssortmentId: 1, _id: 1 },
             },
           ).toArray();
         },
@@ -354,7 +354,7 @@ export const configureAssortmentsModule = async (
             { productId: id },
             {
               projection: { _id: true, assortmentId: true, productId: true },
-              sort: { sortKey: 1, productId: 1 },
+              sort: { sortKey: 1, productId: 1, _id: 1 },
             },
           ).toArray();
         },

@@ -93,7 +93,7 @@ export const configureAssortmentProductsModule = ({
           productId: { $ne: productId },
         },
         {
-          sort: { sortKey: 1 },
+          sort: { sortKey: 1, _id: 1 },
           projection: { productId: 1 },
         },
       ).toArray();
@@ -129,7 +129,7 @@ export const configureAssortmentProductsModule = ({
         // Get next sort key
         const lastAssortmentProduct = (await AssortmentProducts.findOne(
           { assortmentId },
-          { sort: { sortKey: -1 } },
+          { sort: { sortKey: -1, _id: -1 } },
         )) || { sortKey: 0 };
         $setOnInsert.sortKey = lastAssortmentProduct.sortKey + 1;
       } else {

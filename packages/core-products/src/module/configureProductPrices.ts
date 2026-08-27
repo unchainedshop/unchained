@@ -205,7 +205,7 @@ export const configureProductPricesModule = ({
             timestamp: { $lte: referenceDate },
             expiresAt: { $gte: referenceDate },
           },
-          { sort: { timestamp: -1 } },
+          { sort: { timestamp: -1, _id: -1 } },
         );
 
         if (!mostRecentCurrencyRate) return null;

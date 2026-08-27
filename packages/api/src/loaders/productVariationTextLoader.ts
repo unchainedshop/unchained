@@ -18,6 +18,7 @@ export default (unchainedAPI: UnchainedCore) =>
       {
         sort: {
           productVariationId: 1,
+          _id: 1,
         },
       },
     );

@@ -76,7 +76,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
   const WarehousingProviders = await WarehousingProvidersCollection(db);
 
   const allProviders = memoizeWithTTL(
-    async () => WarehousingProviders.find({ deleted: null }, { sort: { created: 1 } }).toArray(),
+    async () => WarehousingProviders.find({ deleted: null }, { sort: { created: 1, _id: 1 } }).toArray(),
     { ttl: process.env.NODE_ENV === 'production' ? 60000 : 1 },
   );
   const TokenSurrogates = await TokenSurrogateCollection(db);
@@ -136,7 +136,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
 
     findProviders: async (
       query: WarehousingProviderQuery = {},
-      options: mongodb.FindOptions = { sort: { created: 1 } },
+      options: mongodb.FindOptions = { sort: { created: 1, _id: 1 } },
     ): Promise<WarehousingProvider[]> => {
       const providers = WarehousingProviders.find(buildFindSelector(query), options);
       return providers.toArray();

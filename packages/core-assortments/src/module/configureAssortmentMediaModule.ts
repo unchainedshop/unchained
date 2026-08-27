@@ -95,7 +95,7 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
       const mediaList = AssortmentMedia.find(selector, {
         skip: offset,
         limit,
-        sort: { sortKey: 1 },
+        sort: { sortKey: 1, _id: 1 },
         ...options,
       });
 
@@ -115,7 +115,7 @@ export const configureAssortmentMediaModule = async ({ db }: ModuleInput<Record<
             assortmentId: doc.assortmentId,
           },
           {
-            sort: { sortKey: -1 },
+            sort: { sortKey: -1, _id: -1 },
           },
         )) || { sortKey: 0 };
         sortKey = lastAssortmentMedia.sortKey + 1;

@@ -12,6 +12,7 @@ export default async function getUserPaymentCredentials(
     {
       sort: {
         created: -1,
+        _id: -1,
       },
     },
   );

@@ -61,6 +61,7 @@ export async function initCartProvidersService(this: Modules, order: Order) {
       {
         sort: {
           created: -1,
+          _id: -1,
         },
       },
     );

@@ -76,7 +76,8 @@ const configureCryptopayModule = async ({ db }) => {
       },
       {
         sort: {
-          created: 1, // Sort by creation date, most recent first
+          created: 1, // Sort by creation date, oldest first
+          _id: 1, // Stable tie-break when addresses share a creation timestamp
         },
       },
     ).toArray();

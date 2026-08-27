@@ -75,7 +75,7 @@ export const configureAssortmentLinksModule = ({
       const links = AssortmentLinks.find(
         selector,
         options || {
-          sort: { sortKey: 1 },
+          sort: { sortKey: 1, _id: 1 },
         },
       );
 
@@ -96,7 +96,7 @@ export const configureAssortmentLinksModule = ({
             { childAssortmentId: id },
             {
               projection: { _id: 1, childAssortmentId: 1, parentAssortmentId: 1 },
-              sort: { sortKey: 1, parentAssortmentId: 1 },
+              sort: { sortKey: 1, parentAssortmentId: 1, _id: 1 },
             },
           ).toArray();
         },
@@ -124,7 +124,7 @@ export const configureAssortmentLinksModule = ({
         // Get next sort key
         const lastAssortmentLink = (await AssortmentLinks.findOne(
           { parentAssortmentId },
-          { sort: { sortKey: -1 } },
+          { sort: { sortKey: -1, _id: -1 } },
         )) || { sortKey: 0 };
         $setOnInsert.sortKey = lastAssortmentLink.sortKey + 1;
       } else {
