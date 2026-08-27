@@ -100,6 +100,12 @@
 - **NEW**: AI Integration docs section (MCP server reference with 9 tool categories, Admin Copilot setup, AI FAQ) and auto-generated `/llms.txt` + `/llms-full.txt` for LLM/crawler consumption.
 - Added a comprehensive GraphQL API reference and an RBAC permissions reference (126 actions documented), plus server-setup, testing, seed-data, and contributing guides.
 
+### Performance & Dependencies
+- **CHANGED**: `@unchainedshop/utils` now uses `awesome-phonenumber` instead of `libphonenumber-js` for phone-number normalization and country-code/subscriber splitting — the same Google-metadata validation at ~0.74 MB installed versus ~12 MB (a ~94% cut in the single largest production dependency of a minimal install). The public helpers `normalizePhoneNumber` and `phoneNumberToParts` are unchanged and remain synchronous.
+
+### Reliability
+- **FIXED**: Deterministic-selection queries now carry a stable `_id` secondary sort key (its direction mirroring the primary key), so results no longer fall back to MongoDB's undefined tie-break order when the primary key ties. This covers current-cart selection, localized-text resolution (backing every product/assortment/filter/media/variation text loader), default delivery/payment/warehousing provider selection, product currency-rate and SKU lookups, stored payment-credential selection, and assortment/product-media display ordering — removing a class of order-dependent nondeterminism (e.g. the default-provider inheritance and Datatrans checkout flakes).
+
 ## Migration Guide
 See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migration instructions.
 
