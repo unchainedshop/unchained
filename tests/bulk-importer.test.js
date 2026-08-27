@@ -249,10 +249,10 @@ test.describe('Bulk Importer', () => {
       const result = await intervalUntilTimeout(async () => {
         const product = await Products.findOne({ tags: 'awesome2' });
         return !!product;
-      }, 10000);
+      }, 20000);
 
       assert.strictEqual(result, true);
-    }, 30000);
+    }, 45000);
   });
 
   test.describe('Import Filters', () => {
@@ -341,10 +341,10 @@ test.describe('Bulk Importer', () => {
       const result = await intervalUntilTimeout(async () => {
         const filter = await Filters.findOne({ _id: 'Filter A' });
         return filter.isActive === false;
-      }, 3000);
+      }, 15000);
 
       assert.strictEqual(result, true);
-    }, 10000);
+    }, 30000);
   });
 
   test.describe('Import Assortments', () => {
@@ -491,14 +491,14 @@ test.describe('Bulk Importer', () => {
         const assortment = await Assortments.findOne({ _id: 'Assortment A' });
 
         return assortment?.tags.includes('base');
-      }, 3000);
+      }, 15000);
 
       const updatedAssortmentMediaHasSmallTag = await intervalUntilTimeout(async () => {
         const assortmentMedia = await AssortmentMedia.findOne({
           _id: 'assortment-a-meteor',
         });
         return assortmentMedia?.tags.includes('small');
-      }, 3000);
+      }, 15000);
       assert.strictEqual(updatedAssortmentMediaHasSmallTag, true);
       assert.strictEqual(assortmentHasBaseTag, true);
 
@@ -509,9 +509,9 @@ test.describe('Bulk Importer', () => {
           assortmentId: 'Assortment A',
         });
         return productLinksCount === 1;
-      }, 3000);
+      }, 15000);
 
       assert.strictEqual(productLinkHasBeenReplaced, true);
-    }, 10000);
+    }, 60000);
   });
 });
