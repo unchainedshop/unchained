@@ -126,13 +126,7 @@ describe('zipTreeByDeepness (full pipeline)', () => {
     const tree: Tree<string> = ['root-p1', 'root-p2', ['child-p1', 'child-p2', ['grandchild-p1']]];
     const result = zipTreeByDeepness(tree);
 
-    assert.deepStrictEqual(result, [
-      'root-p1',
-      'root-p2',
-      'child-p1',
-      'child-p2',
-      'grandchild-p1',
-    ]);
+    assert.deepStrictEqual(result, ['root-p1', 'root-p2', 'child-p1', 'child-p2', 'grandchild-p1']);
   });
 
   it('should keep sibling branches in left-to-right order', () => {
