@@ -135,7 +135,19 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 - Failed MCP tool calls now set the protocol's `isError` flag (`@unchainedshop/api`) instead of hiding the failure inside text content.
 - Tokens GraphQL resolver fixed to remove N+1 query pattern.
 
-# Unchained Engine v4.7 (unreleased)
+# Unchained Engine v4.7
+
+## Minor
+- **Server-side bulk export system.** A new `BULK_EXPORT` worker (`@unchainedshop/plugins`) moves product, assortment and filter exports off the client and onto the server, generating CSV files through a configurable exporter factory. Exports can opt individual data in or out, are grouped by type, expose a recent-exports view with a count in the admin-ui side navigation, and produce download links that expire after one hour. Meta export/import is supported for products, filters and assortments.
+- **User data export.** A default user-export handler exports a user's orders, quotations, reviews and enrollments; the admin-ui gains a user-export flow with configurable fields.
+- **Batch user lookup.** `@unchainedshop/core-users` can now find users in batches by usernames and by emails, backing DataLoader-style resolution instead of per-user queries.
+
+## Patch
+- Bulk import now batches its payload to avoid large-payload errors, with adjusted product/assortment/filter import normalizers.
+- Fixed Stripe attempting to initialize without a configured `apiToken`.
+- Fixed a product-export schema issue and a price-export typo.
+- Fixed the bulk-export return value; exported files download automatically on export success.
+- Fixed an orders performance regression (v4.6.2).
 
 # Unchained Engine v4.6
 
