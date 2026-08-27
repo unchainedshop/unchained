@@ -14,7 +14,7 @@ This guide will help you prepare your development environment for working with U
 ### Required Software
 
 #### Node.js (v22 or newer)
-Unchained Engine requires Node.js 22+ for optimal performance and compatibility.
+Unchained Engine requires Node.js 24+ for optimal performance and compatibility.
 
 **Check your version:**
 ```bash

@@ -33,7 +33,7 @@ node --test path/to/test.ts  # single unit test file
 node --no-warnings --env-file .env.tests --env-file-if-exists=.env --test-isolation=none --test-force-exit --test-global-setup=tests/helpers.js --test --test-concurrency=1 path/to/test.ts
 ```
 
-Requirements: Node.js 22+ (see .nvmrc), MongoDB (or MongoDB Memory Server for tests).
+Requirements: Node.js 24+ (see .nvmrc), MongoDB (or MongoDB Memory Server for tests).
 
 ## Import conventions (strict)
 

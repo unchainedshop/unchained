@@ -33,7 +33,7 @@ Yes. Unchained scales horizontally: stateless API (JWT auth), distributed event 
 
 ### What are the system requirements?
 
-- Node.js 22+
+- Node.js 24+
 - MongoDB (optional in development — the engine boots an in-memory server when `MONGO_URL` is unset)
 
 ### Do I need MongoDB Atlas or can I use local MongoDB?
@@ -178,7 +178,7 @@ See [Multi-Currency Setup](../guides/multi-currency-setup) and [Multi-Language S
 
 - Railway (easiest, one-click template)
 - Docker on any cloud or Kubernetes
-- Any Node.js 22+ host with MongoDB access
+- Any Node.js 24+ host with MongoDB access
 
 See [Deployment](../deployment/index.md).
 

@@ -55,7 +55,7 @@ Plus: Formik • React Intl • Headless UI • Recharts • Cypress • AI SDK
 
 ### Prerequisites
 
-- Node.js 22+
+- Node.js 24+
 - [Unchained Engine](https://github.com/unchainedshop/unchained) running on `localhost:4010`
 
 ### Installation

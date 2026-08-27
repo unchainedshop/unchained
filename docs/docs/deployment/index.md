@@ -23,7 +23,7 @@ The fastest path is the [Railway template](../quick-start/run-railway), which de
 
 ### Infrastructure
 
-- **Node.js 22+** - Runtime environment
+- **Node.js 24+** - Runtime environment
 - **MongoDB** - Primary database (`MONGO_URL`; in development the engine falls back to an in-memory server when unset)
 - **File Storage** - MinIO/S3 or GridFS (MongoDB built-in) for media
 - **Redis** (optional) - For distributed events

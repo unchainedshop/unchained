@@ -63,7 +63,7 @@ import { startPlatform } from '@unchainedshop/platform';
 ```
 
 ### Rationale
-- Native Node.js 22+ ESM TypeScript execution
+- Native Node.js 24+ ESM TypeScript execution
 - TypeScript config: `"allowImportingTsExtensions": true`, `"module": "NodeNext"`
 - No compilation required for development/testing: `node --watch src/file.ts`, `node --test path/to/test.ts`
 
@@ -217,6 +217,6 @@ The API package supports multiple server frameworks:
 - Use `.env` files for local configuration
 - Default values in `.env.defaults`
 - Integration tests use `.env.tests` with `.env` as fallback
-- Node.js 22+ required (25 in .nvmrc)
+- Node.js 24+ required (26 in .nvmrc)
 - MongoDB required (or use MongoDB Memory Server for testing)
  No newline at end of file
