@@ -36,6 +36,11 @@ export const SimpleProduct2 = {
   ...SimpleProduct,
   slugs: ['old-slug-de-2', 'slug-de-2', 'slug-fr-2', 'search-purpose-2'],
   _id: 'simpleproduct-2',
+  // Distinct (later) published date so the default `sequence ASC, published DESC`
+  // sort is deterministic: SimpleProduct shares sequence 0 AND the same published
+  // timestamp, which otherwise leaves the two tied and the products query order up
+  // to MongoDB (flaky in public-queries.test.js). A later date sorts it first.
+  published: new Date('2019-07-31T09:23:57.329+0000'),
 };
 
 export const LeveledPricingProduct = {
