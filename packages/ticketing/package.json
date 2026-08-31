@@ -51,8 +51,9 @@
     "@unchainedshop/api": "^5.0.0-alpha.5",
     "@unchainedshop/core": "^5.0.0-alpha.5",
     "@unchainedshop/core-files": "^5.0.0-alpha.5",
+    "@unchainedshop/core-products": "^5.0.0-alpha.5",
+    "@unchainedshop/utils": "^5.0.0-alpha.5",
     "@unchainedshop/core-orders": "^5.0.0-alpha.5",
-
     "@unchainedshop/core-warehousing": "^5.0.0-alpha.5",
     "@unchainedshop/core-worker": "^5.0.0-alpha.5",
     "@unchainedshop/events": "^5.0.0-alpha.5",

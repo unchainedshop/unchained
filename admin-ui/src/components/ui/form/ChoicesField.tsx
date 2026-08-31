@@ -23,7 +23,24 @@ const ChoicesField = ({ multiple, options, ...props }: ChoicesFieldProps) => {
   } = props;
 
   const mappableValue =
-    typeof field.value === 'string' ? [field.value] : field.value;
+    typeof field.value === 'string'
+      ? [field.value]
+      : Array.isArray(field.value)
+        ? field.value
+        : [];
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (field.multiple) {
+      const clickedValue = event.target.value;
+      const newValues = event.target.checked
+        ? [...mappableValue, clickedValue]
+        : mappableValue.filter((v) => v !== clickedValue);
+      field.setValue(newValues, true);
+    } else {
+      field.onChange(event);
+    }
+  };
+
   const { className, hideLabel } = props;
   return (
     <div
@@ -67,7 +84,7 @@ const ChoicesField = ({ multiple, options, ...props }: ChoicesFieldProps) => {
                 disabled={field.disabled}
                 id={`${field.name}-${value}`}
                 name={field.name}
-                onChange={field.onChange}
+                onChange={handleChange}
                 type={field.multiple ? 'checkbox' : 'radio'}
               />
               <span>{display}</span>
