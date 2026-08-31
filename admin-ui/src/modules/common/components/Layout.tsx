@@ -79,7 +79,7 @@ const SearchButton = ({ narrowNav }: { narrowNav: boolean }) => {
       type="button"
       onClick={open}
       className={`mx-2 flex items-center gap-2 rounded-md border border-border-default bg-surface px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-raised hover:text-text-primary focus:outline-hidden focus:ring-2 focus:ring-focus-ring ${
-        narrowNav ? 'justify-center px-2' : 'lg:mx-4 2xl:mx-6'
+        narrowNav ? 'justify-center px-2' : 'mt-6 lg:mx-4 2xl:mx-6'
       }`}
       aria-label={label}
       title={label}
