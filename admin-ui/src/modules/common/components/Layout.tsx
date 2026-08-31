@@ -286,7 +286,7 @@ const LayoutContent = ({ children, pageHeader = '', componentName }) => {
       name: formatMessage({ id: 'ticketing', defaultMessage: 'Ticketing' }),
       icon: TicketIcon,
       href: '/ticketing',
-      requiredRole: 'viewTokens',
+      requiredRole: 'gateControl',
     },
     {
       _sortOrder: 110,
