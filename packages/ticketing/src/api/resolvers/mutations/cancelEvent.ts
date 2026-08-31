@@ -1,12 +1,8 @@
-import type { Context } from '../../../context.ts';
+import type { Context } from '@unchainedshop/api';
 import { log } from '@unchainedshop/logger';
 import { ProductStatus } from '@unchainedshop/core-products';
-import {
-  InvalidIdError,
-  ProductNotFoundError,
-  ProductWrongStatusError,
-  TicketingModuleNotFoundError,
-} from '../../../errors.ts';
+import { InvalidIdError, ProductNotFoundError, ProductWrongStatusError } from '@unchainedshop/api';
+import { TicketingModuleNotFoundError } from '../../errors.ts';
 
 export default async function cancelEvent(
   root: never,

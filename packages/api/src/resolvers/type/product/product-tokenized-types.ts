@@ -77,11 +77,6 @@ export const TokenizedProduct = {
       productId: product._id,
     });
   },
-
-  async scannerPassCode(product: Product, params: never, requestContext: Context) {
-    await checkAction(requestContext, actions.manageProducts, [undefined, params]);
-    return (product.meta as Record<string, any>)?.scannerPassCode || null;
-  },
 };
 
 delete (TokenizedProduct as any).salesUnit;

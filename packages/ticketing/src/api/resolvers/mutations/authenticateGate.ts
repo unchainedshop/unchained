@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import type { Context } from '../../../context.ts';
-import { TicketingModuleNotFoundError } from '../../../errors.ts';
-import { GATE_COOKIE_NAME, GATE_COOKIE_MAX_AGE, getGateCookieOptions } from '../../../gate-cookie.ts';
+import type { Context } from '@unchainedshop/api';
+import { TicketingModuleNotFoundError } from '../../errors.ts';
+import { GATE_COOKIE_NAME, GATE_COOKIE_MAX_AGE, getGateCookieOptions } from '../../gate-cookie.ts';
 
 export default async function authenticateGate(
   root: never,
