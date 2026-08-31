@@ -149,31 +149,166 @@ await modules.worker.addWork({
 });
 ```
 
-## Overriding Built-in Templates
+## Customizing the Built-in E-Mails
 
-Register a template with the same name as a built-in type to override it:
+There are three levels of customization, from cheapest to most involved:
+
+1. **Environment variables** — change sender, shop name and link base URL without any code
+2. **Override a built-in template** — replace the resolver for one message type, reusing the built-in helpers
+3. **Custom templates** — add entirely new message types (see [Custom Templates](#custom-templates) above)
+
+### Level 1: Environment Variables
+
+The built-in resolvers read their branding and link targets from the environment:
+
+| Variable | Used for | Default |
+|----------|----------|---------|
+| `EMAIL_FROM` | Sender address of all built-in mails | `noreply@unchained.local` |
+| `EMAIL_WEBSITE_NAME` | Shop name in subjects, sender display name and copy | — |
+| `EMAIL_WEBSITE_URL` | Base URL for account action links (`/enroll-account?token=…`, `/reset-password?token=…`, `/verify-email?token=…`) and the website link in order mails | — |
+| `EMAIL_ERROR_REPORT_RECIPIENT` | Recipient of `ERROR_REPORT` mails | `support@unchained.local` |
+| `MAIL_URL` | SMTP server used by the email worker | — |
+
+The account action links assume your storefront serves those three paths and completes the flow with the `token` query parameter. If your routes differ, override `ACCOUNT_ACTION` (level 2).
+
+### Level 2: Overriding a Built-in Template
+
+Register a template with the same name as a built-in type to replace it. Registration is last-write-wins, and the built-ins are registered *inside* `startPlatform` — so **register your override after `startPlatform` has resolved**, otherwise the built-in silently wins:
 
 ```typescript
+import { startPlatform } from '@unchainedshop/platform';
 import { MessagingDirector } from '@unchainedshop/core';
+
+const platform = await startPlatform({ ... });
+
+// ✓ after startPlatform — replaces the built-in resolver
+MessagingDirector.registerTemplate('ORDER_CONFIRMATION', myOrderConfirmationResolver);
+```
+
+The built-in resolvers are exported from `@unchainedshop/platform` (`resolveOrderConfirmationTemplate`, `resolveAccountActionTemplate`, …), so you can also wrap one instead of rewriting it — e.g. keep the built-in behaviour and only change the subject, or add an SMS work item on top of the e-mail:
+
+```typescript
+import { resolveOrderConfirmationTemplate } from '@unchainedshop/platform';
+
+MessagingDirector.registerTemplate('ORDER_CONFIRMATION', async (params, api) => {
+  const workItems = await resolveOrderConfirmationTemplate(params, api);
+  return workItems.map((item) =>
+    item.type === 'EMAIL'
+      ? { ...item, input: { ...item.input, subject: `🎉 ${item.input.subject}` } }
+      : item,
+  );
+});
+```
+
+For more than cosmetic changes, copy the built-in resolver from `packages/platform/src/templates/` into your project and adapt it — they are small, dependency-free functions.
+
+### Localizing Your Copy
+
+The engine already determines the recipient's locale for you: every built-in `MESSAGE` payload carries a `locale` (derived via `modules.users.userLocale()`, falling back to the system locale), and `ACCOUNT_ACTION` resolvers can re-derive it from the user. Key the copy of your resolver by language and pick with a fallback:
+
+```typescript
+const COPY = {
+  en: { subject: (n) => `Order ${n} confirmed`, thanks: 'Thank you for your order!' },
+  de: { subject: (n) => `Bestellung ${n} bestätigt`, thanks: 'Danke für deine Bestellung!' },
+};
 
 MessagingDirector.registerTemplate('ORDER_CONFIRMATION', async ({ orderId, locale }, api) => {
   const order = await api.modules.orders.findOrder({ orderId });
-  const user = await api.modules.users.findUserById(order.userId);
-  const email = api.modules.users.primaryEmail(user);
+  const language = new Intl.Locale(locale).language;
+  const t = COPY[language] ?? COPY.en;
 
   return [
     {
       type: 'EMAIL',
       input: {
-        from: 'shop@example.com',
-        to: email.address,
-        subject: `Order #${order.orderNumber} confirmed`,
-        html: renderOrderEmail(order), // Your custom rendering
+        from: `${process.env.EMAIL_WEBSITE_NAME} <${process.env.EMAIL_FROM}>`,
+        to: order.contact.emailAddress,
+        subject: t.subject(order.orderNumber),
+        text: t.thanks,
       },
     },
   ];
 });
 ```
+
+### Reusing the Order Parser Helpers
+
+You rarely need to re-implement order data extraction. `@unchainedshop/platform` exports the helpers the built-in order mails use themselves:
+
+```typescript
+import { parser } from '@unchainedshop/platform';
+
+// Full plain-text order summary (what the built-in confirmation mail contains):
+const text = await parser.transformOrderToText({ order, locale: new Intl.Locale(locale) }, api);
+
+// Or the structured data, for building your own HTML body:
+const summary = await parser.getOrderSummaryData(order, { locale }, api);
+// → { prices: { items, taxes, delivery, payment, gross }, rawPrices, payment,
+//     delivery, deliveryAddress, billingAddress }
+const positions = await parser.getOrderPositionsData(order, { locale }, api);
+// → [{ productTexts, quantity, unitPrice, total, rawPrices, configuration }, ...]
+```
+
+Prices in `prices`/`unitPrice`/`total` are pre-formatted with `Intl.NumberFormat` in the given locale (e.g. `CHF 1'234.56` for `de-CH`, `1.234,56 EUR` for `de-DE`). Pass a `format` function to take over formatting entirely, and use `rawPrices` (`{ amount, currencyCode }` in minor units) when you need the numbers:
+
+```typescript
+const positions = await parser.getOrderPositionsData(
+  order,
+  {
+    locale,
+    format: ({ amount, currencyCode }) =>
+      new Intl.NumberFormat('fr-CH', { style: 'currency', currency: currencyCode }).format(
+        amount / 100,
+      ),
+  },
+  api,
+);
+```
+
+### Loading HTML Bodies from Files
+
+If you prefer editing HTML/text bodies as files instead of template literals, resolve them relative to `import.meta.url` — that works both when running TypeScript sources directly in development and from the compiled output in a production image (a path relative to `process.cwd()` would break in one of the two):
+
+```typescript
+import { readFile } from 'node:fs/promises';
+
+const loadBody = async (name: string) =>
+  readFile(new URL(`./messages/${name}`, import.meta.url), 'utf8');
+
+MessagingDirector.registerTemplate('ORDER_CONFIRMATION', async ({ orderId, locale }, api) => {
+  const order = await api.modules.orders.findOrder({ orderId });
+  const language = new Intl.Locale(locale).language;
+  const summary = await parser.getOrderSummaryData(
+    order,
+    { locale: new Intl.Locale(locale) },
+    api,
+  );
+
+  let html = await loadBody(`order-confirmation.${language}.html`);
+  // Simple zero-dependency interpolation; bring your own engine if you need more
+  html = html.replace(
+    /{{\s*(\w+)\s*}}/g,
+    (_, key) => ({ orderNumber: order.orderNumber, total: summary.prices.gross })[key] ?? '',
+  );
+
+  return [
+    {
+      type: 'EMAIL',
+      input: {
+        from: process.env.EMAIL_FROM,
+        to: order.contact.emailAddress,
+        subject: `Order ${order.orderNumber}`,
+        text: await parser.transformOrderToText({ order, locale: new Intl.Locale(locale) }, api),
+        html,
+      },
+    },
+  ];
+});
+```
+
+Ship the `messages/` folder alongside your compiled output (e.g. `cp -r src/messages lib/` in your build script, or mark it as an asset in your bundler).
+
+Unchained deliberately ships no template engine — if you want richer templating (Mustache, MJML, ICU messages), install it in your project and call it inside your resolver.
 
 ## Email Attachments
 

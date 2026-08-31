@@ -10,7 +10,8 @@ export const getOrderSummaryData = async (
   context: UnchainedCore,
 ) => {
   const { modules } = context;
-  const { useNetPrice, format = ch.priceToString } = params || {};
+  const { useNetPrice, format = (price) => ch.priceToString({ ...price, locale: params?.locale }) } =
+    params || {};
   const orderDelivery =
     order.deliveryId &&
     (await modules.orders.deliveries.findDelivery({
