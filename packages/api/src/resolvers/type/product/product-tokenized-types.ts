@@ -52,10 +52,6 @@ export const TokenizedProduct = {
     });
   },
 
-  isCanceled(product: Product): boolean {
-    return Boolean(product.meta?.cancelled);
-  },
-
   async tokens(product: Product, params: never, requestContext: Context) {
     try {
       await checkAction(requestContext, actions.viewTokens, [product, params]);
