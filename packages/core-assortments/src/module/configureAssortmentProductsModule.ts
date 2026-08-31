@@ -103,8 +103,8 @@ export const configureAssortmentProductsModule = ({
 
     // Mutations
     create: async (
-      doc: Omit<AssortmentProduct, '_id' | 'created' | 'sortKey'> &
-        Partial<Pick<AssortmentProduct, '_id' | 'created' | 'sortKey'>>,
+      doc: Omit<AssortmentProduct, '_id' | 'created' | 'sortKey' | 'tags'> &
+        Partial<Pick<AssortmentProduct, '_id' | 'created' | 'sortKey' | 'tags'>>,
       options?: { skipInvalidation?: boolean },
     ) => {
       const { _id, assortmentId, productId, sortKey, ...rest } = doc;

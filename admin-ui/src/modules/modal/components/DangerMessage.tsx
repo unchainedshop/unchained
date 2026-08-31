@@ -9,6 +9,7 @@ const DangerMessage = ({
   message = null,
   icon = null,
   close = null,
+  loading = false,
 }) => {
   const { formatMessage } = useIntl();
   return (
@@ -54,8 +55,10 @@ const DangerMessage = ({
         <button
           id="danger_continue"
           onClick={onOkClick}
+          disabled={loading}
+          aria-busy={loading}
           type="button"
-          className="inline-flex w-full justify-center rounded-md border border-transparent bg-rose-600 px-4 py-2 text-base font-medium text-white shadow-xs hover:bg-rose-700 focus:outline-hidden focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
+          className="inline-flex w-full justify-center rounded-md border border-transparent bg-rose-600 px-4 py-2 text-base font-medium text-white shadow-xs hover:bg-rose-700 focus:outline-hidden focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:ml-3 sm:w-auto sm:text-sm"
         >
           {okText ||
             formatMessage({ id: 'continue', defaultMessage: 'Continue' })}
@@ -63,8 +66,9 @@ const DangerMessage = ({
         <button
           id="danger_cancel"
           onClick={onCancelClick || close}
+          disabled={loading}
           type="button"
-          className="mt-3 inline-flex w-full justify-center rounded-md border border-border-default bg-surface px-4 py-2 text-base font-medium text-text-secondary shadow-xs hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+          className="mt-3 inline-flex w-full justify-center rounded-md border border-border-default bg-surface px-4 py-2 text-base font-medium text-text-secondary shadow-xs hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
         >
           {cancelText ||
             formatMessage({ id: 'cancel', defaultMessage: 'Cancel' })}

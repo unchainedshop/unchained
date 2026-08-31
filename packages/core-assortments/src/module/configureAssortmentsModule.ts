@@ -1,4 +1,4 @@
-import { type Tree, type SortOption, SortDirection } from '@unchainedshop/utils';
+import { executeBulkOperation, type Tree, type SortOption, SortDirection } from '@unchainedshop/utils';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
@@ -231,6 +231,63 @@ export const configureAssortmentsModule = async (
   });
   const assortmentMedia = await configureAssortmentMediaModule(moduleInput);
 
+  const updateAssortment = async (
+    assortmentId: string,
+    doc: Partial<Assortment>,
+    options?: { skipInvalidation?: boolean },
+  ) => {
+    const assortment = await Assortments.findOneAndUpdate(
+      generateDbFilterById(assortmentId),
+      {
+        $set: {
+          updated: new Date(),
+          ...doc,
+        },
+      },
+      { returnDocument: 'after' },
+    );
+    if (!assortment) return null;
+    await emit('ASSORTMENT_UPDATE', { assortmentId });
+
+    if (!options?.skipInvalidation) {
+      await invalidateCache({ assortmentIds: [assortmentId] });
+    }
+    return assortment;
+  };
+
+  const deleteAssortment = async (assortmentId: string, options?: { skipInvalidation?: boolean }) => {
+    await assortmentLinks.deleteMany(
+      {
+        $or: [{ parentAssortmentId: assortmentId }, { childAssortmentId: assortmentId }],
+      },
+      { skipInvalidation: true },
+    );
+
+    await assortmentProducts.deleteMany({ assortmentId }, { skipInvalidation: true });
+    await assortmentFilters.deleteMany({ assortmentId });
+    await assortmentTexts.deleteMany({ assortmentId });
+    await assortmentMedia.deleteMediaFiles({ assortmentId });
+
+    const deletedAssortment = await Assortments.findOneAndUpdate(
+      generateDbFilterById(assortmentId),
+      {
+        $set: {
+          deleted: new Date(),
+        },
+      },
+      { returnDocument: 'after' },
+    );
+    if (!deletedAssortment) return null;
+    if (!options?.skipInvalidation) {
+      // Invalidate all assortments
+      await invalidateCache({}, { skipUpstreamTraversal: true });
+    }
+
+    await emit('ASSORTMENT_REMOVE', { assortmentId });
+
+    return deletedAssortment;
+  };
+
   /*
    * Assortment Module
    */
@@ -396,64 +453,47 @@ export const configureAssortmentsModule = async (
       return assortment;
     },
 
-    update: async (
-      assortmentId: string,
-      doc: Partial<Assortment>,
-      options?: { skipInvalidation?: boolean },
-    ) => {
-      const assortment = await Assortments.findOneAndUpdate(
-        generateDbFilterById(assortmentId),
-        {
-          $set: {
-            updated: new Date(),
-            ...doc,
-          },
-        },
-        { returnDocument: 'after' },
-      );
-      if (!assortment) return null;
-      await emit('ASSORTMENT_UPDATE', { assortmentId });
+    update: updateAssortment,
 
-      if (!options?.skipInvalidation) {
-        await invalidateCache({ assortmentIds: [assortmentId] });
-      }
-      return assortment;
-    },
-
-    delete: async (assortmentId: string, options?: { skipInvalidation?: boolean }) => {
-      await assortmentLinks.deleteMany(
-        {
-          $or: [{ parentAssortmentId: assortmentId }, { childAssortmentId: assortmentId }],
-        },
-        { skipInvalidation: true },
-      );
-
-      await assortmentProducts.deleteMany({ assortmentId }, { skipInvalidation: true });
-      await assortmentFilters.deleteMany({ assortmentId });
-      await assortmentTexts.deleteMany({ assortmentId });
-      await assortmentMedia.deleteMediaFiles({ assortmentId });
-
-      const deletedAssortment = await Assortments.findOneAndUpdate(
-        generateDbFilterById(assortmentId),
-        {
-          $set: {
-            deleted: new Date(),
-          },
-        },
-        { returnDocument: 'after' },
-      );
-      if (!deletedAssortment) return null;
-      if (!options?.skipInvalidation) {
-        // Invalidate all assortments
-        await invalidateCache({}, { skipUpstreamTraversal: true });
-      }
-
-      await emit('ASSORTMENT_REMOVE', { assortmentId });
-
-      return deletedAssortment;
-    },
+    delete: deleteAssortment,
 
     invalidateCache,
+
+    bulkDelete: async (
+      assortmentIds: string[],
+    ): Promise<{ successIds: string[]; failedIds: string[] }> => {
+      return executeBulkOperation(assortmentIds, async (assortmentId) => {
+        const assortment = await Assortments.findOne({ _id: assortmentId, deleted: null }, {});
+        if (!assortment) throw new Error('not-found');
+        if (!(await deleteAssortment(assortmentId))) {
+          throw new Error('delete-failed');
+        }
+      });
+    },
+
+    bulkSetActive: async (assortmentIds: string[], isActive: boolean) =>
+      executeBulkOperation(assortmentIds, async (assortmentId) => {
+        const assortment = await Assortments.findOne({ _id: assortmentId, deleted: null }, {});
+        if (!assortment) throw new Error('not-found');
+        await updateAssortment(assortmentId, { isActive });
+      }),
+
+    bulkUpdateTags: async (
+      assortmentIds: string[],
+      { add = [], remove = [] }: { add?: string[]; remove?: string[] },
+    ) => {
+      const tagsToRemove = new Set(remove);
+      return executeBulkOperation(assortmentIds, async (assortmentId) => {
+        const assortment = await Assortments.findOne({ _id: assortmentId, deleted: null }, {});
+        if (!assortment) throw new Error('not-found');
+
+        const tags = (assortment.tags || []).filter((tag) => !tagsToRemove.has(tag));
+        for (const tag of add) {
+          if (!tags.includes(tag)) tags.push(tag);
+        }
+        await updateAssortment(assortmentId, { tags });
+      });
+    },
 
     search: {
       findFilteredAssortments: async ({

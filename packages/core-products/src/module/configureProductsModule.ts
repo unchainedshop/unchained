@@ -7,7 +7,7 @@ import {
   generateDbObjectId,
   type ModuleInput,
 } from '@unchainedshop/mongodb';
-import { SortDirection, type SortOption, type Price } from '@unchainedshop/utils';
+import { executeBulkOperation, SortDirection, type SortOption, type Price } from '@unchainedshop/utils';
 import {
   type Product,
   type ProductAssignment,
@@ -213,6 +213,27 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
     }
 
     return false;
+  };
+
+  const updateProduct = async (
+    productId: string,
+    doc: mongodb.UpdateFilter<Product>,
+  ): Promise<string> => {
+    const product = await Products.findOneAndUpdate(
+      generateDbFilterById(productId),
+      {
+        $set: {
+          updated: new Date(),
+          ...doc,
+        },
+      },
+      { returnDocument: 'after' },
+    );
+
+    // Deprecation notice: remove "...doc", product should be inside product field
+    await emit('PRODUCT_UPDATE', { productId, ...doc, product });
+
+    return productId;
   };
 
   const proxyProducts = async (
@@ -423,24 +444,7 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
       return product;
     },
 
-    update: async (productId: string, doc: mongodb.UpdateFilter<Product>): Promise<string> => {
-      const updateDoc = doc;
-      const product = await Products.findOneAndUpdate(
-        generateDbFilterById(productId),
-        {
-          $set: {
-            updated: new Date(),
-            ...updateDoc,
-          },
-        },
-        { returnDocument: 'after' },
-      );
-
-      // Deprecation notice: remove "...updateDoc", product should be inside product field
-      await emit('PRODUCT_UPDATE', { productId, ...updateDoc, product });
-
-      return productId;
-    },
+    update: updateProduct,
     firstActiveProductProxy: async (productId: string) => {
       return Products.findOne({ 'proxy.assignments.productId': productId });
     },
@@ -467,6 +471,37 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
 
     publish: publishProduct,
     unpublish: unpublishProduct,
+
+    bulkPublish: async (productIds: string[]) =>
+      executeBulkOperation(productIds, async (productId) => {
+        const product = await Products.findOne(generateDbFilterById(productId), {});
+        if (!product || !(await publishProduct(product))) throw new Error('publish-failed');
+      }),
+
+    bulkUnpublish: async (productIds: string[]) =>
+      executeBulkOperation(productIds, async (productId) => {
+        const product = await Products.findOne(generateDbFilterById(productId), {});
+        if (!product || !(await unpublishProduct(product))) throw new Error('unpublish-failed');
+      }),
+
+    bulkUpdateTags: async (
+      productIds: string[],
+      { add = [], remove = [] }: { add?: string[]; remove?: string[] },
+    ) => {
+      const tagsToRemove = new Set(remove);
+      return executeBulkOperation(productIds, async (productId) => {
+        const product = await Products.findOne(generateDbFilterById(productId), {});
+        if (!product || (product.status !== ProductStatus.ACTIVE && !isDraftStatus(product.status))) {
+          throw new Error('not-found');
+        }
+
+        const tags = (product.tags || []).filter((tag) => !tagsToRemove.has(tag));
+        for (const tag of add) {
+          if (!tags.includes(tag)) tags.push(tag);
+        }
+        await updateProduct(productId, { tags });
+      });
+    },
 
     /*
      * Sub entities

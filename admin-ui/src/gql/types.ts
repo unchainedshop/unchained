@@ -237,6 +237,13 @@ export type IBookmark = {
   user: IUser;
 };
 
+export type IBulkOperationResult = {
+  failedCount: Scalars['Int']['output'];
+  failedIds: Array<Scalars['ID']['output']>;
+  successCount: Scalars['Int']['output'];
+  successIds: Array<Scalars['ID']['output']>;
+};
+
 /** A Bundle product consists of multiple products */
 export type IBundleProduct = IProduct & {
   _id: Scalars['ID']['output'];
@@ -1068,6 +1075,30 @@ export type IMutation = {
    * In those cases please use createBookmark and removeBookmark
    */
   bookmark: IBookmark;
+  /** Assign multiple products to an assortment */
+  bulkAssignProductsToAssortment: IBulkOperationResult;
+  /** Remove multiple assortments */
+  bulkRemoveAssortments: IBulkOperationResult;
+  /** Remove multiple filters */
+  bulkRemoveFilters: IBulkOperationResult;
+  /** Remove multiple products */
+  bulkRemoveProducts: IBulkOperationResult;
+  /** Remove multiple users */
+  bulkRemoveUsers: IBulkOperationResult;
+  /** Activate or deactivate multiple assortments at once */
+  bulkSetAssortmentActive: IBulkOperationResult;
+  /** Activate or deactivate multiple filters at once */
+  bulkSetFilterActive: IBulkOperationResult;
+  /** Publish or unpublish multiple products at once */
+  bulkSetProductStatus: IBulkOperationResult;
+  /** Set roles for multiple users at once */
+  bulkSetUserRoles: IBulkOperationResult;
+  /** Add or remove tags from multiple assortments at once */
+  bulkUpdateAssortmentTags: IBulkOperationResult;
+  /** Add or remove tags from multiple products at once */
+  bulkUpdateProductTags: IBulkOperationResult;
+  /** Add or remove tags from multiple users at once */
+  bulkUpdateUserTags: IBulkOperationResult;
   /** Change the current user's password. Must be logged in. */
   changePassword?: Maybe<ISuccessResponse>;
   /**
@@ -1475,6 +1506,65 @@ export type IMutationAllocateWorkArgs = {
 export type IMutationBookmarkArgs = {
   bookmarked?: InputMaybe<Scalars['Boolean']['input']>;
   productId: Scalars['ID']['input'];
+};
+
+export type IMutationBulkAssignProductsToAssortmentArgs = {
+  assortmentId: Scalars['ID']['input'];
+  productIds: Array<Scalars['ID']['input']>;
+};
+
+export type IMutationBulkRemoveAssortmentsArgs = {
+  assortmentIds: Array<Scalars['ID']['input']>;
+};
+
+export type IMutationBulkRemoveFiltersArgs = {
+  filterIds: Array<Scalars['ID']['input']>;
+};
+
+export type IMutationBulkRemoveProductsArgs = {
+  productIds: Array<Scalars['ID']['input']>;
+};
+
+export type IMutationBulkRemoveUsersArgs = {
+  userIds: Array<Scalars['ID']['input']>;
+};
+
+export type IMutationBulkSetAssortmentActiveArgs = {
+  assortmentIds: Array<Scalars['ID']['input']>;
+  isActive: Scalars['Boolean']['input'];
+};
+
+export type IMutationBulkSetFilterActiveArgs = {
+  filterIds: Array<Scalars['ID']['input']>;
+  isActive: Scalars['Boolean']['input'];
+};
+
+export type IMutationBulkSetProductStatusArgs = {
+  productIds: Array<Scalars['ID']['input']>;
+  status: IProductStatus;
+};
+
+export type IMutationBulkSetUserRolesArgs = {
+  roles: Array<Scalars['String']['input']>;
+  userIds: Array<Scalars['ID']['input']>;
+};
+
+export type IMutationBulkUpdateAssortmentTagsArgs = {
+  add?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+  assortmentIds: Array<Scalars['ID']['input']>;
+  remove?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+};
+
+export type IMutationBulkUpdateProductTagsArgs = {
+  add?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+  productIds: Array<Scalars['ID']['input']>;
+  remove?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+};
+
+export type IMutationBulkUpdateUserTagsArgs = {
+  add?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+  remove?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+  userIds: Array<Scalars['ID']['input']>;
 };
 
 export type IMutationChangePasswordArgs = {
@@ -3434,7 +3524,19 @@ export enum IRoleAction {
   AddCartQuotation = 'addCartQuotation',
   AnswerQuotation = 'answerQuotation',
   BookmarkProduct = 'bookmarkProduct',
+  BulkAssignProductsToAssortment = 'bulkAssignProductsToAssortment',
   BulkImport = 'bulkImport',
+  BulkRemoveAssortments = 'bulkRemoveAssortments',
+  BulkRemoveFilters = 'bulkRemoveFilters',
+  BulkRemoveProducts = 'bulkRemoveProducts',
+  BulkRemoveUsers = 'bulkRemoveUsers',
+  BulkSetAssortmentActive = 'bulkSetAssortmentActive',
+  BulkSetFilterActive = 'bulkSetFilterActive',
+  BulkSetProductStatus = 'bulkSetProductStatus',
+  BulkSetUserRoles = 'bulkSetUserRoles',
+  BulkUpdateAssortmentTags = 'bulkUpdateAssortmentTags',
+  BulkUpdateProductTags = 'bulkUpdateProductTags',
+  BulkUpdateUserTags = 'bulkUpdateUserTags',
   ChangePassword = 'changePassword',
   CheckoutCart = 'checkoutCart',
   ConfirmMediaUpload = 'confirmMediaUpload',
@@ -16379,4 +16481,147 @@ export type IWorkQueueQuery = {
     result?: any | null;
     original?: { _id: string; retries: number } | null;
   }>;
+};
+
+export type IBulkSetProductStatusMutationVariables = Exact<{
+  productIds: Array<Scalars['ID']['input']>;
+  status: IProductStatus;
+}>;
+
+export type IBulkSetProductStatusMutation = {
+  bulkSetProductStatus: Pick<
+    IBulkOperationResult,
+    'successCount' | 'failedCount' | 'failedIds'
+  >;
+};
+
+export type IBulkUpdateProductTagsMutationVariables = Exact<{
+  productIds: Array<Scalars['ID']['input']>;
+  add?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+  remove?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+}>;
+
+export type IBulkUpdateProductTagsMutation = {
+  bulkUpdateProductTags: Pick<
+    IBulkOperationResult,
+    'successCount' | 'failedCount' | 'failedIds'
+  >;
+};
+
+export type IBulkRemoveProductsMutationVariables = Exact<{
+  productIds: Array<Scalars['ID']['input']>;
+}>;
+
+export type IBulkRemoveProductsMutation = {
+  bulkRemoveProducts: Pick<
+    IBulkOperationResult,
+    'successCount' | 'failedCount' | 'failedIds'
+  >;
+};
+
+export type IBulkAssignProductsToAssortmentMutationVariables = Exact<{
+  productIds: Array<Scalars['ID']['input']>;
+  assortmentId: Scalars['ID']['input'];
+}>;
+
+export type IBulkAssignProductsToAssortmentMutation = {
+  bulkAssignProductsToAssortment: Pick<
+    IBulkOperationResult,
+    'successCount' | 'failedCount' | 'failedIds'
+  >;
+};
+
+export type IBulkRemoveAssortmentsMutationVariables = Exact<{
+  assortmentIds: Array<Scalars['ID']['input']>;
+}>;
+
+export type IBulkRemoveAssortmentsMutation = {
+  bulkRemoveAssortments: Pick<
+    IBulkOperationResult,
+    'successCount' | 'failedCount' | 'failedIds'
+  >;
+};
+
+export type IBulkUpdateAssortmentTagsMutationVariables = Exact<{
+  assortmentIds: Array<Scalars['ID']['input']>;
+  add?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+  remove?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+}>;
+
+export type IBulkUpdateAssortmentTagsMutation = {
+  bulkUpdateAssortmentTags: Pick<
+    IBulkOperationResult,
+    'successCount' | 'failedCount' | 'failedIds'
+  >;
+};
+
+export type IBulkSetAssortmentActiveMutationVariables = Exact<{
+  assortmentIds: Array<Scalars['ID']['input']>;
+  isActive: Scalars['Boolean']['input'];
+}>;
+
+export type IBulkSetAssortmentActiveMutation = {
+  bulkSetAssortmentActive: Pick<
+    IBulkOperationResult,
+    'successCount' | 'failedCount' | 'failedIds'
+  >;
+};
+
+export type IBulkRemoveFiltersMutationVariables = Exact<{
+  filterIds: Array<Scalars['ID']['input']>;
+}>;
+
+export type IBulkRemoveFiltersMutation = {
+  bulkRemoveFilters: Pick<
+    IBulkOperationResult,
+    'successCount' | 'failedCount' | 'failedIds'
+  >;
+};
+
+export type IBulkSetFilterActiveMutationVariables = Exact<{
+  filterIds: Array<Scalars['ID']['input']>;
+  isActive: Scalars['Boolean']['input'];
+}>;
+
+export type IBulkSetFilterActiveMutation = {
+  bulkSetFilterActive: Pick<
+    IBulkOperationResult,
+    'successCount' | 'failedCount' | 'failedIds'
+  >;
+};
+
+export type IBulkUpdateUserTagsMutationVariables = Exact<{
+  userIds: Array<Scalars['ID']['input']>;
+  add?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+  remove?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
+}>;
+
+export type IBulkUpdateUserTagsMutation = {
+  bulkUpdateUserTags: Pick<
+    IBulkOperationResult,
+    'successCount' | 'failedCount' | 'failedIds'
+  >;
+};
+
+export type IBulkRemoveUsersMutationVariables = Exact<{
+  userIds: Array<Scalars['ID']['input']>;
+}>;
+
+export type IBulkRemoveUsersMutation = {
+  bulkRemoveUsers: Pick<
+    IBulkOperationResult,
+    'successCount' | 'failedCount' | 'failedIds'
+  >;
+};
+
+export type IBulkSetUserRolesMutationVariables = Exact<{
+  userIds: Array<Scalars['ID']['input']>;
+  roles: Array<Scalars['String']['input']>;
+}>;
+
+export type IBulkSetUserRolesMutation = {
+  bulkSetUserRoles: Pick<
+    IBulkOperationResult,
+    'successCount' | 'failedCount' | 'failedIds'
+  >;
 };
