@@ -60,7 +60,6 @@ export default [
       chainId: String
       tokenSerialNumber: String
       ercMetadata(forceLocale: Locale): JSON
-      isCanceled: Boolean
     }
   `,
 ];

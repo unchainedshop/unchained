@@ -63,6 +63,11 @@ export default [
 
     extend type TokenizedProduct {
       scannerPassCode: String @cacheControl(scope: PRIVATE, maxAge: 0)
+      isCanceled: Boolean
+    }
+
+    extend type Token {
+      isCanceled: Boolean
     }
   `,
 ];
