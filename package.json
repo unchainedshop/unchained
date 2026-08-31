@@ -99,6 +99,7 @@
     "@mongodb-js/zstd"
   ],
   "dependencies": {
+    "lightningcss-linux-x64-gnu": "^1.32.0",
     "react-hook-form": "^7.81.0"
   }
 }

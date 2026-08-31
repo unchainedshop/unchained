@@ -1,9 +1,5 @@
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
-import {
-  ISetEventScannerPassCodeMutation,
-  ISetEventScannerPassCodeMutationVariables,
-} from '../../../gql/types';
 
 const SetEventScannerPassCodeMutation = gql`
   mutation SetEventScannerPassCode($productId: ID!, $passCode: String) {
@@ -17,10 +13,7 @@ const SetEventScannerPassCodeMutation = gql`
 `;
 
 const useSetScannerPassCode = () => {
-  const [setPassCodeMutation] = useMutation<
-    ISetEventScannerPassCodeMutation,
-    ISetEventScannerPassCodeMutationVariables
-  >(SetEventScannerPassCodeMutation);
+  const [setPassCodeMutation] = useMutation(SetEventScannerPassCodeMutation);
 
   const setScannerPassCode = async ({
     productId,

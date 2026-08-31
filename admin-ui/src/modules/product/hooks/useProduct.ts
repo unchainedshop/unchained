@@ -72,12 +72,9 @@ const GetProductQuery = (inlineFragment = '') => gql`
           quantity
         }
         tokensCount
-        isCanceled
-        scannerPassCode
         tokens {
           _id
           tokenSerialNumber
-          isCanceled
           invalidatedDate
           isInvalidateable
           quantity

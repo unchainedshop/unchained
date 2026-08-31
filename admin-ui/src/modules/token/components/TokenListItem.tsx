@@ -69,11 +69,6 @@ const TokenListItem = ({ token }) => {
             : null}
         </div>
       </Table.Cell>
-      <Table.Cell>
-        {token.isCanceled ? (
-          <Badge text="Cancelled" color="rose" square />
-        ) : null}
-      </Table.Cell>
     </Table.Row>
   );
 };

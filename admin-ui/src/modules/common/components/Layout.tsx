@@ -288,7 +288,7 @@ const LayoutContent = ({
       name: formatMessage({ id: 'ticketing', defaultMessage: 'Ticketing' }),
       icon: TicketIcon,
       href: '/ticketing',
-      requiredRole: 'viewTokens',
+      requiredRole: 'gateControl',
     },
     {
       _sortOrder: 110,
