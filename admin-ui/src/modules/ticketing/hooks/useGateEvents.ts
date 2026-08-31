@@ -1,9 +1,5 @@
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-import {
-  IGateEventsQuery,
-  IGateEventsQueryVariables,
-} from '../../../gql/types';
 
 const GateEventsQuery = gql`
   query GateEvents($onlyInvalidateable: Boolean!) {
@@ -40,18 +36,18 @@ const GateEventsQuery = gql`
 const useGateEvents = ({
   onlyInvalidateable = false,
 }: { onlyInvalidateable?: boolean } = {}) => {
-  const { data, loading, error, refetch, previousData } = useQuery<
-    IGateEventsQuery,
-    IGateEventsQueryVariables
-  >(GateEventsQuery, {
-    variables: { onlyInvalidateable },
-    fetchPolicy: 'cache-and-network',
-    pollInterval: 10000,
-  });
+  const { data, loading, error, refetch, previousData } = useQuery(
+    GateEventsQuery,
+    {
+      variables: { onlyInvalidateable },
+      fetchPolicy: 'cache-and-network',
+      pollInterval: 10000,
+    },
+  );
 
   const events = (
-    data?.ticketEvents ||
-    previousData?.ticketEvents ||
+    (data as any)?.ticketEvents ||
+    (previousData as any)?.ticketEvents ||
     []
   ).filter((p: any) => p?.tokens?.length && !p.isCanceled);
 

@@ -12,7 +12,6 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
 import useModal from '../../modules/modal/hooks/useModal';
 import useInvalidateTicket from '../../modules/token/hooks/useInvalidateTicket';
-import useCancelTicket from '../../modules/ticketing/hooks/useCancelTicket';
 import { toast } from 'react-toastify';
 import { useCallback } from 'react';
 import useAuth from '../../modules/Auth/useAuth';
@@ -21,10 +20,8 @@ const TokenDetailPage = ({ tokenId }) => {
   const { formatMessage } = useIntl();
   const { setModal } = useModal();
 
-  const { token: rawToken, loading } = useToken({ tokenId: tokenId as string });
-  const token = rawToken as typeof rawToken & { isCanceled?: boolean };
+  const { token, loading } = useToken({ tokenId: tokenId as string });
   const { invalidateTicket } = useInvalidateTicket();
-  const { cancelTicket } = useCancelTicket();
   const { hasRole } = useAuth();
 
   const onInvalidateToken = useCallback(async () => {
@@ -54,55 +51,6 @@ const TokenDetailPage = ({ tokenId }) => {
     );
   }, [tokenId]);
 
-  const onCancelToken = useCallback(async () => {
-    let generateDiscount = false;
-    await setModal(
-      <DangerMessage
-        onCancelClick={() => setModal('')}
-        message={
-          <>
-            {formatMessage({
-              id: 'cancel_ticket_confirmation',
-              defaultMessage:
-                'Are you sure you want to cancel this ticket? This action cannot be undone.',
-            })}
-            <label className="mt-3 flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
-              <input
-                type="checkbox"
-                className="rounded border-slate-300 dark:border-slate-600"
-                onChange={(e) => {
-                  generateDiscount = e.target.checked;
-                }}
-              />
-              {formatMessage({
-                id: 'generate_discount_code',
-                defaultMessage: 'Generate discount code for the user',
-              })}
-            </label>
-          </>
-        }
-        onOkClick={async () => {
-          setModal('');
-          try {
-            await cancelTicket({ tokenId, generateDiscount });
-            toast.success(
-              formatMessage({
-                id: 'ticket_cancelled',
-                defaultMessage: 'Ticket cancelled successfully',
-              }),
-            );
-          } catch (e) {
-            toast.error(e.message);
-          }
-        }}
-        okText={formatMessage({
-          id: 'cancel_ticket',
-          defaultMessage: 'Cancel Ticket',
-        })}
-      />,
-    );
-  }, [tokenId]);
-
   if (loading) return <Loading />;
   return (
     <>
@@ -125,20 +73,8 @@ const TokenDetailPage = ({ tokenId }) => {
             )}
         </PageHeader>
         <div className="flex items-center gap-2">
-          {!token.isCanceled && hasRole(IRoleAction.UpdateToken) && (
-            <Button
-              variant="danger"
-              icon={<XMarkIcon className="h-5 w-5" />}
-              text={formatMessage({
-                id: 'cancel-ticket',
-                defaultMessage: 'Cancel Ticket',
-              })}
-              onClick={onCancelToken}
-            />
-          )}
           {!token.invalidatedDate &&
           token.isInvalidateable &&
-          !token.isCanceled &&
           hasRole(IRoleAction.UpdateToken) ? (
             <Button
               variant="danger"
