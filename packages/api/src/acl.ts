@@ -12,6 +12,12 @@ const SENSITIVE_ACTION_PREFIXES = [
   'impersonate',
   'updateUser',
   'createUser',
+  // Bulk user mutations wrap the same privileged operations as their single-op
+  // counterparts (manageUsers/updateUser), so they must emit ACL_GRANTED_SENSITIVE
+  // too — otherwise mass role assignment and mass deletion leave no audit trail.
+  'bulkSetUserRoles',
+  'bulkRemoveUsers',
+  'bulkUpdateUserTags',
 ];
 
 const defaultOptions = {
