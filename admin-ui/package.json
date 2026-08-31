@@ -29,11 +29,11 @@
     },
     "./theme": {
       "import": "./dist/theme.js",
-      "types": "./dist/sdk/theme.d.ts"
+      "types": "./src/sdk/theme.ts"
     },
     "./plugins": {
-      "import": "./dist/plugins.js",
-      "types": "./dist/sdk/plugins.d.ts"
+      "import": "./src/sdk/plugins.mjs",
+      "types": "./src/sdk/plugins.ts"
     },
     "./plugin-build": {
       "import": "./src/sdk/plugin-build.mjs"

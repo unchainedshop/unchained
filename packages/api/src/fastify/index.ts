@@ -238,12 +238,16 @@ export const connect = async (
     // @unchainedshop/admin-ui dependency is only resolved when a theme is set.
     // Resolution happens lazily on first request: connect() is not awaited by
     // callers, so nothing may suspend here before the routes are registered.
+    // We resolve the specifier at runtime via import.meta.resolve so the engine
+    // builds and boots without admin-ui being compiled first (it ships its own
+    // build artefacts) — keeping this a runtime-only, optional dependency.
     let themePromise: Promise<{ css: string; etag: string }> | undefined;
     const resolveThemeCSS = async () => {
       let css = '/* default theme */';
       if (adminUIOptions?.theme) {
         try {
-          const { generateThemeCSS } = await import('@unchainedshop/admin-ui/theme');
+          const themeModuleUrl = import.meta.resolve('@unchainedshop/admin-ui/theme');
+          const { generateThemeCSS } = await import(themeModuleUrl);
           css = generateThemeCSS(adminUIOptions.theme);
         } catch {
           fastify.log.warn(

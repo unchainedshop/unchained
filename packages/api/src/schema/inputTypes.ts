@@ -262,5 +262,10 @@ export default [
       start: DateTime
       end: DateTime
     }
+
+    input GlobalSearchTypeLimitInput {
+      type: SearchableEntity!
+      limit: Int!
+    }
   `,
 ];

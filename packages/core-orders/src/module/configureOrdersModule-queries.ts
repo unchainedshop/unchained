@@ -168,6 +168,7 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
 
       if (queryString) {
         return Orders.find(selector, {
+          ...findOptions,
           ...options,
           projection: { score: { $meta: 'textScore' } },
           sort: { score: { $meta: 'textScore' } },
