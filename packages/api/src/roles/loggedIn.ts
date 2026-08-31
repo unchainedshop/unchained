@@ -276,6 +276,4 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.uploadTempFile, canUpdateAvatar);
   role.allow(actions.changePassword, () => true);
   role.allow(actions.logoutAllSessions, isMyself);
-  role.allow(actions.validatePassCode, () => true);
-  role.allow(actions.gateControl, () => true);
 };

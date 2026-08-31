@@ -228,33 +228,6 @@ export default [
       tokensCount(queryString: String): Int!
 
       """
-      List all ticket events (tokenized products), by default includes drafts
-      """
-      ticketEvents(
-        queryString: String
-        limit: Int = 50
-        offset: Int = 0
-        includeDrafts: Boolean = true
-        sort: [SortOptionInput!]
-        onlyInvalidateable: Boolean = false
-      ): [Product!]!
-
-      """
-      Returns total number of ticket events (tokenized products)
-      """
-      ticketEventsCount(
-        queryString: String
-        includeDrafts: Boolean = true
-        onlyInvalidateable: Boolean = false
-      ): Int!
-
-      """
-      Validates a scanner pass code for gate access. Pass code is read from the unchained_gate_passcode cookie (set via authenticateGate mutation).
-      Optionally restricted to a specific product.
-      """
-      isPassCodeValid(productId: ID): Boolean!
-
-      """
       Returns total number of payment providers, optionally filtered by type
       """
       paymentProvidersCount(type: PaymentProviderType): Int! @cacheControl(scope: PRIVATE, maxAge: 0)

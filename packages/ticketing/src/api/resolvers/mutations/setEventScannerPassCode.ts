@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError, ProductNotFoundError } from '../../../errors.ts';
-import type { Context } from '../../../context.ts';
+import { InvalidIdError, ProductNotFoundError } from '@unchainedshop/api';
+import type { Context } from '@unchainedshop/api';
 
 export default async function setEventScannerPassCode(
   root: never,

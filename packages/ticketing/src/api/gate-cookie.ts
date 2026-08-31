@@ -1,4 +1,4 @@
-import type { CookieOptions } from './context.ts';
+import type { CookieOptions } from '@unchainedshop/api';
 
 const {
   UNCHAINED_GATE_COOKIE_NAME = 'unchained_gate_passcode',
