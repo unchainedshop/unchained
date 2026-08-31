@@ -67,7 +67,6 @@ import { bulkRemoveFiltersService } from './bulkRemoveFilters.ts';
 import { bulkDeleteUsersService } from './bulkDeleteUsers.ts';
 import { bulkSetFilterActiveService } from './bulkSetFilterActive.ts';
 import { bulkAssignProductsToAssortmentService } from './bulkAssignProductsToAssortment.ts';
-import { onTokenInvalidatedService } from './onTokenInvalidated.ts';
 
 // Auto-Inject Unchained API as last parameter
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy

@@ -1,9 +1,5 @@
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-import {
-  IGateEventDetailQuery,
-  IGateEventDetailQueryVariables,
-} from '../../../gql/types';
 
 const GateEventDetailQuery = gql`
   query GateEventDetail($productId: ID!) {
@@ -58,18 +54,18 @@ const GateEventDetailQuery = gql`
 `;
 
 const useGateEventDetail = (productId: string | null) => {
-  const { data, loading, error, refetch, previousData } = useQuery<
-    IGateEventDetailQuery,
-    IGateEventDetailQueryVariables
-  >(GateEventDetailQuery, {
-    variables: { productId },
-    skip: !productId,
-    fetchPolicy: 'cache-and-network',
-    pollInterval: 10000,
-  });
+  const { data, loading, error, refetch, previousData } = useQuery(
+    GateEventDetailQuery,
+    {
+      variables: { productId },
+      skip: !productId,
+      fetchPolicy: 'cache-and-network',
+      pollInterval: 10000,
+    },
+  );
 
   return {
-    event: data?.product || previousData?.product || null,
+    event: (data as any)?.product || (previousData as any)?.product || null,
     loading,
     error,
     refetch,

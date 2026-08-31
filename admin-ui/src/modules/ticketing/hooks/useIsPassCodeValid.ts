@@ -1,11 +1,5 @@
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
-import {
-  IAuthenticateGateMutation,
-  IAuthenticateGateMutationVariables,
-  IDeauthenticateGateMutation,
-  IDeauthenticateGateMutationVariables,
-} from '../../../gql/types';
 
 const AuthenticateGateMutation = gql`
   mutation AuthenticateGate($passCode: String!) {
@@ -20,21 +14,19 @@ const DeauthenticateGateMutation = gql`
 `;
 
 const useIsPassCodeValid = () => {
-  const [authenticateGate, { loading: authLoading }] = useMutation<
-    IAuthenticateGateMutation,
-    IAuthenticateGateMutationVariables
-  >(AuthenticateGateMutation);
-  const [deauthenticateGate, { loading: deauthLoading }] = useMutation<
-    IDeauthenticateGateMutation,
-    IDeauthenticateGateMutationVariables
-  >(DeauthenticateGateMutation);
+  const [authenticateGate, { loading: authLoading }] = useMutation(
+    AuthenticateGateMutation,
+  );
+  const [deauthenticateGate, { loading: deauthLoading }] = useMutation(
+    DeauthenticateGateMutation,
+  );
 
   const validatePassCode = async (passCode: string) => {
     try {
       const result = await authenticateGate({
         variables: { passCode },
       });
-      return result.data?.authenticateGate || false;
+      return (result.data as any)?.authenticateGate || false;
     } catch {
       return false;
     }
