@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
-import type { Context } from '../../../context.ts';
-import { TicketingModuleNotFoundError } from '../../../errors.ts';
-import { GATE_COOKIE_NAME } from '../../../gate-cookie.ts';
+import type { Context } from '@unchainedshop/api';
+import { TicketingModuleNotFoundError } from '../../errors.ts';
+import { GATE_COOKIE_NAME } from '../../gate-cookie.ts';
 
 interface TicketingServices {
   ticketing?: {

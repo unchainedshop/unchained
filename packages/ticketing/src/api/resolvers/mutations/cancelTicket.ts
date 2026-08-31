@@ -1,11 +1,7 @@
-import type { Context } from '../../../context.ts';
+import type { Context } from '@unchainedshop/api';
 import { log } from '@unchainedshop/logger';
-import {
-  InvalidIdError,
-  TokenNotFoundError,
-  TokenAlreadyRedeemedError,
-  TicketingModuleNotFoundError,
-} from '../../../errors.ts';
+import { InvalidIdError, TokenNotFoundError } from '@unchainedshop/api';
+import { TicketingModuleNotFoundError, TokenAlreadyRedeemedError } from '../../errors.ts';
 
 export default async function cancelTicket(
   root: never,

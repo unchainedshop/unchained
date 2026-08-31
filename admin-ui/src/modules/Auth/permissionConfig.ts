@@ -32,6 +32,7 @@ const ROUTE_ROLES: Record<string, string> = {
   '/quotations': 'viewQuotations',
   '/enrollments': 'viewEnrollments',
   '/tokens': 'viewTokens',
+  '/ticketing': 'gateControl',
   '/copilot': 'viewProducts',
   '/exports': 'viewWorkQueue',
 };

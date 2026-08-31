@@ -4,7 +4,14 @@ import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
 import { SendMessagePlugin } from '@unchainedshop/plugins/delivery/send-message';
 import { pluginRegistry } from '@unchainedshop/core';
 import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
-import setupTicketing, { ticketingModules, type TicketingAPI } from '@unchainedshop/ticketing';
+import setupTicketing, {
+  ticketingModules,
+  ticketingTypeDefs,
+  ticketingResolvers,
+  ticketingActions,
+  configureTicketingRoles,
+  type TicketingAPI,
+} from '@unchainedshop/ticketing';
 import connectTicketingToFastify from '@unchainedshop/ticketing/lib/fastify.js';
 import ticketingServices from '@unchainedshop/ticketing/lib/services.js';
 import seed from './seed.ts';
@@ -24,6 +31,14 @@ try {
   const platform = await startPlatform({
     modules: ticketingModules,
     services: { ...ticketingServices },
+    typeDefs: ticketingTypeDefs,
+    resolvers: [ticketingResolvers],
+    rolesOptions: {
+      additionalActions: ticketingActions,
+      additionalRoles: {
+        ticketing: configureTicketingRoles,
+      },
+    },
   });
 
   // Unchained Ticketing Extension

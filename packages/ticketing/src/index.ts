@@ -8,6 +8,12 @@ import ticketingModules, { type TicketingModule, type TicketingOptions } from '.
 import setupMagicKey from './magic-key.ts';
 import ticketingServices, { type TicketingServices } from './services.ts';
 import type { DiscountCodeHandlers } from './discount-codes.ts';
+import {
+  ticketingTypeDefs,
+  ticketingResolvers,
+  ticketingActions,
+  configureTicketingRoles,
+} from './api/index.ts';
 
 export type TicketingAPI = UnchainedCore & {
   modules: TicketingModule;
@@ -22,7 +28,14 @@ export type {
   DiscountCodeHandlers,
 };
 
-export { ticketingServices, ticketingModules };
+export {
+  ticketingServices,
+  ticketingModules,
+  ticketingTypeDefs,
+  ticketingResolvers,
+  ticketingActions,
+  configureTicketingRoles,
+};
 
 export function setupPDFTickets({ renderOrderPDF }: { renderOrderPDF: any }) {
   registerRenderer(RendererTypes.ORDER_PDF, renderOrderPDF);

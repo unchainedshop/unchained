@@ -1,6 +1,5 @@
 import { timingSafeStringEqual } from '@unchainedshop/utils';
 import { type Context, IN_LOGIN_RESPONSE } from '../context.ts';
-import { GATE_COOKIE_NAME } from '../gate-cookie.ts';
 
 export const all = (role, actions) => {
   const isInLoginMutationResponse = (root) => {
@@ -126,26 +125,7 @@ export const all = (role, actions) => {
   role.allow(actions.viewOrder, () => false);
   role.allow(actions.viewQuotation, () => false);
   role.allow(actions.viewEnrollment, () => false);
-  const hasValidPassCode = async (_root: any, _params: any, context: Context) => {
-    const passCode = context.getCookie?.(GATE_COOKIE_NAME);
-    if (!passCode) return false;
-    const ticketingServices = (context.services as any)?.ticketing;
-    if (!ticketingServices?.isPassCodeValid) return false;
-    return ticketingServices.isPassCodeValid(passCode);
-  };
-
-  role.allow(actions.validatePassCode, () => true);
-  role.allow(actions.gateControl, hasValidPassCode);
-
-  const hasValidPassCodeForProduct = async (root: any, _params: any, context: Context) => {
-    if (!root?._id) return false;
-    const passCode = context.getCookie?.(GATE_COOKIE_NAME);
-    if (!passCode) return false;
-    const ticketingServices = (context.services as any)?.ticketing;
-    if (!ticketingServices?.isPassCodeValid) return false;
-    return ticketingServices.isPassCodeValid(passCode, root._id);
-  };
-  role.allow(actions.viewTokens, hasValidPassCodeForProduct);
+  role.allow(actions.viewTokens, () => false);
   role.allow(actions.viewStatistics, () => false);
   role.allow(actions.uploadUserAvatar, () => false);
   role.allow(actions.uploadTempFile, () => false);
@@ -159,31 +139,11 @@ export const all = (role, actions) => {
   role.allow(actions.viewUserOrders, isInLoginMutationResponse);
   role.allow(actions.viewUserTokens, isInLoginMutationResponse);
   role.allow(actions.viewUserQuotations, isInLoginMutationResponse);
-  const isInLoginOrHasValidPassCode = async (root: any, params: any, context: Context) => {
-    if (isInLoginMutationResponse(root)) return true;
-    return hasValidPassCode(root, params, context);
-  };
-  role.allow(actions.viewUserPrivateInfos, isInLoginOrHasValidPassCode);
+  role.allow(actions.viewUserPrivateInfos, isInLoginMutationResponse);
   role.allow(actions.viewUserEnrollments, isInLoginMutationResponse);
   role.allow(actions.viewUserProductReviews, isInLoginMutationResponse);
 
-  // special case: access to token sometimes works via a X-Token-AccessKey Header or valid gate pass code
-  const hasValidPassCodeForToken = async (_root: any, params: any, context: Context) => {
-    const passCode = context.getCookie?.(GATE_COOKIE_NAME);
-    if (!passCode) return false;
-    const ticketingServices = (context.services as any)?.ticketing;
-    if (!ticketingServices?.isPassCodeValid) return false;
-    const tokenId = params?.tokenId;
-    if (!tokenId) return false;
-    const token = await context.modules.warehousing.findToken({ tokenId });
-    if (!token) return false;
-    return ticketingServices.isPassCodeValid(passCode, token.productId);
-  };
-  const isOwnedTokenOrValidPassCode = async (root: any, params: any, context: Context) => {
-    if (await isOwnedToken(root, params, context)) return true;
-    return hasValidPassCodeForToken(root, params, context);
-  };
-  role.allow(actions.updateToken, isOwnedTokenOrValidPassCode);
+  role.allow(actions.updateToken, isOwnedToken);
   role.allow(actions.viewToken, isOwnedToken);
 
   // special case: access to file downloads should work when meta.isPrivate is not set
