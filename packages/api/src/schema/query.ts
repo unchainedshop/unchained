@@ -428,7 +428,7 @@ export default [
         includeInactiveFilters: Boolean = true
         includeGuestUsers: Boolean = false
         includeCarts: Boolean = false
-      ): GlobalSearchResponse! @cacheControl(maxAge: 30)
+      ): GlobalSearchResponse! @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
       Search products

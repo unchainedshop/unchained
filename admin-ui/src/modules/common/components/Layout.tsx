@@ -15,9 +15,10 @@ import {
   CubeIcon,
   DocumentTextIcon,
   FolderArrowDownIcon,
+  MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
 import useCurrentUser from '../../accounts/hooks/useCurrentUser';
 import useShopInfo from '../hooks/useShopInfo';
@@ -40,6 +41,8 @@ import useShopConfiguration from '../hooks/useShopConfiguration';
 import useRecentExports from '../../work/hooks/useRecentExports';
 import { usePlugins } from '../../plugins/PluginContext';
 import * as HeroIcons from '@heroicons/react/24/outline';
+import CommandPalette from '../../search/components/CommandPalette';
+import { SearchProvider, useSearch } from '../../search/SearchContext';
 
 const resolveIcon = (iconName?: string) => {
   if (!iconName) return null;
@@ -50,9 +53,6 @@ const resolveIcon = (iconName?: string) => {
       .join('') + 'Icon';
   return HeroIcons[pascalCase] || null;
 };
-import CommandPalette from '../../search/components/CommandPalette';
-import { SearchProvider, useSearch } from '../../search/SearchContext';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 const QuotationIcon = ({ className }) => (
   <svg
@@ -66,37 +66,30 @@ const QuotationIcon = ({ className }) => (
   </svg>
 );
 
-const useIsMac = () => {
-  const [isMac, setIsMac] = useState(false);
-  useEffect(() => {
-    const platform =
-      (navigator as any).userAgentData?.platform || navigator.platform || '';
-    setIsMac(platform.toUpperCase().includes('MAC'));
-  }, []);
-  return isMac;
-};
-
 const SearchButton = ({ narrowNav }: { narrowNav: boolean }) => {
   const { open } = useSearch();
   const { formatMessage } = useIntl();
-  const isMac = useIsMac();
+  const label = formatMessage({
+    id: 'search',
+    defaultMessage: 'Search',
+  });
 
   return (
     <button
+      type="button"
       onClick={open}
-      className={`mx-2 mt-4 flex items-center gap-2 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors ${narrowNav ? 'justify-center p-2 lg:mx-2' : 'px-3 py-2 lg:mx-4 2xl:mx-6'}`}
+      className={`mx-2 flex items-center gap-2 rounded-md border border-border-default bg-surface px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-raised hover:text-text-primary focus:outline-hidden focus:ring-2 focus:ring-focus-ring ${
+        narrowNav ? 'justify-center px-2' : 'lg:mx-4 2xl:mx-6'
+      }`}
+      aria-label={label}
+      title={label}
     >
-      <MagnifyingGlassIcon className="h-4 w-4" />
+      <MagnifyingGlassIcon className="h-4 w-4 shrink-0" />
       {!narrowNav && (
         <>
-          <span className="flex-1 text-left">
-            {formatMessage({
-              id: 'search',
-              defaultMessage: 'Search',
-            })}
-          </span>
-          <kbd className="hidden lg:inline-flex text-xs text-slate-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 px-1.5 py-0.5 rounded">
-            {isMac ? '⌘K' : 'Ctrl+K'}
+          <span className="flex-1 text-left">{label}</span>
+          <kbd className="hidden rounded border border-border-default bg-surface-input px-1.5 py-0.5 text-xs text-text-muted lg:inline-flex">
+            ⌘/Ctrl K
           </kbd>
         </>
       )}
@@ -104,7 +97,7 @@ const SearchButton = ({ narrowNav }: { narrowNav: boolean }) => {
   );
 };
 
-const Layout = ({
+const LayoutContent = ({
   children,
   pageHeader = '',
   componentName,
@@ -388,327 +381,35 @@ const Layout = ({
     });
 
   return (
-    <SearchProvider>
-      <AuthWrapper>
-        <CommandPalette />
-        <div
-          className={`fixed inset-0 z-40 flex md:hidden  ${
-            hideNav ? 'hidden' : ''
-          } `}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="fixed inset-0 backdrop-blur-sm" aria-hidden="true" />
+    <AuthWrapper>
+      <CommandPalette />
+      <div
+        className={`fixed inset-0 z-40 flex md:hidden  ${
+          hideNav ? 'hidden' : ''
+        } `}
+        role="dialog"
+        aria-modal="true"
+      >
+        <div className="fixed inset-0 backdrop-blur-sm" aria-hidden="true" />
 
-          <div className="relative flex w-full max-w-xs flex-1 flex-col bg-white dark:bg-slate-900 shadow-xl">
-            <div className="absolute top-0 right-0 -mr-12 pt-2">
-              <button
-                id="close_sidebar"
-                type="button"
-                onClick={() => setHideNav(!hideNav)}
-                className="ml-1 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 dark:bg-slate-800/50 backdrop-blur-sm shadow-lg focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-white dark:focus:ring-slate-400"
-              >
-                <span className="sr-only">
-                  {formatMessage({
-                    id: 'close_sidebar',
-                    defaultMessage: 'Close sidebar',
-                  })}
-                </span>
-
-                <svg
-                  className="h-6 w-6 text-slate-800 dark:text-slate-200"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            <div className="h-0 flex-1 overflow-y-auto pt-5 pb-4">
-              <div className="flex shrink-0 items-center px-2 lg:px-4 2xl:px-6">
-                <Link
-                  href="/"
-                  className="focus:outline-hidden focus:ring-2 focus:ring-slate-800 rounded-md p-1"
-                >
-                  <div className="dark:brightness-0 dark:invert">
-                    <ImageWithFallback
-                      src={process.env.NEXT_PUBLIC_LOGO}
-                      width={41}
-                      height={25}
-                      alt={formatMessage({
-                        id: 'unchained_logo',
-                        defaultMessage: 'Unchained Logo',
-                      })}
-                    />
-                  </div>
-                </Link>
-              </div>
-              <SideNav
-                navigation={defaultNavigation}
-                onClick={() => setHideNav(!hideNav)}
-              />
-            </div>
-            <div className="flex items-center shrink-0 border-t border-slate-300 dark:border-slate-800 px-2 py-2">
-              <Link
-                href="/account"
-                className="flex items-center flex-1 py-2 pr-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-slate-800"
-              >
-                {currentUser?.avatar ? (
-                  <ImageWithFallback
-                    src={currentUser.avatar.url}
-                    width={32}
-                    height={32}
-                    className="h-8 w-8 shrink-0 mr-2 rounded-full object-cover"
-                    alt={formatMessage({
-                      id: 'user_avatar',
-                      defaultMessage: 'User avatar',
-                    })}
-                  />
-                ) : (
-                  <UserIcon className="h-8 w-8 shrink-0 mr-2 text-slate-800 dark:text-slate-300" />
-                )}
-                <div className="flex-1">
-                  <div className="text-sm font-medium dark:text-slate-400">
-                    {formatMessage({
-                      id: 'account',
-                      defaultMessage: 'Account',
-                    })}
-                  </div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
-                    {formatUsername(currentUser)}
-                  </div>
-                </div>
-              </Link>
-              <div className="flex items-center space-x-2 ml-auto">
-                <button
-                  onClick={onLogout}
-                  className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800"
-                  title={formatMessage({
-                    id: 'log_out',
-                    defaultMessage: 'Log out',
-                  })}
-                >
-                  <ArrowRightEndOnRectangleIcon className="h-5 w-5" />
-                </button>
-                <Link
-                  href="https://docs.unchained.shop/admin-ui/overview"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800"
-                  title={formatMessage({
-                    id: 'documentation',
-                    defaultMessage: 'Documentation',
-                  })}
-                >
-                  <DocumentTextIcon className="h-5 w-5" />
-                </Link>
-                <ThemeToggle />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className={`hidden md:fixed md:inset-y-0 md:flex md:flex-col dark:bg-slate-900 dark:text-slate-200 ${narrowNav ? 'md:w-16' : 'md:w-64 2xl:w-96'}`}
-        >
-          <div className="flex min-h-0 flex-1 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-            <div className="flex flex-1 flex-col overflow-y-auto scrollbar-hide pt-10">
-              <div
-                className={`flex shrink-0 items-center ${narrowNav ? 'px-2 justify-center' : 'px-2 lg:px-4 2xl:px-6'}`}
-              >
-                <Link
-                  href="/"
-                  className="focus:outline-hidden focus:ring-2 focus:ring-slate-800 rounded-md p-1"
-                >
-                  <div className="dark:brightness-0 dark:invert">
-                    <ImageWithFallback
-                      src={process.env.NEXT_PUBLIC_LOGO}
-                      width={narrowNav ? 25 : 41}
-                      height={25}
-                      alt={formatMessage({
-                        id: 'unchained_logo',
-                        defaultMessage: 'Unchained Logo',
-                      })}
-                    />
-                  </div>
-                </Link>
-              </div>
-              <SearchButton narrowNav={narrowNav} />
-              <SideNav navigation={defaultNavigation} narrowView={narrowNav} />
-            </div>
-            <div
-              className={`flex items-center shrink-0 py-2 ${narrowNav ? 'justify-center px-2' : 'border-t border-slate-200 dark:border-slate-800 px-2 lg:px-4 2xl:px-6'}`}
-            >
-              {!narrowNav && (
-                <>
-                  <Link
-                    href="/account"
-                    className="flex items-center flex-1 py-2 pr-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-slate-800"
-                  >
-                    {currentUser?.avatar ? (
-                      <ImageWithFallback
-                        src={currentUser.avatar.url}
-                        width={32}
-                        height={32}
-                        className="h-8 w-8 shrink-0 mr-3 rounded-full object-cover"
-                        alt={formatMessage({
-                          id: 'user_avatar',
-                          defaultMessage: 'User avatar',
-                        })}
-                      />
-                    ) : (
-                      <UserIcon className="h-8 w-8 shrink-0 mr-3 text-slate-800 dark:text-slate-300" />
-                    )}
-                    <div className="flex-1">
-                      <div className="text-sm font-medium dark:text-slate-400">
-                        {formatMessage({
-                          id: 'account',
-                          defaultMessage: 'Account',
-                        })}
-                      </div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400">
-                        {formatUsername(currentUser)}
-                      </div>
-                    </div>
-                  </Link>
-                  <button
-                    onClick={onLogout}
-                    className="p-2 mr-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800 ml-auto"
-                    title={formatMessage({
-                      id: 'log_out',
-                      defaultMessage: 'Log out',
-                    })}
-                  >
-                    <ArrowRightEndOnRectangleIcon className="h-5 w-5" />
-                  </button>
-                </>
-              )}
-              {narrowNav && (
-                <div className="flex items-center flex-col space-y-2">
-                  <Link
-                    href="/account"
-                    className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400"
-                    title={formatMessage({
-                      id: 'account',
-                      defaultMessage: 'Account',
-                    })}
-                  >
-                    {currentUser?.avatar ? (
-                      <ImageWithFallback
-                        src={currentUser.avatar.url}
-                        width={24}
-                        height={24}
-                        className="h-6 w-6 rounded-full object-cover"
-                        alt={formatMessage({
-                          id: 'user_avatar',
-                          defaultMessage: 'User avatar',
-                        })}
-                      />
-                    ) : (
-                      <UserIcon className="h-6 w-6" />
-                    )}
-                  </Link>
-                  <button
-                    onClick={onLogout}
-                    className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400"
-                    title={formatMessage({
-                      id: 'log_out',
-                      defaultMessage: 'Log out',
-                    })}
-                  >
-                    <ArrowRightEndOnRectangleIcon className="h-5 w-5" />
-                  </button>
-                  <LanguageToggle narrowNav={narrowNav} />
-                  <Link
-                    href="https://docs.unchained.shop/admin-ui/overview"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-800 dark:focus:ring-slate-400"
-                    title={formatMessage({
-                      id: 'documentation',
-                      defaultMessage: 'Documentation',
-                    })}
-                  >
-                    <DocumentTextIcon className="h-5 w-5" />
-                  </Link>
-                  <ThemeToggle />
-                </div>
-              )}
-            </div>
-            <div
-              className={`flex shrink-0 p-2 ${narrowNav ? '' : 'border-t border-slate-200 dark:border-slate-800'}`}
-            >
-              {narrowNav ? (
-                <button
-                  onClick={() => setNarrowNav(!narrowNav)}
-                  className="w-full flex items-center justify-center p-2 text-slate-600 dark:text-emerald-400 hover:text-slate-900 dark:hover:text-slate-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800"
-                  title={formatMessage({
-                    id: 'expand_navigation',
-                    defaultMessage: 'Expand navigation',
-                  })}
-                >
-                  <Bars4Icon className="h-6 w-6 transition-transform" />
-                </button>
-              ) : (
-                <div className="w-full flex items-center justify-center">
-                  <button
-                    onClick={() => setNarrowNav(!narrowNav)}
-                    className="flex items-center p-2 text-slate-600 dark:text-emerald-400 hover:text-slate-900 dark:hover:text-slate-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800"
-                    title={formatMessage({
-                      id: 'collapse_navigation',
-                      defaultMessage: 'Collapse navigation',
-                    })}
-                  >
-                    <Bars4Icon className="h-6 w-6 rotate-90 transition-transform" />
-                  </button>
-                  <div className="ml-2 flex items-center space-x-2">
-                    <LanguageToggle narrowNav={narrowNav} />
-                    <Link
-                      href="https://docs.unchained.shop/admin-ui/overview"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-hidden focus:ring-2 focus:ring-slate-800"
-                      title={formatMessage({
-                        id: 'documentation',
-                        defaultMessage: 'Documentation',
-                      })}
-                    >
-                      <DocumentTextIcon className="h-6 w-6" />
-                    </Link>
-                    <ThemeToggle />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-        <div
-          className={`flex flex-1 flex-col ${narrowNav ? 'md:pl-16' : 'md:pl-64 2xl:pl-96'}`}
-        >
-          <div className="flex justify-between items-center sticky top-0 z-10 bg-white dark:bg-slate-800 md:hidden border-b border-slate-200 dark:border-slate-700">
+        <div className="relative flex w-full max-w-xs flex-1 flex-col bg-surface-input shadow-xl">
+          <div className="absolute top-0 right-0 -mr-12 pt-2">
             <button
+              id="close_sidebar"
               type="button"
-              ref={ref}
               onClick={() => setHideNav(!hideNav)}
-              className="-ml-0.5 -mt-0.5 inline-flex h-12 w-12 items-center justify-center rounded-md text-slate-500 hover:text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-slate-800 dark:text-slate-200"
+              className="ml-1 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 dark:bg-slate-800/50 backdrop-blur-sm shadow-lg focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-focus-ring"
             >
               <span className="sr-only">
                 {formatMessage({
-                  id: 'open_sidebar',
-                  defaultMessage: ' Open sidebar',
+                  id: 'close_sidebar',
+                  defaultMessage: 'Close sidebar',
                 })}
               </span>
+
               <svg
-                className="h-6 w-6"
+                className="h-6 w-6 text-text-secondary"
+                xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -717,29 +418,76 @@ const Layout = ({
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 8h16M4 16h16"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
             </button>
+          </div>
 
-            <div className="flex-1 flex justify-center">
-              <div className="dark:brightness-0 dark:invert">
+          <div className="h-0 flex-1 overflow-y-auto pt-5 pb-4">
+            <div className="flex shrink-0 items-center px-2 lg:px-4 2xl:px-6">
+              <Link
+                href="/"
+                className="focus:outline-hidden focus:ring-2 focus:ring-focus-ring rounded-md p-1"
+              >
+                <div className="dark:brightness-0 dark:invert">
+                  <ImageWithFallback
+                    src={process.env.NEXT_PUBLIC_LOGO}
+                    width={41}
+                    height={25}
+                    alt={formatMessage({
+                      id: 'unchained_logo',
+                      defaultMessage: 'Unchained Logo',
+                    })}
+                  />
+                </div>
+              </Link>
+            </div>
+            <SideNav
+              navigation={defaultNavigation}
+              onClick={() => setHideNav(!hideNav)}
+            />
+          </div>
+          <div className="flex items-center shrink-0 border-t border-border-default px-2 py-2">
+            <Link
+              href="/account"
+              className="flex items-center flex-1 py-2 pr-2 text-text-secondary hover:text-text-primary hover:bg-surface-raised rounded-md text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
+            >
+              {currentUser?.avatar ? (
                 <ImageWithFallback
-                  src={process.env.NEXT_PUBLIC_LOGO}
-                  width={41}
-                  height={25}
+                  src={currentUser.avatar.url}
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 shrink-0 mr-2 rounded-full object-cover"
                   alt={formatMessage({
-                    id: 'unchained_logo',
-                    defaultMessage: 'Unchained Logo',
+                    id: 'user_avatar',
+                    defaultMessage: 'User avatar',
                   })}
                 />
+              ) : (
+                <UserIcon className="h-8 w-8 shrink-0 mr-2 text-text-secondary" />
+              )}
+              <div className="flex-1">
+                <div className="text-sm font-medium text-text-muted">
+                  {formatMessage({ id: 'account', defaultMessage: 'Account' })}
+                </div>
+                <div className="text-xs text-text-muted">
+                  {formatUsername(currentUser)}
+                </div>
               </div>
-            </div>
-
-            <div className="flex flex-wrap justify-center items-center gap-2 pr-4">
-              <SearchButton narrowNav={true} />
-              <LanguageToggle narrowNav={false} />
+            </Link>
+            <div className="flex items-center space-x-2 ml-auto">
+              <button
+                onClick={onLogout}
+                className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
+                title={formatMessage({
+                  id: 'log_out',
+                  defaultMessage: 'Log out',
+                })}
+              >
+                <ArrowRightEndOnRectangleIcon className="h-5 w-5" />
+              </button>
               <Link
                 href="https://docs.unchained.shop/admin-ui/overview"
                 target="_blank"
@@ -755,16 +503,262 @@ const Layout = ({
               <ThemeToggle />
             </div>
           </div>
-          <main className="container mx-auto max-w-7xl flex-1 px-4 py-5 md:pt-10 lg:pt-5 pb-20 sm:px-6 md:px-8">
-            <h3 className="ml-8 text-lg font-medium leading-6 text-slate-900">
-              {pageHeader}
-            </h3>
-            {React.cloneElement(children)}
-          </main>
         </div>
-      </AuthWrapper>
-    </SearchProvider>
+      </div>
+
+      <div
+        className={`hidden md:fixed md:inset-y-0 md:flex md:flex-col bg-surface-input text-text-primary ${narrowNav ? 'md:w-16' : 'md:w-64 2xl:w-96'}`}
+      >
+        <div className="flex min-h-0 flex-1 flex-col border-r border-border-subtle bg-surface-input">
+          <div className="flex flex-1 flex-col overflow-y-auto scrollbar-hide pt-10">
+            <div
+              className={`flex shrink-0 items-center ${narrowNav ? 'px-2 justify-center' : 'px-2 lg:px-4 2xl:px-6'}`}
+            >
+              <Link
+                href="/"
+                className="focus:outline-hidden focus:ring-2 focus:ring-focus-ring rounded-md p-1"
+              >
+                <div className="dark:brightness-0 dark:invert">
+                  <ImageWithFallback
+                    src={process.env.NEXT_PUBLIC_LOGO}
+                    width={narrowNav ? 25 : 41}
+                    height={25}
+                    alt={formatMessage({
+                      id: 'unchained_logo',
+                      defaultMessage: 'Unchained Logo',
+                    })}
+                  />
+                </div>
+              </Link>
+            </div>
+            <SearchButton narrowNav={narrowNav} />
+            <SideNav navigation={defaultNavigation} narrowView={narrowNav} />
+          </div>
+          <div
+            className={`flex items-center shrink-0 py-2 ${narrowNav ? 'justify-center px-2' : 'border-t border-border-subtle px-2 lg:px-4 2xl:px-6'}`}
+          >
+            {!narrowNav && (
+              <>
+                <Link
+                  href="/account"
+                  className="flex items-center flex-1 py-2 pr-2 text-text-secondary hover:text-text-primary hover:bg-surface-raised rounded-md text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
+                >
+                  {currentUser?.avatar ? (
+                    <ImageWithFallback
+                      src={currentUser.avatar.url}
+                      width={32}
+                      height={32}
+                      className="h-8 w-8 shrink-0 mr-3 rounded-full object-cover"
+                      alt={formatMessage({
+                        id: 'user_avatar',
+                        defaultMessage: 'User avatar',
+                      })}
+                    />
+                  ) : (
+                    <UserIcon className="h-8 w-8 shrink-0 mr-3 text-text-secondary" />
+                  )}
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-text-muted">
+                      {formatMessage({
+                        id: 'account',
+                        defaultMessage: 'Account',
+                      })}
+                    </div>
+                    <div className="text-xs text-text-muted">
+                      {formatUsername(currentUser)}
+                    </div>
+                  </div>
+                </Link>
+                <button
+                  onClick={onLogout}
+                  className="p-2 mr-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-focus-ring ml-auto"
+                  title={formatMessage({
+                    id: 'log_out',
+                    defaultMessage: 'Log out',
+                  })}
+                >
+                  <ArrowRightEndOnRectangleIcon className="h-5 w-5" />
+                </button>
+              </>
+            )}
+            {narrowNav && (
+              <div className="flex items-center flex-col space-y-2">
+                <Link
+                  href="/account"
+                  className="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-raised rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-focus-ring"
+                  title={formatMessage({
+                    id: 'account',
+                    defaultMessage: 'Account',
+                  })}
+                >
+                  {currentUser?.avatar ? (
+                    <ImageWithFallback
+                      src={currentUser.avatar.url}
+                      width={24}
+                      height={24}
+                      className="h-6 w-6 rounded-full object-cover"
+                      alt={formatMessage({
+                        id: 'user_avatar',
+                        defaultMessage: 'User avatar',
+                      })}
+                    />
+                  ) : (
+                    <UserIcon className="h-6 w-6" />
+                  )}
+                </Link>
+                <button
+                  onClick={onLogout}
+                  className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-none focus:ring-2 focus:ring-focus-ring"
+                  title={formatMessage({
+                    id: 'log_out',
+                    defaultMessage: 'Log out',
+                  })}
+                >
+                  <ArrowRightEndOnRectangleIcon className="h-5 w-5" />
+                </button>
+                <LanguageToggle narrowNav={narrowNav} />
+                <Link
+                  href="https://docs.unchained.shop/admin-ui/overview"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-none focus:ring-2 focus:ring-focus-ring"
+                  title={formatMessage({
+                    id: 'documentation',
+                    defaultMessage: 'Documentation',
+                  })}
+                >
+                  <DocumentTextIcon className="h-5 w-5" />
+                </Link>
+                <ThemeToggle />
+              </div>
+            )}
+          </div>
+          <div
+            className={`flex shrink-0 p-2 ${narrowNav ? '' : 'border-t border-border-subtle'}`}
+          >
+            {narrowNav ? (
+              <button
+                onClick={() => setNarrowNav(!narrowNav)}
+                className="w-full flex items-center justify-center p-2 text-slate-600 dark:text-emerald-400 hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
+                title={formatMessage({
+                  id: 'expand_navigation',
+                  defaultMessage: 'Expand navigation',
+                })}
+              >
+                <Bars4Icon className="h-6 w-6 transition-transform" />
+              </button>
+            ) : (
+              <div className="w-full flex items-center justify-center">
+                <button
+                  onClick={() => setNarrowNav(!narrowNav)}
+                  className="flex items-center p-2 text-slate-600 dark:text-emerald-400 hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
+                  title={formatMessage({
+                    id: 'collapse_navigation',
+                    defaultMessage: 'Collapse navigation',
+                  })}
+                >
+                  <Bars4Icon className="h-6 w-6 rotate-90 transition-transform" />
+                </button>
+                <div className="ml-2 flex items-center space-x-2">
+                  <LanguageToggle narrowNav={narrowNav} />
+                  <Link
+                    href="https://docs.unchained.shop/admin-ui/overview"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
+                    title={formatMessage({
+                      id: 'documentation',
+                      defaultMessage: 'Documentation',
+                    })}
+                  >
+                    <DocumentTextIcon className="h-6 w-6" />
+                  </Link>
+                  <ThemeToggle />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      <div
+        className={`flex flex-1 flex-col ${narrowNav ? 'md:pl-16' : 'md:pl-64 2xl:pl-96'}`}
+      >
+        <div className="flex justify-between items-center sticky top-0 z-10 bg-surface md:hidden border-b border-border-subtle">
+          <button
+            type="button"
+            ref={ref}
+            onClick={() => setHideNav(!hideNav)}
+            className="-ml-0.5 -mt-0.5 inline-flex h-12 w-12 items-center justify-center rounded-md text-text-muted hover:text-text-primary focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-focus-ring"
+          >
+            <span className="sr-only">
+              {formatMessage({
+                id: 'open_sidebar',
+                defaultMessage: ' Open sidebar',
+              })}
+            </span>
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 8h16M4 16h16"
+              />
+            </svg>
+          </button>
+
+          <div className="flex-1 flex justify-center">
+            <div className="dark:brightness-0 dark:invert">
+              <ImageWithFallback
+                src={process.env.NEXT_PUBLIC_LOGO}
+                width={41}
+                height={25}
+                alt={formatMessage({
+                  id: 'unchained_logo',
+                  defaultMessage: 'Unchained Logo',
+                })}
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-wrap justify-center items-center gap-2 pr-4">
+            <SearchButton narrowNav />
+            <LanguageToggle narrowNav={false} />
+            <Link
+              href="https://docs.unchained.shop/admin-ui/overview"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 text-text-secondary hover:text-text-primary rounded-md hover:bg-surface-raised transition-colors focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
+              title={formatMessage({
+                id: 'documentation',
+                defaultMessage: 'Documentation',
+              })}
+            >
+              <DocumentTextIcon className="h-5 w-5" />
+            </Link>
+            <ThemeToggle />
+          </div>
+        </div>
+        <main className="container mx-auto max-w-7xl flex-1 px-4 py-5 md:pt-10 lg:pt-5 pb-20 sm:px-6 md:px-8">
+          <h3 className="ml-8 text-lg font-medium leading-6 text-slate-900">
+            {pageHeader}
+          </h3>
+          {React.cloneElement(children)}
+        </main>
+      </div>
+    </AuthWrapper>
   );
 };
+
+const Layout = (props) => (
+  <SearchProvider>
+    <LayoutContent {...props} />
+  </SearchProvider>
+);
 
 export default Layout;

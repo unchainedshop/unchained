@@ -4,13 +4,25 @@ import {
   createAnonymousGraphqlFetch,
   disconnect,
 } from './helpers.js';
-import { ADMIN_TOKEN } from './seeds/users.js';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
 const GLOBAL_SEARCH_QUERY = /* GraphQL */ `
-  query GlobalSearch($query: String!, $types: [SearchableEntity!], $limit: Int) {
-    globalSearch(query: $query, types: $types, limit: $limit) {
+  query GlobalSearch(
+    $query: String!
+    $types: [SearchableEntity!]
+    $limit: Int
+    $typeLimits: [GlobalSearchTypeLimitInput!]
+    $includeDraftProducts: Boolean
+  ) {
+    globalSearch(
+      query: $query
+      types: $types
+      limit: $limit
+      typeLimits: $typeLimits
+      includeDraftProducts: $includeDraftProducts
+    ) {
       results {
         ... on SimpleProduct {
           _id
@@ -47,12 +59,14 @@ const GLOBAL_SEARCH_QUERY = /* GraphQL */ `
 `;
 
 let graphqlFetch;
+let graphqlFetchAsNormalUser;
 let graphqlFetchAsAnonymousUser;
 
 test.describe('Query.globalSearch', () => {
   test.before(async () => {
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
   });
 
@@ -93,6 +107,24 @@ test.describe('Query.globalSearch', () => {
       assert.strictEqual(globalSearch.counts[0].type, 'PRODUCT');
     });
 
+    test('clamp limits and deduplicate requested types', async () => {
+      const {
+        data: { globalSearch },
+      } = await graphqlFetch({
+        query: GLOBAL_SEARCH_QUERY,
+        variables: {
+          query: 'simple',
+          types: ['PRODUCT', 'PRODUCT'],
+          limit: 10,
+          typeLimits: [{ type: 'PRODUCT', limit: 0 }],
+        },
+      });
+
+      assert.strictEqual(globalSearch.results.length, 1);
+      assert.strictEqual(globalSearch.counts.length, 1);
+      assert.strictEqual(globalSearch.counts[0].type, 'PRODUCT');
+    });
+
     test('return empty results for empty query', async () => {
       const {
         data: { globalSearch },
@@ -118,6 +150,43 @@ test.describe('Query.globalSearch', () => {
     });
   });
 
+  test.describe('Limited non-admin user', () => {
+    test('can search only the published products allowed by the effective arguments', async () => {
+      const { data, errors } = await graphqlFetchAsNormalUser({
+        query: GLOBAL_SEARCH_QUERY,
+        variables: {
+          query: 'simple',
+          types: ['PRODUCT'],
+          includeDraftProducts: false,
+        },
+      });
+
+      assert.strictEqual(errors, undefined);
+      assert.ok(data.globalSearch.results.length > 0);
+      assert.deepStrictEqual(data.globalSearch.counts, [
+        {
+          type: 'PRODUCT',
+          totalCount: data.globalSearch.counts[0].totalCount,
+          authorized: true,
+        },
+      ]);
+    });
+
+    test('rejects the whole query when any requested type is unauthorized', async () => {
+      const { data, errors } = await graphqlFetchAsNormalUser({
+        query: GLOBAL_SEARCH_QUERY,
+        variables: {
+          query: 'simple',
+          types: ['PRODUCT', 'ORDER'],
+          includeDraftProducts: false,
+        },
+      });
+
+      assert.strictEqual(data, null);
+      assert.strictEqual(errors?.[0]?.extensions?.code, 'NoPermissionError');
+    });
+  });
+
   test.describe('Anonymous user', () => {
     test('return NoPermissionError', async () => {
       const { errors } = await graphqlFetchAsAnonymousUser({
@@ -125,11 +194,16 @@ test.describe('Query.globalSearch', () => {
         variables: { query: 'test' },
       });
 
-      assert.ok(errors?.length > 0);
-      assert.ok(
-        ['NoPermissionError', 'INTERNAL_SERVER_ERROR'].includes(errors[0].extensions?.code),
-        `Expected permission error, got: ${errors[0].extensions?.code}`,
-      );
+      assert.strictEqual(errors?.[0]?.extensions?.code, 'NoPermissionError');
+    });
+
+    test('return NoPermissionError for an empty query', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: GLOBAL_SEARCH_QUERY,
+        variables: { query: '', types: ['PRODUCT'] },
+      });
+
+      assert.strictEqual(errors?.[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 });

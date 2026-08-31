@@ -24,7 +24,7 @@ import { useSearch } from '../SearchContext';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import generateUniqueId from '../../common/utils/getUniqueId';
 import useAuth from '../../Auth/useAuth';
-import { IRoleAction } from '../../../gql/types';
+import { IRoleAction, ISearchableEntity } from '../../../gql/types';
 import type { IGlobalSearchQuery } from '../../../gql/types';
 
 type SearchResult = IGlobalSearchQuery['globalSearch']['results'][number];
@@ -59,7 +59,7 @@ const typeLabels: Record<string, string> = {
   Work: 'Work',
 };
 
-const typeViewAllPaths: Record<string, string> = {
+const typeViewAllPaths: Record<ISearchableEntity, string> = {
   PRODUCT: '/products',
   USER: '/users',
   ORDER: '/orders',
@@ -70,7 +70,7 @@ const typeViewAllPaths: Record<string, string> = {
   WORK: '/works',
 };
 
-const typeViewAllRoles: Record<string, IRoleAction> = {
+const typeViewAllRoles: Record<ISearchableEntity, IRoleAction> = {
   PRODUCT: IRoleAction.ViewProducts,
   USER: IRoleAction.ViewUsers,
   ORDER: IRoleAction.ViewOrders,
@@ -200,10 +200,17 @@ const CommandPalette = () => {
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const [keyboardNav, setKeyboardNav] = useState(false);
-  const { search, clear, results, counts, loading, error } = useGlobalSearch();
   const router = useRouter();
   const { formatMessage } = useIntl();
-  const { hasRole } = useAuth();
+  const { hasRole, isAdmin } = useAuth();
+  const includeRestrictedEntities = isAdmin();
+  const { search, clear, results, counts, loading, error } = useGlobalSearch({
+    includeDraftProducts: includeRestrictedEntities,
+    includeInactiveAssortments: includeRestrictedEntities,
+    includeInactiveFilters: includeRestrictedEntities,
+    includeGuestUsers: includeRestrictedEntities,
+    includeCarts: includeRestrictedEntities,
+  });
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -231,6 +238,14 @@ const CommandPalette = () => {
     [counts, hasRole],
   );
 
+  const searchableTypes = useMemo(
+    () =>
+      Object.entries(typeViewAllRoles)
+        .filter(([, role]) => hasRole(role))
+        .map(([type]) => type as ISearchableEntity),
+    [hasRole],
+  );
+
   const totalSelectableItems = results.length + visibleCounts.length;
 
   const debouncedSearch = useCallback(
@@ -239,14 +254,14 @@ const CommandPalette = () => {
         clearTimeout(debounceTimerRef.current);
       }
       debounceTimerRef.current = setTimeout(() => {
-        if (value.trim().length >= 2) {
-          search(value);
+        if (value.trim().length >= 2 && searchableTypes.length > 0) {
+          search(value, searchableTypes);
         } else {
           clear();
         }
       }, 300);
     },
-    [search, clear],
+    [search, clear, searchableTypes],
   );
 
   useEffect(() => {
