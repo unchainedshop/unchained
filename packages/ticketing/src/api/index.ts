@@ -30,6 +30,14 @@ const ticketingResolvers = {
       await checkAction(requestContext, 'manageProducts', [undefined, params]);
       return (product.meta as Record<string, any>)?.scannerPassCode || null;
     },
+    isCanceled(product: any) {
+      return Boolean(product.meta?.cancelled);
+    },
+  },
+  Token: {
+    isCanceled(token: any) {
+      return Boolean(token.meta?.cancelled);
+    },
   },
 };
 
