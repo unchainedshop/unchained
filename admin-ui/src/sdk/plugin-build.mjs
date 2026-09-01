@@ -39,6 +39,9 @@ const SHARED_DEPS = {
   'next/router': {
     named: ['useRouter'],
   },
+  'next/link': {
+    default: ['default'],
+  },
   'react-intl': {
     named: ['useIntl', 'FormattedMessage', 'defineMessages'],
   },
@@ -50,6 +53,28 @@ const SHARED_DEPS = {
   },
   '@unchainedshop/admin-ui/plugins': {
     named: ['usePluginRuntime'],
+  },
+  '@unchainedshop/admin-ui/ui': {
+    named: [
+      'Badge',
+      'Button',
+      'Loading',
+      'NoData',
+      'ImageWithFallback',
+      'NoImage',
+      'PageHeader',
+      'ListHeader',
+      'AnimatedCounter',
+      'BreadCrumbs',
+      'SearchField',
+      'DetailHeader',
+      'Pagination',
+      'Table',
+      'MediaAvatar',
+    ],
+  },
+  '@unchainedshop/admin-ui/modal': {
+    named: ['DangerMessage', 'useModal', 'ModalContext'],
   },
 };
 

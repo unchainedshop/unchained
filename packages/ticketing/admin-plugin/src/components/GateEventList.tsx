@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl';
-import useFormatDateTime from '../../common/utils/useFormatDateTime';
-import Badge from '../../../components/ui/Badge';
+import { Badge } from '@unchainedshop/admin-ui/ui';
+import { useFormatDateTime } from '../utils/misc';
 
 const GateEventList = ({ events, onSelectEvent }) => {
   const { formatMessage } = useIntl();
@@ -12,9 +12,7 @@ const GateEventList = ({ events, onSelectEvent }) => {
         const slot = event?.contractConfiguration?.ercMetadataProperties?.slot;
         const tokens = event?.tokens || [];
         const activeTokens = tokens.filter((t) => !t.isCanceled);
-        const redeemedCount = activeTokens.filter(
-          (t) => t.invalidatedDate,
-        ).length;
+        const redeemedCount = activeTokens.filter((t) => t.invalidatedDate).length;
         const invalidateableCount = activeTokens.filter(
           (t) => t.isInvalidateable && !t.invalidatedDate,
         ).length;
@@ -57,10 +55,7 @@ const GateEventList = ({ events, onSelectEvent }) => {
                   <span className="text-xl font-bold text-slate-900 dark:text-slate-100">
                     {redeemedCount}
                   </span>
-                  <span className="text-slate-400">
-                    {' '}
-                    / {activeTokens.length}
-                  </span>
+                  <span className="text-slate-400"> / {activeTokens.length}</span>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
                     {formatMessage({
                       id: 'gate_redeemed',
@@ -75,11 +70,7 @@ const GateEventList = ({ events, onSelectEvent }) => {
                   strokeWidth="2"
                   stroke="currentColor"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 5l7 7-7 7"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
               </div>
             </div>

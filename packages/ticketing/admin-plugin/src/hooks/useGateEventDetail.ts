@@ -54,15 +54,12 @@ const GateEventDetailQuery = gql`
 `;
 
 const useGateEventDetail = (productId: string | null) => {
-  const { data, loading, error, refetch, previousData } = useQuery(
-    GateEventDetailQuery,
-    {
-      variables: { productId },
-      skip: !productId,
-      fetchPolicy: 'cache-and-network',
-      pollInterval: 10000,
-    },
-  );
+  const { data, loading, error, refetch, previousData } = useQuery(GateEventDetailQuery, {
+    variables: { productId },
+    skip: !productId,
+    fetchPolicy: 'cache-and-network',
+    pollInterval: 10000,
+  });
 
   return {
     event: (data as any)?.product || (previousData as any)?.product || null,

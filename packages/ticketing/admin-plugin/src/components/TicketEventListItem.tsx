@@ -1,10 +1,6 @@
 import Link from 'next/link';
-import Table from '../../common/components/Table';
-import Badge from '../../../components/ui/Badge';
-import useFormatDateTime from '../../common/utils/useFormatDateTime';
-import ImageWithFallback from '../../../components/ui/ImageWithFallback';
-import defaultNextImageLoader from '../../common/utils/defaultNextImageLoader';
-import generateUniqueId from '../../common/utils/getUniqueId';
+import { Table, Badge, ImageWithFallback } from '@unchainedshop/admin-ui/ui';
+import { useFormatDateTime, generateUniqueId, defaultNextImageLoader } from '../utils/misc';
 
 const EVENT_STATUSES = {
   ACTIVE: 'emerald',
@@ -17,10 +13,10 @@ const TicketEventListItem = ({ product }) => {
   const slot = product?.contractConfiguration?.ercMetadataProperties?.slot;
 
   const supply = product?.contractConfiguration?.supply || 0;
-  const remaining =
-    product?.simulatedStocks?.reduce((acc, cur) => acc + cur.quantity, 0) || 0;
+  const remaining = product?.simulatedStocks?.reduce((acc, cur) => acc + cur.quantity, 0) || 0;
   const sold = supply - remaining;
-  const ticketUrl = `/ticketing?slug=${generateUniqueId(product)}`;
+  const ticketUrl = `/ext/ticketing/${generateUniqueId(product)}`;
+
   return (
     <Table.Row key={product._id}>
       <Table.Cell>
@@ -66,9 +62,7 @@ const TicketEventListItem = ({ product }) => {
       </Table.Cell>
       <Table.Cell>
         <div className="flex items-center gap-2 text-sm">
-          <span className="font-medium text-slate-800 dark:text-slate-200">
-            {sold}
-          </span>
+          <span className="font-medium text-slate-800 dark:text-slate-200">{sold}</span>
           <span className="text-slate-400">/</span>
           <span className="text-slate-500 dark:text-slate-400">{supply}</span>
           {supply > 0 && (
@@ -86,11 +80,7 @@ const TicketEventListItem = ({ product }) => {
       <Table.Cell>
         <Badge
           text={product?.isCanceled ? 'CANCELLED' : product?.status}
-          color={
-            product?.isCanceled
-              ? 'rose'
-              : EVENT_STATUSES[product?.status] || 'slate'
-          }
+          color={product?.isCanceled ? 'rose' : EVENT_STATUSES[product?.status] || 'slate'}
           square
         />
       </Table.Cell>

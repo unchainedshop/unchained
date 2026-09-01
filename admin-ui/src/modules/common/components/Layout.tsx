@@ -16,7 +16,6 @@ import {
   DocumentTextIcon,
   FolderArrowDownIcon,
   MagnifyingGlassIcon,
-  TicketIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -113,6 +112,7 @@ const LayoutContent = ({
     skip: !hasRole(IRoleAction.ViewWorkQueue),
   });
 
+  const isAuthenticated = !!currentUser?._id;
   const { shopInfo } = useShopInfo();
   const [hideNav, setHideNav] = useState(true);
   const [narrowNav, setNarrowNav] = useState(false);
@@ -167,7 +167,6 @@ const LayoutContent = ({
         _sortOrder: page.sortOrder as number | undefined,
       });
     });
-
     if (children.length === 0) return [];
 
     const nav = manifest.navigation;
@@ -284,12 +283,6 @@ const LayoutContent = ({
       href: '/tokens',
       requiredRole: 'viewTokens',
     },
-    isSystemReady && {
-      name: formatMessage({ id: 'ticketing', defaultMessage: 'Ticketing' }),
-      icon: TicketIcon,
-      href: '/ticketing',
-      requiredRole: 'gateControl',
-    },
     {
       _sortOrder: 110,
       name: formatMessage({ id: 'system', defaultMessage: 'System settings' }),
@@ -386,6 +379,16 @@ const LayoutContent = ({
       if (bOrder != null) return 1;
       return 0;
     });
+
+  if (!isAuthenticated) {
+    return (
+      <AuthWrapper>
+        <main className="container mx-auto max-w-7xl flex-1 px-4 py-5 pb-20 sm:px-6 md:px-8">
+          {React.cloneElement(children)}
+        </main>
+      </AuthWrapper>
+    );
+  }
 
   return (
     <AuthWrapper>

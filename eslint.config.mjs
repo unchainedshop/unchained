@@ -11,7 +11,16 @@ export default tseslint.config(
   tseslint.configs.recommended,
   tseslint.configs.stylistic,
   eslintPluginPrettierConfig,
-  globalIgnores(['.git', '.aider*', 'node_modules/', 'examples/', './docs/', '**/lib/', './admin-ui']),
+  globalIgnores([
+    '.git',
+    '.aider*',
+    'node_modules/',
+    'examples/',
+    './docs/',
+    '**/lib/',
+    '**/dist/',
+    './admin-ui',
+  ]),
   {
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',

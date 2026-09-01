@@ -2,18 +2,14 @@ import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
-import useModal from '../../modal/hooks/useModal';
-import DangerMessage from '../../modal/components/DangerMessage';
-import useFormatDateTime from '../../common/utils/useFormatDateTime';
-import ImageWithFallback from '../../../components/ui/ImageWithFallback';
-import defaultNextImageLoader from '../../common/utils/defaultNextImageLoader';
-import Badge from '../../../components/ui/Badge';
+import { useModal, DangerMessage } from '@unchainedshop/admin-ui/modal';
+import { Badge, ImageWithFallback } from '@unchainedshop/admin-ui/ui';
 import EventTokenList from './EventTokenList';
 import useCancelTicket from '../hooks/useCancelTicket';
 import useCancelEvent from '../hooks/useCancelEvent';
-import useInvalidateTicket from '../../token/hooks/useInvalidateTicket';
+import useInvalidateTicket from '../hooks/useInvalidateTicket';
 import useSetScannerPassCode from '../hooks/useSetScannerPassCode';
-import generateUniqueId from '../../common/utils/getUniqueId';
+import { useFormatDateTime, generateUniqueId, defaultNextImageLoader } from '../utils/misc';
 
 const TicketEventDetail = ({ product }) => {
   const { formatMessage } = useIntl();
@@ -27,8 +23,7 @@ const TicketEventDetail = ({ product }) => {
 
   const slot = product?.contractConfiguration?.ercMetadataProperties?.slot;
   const supply = product?.contractConfiguration?.supply || 0;
-  const remaining =
-    product?.simulatedStocks?.reduce((acc, cur) => acc + cur.quantity, 0) || 0;
+  const remaining = product?.simulatedStocks?.reduce((acc, cur) => acc + cur.quantity, 0) || 0;
   const sold = supply - remaining;
 
   const activeTokens = product?.tokens?.filter((t) => !t.isCanceled) || [];
@@ -140,12 +135,11 @@ const TicketEventDetail = ({ product }) => {
           defaultMessage: 'Ticket redeemed successfully',
         }),
       );
-    } catch (e) {
+    } catch {
       toast.error(
         formatMessage({
           id: 'ticket_redeem_error',
-          defaultMessage:
-            'Ticket already redeemed or not redeemable at this time',
+          defaultMessage: 'Ticket already redeemed or not redeemable at this time',
         }),
       );
     }
@@ -178,9 +172,7 @@ const TicketEventDetail = ({ product }) => {
               {product?.texts?.title}
             </h2>
             {product?.texts?.subtitle && (
-              <p className="mt-1 text-lg text-slate-600 dark:text-slate-400">
-                {product.texts.subtitle}
-              </p>
+              <p className="mt-1 text-lg text-slate-600 dark:text-slate-400">{product.texts.subtitle}</p>
             )}
             {product?.texts?.description && (
               <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
@@ -207,10 +199,7 @@ const TicketEventDetail = ({ product }) => {
               </div>
               <div>
                 <span className="block text-sm font-medium text-slate-500 dark:text-slate-400">
-                  {formatMessage({
-                    id: 'status',
-                    defaultMessage: 'Status',
-                  })}
+                  {formatMessage({ id: 'status', defaultMessage: 'Status' })}
                 </span>
                 <div className="mt-1">
                   <Badge
@@ -248,13 +237,8 @@ const TicketEventDetail = ({ product }) => {
                   })}
                 </span>
                 <p className="mt-1 text-slate-900 dark:text-slate-100">
-                  <span className="text-lg font-semibold">
-                    {redeemedTokens.length}
-                  </span>
-                  <span className="text-slate-400">
-                    {' '}
-                    / {activeTokens.length}
-                  </span>
+                  <span className="text-lg font-semibold">{redeemedTokens.length}</span>
+                  <span className="text-slate-400"> / {activeTokens.length}</span>
                 </p>
               </div>
             </div>
@@ -311,8 +295,7 @@ const TicketEventDetail = ({ product }) => {
                 product?.scannerPassCode
                   ? formatMessage({
                       id: 'scanner_pass_code_set',
-                      defaultMessage:
-                        'Pass code is set (enter new value to change)',
+                      defaultMessage: 'Pass code is set (enter new value to change)',
                     })
                   : formatMessage({
                       id: 'scanner_pass_code_placeholder',
@@ -344,10 +327,7 @@ const TicketEventDetail = ({ product }) => {
             }}
             className="inline-flex items-center rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-950 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {formatMessage({
-              id: 'save',
-              defaultMessage: 'Save',
-            })}
+            {formatMessage({ id: 'save', defaultMessage: 'Save' })}
           </button>
           {product?.scannerPassCode && (
             <button
@@ -371,10 +351,7 @@ const TicketEventDetail = ({ product }) => {
               }}
               className="inline-flex items-center rounded-md border border-rose-300 dark:border-rose-600 px-4 py-2 text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20"
             >
-              {formatMessage({
-                id: 'remove',
-                defaultMessage: 'Remove',
-              })}
+              {formatMessage({ id: 'remove', defaultMessage: 'Remove' })}
             </button>
           )}
         </div>

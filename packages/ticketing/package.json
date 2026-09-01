@@ -17,11 +17,20 @@
     "./lib/*.js": {
       "import": "./lib/*.js",
       "types": "./lib/*.d.ts"
+    },
+    "./admin-plugin": {
+      "import": "./lib/admin-plugin.js",
+      "types": "./lib/admin-plugin.d.ts"
     }
   },
+  "files": [
+    "lib",
+    "admin-plugin/dist"
+  ],
   "scripts": {
     "clean": "tsc -b --clean",
-    "build": "tsc -b",
+    "build": "tsc -b && npm run build:admin-plugin",
+    "build:admin-plugin": "cd admin-plugin && npx tsup",
     "prepublishOnly": "npm run clean && npm run build",
     "watch": "tsc -w",
     "test": "node --test",

@@ -3,11 +3,7 @@ import { useQuery } from '@apollo/client/react';
 
 const GateEventsQuery = gql`
   query GateEvents($onlyInvalidateable: Boolean!) {
-    ticketEvents(
-      limit: 100
-      includeDrafts: false
-      onlyInvalidateable: $onlyInvalidateable
-    ) {
+    ticketEvents(limit: 100, includeDrafts: false, onlyInvalidateable: $onlyInvalidateable) {
       _id
       status
       ... on TokenizedProduct {
@@ -33,23 +29,16 @@ const GateEventsQuery = gql`
   }
 `;
 
-const useGateEvents = ({
-  onlyInvalidateable = false,
-}: { onlyInvalidateable?: boolean } = {}) => {
-  const { data, loading, error, refetch, previousData } = useQuery(
-    GateEventsQuery,
-    {
-      variables: { onlyInvalidateable },
-      fetchPolicy: 'cache-and-network',
-      pollInterval: 10000,
-    },
-  );
+const useGateEvents = ({ onlyInvalidateable = false }: { onlyInvalidateable?: boolean } = {}) => {
+  const { data, loading, error, refetch, previousData } = useQuery(GateEventsQuery, {
+    variables: { onlyInvalidateable },
+    fetchPolicy: 'cache-and-network',
+    pollInterval: 10000,
+  });
 
-  const events = (
-    (data as any)?.ticketEvents ||
-    (previousData as any)?.ticketEvents ||
-    []
-  ).filter((p: any) => p?.tokens?.length && !p.isCanceled);
+  const events = ((data as any)?.ticketEvents || (previousData as any)?.ticketEvents || []).filter(
+    (p: any) => p?.tokens?.length && !p.isCanceled,
+  );
 
   return {
     events,
