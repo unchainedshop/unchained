@@ -1,5 +1,5 @@
 {
-  "name": "@unchainedshop/plugin-bookmark-manager",
+  "name": "@unchainedshop/ticketing-admin-plugin",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -9,10 +9,10 @@
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
-    "@unchainedshop/admin-ui": "file:../../../../admin-ui",
-    "@unchainedshop/client": "file:../../../../admin-ui/client",
+    "@unchainedshop/admin-ui": "*",
     "esbuild": "^0.27.0",
     "react": "^19.0.0",
-    "tsup": "^8.0.0"
+    "tsup": "^8.0.0",
+    "typescript": "^6.0.3"
   }
 }

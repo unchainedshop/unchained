@@ -14,12 +14,8 @@ const DeauthenticateGateMutation = gql`
 `;
 
 const useIsPassCodeValid = () => {
-  const [authenticateGate, { loading: authLoading }] = useMutation(
-    AuthenticateGateMutation,
-  );
-  const [deauthenticateGate, { loading: deauthLoading }] = useMutation(
-    DeauthenticateGateMutation,
-  );
+  const [authenticateGate, { loading: authLoading }] = useMutation(AuthenticateGateMutation);
+  const [deauthenticateGate, { loading: deauthLoading }] = useMutation(DeauthenticateGateMutation);
 
   const validatePassCode = async (passCode: string) => {
     try {

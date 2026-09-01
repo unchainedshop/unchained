@@ -6,7 +6,6 @@ import { RendererTypes, getRenderer } from './template-registry.ts';
 import { createLogger } from '@unchainedshop/logger';
 import { getFileAdapter } from '@unchainedshop/core';
 import type { TicketingAPI } from './index.ts';
-
 const logger = createLogger('unchained:ticketing');
 
 const {
