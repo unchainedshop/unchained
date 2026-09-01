@@ -20,7 +20,7 @@ For detailed security documentation including compliance matrices, FIPS 140-3 co
 | **PCI DSS SAQ-A** | Compatible | No card data storage; uses tokenization |
 | **ISO 27001** | Technical Controls | Access control, audit logging, cryptographic standards |
 | **FIPS 140-3** | Algorithm Compatible | Uses FIPS-approved algorithms (PBKDF2, SHA-256/512, AES-256-GCM) |
-| **SOC 2** | Audit Support | Tamper-evident audit logs for evidence collection |
+| **SOC 2** | Audit Support | OCSF audit event stream for evidence collection in your SIEM |
 | **GDPR** | Technical Measures | Audit logging supports Article 30 requirements |
 
 ## Cryptographic Standards
@@ -85,28 +85,36 @@ role.allow(actions.updateOrder, async (obj, params, context) => {
 
 ## Audit Logging
 
-Unchained provides **OCSF-compliant** (Open Cybersecurity Schema Framework) audit logging with tamper-evident hash chains.
+Unchained provides **OCSF-compliant** (Open Cybersecurity Schema Framework) audit logging designed for consumption by external monitoring agents.
 
 ### Features
 
 - **OCSF v1.4.0 schema** - Industry-standard format supported by AWS Security Lake, Datadog, Splunk, Google Chronicle
-- **MongoDB storage** - Indexed queries with text search
-- **Tamper-evident** - SHA-256 hash chain for integrity verification
-- **Append-only** - No update or delete operations (except retention pruning)
-- **SIEM-ready** - HTTP push and OCSF format for direct ingestion into security monitoring tools
+- **Structured emission by default** - Every event as one JSON log line on stdout (`UNCHAINED_LOG_FORMAT=json`), scrapeable by any log agent
+- **OTLP push** - Optional OTLP/HTTP push to any OpenTelemetry-compatible collector (`collectorUrl` or `OTEL_EXPORTER_OTLP_*` env)
+
+The engine does not persist audit events itself — retention, queries, and integrity guarantees are the consuming log pipeline's or SIEM's concern.
 
 ### Quick Start
 
-Audit logging is automatically enabled when using `startPlatform()` — events are stored in MongoDB with indexed queries and a SHA-256 hash chain for tamper detection.
+Audit logging is automatically enabled when using `startPlatform()` — events are emitted through the `unchained:audit` logger; OTLP push is opt-in.
 
 ```typescript
 import { startPlatform } from '@unchainedshop/platform';
 
-// Audit logging enabled by default (MongoDB storage)
+// Audit logging enabled by default (structured log emission)
 const platform = await startPlatform({ modules: defaultModules });
 
+// Opt-in OTLP push:
+const platform = await startPlatform({
+  modules: defaultModules,
+  auditLog: {
+    collectorUrl: 'http://otel-collector:4318/v1/logs',
+  },
+});
+
 // Events automatically captured:
-// - Login/logout (97 event types total)
+// - Login/logout/failed login (97 event types total)
 // - User creation/deletion
 // - Password changes
 // - Role changes

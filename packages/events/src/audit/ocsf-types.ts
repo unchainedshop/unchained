@@ -87,7 +87,12 @@ export const OCSF_ACCOUNT_ACTIVITY = {
 
 /**
  * OCSF API Activity IDs
- * Standard OCSF IDs (1-4) plus e-commerce extensions (90-99)
+ *
+ * Standard OCSF defines activity_id 0-4 and 99 for API Activity. The 90-98
+ * values below are internal Unchained identifiers for e-commerce semantics:
+ * emitted events map them to 99 (Other) with the specific label carried in
+ * the standard `activity_name` sibling attribute, so events validate against
+ * the unmodified OCSF schema.
  */
 export const OCSF_API_ACTIVITY = {
   // Standard OCSF activities
@@ -97,7 +102,7 @@ export const OCSF_API_ACTIVITY = {
   UPDATE: 3,
   DELETE: 4,
 
-  // E-commerce specific activities (extension range)
+  // E-commerce specific activities (internal identifiers, emitted as Other/99)
   CHECKOUT: 90, // Order checkout
   PAYMENT: 91, // Payment processing
   REFUND: 92, // Refund processing
@@ -107,6 +112,24 @@ export const OCSF_API_ACTIVITY = {
 
   OTHER: 99,
 } as const;
+
+/**
+ * Captions for API activity identifiers, used as the OCSF `activity_name`
+ */
+export const OCSF_API_ACTIVITY_NAMES: Record<number, string> = {
+  [OCSF_API_ACTIVITY.UNKNOWN]: 'Unknown',
+  [OCSF_API_ACTIVITY.CREATE]: 'Create',
+  [OCSF_API_ACTIVITY.READ]: 'Read',
+  [OCSF_API_ACTIVITY.UPDATE]: 'Update',
+  [OCSF_API_ACTIVITY.DELETE]: 'Delete',
+  [OCSF_API_ACTIVITY.CHECKOUT]: 'Checkout',
+  [OCSF_API_ACTIVITY.PAYMENT]: 'Payment',
+  [OCSF_API_ACTIVITY.REFUND]: 'Refund',
+  [OCSF_API_ACTIVITY.EXPORT]: 'Export',
+  [OCSF_API_ACTIVITY.IMPORT]: 'Import',
+  [OCSF_API_ACTIVITY.ACCESS_DENIED]: 'Access Denied',
+  [OCSF_API_ACTIVITY.OTHER]: 'Other',
+};
 
 // ============================================================================
 // OCSF Object Types
@@ -187,6 +210,18 @@ export interface OCSFEndpoint {
 }
 
 /**
+ * OCSF Service object - the service the event pertains to
+ */
+export interface OCSFService {
+  /** Service name */
+  name?: string;
+  /** Unique service identifier */
+  uid?: string;
+  /** Service version */
+  version?: string;
+}
+
+/**
  * OCSF API object - describes the API call
  */
 export interface OCSFApi {
@@ -223,6 +258,8 @@ export interface OCSFBaseEvent {
   type_uid: number;
   /** Activity type within the class */
   activity_id: number;
+  /** Activity caption; carries the source-specific name when activity_id is 99 (Other) */
+  activity_name?: string;
   /** Severity level (0-6) */
   severity_id: number;
   /** Event timestamp (Unix ms) */
@@ -236,17 +273,11 @@ export interface OCSFBaseEvent {
   /** Status detail message */
   status_detail?: string;
   /**
-   * Unmapped fields for extensions (hash chain)
-   * OCSF allows custom fields in unmapped object
+   * Unmapped fields for source-specific extensions.
+   * OCSF allows custom fields in the unmapped object; Unchained uses it to
+   * carry changed-field snapshots for update events (`data`).
    */
-  unmapped?: {
-    /** Sequence number for ordering */
-    seq: number;
-    /** SHA-256 hash of previous event */
-    prev_hash: string;
-    /** SHA-256 hash of this event */
-    hash: string;
-  };
+  unmapped?: Record<string, unknown>;
 }
 
 // ============================================================================
@@ -262,6 +293,8 @@ export interface OCSFAuthenticationEvent extends OCSFBaseEvent {
   class_uid: 3002;
   /** Target user being authenticated */
   user: OCSFUser;
+  /** Service the user authenticates to (OCSF requires service or dst_endpoint) */
+  service?: OCSFService;
   /** Source endpoint (client) */
   src_endpoint?: OCSFEndpoint;
   /** Destination endpoint (server) */

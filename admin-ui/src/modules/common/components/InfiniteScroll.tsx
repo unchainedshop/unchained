@@ -40,7 +40,9 @@ const InfiniteScroll = ({
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [threshold]);
+    // hasMore controls whether the sentinel is mounted, so the observer must
+    // re-attach whenever it toggles
+  }, [threshold, hasMore]);
 
   return (
     <>

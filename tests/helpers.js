@@ -5,6 +5,7 @@ import {
   shutdownTestPlatform,
   getTestPlatform,
   getServerPort,
+  clearCapturedAuditEvents,
 } from './setup.js';
 import seedLocaleData from './seeds/locale-data.js';
 import seedUsers, { ADMIN_TOKEN } from './seeds/users.js';
@@ -51,6 +52,10 @@ export const setupDatabase = async () => {
   await initializeTestPlatform();
 
   const { db } = getTestPlatform();
+
+  // Give each test file a clean slate of captured audit events
+  clearCapturedAuditEvents();
+
   const collections = await db.collections();
   await Promise.all(collections.map(async (collection) => collection.deleteMany({})));
 

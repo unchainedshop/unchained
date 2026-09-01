@@ -1,4 +1,4 @@
-import { registerEvents, type AuditLog } from '@unchainedshop/events';
+import { registerEvents } from '@unchainedshop/events';
 import createGraphQLServer, { type GraphQLServerOptions } from './createGraphQLServer.ts';
 import {
   createContextResolver,
@@ -27,7 +27,6 @@ import { actions } from './roles/index.ts';
 export type UnchainedServerOptions = {
   roles?: RolesInterface;
   adminUiConfig?: AdminUiConfig;
-  auditLog?: AuditLog;
   unchainedAPI: UnchainedCore;
   context?: (defaultResolver: UnchainedContextResolver) => UnchainedContextResolver;
 } & Partial<GraphQLServerOptions>;
@@ -40,14 +39,12 @@ export const startAPIServer = async (options: UnchainedServerOptions) => {
     context: customContext,
     roles,
     adminUiConfig = {},
-    auditLog,
     ...serverOptions
   } = options as UnchainedServerOptions;
 
   const contextResolver = createContextResolver(unchainedAPI, {
     roles,
     adminUiConfig,
-    auditLog,
   });
 
   setCurrentContextResolver(

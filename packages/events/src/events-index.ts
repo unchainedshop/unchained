@@ -42,13 +42,12 @@ export {
   OCSF_AUTH_ACTIVITY,
   OCSF_ACCOUNT_ACTIVITY,
   OCSF_API_ACTIVITY,
+  OCSF_API_ACTIVITY_NAMES,
   // Types
-  type AuditLogConfig,
+  type AuditLogOptions,
   type AuthenticationInput,
   type AccountChangeInput,
   type ApiActivityInput,
-  type AuditLogQuery,
-  type VerifyResult,
   // OCSF types
   type OCSFBaseEvent,
   type OCSFAuthenticationEvent,
@@ -60,6 +59,7 @@ export {
   type OCSFActor,
   type OCSFEndpoint,
   type OCSFApi,
+  type OCSFService,
   type OCSFSession,
 } from './audit/index.ts';
 

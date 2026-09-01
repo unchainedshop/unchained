@@ -1,6 +1,5 @@
 import type { UnchainedCore } from '@unchainedshop/core';
 import type { RolesInterface } from '@unchainedshop/roles';
-import type { AuditLog } from '@unchainedshop/events';
 import instantiateLoaders, { type UnchainedLoaders } from './loaders/index.ts';
 import { getLocaleContext, type UnchainedLocaleContext } from './locale-context.ts';
 import type { UnchainedServerOptions } from './api-index.ts';
@@ -52,7 +51,6 @@ export type Context = UnchainedCore & {
   version?: string;
   roles?: RolesInterface;
   adminUiConfig?: AdminUiConfig;
-  auditLog?: AuditLog;
   loaders: UnchainedLoaders;
 } & UnchainedUserContext &
   UnchainedLocaleContext &
@@ -75,7 +73,7 @@ export type UnchainedContextResolver<Request = any, Response = any> = (
 export const createContextResolver =
   (
     unchainedAPI: UnchainedCore,
-    unchainedConfig: Pick<UnchainedServerOptions, 'roles' | 'adminUiConfig' | 'auditLog'>,
+    unchainedConfig: Pick<UnchainedServerOptions, 'roles' | 'adminUiConfig'>,
   ): UnchainedContextResolver =>
   async ({
     getHeader,

@@ -53,19 +53,17 @@ await startPlatform({
 
 ### Audit Logging
 
-- [ ] **Audit logging enabled** - OCSF-compliant audit logging configured
-- [ ] **Log storage configured** - Audit logs persisted to file or SIEM
-- [ ] **Integrity verification** - Hash chain verification scheduled
+- [ ] **Audit events shipped** - `UNCHAINED_LOG_FORMAT=json` set and a log agent scrapes the `unchained:audit` lines, or OTLP push configured
+- [ ] **Collector reachable** (if pushing) - `collectorUrl` / `OTEL_EXPORTER_OTLP_ENDPOINT` points at your OTLP collector
+- [ ] **Retention in the log pipeline** - your SIEM/log store retains audit events per your compliance requirements
 
 ```typescript
-import { createAuditLog, configureAuditIntegration } from '@unchainedshop/events';
-
-const auditLog = createAuditLog({
-  directory: process.env.UNCHAINED_AUDIT_DIR || './audit-logs',
-  collectorUrl: process.env.UNCHAINED_AUDIT_COLLECTOR_URL,
+const platform = await startPlatform({
+  modules: defaultModules,
+  auditLog: {
+    collectorUrl: process.env.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT, // or rely on the env fallback
+  },
 });
-
-configureAuditIntegration(auditLog);
 ```
 
 ### Database Security
@@ -124,7 +122,7 @@ mongosh --eval "db.products.getIndexes()"
 ```bash
 # Logging configuration
 LOG_LEVEL=info
-LOG_FORMAT=json  # For structured logging
+UNCHAINED_LOG_FORMAT=json  # For structured logging
 ```
 
 ## Configuration

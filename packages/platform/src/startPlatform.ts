@@ -8,7 +8,7 @@ import {
   createAuditLog,
   configureAuditIntegration,
   setAuditLogInstance,
-  type AuditLogConfig,
+  type AuditLogOptions,
   type AuditLog,
 } from '@unchainedshop/events';
 import { setupAccounts } from './setup/setupAccounts.ts';
@@ -25,9 +25,9 @@ export { MessageTypes };
 export type PlatformOptions = {
   rolesOptions?: IRoleOptionConfig;
   workQueueOptions?: SetupWorkqueueOptions;
-  auditLog?: AuditLogConfig | false;
+  auditLog?: AuditLogOptions | false;
 } & Omit<UnchainedCoreOptions, 'migrationRepository' | 'db'> &
-  Omit<UnchainedServerOptions, 'roles' | 'unchainedAPI' | 'auditLog'>;
+  Omit<UnchainedServerOptions, 'roles' | 'unchainedAPI'>;
 
 const REQUIRED_ENV_VARIABLES = [
   'EMAIL_WEBSITE_NAME',
@@ -120,7 +120,7 @@ export const startPlatform = async ({
   // Create audit log instance (integration configured after events are registered)
   let auditLog: AuditLog | undefined;
   if (auditLogConfig !== false) {
-    auditLog = createAuditLog(auditLogConfig ? { ...auditLogConfig, db } : { db });
+    auditLog = createAuditLog(auditLogConfig || {});
     setAuditLogInstance(auditLog);
   }
 
@@ -137,7 +137,6 @@ export const startPlatform = async ({
   const graphqlHandler = await startAPIServer({
     unchainedAPI,
     roles: configuredRoles,
-    auditLog,
     ...arbitraryAPIServerConfiguration,
   });
 

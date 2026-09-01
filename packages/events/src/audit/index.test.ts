@@ -1,6 +1,7 @@
-import { describe, it, before, after } from 'node:test';
+import { describe, it, before, after, mock } from 'node:test';
 import assert from 'node:assert';
-import { createDatabaseResource, type DatabaseResource } from '@unchainedshop/mongodb';
+import { createServer, type Server } from 'node:http';
+import { setTimeout as sleep } from 'node:timers/promises';
 import {
   AuditLog,
   OCSF_CLASS,
@@ -10,333 +11,212 @@ import {
   OCSF_ACCOUNT_ACTIVITY,
   OCSF_API_ACTIVITY,
   createAuditLog,
-  type OCSFAuthenticationEvent,
 } from './index.ts';
 
-let dbResource: DatabaseResource;
+const ORIGINAL_LOG_FORMAT = process.env.UNCHAINED_LOG_FORMAT;
+const ORIGINAL_CONSOLE_LOG = console.log;
+
+const restoreLogFormat = () => {
+  if (ORIGINAL_LOG_FORMAT === undefined) delete process.env.UNCHAINED_LOG_FORMAT;
+  else process.env.UNCHAINED_LOG_FORMAT = ORIGINAL_LOG_FORMAT;
+};
+
+/** Runs fn against a fresh emit-only AuditLog and returns the OCSF events it emitted. */
+const captureEvents = async (fn: (auditLog: AuditLog) => Promise<void>): Promise<any[]> => {
+  process.env.UNCHAINED_LOG_FORMAT = 'json';
+  const events: any[] = [];
+  console.log = mock.fn((line: any) => {
+    try {
+      const parsed = JSON.parse(line);
+      if (parsed.ocsf) events.push(parsed.ocsf);
+    } catch {
+      // non-JSON output — ignore
+    }
+  });
+  try {
+    const auditLog = createAuditLog({});
+    await fn(auditLog);
+    await auditLog.close();
+  } finally {
+    console.log = ORIGINAL_CONSOLE_LOG;
+    restoreLogFormat();
+  }
+  return events;
+};
 
 describe('AuditLog (OCSF Format)', () => {
-  let auditLog: AuditLog;
+  it('should emit an event and return its uid', async () => {
+    let id: string | undefined;
+    const [event] = await captureEvents(async (auditLog) => {
+      id = await auditLog.logAuthentication({
+        activity: OCSF_AUTH_ACTIVITY.LOGON,
+        userId: 'user-123',
+        success: true,
+        remoteAddress: '192.168.1.1',
+        sessionId: 'sess-abc',
+      });
+    });
 
-  before(async () => {
-    dbResource = await createDatabaseResource({ forceInMemory: true });
-    auditLog = createAuditLog({ db: dbResource.db });
+    assert.match(id!, /^[0-9a-f-]{36}$/);
+    assert.strictEqual(event.metadata.uid, id);
   });
 
-  after(async () => {
-    await auditLog.close();
-    await dbResource[Symbol.asyncDispose]();
-  });
-
-  it('should append a log entry and return an id', async () => {
-    const id = await auditLog.logAuthentication({
-      activity: OCSF_AUTH_ACTIVITY.LOGON,
-      userId: 'user-123',
-      success: true,
-      remoteAddress: '192.168.1.1',
-      sessionId: 'sess-abc',
+  it('should build well-formed authentication events', async () => {
+    const [event] = await captureEvents(async (auditLog) => {
+      await auditLog.logAuthentication({
+        activity: OCSF_AUTH_ACTIVITY.LOGON,
+        userId: 'typed-user',
+        userName: 'test@example.com',
+        success: true,
+        isMfa: true,
+        remoteAddress: '10.0.0.1',
+        sessionId: 'sess-1',
+      });
     });
 
-    assert.ok(id);
-    assert.match(id, /^[0-9a-f-]{36}$/);
-  });
-
-  it('should store events in MongoDB', async () => {
-    await auditLog.logAccountChange({
-      activity: OCSF_ACCOUNT_ACTIVITY.CREATE,
-      userId: 'test-user',
-      success: true,
-    });
-
-    const entries = await auditLog.find({
-      classUids: [OCSF_CLASS.ACCOUNT_CHANGE],
-      userId: 'test-user',
-      limit: 1,
-    });
-
-    assert.ok(entries.length >= 1);
-    const event = entries[0];
-    assert.strictEqual(event.class_uid, OCSF_CLASS.ACCOUNT_CHANGE);
-    assert.strictEqual(event.category_uid, 3);
-    assert.strictEqual(event.activity_id, OCSF_ACCOUNT_ACTIVITY.CREATE);
-    assert.strictEqual(event.message, 'User Created');
-    assert.strictEqual((event as any).user?.uid, 'test-user');
-    assert.strictEqual(event.status_id, OCSF_STATUS.SUCCESS);
-  });
-
-  it('should use typed authentication logging', async () => {
-    await auditLog.logAuthentication({
-      activity: OCSF_AUTH_ACTIVITY.LOGON,
-      userId: 'typed-user',
-      userName: 'test@example.com',
-      success: true,
-      isMfa: true,
-      remoteAddress: '10.0.0.1',
-    });
-
-    const entries = await auditLog.find({
-      classUids: [OCSF_CLASS.AUTHENTICATION],
-      userId: 'typed-user',
-      limit: 1,
-    });
-
-    assert.ok(entries.length >= 1);
-    const event = entries[0] as OCSFAuthenticationEvent;
     assert.strictEqual(event.class_uid, OCSF_CLASS.AUTHENTICATION);
+    assert.strictEqual(event.category_uid, 3);
+    assert.strictEqual(event.type_uid, OCSF_CLASS.AUTHENTICATION * 100 + OCSF_AUTH_ACTIVITY.LOGON);
+    assert.strictEqual(event.message, 'User Login');
+    assert.strictEqual(event.status_id, OCSF_STATUS.SUCCESS);
+    assert.strictEqual(event.severity_id, OCSF_SEVERITY.INFORMATIONAL);
     assert.strictEqual(event.is_mfa, true);
-    assert.strictEqual(event.user?.uid, 'typed-user');
-    assert.strictEqual(event.user?.email_addr, 'test@example.com');
+    assert.strictEqual(event.user.uid, 'typed-user');
+    assert.strictEqual(event.user.email_addr, 'test@example.com');
+    assert.strictEqual(event.src_endpoint.ip, '10.0.0.1');
+    assert.strictEqual(event.session.uid, 'sess-1');
+    // OCSF requires service or dst_endpoint on authentication events
+    assert.ok(event.service?.name);
+    assert.ok(event.time > 0);
+    assert.strictEqual(event.metadata.version, '1.4.0');
   });
 
-  it('should find entries by classUid', async () => {
-    await auditLog.logAuthentication({
-      activity: OCSF_AUTH_ACTIVITY.LOGOFF,
-      userId: 'user-123',
-      success: true,
+  it('should escalate severity and status for failures', async () => {
+    const [event] = await captureEvents(async (auditLog) => {
+      await auditLog.logAuthentication({
+        activity: OCSF_AUTH_ACTIVITY.LOGON,
+        success: false,
+        message: 'Failed Login Attempt',
+      });
     });
 
-    const entries = await auditLog.find({ classUids: [OCSF_CLASS.AUTHENTICATION] });
-    assert.ok(entries.length >= 1);
-    assert.strictEqual(entries[0].class_uid, OCSF_CLASS.AUTHENTICATION);
+    assert.strictEqual(event.severity_id, OCSF_SEVERITY.HIGH);
+    assert.strictEqual(event.status_id, OCSF_STATUS.FAILURE);
+    assert.strictEqual(event.message, 'Failed Login Attempt');
   });
 
-  it('should find entries by userId', async () => {
-    await auditLog.logAccountChange({
-      activity: OCSF_ACCOUNT_ACTIVITY.OTHER,
-      userId: 'user-456',
-      success: true,
-      message: 'User Updated',
+  it('should build account change events with actor', async () => {
+    const [created, roleChange] = await captureEvents(async (auditLog) => {
+      await auditLog.logAccountChange({
+        activity: OCSF_ACCOUNT_ACTIVITY.CREATE,
+        userId: 'test-user',
+        success: true,
+      });
+      await auditLog.logAccountChange({
+        activity: OCSF_ACCOUNT_ACTIVITY.ATTACH_POLICY,
+        userId: 'target-user',
+        userName: 'target@example.com',
+        actorUserId: 'admin-user',
+        actorUserName: 'admin@example.com',
+        success: true,
+      });
     });
 
-    const entries = await auditLog.find({ userId: 'user-456' });
-    assert.ok(entries.length >= 1);
-    const event = entries[0] as OCSFAuthenticationEvent;
-    assert.strictEqual(event.user?.uid, 'user-456');
+    assert.strictEqual(created.class_uid, OCSF_CLASS.ACCOUNT_CHANGE);
+    assert.strictEqual(created.activity_id, OCSF_ACCOUNT_ACTIVITY.CREATE);
+    assert.strictEqual(created.message, 'User Created');
+    assert.strictEqual(created.user.uid, 'test-user');
+
+    assert.strictEqual(roleChange.message, 'User Roles Changed');
+    assert.strictEqual(roleChange.user.uid, 'target-user');
+    assert.strictEqual(roleChange.actor.user.uid, 'admin-user');
   });
 
-  it('should count entries', async () => {
-    const before = await auditLog.count({});
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.READ,
-      success: true,
-      message: 'Data Export',
+  it('should build API activity events with request details', async () => {
+    const [event] = await captureEvents(async (auditLog) => {
+      await auditLog.logApiActivity({
+        activity: OCSF_API_ACTIVITY.UPDATE,
+        userId: 'payer-user',
+        operation: 'processPayment',
+        httpMethod: 'POST',
+        path: '/api/payments',
+        responseCode: 200,
+        remoteAddress: '10.0.0.2',
+        success: true,
+        message: 'Payment Completed',
+      });
     });
-    const after = await auditLog.count({});
 
-    assert.strictEqual(after, before + 1);
+    assert.strictEqual(event.class_uid, OCSF_CLASS.API_ACTIVITY);
+    assert.strictEqual(event.activity_id, OCSF_API_ACTIVITY.UPDATE);
+    assert.strictEqual(event.activity_name, 'Update');
+    assert.strictEqual(event.actor.user.uid, 'payer-user');
+    assert.strictEqual(event.api.operation, 'processPayment');
+    assert.strictEqual(event.api.response.code, 200);
+    assert.strictEqual(event.http_request.http_method, 'POST');
+    assert.strictEqual(event.http_request.url.path, '/api/payments');
+    assert.strictEqual(event.src_endpoint.ip, '10.0.0.2');
   });
 
-  it('should track failed login attempts', async () => {
-    const userId = 'lockout-user';
-    const ip = '10.0.0.1';
-
-    await auditLog.logAuthentication({
-      activity: OCSF_AUTH_ACTIVITY.LOGON,
-      userId,
-      remoteAddress: ip,
-      success: false,
-      message: 'Failed Login Attempt',
-    });
-    await auditLog.logAuthentication({
-      activity: OCSF_AUTH_ACTIVITY.LOGON,
-      userId,
-      remoteAddress: ip,
-      success: false,
-      message: 'Failed Login Attempt',
-    });
-    await auditLog.logAuthentication({
-      activity: OCSF_AUTH_ACTIVITY.LOGON,
-      userId,
-      remoteAddress: ip,
-      success: false,
-      message: 'Failed Login Attempt',
+  it('should fall back to the engine host for system-originated API activity', async () => {
+    const [event] = await captureEvents(async (auditLog) => {
+      await auditLog.logApiActivity({
+        activity: OCSF_API_ACTIVITY.CREATE,
+        operation: 'createLanguage',
+        success: true,
+      });
     });
 
-    const count = await auditLog.getFailedLogins({ userId });
-    assert.ok(count >= 3);
+    // OCSF requires src_endpoint on API Activity events
+    assert.ok(event.src_endpoint.hostname);
+    assert.strictEqual(event.src_endpoint.ip, undefined);
   });
 
-  it('should maintain hash chain integrity', async () => {
-    await auditLog.logAccountChange({
-      activity: OCSF_ACCOUNT_ACTIVITY.CREATE,
-      userId: 'new-user',
-      success: true,
-    });
-    await auditLog.logAccountChange({
-      activity: OCSF_ACCOUNT_ACTIVITY.ATTACH_POLICY,
-      userId: 'new-user',
-      success: true,
-    });
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      userId: 'new-user',
-      success: true,
-      message: 'Payment Completed',
+  it('should emit e-commerce activities as OCSF Other with activity_name', async () => {
+    const [checkout, payment, denied] = await captureEvents(async (auditLog) => {
+      await auditLog.logApiActivity({
+        activity: OCSF_API_ACTIVITY.CHECKOUT,
+        userId: 'checkout-user',
+        success: true,
+      });
+      await auditLog.logApiActivity({
+        activity: OCSF_API_ACTIVITY.PAYMENT,
+        userId: 'payment-user',
+        success: true,
+      });
+      await auditLog.logApiActivity({
+        activity: OCSF_API_ACTIVITY.ACCESS_DENIED,
+        userId: 'denied-user',
+        success: false,
+      });
     });
 
-    const result = await auditLog.verify();
+    // E-commerce identifiers are emitted as activity_id 99 (Other) per OCSF
+    assert.strictEqual(checkout.activity_id, OCSF_API_ACTIVITY.OTHER);
+    assert.strictEqual(checkout.activity_name, 'Checkout');
+    assert.strictEqual(checkout.type_uid, OCSF_CLASS.API_ACTIVITY * 100 + OCSF_API_ACTIVITY.OTHER);
+    assert.strictEqual(checkout.message, 'Order Checkout');
 
-    assert.strictEqual(result.valid, true);
-    assert.ok(result.entries > 0);
-    assert.strictEqual(result.entries, result.verified);
+    assert.strictEqual(payment.activity_id, OCSF_API_ACTIVITY.OTHER);
+    assert.strictEqual(payment.activity_name, 'Payment');
+    assert.strictEqual(payment.message, 'Payment Processed');
+
+    assert.strictEqual(denied.activity_id, OCSF_API_ACTIVITY.OTHER);
+    assert.strictEqual(denied.activity_name, 'Access Denied');
+    assert.strictEqual(denied.severity_id, OCSF_SEVERITY.HIGH);
   });
 
-  it('should have sequential sequence numbers', async () => {
-    const entries = await auditLog.find({ limit: 10 });
-
-    // Entries are returned newest first
-    for (let i = 0; i < entries.length - 1; i++) {
-      assert.strictEqual(entries[i].unmapped?.seq, (entries[i + 1].unmapped?.seq ?? 0) + 1);
-    }
-  });
-
-  it('should filter by time range', async () => {
-    const now = new Date();
-    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
-
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.CREATE,
-      success: true,
-      message: 'Order Checkout',
+  it('should carry changed-field snapshots in unmapped.data', async () => {
+    const [event] = await captureEvents(async (auditLog) => {
+      await auditLog.logApiActivity({
+        activity: OCSF_API_ACTIVITY.UPDATE,
+        operation: 'updateProduct',
+        success: true,
+        data: { status: 'ACTIVE' },
+      });
     });
 
-    const entries = await auditLog.find({
-      startTime: oneHourAgo,
-      endTime: new Date(now.getTime() + 1000),
-    });
-
-    assert.ok(entries.length >= 1);
-  });
-
-  it('should respect limit and offset', async () => {
-    const all = await auditLog.find({ limit: 100 });
-    const first3 = await auditLog.find({ limit: 3 });
-    const skip2 = await auditLog.find({ limit: 3, offset: 2 });
-
-    assert.strictEqual(first3.length, Math.min(3, all.length));
-    if (all.length > 2) {
-      assert.strictEqual(skip2[0].metadata?.uid, first3[2].metadata?.uid);
-    }
-  });
-
-  it('should set higher severity for failures', async () => {
-    await auditLog.logAuthentication({
-      activity: OCSF_AUTH_ACTIVITY.LOGON,
-      success: false,
-      message: 'Failed Login Attempt',
-    });
-
-    const entries = await auditLog.find({
-      classUids: [OCSF_CLASS.AUTHENTICATION],
-      success: false,
-      limit: 1,
-    });
-    assert.ok(entries.length > 0);
-    assert.strictEqual(entries[0].severity_id, OCSF_SEVERITY.HIGH);
-  });
-
-  it('should include human-readable message', async () => {
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.READ,
-      success: false,
-      message: 'Access Denied',
-    });
-
-    const entries = await auditLog.find({
-      classUids: [OCSF_CLASS.API_ACTIVITY],
-      limit: 1,
-    });
-    assert.ok(entries.length > 0);
-    assert.strictEqual(entries[0].message, 'Access Denied');
-  });
-
-  it('should support API activity logging', async () => {
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.UPDATE,
-      userId: 'payer-user',
-      operation: 'processPayment',
-      httpMethod: 'POST',
-      path: '/api/payments',
-      responseCode: 200,
-      success: true,
-      message: 'Payment Completed',
-    });
-
-    const entries = await auditLog.find({
-      classUids: [OCSF_CLASS.API_ACTIVITY],
-      userId: 'payer-user',
-      limit: 1,
-    });
-
-    assert.ok(entries.length >= 1);
-    assert.strictEqual(entries[0].class_uid, OCSF_CLASS.API_ACTIVITY);
-  });
-
-  it('should have default messages for e-commerce activities', async () => {
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.CHECKOUT,
-      userId: 'checkout-user',
-      success: true,
-    });
-
-    const checkoutEntries = await auditLog.find({
-      classUids: [OCSF_CLASS.API_ACTIVITY],
-      activityIds: [OCSF_API_ACTIVITY.CHECKOUT],
-      limit: 1,
-    });
-    assert.ok(checkoutEntries.length >= 1);
-    assert.strictEqual(checkoutEntries[0].message, 'Order Checkout');
-
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.PAYMENT,
-      userId: 'payment-user',
-      success: true,
-    });
-
-    const paymentEntries = await auditLog.find({
-      classUids: [OCSF_CLASS.API_ACTIVITY],
-      activityIds: [OCSF_API_ACTIVITY.PAYMENT],
-      limit: 1,
-    });
-    assert.ok(paymentEntries.length >= 1);
-    assert.strictEqual(paymentEntries[0].message, 'Payment Processed');
-
-    await auditLog.logApiActivity({
-      activity: OCSF_API_ACTIVITY.ACCESS_DENIED,
-      userId: 'denied-user',
-      success: false,
-    });
-
-    const deniedEntries = await auditLog.find({
-      classUids: [OCSF_CLASS.API_ACTIVITY],
-      activityIds: [OCSF_API_ACTIVITY.ACCESS_DENIED],
-      limit: 1,
-    });
-    assert.ok(deniedEntries.length >= 1);
-    assert.strictEqual(deniedEntries[0].message, 'Access Denied');
-    assert.strictEqual(deniedEntries[0].severity_id, 4); // HIGH
-  });
-
-  it('should support account change logging with actor', async () => {
-    await auditLog.logAccountChange({
-      activity: OCSF_ACCOUNT_ACTIVITY.ATTACH_POLICY,
-      userId: 'target-user',
-      userName: 'target@example.com',
-      actorUserId: 'admin-user',
-      actorUserName: 'admin@example.com',
-      success: true,
-    });
-
-    const entries = await auditLog.find({
-      classUids: [OCSF_CLASS.ACCOUNT_CHANGE],
-      userId: 'target-user',
-      limit: 1,
-    });
-
-    assert.ok(entries.length >= 1);
-    const event = entries[0] as any;
-    assert.strictEqual(event.user?.uid, 'target-user');
-    assert.strictEqual(event.actor?.user?.uid, 'admin-user');
+    assert.deepStrictEqual(event.unmapped, { data: { status: 'ACTIVE' } });
   });
 });
 
@@ -365,7 +245,7 @@ describe('OCSF Activity Constants', () => {
     assert.strictEqual(OCSF_API_ACTIVITY.OTHER, 99);
   });
 
-  it('should have e-commerce specific API activities', () => {
+  it('should have internal e-commerce API activity identifiers', () => {
     assert.strictEqual(OCSF_API_ACTIVITY.CHECKOUT, 90);
     assert.strictEqual(OCSF_API_ACTIVITY.PAYMENT, 91);
     assert.strictEqual(OCSF_API_ACTIVITY.REFUND, 92);
@@ -393,5 +273,218 @@ describe('OCSF Constants', () => {
   it('should have standard status IDs', () => {
     assert.strictEqual(OCSF_STATUS.SUCCESS, 1);
     assert.strictEqual(OCSF_STATUS.FAILURE, 2);
+  });
+});
+
+describe('AuditLog logger sink', () => {
+  it('emits the full OCSF event as a structured JSON log line', async () => {
+    process.env.UNCHAINED_LOG_FORMAT = 'json';
+    const lines: string[] = [];
+    console.log = mock.fn((line: any) => {
+      lines.push(typeof line === 'string' ? line : JSON.stringify(line));
+    });
+    try {
+      const auditLog = createAuditLog({});
+      await auditLog.logAuthentication({
+        activity: OCSF_AUTH_ACTIVITY.LOGON,
+        userId: 'stdout-user',
+        userName: 'stdout@example.com',
+        success: true,
+      });
+      await auditLog.close();
+    } finally {
+      console.log = ORIGINAL_CONSOLE_LOG;
+      restoreLogFormat();
+    }
+
+    const auditLines = lines
+      .map((line) => {
+        try {
+          return JSON.parse(line);
+        } catch {
+          return null;
+        }
+      })
+      .filter((parsed) => parsed?.name === 'unchained:audit' && parsed?.ocsf);
+    assert.strictEqual(auditLines.length, 1);
+    const parsed = auditLines[0];
+    assert.strictEqual(parsed.level, 'INFO');
+    assert.strictEqual(parsed.message, 'User Login');
+    assert.strictEqual(parsed.ocsf.class_uid, OCSF_CLASS.AUTHENTICATION);
+    assert.strictEqual(parsed.ocsf.user.uid, 'stdout-user');
+  });
+
+  it('emits nothing when log is disabled', async () => {
+    process.env.UNCHAINED_LOG_FORMAT = 'json';
+    const lines: string[] = [];
+    console.log = mock.fn((line: any) => {
+      lines.push(String(line));
+    });
+    try {
+      const auditLog = createAuditLog({ log: false });
+      await auditLog.logAuthentication({
+        activity: OCSF_AUTH_ACTIVITY.LOGON,
+        userId: 'silent-user',
+        success: true,
+      });
+      await auditLog.close();
+    } finally {
+      console.log = ORIGINAL_CONSOLE_LOG;
+      restoreLogFormat();
+    }
+    assert.strictEqual(lines.filter((line) => line.includes('unchained:audit')).length, 0);
+  });
+});
+
+describe('AuditLog OTLP collector push', () => {
+  let server: Server;
+  let collectorUrl: string;
+  let requests: { url: string; body: any }[] = [];
+  let statusCode = 200;
+
+  before(async () => {
+    server = createServer((req, res) => {
+      let raw = '';
+      req.on('data', (chunk) => (raw += chunk));
+      req.on('end', () => {
+        requests.push({ url: req.url!, body: JSON.parse(raw) });
+        res.statusCode = statusCode;
+        res.setHeader('Content-Type', 'application/json');
+        res.end('{}');
+      });
+    });
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+    const { port } = server.address() as { port: number };
+    collectorUrl = `http://127.0.0.1:${port}/v1/logs`;
+  });
+
+  after(async () => {
+    await new Promise((resolve) => server.close(resolve));
+  });
+
+  const waitFor = async (condition: () => boolean, timeoutMs = 2000) => {
+    const start = Date.now();
+    while (!condition()) {
+      if (Date.now() - start > timeoutMs) throw new Error('Timed out waiting for condition');
+      await sleep(10);
+    }
+  };
+
+  it('pushes OTLP resourceLogs once batchSize is reached', async () => {
+    requests = [];
+    statusCode = 200;
+    const auditLog = createAuditLog({
+      log: false,
+      collectorUrl,
+      batchSize: 2,
+      flushIntervalMs: 60_000,
+    });
+
+    await auditLog.logAuthentication({
+      activity: OCSF_AUTH_ACTIVITY.LOGON,
+      userId: 'otlp-1',
+      success: true,
+    });
+    assert.strictEqual(requests.length, 0);
+    await auditLog.logAuthentication({
+      activity: OCSF_AUTH_ACTIVITY.LOGON,
+      userId: 'otlp-2',
+      success: false,
+    });
+    await waitFor(() => requests.length === 1);
+
+    const { url, body } = requests[0];
+    assert.strictEqual(url, '/v1/logs');
+    const serviceName = body.resourceLogs[0].resource.attributes.find(
+      (attribute: any) => attribute.key === 'service.name',
+    );
+    assert.ok(serviceName.value.stringValue);
+    const scopeLogs = body.resourceLogs[0].scopeLogs[0];
+    assert.strictEqual(scopeLogs.scope.name, 'unchained:audit');
+    const records = scopeLogs.logRecords;
+    assert.strictEqual(records.length, 2);
+    assert.match(records[0].timeUnixNano, /^\d+$/);
+    assert.strictEqual(records[0].severityNumber, 9); // INFO
+    assert.strictEqual(records[1].severityNumber, 17); // ERROR (failed login)
+    const classUid = records[0].body.kvlistValue.values.find((entry: any) => entry.key === 'class_uid');
+    assert.strictEqual(classUid.value.intValue, '3002');
+    const userAttribute = records[0].attributes.find((attribute: any) => attribute.key === 'user.id');
+    assert.strictEqual(userAttribute.value.stringValue, 'otlp-1');
+    await auditLog.close();
+  });
+
+  it('flushes remaining events on close', async () => {
+    requests = [];
+    statusCode = 200;
+    const auditLog = createAuditLog({
+      log: false,
+      collectorUrl,
+      batchSize: 100,
+      flushIntervalMs: 60_000,
+    });
+    await auditLog.logApiActivity({
+      activity: OCSF_API_ACTIVITY.CHECKOUT,
+      userId: 'close-user',
+      success: true,
+    });
+    assert.strictEqual(requests.length, 0);
+    await auditLog.close();
+    assert.strictEqual(requests.length, 1);
+    assert.strictEqual(requests[0].body.resourceLogs[0].scopeLogs[0].logRecords.length, 1);
+  });
+
+  it('re-queues events when the collector fails and retries on the next flush', async () => {
+    requests = [];
+    statusCode = 500;
+    const auditLog = createAuditLog({
+      log: false,
+      collectorUrl,
+      batchSize: 2,
+      flushIntervalMs: 60_000,
+    });
+    await auditLog.logAuthentication({
+      activity: OCSF_AUTH_ACTIVITY.LOGON,
+      userId: 'retry-1',
+      success: true,
+    });
+    await auditLog.logAuthentication({
+      activity: OCSF_AUTH_ACTIVITY.LOGON,
+      userId: 'retry-2',
+      success: true,
+    });
+    await waitFor(() => requests.length === 1);
+    await sleep(50); // allow the failed batch to be re-queued
+    statusCode = 200;
+    await auditLog.close();
+    assert.strictEqual(requests.length, 2);
+    assert.strictEqual(requests[1].body.resourceLogs[0].scopeLogs[0].logRecords.length, 2);
+  });
+
+  it('caps the queue and drops the oldest events', async () => {
+    requests = [];
+    statusCode = 200;
+    const auditLog = createAuditLog({
+      log: false,
+      collectorUrl,
+      batchSize: 100,
+      flushIntervalMs: 60_000,
+      maxQueueSize: 3,
+    });
+    for (let i = 1; i <= 5; i += 1) {
+      await auditLog.logAuthentication({
+        activity: OCSF_AUTH_ACTIVITY.LOGON,
+        userId: `cap-${i}`,
+        success: true,
+      });
+    }
+    await auditLog.close();
+    assert.strictEqual(requests.length, 1);
+    const records = requests[0].body.resourceLogs[0].scopeLogs[0].logRecords;
+    assert.strictEqual(records.length, 3);
+    const userIds = records.map(
+      (record: any) =>
+        record.attributes.find((attribute: any) => attribute.key === 'user.id').value.stringValue,
+    );
+    assert.deepStrictEqual(userIds, ['cap-3', 'cap-4', 'cap-5']);
   });
 });

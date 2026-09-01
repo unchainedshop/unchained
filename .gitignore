@@ -18,4 +18,3 @@ fly.toml
 .db
 *.db
 dist
-audit-logs

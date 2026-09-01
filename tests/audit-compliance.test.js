@@ -1,23 +1,40 @@
 /**
  * Audit Log Compliance Integration Test
  *
- * Verifies that security-relevant events are properly captured
- * in the OCSF-compliant audit log during a complete e-commerce flow:
+ * Verifies that security-relevant events are captured and emitted as
+ * OCSF-conformant payloads during a complete e-commerce flow:
  *
  * 1. Add product to cart
  * 2. Update cart with billing/contact
  * 3. Checkout
- * 4. Verify all audit entries exist in MongoDB
+ * 4. Assert the emitted audit events
  *
- * Uses the platform's built-in audit log (configured in startPlatform).
+ * The test platform pushes audit events to an in-process OTLP collector
+ * (see tests/setup.js); assertions run against the decoded OCSF payloads.
  */
 
-import { createLoggedInGraphqlFetch, disconnect, setupDatabase } from './helpers.js';
+import {
+  createAnonymousGraphqlFetch,
+  createLoggedInGraphqlFetch,
+  disconnect,
+  setupDatabase,
+} from './helpers.js';
+import { getCapturedAuditEvents } from './setup.js';
 import { SimpleProduct } from './seeds/products.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
-import { getAuditLogInstance, OCSF_CLASS, OCSF_API_ACTIVITY } from '@unchainedshop/events';
+import { OCSF_CLASS, OCSF_AUTH_ACTIVITY, OCSF_STATUS } from '@unchainedshop/events';
+
+const waitForEvents = async (predicate, timeoutMs = 3000) => {
+  const start = Date.now();
+  for (;;) {
+    const matches = getCapturedAuditEvents().filter(predicate);
+    if (matches.length > 0) return matches;
+    if (Date.now() - start > timeoutMs) return matches;
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  }
+};
 
 test.describe('Audit Log Compliance - Checkout Flow', () => {
   let graphqlFetch;
@@ -137,58 +154,77 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
   });
 
   // ============================================================================
-  // Verify Audit Trail (reads from platform's audit log in MongoDB)
+  // Verify Emitted Audit Events (captured via the in-process OTLP collector)
   // ============================================================================
 
-  test('Audit: should have all required entries in MongoDB', async () => {
-    const auditLog = getAuditLogInstance();
-    const allEntries = await auditLog.find({ limit: 1000 });
+  test('Audit: login success and failure produce authentication events', async () => {
+    const anonymousFetch = createAnonymousGraphqlFetch();
 
-    const apiEntries = allEntries.filter((e) => e.class_uid === OCSF_CLASS.API_ACTIVITY);
-    assert.ok(apiEntries.length >= 3, 'Should have API activity entries (order, add, checkout)');
+    await anonymousFetch({
+      query: /* GraphQL */ `
+        mutation {
+          loginWithPassword(username: "admin", password: "password") {
+            _id
+          }
+        }
+      `,
+    });
+    await anonymousFetch({
+      query: /* GraphQL */ `
+        mutation {
+          loginWithPassword(username: "admin", password: "definitely-wrong") {
+            _id
+          }
+        }
+      `,
+    });
 
-    for (const entry of allEntries) {
-      assert.ok(entry.class_uid, 'Entry should have class_uid');
-      assert.ok(entry.category_uid, 'Entry should have category_uid');
-      assert.ok(entry.activity_id !== undefined, 'Entry should have activity_id');
-      assert.ok(entry.time, 'Entry should have timestamp');
-      assert.ok(entry.metadata, 'Entry should have metadata');
-      assert.ok(entry.metadata.version, 'Entry should have OCSF version');
-      assert.ok(entry.unmapped, 'Entry should have hash chain data');
-      assert.ok(entry.unmapped.seq, 'Entry should have sequence number');
-      assert.ok(entry.unmapped.hash, 'Entry should have hash');
-      assert.ok(entry.unmapped.prev_hash, 'Entry should have prev_hash');
+    const authEvents = await waitForEvents(
+      (e) =>
+        e.class_uid === OCSF_CLASS.AUTHENTICATION &&
+        e.activity_id === OCSF_AUTH_ACTIVITY.LOGON &&
+        e.status_id === OCSF_STATUS.FAILURE,
+    );
+
+    const failureEvent = authEvents[0];
+    assert.ok(failureEvent, 'Failed login should produce a failed LOGON audit event');
+    assert.strictEqual(failureEvent.user?.name, 'admin');
+
+    const successEvents = getCapturedAuditEvents().filter(
+      (e) =>
+        e.class_uid === OCSF_CLASS.AUTHENTICATION &&
+        e.activity_id === OCSF_AUTH_ACTIVITY.LOGON &&
+        e.status_id === OCSF_STATUS.SUCCESS,
+    );
+    assert.ok(successEvents.length >= 1, 'Successful login should produce a LOGON audit event');
+  });
+
+  test('Audit: emitted events are well-formed OCSF', async () => {
+    const apiEvents = await waitForEvents((e) => e.class_uid === OCSF_CLASS.API_ACTIVITY);
+    assert.ok(apiEvents.length >= 3, 'Should have API activity events (order, add, checkout)');
+
+    for (const event of getCapturedAuditEvents()) {
+      assert.ok(event.class_uid, 'Event should have class_uid');
+      assert.ok(event.category_uid, 'Event should have category_uid');
+      assert.ok(event.activity_id !== undefined, 'Event should have activity_id');
+      assert.ok(event.time, 'Event should have timestamp');
+      assert.ok(event.metadata?.version, 'Event should have OCSF version');
+      assert.ok(event.metadata?.product?.name, 'Event should have product metadata');
+
+      // OCSF class requirements
+      if (event.class_uid === OCSF_CLASS.API_ACTIVITY) {
+        assert.ok(event.actor, 'API activity should have an actor');
+        assert.ok(event.src_endpoint, 'API activity should have src_endpoint');
+        assert.ok([0, 1, 2, 3, 4, 99].includes(event.activity_id), 'Legal API activity_id');
+      }
+      if (event.class_uid === OCSF_CLASS.AUTHENTICATION) {
+        assert.ok(event.user, 'Authentication should have a user');
+        assert.ok(
+          event.service || event.dst_endpoint,
+          'Authentication should have service or dst_endpoint',
+        );
+      }
     }
-  });
-
-  test('Audit: should verify hash chain integrity', async () => {
-    const auditLog = getAuditLogInstance();
-    const result = await auditLog.verify();
-
-    assert.strictEqual(result.valid, true, 'Hash chain should be valid');
-    assert.ok(result.entries > 0, 'Should have verified entries');
-    assert.strictEqual(result.entries, result.verified, 'All entries should be verified');
-  });
-
-  test('Audit: should have sequential sequence numbers (no gaps)', async () => {
-    const auditLog = getAuditLogInstance();
-    const entries = await auditLog.find({ limit: 1000 });
-
-    for (let i = 0; i < entries.length - 1; i++) {
-      const expected = (entries[i + 1].unmapped?.seq || 0) + 1;
-      assert.strictEqual(
-        entries[i].unmapped?.seq,
-        expected,
-        `Sequence ${entries[i].unmapped?.seq} should follow ${entries[i + 1].unmapped?.seq}`,
-      );
-    }
-  });
-
-  test('Audit: should be able to count entries', async () => {
-    const auditLog = getAuditLogInstance();
-    const total = await auditLog.count({});
-
-    assert.ok(total >= 3, 'Should have at least 3 audit entries for checkout flow');
   });
 
   // ============================================================================
@@ -196,31 +232,16 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
   // ============================================================================
 
   test('PCI DSS 10.2.1 - Checkout activity logged', async () => {
-    const auditLog = getAuditLogInstance();
-    const entries = await auditLog.find({ limit: 1000 });
-
-    const hasCheckout = entries.some(
-      (e) =>
-        e.activity_id === OCSF_API_ACTIVITY.CHECKOUT || e.message?.toLowerCase().includes('checkout'),
+    const hasCheckout = getCapturedAuditEvents().some(
+      (e) => e.activity_name === 'Checkout' || e.message?.toLowerCase().includes('checkout'),
     );
 
     assert.ok(hasCheckout, 'Should log checkout activity (access to payment flow)');
   });
 
-  test('SOC 2 - Audit trail integrity (hash chain valid)', async () => {
-    const auditLog = getAuditLogInstance();
-    const result = await auditLog.verify();
-
-    assert.strictEqual(result.valid, true, 'Audit trail should be tamper-evident (hash chain valid)');
-  });
-
   test('GDPR Article 30 - Processing activities tracked', async () => {
-    const auditLog = getAuditLogInstance();
-    const apiEntries = await auditLog.find({
-      classUids: [OCSF_CLASS.API_ACTIVITY],
-      limit: 50,
-    });
+    const apiEvents = getCapturedAuditEvents().filter((e) => e.class_uid === OCSF_CLASS.API_ACTIVITY);
 
-    assert.ok(apiEntries.length >= 1, 'Should track data processing activities');
+    assert.ok(apiEvents.length >= 1, 'Should track data processing activities');
   });
 });

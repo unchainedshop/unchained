@@ -28,7 +28,6 @@ import worker from './worker.ts';
 import enrollment from './enrollment.ts';
 import events from './events.ts';
 import files from './files.ts';
-import audit from './audit.ts';
 
 export default [
   ...address,
@@ -61,5 +60,4 @@ export default [
   ...enrollment,
   ...events,
   ...files,
-  ...audit,
 ];

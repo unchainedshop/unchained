@@ -114,11 +114,12 @@ const createMiddlewareHook = (authConfig?: AuthConfig, trustProxy = false) =>
       reply,
     );
     (req as any).unchainedContext = unchainedContext;
+    // NOTE: no sessionId — authContext.accessToken is the raw API key for
+    // API-key-authenticated requests and must never reach the audit sinks
     (req as any)._auditContext = {
       userId: unchainedContext.userId,
       userName: unchainedContext.user?.username || unchainedContext.user?.emails?.[0]?.address,
       remoteAddress,
-      sessionId: authContext.accessToken,
     };
   };
 

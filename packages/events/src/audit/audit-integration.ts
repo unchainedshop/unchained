@@ -43,6 +43,7 @@ function extractContext(payload: Record<string, any>) {
     userId: payload.userId || payload.user?._id || payload.user?.id || reqCtx?.userId,
     userName:
       payload.userName ||
+      payload.username ||
       payload.user?.username ||
       payload.user?.emails?.[0]?.address ||
       reqCtx?.userName,

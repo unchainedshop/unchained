@@ -50,8 +50,6 @@ export const all = (role, actions) => {
 
   role.allow(actions.viewEvent, () => false);
   role.allow(actions.viewEvents, () => false);
-  role.allow(actions.viewAuditLog, () => false);
-  role.allow(actions.verifyAuditChain, () => false);
   role.allow(actions.viewUser, () => false);
   role.allow(actions.viewUsers, () => false);
   role.allow(actions.viewUserCount, isUsersCollectionEmpty);

@@ -112,16 +112,6 @@ const keyMappings: any = {
           'paymentProviderIds',
         ]),
       },
-      auditLogs: {
-        ...offsetLimitPagination([
-          'classUids',
-          'userId',
-          'success',
-          'from',
-          'to',
-          'queryText',
-        ]),
-      },
     },
   },
 };

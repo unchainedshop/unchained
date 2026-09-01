@@ -1,4 +1,5 @@
 import net from 'node:net';
+import { createServer } from 'node:http';
 import Fastify from 'fastify';
 import { startPlatform } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/fastify';
@@ -55,6 +56,58 @@ function getRandomStartPort() {
   return 10000 + Math.floor(Math.random() * 40000);
 }
 
+// In-process OTLP collector capturing the audit events the platform pushes,
+// so integration tests can assert on the emitted OCSF payloads
+let auditCollectorServer = null;
+const capturedAuditEvents = [];
+
+// Decodes an OTLP AnyValue back into a plain JS value
+function anyValueToJs(value) {
+  if ('stringValue' in value) return value.stringValue;
+  if ('boolValue' in value) return value.boolValue;
+  if ('intValue' in value) return Number(value.intValue);
+  if ('doubleValue' in value) return value.doubleValue;
+  if ('arrayValue' in value) return value.arrayValue.values.map(anyValueToJs);
+  if ('kvlistValue' in value)
+    return Object.fromEntries(
+      value.kvlistValue.values.map(({ key, value: entry }) => [key, anyValueToJs(entry)]),
+    );
+  return null;
+}
+
+async function startAuditCollector() {
+  auditCollectorServer = createServer((req, res) => {
+    let raw = '';
+    req.on('data', (chunk) => (raw += chunk));
+    req.on('end', () => {
+      try {
+        const body = JSON.parse(raw);
+        for (const resourceLog of body.resourceLogs || []) {
+          for (const scopeLog of resourceLog.scopeLogs || []) {
+            for (const record of scopeLog.logRecords || []) {
+              capturedAuditEvents.push(anyValueToJs(record.body));
+            }
+          }
+        }
+      } catch {
+        // ignore malformed payloads
+      }
+      res.setHeader('content-type', 'application/json');
+      res.end('{}');
+    });
+  });
+  await new Promise((resolve) => auditCollectorServer.listen(0, '127.0.0.1', resolve));
+  return auditCollectorServer.address().port;
+}
+
+export function getCapturedAuditEvents() {
+  return capturedAuditEvents;
+}
+
+export function clearCapturedAuditEvents() {
+  capturedAuditEvents.length = 0;
+}
+
 export async function initializeTestPlatform() {
   if (platform) return platform;
 
@@ -76,11 +129,19 @@ export async function initializeTestPlatform() {
   pluginRegistry.register(HalfPriceManualPlugin);
   pluginRegistry.register(HundredOffPlugin);
 
+  const auditCollectorPort = await startAuditCollector();
+
   // Start platform with in-memory MongoDB
   platform = await startPlatform({
     workQueueOptions: {
       // Workers enabled for work queue tests
       pollInterval: 500, // Process work every 500ms for faster tests
+    },
+    auditLog: {
+      log: false, // keep test output readable
+      collectorUrl: `http://127.0.0.1:${auditCollectorPort}/v1/logs`,
+      batchSize: 1, // flush every event promptly so tests can assert on it
+      flushIntervalMs: 100,
     },
   });
 
@@ -135,6 +196,10 @@ export async function shutdownTestPlatform() {
   if (platform) {
     await platform.graphqlHandler.dispose?.();
     platform = null;
+  }
+  if (auditCollectorServer) {
+    await new Promise((resolve) => auditCollectorServer.close(resolve));
+    auditCollectorServer = null;
   }
   // Stop MongoDB memory server to allow process to exit
   await stopDb();

@@ -20,7 +20,7 @@ This section describes how Unchained Engine can support compliance efforts. **No
 | **PCI DSS SAQ-A** | Compatible | No card data storage; uses tokenization. Eligibility depends on your full deployment. |
 | **ISO 27001** | Technical Controls | Implements access control, audit logging, and cryptographic standards. ISMS policies and processes are your responsibility. |
 | **FIPS 140-3** | Algorithm Compatible | Uses FIPS-approved algorithms (PBKDF2, SHA-256/512, AES-256-GCM). Requires FIPS-validated runtime for full compliance. |
-| **SOC 2** | Audit Support | Provides tamper-evident audit logs for evidence collection. SOC 2 audits evaluate your organization's controls, not software. |
+| **SOC 2** | Audit Support | Emits an OCSF audit event stream for evidence collection in your SIEM. SOC 2 audits evaluate your organization's controls, not software. |
 | **FINMA 2023/1** | Technical Controls | Audit logging, access control, and cryptography support ICT risk management requirements. The circular is principle-based; organizational controls are your responsibility. |
 | **GDPR** | Technical Measures | Audit logging supports Article 30 requirements. Data protection policies are your responsibility. |
 
@@ -341,41 +341,45 @@ This matters because:
 
 ## Audit Logging
 
-Unchained provides append-only, tamper-evident audit logging based on the **OCSF (Open Cybersecurity Schema Framework)**. OCSF is an industry-standard schema developed by 120+ organizations (AWS, Splunk, IBM) and is now a Linux Foundation project. It is natively supported by AWS Security Lake, Google Chronicle, Datadog, Elastic, and other SIEM systems.
+Unchained provides audit event emission based on the **OCSF (Open Cybersecurity Schema Framework)**. OCSF is an industry-standard schema developed by 120+ organizations (AWS, Splunk, IBM) and is now a Linux Foundation project. It is natively supported by AWS Security Lake, Google Chronicle, Datadog, Elastic, and other SIEM systems.
+
+The engine does not persist audit events itself — retention, queries, and integrity guarantees are the consuming log pipeline's or SIEM's concern.
 
 ### Features
 
-- **OCSF-based schema** - Uses OCSF v1.4.0 structure with e-commerce extensions
-- **JSON Lines format** - Easy parsing and integration
-- **Append-only** - No update or delete operations
-- **Tamper-evident** - SHA-256 hash chain for integrity verification
-- **File-based** - No external dependencies (MongoDB-free)
-- **HTTP push** - Optional push to OpenTelemetry Collector, Fluentd, or Vector
+- **OCSF-based schema** - Schema-conformant OCSF v1.4.0 events with e-commerce activity names
+- **Structured log emission** - Every event as one JSON log line on stdout (default), scrapeable by any log agent
+- **OTLP push** - Optional OTLP/HTTP push to OpenTelemetry Collector, Vector, Fluent Bit, or vendor intakes
 - **SIEM-ready** - Direct ingestion into security monitoring tools
 - **Event integration** - Automatic capture of authentication, orders, and payments
 - **E-commerce specific** - Checkout, payment, refund, and access denied events
 
 ### Usage
 
+Audit logging is enabled by default in `startPlatform()`; OTLP push is opt-in:
+
+```typescript
+import { startPlatform } from '@unchainedshop/platform';
+
+const platform = await startPlatform({
+  modules: defaultModules,
+  auditLog: {
+    collectorUrl: 'http://otel-collector:4318/v1/logs', // optional OTLP push
+  },
+});
+```
+
+For custom audit events, use the singleton instance:
+
 ```typescript
 import {
-  createAuditLog,
-  OCSF_CLASS,
+  getAuditLogInstance,
   OCSF_AUTH_ACTIVITY,
   OCSF_ACCOUNT_ACTIVITY,
   OCSF_API_ACTIVITY,
 } from '@unchainedshop/events';
 
-// Create audit log instance (file-based)
-const auditLog = createAuditLog('./audit-logs');
-
-// Or with HTTP push to collector
-const auditLog = createAuditLog({
-  directory: './audit-logs',
-  collectorUrl: 'http://otel-collector:4318/v1/logs',
-  batchSize: 10,
-  flushIntervalMs: 5000,
-});
+const auditLog = getAuditLogInstance();
 
 // Log authentication event
 await auditLog.logAuthentication({
@@ -431,62 +435,26 @@ await auditLog.logApiActivity({
   remoteAddress: req.ip,
   message: 'Access denied',
 });
-
-// Query audit logs
-const logs = await auditLog.find({
-  classUids: [OCSF_CLASS.AUTHENTICATION],
-  userId: 'user-id',
-  success: false,
-  startTime: new Date('2024-01-01'),
-  limit: 100,
-});
-
-// Get failed login attempts (for lockout policies)
-const failedAttempts = await auditLog.getFailedLogins({
-  remoteAddress: '192.168.1.1',
-  since: new Date(Date.now() - 15 * 60 * 1000), // Last 15 minutes
-});
-
-// Verify integrity of audit log chain
-const result = await auditLog.verify();
-if (!result.valid) {
-  console.error('Audit log tampering detected:', result.error);
-}
-
-// Close audit log (flushes pending events)
-await auditLog.close();
 ```
 
 ### Automatic Event Integration
 
-For automatic audit logging of all security-relevant events, use the integration layer:
+`startPlatform()` wires the integration layer automatically — no manual setup is needed. Events automatically captured (97 event types, see `AUDITED_EVENTS`):
 
-```typescript
-import { createAuditLog, configureAuditIntegration } from '@unchainedshop/events';
+- `API_LOGIN_TOKEN_CREATED` → Authentication (LOGON)
+- `API_LOGIN_FAILED` → Authentication (LOGON, failure)
+- `API_LOGOUT` → Authentication (LOGOFF)
+- `USER_CREATE` → Account Change (CREATE)
+- `USER_REMOVE` → Account Change (DELETE)
+- `USER_UPDATE_PASSWORD` → Account Change (PASSWORD_CHANGE)
+- `USER_ADD_ROLES` → Account Change (ATTACH_POLICY)
+- `ORDER_CREATE` → API Activity (CREATE)
+- `ORDER_CHECKOUT` → API Activity (CHECKOUT)
+- `ORDER_ADD_PRODUCT` → API Activity (UPDATE)
+- `ORDER_PAY` → API Activity (PAYMENT)
+- And more...
 
-// Create audit log instance
-const auditLog = createAuditLog('./audit-logs');
-
-// Enable automatic event capture
-const cleanup = configureAuditIntegration(auditLog);
-
-// Events automatically captured:
-// - API_LOGIN_TOKEN_CREATED → Authentication (LOGON)
-// - API_LOGOUT → Authentication (LOGOFF)
-// - USER_CREATE → Account Change (CREATE)
-// - USER_REMOVE → Account Change (DELETE)
-// - USER_UPDATE_PASSWORD → Account Change (PASSWORD_CHANGE)
-// - USER_ADD_ROLES → Account Change (ATTACH_POLICY)
-// - ORDER_CREATE → API Activity (CREATE)
-// - ORDER_CHECKOUT → API Activity (CHECKOUT)
-// - ORDER_ADD_PRODUCT → API Activity (UPDATE)
-// - ORDER_PAY → API Activity (PAYMENT)
-// - And more...
-
-// On shutdown
-cleanup();
-await auditLog.close();
-```
+Shutdown (flushing pending collector batches) is handled by the platform's cleanup path.
 
 ### OCSF Event Classes
 
@@ -496,13 +464,14 @@ await auditLog.close();
 | **Account Change** | 3001 | User CRUD, password changes, role changes |
 | **API Activity** | 6003 | API access, payments, orders, access denied |
 
-### JSON Lines Format
+### Structured Log Emission
 
-Audit logs are stored as JSON Lines (one JSON object per line):
+With `UNCHAINED_LOG_FORMAT=json`, every audit event is emitted as one JSON line on stdout via the `unchained:audit` logger, with the full OCSF event under the `ocsf` key:
 
 ```json
-{"class_uid":3002,"category_uid":3,"type_uid":300201,"activity_id":1,"severity_id":1,"time":1735570800000,"message":"User Login","user":{"uid":"user-123","name":"john@example.com"},"src_endpoint":{"ip":"192.168.1.1"},"status_id":1,"is_mfa":true,"metadata":{"version":"1.4.0","product":{"name":"Unchained Engine","version":"4.5"}},"unmapped":{"seq":42,"prev_hash":"abc123...","hash":"def456..."}}
+{"timestamp":"2026-09-01T09:12:00.000Z","level":"INFO","name":"unchained:audit","message":"User Login","ocsf":{"class_uid":3002,"category_uid":3,"type_uid":300201,"activity_id":1,"severity_id":1,"time":1788253920000,"user":{"uid":"user-123","name":"john@example.com"},"src_endpoint":{"ip":"192.168.1.1"},"status_id":1,"is_mfa":true,"metadata":{"version":"1.4.0","product":{"name":"Unchained Engine"}}}}
 ```
+
 
 ### OCSF Activity Types
 
@@ -540,7 +509,7 @@ Audit logs are stored as JSON Lines (one JSON object per line):
 | `ACCESS_DENIED` | 95 | Authorization failure (extension) |
 | `OTHER` | 99 | Other API activities |
 
-*Note: IDs 90-95 are Unchained-specific extensions. Standard OCSF defines activity_id 1-4 and 99 for API Activity. SIEM systems may display these as "Other" or "Unknown" unless configured to recognize the extended values.*
+*Note: IDs 90-95 are internal Unchained identifiers. Standard OCSF defines activity_id 0-4 and 99 for API Activity, so emitted events carry `activity_id: 99` (Other) with the specific label in the standard `activity_name` attribute (e.g. "Checkout") — fully schema-conformant, with fine-grained semantics also available in `api.operation`.*
 
 ### OCSF Severity Levels
 
@@ -555,62 +524,75 @@ Audit logs are stored as JSON Lines (one JSON object per line):
 
 ### SIEM Integration
 
-Audit log files (`audit-YYYY-MM-DD.jsonl`) can be directly ingested by SIEM systems:
+Two vendor-neutral paths reach any SIEM:
 
-**Filebeat (Elastic):**
-```yaml
-filebeat.inputs:
-  - type: log
-    paths:
-      - /path/to/audit-logs/*.jsonl
-    json.keys_under_root: true
-    json.add_error_key: true
-```
+**1. Scrape stdout** — run the engine with `UNCHAINED_LOG_FORMAT=json` and let a log agent tail the container output. Example OpenTelemetry Collector configuration:
 
-**Promtail (Loki/Grafana):**
-```yaml
-scrape_configs:
-  - job_name: unchained-audit
-    static_configs:
-      - targets: [localhost]
-        labels:
-          job: audit
-          __path__: /path/to/audit-logs/*.jsonl
-    pipeline_stages:
-      - json:
-          expressions:
-            class_uid: class_uid
-            activity_id: activity_id
-            user_id: user.uid
-```
-
-**OpenTelemetry Collector (HTTP push):**
 ```yaml
 receivers:
-  otlphttp:
-    endpoint: 0.0.0.0:4318
+  filelog:
+    include: [/var/log/containers/unchained-*.log]
+    operators:
+      - type: json_parser
+      - type: filter
+        expr: 'attributes.name != "unchained:audit"'
 
 exporters:
   elasticsearch:
     endpoints: ["https://es:9200"]
+
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
+      exporters: [elasticsearch]
+```
+
+Vector, Fluent Bit, Promtail/Alloy, Filebeat and vendor agents work the same way: parse the JSON line and route on `name == "unchained:audit"`.
+
+**2. OTLP push** — the engine pushes OTLP/HTTP log records directly to a collector:
+
+```yaml
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+
+exporters:
+  elasticsearch:
+    endpoints: ["https://es:9200"]
+
+service:
+  pipelines:
+    logs:
+      receivers: [otlp]
+      exporters: [elasticsearch]
 ```
 
 ### Configuration
 
-The audit log is configured programmatically. Example using environment variables:
+The audit log is configured via `startPlatform({ auditLog: {...} })`; the OTLP push also honors the standard OpenTelemetry environment variables:
 
-```typescript
-import { createAuditLog } from '@unchainedshop/events';
-
-const auditLog = createAuditLog({
-  directory: process.env.UNCHAINED_AUDIT_DIR || './audit-logs',
-  collectorUrl: process.env.UNCHAINED_AUDIT_COLLECTOR_URL,
-});
+```bash
+OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318   # /v1/logs is appended
+OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=...                     # used verbatim, wins over the above
+OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer%20abc"  # key=value,key=value
+OTEL_SERVICE_NAME=my-shop                                # service.name resource attribute
 ```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `log` | `true` | Emit each event as a structured log line |
+| `collectorUrl` | `OTEL_EXPORTER_OTLP_*` env | OTLP/HTTP logs endpoint |
+| `collectorHeaders` | env headers | HTTP headers for collector auth |
+| `batchSize` | `10` | Events batched before pushing |
+| `flushIntervalMs` | `5000` | Max interval between pushes |
+| `maxQueueSize` | `1000` | Push queue cap (oldest dropped beyond it) |
 
 ### Event Emission (Transient)
 
-In addition to persistent audit logs, Unchained emits transient events for real-time processing:
+In addition to audit events, Unchained emits transient events for real-time processing:
 
 - `USER_CREATE`, `USER_UPDATE`, `USER_REMOVE`
 - `USER_UPDATE_PASSWORD`, `USER_UPDATE_ROLES`

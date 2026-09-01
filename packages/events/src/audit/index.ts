@@ -1,21 +1,21 @@
 /**
  * OCSF Audit Log (Open Cybersecurity Schema Framework)
  *
- * MongoDB-backed, tamper-evident audit logging using OCSF format.
- * OCSF is an industry-standard schema supported by AWS Security Lake, Datadog,
- * Splunk, Google Chronicle, and other SIEM systems.
+ * Emits OCSF v1.4.0 compliant audit events for consumption by external
+ * monitoring agents. OCSF is an industry-standard schema supported by
+ * AWS Security Lake, Datadog, Splunk, Google Chronicle, and other SIEM systems.
  *
- * Features:
- * - OCSF v1.4.0 compliant event schema
- * - MongoDB storage with indexed queries
- * - SHA-256 hash chain for tamper detection
- * - Optional HTTP push to collectors (OpenTelemetry, Fluentd, Vector)
- * - Append-only (no update/delete except prune)
+ * Sinks (fan-out per event):
+ * - Structured log line via @unchainedshop/logger (default on) — with
+ *   UNCHAINED_LOG_FORMAT=json any log-shipping agent can scrape stdout
+ * - OTLP/HTTP push to a collector (opt-in via collectorUrl or OTEL_EXPORTER_* env)
+ *
+ * The engine does not persist audit events itself — retention, queries, and
+ * integrity guarantees are the consuming log pipeline's or SIEM's concern.
  */
 
-import { createHash } from 'node:crypto';
+import { hostname } from 'node:os';
 import { createLogger } from '@unchainedshop/logger';
-import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 import {
   type OCSFMetadata,
   type OCSFUser,
@@ -31,56 +31,47 @@ import {
   OCSF_AUTH_ACTIVITY,
   OCSF_ACCOUNT_ACTIVITY,
   OCSF_API_ACTIVITY,
+  OCSF_API_ACTIVITY_NAMES,
 } from './ocsf-types.ts';
+import { exportLogs, resolveCollectorUrl, resolveCollectorHeaders } from './otlp.ts';
 
 // Re-export types
 export * from './ocsf-types.ts';
 
 const logger = createLogger('unchained:audit');
 
-function canonicalize(value: unknown): unknown {
-  if (value === null || value === undefined || typeof value !== 'object') return value;
-  if (Array.isArray(value)) return value.map(canonicalize);
-  const sorted: Record<string, unknown> = {};
-  for (const key of Object.keys(value as Record<string, unknown>).sort()) {
-    sorted[key] = canonicalize((value as Record<string, unknown>)[key]);
-  }
-  return sorted;
-}
-
 // Product metadata
 const OCSF_VERSION = '1.4.0';
 const PRODUCT_NAME = 'Unchained Engine';
-const PRODUCT_VERSION = '4.5';
+const PRODUCT_VERSION = process.env.npm_package_version || '5.0';
 const PRODUCT_VENDOR = 'Unchained';
 
-// Genesis hash for the first entry
-const GENESIS_HASH = '0'.repeat(64);
-
-const AUDIT_LOGS_COLLECTION = 'audit_logs';
+// Fallback source endpoint for system-originated events (workers, seeding);
+// OCSF requires src_endpoint on API Activity events
+const ENGINE_HOSTNAME = hostname();
 
 // ============================================================================
 // Configuration
 // ============================================================================
 
-export interface AuditLogConfig {
-  /** MongoDB database instance */
-  db: mongodb.Db;
+export interface AuditLogOptions {
+  /** Emit every audit event as a structured log line via createLogger('unchained:audit') (default: true) */
+  log?: boolean;
 
-  /** HTTP collector URL for push mode */
+  /** OTLP/HTTP logs endpoint; falls back to OTEL_EXPORTER_OTLP_LOGS_ENDPOINT, else OTEL_EXPORTER_OTLP_ENDPOINT + '/v1/logs' */
   collectorUrl?: string;
 
-  /** HTTP headers for collector requests */
+  /** HTTP headers for collector requests, merged over OTEL_EXPORTER_OTLP[_LOGS]_HEADERS ("k=v,k=v" format) */
   collectorHeaders?: Record<string, string>;
 
-  /** Batch size for HTTP push (default: 10) */
+  /** Number of queued events that triggers an immediate OTLP flush (default: 10) */
   batchSize?: number;
 
-  /** Flush interval in ms for HTTP push (default: 5000) */
+  /** Max interval between OTLP flushes in ms (default: 5000) */
   flushIntervalMs?: number;
 
-  /** Number of days to retain audit log entries (default: 90, 0 = no pruning) */
-  retentionDays?: number;
+  /** Cap on the OTLP send queue; beyond it the oldest events are dropped with a warning (default: 1000) */
+  maxQueueSize?: number;
 }
 
 // ============================================================================
@@ -126,114 +117,39 @@ export interface ApiActivityInput {
   data?: Record<string, unknown>;
 }
 
-export interface AuditLogQuery {
-  classUids?: number[];
-  activityIds?: number[];
-  userId?: string;
-  success?: boolean;
-  startTime?: Date;
-  endTime?: Date;
-  queryText?: string;
-  limit?: number;
-  offset?: number;
-}
-
-export interface VerifyResult {
-  valid: boolean;
-  entries: number;
-  verified: number;
-  error?: string;
-}
-
 // ============================================================================
 // Audit Log Implementation
 // ============================================================================
 
 export class AuditLog {
+  private readonly logEnabled: boolean;
+  private readonly auditLogger: ReturnType<typeof createLogger>;
   private readonly collectorUrl?: string;
   private readonly collectorHeaders: Record<string, string>;
   private readonly batchSize: number;
   private readonly flushIntervalMs: number;
-  private readonly retentionDays: number;
-  private readonly collection: mongodb.Collection<OCSFEvent>;
-  private hasTextIndex = false;
+  private readonly maxQueueSize: number;
+  private readonly serviceName: string;
 
-  private lastEvent: OCSFEvent | null = null;
-  private writeLock: Promise<unknown> = Promise.resolve();
-  private initialized = false;
   private pendingEvents: OCSFEvent[] = [];
+  private droppedEvents = 0;
+  private flushing = false;
   private flushTimer?: ReturnType<typeof setInterval>;
-  private cachedVerifyResult: VerifyResult | null = null;
-  private cachedVerifySeq = 0;
 
-  constructor(config: AuditLogConfig) {
-    this.collection = config.db.collection<OCSFEvent>(AUDIT_LOGS_COLLECTION);
-    this.collectorUrl = config.collectorUrl;
-    this.collectorHeaders = config.collectorHeaders || {};
+  constructor(config: AuditLogOptions = {}) {
+    this.logEnabled = config.log ?? true;
+    this.auditLogger = createLogger('unchained:audit');
+    this.collectorUrl = resolveCollectorUrl(config.collectorUrl);
+    this.collectorHeaders = resolveCollectorHeaders(config.collectorHeaders);
     this.batchSize = config.batchSize || 10;
     this.flushIntervalMs = config.flushIntervalMs || 5000;
-    this.retentionDays = config.retentionDays ?? 90;
+    this.maxQueueSize = config.maxQueueSize || 1000;
+    this.serviceName = process.env.OTEL_SERVICE_NAME || 'unchained-engine';
   }
 
   // --------------------------------------------------------------------------
   // Private Helpers
   // --------------------------------------------------------------------------
-
-  private async init(): Promise<void> {
-    if (this.initialized) return;
-
-    await buildDbIndexes<OCSFEvent>(this.collection, [
-      { index: { 'unmapped.seq': 1 }, options: { unique: true } },
-      { index: { class_uid: 1, time: -1 } },
-      { index: { activity_id: 1 } },
-      { index: { 'user.uid': 1 } },
-      { index: { 'actor.user.uid': 1 } },
-      { index: { status_id: 1 } },
-      { index: { time: -1 } },
-      { index: { 'src_endpoint.ip': 1 } },
-    ]);
-
-    try {
-      await this.collection.createIndex({ message: 'text', 'api.operation': 'text' });
-      this.hasTextIndex = true;
-    } catch {
-      logger.warn('Could not create text index on audit_logs — falling back to regex for text search');
-    }
-
-    // Load last event to resume hash chain
-    const lastDoc = await this.collection.findOne(
-      {},
-      { sort: { 'unmapped.seq': -1 }, projection: { _id: 0 } },
-    );
-    if (lastDoc?.unmapped?.hash) {
-      const recomputed = this.computeHash(lastDoc);
-      if (recomputed === lastDoc.unmapped.hash) {
-        this.lastEvent = lastDoc;
-      } else {
-        logger.warn(
-          'Existing audit log entries use an incompatible hash algorithm — starting fresh chain',
-        );
-      }
-    }
-
-    if (this.collectorUrl && !this.flushTimer) {
-      this.flushTimer = setInterval(() => this.flushToCollector(), this.flushIntervalMs);
-    }
-
-    this.initialized = true;
-  }
-
-  private computeHash(
-    event: Omit<OCSFEvent, 'unmapped'> & { unmapped?: Partial<OCSFEvent['unmapped']> },
-  ): string {
-    const { unmapped, ...rest } = event;
-    const toHash = {
-      ...rest,
-      unmapped: unmapped ? { seq: unmapped.seq, prev_hash: unmapped.prev_hash } : undefined,
-    };
-    const data = JSON.stringify(canonicalize(toHash));
-    return createHash('sha256').update(data, 'utf8').digest('hex');
-  }
 
   private createMetadata(uid: string): OCSFMetadata {
     return {
@@ -260,124 +176,68 @@ export class AuditLog {
     return { ip };
   }
 
-  private async writeEvent(event: OCSFEvent): Promise<string> {
-    const result = this.writeLock.then(async () => {
-      await this.init();
+  /** Fans the event out to all enabled sinks. */
+  private async dispatch(event: OCSFEvent): Promise<string> {
+    if (this.logEnabled) {
+      this.auditLogger.info(event.message || 'Audit event', { ocsf: event });
+    }
 
-      const prevHash = this.lastEvent?.unmapped?.hash || GENESIS_HASH;
-      const seq = (this.lastEvent?.unmapped?.seq || 0) + 1;
+    if (this.collectorUrl) {
+      this.enqueueForCollector(event);
+    }
 
-      const eventWithChain: OCSFEvent = {
-        ...event,
-        unmapped: {
-          ...event.unmapped,
-          seq,
-          prev_hash: prevHash,
-          hash: '',
-        },
-      };
+    return event.metadata.uid!;
+  }
 
-      const hash = this.computeHash(eventWithChain);
-      eventWithChain.unmapped!.hash = hash;
+  private enqueueForCollector(event: OCSFEvent): void {
+    this.pendingEvents.push(event);
+    this.capPendingEvents();
 
-      // Strip undefined values to prevent MongoDB converting them to null,
-      // which would break hash verification on read-back
-      const doc = JSON.parse(JSON.stringify(eventWithChain));
-      try {
-        await this.collection.insertOne(doc);
-      } catch (err: any) {
-        logger.error(`Failed to write audit event seq=${seq}: ${err.message}`);
-        throw err;
+    if (!this.flushTimer) {
+      this.flushTimer = setInterval(() => {
+        this.flushToCollector().catch((err) =>
+          logger.error(`Failed to flush audit events to collector: ${err.message}`),
+        );
+      }, this.flushIntervalMs);
+      this.flushTimer.unref?.();
+    }
+
+    if (this.pendingEvents.length >= this.batchSize) {
+      this.flushToCollector().catch((err) =>
+        logger.error(`Failed to flush audit events to collector: ${err.message}`),
+      );
+    }
+  }
+
+  private capPendingEvents(): void {
+    while (this.pendingEvents.length > this.maxQueueSize) {
+      this.pendingEvents.shift();
+      this.droppedEvents += 1;
+      if (this.droppedEvents === 1 || this.droppedEvents % 100 === 0) {
+        logger.warn(
+          `Audit collector queue exceeded ${this.maxQueueSize} events — dropped ${this.droppedEvents} events so far`,
+        );
       }
-
-      this.lastEvent = eventWithChain;
-
-      if (this.collectorUrl) {
-        this.pendingEvents.push(eventWithChain);
-        if (this.pendingEvents.length >= this.batchSize) {
-          this.flushToCollector().catch((err) =>
-            logger.error(`Failed to flush to collector: ${err.message}`),
-          );
-        }
-      }
-
-      logger.debug(`Audit: ${event.message || 'Event'} [class=${event.class_uid}] seq=${seq}`);
-
-      return eventWithChain.metadata.uid!;
-    });
-
-    this.writeLock = result.catch((e) => {
-      console.error('Error writing audit event:', e);
-    });
-    return result;
+    }
   }
 
   private async flushToCollector(): Promise<void> {
-    if (!this.collectorUrl || this.pendingEvents.length === 0) return;
+    if (!this.collectorUrl || this.flushing || this.pendingEvents.length === 0) return;
 
-    const events = [...this.pendingEvents];
+    this.flushing = true;
+    const events = this.pendingEvents;
     this.pendingEvents = [];
 
     try {
-      const response = await fetch(this.collectorUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...this.collectorHeaders,
-        },
-        body: JSON.stringify({ events }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      logger.debug(`Flushed ${events.length} events to collector`);
+      await exportLogs(this.collectorUrl, this.collectorHeaders, events);
+      logger.debug(`Flushed ${events.length} audit events to collector`);
     } catch (err) {
       this.pendingEvents = [...events, ...this.pendingEvents];
+      this.capPendingEvents();
       throw err;
+    } finally {
+      this.flushing = false;
     }
-  }
-
-  private buildMongoFilter(query: AuditLogQuery): mongodb.Filter<OCSFEvent> {
-    const filter: Record<string, any> = {};
-    const andConditions: Record<string, any>[] = [];
-
-    if (query.classUids?.length) {
-      filter.class_uid = { $in: query.classUids };
-    }
-    if (query.activityIds?.length) {
-      filter.activity_id = { $in: query.activityIds };
-    }
-    if (query.userId) {
-      andConditions.push({
-        $or: [{ 'user.uid': query.userId }, { 'actor.user.uid': query.userId }],
-      });
-    }
-    if (query.success !== undefined) {
-      filter.status_id = query.success ? OCSF_STATUS.SUCCESS : OCSF_STATUS.FAILURE;
-    }
-    if (query.startTime || query.endTime) {
-      filter.time = {};
-      if (query.startTime) filter.time.$gte = query.startTime.getTime();
-      if (query.endTime) filter.time.$lte = query.endTime.getTime();
-    }
-    if (query.queryText) {
-      if (this.hasTextIndex) {
-        filter.$text = { $search: query.queryText };
-      } else {
-        const regex = { $regex: query.queryText, $options: 'i' };
-        andConditions.push({
-          $or: [{ message: regex }, { 'api.operation': regex }],
-        });
-      }
-    }
-
-    if (andConditions.length) {
-      filter.$and = andConditions;
-    }
-
-    return filter as mongodb.Filter<OCSFEvent>;
   }
 
   // --------------------------------------------------------------------------
@@ -402,13 +262,15 @@ export class AuditLog {
       message: input.message || activityMessages[activityId] || 'Authentication Event',
       metadata: this.createMetadata(crypto.randomUUID()),
       user: this.createUser(input.userId, input.userName),
+      // OCSF requires service or dst_endpoint on authentication events
+      service: { name: this.serviceName },
       src_endpoint: this.createEndpoint(input.remoteAddress),
       is_mfa: input.isMfa,
       auth_protocol: input.authProtocol,
       session: input.sessionId ? { uid: input.sessionId } : undefined,
     };
 
-    return this.writeEvent(event);
+    return this.dispatch(event);
   }
 
   async logAccountChange(input: AccountChangeInput): Promise<string> {
@@ -443,7 +305,7 @@ export class AuditLog {
       src_endpoint: this.createEndpoint(input.remoteAddress),
     };
 
-    return this.writeEvent(event);
+    return this.dispatch(event);
   }
 
   async logApiActivity(input: ApiActivityInput): Promise<string> {
@@ -465,11 +327,18 @@ export class AuditLog {
     const severity =
       isAccessDenied || input.success === false ? OCSF_SEVERITY.HIGH : OCSF_SEVERITY.INFORMATIONAL;
 
+    // OCSF defines activity_id 0-4 and 99 for API Activity; the internal
+    // e-commerce identifiers (90-98) are emitted as Other with their label
+    // in activity_name so events validate against the standard schema
+    const isExtensionActivity = activityId >= 90 && activityId < 99;
+    const wireActivityId = isExtensionActivity ? OCSF_API_ACTIVITY.OTHER : activityId;
+
     const event: OCSFApiActivityEvent = {
       category_uid: OCSF_CATEGORY.APPLICATION_ACTIVITY,
       class_uid: OCSF_CLASS.API_ACTIVITY,
-      type_uid: OCSF_CLASS.API_ACTIVITY * 100 + activityId,
-      activity_id: activityId,
+      type_uid: OCSF_CLASS.API_ACTIVITY * 100 + wireActivityId,
+      activity_id: wireActivityId,
+      activity_name: OCSF_API_ACTIVITY_NAMES[activityId],
       severity_id: severity,
       status_id: input.success === false ? OCSF_STATUS.FAILURE : OCSF_STATUS.SUCCESS,
       time: Date.now(),
@@ -483,7 +352,9 @@ export class AuditLog {
         operation: input.operation,
         response: input.responseCode ? { code: input.responseCode } : undefined,
       },
-      src_endpoint: this.createEndpoint(input.remoteAddress),
+      // OCSF requires src_endpoint on API Activity; system-originated events
+      // (workers, seeding) fall back to the engine host
+      src_endpoint: this.createEndpoint(input.remoteAddress) || { hostname: ENGINE_HOSTNAME },
       http_request:
         input.httpMethod || input.path
           ? {
@@ -491,158 +362,10 @@ export class AuditLog {
               url: input.path ? { path: input.path } : undefined,
             }
           : undefined,
-      ...(input.data ? { unmapped: { data: input.data } as any } : {}),
+      ...(input.data ? { unmapped: { data: input.data } } : {}),
     };
 
-    return this.writeEvent(event);
-  }
-
-  // --------------------------------------------------------------------------
-  // Public API - Query & Verify
-  // --------------------------------------------------------------------------
-
-  async findAndCount(query: AuditLogQuery = {}): Promise<{ results: OCSFEvent[]; total: number }> {
-    await this.init();
-
-    const filter = this.buildMongoFilter(query);
-    const limit = query.limit ?? 100;
-    const offset = query.offset || 0;
-
-    const [docs, total] = await Promise.all([
-      limit > 0
-        ? this.collection
-            .find(filter, { projection: { _id: 0 } })
-            .sort({ 'unmapped.seq': -1 })
-            .skip(offset)
-            .limit(limit)
-            .toArray()
-        : [],
-      this.collection.countDocuments(filter),
-    ]);
-
-    return { results: docs as OCSFEvent[], total };
-  }
-
-  async find(query: AuditLogQuery = {}): Promise<OCSFEvent[]> {
-    const { results } = await this.findAndCount(query);
-    return results;
-  }
-
-  async count(query: AuditLogQuery = {}): Promise<number> {
-    const { total } = await this.findAndCount({ ...query, limit: 0, offset: 0 });
-    return total;
-  }
-
-  async getFailedLogins(params: {
-    userId?: string;
-    remoteAddress?: string;
-    since?: Date;
-  }): Promise<number> {
-    await this.init();
-
-    const filter: Record<string, any> = {
-      class_uid: OCSF_CLASS.AUTHENTICATION,
-      activity_id: OCSF_AUTH_ACTIVITY.LOGON,
-      status_id: OCSF_STATUS.FAILURE,
-    };
-    if (params.userId) filter['user.uid'] = params.userId;
-    if (params.remoteAddress) filter['src_endpoint.ip'] = params.remoteAddress;
-    if (params.since) filter.time = { $gte: params.since.getTime() };
-
-    return this.collection.countDocuments(filter as mongodb.Filter<OCSFEvent>);
-  }
-
-  async verify(): Promise<VerifyResult> {
-    await this.init();
-
-    let entries = 0;
-    let verified = 0;
-    let prevHash = this.cachedVerifyResult?.valid
-      ? (this.cachedVerifyResult as any)._lastHash || GENESIS_HASH
-      : GENESIS_HASH;
-    let prevSeq = this.cachedVerifySeq;
-    const skipUntilSeq = this.cachedVerifySeq;
-
-    const cursor = this.collection
-      .find(skipUntilSeq > 0 ? ({ 'unmapped.seq': { $gt: skipUntilSeq } } as any) : {}, {
-        projection: { _id: 0 },
-      })
-      .sort({ 'unmapped.seq': 1 });
-
-    if (skipUntilSeq > 0) {
-      verified = skipUntilSeq;
-      entries = skipUntilSeq;
-    }
-
-    try {
-      for await (const doc of cursor) {
-        const event = doc as OCSFEvent;
-
-        if (!event.unmapped) {
-          entries++;
-          return { valid: false, entries, verified, error: `Missing hash chain at entry ${entries}` };
-        }
-
-        const computedHash = this.computeHash(event);
-        if (computedHash !== event.unmapped.hash) {
-          continue;
-        }
-
-        entries++;
-
-        if (entries === skipUntilSeq + 1 && skipUntilSeq > 0) {
-          if (event.unmapped.prev_hash !== prevHash) {
-            return {
-              valid: false,
-              entries,
-              verified,
-              error: `Chain broken at seq ${event.unmapped.seq}`,
-            };
-          }
-        } else if (event.unmapped.seq !== prevSeq + 1) {
-          return { valid: false, entries, verified, error: `Sequence gap at ${event.unmapped.seq}` };
-        } else if (event.unmapped.prev_hash !== prevHash) {
-          return {
-            valid: false,
-            entries,
-            verified,
-            error: `Chain broken at seq ${event.unmapped.seq}`,
-          };
-        }
-
-        verified++;
-        prevHash = event.unmapped.hash;
-        prevSeq = event.unmapped.seq;
-      }
-    } catch (e) {
-      return { valid: false, entries, verified, error: `Read error: ${e}` };
-    }
-
-    const result = { valid: true, entries, verified };
-    this.cachedVerifyResult = { ...result, _lastHash: prevHash } as any;
-    this.cachedVerifySeq = prevSeq;
-    return result;
-  }
-
-  async prune(): Promise<number> {
-    if (this.retentionDays <= 0) return 0;
-    await this.init();
-
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - this.retentionDays);
-
-    const result = await this.collection.deleteMany({
-      time: { $lt: cutoff.getTime() },
-    } as mongodb.Filter<OCSFEvent>);
-    const removed = result.deletedCount || 0;
-
-    if (removed > 0) {
-      logger.info(`Pruned ${removed} audit log entries older than ${this.retentionDays} days`);
-      this.cachedVerifyResult = null;
-      this.cachedVerifySeq = 0;
-    }
-
-    return removed;
+    return this.dispatch(event);
   }
 
   async close(): Promise<void> {
@@ -655,17 +378,13 @@ export class AuditLog {
       try {
         await this.flushToCollector();
       } catch (err) {
-        logger.error(`Failed to flush pending events on close: ${(err as Error).message}`);
+        logger.error(`Failed to flush pending audit events on close: ${(err as Error).message}`);
       }
     }
-
-    await this.writeLock;
-    this.initialized = false;
-    this.lastEvent = null;
   }
 }
 
-export function createAuditLog(config: AuditLogConfig): AuditLog {
+export function createAuditLog(config: AuditLogOptions = {}): AuditLog {
   return new AuditLog(config);
 }
 
