@@ -36,7 +36,12 @@ const UserLastLogin = ({ lastLogin }) => {
   );
 };
 
-const UserListItem = ({ user }) => {
+const UserListItem = ({
+  user,
+  isSelected = false,
+  onToggleSelect = undefined,
+  showCheckbox = false,
+}) => {
   const { formatMessage, locale } = useIntl();
   const router = useRouter();
   const { currentUser, loading } = useCurrentUser();
@@ -74,6 +79,17 @@ const UserListItem = ({ user }) => {
 
   return (
     <Table.Row className="group">
+      {showCheckbox && (
+        <Table.Cell>
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={onToggleSelect}
+            className="h-4 w-4 rounded border-slate-300 text-slate-800 focus:ring-slate-800 cursor-pointer"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </Table.Cell>
+      )}
       <Table.Cell>
         <Link
           href={`/users?userId=${user._id}`}

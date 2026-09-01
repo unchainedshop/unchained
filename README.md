@@ -27,9 +27,7 @@ Unchained Engine is a modular, API-first e-commerce platform built as a monorepo
 npm init @unchainedshop
 ```
 
-Then navigate to http://localhost:4000/ to view the welcome screen. Login with:
-- **User:** admin@unchained.local
-- **Password:** password
+Then navigate to http://localhost:4010/ to open the Admin UI and set up your administrator account on first run.
 
 ### Run Local AI for Copilot
 
@@ -149,16 +147,16 @@ See the [Core README](packages/core/README.md) for detailed documentation on cre
 The [@unchainedshop/plugins](packages/plugins/README.md) package includes:
 
 ### Payment
-- Stripe, PayPal, Braintree, Datatrans, Saferpay
+- Stripe, Datatrans, Saferpay, PostFinance Checkout
 - Payrexx, Cryptopay, Apple IAP
 - Invoice (standard and prepaid)
 
 ### Delivery
-- Post (manual shipping), Store pickup, Digital delivery
+- Post (manual shipping), Store pickup, Message-based delivery
 
 ### Pricing
-- Product catalog pricing, Currency conversion, Tax calculation (Swiss VAT)
-- Order-level and product-level discounts, Price rounding
+- Product catalog pricing, Currency conversion, Tax calculation (Swiss, EU, UK, US)
+- Order-level and product-level discounts
 
 ### File Storage
 - MongoDB GridFS, MinIO/S3-compatible storage

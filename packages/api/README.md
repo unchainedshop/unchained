@@ -141,13 +141,15 @@ The API exposes a complete GraphQL schema with:
 
 ## MCP Server
 
-Model Context Protocol server for AI agent integrations:
+Model Context Protocol server for AI agent integrations. `connect()` (Express or Fastify) automatically mounts a stateless MCP endpoint at `/mcp` (configurable via `MCP_API_PATH`). The endpoint requires an authenticated user with the `admin` role and serves 9 management tools plus the shop localization resources.
 
-```typescript
-import { createMCPServer } from '@unchainedshop/api/mcp';
+MCP support is an optional peer dependency:
 
-const mcpServer = createMCPServer(unchainedCore);
+```bash
+npm install @modelcontextprotocol/server
 ```
+
+Without it, the engine boots normally and `/mcp` responds with `503`. The chat handlers (`connect(..., { chat })`) additionally require the optional peers `ai` and `@ai-sdk/mcp` — and `@modelcontextprotocol/server` too, since chat derives its tool set through the engine's own `/mcp` endpoint.
 
 ## Security
 
@@ -166,8 +168,8 @@ The API layer implements comprehensive security controls.
 |----------|---------|---------|
 | `UNCHAINED_TOKEN_SECRET` | Session encryption (min 32 chars) | Required |
 | `UNCHAINED_COOKIE_NAME` | Cookie name | `unchained_token` |
-| `UNCHAINED_COOKIE_SAMESITE` | SameSite attribute | `none` |
-| `UNCHAINED_COOKIE_INSECURE` | Disable secure flag | `false` |
+| `UNCHAINED_COOKIE_SAMESITE` | SameSite attribute | `lax` |
+| `UNCHAINED_COOKIE_INSECURE` | Disable secure flag (development only) | `false` |
 
 Cookies are `httpOnly` and `secure` by default.
 

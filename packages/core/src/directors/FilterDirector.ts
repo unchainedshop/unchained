@@ -3,6 +3,7 @@ import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
 import type { FilterAdapterActions, FilterContext, IFilterAdapter } from './FilterAdapter.ts';
 import {
   type Filter,
+  filterCacheGeneration,
   filtersSettings,
   FilterType,
   type SearchConfiguration,
@@ -169,19 +170,28 @@ export const FilterDirector: IFilterDirector = {
     unchainedAPI: { modules: Modules },
   ): Promise<[string[], Record<string, string[]>]> {
     const allProductIds = await this.findProductIds(filter, {}, unchainedAPI);
-    const productIdsMap =
-      filter.type === FilterType.SWITCH
-        ? {
-            true: await this.findProductIds(filter, { value: true }, unchainedAPI),
-            false: await this.findProductIds(filter, { value: { $in: [null, false] } }, unchainedAPI),
-          }
-        : await (filter.options || []).reduce(async (accumulatorPromise, option) => {
-            const accumulator = await accumulatorPromise;
-            return {
-              ...accumulator,
-              [option]: await this.findProductIds(filter, { value: option }, unchainedAPI),
-            };
-          }, Promise.resolve({}));
+
+    if (filter.type === FilterType.SWITCH) {
+      return [
+        allProductIds,
+        {
+          true: await this.findProductIds(filter, { value: true }, unchainedAPI),
+          false: await this.findProductIds(filter, { value: { $in: [null, false] } }, unchainedAPI),
+        },
+      ];
+    }
+
+    // Collected into one object instead of respreading the accumulator per option: that is
+    // quadratic, and a filter can carry thousands of options. The lookups stay sequential on
+    // purpose, so rebuilding a large filter does not flood the database with parallel scans.
+    //
+    // Null-prototyped because option values are arbitrary strings: assigning `__proto__` into a
+    // normal object walks into the prototype setter instead of creating a key, and the option
+    // would then be missing from everything derived from this map.
+    const productIdsMap: Record<string, string[]> = Object.create(null);
+    for (const option of filter.options || []) {
+      productIdsMap[option] = await this.findProductIds(filter, { value: option }, unchainedAPI);
+    }
 
     return [allProductIds, productIdsMap];
   },
@@ -205,10 +215,13 @@ export const FilterDirector: IFilterDirector = {
 
     const result = new Set<string>();
     for (const key of filteredKeys as string[]) {
+      // Own properties only. The keys come straight from a user supplied filterQuery, so
+      // asking for `constructor` or `toString` would otherwise reach Object.prototype and
+      // throw while iterating it.
+      if (!Object.hasOwn(keyToProductIdMap, key)) continue;
       const additionalValues = keyToProductIdMap[key];
-      if (additionalValues) {
-        for (const val of additionalValues) result.add(val);
-      }
+      if (!additionalValues) continue;
+      for (const val of additionalValues) result.add(val);
     }
     return result;
   },
@@ -322,6 +335,20 @@ export const FilterDirector: IFilterDirector = {
     if (!filter) return;
 
     const [productIds, productIdMap] = await this.buildProductIdMap(filter, unchainedAPI);
-    await filtersSettings.setCachedProductIds(filter._id, productIds, productIdMap);
+
+    // A deleted filter has no generation left to be overtaken by, so it needs its own check.
+    // This is about not rebuilding the cache of something that no longer exists rather than
+    // about correctness: a rebuild that slips past it leaves orphan rows, not wrong answers,
+    // because nothing can query a filter that is gone.
+    if (!(await unchainedAPI.modules.filters.filterExists({ filterId: filter._id }))) return;
+
+    // Stamped with the generation this map was built from, so a rebuild that has been overtaken
+    // while it scanned cannot publish ids computed against a filter that has since changed.
+    await filtersSettings.setCachedProductIds(
+      filter._id,
+      productIds,
+      productIdMap,
+      filterCacheGeneration(filter),
+    );
   },
 };

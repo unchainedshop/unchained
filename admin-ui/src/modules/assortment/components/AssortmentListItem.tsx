@@ -14,7 +14,13 @@ import DangerMessage from '../../modal/components/DangerMessage';
 import useUpdateAssortment from '../hooks/useUpdateAssortment';
 import useRemoveAssortment from '../hooks/useRemoveAssortment';
 
-const AssortmentListItem = ({ assortment, showAvatar }) => {
+const AssortmentListItem = ({
+  assortment,
+  showAvatar,
+  isSelected = false,
+  onToggleSelect = undefined,
+  showCheckbox = false,
+}) => {
   const { formatMessage } = useIntl();
   const router = useRouter();
   const { hasRole } = useAuth();
@@ -62,6 +68,17 @@ const AssortmentListItem = ({ assortment, showAvatar }) => {
 
   return (
     <Table.Row>
+      {showCheckbox && (
+        <Table.Cell>
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={onToggleSelect}
+            className="h-4 w-4 rounded border-slate-300 text-slate-800 focus:ring-slate-800 cursor-pointer"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </Table.Cell>
+      )}
       <Table.Cell className="whitespace-nowrap">
         <div className="flex items-center text-sm text-slate-900">
           {showAvatar && (

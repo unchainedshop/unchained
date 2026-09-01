@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/roles",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.4",
   "description": "Role-based access control system for the Unchained Engine",
   "main": "lib/roles-index.js",
   "types": "lib/roles-index.d.ts",
@@ -35,6 +35,6 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "devDependencies": {
     "@types/node": "^26.2.0",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }

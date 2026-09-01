@@ -7,20 +7,19 @@ description: W3C compliant web push notifications
 
 # Push Notification Worker
 
-Send W3C compliant web push notifications to subscribed users.
+Send W3C compliant web push notifications to subscribed users. Requires the optional `web-push` package (`npm install web-push`).
 
-## Installation
+:::info Included in All Preset
+Registered automatically by `registerAllPlugins()`.
+:::
+
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/worker/push-notification';
-```
+import { pluginRegistry } from '@unchainedshop/core';
+import { PushNotificationPlugin } from '@unchainedshop/plugins/worker/push-notification';
 
-### Peer Dependency
-
-This worker requires the `web-push` package:
-
-```bash
-npm install web-push
+pluginRegistry.register(PushNotificationPlugin);
 ```
 
 ## Environment Variables
@@ -190,7 +189,7 @@ MessagingDirector.registerTemplate('ORDER_SHIPPED', async ({ orderId }, context)
 |----------|-------|
 | Key | `shop.unchained.worker-plugin.push-notification` |
 | Type | `PUSH` |
-| Source | [worker/push-notification.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/worker/push-notification.ts) |
+| Source | [worker/push-notification](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/worker/push-notification) |
 
 ## External Resources
 

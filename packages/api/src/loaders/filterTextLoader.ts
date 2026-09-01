@@ -16,6 +16,7 @@ export default (unchainedAPI: UnchainedCore) =>
       {
         sort: {
           filterId: 1,
+          _id: 1,
         },
       },
     );

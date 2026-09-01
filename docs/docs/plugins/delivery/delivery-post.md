@@ -7,66 +7,50 @@ description: Standard postal delivery adapter
 
 # Post Delivery Adapter
 
-The Post adapter provides standard postal/courier delivery functionality.
+Manual shipping delivery without external carrier integration. Use it for physical goods where shipping is handled outside the system.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` and `registerAllPlugins()`.
 :::
 
-## Installation
+If you register plugins individually instead of using a preset:
 
 ```typescript
-import '@unchainedshop/plugins/delivery/post';
+import { pluginRegistry } from '@unchainedshop/core';
+import { PostPlugin } from '@unchainedshop/plugins/delivery/post';
+
+pluginRegistry.register(PostPlugin);
 ```
 
-## Configuration
-
-Create a delivery provider using this adapter:
+## Setup
 
 ```graphql
 mutation CreatePostDelivery {
   createDeliveryProvider(deliveryProvider: {
     type: SHIPPING
-    adapterKey: "shop.unchained.delivery.post"
+    adapterKey: "shop.unchained.post"
   }) {
     _id
   }
 }
 ```
 
-## Features
-
-- Standard shipping delivery type
-- Configurable estimated delivery time
-- Auto-release support
-- No external API dependencies
-
 ## Adapter Details
 
 | Property | Value |
 |----------|-------|
-| Key | `shop.unchained.delivery.post` |
+| Key | `shop.unchained.post` |
 | Type | `SHIPPING` |
-| Auto-release | Configurable |
-| Source | [delivery/post.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/delivery/post.ts) |
+| Source | [delivery/post](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/delivery/post) |
 
 ## Behavior
 
-### `isActive()`
-Always returns `true` - no configuration required.
-
-### `isAutoReleaseAllowed()`
-Returns `true` by default, allowing orders to proceed automatically after payment.
-
-### `send()`
-Returns success without external API calls. For production integrations with actual carriers, create a custom adapter.
-
-### `estimatedDeliveryThroughput()`
-Returns a default delivery estimate. Override in configuration or extend the adapter for custom calculations.
+- `isActive()` returns `true` and `configurationError()` returns `null` — no configuration required.
+- All other actions use the `DeliveryAdapter` defaults: `isAutoReleaseAllowed()` returns `true` (delivery is released automatically after order confirmation), `send()` returns `false` (the delivery status stays unchanged — mark deliveries as delivered manually), and `estimatedDeliveryThroughput()` returns `0`.
 
 ## Extending for Real Carriers
 
-For production use, register a carrier-specific shipping provider:
+For carrier integrations, register a custom shipping adapter with the `registerShippingDelivery` factory:
 
 ```typescript
 import { registerShippingDelivery } from '@unchainedshop/core';
@@ -75,30 +59,17 @@ registerShippingDelivery({
   adapterId: 'swiss-post',
   estimatedDeliveryThroughput: async (warehousingTime) =>
     warehousingTime + 2 * 24 * 60 * 60 * 1000,
-  send: async (configuration, { order }) => {
+  send: async (configuration, { order, orderDelivery }) => {
     await swissPostApi.createShipment({
-      recipient: order.delivery.address,
-      weight: calculateWeight(order.items),
+      recipient: orderDelivery.context?.address || order.billingAddress,
     });
-    return true;
+    return true; // marks the delivery as DELIVERED
   },
 });
 ```
 
-## Delivery Pricing
-
-Combine with delivery pricing adapters:
-
-```typescript
-import '@unchainedshop/plugins/pricing/order-delivery';
-import '@unchainedshop/plugins/pricing/free-delivery';
-```
-
-Set prices via configuration or custom pricing adapter.
-
 ## Related
 
-- [Plugins Overview](./) - All available plugins
 - [Stores Delivery](./delivery-stores.md) - Pickup delivery
 - [Delivery Pricing](../../extend/pricing/delivery-pricing.md) - Pricing configuration
 - [Custom Delivery Plugins](../../extend/order-fulfilment/fulfilment-plugins/delivery.md) - Write your own

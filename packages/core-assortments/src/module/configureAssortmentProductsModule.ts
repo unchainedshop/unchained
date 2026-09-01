@@ -93,7 +93,7 @@ export const configureAssortmentProductsModule = ({
           productId: { $ne: productId },
         },
         {
-          sort: { sortKey: 1 },
+          sort: { sortKey: 1, _id: 1 },
           projection: { productId: 1 },
         },
       ).toArray();
@@ -103,8 +103,8 @@ export const configureAssortmentProductsModule = ({
 
     // Mutations
     create: async (
-      doc: Omit<AssortmentProduct, '_id' | 'created' | 'sortKey'> &
-        Partial<Pick<AssortmentProduct, '_id' | 'created' | 'sortKey'>>,
+      doc: Omit<AssortmentProduct, '_id' | 'created' | 'sortKey' | 'tags'> &
+        Partial<Pick<AssortmentProduct, '_id' | 'created' | 'sortKey' | 'tags'>>,
       options?: { skipInvalidation?: boolean },
     ) => {
       const { _id, assortmentId, productId, sortKey, ...rest } = doc;
@@ -129,7 +129,7 @@ export const configureAssortmentProductsModule = ({
         // Get next sort key
         const lastAssortmentProduct = (await AssortmentProducts.findOne(
           { assortmentId },
-          { sort: { sortKey: -1 } },
+          { sort: { sortKey: -1, _id: -1 } },
         )) || { sortKey: 0 };
         $setOnInsert.sortKey = lastAssortmentProduct.sortKey + 1;
       } else {

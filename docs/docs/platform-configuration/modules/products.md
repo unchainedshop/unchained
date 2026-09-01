@@ -25,13 +25,14 @@ export interface ProductsSettingsOptions {
 
 ```typescript
 import slugify from 'slugify';
-const options = {
-  modules: {
+
+await startPlatform({
+  options: {
     products: {
       slugify,
     },
   },
-};
+});
 ```
 
 ## Events
@@ -43,7 +44,7 @@ const options = {
 | `PRODUCT_REMOVE` | `{ productId }` | Emitted when a product is removed |
 | `PRODUCT_PUBLISH` | `{ product }` | Emitted when a product is published |
 | `PRODUCT_UNPUBLISH` | `{ product }` | Emitted when a product is unpublished |
-| `PRODUCT_UPDATE_TEXT` | `{ productId, locale }` | Emitted when product text is updated |
+| `PRODUCT_UPDATE_TEXT` | `{ productId, text }` | Emitted when product text is updated |
 | `PRODUCT_ADD_MEDIA` | `{ productMedia }` | Emitted when media is added |
 | `PRODUCT_REMOVE_MEDIA` | `{ productMediaId }` | Emitted when media is removed |
 | `PRODUCT_REORDER_MEDIA` | `{ productMedias }` | Emitted when media is reordered |
@@ -52,11 +53,11 @@ const options = {
 | `PRODUCT_REMOVE_VARIATION` | `{ productVariationId }` | Emitted when a variation is removed |
 | `PRODUCT_UPDATE_VARIATION_TEXT` | `{ productVariationId }` | Emitted when variation text is updated |
 | `PRODUCT_VARIATION_OPTION_CREATE` | `{ productVariation, value }` | Emitted when a variation option is added |
-| `PRODUCT_REMOVE_VARIATION_OPTION` | `{ productVariationId, value }` | Emitted when a variation option is removed |
+| `PRODUCT_REMOVE_VARIATION_OPTION` | `{ productVariationId, productVariationOptionValue }` | Emitted when a variation option is removed |
 | `PRODUCT_REVIEW_CREATE` | `{ productReview }` | Emitted when a review is created |
 | `PRODUCT_UPDATE_REVIEW` | `{ productReview }` | Emitted when a review is updated |
 | `PRODUCT_REMOVE_REVIEW` | `{ productReviewId }` | Emitted when a review is removed |
-| `PRODUCT_REVIEW_ADD_VOTE` | `{ productReviewId, type }` | Emitted when a vote is added to a review |
+| `PRODUCT_REVIEW_ADD_VOTE` | `{ productReview }` | Emitted when a vote is added to a review |
 | `PRODUCT_REMOVE_REVIEW_VOTE` | `{ productReviewId, type }` | Emitted when a vote is removed from a review |
 
 ## More Information

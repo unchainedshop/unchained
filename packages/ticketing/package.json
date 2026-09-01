@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/ticketing",
   "description": "Event ticketing extension for the Unchained Engine with PDF and wallet pass support",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.4",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "type": "module",
@@ -50,7 +50,7 @@
   },
   "peerDependenciesMeta": {
     "@parse/node-apn": {
-      "optional": false
+      "optional": true
     },
     "express": {
       "optional": true
@@ -65,6 +65,6 @@
     "@types/node": "^26.2.0",
     "express": "^5.1.0",
     "fastify": "^5.4.0",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }

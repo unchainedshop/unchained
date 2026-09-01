@@ -33,14 +33,11 @@ const allEvents = getRegisteredEvents();
 
 ### Event Names
 
-Events are registered as strings. You can query available events via GraphQL:
+Events are registered as strings. You can query the registered event names via GraphQL:
 
 ```graphql
 query {
-  events {
-    _id
-    type
-  }
+  registeredEventTypes
 }
 ```
 
@@ -72,24 +69,33 @@ Each module emits events for tracking and integration. See the module documentat
 
 ## Subscribing to Events
 
+The callback receives `{ payload }` only — the data passed to `emit`. There is no context argument; if you need modules, capture the `unchainedAPI` returned by `startPlatform`.
+
 ```typescript
 import { subscribe } from '@unchainedshop/events';
+import { OrderPricingSheet } from '@unchainedshop/core';
 
-// Track order confirmations
+// Track order confirmations. The payload contains the raw order document:
+// totals live in `order.calculation` (pricing rows), the currency in `order.currencyCode`.
 subscribe('ORDER_CONFIRMED', async ({ payload }) => {
   const { order } = payload;
+  const { amount } = OrderPricingSheet({
+    calculation: order.calculation,
+    currencyCode: order.currencyCode,
+  }).total();
 
   // Send to analytics
   await analytics.track('purchase', {
     orderId: order._id,
-    total: order.total,
+    total: amount,
   });
 });
 
-// Track product views
-subscribe('PRODUCT_VIEW', async ({ payload }) => {
-  await analytics.track('product_view', {
-    productId: payload.productId,
+// Track page views (emitted by Mutation.pageView)
+subscribe('PAGE_VIEW', async ({ payload }) => {
+  await analytics.track('page_view', {
+    path: payload.path,
+    referrer: payload.referrer,
   });
 });
 ```
@@ -184,10 +190,16 @@ The Node.js in-memory emitter is wired automatically by `registerBasePlugins()`.
 
 ```typescript
 subscribe('ORDER_CHECKOUT', async ({ payload }) => {
+  const { order } = payload;
+  const { amount, currencyCode } = OrderPricingSheet({
+    calculation: order.calculation,
+    currencyCode: order.currencyCode,
+  }).total();
+
   await gtag('event', 'purchase', {
-    transaction_id: payload.order._id,
-    value: payload.order.total / 100,
-    currency: payload.order.currency,
+    transaction_id: order._id,
+    value: amount / 100,
+    currency: currencyCode,
   });
 });
 ```
@@ -207,15 +219,14 @@ subscribe('ORDER_CONFIRMED', async ({ payload }) => {
 ### Inventory Alerts
 
 ```typescript
-subscribe('ORDER_ADD_PRODUCT', async ({ payload, context }) => {
-  const product = await context.modules.products.findProduct({
-    productId: payload.orderPosition.productId,
-  });
+subscribe('ORDER_ADD_PRODUCT', async ({ payload }) => {
+  const { orderPosition } = payload;
+  const stock = await inventorySystem.getStock(orderPosition.productId);
 
-  if (product.stock < 10) {
+  if (stock < 10) {
     emit('INVENTORY_LOW', {
-      productId: product._id,
-      currentStock: product.stock,
+      productId: orderPosition.productId,
+      currentStock: stock,
     });
   }
 });
@@ -248,16 +259,15 @@ auditEvents.forEach(eventName => {
 
 ## Querying Registered Events
 
-Use GraphQL to list all registered events:
+Use GraphQL to list all registered event types:
 
 ```graphql
 query {
-  events {
-    _id
-    type
-  }
+  registeredEventTypes
 }
 ```
+
+To query the *emitted* event documents instead, use `events { _id type }` (paginated, sorted by creation date).
 
 ## Audit Logging (OCSF)
 

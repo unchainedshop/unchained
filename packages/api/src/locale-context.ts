@@ -46,16 +46,14 @@ const uncachedResolveDefaultContext = async (
   return newContext;
 };
 
-export const resolveDefaultContext = memoizeWithTTL(
-  uncachedResolveDefaultContext,
-  process.env.NODE_ENV === 'production' ? 1000 * 60 : 1,
-  {
-    cacheKey: (args) => {
-      const [{ acceptLang, acceptCountry }] = args;
-      return `${acceptLang}-${acceptCountry}`;
-    },
+export const resolveDefaultContext = memoizeWithTTL(uncachedResolveDefaultContext, {
+  // Cached values expire after a minute
+  ttl: process.env.NODE_ENV === 'production' ? 1000 * 60 : 1,
+  cacheKey: (args) => {
+    const [{ acceptLang, acceptCountry }] = args;
+    return `${acceptLang}-${acceptCountry}`;
   },
-);
+});
 
 export const getLocaleContext = async (
   {

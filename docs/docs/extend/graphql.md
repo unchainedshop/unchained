@@ -7,9 +7,9 @@ description: Extending the schema to hold custom types
 
 # Extend the GraphQL API
 
-We know that any two projects don't have the same business logic and data model. Projects need different data models to hold data for of there domain so for this reason unchained is build to be easily extended to hold custom data a project might need.
+No two projects share the same business logic and data model, so Unchained is built to be extended with the custom data a project needs.
 
-Most mutations of unchained accept a JSON type `meta` property for this purpose. you can pass this field and object holding custom properties you want to store related to a certain entity/object.
+Most mutations of Unchained accept a JSON type `meta` property for this purpose: pass an object holding the custom properties you want to store on a certain entity.
 
 In this we will extend `product` to hold two custom properties `size` and `expiryDate` for demonstration purposes.
 
@@ -23,14 +23,23 @@ Let's follow the above guide to extend the `Product` entity.
 
 **Extend entity include the custom fields**
 
+`Product` is a GraphQL *interface*, so you extend the concrete object types that implement it (`SimpleProduct`, `PlanProduct`, `ConfigurableProduct`, `BundleProduct`, `TokenizedProduct`) — `extend type Product` would fail at boot. Alternatively, `extend interface Product` works, but then you must add the fields to **all five** implementing types.
+
 ```js
 const typeDefs = [
    /* GraphQL */ `
-     extend type Product {
-       size: String,
+     extend type SimpleProduct {
+       size: String
        expiryDate: String
      }
-
+     extend type PlanProduct {
+       size: String
+       expiryDate: String
+     }
+     extend type ConfigurableProduct {
+       size: String
+       expiryDate: String
+     }
    `,
  ];
 ```
@@ -73,28 +82,29 @@ import { startPlatform } from '@unchainedshop/platform'
 
 await startPlatform({
   typeDefs: [...typeDefs],
-  resolvers: [resolvers],
+  resolvers: [resolverDefs],
 })
-seed()
 ```
 
 That was all, everything is setup and the schema will be updated to include the custom types defined above for product entity.
-Assuming we have a `SimulatedProduct` product type with a `productId` `test-product-id`, we can use the `mutation.updateProduct` to assign values for the new fields.
+Assuming we have a `SimpleProduct` with `productId` `test-product-id`, we can use `Mutation.updateProduct` to assign values for the new fields:
 
 ```graphql
 mutation UpdateProductMeta {
   updateProduct(
     productId: "test-product-id"
     product: {
-      meta: { size: "large", expiryDate: "1694908800000" }
+      meta: { size: "large", expiryDate: "2023-09-17" }
     }
   ) {
     _id
+    ... on SimpleProduct {
+      size
+      expiryDate
+    }
   }
 }
 ```
-
-Note: The `size` and `expiryDate` fields shown above are custom fields added via resolvers and would need to be queried after the type extensions are registered.
 
 This will return with the updated value:
 
@@ -122,7 +132,7 @@ Explanation:
 DESC at the end means it should sort descending whereas ASC or neither direction means it will sort ascending. Underscores will be replaced by dots before firing to the MongoDB, so "meta_priceRanges_minSimulatedPrice_DESC" this effectively translates to:
 
 ```
-{ $sort: { "meta.priceRanges.minSimulatedPrice": -1, "_id": 1 } }
+{ $sort: { "meta.priceRanges.minSimulatedPrice": -1, "index": 1 } }
 ```
 
 

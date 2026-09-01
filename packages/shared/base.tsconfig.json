@@ -11,6 +11,7 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "skipLibCheck": true,
+    "strict": false,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "strictBindCallApply": true,

@@ -31,9 +31,12 @@ Call the seed function after platform startup:
 
 ```typescript
 import { startPlatform } from '@unchainedshop/platform';
+import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
 import seed from './seed.ts';
 
-const platform = await startPlatform({ modules: defaultModules });
+registerAllPlugins();
+
+const platform = await startPlatform({});
 await seed(platform.unchainedAPI);
 ```
 
@@ -49,7 +52,7 @@ await modules.users.createUser(
     email: 'admin@unchained.local',
     guest: false,
     initialPassword: true,
-    password: modules.users.hashPassword(adminPassword),
+    password: adminPassword, // hashed internally by createUser
     profile: { address: {} },
     roles: ['admin'],
     username: 'admin',
@@ -130,7 +133,7 @@ export default async function seed(unchainedAPI: UnchainedCore) {
   if (adminCount > 0) return;
 
   const password = process.env.UNCHAINED_SEED_PASSWORD || crypto.randomUUID();
-  const lang = process.env.UNCHAINED_LANG || 'en';
+  const lang = process.env.UNCHAINED_LANG || 'de';
   const currency = process.env.UNCHAINED_CURRENCY || 'CHF';
   const country = process.env.UNCHAINED_COUNTRY || 'CH';
 
@@ -140,7 +143,7 @@ export default async function seed(unchainedAPI: UnchainedCore) {
       email: 'admin@unchained.local',
       guest: false,
       initialPassword: true,
-      password: modules.users.hashPassword(password),
+      password: password, // hashed internally by createUser
       profile: { address: {} },
       roles: ['admin'],
       username: 'admin',

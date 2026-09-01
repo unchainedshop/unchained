@@ -2,12 +2,18 @@ import express from 'express';
 import type { Express, Request, RequestHandler, Response } from 'express';
 import type * as aiTypes from 'ai';
 import type * as mcpTypes from '@ai-sdk/mcp';
-import type * as mcpSDKClientLibraryTypes from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import type * as mcpSDKClientTypes from '@modelcontextprotocol/sdk/client/index.js';
-import { type ChatConfiguration, errorHandler } from '../chat/utils.ts';
+import type { Context } from '../context.ts';
+import {
+  chatErrorStatus,
+  createChatRequestLifecycle,
+  type ChatConfiguration,
+  errorHandler,
+  logOptionalPeerLoadError,
+} from '../chat/utils.ts';
 import generateImageHandler from '../chat/generateImageHandler.ts';
 import defaultSystemPrompt from '../chat/defaultSystemPrompt.ts';
 import normalizeToolsIndex from '../chat/normalizeToolsIndex.ts';
+import { buildChatResourceContext } from '../mcp/resources/localization.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api:chat');
@@ -16,25 +22,20 @@ let convertToModelMessages: typeof aiTypes.convertToModelMessages;
 let stepCountIs: typeof aiTypes.stepCountIs;
 let streamText: typeof aiTypes.streamText;
 let createMCPClient: typeof mcpTypes.createMCPClient;
-let StreamableHTTPClientTransport: typeof mcpSDKClientLibraryTypes.StreamableHTTPClientTransport;
-let Client: typeof mcpSDKClientTypes.Client;
 
 try {
   const aiTools = await import('ai');
-  const mcpTools = await import('@ai-sdk/mcp');
-  const mcpSDKClientLibrary = await import('@modelcontextprotocol/sdk/client/streamableHttp.js');
-  const mcpSDKClient = await import('@modelcontextprotocol/sdk/client/index.js');
-
-  StreamableHTTPClientTransport = mcpSDKClientLibrary.StreamableHTTPClientTransport;
-  Client = mcpSDKClient.Client;
   convertToModelMessages = aiTools.convertToModelMessages;
   stepCountIs = aiTools.stepCountIs;
   streamText = aiTools.streamText;
+} catch (error) {
+  logOptionalPeerLoadError('ai', error);
+}
+try {
+  const mcpTools = await import('@ai-sdk/mcp');
   createMCPClient = mcpTools.createMCPClient;
-} catch {
-  logger.warn(
-    `optional peer npm packages 'ai', '@ai-sdk/mcp' and '@modelcontextprotocol/sdk' not installed, chat will not work`,
-  );
+} catch (error) {
+  logOptionalPeerLoadError('@ai-sdk/mcp', error);
 }
 
 const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): RequestHandler => {
@@ -47,6 +48,10 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
     unchainedMCPUrl = `${process.env.ROOT_URL}/mcp`,
     model,
     imageGenerationTool,
+    abortSignal: configuredAbortSignal,
+    onAbort: configuredOnAbort,
+    onEnd: configuredOnEnd,
+    onFinish: configuredOnFinish,
     ...restChatConfig
   }: any = chatConfiguration;
 
@@ -63,55 +68,42 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
       res.status(405).json({ error: 'Method Not Allowed. Use POST.' });
       return;
     }
-    const resourceTransport = new StreamableHTTPClientTransport(new URL(unchainedMCPUrl), {
-      requestInit: {
-        headers: {
-          Cookie: req.headers.cookie || '',
-        },
-      },
-    });
 
-    const sdkClient = new Client({ name: 'unchained-chat-client', version: '1.0.0' });
-    await sdkClient.connect(resourceTransport as any);
-    // Use the AI SDK's own streamable-HTTP transport rather than the MCP SDK's
-    // StreamableHTTPClientTransport: @ai-sdk/mcp assigns `transport.protocolVersion`
-    // during init, but the MCP SDK transport exposes that as a getter-only property
-    // (via setProtocolVersion()), which throws. The AI SDK transport has a settable one.
-    const client = await createMCPClient({
-      transport: {
-        type: 'http',
-        url: unchainedMCPUrl,
-        headers: {
-          Cookie: req.headers.cookie || '',
-        },
-      },
-    });
+    // Chat proxies the admin-gated /mcp surface: enforce the same auth wall up front
+    // instead of letting the downstream MCP 401 surface as a 500.
+    const unchainedContext = (req as Request & { unchainedContext?: Context }).unchainedContext;
+    const user = unchainedContext?.user;
+    if (!user) {
+      res.status(401).json({ error: 'unauthorized' });
+      return;
+    }
+    if (!(user.roles || []).includes('admin')) {
+      res.status(403).json({ error: 'forbidden', message: 'Chat requires admin privileges' });
+      return;
+    }
 
+    let client: Awaited<ReturnType<typeof createMCPClient>> | undefined;
+    const lifecycle = createChatRequestLifecycle(res, configuredAbortSignal);
     try {
+      client = await createMCPClient({
+        transport: {
+          type: 'http',
+          url: unchainedMCPUrl,
+          headers: {
+            // Forward both auth mechanisms accepted by /mcp: cookie sessions and bearer tokens
+            Cookie: req.headers.cookie || '',
+            ...(req.headers.authorization ? { Authorization: req.headers.authorization } : {}),
+          },
+        },
+        initializationOptions: { signal: lifecycle.signal },
+      });
+      lifecycle.setClientClose(() => client!.close());
+
       const defaultUnchainedTools = await client.tools();
-      let resourceContext = '';
-      try {
-        const resources = await sdkClient.listResources();
-        if (resources?.resources) {
-          const resourceTexts = await Promise.all(
-            resources.resources.map(async (resource) => {
-              try {
-                const content = await sdkClient.readResource({ uri: resource.uri });
-                if ((content?.contents?.[0] as any)?.text) {
-                  return `${resource.name}:\n${(content.contents[0] as any).text}`;
-                }
-              } catch (e) {
-                logger.error(`Failed to read resource ${resource.uri}: ${e.message}`);
-              }
-              return null;
-            }),
-          );
-          resourceContext =
-            '\n\nAVAILABLE SHOP CONFIGURATION:\n' + resourceTexts.filter(Boolean).join('\n\n');
-        }
-      } catch (e) {
-        logger.error(`Failed to fetch MCP resources: ${e.message}`);
-      }
+
+      // Shop configuration is read in-process from the same data the MCP resources serve
+      // (admin-gated inside the builder, mirroring the /mcp auth wall).
+      const resourceContext = await buildChatResourceContext(unchainedContext);
 
       const tools: aiTypes.ToolSet = {
         ...defaultUnchainedTools,
@@ -122,6 +114,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
       }
 
       if (req.method === 'GET') {
+        await lifecycle.close();
         res.status(200).json({
           tools: normalizeToolsIndex(tools),
           cached: false,
@@ -164,17 +157,29 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
       const messagesToInclude = normalizedMessages.slice(startIndex);
 
       const result = streamText({
-        stopWhen: stepCountIs(10),
+        stopWhen: stepCountIs(500),
         maxRetries: 3,
         // No hardcoded temperature: reasoning models (e.g. gpt-5.2) reject it. Callers
         // can set temperature via their chat configuration when using a model that
         // supports it.
         ...restChatConfig,
+        abortSignal: lifecycle.signal,
         system: system + resourceContext,
         model,
         tools: cacheControlledTools,
-        onFinish: async () => {
-          await client?.close();
+        onEnd: async (event) => {
+          try {
+            await (configuredOnEnd ?? configuredOnFinish)?.(event);
+          } finally {
+            await lifecycle.close();
+          }
+        },
+        onAbort: async (event) => {
+          try {
+            await configuredOnAbort?.(event);
+          } finally {
+            await lifecycle.close();
+          }
         },
         messages: messagesToInclude,
         providerOptions: {
@@ -186,13 +191,21 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
         },
       });
 
+      // streamText skips onFinish when the provider errors before the first step (the error
+      // only reaches the UI stream's onError callback), so release the MCP client on that
+      // termination path too — close() is idempotent.
+      void result.finishReason.then(undefined, async () => {
+        await lifecycle.close();
+      });
+
       result.pipeUIMessageStreamToResponse(res, {
         onError: errorHandler,
       });
     } catch (err) {
-      await client?.close();
-      await sdkClient?.close();
-      res.status(500).json({ error: errorHandler(err) });
+      logger.error(err);
+      await lifecycle.close();
+      if (lifecycle.signal.aborted || res.destroyed || res.writableEnded) return;
+      res.status(chatErrorStatus(err)).json({ error: errorHandler(err) });
     }
   };
 
@@ -200,7 +213,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
 };
 
 export const connectChat = (app: Express, chatConfiguration: ChatConfiguration) => {
-  if (!createMCPClient) {
+  if (!createMCPClient || !streamText) {
     logger.warn(
       'Optional dependencies for AI SDK Chat Handler are not installed. Please install @ai-sdk/mcp and ai packages to use this feature.',
     );

@@ -79,5 +79,22 @@ export default (tree: Tree<string>): string[] => {
   const levels = divideTreeByLevels(tree);
   const concattedLevels = concatItemsByLevels(levels);
   const items = shuffleEachLevel(concattedLevels);
-  return items.flat(Infinity).filter(Boolean) as any as string[];
+
+  // Iterative flatten to avoid stack overflow: shuffleEachLevel produces deeply
+  // nested arrays (zip-reducing N sub-arrays nests ~N deep), which makes V8's
+  // recursive .flat(Infinity) blow the stack on large assortment trees.
+  // Seed the stack reversed so top-level order (level 0 first) is preserved.
+  const result: string[] = [];
+  const stack: unknown[] = [...items].reverse();
+  while (stack.length > 0) {
+    const value = stack.pop();
+    if (Array.isArray(value)) {
+      for (let i = value.length - 1; i >= 0; i--) {
+        stack.push(value[i]);
+      }
+    } else if (value) {
+      result.push(value as string);
+    }
+  }
+  return result;
 };

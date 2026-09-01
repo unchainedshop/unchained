@@ -19,20 +19,20 @@ export interface QuotationsSettingsOptions {
 
 ### Quotation Number Creation
 
-The `quotationNumberHashFn` is used to generate human-readable codes that can be easily spelled out to support staff. The default is a hashids based function that generates an alphanumeric uppercase string with length 6 without the hard to distinguish 0IOl etc. If the number has already been taken, the function gets iteratively called with an increasing `index`.
+The `quotationNumberHashFn` is used to generate human-readable codes that can be easily spelled out to support staff. The default generates a random alphanumeric uppercase string with length 6 using an unambiguous charset (no `O`, `0`, `1`). If the number has already been taken, the function gets iteratively called with an increasing `index`.
 
 [Default Random Hash Generator](https://github.com/unchainedshop/unchained/blob/master/packages/utils/src/generate-random-hash.ts)
 
 ### Example Custom Configuration
 
 ```typescript
-const options = {
-  modules: {
+await startPlatform({
+  options: {
     quotations: {
-      quotationNumberHashFn: (quotation, index) => quotation.sequence + 300000 + index,
+      quotationNumberHashFn: (quotation, index) => `${300000 + index}`,
     },
   },
-};
+});
 ```
 
 ## Events
@@ -40,7 +40,8 @@ const options = {
 | Event | Payload | Description |
 |-------|---------|-------------|
 | `QUOTATION_REQUEST_CREATE` | `{ quotation }` | Emitted when a quotation request is created |
-| `QUOTATION_UPDATE` | `{ quotation, field }` | Emitted when a quotation is updated |
+| `QUOTATION_UPDATE` | `{ quotation, field: 'status' }` or `{ quotation, fields }` | Emitted when a quotation is updated |
+| `QUOTATION_REMOVE` | `{ quotationId }` | Emitted when a quotation is removed |
 
 ## More Information
 

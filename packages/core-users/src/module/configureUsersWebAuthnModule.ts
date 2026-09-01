@@ -79,7 +79,8 @@ async function fetchMDSEntriesImpl(): Promise<Map<string, MDSEntry>> {
   return cache;
 }
 
-const fetchMDSEntries = memoizeWithTTL(fetchMDSEntriesImpl, ONE_DAY_MS);
+// Memoize MDS fetch with a 24-hour TTL
+const fetchMDSEntries = memoizeWithTTL(fetchMDSEntriesImpl, { ttl: ONE_DAY_MS });
 
 export function toArrayBuffer(buffer: Buffer): ArrayBuffer {
   return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;

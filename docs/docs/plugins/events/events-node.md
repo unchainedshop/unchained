@@ -7,85 +7,31 @@ description: In-memory event system using Node.js EventEmitter
 
 # Node.js Event Emitter
 
-The default in-memory event system using Node.js built-in EventEmitter.
+The default in-memory event transport, backed by the Node.js built-in `EventEmitter`. Events stay within a single process — use [Redis](./events-redis.md) for multi-instance deployments.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+`registerBasePlugins()` (and therefore `registerAllPlugins()`) wires this adapter automatically via `setEmitAdapter()`.
 :::
 
-## Installation
+Manual registration is only needed without a preset:
 
 ```typescript
-import '@unchainedshop/plugins/events/node-event-emitter';
+import { setEmitAdapter } from '@unchainedshop/events';
+import { NodeEventEmitter } from '@unchainedshop/plugins/events/node-event-emitter';
+
+setEmitAdapter(NodeEventEmitter());
 ```
-
-This plugin automatically calls `setEmitAdapter()` when imported, making it the active event system immediately.
-
-## Features
-
-- **In-Memory**: Events are handled within the same process
-- **High Performance**: Fast event handling with no network overhead
-- **Simple Setup**: No external dependencies required
-- **Development Friendly**: Perfect for development and testing
-- **Synchronous**: Events are processed synchronously within the process
-
-## Use Cases
-
-- **Single Instance Deployments**: Applications running on a single server
-- **Development Environment**: Local development and testing
-- **Simple Applications**: Applications without complex scaling requirements
-- **Real-time Processing**: When low latency is critical
-
-## Limitations
-
-- **Single Process**: Events don't cross process boundaries
-- **No Persistence**: Events are lost if the process crashes
-- **Memory Usage**: All listeners are kept in memory
-- **No Distribution**: Cannot scale across multiple instances
-
-## Usage
-
-### Publishing Events
-
-```typescript
-import { emit } from '@unchainedshop/events';
-
-await emit('ORDER_CREATE', {
-  orderId: '12345',
-  userId: 'user123',
-  total: 99.99
-});
-```
-
-### Subscribing to Events
-
-```typescript
-import { subscribe } from '@unchainedshop/events';
-
-subscribe('ORDER_CREATE', async (payload) => {
-  const { orderId, userId, total } = payload;
-  await sendOrderConfirmationEmail(userId, orderId);
-});
-```
-
-## When to Use
-
-Use the Node.js Event Emitter for:
-
-- Local development
-- Testing environments
-- Simple applications
-- Single server deployments
-- When Redis/cloud setup is not feasible
 
 ## Adapter Details
 
 | Property | Value |
 |----------|-------|
+| Export | `NodeEventEmitter` |
 | Source | [events/node-event-emitter.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/events/node-event-emitter.ts) |
+
+For emitting and subscribing to events, see [Event System](../../extend/events.md).
 
 ## Related
 
 - [Redis Events](./events-redis.md) - Distributed events with Redis
 - [AWS EventBridge](./events-eventbridge.md) - Cloud-native events
-- [Plugins Overview](./) - All available plugins

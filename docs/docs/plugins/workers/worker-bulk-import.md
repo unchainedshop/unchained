@@ -10,56 +10,38 @@ description: Process large data imports from JSON streams
 Processes large data imports from JSON streams with event-based processing.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.
 :::
 
-## Installation
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/worker/bulk-import';
+import { pluginRegistry } from '@unchainedshop/core';
+import { BulkImportPlugin } from '@unchainedshop/plugins/worker/bulk-import';
+
+pluginRegistry.register(BulkImportPlugin);
 ```
 
-## Features
+## Event Format
 
-- **Streaming Processing**: Handles large files without memory issues
-- **JSON Stream Parsing**: Parses JSON events from uploaded files
-- **Event-Based**: Processes import events one by one
-- **File Adapter Integration**: Works with any Unchained file storage adapter
-- **Backpressure Handling**: Automatic flow control for large datasets
-
-## Usage
-
-Upload a JSON file with import events:
+Each event has an `entity` (`PRODUCT`, `ASSORTMENT`, or `FILTER`), an `operation` (`CREATE`, `UPDATE`, `REMOVE`), and a `payload`. See the [Bulk Import Guide](../../guides/bulk-import.md) for the full event schemas.
 
 ```json
 {
   "events": [
     {
-      "type": "PRODUCT",
+      "entity": "PRODUCT",
       "operation": "CREATE",
       "payload": {
-        "sku": "PRODUCT-001",
-        "title": "Sample Product"
-      }
-    },
-    {
-      "type": "PRODUCT",
-      "operation": "UPDATE",
-      "payload": {
-        "sku": "PRODUCT-002",
-        "title": "Updated Product"
+        "_id": "product-001",
+        "specification": { "type": "SIMPLE_PRODUCT" }
       }
     }
   ]
 }
 ```
 
-## Supported Event Types
-
-- `PRODUCT` - Create/update products
-- `ASSORTMENT` - Create/update assortments
-- `FILTER` - Create/update filters
-- `ENROLLMENT` - Create/update enrollments
+Only one `BULK_IMPORT` work item is processed at a time (`maxParallelAllocations: 1`).
 
 ## Triggering Import
 
@@ -90,7 +72,7 @@ await unchainedAPI.modules.worker.addWork({
   type: 'BULK_IMPORT',
   input: {
     events: [
-      { type: 'PRODUCT', operation: 'CREATE', payload: { sku: 'PRODUCT-001' } }
+      { entity: 'PRODUCT', operation: 'CREATE', payload: { _id: 'product-001' } }
     ]
   }
 });
@@ -111,7 +93,9 @@ await unchainedAPI.modules.worker.addWork({
 | Property | Value |
 |----------|-------|
 | Key | `shop.unchained.worker-plugin.bulk-import` |
-| Source | [worker/bulk-import.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/worker/bulk-import.ts) |
+| Type | `BULK_IMPORT` |
+| Max Parallel | 1 |
+| Source | [worker/bulk-import](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/worker/bulk-import) |
 
 ## Related
 

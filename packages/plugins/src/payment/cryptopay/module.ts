@@ -76,7 +76,10 @@ const configureCryptopayModule = async ({ db }) => {
       },
       {
         sort: {
-          created: 1, // Sort by creation date, most recent first
+          // Ordered by creation (currency-config order, e.g. BTC then ETH). No _id
+          // tie-break here: these docs' _id IS the wallet address, so sorting by it
+          // would reorder the per-currency list alphabetically by address.
+          created: 1,
         },
       },
     ).toArray();

@@ -7,51 +7,49 @@ description: Pre-launch checklist for Unchained Engine
 
 # Production Checklist
 
-Use this checklist to ensure your Unchained Engine deployment is production-ready.
+Use this checklist to ensure your Unchained Engine deployment is production-ready. For the full list of configuration options, see [Environment Variables](../platform-configuration/environment-variables) — this page only covers what typically goes wrong at launch.
 
-## Security
+## Environment
 
-For comprehensive security documentation, see the [Security Guide](./security).
-
-### Authentication & Secrets
-
-- [ ] **Token secret configured** - `UNCHAINED_TOKEN_SECRET` is set to a strong, unique value (minimum 32 characters)
-- [ ] **Admin credentials secure** - Default admin password changed
-- [ ] **API tokens rotated** - Any development tokens have been replaced
+- [ ] **`NODE_ENV=production`** - Enables production behavior across the engine (and turns off email interception, see below)
+- [ ] **Required boot variables set** - `startPlatform` exits if `ROOT_URL`, `UNCHAINED_TOKEN_SECRET`, `EMAIL_WEBSITE_NAME`, `EMAIL_WEBSITE_URL`, or `EMAIL_FROM` are missing
+- [ ] **`UNCHAINED_TOKEN_SECRET`** - Strong, unique, minimum 32 characters (boot fails otherwise)
+- [ ] **`MONGO_URL` set** - Without it, the engine spawns a local `mongod` (via `mongodb-memory-server`) that stores its data in `./.db`. Data does survive restarts, but this is not production-appropriate: an unmanaged, single-node local mongod with no backups, replication, or authentication
+- [ ] **No secrets in code or images** - All secrets from environment
+- [ ] **Seed/admin credentials rotated** - Don't ship `UNCHAINED_SEED_PASSWORD`-style development passwords
 
 ```bash
-# Generate secure secrets
+# Generate a secure secret
 openssl rand -base64 32  # For UNCHAINED_TOKEN_SECRET
 ```
 
-### Cryptographic Standards
+## Cookies & Sessions
 
-Unchained uses industry-standard cryptography:
+- [ ] **HTTPS enforced** - Cookies default to `secure`; never set `UNCHAINED_COOKIE_INSECURE` in production
+- [ ] **`UNCHAINED_COOKIE_SAMESITE` reviewed** - Default is `lax`; only set `none` if your storefront runs on a different site, and only over HTTPS
+- [ ] **`UNCHAINED_COOKIE_DOMAIN` set** - If storefront and engine share a parent domain
 
-- **Password hashing**: PBKDF2-SHA512 with 300,000 iterations
-- **Token storage**: SHA-256 hashed before database storage
-- **Session encryption**: AES-256-GCM (optional)
+See [Security](./security#session-cookies) for the full cookie reference.
 
-### Network Security
+## CORS
 
-- [ ] **HTTPS enforced** - All traffic uses TLS/SSL
-- [ ] **CORS configured** - Only allowed origins can access the API
-- [ ] **Rate limiting enabled** - Protection against abuse (implement at reverse proxy)
-- [ ] **Firewall rules** - Only necessary ports are open
+The engine does not restrict origins itself: the GraphQL endpoint (GraphQL Yoga) reflects the request `Origin` header by default, and `allowRemoteToLocalhostSecureCookies` is a development-only mode that throws in production. To restrict cross-origin access:
+
+- [ ] **Enforce allowed origins at your reverse proxy/CDN** - This covers all routes (GraphQL, webhooks, `/chat`)
+- [ ] Optionally pass Yoga's `cors` option through `startPlatform` for the GraphQL endpoint:
 
 ```typescript
-// Example CORS configuration
 await startPlatform({
-  options: {
-    cors: {
-      origin: ['https://myshop.com', 'https://admin.myshop.com'],
-      credentials: true,
-    },
+  cors: {
+    origin: ['https://myshop.com'],
+    credentials: true,
   },
 });
 ```
 
-### Audit Logging
+The `/mcp` endpoint has its own built-in Origin/Host validation based on `ROOT_URL`.
+
+## Audit Logging
 
 - [ ] **Audit events shipped** - `UNCHAINED_LOG_FORMAT=json` set and a log agent scrapes the `unchained:audit` lines, or OTLP push configured
 - [ ] **Collector reachable** (if pushing) - `collectorUrl` / `OTEL_EXPORTER_OTLP_ENDPOINT` points at your OTLP collector
@@ -59,248 +57,77 @@ await startPlatform({
 
 ```typescript
 const platform = await startPlatform({
-  modules: defaultModules,
   auditLog: {
     collectorUrl: process.env.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT, // or rely on the env fallback
   },
 });
 ```
 
-### Database Security
+## Database
 
-- [ ] **MongoDB authentication** - Database requires authentication
-- [ ] **Network isolation** - Database not publicly accessible
+- [ ] **MongoDB authentication** - Database requires authentication, not publicly accessible
 - [ ] **Encrypted connections** - MongoDB connection uses TLS
 - [ ] **Regular backups** - Automated backup schedule configured
 
-## Performance
+Unchained creates its indexes automatically at startup; custom indexes are only needed for custom fields you query on.
 
-### Database
+## File Storage
 
-- [ ] **Indexes created** - All necessary indexes exist
-- [ ] **Connection pooling** - Pool size appropriate for workload
-- [ ] **Query optimization** - No slow queries in production
+- [ ] **Storage plugin registered** - GridFS (default in presets) or MinIO/S3
+- [ ] **GridFS**: `UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET` set (required for PUT uploads and signed downloads)
+- [ ] **MinIO/S3**: `MINIO_ENDPOINT` (full URL), `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_BUCKET_NAME` set
 
-```bash
-# Check MongoDB indexes
-mongosh --eval "db.products.getIndexes()"
-```
-
-### Caching
-
-- [ ] **Redis configured** (if using) - For events and caching
-- [ ] **CDN configured** - Static assets served from CDN
-- [ ] **Browser caching** - Appropriate cache headers set
-
-### Application
-
-- [ ] **Production mode** - `NODE_ENV=production`
-- [ ] **Memory limits** - Container/process memory limits set
-- [ ] **Health checks** - Liveness and readiness probes configured
-
-## Infrastructure
-
-### Compute
-
-- [ ] **Sufficient resources** - CPU and memory for expected load
-- [ ] **Auto-scaling** - Scales based on demand (if applicable)
-- [ ] **Multiple replicas** - No single point of failure
-
-### Storage
-
-- [ ] **File storage configured** - S3, MinIO, or GridFS
-- [ ] **Signed URLs** - Secure file access
-- [ ] **Backup strategy** - Files are backed up
-
-### Monitoring
-
-- [ ] **Logging configured** - Centralized log collection
-- [ ] **Error tracking** - Sentry or similar configured
-- [ ] **Metrics collection** - Performance metrics tracked
-- [ ] **Alerting** - Notifications for critical issues
-
-```bash
-# Logging configuration
-LOG_LEVEL=info
-UNCHAINED_LOG_FORMAT=json  # For structured logging
-```
-
-## Configuration
-
-### Environment Variables
-
-- [ ] **All required variables set** - See [Environment Variables](../platform-configuration/environment-variables)
-- [ ] **No hardcoded secrets** - All secrets from environment
-- [ ] **Separate environments** - Different configs for staging/production
-
-### Essential Variables
-
-```bash
-# Required
-NODE_ENV=production
-ROOT_URL=https://api.myshop.com
-MONGO_URL=mongodb+srv://...
-UNCHAINED_TOKEN_SECRET=<32+ character secret>
-
-# Email
-MAIL_URL=smtp://...
-EMAIL_FROM=noreply@myshop.com
-EMAIL_WEBSITE_NAME=My Shop
-EMAIL_WEBSITE_URL=https://myshop.com
-
-# File Storage (when using MinIO plugin)
-MINIO_ENDPOINT=s3.amazonaws.com
-MINIO_ACCESS_KEY=...
-MINIO_SECRET_KEY=...
-MINIO_BUCKET=my-shop-files
-```
-
-### Payment Providers
-
-- [ ] **Production API keys** - Not using test/sandbox keys
-- [ ] **Webhooks configured** - Payment webhooks point to production
-- [ ] **Webhook secrets set** - Webhook signatures are validated
-
-```bash
-# Stripe production
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-```
-
-## Data
-
-### Initial Data
-
-- [ ] **Countries configured** - Active countries set up
-- [ ] **Currencies configured** - Active currencies set up
-- [ ] **Languages configured** - Active languages set up
-- [ ] **Tax rates configured** - Correct tax rates for regions
-
-### Products & Content
-
-- [ ] **Products published** - All products have correct status
-- [ ] **Prices set** - Products have prices in all currencies
-- [ ] **Media uploaded** - Product images are uploaded
-- [ ] **Translations complete** - Content in all languages
-
-### Providers
-
-- [ ] **Payment providers active** - At least one payment method
-- [ ] **Delivery providers active** - At least one delivery method
-- [ ] **Provider configuration** - All providers properly configured
+See [File Uploads](../guides/file-uploads).
 
 ## Email
 
-### Configuration
+- [ ] **`MAIL_URL` configured** - SMTP connection string; no emails are sent without it
+- [ ] **Interception off** - Outside production, emails are intercepted (logged, not sent) unless `UNCHAINED_DISABLE_EMAIL_INTERCEPTION` is set. With `NODE_ENV=production`, emails are always sent — make sure that's what you deploy with
+- [ ] **Order confirmation and password reset tested** - Against the real SMTP server
 
-- [ ] **SMTP configured** - `MAIL_URL` set correctly
-- [ ] **From address set** - `EMAIL_FROM` configured
-- [ ] **Templates customized** - Email templates match brand
+## Payment Providers
 
-### Testing
-
-- [ ] **Order confirmation** - Email sends correctly
-- [ ] **Password reset** - Reset flow works
-- [ ] **Email preview disabled** - Not using built-in preview in production
+- [ ] **Production API keys** - Not using test/sandbox keys
+- [ ] **Webhooks pointed at production** - e.g. Stripe's webhook to `https://api.myshop.com/payment/stripe/webhook`
+- [ ] **Webhook secrets set** - Signatures are validated
 
 ```bash
-# Disable email preview in production
-EMAIL_PREVIEW=false  # or just don't set it
+# Stripe plugin
+STRIPE_SECRET=sk_live_...
+STRIPE_ENDPOINT_SECRET=whsec_...
 ```
 
-## Testing
+## Initial Data
 
-### Functional Testing
+- [ ] **Countries, currencies, languages** - Active entities configured (Admin UI or seed)
+- [ ] **Products published** - Correct status and prices in all active currencies
+- [ ] **At least one active payment and delivery provider** - Checkout fails without both
 
-- [ ] **Checkout flow** - Complete purchase works
-- [ ] **Payment processing** - Real payments process correctly
-- [ ] **Order management** - Orders can be managed in Admin UI
-- [ ] **User registration** - Users can create accounts
+## Operations
 
-### Load Testing
-
-- [ ] **Performance baseline** - Know expected response times
-- [ ] **Load tested** - System handles expected traffic
-- [ ] **Stress tested** - Know system limits
-
-### Error Handling
-
-- [ ] **Error pages** - Custom error pages configured
-- [ ] **Graceful degradation** - Handles partial failures
-- [ ] **Error logging** - Errors are captured and reported
-
-## Deployment Process
-
-### CI/CD
-
-- [ ] **Automated deployments** - Code deploys automatically
-- [ ] **Testing pipeline** - Tests run before deployment
-- [ ] **Rollback plan** - Can quickly revert if needed
-
-### Database Migrations
-
-- [ ] **Migrations tested** - Run on staging first
-- [ ] **Backup before migration** - Database backed up
-- [ ] **Rollback plan** - Can reverse migrations
-
-## Documentation
-
-### Internal
-
-- [ ] **Deployment documented** - How to deploy
-- [ ] **Configuration documented** - All config options
-- [ ] **Runbooks** - How to handle common issues
-
-### External
-
-- [ ] **API documentation** - GraphQL schema documented
-- [ ] **Integration guides** - For partners/developers
-
-## Launch
-
-### Pre-Launch
-
-- [ ] **Staging tested** - Full test on staging environment
-- [ ] **DNS configured** - Domains point to production
-- [ ] **SSL certificates** - Valid certificates installed
-- [ ] **Monitoring active** - All monitoring in place
-
-### Launch Day
-
-- [ ] **Team available** - Support team ready
-- [ ] **Monitoring dashboard** - Real-time visibility
-- [ ] **Communication plan** - How to communicate issues
-
-### Post-Launch
-
-- [ ] **Monitor closely** - Watch for issues first 24-48 hours
-- [ ] **Gather feedback** - Note any issues for improvement
-- [ ] **Document learnings** - Update runbooks
+- [ ] **Rate limiting at reverse proxy** - See [Security](./security#rate-limiting)
+- [ ] **Health probes** - Liveness/readiness routes wired up, see [Docker Deployment](./docker#health-endpoints)
+- [ ] **Structured logs collected** - `UNCHAINED_LOG_FORMAT=json` for log pipelines, `LOG_LEVEL=Info`
+- [ ] **Full checkout tested on staging** - Cart → delivery → payment → confirmation email
 
 ## Quick Verification Commands
 
 ```bash
-# Check Node.js version
-node --version  # Should be 22+
+# Check Node.js version (needs 22+)
+node --version
 
 # Test MongoDB connection
 mongosh "$MONGO_URL" --eval "db.adminCommand('ping')"
 
-# Test SMTP
-npm run test:email  # If you have this script
-
-# Check environment variables
-env | grep UNCHAINED
-
 # Test API endpoint
 curl https://api.myshop.com/graphql \
   -H "Content-Type: application/json" \
-  -d '{"query":"{ __typename }"}'
+  -d '{"query":"{ shopInfo { _id } }"}'
 ```
 
 ## Related Documentation
 
-- [Security Guide](./security) - Security features and compliance
+- [Security Guide](./security) - Security features and practices
 - [Environment Variables](../platform-configuration/environment-variables) - Full configuration reference
 - [Docker Deployment](./docker) - Container deployment
 - [Audit Logging](../extend/events#audit-logging-ocsf) - OCSF audit logging

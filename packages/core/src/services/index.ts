@@ -41,6 +41,10 @@ import { verifyQuotationService } from './verifyQuotation.ts';
 import { loadFiltersService } from './loadFilters.ts';
 import { loadFilterOptionsService } from './loadFilterOptions.ts';
 import { removeFilterService } from './removeFilter.ts';
+import { createFilterService } from './createFilter.ts';
+import { updateFilterService } from './updateFilter.ts';
+import { createFilterOptionService } from './createFilterOption.ts';
+import { removeFilterOptionService } from './removeFilterOption.ts';
 import { removeCartDiscountService } from './removeCartDiscount.ts';
 import { addMultipleCartProductsService } from './addMultipleCartProducts.ts';
 import { ercMetadataService } from './ercMetadata.ts';
@@ -58,6 +62,11 @@ import { simulateConfigurablePriceRangeService } from './simulateConfigurablePri
 import { createFileDownloadURLService } from './createFileDownloadURL.ts';
 import { resolveTokenStatusService } from './resolveTokenStatus.ts';
 import { isTokenInvalidateableService } from './isTokenInvalidateable.ts';
+import { bulkRemoveProductsService } from './bulkRemoveProducts.ts';
+import { bulkRemoveFiltersService } from './bulkRemoveFilters.ts';
+import { bulkDeleteUsersService } from './bulkDeleteUsers.ts';
+import { bulkSetFilterActiveService } from './bulkSetFilterActive.ts';
+import { bulkAssignProductsToAssortmentService } from './bulkAssignProductsToAssortment.ts';
 
 // Auto-Inject Unchained API as last parameter
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
@@ -145,9 +154,15 @@ export default function initServices(modules: Modules, customServices: CustomSer
         typeof simulateProductInventoryService
       >,
       removeProduct: removeProductService as Bound<typeof removeProductService>,
+      bulkRemoveProducts: bulkRemoveProductsService as Bound<typeof bulkRemoveProductsService>,
       findProductSiblings: findProductSiblingsService as Bound<typeof findProductSiblingsService>,
       simulateConfigurablePriceRange: simulateConfigurablePriceRangeService as Bound<
         typeof simulateConfigurablePriceRangeService
+      >,
+    },
+    assortments: {
+      bulkAssignProductsToAssortment: bulkAssignProductsToAssortmentService as Bound<
+        typeof bulkAssignProductsToAssortmentService
       >,
     },
     users: {
@@ -156,6 +171,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
         typeof updateUserAvatarAfterUploadService
       >,
       deleteUser: deleteUserService as Bound<typeof deleteUserService>,
+      bulkDeleteUsers: bulkDeleteUsersService as Bound<typeof bulkDeleteUsersService>,
     },
     enrollments: {
       createEnrollmentFromCheckout: createEnrollmentFromCheckoutService as Bound<
@@ -183,6 +199,12 @@ export default function initServices(modules: Modules, customServices: CustomSer
       loadFilters: loadFiltersService as Bound<typeof loadFiltersService>,
       loadFilterOptions: loadFilterOptionsService as Bound<typeof loadFilterOptionsService>,
       removeFilter: removeFilterService as Bound<typeof removeFilterService>,
+      createFilter: createFilterService as Bound<typeof createFilterService>,
+      updateFilter: updateFilterService as Bound<typeof updateFilterService>,
+      createFilterOption: createFilterOptionService as Bound<typeof createFilterOptionService>,
+      removeFilterOption: removeFilterOptionService as Bound<typeof removeFilterOptionService>,
+      bulkRemoveFilters: bulkRemoveFiltersService as Bound<typeof bulkRemoveFiltersService>,
+      bulkSetFilterActive: bulkSetFilterActiveService as Bound<typeof bulkSetFilterActiveService>,
     },
     warehousing: {
       ercMetadata: ercMetadataService as Bound<typeof ercMetadataService>,

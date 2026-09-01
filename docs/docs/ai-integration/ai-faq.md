@@ -17,7 +17,7 @@ Three integration surfaces:
 
 1. **MCP Server** — A Model Context Protocol server at `/mcp` that exposes the full commerce API as AI-callable tools. Compatible with Claude Desktop, Claude Code, Cursor, and any MCP client.
 2. **Admin Copilot** — A chat interface in the Admin UI powered by the Vercel AI SDK. Connects to the MCP server internally.
-3. **llms.txt** — Static files (`/llms.txt` and `/llms-full.txt`) that help LLMs discover and navigate the documentation.
+3. **llms.txt** — Static files ([docs.unchained.shop/llms.txt](https://docs.unchained.shop/llms.txt) and [/llms-full.txt](https://docs.unchained.shop/llms-full.txt)) published by this documentation site (not the engine) that help LLMs discover and navigate the documentation.
 
 ### Which AI models are supported?
 
@@ -40,11 +40,11 @@ An authenticated user with the `admin` role. Pass the session token via `Authori
 
 ### What transport protocol does the MCP server use?
 
-Streamable HTTP — the standard MCP HTTP transport. It supports `POST` (send messages), `GET` (query sessions), and `DELETE` (clean up sessions) on the `/mcp` endpoint.
+Streamable HTTP — the standard MCP HTTP transport — in stateless mode. Send JSON-RPC messages via `POST` to `/mcp`; every request is authenticated and served independently, and no session ids are issued.
 
 ### How many tools are available?
 
-The MCP server provides 9 tool categories: Product Management, Order Management, Assortment Management, User Management, Filter Management, System Management, Localization Management, Provider Management, and Quotation Management. Each category contains multiple operations. See the [MCP Server Reference](./mcp-server) for the full list.
+The MCP server provides 9 tools, one per management area: `product_management`, `order_management`, `assortment_management`, `users_management`, `filter_management`, `system_management`, `localization_management`, `provider_management`, and `quotation_management`. Each tool takes an `action` argument selecting the operation. See the [MCP Server Reference](./mcp-server) for the full list.
 
 ### What resources does the MCP server expose?
 
@@ -103,7 +103,7 @@ See [Connecting AI clients](./mcp-server#connecting-ai-clients) for Claude Code 
 
 ### Can I build a custom AI agent that manages my store?
 
-Yes. Connect to the MCP server using the `@modelcontextprotocol/sdk` package. See the [Custom agents example](./mcp-server#custom-agents-typescript).
+Yes. Connect with the AI SDK's MCP client (`@ai-sdk/mcp`) or plain JSON-RPC over HTTP from any language. See the [Custom agents example](./mcp-server#custom-agents-typescript).
 
 ### Can I use the MCP server and GraphQL API together?
 
@@ -130,6 +130,10 @@ You've hit the rate limit of your AI model provider. Wait and retry, or switch t
 
 Prices are stored as integers. Divide by 10^(decimal places) for the currency. Check the currencies resource for the decimal precision of each currency.
 
-### The MCP session disconnects
+### The MCP connection drops after an engine restart
 
-Sessions are stored in memory. If the engine restarts, all sessions are lost. MCP clients should handle reconnection gracefully.
+The MCP server is stateless — there is no session to restore. Simply retry the request; as long as your token is still valid, it will be served.
+
+### I get a 403 "Invalid Origin" error
+
+Browser-originated requests are validated against the `ROOT_URL` hostname (plus localhost) to prevent DNS rebinding. Make sure `ROOT_URL` matches the host your client connects to, or omit the `Origin` header for non-browser clients.

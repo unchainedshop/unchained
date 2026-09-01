@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/utils",
   "description": "Common utility functions and base classes for the Unchained Engine",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.4",
   "main": "lib/utils-index.js",
   "types": "lib/utils-index.d.ts",
   "type": "module",
@@ -30,11 +30,10 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@unchainedshop/logger": "^5.0.0-alpha.1",
-    "hashids": "^2.3.0",
-    "libphonenumber-js": "^1.11.0"
+    "awesome-phonenumber": "^7.8.0"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }

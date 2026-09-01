@@ -9,10 +9,17 @@ description: Currency conversion for product prices
 
 Converts product prices between currencies using configured exchange rates. Only activates when no direct price exists for the target currency.
 
-## Installation
+:::info Included in Crypto Preset
+Registered automatically by `registerCryptoPlugins()` / `registerAllPlugins()`.
+:::
+
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/pricing/product-price-rateconversion';
+import { pluginRegistry } from '@unchainedshop/core';
+import { ProductPriceRateConversionPlugin } from '@unchainedshop/plugins/pricing/product-price-rateconversion';
+
+pluginRegistry.register(ProductPriceRateConversionPlugin);
 ```
 
 ## How It Works
@@ -29,7 +36,7 @@ import '@unchainedshop/plugins/pricing/product-price-rateconversion';
 
 ## Setting Exchange Rates
 
-Exchange rates are managed through the `products.prices.updateRates` module method. Use one of the built-in worker plugins to update rates automatically:
+Use one of the built-in worker plugins to update rates automatically:
 
 - [Update ECB Rates](../workers/worker-update-ecb-rates.md) - European Central Bank rates
 - [Update Coinbase Rates](../workers/worker-update-coinbase-rates.md) - Cryptocurrency rates
@@ -37,12 +44,13 @@ Exchange rates are managed through the `products.prices.updateRates` module meth
 Or update rates programmatically:
 
 ```typescript
-await unchainedAPI.modules.products.prices.updateRates([
+await unchainedAPI.modules.products.prices.rates.updateRates([
   {
     baseCurrency: 'CHF',
     quoteCurrency: 'EUR',
     rate: 0.95,
     timestamp: new Date(),
+    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
   },
 ]);
 ```
@@ -54,7 +62,7 @@ await unchainedAPI.modules.products.prices.updateRates([
 | Key | `shop.unchained.pricing.rate-conversion` |
 | Version | `1.0.0` |
 | Order Index | `10` |
-| Source | [pricing/product-price-rateconversion.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/pricing/product-price-rateconversion.ts) |
+| Source | [pricing/product-price-rateconversion](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/pricing/product-price-rateconversion) |
 
 ## Related
 

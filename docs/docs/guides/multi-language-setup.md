@@ -26,7 +26,7 @@ Product
 
 ### 1. Set Up Languages
 
-Create languages in the system:
+Create languages via GraphQL:
 
 ```graphql
 mutation CreateLanguage {
@@ -40,35 +40,18 @@ mutation CreateLanguage {
 }
 ```
 
-Or seed languages at startup:
+Or seed them at startup:
 
 ```typescript
-// seed/languages.ts
-export const languages = [
-  { isoCode: 'en', isActive: true },
-  { isoCode: 'de', isActive: true },
-  { isoCode: 'fr', isActive: true },
-  { isoCode: 'it', isActive: false }, // Inactive
-];
-
-// In your boot script
-for (const lang of languages) {
-  await modules.languages.create(lang);
+// In your boot script, after startPlatform()
+for (const isoCode of ['en', 'de', 'fr']) {
+  await platform.unchainedAPI.modules.languages.create({ isoCode, isActive: true });
 }
 ```
 
-### 2. Configure Default Language
+### 2. Set Up Countries
 
-Set the default language via environment variable:
-
-```bash
-# .env
-LANG=de  # Default language
-```
-
-### 3. Set Up Countries
-
-Link countries to languages:
+Locale resolution combines languages with countries (e.g. `de` + `CH` → `de-CH`), so create at least one country:
 
 ```graphql
 mutation CreateCountry {
@@ -77,12 +60,13 @@ mutation CreateCountry {
   }) {
     _id
     isoCode
-    defaultCurrency {
-      isoCode
-    }
   }
 }
 ```
+
+### 3. Fallback Locale
+
+The environment variables `UNCHAINED_LANG` and `UNCHAINED_COUNTRY` (defaults: `de`, `CH`) define the system locale. It is used as the fallback when a request's `Accept-Language` header doesn't match any active language, and the seed scripts of the example projects use it to decide which language, country, and currency to create. It does **not** override the request's `Accept-Language` header.
 
 ## Adding Translations
 
@@ -155,7 +139,7 @@ mutation UpdateFilterTexts {
 
 ### Automatic Locale Resolution
 
-Unchained automatically resolves the `texts` field based on the request locale:
+Unchained resolves the `texts` field based on the request locale:
 
 ```graphql
 # Request headers: Accept-Language: de
@@ -171,31 +155,15 @@ query {
 
 ### Explicit Locale
 
-Query all translations:
+Every `texts` field accepts a `forceLocale` argument (a locale string like `"en"` or `"de-CH"`), which you can combine with aliases to fetch several translations at once:
 
 ```graphql
 query {
   product(productId: "...") {
-    texts(forceLocale: "en") {
-      title
-    }
-  }
-}
-```
-
-### All Translations
-
-Get all available translations:
-
-```graphql
-query {
-  product(productId: "...") {
-    # Default (resolved)
     texts {
       locale
       title
     }
-    # Specific locale
     germanTexts: texts(forceLocale: "de") {
       title
     }
@@ -203,224 +171,55 @@ query {
 }
 ```
 
-## Frontend Implementation
-
-### Language Switcher
-
-```tsx
-import { useQuery, useMutation } from '@apollo/client';
-
-const LANGUAGES = gql`
-  query Languages {
-    languages(includeInactive: false) {
-      _id
-      isoCode
-      name
-    }
-  }
-`;
-
-function LanguageSwitcher() {
-  const { data } = useQuery(LANGUAGES);
-  const [currentLocale, setCurrentLocale] = useState('en');
-
-  const handleChange = (locale: string) => {
-    // Update cookie/localStorage
-    document.cookie = `locale=${locale}; path=/`;
-
-    // Update Apollo client headers
-    apolloClient.setLink(
-      authLink.concat(
-        createHttpLink({
-          uri: GRAPHQL_URL,
-          headers: {
-            'Accept-Language': locale,
-          },
-        })
-      )
-    );
-
-    // Refetch queries
-    apolloClient.resetStore();
-
-    setCurrentLocale(locale);
-  };
-
-  return (
-    <select value={currentLocale} onChange={(e) => handleChange(e.target.value)}>
-      {data?.languages.map((lang) => (
-        <option key={lang.isoCode} value={lang.isoCode}>
-          {lang.name || lang.isoCode.toUpperCase()}
-        </option>
-      ))}
-    </select>
-  );
-}
-```
-
-### Next.js i18n Integration
-
-```typescript
-// next.config.js
-module.exports = {
-  i18n: {
-    locales: ['en', 'de', 'fr'],
-    defaultLocale: 'en',
-  },
-};
-```
-
-```tsx
-// pages/products/[slug].tsx
-import { useRouter } from 'next/router';
-import { useQuery } from '@apollo/client';
-
-export default function ProductPage() {
-  const { locale } = useRouter();
-
-  const { data } = useQuery(PRODUCT_QUERY, {
-    context: {
-      headers: {
-        'Accept-Language': locale,
-      },
-    },
-  });
-
-  return (
-    <div>
-      <h1>{data?.product?.texts?.title}</h1>
-      <p>{data?.product?.texts?.description}</p>
-    </div>
-  );
-}
-```
-
-### Apollo Client Setup for i18n
-
-```typescript
-// lib/apollo-client.ts
-import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
-
-export function createApolloClient(locale: string) {
-  const httpLink = createHttpLink({
-    uri: process.env.NEXT_PUBLIC_GRAPHQL_URL,
-  });
-
-  const localeLink = setContext((_, { headers }) => ({
-    headers: {
-      ...headers,
-      'Accept-Language': locale,
-    },
-  }));
-
-  return new ApolloClient({
-    link: localeLink.concat(httpLink),
-    cache: new InMemoryCache(),
-  });
-}
-```
-
 ## Server-Side Language Resolution
 
-Unchained resolves the locale automatically from the `Accept-Language` HTTP header. The locale is available in the GraphQL context and affects how `texts` fields are resolved.
+Resolution happens per request in `getLocaleContext` ([`packages/api/src/locale-context.ts`](https://github.com/unchainedshop/unchained/blob/master/packages/api/src/locale-context.ts)):
 
-The resolution order is:
-1. `Accept-Language` header from the request
-2. Default language from the `LANG` environment variable
-3. Fallback to `en`
+1. The set of supported locales is built as the cross product of **active languages × active countries** (e.g. `de-CH`, `en-CH`). An `x-shop-country` request header restricts the country.
+2. The `Accept-Language` header is parsed (quality-ordered) and matched against the supported locales — exact match first, then language-only (`de` matches `de-CH`).
+3. If nothing matches, the fallback locale applies: the system locale from `UNCHAINED_LANG`/`UNCHAINED_COUNTRY` if those are active, otherwise the first active language/country.
+
+The resolved locale (and the derived country/currency) is memoized for 60 seconds per `Accept-Language`/`x-shop-country` combination in production.
+
+For the frontend this means: **send the `Accept-Language` header with every GraphQL request** to switch languages — no other client plumbing required. Fetch selectable languages via:
+
+```graphql
+query Languages {
+  languages(includeInactive: false) {
+    _id
+    isoCode
+    name
+  }
+}
+```
 
 ## Bulk Import with Translations
 
-```typescript
-await modules.bulkImporter.prepare({
-  entity: 'PRODUCT',
-  data: {
-    _id: 'product-123',
-    type: 'SIMPLE',
-    texts: [
-      { locale: 'en', title: 'T-Shirt', slug: 't-shirt' },
-      { locale: 'de', title: 'T-Shirt', slug: 't-shirt-de' },
-    ],
-    // ... other fields
-  },
-});
-```
+Bulk import events carry translations as a `content` map keyed by locale:
 
-## Admin UI Translations
-
-The Admin UI supports language management:
-
-1. Go to **Settings > Languages**
-2. Add/edit languages
-3. Go to any entity (Products, Assortments)
-4. Use the locale switcher to edit translations
-
-## Best Practices
-
-### 1. Always Provide Fallback
-
-Ensure at least one language (typically English) has complete translations:
-
-```graphql
-mutation {
-  updateProductTexts(productId: "...", texts: [
-    { locale: "en", title: "Fallback Title" }  # Always provide
-    { locale: "de", title: "German Title" }     # Optional
-  ]) {
-    locale
-    title
-  }
-}
-```
-
-### 2. Use Slugs Per Locale
-
-Different slugs allow for SEO-friendly URLs:
-
-```
-/en/products/organic-t-shirt
-/de/products/bio-t-shirt
-/fr/products/t-shirt-bio
-```
-
-### 3. Handle Missing Translations
-
-```tsx
-function ProductTitle({ product }) {
-  const title = product.texts?.title;
-
-  if (!title) {
-    // Fallback to product ID or show placeholder
-    return <span className="untranslated">{product._id}</span>;
-  }
-
-  return <h1>{title}</h1>;
-}
-```
-
-### 4. Validate Translations
-
-Check for missing translations:
-
-```graphql
-query ProductsWithMissingTranslations {
-  products {
-    _id
-    texts {
-      locale
-      title
+```json
+{
+  "entity": "PRODUCT",
+  "operation": "CREATE",
+  "payload": {
+    "_id": "product-123",
+    "specification": {
+      "type": "SIMPLE_PRODUCT",
+      "content": {
+        "en": { "title": "T-Shirt", "slug": "t-shirt" },
+        "de": { "title": "T-Shirt", "slug": "t-shirt-de" }
+      }
     }
   }
 }
 ```
 
-```typescript
-// Find products missing German translations
-const missingDE = products.filter(
-  (p) => !p.texts.some((t) => t.locale === 'de')
-);
-```
+See [Bulk Import](./bulk-import) for the full event format and how to submit events.
+
+## Best Practices
+
+- **Always provide a fallback language** — ensure one language (typically English) has complete translations, and handle missing `texts` gracefully in the frontend.
+- **Use locale-specific slugs** — `/en/products/organic-t-shirt` vs `/de/products/bio-t-shirt` for SEO-friendly URLs; `product(slug: ...)` resolves slugs across locales.
 
 ## Related
 

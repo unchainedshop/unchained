@@ -10,25 +10,21 @@ description: Zero-cost payment pricing adapter
 A simple payment pricing adapter that sets payment fees to zero. Use as a starting point or for payment methods without processing fees.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.
 :::
 
-## Installation
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/pricing/free-payment';
+import { pluginRegistry } from '@unchainedshop/core';
+import { PaymentFreePricePlugin } from '@unchainedshop/plugins/pricing/free-payment';
+
+pluginRegistry.register(PaymentFreePricePlugin);
 ```
 
 ## How It Works
 
 Adds a payment fee of 0 to the calculation, with no tax implications.
-
-## Use Cases
-
-- Invoice payments (no processing fee)
-- Bank transfers
-- Cash on delivery
-- Development and testing
 
 ## Adapter Details
 
@@ -37,7 +33,7 @@ Adds a payment fee of 0 to the calculation, with no tax implications.
 | Key | `shop.unchained.pricing.payment-free` |
 | Version | `1.0.0` |
 | Order Index | `0` |
-| Source | [pricing/free-payment.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/pricing/free-payment.ts) |
+| Source | [pricing/free-payment](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/pricing/free-payment) |
 
 ## Related
 

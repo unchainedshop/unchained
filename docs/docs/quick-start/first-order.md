@@ -76,9 +76,8 @@ mutation LoginAsGuest {
 :::info Authentication
 Unchained uses **cookie-based authentication**. When you call `loginAsGuest` (or any login mutation), the server responds with a `Set-Cookie` header containing `unchained_token`.
 
-**In the GraphQL Playground:**
-- Cookies are automatically handled if you enable "request.credentials" in settings
-- Go to Settings (gear icon) and set `"request.credentials": "include"`
+**In GraphiQL (served at `/graphql`):**
+- Cookies are sent automatically for same-origin requests — no configuration needed
 
 **In your application:**
 - Ensure your HTTP client is configured to include credentials (cookies)
@@ -400,22 +399,11 @@ mutation MarkDelivered {
 - Check that `Authorization` header is set correctly
 - Verify products are published
 
-## Order Lifecycle Diagram
-
-```mermaid
-stateDiagram-v2
-    [*] --> OPEN: Cart
-    OPEN --> PENDING: checkoutCart
-    PENDING --> CONFIRMED: confirmOrder
-    PENDING --> REJECTED: rejectOrder
-    CONFIRMED --> FULFILLED: deliverOrder
-```
-
 ## Next Steps
 
 Now that you've created your first order, explore:
 
-- [Order Lifecycle](../concepts/order-lifecycle) - Understand order states
+- [Order Lifecycle](../concepts/order-lifecycle) - Order states and transitions
 - [Payment Integration](../guides/payment-integration) - Set up real payments
 - [Checkout Implementation](../guides/checkout-implementation) - Build custom checkout
 - [Platform Configuration](../platform-configuration/) - Customize your shop

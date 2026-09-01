@@ -69,12 +69,17 @@
 - **CHANGED**: the Redis and AWS EventBridge emit adapters no longer self-register on import. Register the transport explicitly before `startPlatform`: `import { setEmitAdapter } from '@unchainedshop/events'; import { RedisEventEmitter } from '@unchainedshop/plugins/events/redis'; setEmitAdapter(RedisEventEmitter());`
 - **NEW**: optional `EmitAdapter.shutdown()` — implemented by the redis/eventbridge adapters to close long-lived connections; called by `startPlatform` on graceful shutdown.
 
+### Dependencies & Integrations
+- **CHANGED**: Upgraded to `graphql` ^17 across the workspace, executed through the graphql-js reference engine (`useEngine` inserted as the first Yoga plugin). `@unchainedshop/api` declares a non-optional `graphql` peer `>=16.14 <18`.
+- **CHANGED**: MCP integration migrated to the split `@modelcontextprotocol/server` v2 (optional peer `>=2 <3`, replacing the monolithic v1 SDK). The `/mcp` endpoint is now stateless — a fresh `McpServer` is built per request from the authenticated context.
+- **CHANGED**: `@parse/node-apn` (Apple Wallet push in `@unchainedshop/ticketing`) is now an **optional** peer dependency, loaded via guarded dynamic import. Install it only if you send pass push notifications.
+- **CHANGED**: Dependency cleanup — declared previously-phantom dependencies, and dropped `safe-stable-stringify` (logger now ships its own cycle/BigInt-safe `safeStringify`) and `@kontsedal/locco` (checkout now uses a MongoDB-backed order lock on the same `locco-locks` collection, no migration).
+
 ## New Features & Improvements
 
 ### Authentication & Security
 - **NEW**: `Mutation.logoutAllSessions` invalidates all of a user's JWTs by bumping the token version.
 - **NEW**: OIDC inbound token verification (remote JWKS) and an OpenID Connect Back-Channel Logout 1.0 endpoint (`POST /backchannel-logout`) with full `logout_token` signature verification.
-- **NEW**: Token-sidejacking protection — a fingerprint hash is embedded in the JWT and matched against a hardened `__Secure-fgp` cookie using a timing-safe compare.
 - **NEW**: Security audit events `ACL_DENIED` and `ACL_GRANTED_SENSITIVE` for monitoring denied and sensitive permission grants.
 - **CHANGED**: Admin impersonation now travels inside the JWT (`imp` claim) instead of session state.
 
@@ -84,12 +89,22 @@
 - **NEW**: Pluggable logger context — `setLogContextProvider()` merges request-scoped fields (e.g. OpenTelemetry `trace_id` / `span_id`) into every JSON log line (prototype-pollution-safe; provider errors are swallowed so telemetry never breaks logging).
 - **NEW**: `Query.registeredEventTypes: [String!]!` lists all registered event type names (gated by `viewEvents`).
 
+### Tax
+- **NEW**: EU, UK, and US tax plugins with bundled, era-based rate tables and country presets (`registerEuTaxPlugins`, `registerUkTaxPlugins`, `registerUsSalesTaxPlugins`). EU covers destination-based VAT for all 27 member states with per-category rates; categories are selected via a `eu-tax-category:<name>` product tag or delivery provider.
+- **CHANGED**: Swiss VAT rates moved out of code into a bundled `ch-tax-rates.json` table (ESTV source metadata, era history back to 2001), sharing the new era-based tax helpers. See the `update-tax-rates` maintenance workflow.
+
 ### Admin UI
 - Added Cypress e2e suites for enrollments, quotations, and tokens, and reduced flakiness (lower retries, real support entrypoint, `cy.selectLocale()` command).
 
 ### Documentation
 - **NEW**: AI Integration docs section (MCP server reference with 9 tool categories, Admin Copilot setup, AI FAQ) and auto-generated `/llms.txt` + `/llms-full.txt` for LLM/crawler consumption.
 - Added a comprehensive GraphQL API reference and an RBAC permissions reference (126 actions documented), plus server-setup, testing, seed-data, and contributing guides.
+
+### Performance & Dependencies
+- **CHANGED**: `@unchainedshop/utils` now uses `awesome-phonenumber` instead of `libphonenumber-js` for phone-number normalization and country-code/subscriber splitting — the same Google-metadata validation at ~0.74 MB installed versus ~12 MB (a ~94% cut in the single largest production dependency of a minimal install). The public helpers `normalizePhoneNumber` and `phoneNumberToParts` are unchanged and remain synchronous.
+
+### Reliability
+- **FIXED**: Deterministic-selection queries now carry a stable `_id` secondary sort key (its direction mirroring the primary key), so results no longer fall back to MongoDB's undefined tie-break order when the primary key ties. This covers current-cart selection, localized-text resolution (backing every product/assortment/filter/media/variation text loader), default delivery/payment/warehousing provider selection, product currency-rate and SKU lookups, stored payment-credential selection, and assortment/product-media display ordering — removing a class of order-dependent nondeterminism (e.g. the default-provider inheritance and Datatrans checkout flakes).
 
 ## Migration Guide
 See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migration instructions.
@@ -99,6 +114,13 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 # Unchained Engine v4.8
 
 ## Minor
+- **Breaking (MCP deployments): MCP migrated to the MCP TypeScript SDK v2 — the optional peer dependency is renamed from `@modelcontextprotocol/sdk` to `@modelcontextprotocol/server`, shrinking the installed MCP footprint from 94 packages to 3** (`@unchainedshop/api`). The `/mcp` endpoint is now **stateless**: every request is served by a fresh per-request MCP server built from that request's authenticated context, so no `Mcp-Session-Id` is issued or required, `GET`/`DELETE /mcp` return `405`, the abandoned-session memory growth of the old in-process session map is gone, and the endpoint works multi-replica. Cross-user session reuse is now impossible by construction (there are no sessions), while the per-request 401/403 admin wall — including the `WWW-Authenticate`/`.well-known/oauth-protected-resource` metadata — is unchanged. Clients speaking the modern MCP protocol era (2026-07-28, `server/discover`) are now supported alongside the legacy `initialize` era; tool schemas in `tools/list` are otherwise content-identical but declare JSON Schema draft 2020-12 instead of draft-07. Chat no longer needs any `@modelcontextprotocol/*` client package: the shop-configuration resources are read in-process (admin-gated), and tools continue to flow through `@ai-sdk/mcp` (chat deployments still install `@modelcontextprotocol/server`, since the tools are served by the engine's own `/mcp` endpoint). If the new peer is missing, the engine boots with a warning and `/mcp` answers `503` instead of crashing. The express chat handler was aligned with fastify (`stepCountIs(500)`, no hardcoded `temperature`, MCP client closed on all paths). The `/mcp` endpoint is now covered by an integration test suite (raw JSON-RPC + `@ai-sdk/mcp` interop); `zod` ranges in `@unchainedshop/api` and `@unchainedshop/core` narrowed to `^4.2.0`. See `MIGRATION.md`.
+- **Filter product-id cache overhauled** (`@unchainedshop/core-filters`, `@unchainedshop/core`, `@unchainedshop/api`): cache rows of removed filter options are pruned; rows carry a generation derived from the filter's `updated` stamp so an overtaken rebuild can neither publish nor retire rows a newer generation already claimed; partial writes never retire rows the live fallback still needs; the mongo cache backend now owns its `filter_productId_cache` collection and indexes (nothing provisions them unless the backend is in use) and evicts its per-process memo on every write/purge. `buildProductIdMap` no longer respreads its accumulator per option (quadratic on large filters) and uses a null-prototyped map, and `filterProductIds` only reads own properties — a `filterQuery` asking for `constructor`/`toString` no longer crashes the search. Filter mutations (`createFilter`, `updateFilter`, `createFilterOption`, `removeFilterOption`) moved into core services that pair the write with cache invalidation — the MCP `updateFilter` tool previously updated without invalidating at all. `LoadedFilterOption.isSelected` is non-nullable again.
+- **Era-based regional tax plugins with bundled rate tables** (`@unchainedshop/plugins`): Swiss VAT rates move out of code into `ch-tax-rates.json` (ESTV metadata, era history back to 2001) — also a behavior fix: 2011–2017 orders were previously priced with 2018–2023 rates. New destination-based EU VAT (all 27 member states, per-country era tables with `standard`/`reduced`/`reduced2`/`super_reduced`/`parking` categories), UK VAT (GB/IM/XI) and US statewide sales-tax (50 states + DC) adapters, registered via new opt-in presets `presets/countries/{eu,uk,us}` (`registerEuTaxPlugins()` etc. — deliberately not part of the all-preset, since stacking regional taxers would double-tax). Rate tables are emitted to `lib/` and never fetched at runtime; the repository's `update-tax-rates` skill maintains them against the official sources.
+- **graphql 17** across the workspace, executed by the graphql-js reference engine via `@envelop/core`'s `useEngine` (the `@graphql-tools/executor` default drops schema argument defaults for unprovided variables on graphql 17); `graphql-scalars` v2; `@unchainedshop/api` now declares an explicit `graphql >= 16.14 < 18` peer.
+- **External dependency reduction:** `p-memoize` + `expiry-map` semantics are provided by `memoizeWithTTL`, exported from `@unchainedshop/utils` (concurrent callers share the in-flight promise, TTL counts from settlement, resolved `null` stays cached, rejections are evicted, per-key `delete()`); `@kontsedal/locco` is replaced by a MongoDB-backed order lock in `@unchainedshop/core-orders` on the same `locco-locks` collection (no migration, same contention semantics, but fail-closed: if the unique index cannot be ensured the module refuses to start instead of handing out locks that do not exclude); `safe-stable-stringify` is replaced by `safeStringify`, exported from `@unchainedshop/logger` (circular references become `"[Circular]"`, shared references serialize normally, BigInt becomes a string; JSON log keys now appear in insertion order instead of sorted), leaving `@unchainedshop/logger` with zero runtime dependencies; `hashids` is replaced by `crypto.randomInt` over the same unambiguous alphabet — order/quotation/enrollment numbers keep their look but are now always 6 characters; existing persisted numbers are unaffected.
+- **Ticketing: `@parse/node-apn` is now an optional peer dependency.** PDF-only ticketing setups no longer install its package subtree; Apple Wallet pass-update pushes throw a descriptive error if the package is missing, and a package that is installed but fails to load logs the real load error.
+- **Dependency metadata cleanup across all packages.** Every package now declares what it imports instead of relying on npm workspace hoisting: 13 core-\* modules (plus `core`, `api` and `plugins`) declare `@unchainedshop/mongodb`, `core` declares `zod`, `api` declares all 17 core-\* packages it imports, `plugins` declares `@noble/curves`/`@noble/hashes` as optional peers; declared-but-never-imported dependencies were removed. Apps that accidentally imported an undeclared transitive may need to declare it themselves now.
 - **Breaking: DocumentDB compatibility mode removed.** `UNCHAINED_DOCUMENTDB_COMPAT_MODE` is no longer read and the `isDocumentDBCompatModeEnabled` / `assertDocumentDBCompatMode` exports have been deleted from `@unchainedshop/mongodb`. Text indexes and `$text` queries now run unconditionally. Supported text-search targets: MongoDB 4.4+, AWS DocumentDB 5.0+ (text search added Feb 2024), AWS DocumentDB 8.0, FerretDB 2.x. **Do not upgrade on AWS DocumentDB ≤4.0 or FerretDB 1.x** — startup will fail.
 - **MongoDB index refactor across the whole codebase.** Compound indexes now cover the common filter+sort shapes on `orders`, `order_positions`, `order_payments`, `order_deliveries`, `order_discounts`, `quotations`, `enrollments`, `products`, `product_texts`, `product_variation_texts`, `product_media_texts`, `assortments`, `assortment_texts`, `assortment_media_texts`, `users`, `token_surrogates`, `payment_credentials`, `work_queue`, and the payment/delivery/warehousing provider collections. Missing single-field indexes were added on `order_payments.paymentProviderId`, `order_deliveries.deliveryProviderId`, `enrollments.periods.orderId`, `users.services.web3.verified`, `users.tags`, `users.lastLogin.timestamp`, `token_surrogates.walletAddress`, `currencies.contractAddress`, `media_objects.path`, and the entire `cryptopay_transactions` collection (previously unindexed). Redundant singletons covered by new compounds were dropped, and the unused `order_discounts.trigger` index was removed. See `MIGRATION.md` for the ops-side cleanup needed on existing production databases.
 - **Breaking (cryptopay plugin):** `CryptopayTransactionsCollection` and `configureCryptopayModule` are now async — the cryptopay plugin now builds indexes on startup. Callers wiring the plugin directly must `await cryptopay.configure({ db })`.
@@ -114,9 +136,24 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 - ESLint upgraded to v10 across the workspace; Stripe SDK updated alongside.
 
 ## Patch
+- Autoscheduled work is no longer queued with a `null` input (`@unchainedshop/core-worker`): `ensureOneWork` serialized an undefined input as `null`, which a `= {}` default parameter does not guard, so autoscheduled adapters that destructure their input (`GC_GUESTS`, `INVALIDATE_CARTS`) failed on every run; the dispatch boundary also settles legacy null inputs once.
+- Imported draft products are stored the way every selector reads them (`@unchainedshop/core`): the bulk importer persisted `status: "DRAFT"` verbatim while selectors and publish flows represent a draft as `status: null` — imported drafts were invisible to draft queries and could not be published.
+- Failed MCP tool calls now set the protocol's `isError` flag (`@unchainedshop/api`) instead of hiding the failure inside text content.
 - Tokens GraphQL resolver fixed to remove N+1 query pattern.
 
-# Unchained Engine v4.7 (unreleased)
+# Unchained Engine v4.7
+
+## Minor
+- **Server-side bulk export system.** A new `BULK_EXPORT` worker (`@unchainedshop/plugins`) moves product, assortment and filter exports off the client and onto the server, generating CSV files through a configurable exporter factory. Exports can opt individual data in or out, are grouped by type, expose a recent-exports view with a count in the admin-ui side navigation, and produce download links that expire after one hour. Meta export/import is supported for products, filters and assortments.
+- **User data export.** A default user-export handler exports a user's orders, quotations, reviews and enrollments; the admin-ui gains a user-export flow with configurable fields.
+- **Batch user lookup.** `@unchainedshop/core-users` can now find users in batches by usernames and by emails, backing DataLoader-style resolution instead of per-user queries.
+
+## Patch
+- Bulk import now batches its payload to avoid large-payload errors, with adjusted product/assortment/filter import normalizers.
+- Fixed Stripe attempting to initialize without a configured `apiToken`.
+- Fixed a product-export schema issue and a price-export typo.
+- Fixed the bulk-export return value; exported files download automatically on export success.
+- Fixed an orders performance regression (v4.6.2).
 
 # Unchained Engine v4.6
 

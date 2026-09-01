@@ -11,7 +11,7 @@ Worker plugins handle background tasks like notifications, data processing, and 
 
 ## Base Preset Workers
 
-These workers are automatically loaded when using the `base` preset and are strongly recommended for proper system operation:
+These workers are registered by `registerBasePlugins()` (from `@unchainedshop/plugins/presets/base`) and are strongly recommended for proper system operation:
 
 | Adapter Key | Type | Description | When to Use |
 |-------------|------|-------------|-------------|
@@ -26,6 +26,8 @@ These workers are automatically loaded when using the `base` preset and are stro
 
 ## SMS Workers
 
+Registered by `registerAllPlugins()` (from `@unchainedshop/plugins/presets/all`):
+
 | Adapter Key | Type | Description |
 |-------------|------|-------------|
 | [`shop.unchained.worker-plugin.twilio`](./twilio.md) | `TWILIO` | SMS via Twilio |
@@ -34,11 +36,15 @@ These workers are automatically loaded when using the `base` preset and are stro
 
 ## Push Notifications
 
+Registered by `registerAllPlugins()`:
+
 | Adapter Key | Type | Description |
 |-------------|------|-------------|
 | [`shop.unchained.worker-plugin.push-notification`](./push-notification.md) | `PUSH` | W3C Web Push notifications |
 
 ## Currency Rate Workers
+
+Registered by `registerCryptoPlugins()` (from `@unchainedshop/plugins/presets/crypto`) and `registerAllPlugins()`:
 
 | Adapter Key | Type | Description |
 |-------------|------|-------------|
@@ -47,11 +53,15 @@ These workers are automatically loaded when using the `base` preset and are stro
 
 ## Enrollment Workers
 
+Registered by `registerAllPlugins()`:
+
 | Adapter Key | Type | Description |
 |-------------|------|-------------|
 | [`shop.unchained.worker-plugin.generate-enrollment-orders`](./worker-enrollment-order-generator.md) | `ENROLLMENT_ORDER_GENERATOR` | Generate orders from subscriptions |
 
 ## Token/NFT Workers
+
+Registered by `registerCryptoPlugins()` (from `@unchainedshop/plugins/presets/crypto`) and `registerAllPlugins()`:
 
 | Adapter Key | Type | Description |
 |-------------|------|-------------|

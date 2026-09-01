@@ -9,10 +9,17 @@ description: Automatically update cryptocurrency and fiat exchange rates from Co
 
 Automatically fetches and updates currency exchange rates from Coinbase, supporting both fiat and cryptocurrency pairs.
 
-## Installation
+:::info Included in Crypto Preset
+Registered automatically by `registerCryptoPlugins()` / `registerAllPlugins()`.
+:::
+
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/worker/update-coinbase-rates';
+import { pluginRegistry } from '@unchainedshop/core';
+import { UpdateCoinbaseRatesPlugin } from '@unchainedshop/plugins/worker/update-coinbase-rates';
+
+pluginRegistry.register(UpdateCoinbaseRatesPlugin);
 ```
 
 ## Purpose
@@ -20,13 +27,12 @@ import '@unchainedshop/plugins/worker/update-coinbase-rates';
 Coinbase provides real-time exchange rates for a wide variety of currencies including cryptocurrencies. This worker:
 
 - Fetches the latest rates from the Coinbase API
-- Uses your system's default currency as the base
+- Uses your default currency as the base (`UNCHAINED_CURRENCY`, falling back to the first configured currency)
 - Updates product price rates with a 5-minute expiration
-- Automatically schedules itself to run every minute
 
 ## Auto-Scheduling
 
-When imported, this worker automatically schedules itself to run every minute to keep cryptocurrency rates up-to-date.
+On registration, this worker schedules itself to run every minute to keep cryptocurrency rates up-to-date.
 
 ## Manual Trigger
 
@@ -47,7 +53,7 @@ Coinbase provides rates for:
 - **Fiat currencies**: USD, EUR, GBP, CHF, and many more
 - **Cryptocurrencies**: BTC, ETH, USDC, and hundreds of others
 
-Only currencies that are enabled in your Unchained configuration will be updated.
+Only currencies that exist in your Unchained system (active or inactive) are updated.
 
 ## Rate Expiration
 
@@ -70,7 +76,7 @@ Rates are set to expire after 5 minutes, ensuring that:
 | Key | `shop.unchained.worker.update-coinbase-rates` |
 | Type | `UPDATE_COINBASE_RATES` |
 | Auto-Schedule | Every minute |
-| Source | [worker/update-coinbase-rates.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/worker/update-coinbase-rates.ts) |
+| Source | [worker/update-coinbase-rates](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/worker/update-coinbase-rates) |
 
 ## Related
 

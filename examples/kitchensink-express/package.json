@@ -2,7 +2,7 @@
   "name": "@unchainedshop/example-kitchensink-express",
   "description": "Kitchensink for Unchained Engine (Express.js)",
   "private": true,
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.4",
   "license": "EUPL-1.2",
   "type": "module",
   "homepage": "https://unchained.shop",
@@ -22,7 +22,7 @@
   },
   "engineStrict": true,
   "engines": {
-    "node": ">=22.0.0",
+    "node": ">=24.0.0",
     "npm": ">=10.0.0"
   },
   "scripts": {
@@ -34,8 +34,9 @@
     "test-mcp": "npx @modelcontextprotocol/inspector"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.7",
-    "@ai-sdk/openai-compatible": "^2.0.4",
+    "@ai-sdk/openai": "^4.0.47",
+    "@ai-sdk/openai-compatible": "^3.0.37",
+    "@modelcontextprotocol/server": "^2.0.0",
     "@scure/bip32": "^2.0.0",
     "@scure/btc-signer": "^2.0.0",
     "@unchainedshop/admin-ui": "^5.0.0-alpha.1",
@@ -46,8 +47,8 @@
     "@unchainedshop/plugins": "^5.0.0-alpha.1",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
-    "graphql": "^16.11.0",
-    "graphql-yoga": "^5.15.1",
+    "graphql": "^17.0.2",
+    "graphql-yoga": "^5.22.0",
     "multer": "^2.0.1",
     "nodemailer": "^9.0.0",
     "passport": "^0.7.0",
@@ -60,6 +61,6 @@
     "@types/node": "^26.2.0",
     "mongodb-memory-server": "^11.0.0",
     "prettier": "^3.6.2",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }

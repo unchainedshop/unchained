@@ -49,14 +49,14 @@ export default [
     type LoadedFilterOption @cacheControl(maxAge: 180) {
       filteredProductsCount: Int!
       definition: FilterOption!
-      isSelected: Boolean
+      isSelected: Boolean!
     }
 
     type LoadedFilter @cacheControl(maxAge: 180) {
       productsCount: Int!
       filteredProductsCount: Int!
       definition: Filter!
-      isSelected: Boolean
+      isSelected: Boolean!
       options: [LoadedFilterOption!]
     }
   `,

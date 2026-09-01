@@ -7,31 +7,28 @@ description: Period-based subscription adapter for licensed products
 
 # Licensed Enrollments
 
-A subscription adapter for licensed products that grants access based on active periods.
+A subscription adapter for licensed products: access is valid while the current date falls within an enrollment period, and an order is generated at the beginning of each period. Designed for prepaid subscriptions (`isOverdue()` always returns `false`).
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` and `registerAllPlugins()`.
 :::
 
-## Installation
+If you register plugins individually instead of using a preset:
 
 ```typescript
-import '@unchainedshop/plugins/enrollments/licensed';
+import { pluginRegistry } from '@unchainedshop/core';
+import { LicensedEnrollmentsPlugin } from '@unchainedshop/plugins/enrollments/licensed';
+
+pluginRegistry.register(LicensedEnrollmentsPlugin);
 ```
 
-## Features
+## Adapter Details
 
-- **Period-Based Access**: Access is granted when current date falls within an active period
-- **Automatic Order Generation**: Orders are created at the beginning of each period
-- **Simple Licensing Model**: One product per enrollment period
-- **No Overdue Handling**: Designed for prepaid subscriptions
-
-## How It Works
-
-1. Customer purchases a `PLAN_PRODUCT` with `usageCalculationType: LICENSED`
-2. Enrollment is created with defined periods
-3. At period start, an order is automatically generated
-4. Access is valid while current date is within an active period
+| Property | Value |
+|----------|-------|
+| Key | `shop.unchained.enrollments.licensed` |
+| Activation | Plan products with `usageCalculationType: LICENSED` |
+| Source | [enrollments/licensed](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/enrollments/licensed) |
 
 ## Product Configuration
 
@@ -39,9 +36,7 @@ Create a plan product for licensed subscriptions:
 
 ```graphql
 mutation CreateSubscriptionProduct {
-  createProduct(product: {
-    type: PLAN_PRODUCT
-  }) {
+  createProduct(product: { type: PLAN_PRODUCT }) {
     _id
   }
 }
@@ -53,7 +48,6 @@ mutation UpdatePlanData {
       usageCalculationType: LICENSED
       billingInterval: MONTHS
       billingIntervalCount: 1
-      trialIntervalCount: 0
     }
   ) {
     _id
@@ -67,55 +61,11 @@ mutation UpdatePlanData {
 }
 ```
 
-## Activation Logic
+## Behavior
 
-The adapter activates only for products with `usageCalculationType: LICENSED`:
-
-```typescript
-isActivatedFor: (productPlan) => {
-  return productPlan?.usageCalculationType === 'LICENSED';
-}
-```
-
-## Validity Check
-
-Access is granted when the current date falls within any enrollment period:
-
-```typescript
-isValidForActivation: async () => {
-  const periods = enrollment?.periods || [];
-  const now = new Date();
-
-  return periods.some(period => {
-    const start = new Date(period.start);
-    const end = new Date(period.end);
-    return start <= now && end >= now;
-  });
-}
-```
-
-## Order Generation
-
-Orders are generated at the beginning of each period:
-
-```typescript
-configurationForOrder: async ({ period }) => {
-  const beginningOfPeriod = period.start.getTime() <= Date.now();
-
-  if (beginningOfPeriod) {
-    return {
-      period,
-      orderContext: {},
-      orderPositionTemplates: [{
-        quantity: 1,
-        productId: enrollment.productId,
-        originalProductId: enrollment.productId,
-      }],
-    };
-  }
-  return null;
-}
-```
+- `isValidForActivation()`: `true` while the current date falls within any enrollment period
+- `configurationForOrder()`: once a period has started, returns one order position template with `quantity: 1` for the enrolled product; before the period starts, returns `null` (no order generated)
+- `isOverdue()`: always `false`
 
 ## Usage
 
@@ -143,6 +93,7 @@ query MyEnrollments {
     enrollments {
       _id
       status
+      isExpired
       plan {
         product {
           texts { title }
@@ -162,18 +113,6 @@ query MyEnrollments {
 }
 ```
 
-### Check Access
-
-```graphql
-query CheckAccess {
-  enrollment(enrollmentId: "enrollment-id") {
-    _id
-    status
-    isExpired
-  }
-}
-```
-
 ### Terminate Enrollment
 
 ```graphql
@@ -187,21 +126,25 @@ mutation TerminateSubscription {
 
 ## Automatic Order Generation
 
-Use the [Enrollment Order Generator Worker](../workers/worker-enrollment-order-generator.md) to automatically generate orders:
+The [Enrollment Order Generator Worker](../workers/worker-enrollment-order-generator.md) (part of the `all` preset) schedules order generation automatically; the default schedule fires twice per hour (at minutes 0 and 59). To customize, pass the schedule via the platform options:
 
 ```typescript
-import { configureGenerateOrderAutoscheduling } from '@unchainedshop/plugins/worker/enrollment-order-generator';
-import { enrollmentsSettings } from '@unchainedshop/core-enrollments';
 import { schedule } from '@unchainedshop/core';
+import { startPlatform } from '@unchainedshop/platform';
 
-// Run daily at midnight
-enrollmentsSettings.autoSchedulingSchedule = schedule.parse.cron('0 0 * * *');
-configureGenerateOrderAutoscheduling();
+// Run daily at midnight instead
+await startPlatform({
+  options: {
+    enrollments: {
+      autoSchedulingSchedule: schedule.parse.cron('0 0 * * *'),
+    },
+  },
+});
 ```
 
-## Extending the Adapter
+## Custom Subscription Logic
 
-For custom subscription logic, use `registerEnrollment`:
+Use the `registerEnrollment` factory:
 
 ```typescript
 import { registerEnrollment } from '@unchainedshop/core';
@@ -236,15 +179,7 @@ registerEnrollment({
 });
 ```
 
-## Adapter Details
-
-| Property | Value |
-|----------|-------|
-| Key | `shop.unchained.enrollments.licensed` |
-| Version | `1.0.0` |
-| Source | [enrollments/licensed.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/enrollments/licensed.ts) |
-
 ## Related
 
-- [Plugins Overview](./) - All available plugins
 - [Enrollment Order Generator](../workers/worker-enrollment-order-generator.md) - Auto-generate orders
+- [Custom Enrollment Plugins](../../extend/enrollment.md) - Write your own

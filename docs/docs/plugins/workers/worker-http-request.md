@@ -10,22 +10,17 @@ description: Process outbound HTTP requests and webhooks
 Handles outbound HTTP requests for webhooks and external API integrations.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.
 :::
 
-## Installation
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/worker/http-request';
+import { pluginRegistry } from '@unchainedshop/core';
+import { HttpRequestPlugin } from '@unchainedshop/plugins/worker/http-request';
+
+pluginRegistry.register(HttpRequestPlugin);
 ```
-
-## Features
-
-- **Outbound Webhooks**: Send HTTP requests to external services
-- **Configurable Methods**: Support for GET and POST methods
-- **Headers Support**: Custom headers for authentication
-- **JSON Payloads**: Automatic JSON serialization for POST requests
-- **Response Parsing**: Automatic JSON/text response handling
 
 ## Usage
 
@@ -55,14 +50,17 @@ mutation CreateWebhook {
 | `url` | String | Target URL (required) |
 | `method` | String | HTTP method: `GET` or `POST` (default: POST) |
 | `headers` | Object | Request headers |
-| `data` | Object | Request body for POST requests (JSON serialized) |
+| `data` | Object | Request body for POST requests (JSON serialized, `Content-Type: application/json`) |
+
+The work item succeeds only on HTTP status 200; JSON responses are parsed, other responses are returned as `{ text }`.
 
 ## Adapter Details
 
 | Property | Value |
 |----------|-------|
 | Key | `shop.unchained.worker-plugin.http-request` |
-| Source | [worker/http-request.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/worker/http-request.ts) |
+| Type | `HTTP_REQUEST` |
+| Source | [worker/http-request](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/worker/http-request) |
 
 ## Related
 

@@ -10,13 +10,16 @@ description: Clean up orphaned database records and files
 Cleans up orphaned database records and files that are no longer referenced by their parent entities.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.
 :::
 
-## Installation
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/worker/zombie-killer';
+import { pluginRegistry } from '@unchainedshop/core';
+import { ZombieKillerPlugin } from '@unchainedshop/plugins/worker/zombie-killer';
+
+pluginRegistry.register(ZombieKillerPlugin);
 ```
 
 ## Purpose
@@ -29,8 +32,13 @@ The Zombie Killer Worker removes "zombie" data - records that have become orphan
 - **Product texts** without parent products
 - **Product variations** without parent products
 - **Product media** without parent products
-- **Unreferenced files** in product-media and assortment-media paths
+- **Unreferenced files** in product-media and assortment-media paths (in-progress uploads are skipped)
 - **Old bulk import streams** older than a configurable age
+- **Dead carts** whose owning user no longer exists
+
+## Auto-Scheduling
+
+Runs automatically every day at 02:00 (configured on registration, retries 0).
 
 ## Usage
 
@@ -70,22 +78,9 @@ The worker returns counts of deleted items:
   "deletedProductTextsCount": 0,
   "deletedProductVariationsCount": 0,
   "deletedProductMediaCount": 0,
-  "deletedFilesCount": 0
+  "deletedFilesCount": 0,
+  "deletedCartsCount": 0
 }
-```
-
-## Recommended Schedule
-
-Consider running this worker periodically (e.g., weekly) to keep your database clean:
-
-```typescript
-import { WorkerDirector, schedule } from '@unchainedshop/core';
-
-WorkerDirector.configureAutoscheduling({
-  type: 'ZOMBIE_KILLER',
-  schedule: schedule.parse.cron('0 3 * * 0'), // Every Sunday at 3 AM
-  input: { bulkImportMaxAgeInDays: 7 },
-});
 ```
 
 ## Adapter Details
@@ -94,7 +89,9 @@ WorkerDirector.configureAutoscheduling({
 |----------|-------|
 | Key | `shop.unchained.worker-plugin.zombie-killer` |
 | Type | `ZOMBIE_KILLER` |
-| Source | [worker/zombie-killer.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/worker/zombie-killer.ts) |
+| Auto-Schedule | Daily at 02:00 |
+| Retries | 0 |
+| Source | [worker/zombie-killer](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/worker/zombie-killer) |
 
 ## Related
 

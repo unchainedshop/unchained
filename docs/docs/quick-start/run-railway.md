@@ -37,28 +37,20 @@ After you have deployed the Template Railway will start a mongo:7 database servi
 Once Railway communicates success, it looks like this:
 ![Deployment Ready](../../src/assets/railway-deployment-ready.png)
 
-To find the Unchained Admin UI URL of your deployment, open the "unchained" card. The deployment URL will propably look something like `unchained*.up.railway.app`. The Storefront URL of your depoyment can be found in "storefront" and looks something like `storefront*.up.railway.app`.
+To find the Unchained Admin UI URL of your deployment, open the "unchained" card. The deployment URL will probably look something like `unchained*.up.railway.app`. The Storefront URL of your deployment can be found in "storefront" and looks something like `storefront*.up.railway.app`.
 
 1. **Configure your Backend**
 
 - Open the Railway Deployment URL of the engine in your browser
 - Setup your administrator user
-- Go the dashboard and complete the onboarding (essentials)
-
-To have a working checkout, you need:
-- 1 currency
-- 1 country with the default currency set
-- 1 language
-- 1 payment provider (use Invoice -> Invoice)
-- 1 delivery provider (use Shipping -> Manual)
-- 1 simple product in status published with at least one price setup in commerce.
+- Go to the dashboard and complete the onboarding (essentials), setting up [everything needed for a working checkout](./run-local.md#verify-engine-installation)
 
 2. **Verify Checkout on Storefront**
 
-- Open the Railway Deployment URL of storefton in your browser
+- Open the Railway Deployment URL of the storefront in your browser
 - Scroll down, you should see your product
 - Add it to the cart and complete the payment process
-- At the end of the process, you should get an E-Mail Confirmation of the Order (if you have setup `MAIL_URL` and `EMAIL_URL` correctly)
+- At the end of the process, you should get an E-Mail Confirmation of the Order (if you have setup `MAIL_URL` and `EMAIL_FROM` correctly)
 
 ## Eject
 
@@ -70,7 +62,7 @@ Railway helps you with this, just go to settings of the unchained service, it wi
 After cloning your own engine backend, you have to install dependencies:
 `npm install`
 
-Next you propably want to connect to the mongodb database service on railway by creating a `.env` file:
+Next you probably want to connect to the mongodb database service on railway by creating a `.env` file:
 ```
 MONGO_URL=mongodb://mongo:***@*.proxy.rlwy.net:***
 ```
@@ -89,7 +81,7 @@ Of course, same is true for the Storefront. Just eject it and start working on i
 Your Unchained project is now initialized and running locally and you should see your first confirmed order in the Admin UI. You can now turn to our next section "Platform Configuration" to find out how to configure and/or extend your project to your needs.
 
 
-## Troublehsooting
+## Troubleshooting
 
 ### Adjusting Environment Variables on deployed Stack
 

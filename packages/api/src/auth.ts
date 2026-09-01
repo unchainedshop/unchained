@@ -1,6 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
 import * as jose from 'jose';
-import { createHash } from 'crypto';
 
 const logger = createLogger('unchained:api:auth');
 
@@ -20,7 +19,6 @@ export interface AccessTokenPayload {
   iss: string; // issuer - OWASP requires this
   sub: string; // userId
   ver: number; // tokenVersion
-  fgp?: string; // fingerprint hash for sidejacking protection
   imp?: string; // impersonatorId (for admin impersonation)
   jti?: string; // unique token ID
   iat?: number; // issued at
@@ -51,30 +49,6 @@ function validateSecretStrength(secret: string): void {
 }
 
 /**
- * Generate a fingerprint hash for token sidejacking protection
- * OWASP: Store SHA256 hash in token, send raw value as hardened cookie
- */
-export function generateFingerprint(): { raw: string; hash: string } {
-  const raw = crypto.randomUUID() + crypto.randomUUID(); // 72 chars of randomness
-  const hash = createHash('sha256').update(raw).digest('hex');
-  return { raw, hash };
-}
-
-/**
- * Verify a fingerprint matches its hash
- */
-export function verifyFingerprint(raw: string, hash: string): boolean {
-  const computedHash = createHash('sha256').update(raw).digest('hex');
-  // Use timing-safe comparison to prevent timing attacks
-  if (computedHash.length !== hash.length) return false;
-  let result = 0;
-  for (let i = 0; i < computedHash.length; i++) {
-    result |= computedHash.charCodeAt(i) ^ hash.charCodeAt(i);
-  }
-  return result === 0;
-}
-
-/**
  * Sign a new JWT access token for local authentication
  */
 export async function signAccessToken(
@@ -82,7 +56,6 @@ export async function signAccessToken(
   tokenVersion: number,
   options?: {
     impersonatorId?: string;
-    fingerprintHash?: string;
   },
 ): Promise<{ token: string; expires: Date }> {
   if (!UNCHAINED_TOKEN_SECRET) {
@@ -95,16 +68,11 @@ export async function signAccessToken(
   const expirySeconds = parseInt(UNCHAINED_TOKEN_EXPIRY_SECONDS, 10);
   const now = Math.floor(Date.now() / 1000);
 
-  const payload: Omit<AccessTokenPayload, 'iss' | 'iat' | 'exp'> & { fgp?: string; imp?: string } = {
+  const payload: Omit<AccessTokenPayload, 'iss' | 'iat' | 'exp'> & { imp?: string } = {
     sub: userId,
     ver: tokenVersion,
     jti: crypto.randomUUID(),
   };
-
-  // Add fingerprint hash for sidejacking protection
-  if (options?.fingerprintHash) {
-    payload.fgp = options.fingerprintHash;
-  }
 
   if (options?.impersonatorId) {
     payload.imp = options.impersonatorId;
@@ -267,7 +235,6 @@ export interface AuthHandlerResult {
   userId?: string;
   tokenVersion?: number;
   impersonatorId?: string;
-  fingerprintHash?: string;
   accessToken?: string;
   isApiKey?: boolean;
 }
@@ -288,7 +255,6 @@ export function createAuthHandler(config?: AuthConfig) {
         userId: localPayload.sub,
         tokenVersion: localPayload.ver,
         impersonatorId: localPayload.imp,
-        fingerprintHash: localPayload.fgp,
       };
     }
 

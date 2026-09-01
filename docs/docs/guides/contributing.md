@@ -11,7 +11,7 @@ This guide covers how to set up a development environment and contribute to Unch
 
 ## Prerequisites
 
-- **Node.js 22+** (25 recommended, see `.nvmrc`)
+- **Node.js 24+** (26 recommended, see `.nvmrc`)
 - **MongoDB** (or MongoDB Memory Server for testing)
 - **npm** (uses npm workspaces)
 
@@ -30,7 +30,7 @@ npm run dev
 ```
 
 `npm run dev` starts:
-- The kitchensink example on port 3000
+- The kitchensink example on port 4010
 - Admin UI
 - Watch mode for all packages
 
@@ -115,7 +115,7 @@ import { startPlatform } from '@unchainedshop/platform';
 npm run test
 
 # Single unit test
-node --test packages/core-orders/src/orders.test.ts
+node --test packages/core-orders/src/module/buildFindSelector.test.ts
 
 # Single integration test (from monorepo root)
 node --no-warnings \

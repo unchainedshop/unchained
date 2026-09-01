@@ -7,54 +7,38 @@ description: Worldline Saferpay payment integration
 
 # Saferpay
 
-Unchained payment plugin for Worldline Saferpay, supporting the Payment Page API for various payment methods.
-
-- [Saferpay JSON API Documentation](https://saferpay.github.io/jsonapi/)
-- [Saferpay Integration Guide](https://docs.saferpay.com/home/integration-guide/introduction)
+Payment plugin for [Worldline Saferpay](https://saferpay.github.io/jsonapi/), using the Payment Page API.
 
 ## Installation
 
-**Express:**
+Included in the [`all` preset](../../platform-configuration/plugin-presets.md) — `registerAllPlugins()` registers the plugin together with its webhook route and database module.
+
+To register it individually:
+
 ```typescript
-import saferpayTransactionsModule from '@unchainedshop/plugins/payment/saferpay';
-import '@unchainedshop/plugins/payment/saferpay';
-import { saferpayHandler } from '@unchainedshop/plugins/payment/saferpay/handler-express';
+import { pluginRegistry } from '@unchainedshop/core';
+import { SaferpayPlugin } from '@unchainedshop/plugins/payment/saferpay';
 
-const { SAFERPAY_WEBHOOK_PATH = '/payment/saferpay/webhook' } = process.env;
-
-// Add module to platform options
-const unchainedApi = await startPlatform({
-  modules: {
-    saferpayTransactions: saferpayTransactionsModule,
-  },
-});
-
-// Note: Saferpay uses GET method with query parameters, no body parsing needed
-app.get(SAFERPAY_WEBHOOK_PATH, saferpayHandler);
+pluginRegistry.register(SaferpayPlugin);
 ```
 
-**Fastify:**
-```typescript
-import saferpayTransactionsModule from '@unchainedshop/plugins/payment/saferpay';
-import '@unchainedshop/plugins/payment/saferpay';
-import { saferpayHandler } from '@unchainedshop/plugins/payment/saferpay/handler-fastify';
+Register before `startPlatform()`. Registration mounts the webhook route `GET /payment/saferpay/webhook` (path configurable via `SAFERPAY_WEBHOOK_PATH`) and adds the `saferpayTransactions` database module. Registration throws unless `SAFERPAY_CUSTOMER_ID`, `SAFERPAY_TERMINAL_ID`, `SAFERPAY_API_USER`, and `SAFERPAY_API_PASSWORD` are all set.
 
-const { SAFERPAY_WEBHOOK_PATH = '/payment/saferpay/webhook' } = process.env;
+## Environment Variables
 
-// Add module to platform options
-const unchainedApi = await startPlatform({
-  modules: {
-    saferpayTransactions: saferpayTransactionsModule,
-  },
-});
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SAFERPAY_CUSTOMER_ID` | - | Saferpay customer ID (required at registration and by the API client) |
+| `SAFERPAY_TERMINAL_ID` | - | Saferpay terminal ID (required at registration; the adapter itself reads the `terminalId` provider configuration) |
+| `SAFERPAY_API_USER` | - | API username (required at registration and by the API client) |
+| `SAFERPAY_API_PASSWORD` | - | API password (required at registration, by the API client, and for webhook signatures) |
+| `SAFERPAY_BASE_URL` | `https://test.saferpay.com/api` | API base URL. Production: `https://www.saferpay.com/api` |
+| `SAFERPAY_WEBHOOK_PATH` | `/payment/saferpay/webhook` | Webhook endpoint path |
+| `SAFERPAY_RETURN_PATH` | `/saferpay/return` | User return URL path after payment |
+| `ROOT_URL` | `http://localhost:4010` | Base URL for webhook notifications |
+| `EMAIL_WEBSITE_URL` | - | Base URL for user redirects (falls back to `ROOT_URL`) |
 
-// Note: Saferpay uses GET method with query parameters
-fastify.route({
-  url: SAFERPAY_WEBHOOK_PATH,
-  method: 'GET',
-  handler: saferpayHandler,
-});
-```
+The v4.8 names `SAFERPAY_USER` / `SAFERPAY_PW` are still read as deprecated fallbacks for `SAFERPAY_API_USER` / `SAFERPAY_API_PASSWORD`.
 
 ## Create Provider
 
@@ -84,43 +68,20 @@ mutation ConfigureSaferpayProvider {
 }
 ```
 
-## Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `SAFERPAY_BASE_URL` | `https://test.saferpay.com/api` | API base URL. Production: `https://www.saferpay.com/api` |
-| `SAFERPAY_CUSTOMER_ID` | - | Your Saferpay customer ID (required) |
-| `SAFERPAY_USER` | - | API username (required) |
-| `SAFERPAY_PW` | - | API password (required) |
-| `SAFERPAY_WEBHOOK_PATH` | `/payment/saferpay/webhook` | Webhook endpoint path |
-| `SAFERPAY_RETURN_PATH` | `/saferpay/return` | User return URL path after payment |
-| `ROOT_URL` | `http://localhost:4010` | Base URL for webhook notifications |
-| `EMAIL_WEBSITE_URL` | - | Base URL for user redirects (falls back to ROOT_URL) |
-
-## Provider Configuration
+Provider configuration:
 
 | Key | Description |
 |-----|-------------|
-| `terminalId` | Your Saferpay terminal ID (required) |
+| `terminalId` | Saferpay terminal ID (required — the provider is inactive without it) |
+
+To use multiple terminals (e.g. one per currency), create multiple providers with different `terminalId` values.
 
 ## Payment Flow
 
-### 1. Sign for Checkout
+Follows the standard [checkout flow](./index.md#checkout-flow). Saferpay specifics:
 
-Initialize a Saferpay Payment Page:
+`signPaymentProviderForCheckout` initializes a Payment Page and returns a JSON string:
 
-```graphql
-mutation SignPayment {
-  signPaymentProviderForCheckout(
-    orderPaymentId: "order-payment-id"
-    transactionContext: {
-      description: "Order Payment"
-    }
-  )
-}
-```
-
-Returns a JSON string:
 ```json
 {
   "location": "https://test.saferpay.com/vt2/api/PaymentPage/...",
@@ -129,57 +90,24 @@ Returns a JSON string:
 }
 ```
 
-### 2. Redirect to Payment Page
-
-```typescript
-const result = JSON.parse(signResult);
-window.location.href = result.location;
-```
-
-### 3. Handle Return
-
-After payment, users are redirected to:
-```
-EMAIL_WEBSITE_URL + SAFERPAY_RETURN_PATH?transactionId=<hex-id>
-```
-
-### 4. Complete Checkout
+Redirect the user to `location`. After payment, the user returns to `EMAIL_WEBSITE_URL + SAFERPAY_RETURN_PATH?transactionId=<hex-id>`, and Saferpay notifies the webhook (`ROOT_URL + SAFERPAY_WEBHOOK_PATH?orderPaymentId=<id>&signature=<sig>&transactionId=<hex-id>`, signature verified server-side), which checks out the cart. Fallback — checkout with the transaction id:
 
 ```graphql
-mutation CheckoutWithSaferpay {
-  checkoutCart(
-    paymentContext: {
-      transactionId: "hex-transaction-id"
-    }
-  ) {
+mutation {
+  checkoutCart(paymentContext: { transactionId: "hex-transaction-id" }) {
     _id
     status
-    orderNumber
   }
 }
 ```
 
-## Webhook Notifications
+The charge succeeds when the Saferpay transaction amount and currency match the order and its status is `AUTHORIZED` or `CAPTURED`.
 
-The webhook receives success notifications automatically:
-```
-ROOT_URL/payment/saferpay/webhook?orderPaymentId=<id>&signature=<sig>&transactionId=<hex-id>
-```
+Optional `transactionContext` fields for `signPaymentProviderForCheckout`: `description` (payment description, default "Bestellung"), `Payment` (override payment details), `ReturnUrl` (override return URL). Additional fields are forwarded to the Payment Page Initialize request.
 
-The signature is verified server-side for security.
+## Capture and Cancel
 
-## Payment States
-
-| Saferpay Status | Description | Action |
-|-----------------|-------------|--------|
-| `AUTHORIZED` | Payment authorized | Ready for capture |
-| `CAPTURED` | Payment captured | Order complete |
-
-## Confirm and Cancel
-
-### Capture Payment
-
-After successful checkout with `AUTHORIZED` status:
+`AUTHORIZED` transactions are captured on `confirmOrder` and cancelled on `rejectOrder`:
 
 ```graphql
 mutation ConfirmOrder {
@@ -190,74 +118,6 @@ mutation ConfirmOrder {
 }
 ```
 
-### Cancel Authorization
-
-Before capture:
-
-```graphql
-mutation CancelOrder {
-  rejectOrder(orderId: "order-id") {
-    _id
-    status
-  }
-}
-```
-
-## Multiple Terminals
-
-Create multiple providers with different terminal IDs:
-
-```graphql
-mutation CreateCHFTerminal {
-  createPaymentProvider(
-    paymentProvider: {
-      type: GENERIC
-      adapterKey: "shop.unchained.payment.saferpay"
-    }
-  ) {
-    _id
-  }
-}
-
-mutation ConfigureCHFTerminal {
-  updatePaymentProvider(
-    paymentProviderId: "provider-id"
-    paymentProvider: {
-      configuration: [
-        { key: "terminalId", value: "chf-terminal-id" }
-      ]
-    }
-  ) {
-    _id
-  }
-}
-```
-
-## Transaction Context Options
-
-Available options in `transactionContext`:
-
-| Key | Description |
-|-----|-------------|
-| `description` | Payment description shown to user |
-| `Payment` | Override payment details |
-| `ReturnUrl` | Override return URL |
-
-## Testing
-
-Use test credentials:
-- Set `SAFERPAY_BASE_URL=https://test.saferpay.com/api`
-- Use Saferpay test credentials
-- Test cards available in Saferpay documentation
-
-## Features
-
-- Payment Page API integration
-- Multiple terminal support
-- Authorization with deferred capture
-- Signature-verified webhooks
-- Cancellation support
-
 ## Adapter Details
 
 | Property | Value |
@@ -265,10 +125,4 @@ Use test credentials:
 | Key | `shop.unchained.payment.saferpay` |
 | Type | `GENERIC` |
 | Version | `1.38.0` |
-| Source | [payment/saferpay/](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/payment/saferpay/) |
-
-## Related
-
-- [Plugins Overview](./) - All available plugins
-- [Payment Integration Guide](../../guides/payment-integration.md) - Payment setup guide
-- [Checkout Implementation](../../guides/checkout-implementation.md) - Complete checkout flow
+| Source | [payment/saferpay/](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/payment/saferpay) |

@@ -9,10 +9,15 @@ description: Coupon code for 50% discount on products
 
 A sample discount adapter demonstrating a percentage-based coupon code. Applies 50% off to all products when code is entered.
 
-## Installation
+## Registration
+
+Not part of any preset — register it explicitly:
 
 ```typescript
-import '@unchainedshop/plugins/pricing/discount-half-price-manual';
+import { pluginRegistry } from '@unchainedshop/core';
+import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
+
+pluginRegistry.register(HalfPriceManualPlugin);
 ```
 
 ## How It Works
@@ -43,13 +48,6 @@ mutation ApplyDiscount {
 }
 ```
 
-## Difference from Half Price
-
-| Adapter | Trigger | Removal |
-|---------|---------|---------|
-| Half Price | Automatic (user tag) | Not removable |
-| Half Price Manual | Coupon code | User can remove |
-
 ## Configuration
 
 The adapter targets `shop.unchained.pricing.product-discount`:
@@ -73,10 +71,9 @@ discountForPricingAdapterKey({ pricingAdapterKey }) {
 | Manual Addition | Yes |
 | Manual Removal | Yes |
 | System Triggering | No |
-| Source | [pricing/discount-half-price-manual.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/pricing/discount-half-price-manual.ts) |
+| Source | [pricing/discount-half-price-manual](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/pricing/discount-half-price-manual) |
 
 ## Related
 
-- [Discount Half Price](./pricing-discount-half-price.md) - Automatic version
 - [Discount 100 Off](./pricing-discount-100-off.md) - Fixed amount discount
 - [Order Discounts](../../extend/pricing/order-discounts.md) - Creating custom discounts

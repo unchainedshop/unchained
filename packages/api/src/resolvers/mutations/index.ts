@@ -150,6 +150,18 @@ import updateCartDeliveryPickUp from './orders/updateCartDeliveryPickUp.ts';
 import updateCartDeliveryShipping from './orders/updateCartDeliveryShipping.ts';
 import updateCartPaymentGeneric from './orders/updateCartPaymentGeneric.ts';
 import updateCartPaymentInvoice from './orders/updateCartPaymentInvoice.ts';
+import bulkSetProductStatus from './bulk/bulkSetProductStatus.ts';
+import bulkUpdateProductTags from './bulk/bulkUpdateProductTags.ts';
+import bulkAssignProductsToAssortment from './bulk/bulkAssignProductsToAssortment.ts';
+import bulkRemoveProducts from './bulk/bulkRemoveProducts.ts';
+import bulkUpdateUserTags from './bulk/bulkUpdateUserTags.ts';
+import bulkRemoveAssortments from './bulk/bulkRemoveAssortments.ts';
+import bulkUpdateAssortmentTags from './bulk/bulkUpdateAssortmentTags.ts';
+import bulkSetAssortmentActive from './bulk/bulkSetAssortmentActive.ts';
+import bulkRemoveFilters from './bulk/bulkRemoveFilters.ts';
+import bulkSetFilterActive from './bulk/bulkSetFilterActive.ts';
+import bulkRemoveUsers from './bulk/bulkRemoveUsers.ts';
+import bulkSetUserRoles from './bulk/bulkSetUserRoles.ts';
 
 export default {
   logout: acl(actions.logout)(logout),
@@ -311,4 +323,18 @@ export default {
   ),
   signPaymentProviderForCheckout: acl(actions.updateOrderPayment)(signPaymentProviderForCheckout),
   removeUserProductReviews: acl(actions.updateUser)(removeUserProductReviews),
+  bulkSetProductStatus: acl(actions.bulkSetProductStatus)(bulkSetProductStatus),
+  bulkUpdateProductTags: acl(actions.bulkUpdateProductTags)(bulkUpdateProductTags),
+  bulkAssignProductsToAssortment: acl(actions.bulkAssignProductsToAssortment)(
+    bulkAssignProductsToAssortment,
+  ),
+  bulkRemoveProducts: acl(actions.bulkRemoveProducts)(bulkRemoveProducts),
+  bulkUpdateUserTags: acl(actions.bulkUpdateUserTags)(bulkUpdateUserTags),
+  bulkRemoveAssortments: acl(actions.bulkRemoveAssortments)(bulkRemoveAssortments),
+  bulkUpdateAssortmentTags: acl(actions.bulkUpdateAssortmentTags)(bulkUpdateAssortmentTags),
+  bulkSetAssortmentActive: acl(actions.bulkSetAssortmentActive)(bulkSetAssortmentActive),
+  bulkRemoveFilters: acl(actions.bulkRemoveFilters)(bulkRemoveFilters),
+  bulkSetFilterActive: acl(actions.bulkSetFilterActive)(bulkSetFilterActive),
+  bulkRemoveUsers: acl(actions.bulkRemoveUsers)(bulkRemoveUsers),
+  bulkSetUserRoles: acl(actions.bulkSetUserRoles)(bulkSetUserRoles),
 };

@@ -444,7 +444,7 @@ query OrderStatus {
 
 | Status | Meaning |
 |--------|---------|
-| `null` | Cart (not checked out) |
+| `OPEN` | Open order / cart (not checked out) |
 | `PENDING` | Checked out, awaiting payment |
 | `CONFIRMED` | Payment confirmed, ready for delivery |
 | `FULFILLED` | Order delivered and complete |
@@ -542,13 +542,18 @@ function Checkout() {
 
 ### Common Checkout Errors
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `NoCartItems` | Empty cart | Ensure items are added |
-| `NoDeliveryProvider` | Delivery not set | Set delivery provider |
-| `NoPaymentProvider` | Payment not set | Set payment provider |
-| `PaymentDeclined` | Payment failed | Show error, retry payment |
-| `ProductNotActive` | Product unavailable | Remove item from cart |
+A failed `checkoutCart` throws an `OrderCheckoutError` (`extensions.code`); the underlying cause is in `extensions.detailCode` and `extensions.detailMessage`:
+
+| `detailCode` | Cause | Solution |
+|--------------|-------|----------|
+| `NoItemsError` | Empty cart | Ensure items are added |
+| `NoDeliveryProviderError` | Delivery not set | Set delivery provider |
+| `NoPaymentProviderError` | Payment not set | Set payment provider |
+| `ContactMissingError` | Contact data not set | Set contact via `updateCart` |
+| `BillingAddressMissingError` | Billing address not set | Set billing address via `updateCart` |
+| `QuotationInvalidError` | Quotation expired or fulfilled | Request a new offer |
+
+Payment charge failures surface the same way, with the payment adapter's error name as `detailCode`.
 
 ### Handling Payment Errors
 
@@ -567,18 +572,19 @@ If the mutation throws, catch and display the error:
 try {
   await checkout();
 } catch (error) {
-  if (error.graphQLErrors) {
-    const code = error.graphQLErrors[0]?.extensions?.code;
-    switch (code) {
-      case 'PAYMENT_DECLINED':
-        showError('Payment was declined. Please try another method.');
+  const extensions = error.graphQLErrors?.[0]?.extensions;
+  if (extensions?.code === 'OrderCheckoutError') {
+    switch (extensions.detailCode) {
+      case 'NoDeliveryProviderError':
+      case 'NoPaymentProviderError':
+        showError('Please select a delivery and payment method.');
         break;
-      case 'INSUFFICIENT_STOCK':
-        showError('Some items are no longer available.');
+      case 'NoItemsError':
+        showError('Your cart is empty.');
         refetch(); // Refresh cart
         break;
       default:
-        showError('Checkout failed. Please try again.');
+        showError(extensions.detailMessage ?? 'Checkout failed. Please try again.');
     }
   }
 }
@@ -586,27 +592,9 @@ try {
 
 ## Webhooks for Async Payments
 
-Many payment providers confirm payments asynchronously via webhooks:
+Many payment providers confirm payments asynchronously via webhooks. The payment plugins register their webhook routes themselves — you don't write a handler. The Stripe plugin, for example, serves `POST /payment/stripe/webhook` (path configurable via `STRIPE_WEBHOOK_PATH`): it verifies the signature with `STRIPE_ENDPOINT_SECRET` and, on `payment_intent.succeeded`, checks out the pending order so it transitions to `CONFIRMED`.
 
-```typescript
-// Express webhook handler
-app.post('/webhooks/stripe', async (req, res) => {
-  const event = stripe.webhooks.constructEvent(
-    req.body,
-    req.headers['stripe-signature'],
-    process.env.STRIPE_WEBHOOK_SECRET
-  );
-
-  if (event.type === 'payment_intent.succeeded') {
-    const { orderId } = event.data.object.metadata;
-
-    // The order will automatically transition to CONFIRMED
-    // via the payment adapter's charge() method
-  }
-
-  res.json({ received: true });
-});
-```
+Point the provider's dashboard at your engine, e.g. `https://your-shop.example/payment/stripe/webhook`, and set `STRIPE_ENDPOINT_SECRET` — without it, webhooks are not processed.
 
 ## Related
 

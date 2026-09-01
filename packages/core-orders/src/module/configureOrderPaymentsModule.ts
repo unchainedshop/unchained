@@ -3,7 +3,7 @@ import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedsho
 import type { PricingCalculation } from '@unchainedshop/utils';
 import { type OrderPayment, OrderPaymentStatus } from '../db/OrderPaymentsCollection.ts';
 
-const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_SIGN_PAYMENT', 'ORDER_PAY'];
+const ORDER_PAYMENT_EVENTS: string[] = ['ORDER_UPDATE_PAYMENT', 'ORDER_PAY'];
 
 export const buildFindOrderPaymentByIdSelector = (orderPaymentId: string) =>
   generateDbFilterById(orderPaymentId) as mongodb.Filter<OrderPayment>;

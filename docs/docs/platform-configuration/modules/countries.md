@@ -25,7 +25,7 @@ Access via `modules.countries` in the Unchained API context.
 | `findCountries` | `{ limit?, offset?, sort?, ...query }` | List countries with pagination |
 | `count` | `query` | Count countries matching criteria |
 | `countryExists` | `{ countryId }` | Check if country exists |
-| `name` | `country, locale` | Get localized country name |
+| `name` | `country, locale: Intl.Locale` | Get localized country name |
 | `flagEmoji` | `country` | Get country flag emoji |
 | `isBase` | `country` | Check if this is the default country |
 
@@ -44,7 +44,7 @@ Access via `modules.countries` in the Unchained API context.
 const country = await modules.countries.findCountry({ isoCode: 'CH' });
 
 // Get localized name
-const name = modules.countries.name(country, 'en'); // "Switzerland"
+const name = modules.countries.name(country, new Intl.Locale('en')); // "Switzerland"
 
 // Get flag emoji
 const flag = modules.countries.flagEmoji(country); // "🇨🇭"

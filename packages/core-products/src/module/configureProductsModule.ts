@@ -7,7 +7,7 @@ import {
   generateDbObjectId,
   type ModuleInput,
 } from '@unchainedshop/mongodb';
-import { SortDirection, type SortOption, type Price } from '@unchainedshop/utils';
+import { executeBulkOperation, SortDirection, type SortOption, type Price } from '@unchainedshop/utils';
 import {
   type Product,
   type ProductAssignment,
@@ -63,6 +63,14 @@ const PRODUCT_EVENTS = [
 const InternalProductStatus = {
   DRAFT: null,
 };
+
+/*
+ * A draft is stored as null, but ProductStatus.DRAFT ('DRAFT') exists in the public enum and can
+ * reach the database through the bulk importer. Both spellings have to count as a draft, or a
+ * product can end up in a state that reads as a draft yet refuses to be published.
+ */
+const isDraftStatus = (status: Product['status']) =>
+  status === ProductStatus.DRAFT || status === InternalProductStatus.DRAFT;
 
 export const buildFindSelector = ({
   slugs,
@@ -170,7 +178,7 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
   };
 
   const publishProduct = async (product: Product): Promise<boolean> => {
-    if (product.status === InternalProductStatus.DRAFT) {
+    if (isDraftStatus(product.status)) {
       await Products.updateOne(generateDbFilterById(product._id), {
         $set: {
           status: ProductStatus.ACTIVE,
@@ -205,6 +213,27 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
     }
 
     return false;
+  };
+
+  const updateProduct = async (
+    productId: string,
+    doc: mongodb.UpdateFilter<Product>,
+  ): Promise<string> => {
+    const product = await Products.findOneAndUpdate(
+      generateDbFilterById(productId),
+      {
+        $set: {
+          updated: new Date(),
+          ...doc,
+        },
+      },
+      { returnDocument: 'after' },
+    );
+
+    // Deprecation notice: remove "...doc", product should be inside product field
+    await emit('PRODUCT_UPDATE', { productId, ...doc, product });
+
+    return productId;
   };
 
   const proxyProducts = async (
@@ -251,7 +280,7 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
           },
     ): Promise<Product | null> => {
       if ('sku' in params) {
-        return Products.findOne({ 'warehousing.sku': params.sku }, { sort: { sequence: 1 } });
+        return Products.findOne({ 'warehousing.sku': params.sku }, { sort: { sequence: 1, _id: 1 } });
       }
       if ('slug' in params && params.slug != null) {
         return Products.findOne({ slugs: params.slug }, {});
@@ -311,7 +340,7 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
       return product.status === ProductStatus.ACTIVE;
     },
     isDraft: (product: Product) => {
-      return product.status === ProductStatus.DRAFT || product.status === InternalProductStatus.DRAFT;
+      return isDraftStatus(product.status);
     },
     normalizedStatus: (product: Product): ProductStatus => {
       return product.status === null ? ProductStatus.DRAFT : (product.status as ProductStatus);
@@ -415,24 +444,7 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
       return product;
     },
 
-    update: async (productId: string, doc: mongodb.UpdateFilter<Product>): Promise<string> => {
-      const updateDoc = doc;
-      const product = await Products.findOneAndUpdate(
-        generateDbFilterById(productId),
-        {
-          $set: {
-            updated: new Date(),
-            ...updateDoc,
-          },
-        },
-        { returnDocument: 'after' },
-      );
-
-      // Deprecation notice: remove "...updateDoc", product should be inside product field
-      await emit('PRODUCT_UPDATE', { productId, ...updateDoc, product });
-
-      return productId;
-    },
+    update: updateProduct,
     firstActiveProductProxy: async (productId: string) => {
       return Products.findOne({ 'proxy.assignments.productId': productId });
     },
@@ -459,6 +471,37 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
 
     publish: publishProduct,
     unpublish: unpublishProduct,
+
+    bulkPublish: async (productIds: string[]) =>
+      executeBulkOperation(productIds, async (productId) => {
+        const product = await Products.findOne(generateDbFilterById(productId), {});
+        if (!product || !(await publishProduct(product))) throw new Error('publish-failed');
+      }),
+
+    bulkUnpublish: async (productIds: string[]) =>
+      executeBulkOperation(productIds, async (productId) => {
+        const product = await Products.findOne(generateDbFilterById(productId), {});
+        if (!product || !(await unpublishProduct(product))) throw new Error('unpublish-failed');
+      }),
+
+    bulkUpdateTags: async (
+      productIds: string[],
+      { add = [], remove = [] }: { add?: string[]; remove?: string[] },
+    ) => {
+      const tagsToRemove = new Set(remove);
+      return executeBulkOperation(productIds, async (productId) => {
+        const product = await Products.findOne(generateDbFilterById(productId), {});
+        if (!product || (product.status !== ProductStatus.ACTIVE && !isDraftStatus(product.status))) {
+          throw new Error('not-found');
+        }
+
+        const tags = (product.tags || []).filter((tag) => !tagsToRemove.has(tag));
+        for (const tag of add) {
+          if (!tags.includes(tag)) tags.push(tag);
+        }
+        await updateProduct(productId, { tags });
+      });
+    },
 
     /*
      * Sub entities

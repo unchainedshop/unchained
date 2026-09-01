@@ -1,0 +1,24 @@
+[    2167ms] [ERROR] Failed to load resource: net::ERR_INVALID_HANDLE @ https://www.googletagmanager.com/gtag/js?id=G-NJ53K3GRW2:0
+[   10546ms] [INFO] [Intercom] Launcher is disabled in settings or current page does not match display conditions @ https://js.intercomcdn.com/frame-modern.9f813d2e.js:0
+[   24565ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ https://context7.com/sign-in?redirect_url=%2Fdashboard:0
+[ 6613884ms] [ERROR] Failed to load resource: net::ERR_INVALID_HANDLE @ https://www.googletagmanager.com/gtag/js?id=G-NJ53K3GRW2:0
+[ 6614470ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ https://context7.com/sign-in?redirect_url=%2Fdashboard:0
+[ 6623434ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ https://context7.com/sign-in/factor-one?redirect_url=%2Fdashboard:0
+[ 6632899ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ https://context7.com/sign-in?redirect_url=%2Fdashboard:0
+[ 6636125ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "username"): (More info: https://goo.gl/9p2vKq) %o @ https://context7.com/sign-up?redirect_url=https%3A%2F%2Fcontext7.com%2Fdashboard:0
+[ 6654372ms] [ERROR] Failed to load resource: net::ERR_INVALID_HANDLE @ https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit:0
+[ 6654866ms] [ERROR] Failed to load resource: net::ERR_INVALID_HANDLE @ https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit:0
+[ 6655487ms] [ERROR] Failed to load resource: net::ERR_INVALID_HANDLE @ https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit:0
+[ 6656672ms] [ERROR] Failed to load resource: net::ERR_INVALID_HANDLE @ https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit:0
+[ 6658225ms] [ERROR] Failed to load resource: net::ERR_INVALID_HANDLE @ https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit:0
+[ 6661167ms] [ERROR] Failed to load resource: net::ERR_INVALID_HANDLE @ https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit:0
+[ 6661167ms] [WARNING] Clerk: Failed to load the CAPTCHA script from Cloudflare. If you see a CSP error in your browser, please add the necessary CSP rules to your app. Visit https://clerk.com/docs/security/clerk-csp for more information. @ https://clerk.context7.com/npm/@clerk/clerk-js@6/dist/clerk.browser.js:16
+[ 6661582ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://clerk.context7.com/v1/client/sign_ups?__clerk_api_version=2026-05-12&_clerk_js_version=6.30.1:0
+[ 6669708ms] [ERROR] Failed to load resource: net::ERR_INVALID_HANDLE @ https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit:0
+[ 6670153ms] [ERROR] Failed to load resource: net::ERR_INVALID_HANDLE @ https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit:0
+[ 6670925ms] [ERROR] Failed to load resource: net::ERR_INVALID_HANDLE @ https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit:0
+[ 6671767ms] [ERROR] Failed to load resource: net::ERR_INVALID_HANDLE @ https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit:0
+[ 6673450ms] [ERROR] Failed to load resource: net::ERR_INVALID_HANDLE @ https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit:0
+[ 6675938ms] [ERROR] Failed to load resource: net::ERR_INVALID_HANDLE @ https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit:0
+[ 6675938ms] [WARNING] Clerk: Failed to load the CAPTCHA script from Cloudflare. If you see a CSP error in your browser, please add the necessary CSP rules to your app. Visit https://clerk.com/docs/security/clerk-csp for more information. @ https://clerk.context7.com/npm/@clerk/clerk-js@6/dist/clerk.browser.js:16
+[ 6676405ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://clerk.context7.com/v1/client/sign_ups?__clerk_api_version=2026-05-12&_clerk_js_version=6.30.1:0

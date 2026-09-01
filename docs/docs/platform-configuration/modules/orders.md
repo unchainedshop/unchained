@@ -16,7 +16,7 @@ export interface OrderSettingsOrderPositionValidation {
   order: Order;
   product: Product;
   quantityDiff?: number;
-  configuration?: { key: string; value: string }[];
+  configuration?: { key: string; value: string }[] | null;
 }
 
 export interface OrdersSettingsOptions {
@@ -31,11 +31,11 @@ export interface OrdersSettingsOptions {
 ```
 
 - `ensureUserHasCart`: If enabled, Unchained will try to pre-generate a new cart when a user does not have one on various occasions, it's still not guaranteed that a user always has a cart. (default: false)
-- `lockOrderDuringCheckout`: If enabled, Unchained tries to use a so-called "Distributed Locking" approach with MongoDB while the checkout process is running, highly encouraged for most cases (default: true)
+- `lockOrderDuringCheckout`: If enabled, Unchained tries to use a so-called "Distributed Locking" approach with MongoDB while the checkout process is running, highly encouraged for most cases (default: false)
 
 ### Order Number Creation
 
-The `orderNumberHashFn` is used to generate human-readable codes that can be easily spelled out to support staff. The default is a hashids based function that generates an alphanumeric uppercase string with length 6 without the hard to distinguish 0IOl etc. If the number has already been taken, the function gets iteratively called with an increasing `index`.
+The `orderNumberHashFn` is used to generate human-readable codes that can be easily spelled out to support staff. The default generates a random alphanumeric uppercase string with length 6 using an unambiguous charset (no `O`, `0`, `1`). If the number has already been taken, the function gets iteratively called with an increasing `index`.
 
 [Default Random Hash Generator](https://github.com/unchainedshop/unchained/blob/master/packages/utils/src/generate-random-hash.ts)
 
@@ -48,10 +48,10 @@ With `validateOrderPosition` you can validate cart manipulations and throw Error
 **The default validator checks if a product is active.**
 
 ```typescript
-const options = {
-  modules: {
+await startPlatform({
+  options: {
     orders: {
-      orderNumberHashFn: (order, index) => order.sequence + 100000 + index,
+      orderNumberHashFn: (order, index) => `${100000 + index}`,
       validateOrderPosition: async ({ order, product, quantityDiff, configuration }, context) => {
         const justOneAtATime = product.tags?.includes('one-at-a-time');
         const positions = await context.modules.orders.positions.findOrderPositions({
@@ -64,7 +64,7 @@ const options = {
       },
     },
   },
-};
+});
 ```
 
 ## Module API
@@ -78,7 +78,6 @@ Access via `modules.orders` in the Unchained API context.
 | `cart` | `{ userId, countryCode?, orderNumber? }` | Get user's cart |
 | `findOrder` | `{ orderId? \| orderNumber? }, options?` | Find a specific order |
 | `findOrders` | `{ limit?, offset?, sort?, ...query }` | List orders with pagination |
-| `findOrderIds` | `query` | Get array of order IDs |
 | `count` | `query` | Count orders |
 | `orderExists` | `{ orderId }` | Check if order exists |
 | `isCart` | `order` | Check if order is a cart |
@@ -106,7 +105,7 @@ Access via `modules.orders` in the Unchained API context.
 |--------|-----------|-------------|
 | `findOrderPosition` | `{ itemId }` | Get single position |
 | `findOrderPositions` | `{ orderId }` | Get all positions in order |
-| `addProductItem` | `{ orderId, productId, quantity, configuration? }` | Add product to cart |
+| `addProductItem` | `{ orderId, productId, originalProductId, quantity, configuration?, quotationId?, context? }` | Add product to cart |
 | `updateProductItem` | `{ orderPositionId, quantity, configuration }` | Update line item |
 | `delete` | `orderPositionId` | Remove line item |
 | `removePositions` | `{ orderId }` | Clear all positions |
@@ -117,20 +116,21 @@ Access via `modules.orders` in the Unchained API context.
 |--------|-----------|-------------|
 | `findOrderPayment` | `{ orderPaymentId }` | Get payment record |
 | `updateStatus` | `orderPaymentId, { status, transactionId?, info? }` | Update payment status |
-| `markAsPaid` | `orderPaymentId, info?` | Mark as paid |
+| `markAsPaid` | `orderPayment, meta?` | Mark an open payment as paid |
 
 **`modules.orders.deliveries`** — Order deliveries:
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `findOrderDelivery` | `{ orderDeliveryId }` | Get delivery record |
+| `findDelivery` | `{ orderDeliveryId }` | Get delivery record |
 | `updateStatus` | `orderDeliveryId, { status, info? }` | Update delivery status |
+| `markAsDelivered` | `orderDelivery` | Mark an open delivery as delivered |
 
 **`modules.orders.discounts`** — Order discounts:
 
 | Method | Arguments | Description |
 |--------|-----------|-------------|
-| `findOrderDiscount` | `{ orderDiscountId }` | Get discount record |
+| `findOrderDiscount` | `{ discountId }` | Get discount record |
 | `create` | `doc` | Create discount |
 | `delete` | `orderDiscountId` | Remove discount |
 
@@ -161,6 +161,8 @@ Access via `modules.orders` in the Unchained API context.
 | `ORDER_SET_PAYMENT_PROVIDER` | `{ order }` | Emitted when payment provider is set |
 | `ORDER_UPDATE_DELIVERY` | `{ orderDelivery }` | Emitted when delivery is updated |
 | `ORDER_DELIVER` | `{ orderDelivery }` | Emitted when order is delivered |
+| `ORDER_PAY` | `{ orderPayment }` | Emitted when an order payment is marked as paid |
+| `ORDER_UPDATE_PAYMENT` | `{ orderPayment }` | Emitted when an order payment is updated |
 | `ORDER_CREATE_DISCOUNT` | `{ discount }` | Emitted when a discount is created |
 | `ORDER_UPDATE_DISCOUNT` | `{ discount }` | Emitted when a discount is updated |
 | `ORDER_REMOVE_DISCOUNT` | `{ discount }` | Emitted when a discount is removed |

@@ -36,7 +36,7 @@ export const configureAssortmentFiltersModule = ({
       const filters = AssortmentFilters.find(
         { assortmentId },
         {
-          sort: { sortKey: 1 },
+          sort: { sortKey: 1, _id: 1 },
           projection: { filterId: 1 },
         },
       ).map((filter) => filter.filterId);
@@ -70,7 +70,7 @@ export const configureAssortmentFiltersModule = ({
         // Get next sort key
         const lastAssortmentFilter = (await AssortmentFilters.findOne(
           { assortmentId },
-          { sort: { sortKey: -1 } },
+          { sort: { sortKey: -1, _id: -1 } },
         )) || { sortKey: 0 };
         $setOnInsert.sortKey = lastAssortmentFilter.sortKey + 1;
       } else {

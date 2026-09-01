@@ -7,7 +7,7 @@ description: Customizing quotation
 
 # Quotation Adapters
 
-Accept and process quotation (request-for-quote) requests for shop items, manually or automatically. Several adapters can be active; they run in ascending `orderIndex`.
+Accept and process quotation (request-for-quote) requests for shop items, manually or automatically. Several adapters can be registered; the first adapter that activates for a quotation handles it.
 
 ## Creating an adapter
 

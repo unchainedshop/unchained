@@ -7,36 +7,36 @@ description: Swiss payment provider supporting TWINT, PostFinance, and more
 
 # Payrexx
 
-Unchained payment plugin for Payrexx, a Swiss payment service provider supporting various payment methods including credit cards, TWINT, PostFinance, and more.
-
-- [Payrexx API Documentation](https://docs.payrexx.com)
+Payment plugin for [Payrexx](https://docs.payrexx.com), a Swiss payment service provider supporting credit cards, TWINT, PostFinance, and more.
 
 ## Installation
 
-**Express:**
+Included in the [`all` preset](../../platform-configuration/plugin-presets.md) — `registerAllPlugins()` registers the plugin together with its webhook route.
+
+To register it individually:
+
 ```typescript
-import express from 'express';
-import '@unchainedshop/plugins/payment/payrexx';
-import { payrexxHandler } from '@unchainedshop/plugins/payment/payrexx/handler-express';
+import { pluginRegistry } from '@unchainedshop/core';
+import { PayrexxPlugin } from '@unchainedshop/plugins/payment/payrexx';
 
-const { PAYREXX_WEBHOOK_PATH = '/payment/payrexx' } = process.env;
-
-app.use(PAYREXX_WEBHOOK_PATH, express.json({ type: 'application/json' }), payrexxHandler);
+pluginRegistry.register(PayrexxPlugin);
 ```
 
-**Fastify:**
-```typescript
-import '@unchainedshop/plugins/payment/payrexx';
-import { payrexxHandler } from '@unchainedshop/plugins/payment/payrexx/handler-fastify';
+Register before `startPlatform()`. Registration mounts the webhook route `POST /payment/payrexx` (path configurable via `PAYREXX_WEBHOOK_PATH`) on the Unchained HTTP server. Registration throws if `PAYREXX_SECRET` is not set.
 
-const { PAYREXX_WEBHOOK_PATH = '/payment/payrexx' } = process.env;
+In your Payrexx dashboard, configure the webhook URL `https://your-domain.com/payment/payrexx` and enable transaction notifications.
 
-fastify.route({
-  url: PAYREXX_WEBHOOK_PATH,
-  method: 'POST',
-  handler: payrexxHandler,
-});
-```
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PAYREXX_SECRET` | - | Payrexx API secret key (required, registration throws without it) |
+| `PAYREXX_WEBHOOK_PATH` | `/payment/payrexx` | Webhook endpoint path |
+| `EMAIL_WEBSITE_URL` | - | Base URL for redirects (e.g. `https://shop.example.com`) |
+| `EMAIL_WEBSITE_NAME` | `Unchained` | Shop name shown in the payment purpose |
+| `PAYREXX_SUCCESS_PATH` | `/payrexx/success` | Path for successful payment redirect |
+| `PAYREXX_ERROR_PATH` | `/payrexx/error` | Path for failed payment redirect |
+| `PAYREXX_CANCEL_PATH` | `/payrexx/cancel` | Path for cancelled payment redirect |
 
 ## Create Provider
 
@@ -66,44 +66,18 @@ mutation ConfigurePayrexxProvider {
 }
 ```
 
-## Configure Payrexx Dashboard
-
-1. Log in to your Payrexx dashboard
-2. Go to **Settings** > **Webhooks**
-3. Add webhook URL: `https://your-domain.com/payment/payrexx`
-4. Enable transaction notifications
-
-## Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PAYREXX_SECRET` | - | Your Payrexx API secret key (required) |
-| `PAYREXX_WEBHOOK_PATH` | `/payment/payrexx` | Webhook endpoint path |
-| `EMAIL_WEBSITE_URL` | - | Base URL for redirects (e.g., `https://shop.example.com`) |
-| `EMAIL_WEBSITE_NAME` | `Unchained` | Shop name shown in payment purpose |
-| `PAYREXX_SUCCESS_PATH` | `/payrexx/success` | Path for successful payment redirect |
-| `PAYREXX_ERROR_PATH` | `/payrexx/error` | Path for failed payment redirect |
-| `PAYREXX_CANCEL_PATH` | `/payrexx/cancel` | Path for cancelled payment redirect |
-
-## Provider Configuration
+Provider configuration:
 
 | Key | Description |
 |-----|-------------|
-| `instance` | Your Payrexx instance name (required) |
+| `instance` | Payrexx instance name (required — the provider is inactive without it) |
 
 ## Payment Flow
 
-### 1. Sign for Checkout
+Follows the standard [checkout flow](./index.md#checkout-flow). Payrexx specifics:
 
-Create a Payrexx gateway for the order:
+`signPaymentProviderForCheckout(orderPaymentId: "...")` creates a Payrexx gateway and returns it as a JSON string:
 
-```graphql
-mutation SignPayment {
-  signPaymentProviderForCheckout(orderPaymentId: "order-payment-id")
-}
-```
-
-Returns a JSON string containing:
 ```json
 {
   "id": "gateway-id",
@@ -112,66 +86,20 @@ Returns a JSON string containing:
 }
 ```
 
-### 2. Redirect to Payment
-
-Parse the response and redirect the user to the `link` URL:
-
-```typescript
-const gateway = JSON.parse(signResult);
-window.location.href = gateway.link;
-```
-
-### 3. Handle Redirect
-
-The user is redirected back to your configured paths:
-- **Success**: `EMAIL_WEBSITE_URL + PAYREXX_SUCCESS_PATH`
-- **Error**: `EMAIL_WEBSITE_URL + PAYREXX_ERROR_PATH`
-- **Cancel**: `EMAIL_WEBSITE_URL + PAYREXX_CANCEL_PATH`
-
-### 4. Complete via Webhook
-
-The webhook automatically completes the checkout when payment is confirmed:
-
-```typescript
-// Webhook handler calls internally:
-await services.orders.checkoutOrder(orderId, {
-  paymentContext: { gatewayId: 'payrexx-gateway-id' }
-});
-```
-
-### 5. Manual Checkout (Alternative)
-
-If not using webhooks, complete manually:
+Redirect the user to `link`. After payment, the user is redirected back to `EMAIL_WEBSITE_URL` + `PAYREXX_SUCCESS_PATH` / `PAYREXX_ERROR_PATH` / `PAYREXX_CANCEL_PATH`, and the webhook checks out the cart server-side. Fallback — checkout with the gateway id:
 
 ```graphql
-mutation CheckoutWithPayrexx {
-  checkoutCart(
-    paymentContext: {
-      gatewayId: "payrexx-gateway-id"
-    }
-  ) {
+mutation {
+  checkoutCart(paymentContext: { gatewayId: "payrexx-gateway-id" }) {
     _id
     status
-    orderNumber
   }
 }
 ```
 
-## Payment States
+## Pre-Authorization
 
-| Payrexx Status | Description | Unchained Action |
-|----------------|-------------|------------------|
-| `waiting` | Awaiting payment | No action |
-| `reserved` | Payment authorized | Ready for checkout |
-| `confirmed` | Payment captured | Order confirmed |
-
-## Pre-Authorization Flow
-
-Payrexx uses reservation mode by default:
-
-1. **Reserve**: Payment is authorized at checkout
-2. **Confirm**: Call `confirmOrder` to capture the payment
-3. **Cancel**: Call `rejectOrder` to release the reservation
+Payrexx uses reservation mode: the payment is reserved (`reserved` status) at checkout, then captured on `confirmOrder` and released on `rejectOrder`:
 
 ```graphql
 mutation ConfirmOrder {
@@ -182,34 +110,11 @@ mutation ConfirmOrder {
 }
 ```
 
-## Redirect URLs
-
-After payment, users are redirected with the transaction ID:
-
-```
-https://shop.example.com/payrexx/success?transactionId=abc123
-```
-
-Use this to show appropriate confirmation or error pages.
-
-## Features
-
-- Multiple payment methods (cards, TWINT, PostFinance, etc.)
-- Pre-authorization with deferred capture
-- Automatic webhook processing
-- Price validation
-- Reservation cancellation on validation failure
-
 ## Adapter Details
 
 | Property | Value |
 |----------|-------|
 | Key | `shop.unchained.payment.payrexx` |
 | Type | `GENERIC` |
-| Source | [payment/payrexx/](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/payment/payrexx/) |
-
-## Related
-
-- [Plugins Overview](./) - All available plugins
-- [Payment Integration Guide](../../guides/payment-integration.md) - Payment setup guide
-- [Checkout Implementation](../../guides/checkout-implementation.md) - Complete checkout flow
+| Version | `1.0.0` |
+| Source | [payment/payrexx/](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/payment/payrexx) |

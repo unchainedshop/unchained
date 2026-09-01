@@ -15,6 +15,7 @@ import {
   CubeIcon,
   DocumentTextIcon,
   FolderArrowDownIcon,
+  MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -40,6 +41,8 @@ import useShopConfiguration from '../hooks/useShopConfiguration';
 import useRecentExports from '../../work/hooks/useRecentExports';
 import { usePlugins } from '../../plugins/PluginContext';
 import * as HeroIcons from '@heroicons/react/24/outline';
+import CommandPalette from '../../search/components/CommandPalette';
+import { SearchProvider, useSearch } from '../../search/SearchContext';
 
 const resolveIcon = (iconName?: string) => {
   if (!iconName) return null;
@@ -63,7 +66,38 @@ const QuotationIcon = ({ className }) => (
   </svg>
 );
 
-const Layout = ({
+const SearchButton = ({ narrowNav }: { narrowNav: boolean }) => {
+  const { open } = useSearch();
+  const { formatMessage } = useIntl();
+  const label = formatMessage({
+    id: 'search',
+    defaultMessage: 'Search',
+  });
+
+  return (
+    <button
+      type="button"
+      onClick={open}
+      className={`mx-2 flex items-center gap-2 rounded-md border border-border-default bg-surface px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-surface-raised hover:text-text-primary focus:outline-hidden focus:ring-2 focus:ring-focus-ring ${
+        narrowNav ? 'justify-center px-2' : 'mt-6 lg:mx-4 2xl:mx-6'
+      }`}
+      aria-label={label}
+      title={label}
+    >
+      <MagnifyingGlassIcon className="h-4 w-4 shrink-0" />
+      {!narrowNav && (
+        <>
+          <span className="flex-1 text-left">{label}</span>
+          <kbd className="hidden rounded border border-border-default bg-surface-input px-1.5 py-0.5 text-xs text-text-muted lg:inline-flex">
+            ⌘/Ctrl K
+          </kbd>
+        </>
+      )}
+    </button>
+  );
+};
+
+const LayoutContent = ({
   children,
   pageHeader = '',
   componentName,
@@ -348,6 +382,7 @@ const Layout = ({
 
   return (
     <AuthWrapper>
+      <CommandPalette />
       <div
         className={`fixed inset-0 z-40 flex md:hidden  ${
           hideNav ? 'hidden' : ''
@@ -496,6 +531,7 @@ const Layout = ({
                 </div>
               </Link>
             </div>
+            <SearchButton narrowNav={narrowNav} />
             <SideNav navigation={defaultNavigation} narrowView={narrowNav} />
           </div>
           <div
@@ -691,6 +727,7 @@ const Layout = ({
           </div>
 
           <div className="flex flex-wrap justify-center items-center gap-2 pr-4">
+            <SearchButton narrowNav />
             <LanguageToggle narrowNav={false} />
             <Link
               href="https://docs.unchained.shop/admin-ui/overview"
@@ -717,5 +754,11 @@ const Layout = ({
     </AuthWrapper>
   );
 };
+
+const Layout = (props) => (
+  <SearchProvider>
+    <LayoutContent {...props} />
+  </SearchProvider>
+);
 
 export default Layout;

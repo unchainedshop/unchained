@@ -7,17 +7,22 @@ description: NFT tokenization adapter for Web3 products
 
 # ETH Minter Warehousing Adapter
 
-The ETH Minter adapter enables tokenization for NFT and Web3 products, supporting ERC-721 and ERC-1155 standards.
+Virtual warehousing for tokenized (NFT) products. Creates token records for ERC-721 and ERC-1155 contracts and serves ERC-compatible token metadata.
 
-## Installation
+:::info Included in Crypto Preset
+Registered automatically by `registerCryptoPlugins()` and `registerAllPlugins()`.
+:::
+
+If you register plugins individually:
 
 ```typescript
-import '@unchainedshop/plugins/warehousing/eth-minter';
+import { pluginRegistry } from '@unchainedshop/core';
+import { ETHMinterPlugin } from '@unchainedshop/plugins/warehousing/eth-minter';
+
+pluginRegistry.register(ETHMinterPlugin);
 ```
 
-## Configuration
-
-Create a warehousing provider for tokenized products:
+## Setup
 
 ```graphql
 mutation CreateETHMinter {
@@ -30,16 +35,6 @@ mutation CreateETHMinter {
 }
 ```
 
-Configure the `chainId` via the Admin UI after creation.
-
-## Features
-
-- ERC-721 (non-fungible) token minting
-- ERC-1155 (semi-fungible) token minting
-- Supply tracking and enforcement
-- ERC metadata endpoint support
-- Multi-language token metadata
-
 ## Adapter Details
 
 | Property | Value |
@@ -47,114 +42,67 @@ Configure the `chainId` via the Admin UI after creation.
 | Key | `shop.unchained.warehousing.infinite-minter` |
 | Type | `VIRTUAL` |
 | Order Index | `0` |
-| Source | [warehousing/eth-minter.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/warehousing/eth-minter.ts) |
+| Source | [warehousing/eth-minter](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/warehousing/eth-minter) |
 
 ## Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `MINTER_TOKEN_OFFSET` | Starting token ID offset | `0` |
-| `ROOT_URL` | Base URL for metadata endpoints | `http://localhost:4010` |
+| `MINTER_TOKEN_OFFSET` | Starting token serial number offset (ERC-721) | `0` |
+| `ROOT_URL` | Base URL for the metadata localization URI | `http://localhost:4010` |
 
 ## Configuration Options
 
-| Key | Description |
-|-----|-------------|
-| `chainId` | Ethereum chain ID (1 = mainnet, 5 = goerli, etc.) |
+| Key | Description | Default |
+|-----|-------------|---------|
+| `chainId` | Chain ID stored on created tokens | `0` |
 
 ## Product Setup
 
-Configure tokenized products:
+Create a `TOKENIZED_PRODUCT` and configure its tokenization:
 
 ```graphql
 mutation CreateTokenizedProduct {
-  createProduct(product: {
-    type: TOKENIZED_PRODUCT
-  }) {
+  createProduct(product: { type: TOKENIZED_PRODUCT }) {
+    _id
+  }
+}
+
+mutation ConfigureTokenization {
+  updateProductTokenization(
+    productId: "product-id"
+    tokenization: {
+      contractAddress: "0x..."
+      contractStandard: ERC721
+      tokenId: "1"
+      supply: 1000
+      ercMetadataProperties: { attributes: [{ trait_type: "Rarity", value: "Legendary" }] }
+    }
+  ) {
     _id
   }
 }
 ```
 
-After creating the product, configure tokenization via the Admin UI or update the product with tokenization settings.
+**ERC-721 (non-fungible):** every mint creates one token record per quantity with a unique, incrementing `tokenSerialNumber` (starting at `MINTER_TOKEN_OFFSET + 1`).
 
-Tokenization configuration includes:
-- `contractAddress` - The smart contract address
-- `contractStandard` - `ERC721` or `ERC1155`
-- `supply` - Maximum token supply
-- `ercMetadataProperties` - Metadata for the token
-
-### Contract Standards
-
-**ERC-721 (Non-Fungible)**
-- Each token has a unique serial number
-- Serial number increments per mint
-- Quantity is always 1 per token
-
-**ERC-1155 (Semi-Fungible)**
-- Tokens share the same tokenId
-- Quantity can be > 1
-- Requires `tokenId` in product configuration
-
-```
-# ERC-1155 product tokenization config
-tokenization: {
-  contractAddress: "0x..."
-  contractStandard: ERC1155
-  tokenId: "42"  # Required for ERC-1155
-  supply: 1000
-}
-```
+**ERC-1155 (semi-fungible):** every mint creates a single token record with the configured `tokenId` as serial number and the ordered quantity. `tokenId` is required — `configurationError()` reports `INCOMPLETE_CONFIGURATION` without it.
 
 ## Behavior
 
-### `isActive()`
-Returns `true` only for `TOKENIZED_PRODUCT` type products.
-
-### `stock()`
-Returns remaining supply:
-```typescript
-const tokensCreated = await getTokensCreated();
-return supply ? supply - tokensCreated : 0;
-```
-
-### `tokenize()`
-Creates token records when an order is fulfilled:
-
-**ERC-721:**
-```typescript
-// Creates N unique tokens for N quantity
-[
-  { tokenSerialNumber: "1", quantity: 1 },
-  { tokenSerialNumber: "2", quantity: 1 },
-  // ...
-]
-```
-
-**ERC-1155:**
-```typescript
-// Creates one token record with total quantity
-[
-  { tokenSerialNumber: "42", quantity: 5 }
-]
-```
-
-### `tokenMetadata()`
-Returns ERC-compatible metadata JSON:
+- `isActive()` returns `true` only for `TOKENIZED_PRODUCT` products.
+- `stock()` returns `supply - tokensCreated` (or `0` when no supply is set).
+- `tokenize()` creates the token records described above when an order position is fulfilled — actual on-chain minting is up to you.
+- `tokenMetadata(tokenSerialNumber)` returns EIP-721/EIP-1155-compatible JSON built from the localized product texts, the first product media file, and `ercMetadataProperties`:
 
 ```json
 {
   "name": "Product Title #1",
   "description": "Product description",
   "image": "https://cdn.example.com/image.png",
-  "properties": {
-    "external_url": "https://example.com",
-    "attributes": [
-      { "trait_type": "Rarity", "value": "Legendary" }
-    ]
-  },
+  "properties": { "attributes": [{ "trait_type": "Rarity", "value": "Legendary" }] },
   "localization": {
-    "uri": "https://example.com/erc-metadata/{id}/{locale}/{tokenId}.json",
+    "uri": "https://example.com/erc-metadata/{productId}/{locale}/{tokenId}.json",
     "default": "en",
     "locales": ["en", "de", "fr"]
   }
@@ -163,55 +111,28 @@ Returns ERC-compatible metadata JSON:
 
 ## Metadata Endpoint
 
-The adapter expects a metadata endpoint at:
-```
-{ROOT_URL}/erc-metadata/{productId}/{locale}/{tokenId}.json
-```
+The metadata HTTP route is served by the separate `shop.unchained.warehousing.erc-metadata` plugin ([warehousing/erc-metadata](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/warehousing/erc-metadata), part of the `base` preset). The path prefix defaults to `/erc-metadata` and is configurable via the `ERC_METADATA_API_PATH` env var.
 
-Implement this endpoint in your server:
+## Querying Tokens
 
-```typescript
-app.get('/erc-metadata/:productId/:locale/:tokenId.json', async (req, res) => {
-  const { productId, locale, tokenId } = req.params;
-
-  const metadata = await modules.warehousing.tokenMetadata({
-    productId,
-    locale,
-    tokenSerialNumber: tokenId,
-  });
-
-  res.json(metadata);
-});
-```
-
-## On-Chain Integration
-
-The adapter creates database records. Actual blockchain minting requires additional integration:
-
-```typescript
-import { ethers } from 'ethers';
-
-// After order confirmation
-const tokens = await modules.warehousing.tokenize(orderPosition);
-
-for (const token of tokens) {
-  // Mint on blockchain
-  const tx = await nftContract.mint(
-    customerWallet,
-    token.tokenSerialNumber
-  );
-
-  // Update token with transaction hash
-  await modules.warehousing.updateToken(token._id, {
-    'meta.txHash': tx.hash,
-    'meta.mintedAt': new Date(),
-  });
+```graphql
+query MyTokens {
+  me {
+    tokens {
+      _id
+      quantity
+      status
+      contractAddress
+      chainId
+      walletAddress
+    }
+  }
 }
 ```
 
 ## Custom Minting Adapter
 
-For custom blockchain integrations, use `registerVirtualWarehousing`:
+For custom blockchain integrations, use the `registerVirtualWarehousing` factory:
 
 ```typescript
 import { registerVirtualWarehousing } from '@unchainedshop/core';
@@ -224,7 +145,7 @@ registerVirtualWarehousing({
     return maxSupply - totalSupply;
   },
   tokenize: async (configuration, { product, orderPosition }) => {
-    const tx = await contract.mint(orderPosition.quantity, { gasLimit: 500000 });
+    const tx = await contract.mint(orderPosition.quantity);
     const receipt = await tx.wait();
 
     return receipt.events
@@ -234,32 +155,13 @@ registerVirtualWarehousing({
         tokenSerialNumber: event.args.tokenId.toString(),
         contractAddress: product.tokenization.contractAddress,
         quantity: 1,
-        meta: { txHash: tx.hash, blockNumber: receipt.blockNumber },
+        meta: { txHash: tx.hash },
       }));
   },
 });
 ```
 
-## Querying Tokens
-
-```graphql
-query UserTokens {
-  me {
-    orders {
-      items {
-        product { _id texts { title } }
-        tokens {
-          _id
-          quantity
-        }
-      }
-    }
-  }
-}
-```
-
 ## Related
 
-- [Plugins Overview](./) - All available plugins
 - [Store Adapter](./warehousing-store.md) - Physical inventory
 - [Custom Warehousing Plugins](../../extend/order-fulfilment/fulfilment-plugins/warehousing.md) - Write your own

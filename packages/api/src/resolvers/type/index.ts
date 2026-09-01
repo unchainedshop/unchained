@@ -16,6 +16,7 @@ import { EnrollmentDelivery } from './enrollment/enrollment-delivery-types.ts';
 import { EnrollmentPayment } from './enrollment/enrollment-payment-types.ts';
 import { EnrollmentPeriod } from './enrollment/enrollment-period-types.ts';
 import { EnrollmentPlan } from './enrollment/enrollment-plan-tyes.ts';
+import { GlobalSearchResult } from './global-search-result-types.ts';
 import { Filter } from './filter/filter-types.ts';
 import { FilterOption } from './filter/filter-option-types.ts';
 import { Language } from './language-types.ts';
@@ -92,6 +93,7 @@ const types = {
   EnrollmentPeriod,
   EnrollmentPlan,
   Filter,
+  GlobalSearchResult,
   FilterOption,
   Language,
   LoadedFilter,

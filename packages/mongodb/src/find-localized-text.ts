@@ -14,7 +14,7 @@ export const findLocalizedText = async <T extends Document>(
   locale: Intl.Locale,
 ): Promise<T> => {
   const exactTranslation = await collection.findOne(extendSelectorWithLocale(selector, locale), {
-    sort: { updated: -1 },
+    sort: { updated: -1, _id: -1 },
   });
   if (exactTranslation) {
     return exactTranslation as T;
@@ -24,7 +24,7 @@ export const findLocalizedText = async <T extends Document>(
     const fallbackTranslation = await collection.findOne(
       extendSelectorWithLocale(selector, systemLocale),
       {
-        sort: { updated: -1 },
+        sort: { updated: -1, _id: -1 },
       },
     );
     if (fallbackTranslation) {
@@ -33,7 +33,7 @@ export const findLocalizedText = async <T extends Document>(
   }
 
   const foundText = await collection.findOne(selector, {
-    sort: { updated: -1 },
+    sort: { updated: -1, _id: -1 },
   });
   return foundText as T;
 };

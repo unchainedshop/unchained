@@ -43,30 +43,39 @@ export const configureAssortmentLinksModule = ({
         assortmentIds,
         parentAssortmentId,
         parentAssortmentIds,
+        childAssortmentId,
+        childAssortmentIds,
       }: {
         assortmentId?: string;
         assortmentIds?: string[];
         parentAssortmentId?: string;
         parentAssortmentIds?: string[];
+        childAssortmentId?: string;
+        childAssortmentIds?: string[];
       },
       options?: mongodb.FindOptions,
     ): Promise<AssortmentLink[]> => {
-      const selector =
-        parentAssortmentId || parentAssortmentIds
-          ? {
-              parentAssortmentId: parentAssortmentId || { $in: parentAssortmentIds },
-            }
-          : {
-              $or: [
-                { parentAssortmentId: assortmentId || { $in: assortmentIds } },
-                { childAssortmentId: assortmentId || { $in: assortmentIds } },
-              ],
-            };
+      const selectors: mongodb.Filter<AssortmentLink>[] = [];
+      const parentIds = parentAssortmentId || (parentAssortmentIds && { $in: parentAssortmentIds });
+      const childIds = childAssortmentId || (childAssortmentIds && { $in: childAssortmentIds });
+      const bidirectionalIds = assortmentId || (assortmentIds && { $in: assortmentIds });
+
+      if (parentIds) selectors.push({ parentAssortmentId: parentIds });
+      if (childIds) selectors.push({ childAssortmentId: childIds });
+      if (bidirectionalIds) {
+        selectors.push(
+          { parentAssortmentId: bidirectionalIds },
+          { childAssortmentId: bidirectionalIds },
+        );
+      }
+      if (!selectors.length) return [];
+
+      const selector = selectors.length > 1 ? { $or: selectors } : selectors[0];
 
       const links = AssortmentLinks.find(
         selector,
         options || {
-          sort: { sortKey: 1 },
+          sort: { sortKey: 1, _id: 1 },
         },
       );
 
@@ -87,7 +96,7 @@ export const configureAssortmentLinksModule = ({
             { childAssortmentId: id },
             {
               projection: { _id: 1, childAssortmentId: 1, parentAssortmentId: 1 },
-              sort: { sortKey: 1, parentAssortmentId: 1 },
+              sort: { sortKey: 1, parentAssortmentId: 1, _id: 1 },
             },
           ).toArray();
         },
@@ -115,7 +124,7 @@ export const configureAssortmentLinksModule = ({
         // Get next sort key
         const lastAssortmentLink = (await AssortmentLinks.findOne(
           { parentAssortmentId },
-          { sort: { sortKey: -1 } },
+          { sort: { sortKey: -1, _id: -1 } },
         )) || { sortKey: 0 };
         $setOnInsert.sortKey = lastAssortmentLink.sortKey + 1;
       } else {

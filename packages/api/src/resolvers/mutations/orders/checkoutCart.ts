@@ -35,7 +35,12 @@ export default async function checkoutCart(
       userId,
       orderId: order._id,
       ...transactionContext,
-      detailCode: error.name || error.code,
+      // Errors created via `createError` (e.g. a custom validateOrderPosition
+      // throwing ProductNotOrderableError) are GraphQLError subclasses whose
+      // `.name` is the literal "GraphQLError" and whose real code lives in
+      // `extensions.code`. Prefer that so the business code is not flattened to
+      // "GraphQLError"; fall back to `.name` (createServiceError) / `.code`.
+      detailCode: error.extensions?.code || error.name || error.code,
       detailMessage: error.message,
     });
   }

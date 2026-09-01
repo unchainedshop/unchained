@@ -41,7 +41,13 @@ mutation BulkImport {
         {
           entity: "PRODUCT"
           operation: "CREATE"
-          payload: "{}"
+          payload: {
+            _id: "product-1"
+            specification: {
+              type: "SIMPLE_PRODUCT"
+              content: { en: { title: "Product 1" } }
+            }
+          }
         }
       ]
     }
@@ -291,26 +297,27 @@ curl -X POST \
 
 ## Custom Import Handlers
 
-Create custom handlers for specialized import needs:
+Create custom handlers for specialized import needs. Entity keys must be uppercase and operation keys lowercase — the engine uppercases `entity` and lowercases `operation` from each event before looking up the handler:
 
 ```typescript
-import { UnchainedCore } from '@unchainedshop/core';
-import { BulkImportHandler, BulkImportOperation } from '@unchainedshop/platform';
+import { startPlatform } from '@unchainedshop/platform';
+import type { UnchainedCore, BulkImportHandler } from '@unchainedshop/core';
 
-const customHandlers: Record<string, BulkImportHandler> = {
+const customHandlers: Record<string, BulkImportHandler<UnchainedCore>> = {
   INVENTORY: {
-    UPDATE: async function updateInventory(
+    update: async function updateInventory(
       payload: { sku: string; quantity: number },
-      options: { logger?: any },
-      unchainedAPI: UnchainedCore
+      options,
+      unchainedAPI: UnchainedCore,
     ) {
       const { sku, quantity } = payload;
 
-      await unchainedAPI.modules.warehousing.updateStock(sku, quantity);
+      // Your import logic, e.g. write to a custom module
+      await unchainedAPI.modules.myInventory.updateStock(sku, quantity);
 
       return {
         entity: 'INVENTORY',
-        operation: 'UPDATE',
+        operation: 'update',
         success: true,
       };
     },
@@ -419,11 +426,10 @@ query ImportJobs {
 For systems requiring pull-based sync:
 
 ```typescript
-import { registerWorker, WorkerDirector } from '@unchainedshop/core';
+import { registerWorker, WorkerDirector, schedule } from '@unchainedshop/core';
 
 registerWorker<{ lastSyncDate?: string }, { synced: number }>({
   type: 'PIM_SYNC',
-  external: true,
   maxParallelAllocations: 1,
   process: async (input) => {
     const { lastSyncDate } = input;
@@ -435,7 +441,7 @@ registerWorker<{ lastSyncDate?: string }, { synced: number }>({
       payload: transformProduct(product),
     }));
 
-    await submitBulkImport(events);
+    await submitBulkImport(events); // e.g. POST the events to /bulk-import
     return { synced: events.length };
   },
 });
@@ -443,8 +449,7 @@ registerWorker<{ lastSyncDate?: string }, { synced: number }>({
 // Schedule hourly sync
 WorkerDirector.configureAutoscheduling({
   type: 'PIM_SYNC',
-  input: {},
-  schedule: '0 * * * *',
+  schedule: schedule.parse.cron('0 * * * *'),
 });
 ```
 

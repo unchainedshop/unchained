@@ -1,4 +1,4 @@
-import type { McpServer as McpServerType } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer as McpServerType } from '@modelcontextprotocol/server';
 import type { Context } from '../context.ts';
 import { registerFilterTools } from './tools/filter/index.ts';
 import { registerProductTools } from './tools/product/index.ts';

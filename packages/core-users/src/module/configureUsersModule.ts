@@ -19,6 +19,7 @@ import {
 } from '../db/UsersCollection.ts';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
+  executeBulkOperation,
   systemLocale,
   SortDirection,
   type SortOption,
@@ -85,13 +86,13 @@ export const buildFindSelector = ({
   }
   if (usernames?.length) {
     selector.username = {
-      $in: usernames.map((u) => insensitiveTrimmedRegexOperator(u)),
-    } as any;
+      $in: usernames.map((u) => insensitiveTrimmedRegexOperator(u).$regex),
+    };
   }
   if (emails?.length) {
     selector['emails.address'] = {
-      $in: emails.map((e) => insensitiveTrimmedRegexOperator(e)),
-    } as any;
+      $in: emails.map((e) => insensitiveTrimmedRegexOperator(e).$regex),
+    };
   }
   if (emailVerified === true) {
     selector['emails.verified'] = true;
@@ -133,6 +134,42 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
   const webAuthn = await configureUsersWebAuthnModule(moduleInput);
+
+  const updateUserRoles = async (_id: string, roles: string[]) => {
+    const user = await Users.findOneAndUpdate(
+      generateDbFilterById(_id),
+      {
+        $set: {
+          updated: new Date(),
+          roles,
+        },
+      },
+      { returnDocument: 'after' },
+    );
+    if (!user) return null;
+    await emit('USER_UPDATE_ROLE', {
+      user: removeConfidentialServiceHashes(user),
+    });
+    return user;
+  };
+
+  const updateUserTags = async (_id: string, tags: string[]) => {
+    const user = await Users.findOneAndUpdate(
+      generateDbFilterById(_id),
+      {
+        $set: {
+          updated: new Date(),
+          tags,
+        },
+      },
+      { returnDocument: 'after' },
+    );
+    if (!user) return null;
+    await emit('USER_UPDATE_TAGS', {
+      user: removeConfidentialServiceHashes(user),
+    });
+    return user;
+  };
 
   return {
     // Queries
@@ -1024,23 +1061,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       return updatedUser;
     },
 
-    updateRoles: async (_id: string, roles: string[]) => {
-      const modifier = {
-        $set: {
-          updated: new Date(),
-          roles,
-        },
-      };
-
-      const user = await Users.findOneAndUpdate(generateDbFilterById(_id), modifier, {
-        returnDocument: 'after',
-      });
-      if (!user) return null;
-      await emit('USER_UPDATE_ROLE', {
-        user: removeConfidentialServiceHashes(user),
-      });
-      return user;
-    },
+    updateRoles: updateUserRoles,
 
     incrementTokenVersion: async (userId: string): Promise<{ tokenVersion: number } | null> => {
       const user = await Users.findOneAndUpdate(
@@ -1070,25 +1091,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       return user;
     },
 
-    updateTags: async (_id: string, tags: string[]) => {
-      const user = await Users.findOneAndUpdate(
-        generateDbFilterById(_id),
-        {
-          $set: {
-            updated: new Date(),
-            tags,
-          },
-        },
-        {
-          returnDocument: 'after',
-        },
-      );
-      if (!user) return null;
-      await emit('USER_UPDATE_TAGS', {
-        user: removeConfidentialServiceHashes(user),
-      });
-      return user;
-    },
+    updateTags: updateUserTags,
 
     updateUser: async (
       selector: mongodb.Filter<User>,
@@ -1156,6 +1159,33 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       })) as string[];
       return tags.filter(Boolean).toSorted();
     },
+
+    bulkUpdateTags: async (
+      userIds: string[],
+      { add = [], remove = [] }: { add?: string[]; remove?: string[] },
+    ) => {
+      const tagsToRemove = new Set(remove);
+      return executeBulkOperation(userIds, async (userId) => {
+        const user = await Users.findOne({ _id: userId, deleted: null as any }, {});
+        if (!user) throw new Error('not-found');
+
+        const tags = (user.tags || []).filter((tag) => !tagsToRemove.has(tag));
+        for (const tag of add) {
+          if (!tags.includes(tag)) tags.push(tag);
+        }
+        await updateUserTags(userId, tags);
+      });
+    },
+
+    bulkUpdateRoles: async (userIds: string[], roles: string[]) =>
+      executeBulkOperation(userIds, async (userId) => {
+        const user = await Users.findOne(
+          { _id: userId, deleted: null as any },
+          { projection: { _id: 1 } },
+        );
+        if (!user) throw new Error('not-found');
+        await updateUserRoles(userId, roles);
+      }),
   };
 };
 

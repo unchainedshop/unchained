@@ -13,6 +13,7 @@ Practical, step-by-step guides for common development tasks with Unchained Engin
 
 - [Building a Storefront](./building-a-storefront) - Integrate Unchained with your frontend
 - [Checkout Implementation](./checkout-implementation) - Complete checkout flow from cart to order
+- [Server Setup](./server-setup) - Express vs Fastify and `connect()` options
 
 ## Payments & Commerce
 
@@ -29,16 +30,22 @@ Practical, step-by-step guides for common development tasks with Unchained Engin
 
 - [Bulk Import](./bulk-import) - Import large datasets from PIM/ERP systems
 - [File Uploads](./file-uploads) - Manage file uploads with MinIO or S3
+- [Seed Data](./seed-data) - Bootstrap a fresh instance with initial data
 
 ## Extensions
 
 - [Event Ticketing](./ticketing-setup) - Set up event ticketing with PDF tickets and mobile wallet passes
 
+## Development
+
+- [Testing](./testing) - Test custom plugins, modules, and integrations
+- [Contributing](./contributing) - Development workflow and code standards for the engine itself
+
 ## Prerequisites
 
 Before following these guides, ensure you have:
 
-1. Node.js 22+ installed
+1. Node.js 24+ installed
 2. MongoDB running (or MongoDB Memory Server for development)
 3. Basic knowledge of TypeScript and GraphQL
 4. An Unchained Engine project set up (see [Quick Start](../quick-start/))

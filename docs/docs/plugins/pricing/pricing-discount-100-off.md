@@ -9,10 +9,15 @@ description: Example fixed-amount coupon code discount
 
 A sample discount adapter demonstrating a fixed-amount coupon code (100 CHF off). Use this as a template for implementing your own coupon systems.
 
-## Installation
+## Registration
+
+Not part of any preset — register it explicitly:
 
 ```typescript
-import '@unchainedshop/plugins/pricing/discount-100-off';
+import { pluginRegistry } from '@unchainedshop/core';
+import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
+
+pluginRegistry.register(HundredOffPlugin);
 ```
 
 ## How It Works
@@ -76,10 +81,10 @@ discountForPricingAdapterKey: ({ pricingAdapterKey }) => {
 | Manual Addition | Yes |
 | Manual Removal | Yes |
 | System Triggering | No |
-| Source | [pricing/discount-100-off.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/pricing/discount-100-off.ts) |
+| Source | [pricing/discount-100-off](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/pricing/discount-100-off) |
 
 ## Related
 
-- [Discount Half Price](./pricing-discount-half-price.md) - Percentage discount
+- [Discount Half Price Manual](./pricing-discount-half-price-manual.md) - Percentage discount
 - [Order Discount](./pricing-order-discount.md) - Order-level discount pricing
 - [Order Discounts](../../extend/pricing/order-discounts.md) - Creating custom discounts

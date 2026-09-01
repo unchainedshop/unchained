@@ -7,7 +7,7 @@ description: Customize warehousing
 
 # Warehousing Provider Plugins
 
-A warehousing adapter models stock availability and fulfilment timing. A store can have several; they run in ascending `orderIndex`.
+A warehousing adapter models stock availability and fulfilment timing. A store can have several; each warehousing provider invokes the adapter it is configured with.
 
 | Factory | For |
 |---|---|
@@ -34,7 +34,7 @@ Each option accepts either a literal value or a `(…args, configuration, contex
 | `stock` | available quantity at a reference date |
 | `productionTime` | ms to produce a quantity (made-to-order) |
 | `commissioningTime` | ms to prepare a quantity for shipping |
-| `orderIndex` | execution order (default `0`) |
+| `orderIndex` | sorts adapter listings ascending (default `0`); each provider still invokes a single adapter |
 
 ## Example: tokenized products
 

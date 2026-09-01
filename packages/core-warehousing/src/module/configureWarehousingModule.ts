@@ -28,8 +28,6 @@ const WAREHOUSING_PROVIDER_EVENTS: string[] = [
   'TOKEN_INVALIDATED',
 ];
 
-const allProvidersTtlMs = process.env.NODE_ENV === 'production' ? 60000 : 1;
-
 export interface WarehousingProviderQuery {
   warehousingProviderIds?: string[];
   type?: WarehousingProviderType;
@@ -76,11 +74,12 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
   registerEvents(WAREHOUSING_PROVIDER_EVENTS);
 
   const WarehousingProviders = await WarehousingProvidersCollection(db);
-  const TokenSurrogates = await TokenSurrogateCollection(db);
 
-  const allProviders = memoizeWithTTL(async function () {
-    return WarehousingProviders.find({ deleted: null }, { sort: { created: 1 } }).toArray();
-  }, allProvidersTtlMs);
+  const allProviders = memoizeWithTTL(
+    async () => WarehousingProviders.find({ deleted: null }, { sort: { created: 1, _id: 1 } }).toArray(),
+    { ttl: process.env.NODE_ENV === 'production' ? 60000 : 1 },
+  );
+  const TokenSurrogates = await TokenSurrogateCollection(db);
 
   return {
     // Queries
@@ -137,7 +136,7 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
 
     findProviders: async (
       query: WarehousingProviderQuery = {},
-      options: mongodb.FindOptions = { sort: { created: 1 } },
+      options: mongodb.FindOptions = { sort: { created: 1, _id: 1 } },
     ): Promise<WarehousingProvider[]> => {
       const providers = WarehousingProviders.find(buildFindSelector(query), options);
       return providers.toArray();

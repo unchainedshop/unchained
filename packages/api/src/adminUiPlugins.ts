@@ -6,6 +6,34 @@ const PLUGIN_NAME_RE = /^[a-z0-9]([a-z0-9_-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9_-]*[a
 
 const IMMUTABLE_CACHE = 'public, max-age=31536000, immutable';
 
+// Keep in sync with admin-ui/src/sdk/theme.ts — defined locally so the emitted
+// declarations don't require the optional @unchainedshop/admin-ui to be installed
+export interface AdminUIThemeTokens {
+  surface?: string;
+  'surface-subtle'?: string;
+  'surface-raised'?: string;
+  'surface-input'?: string;
+  border?: string;
+  'border-subtle'?: string;
+  'text-primary'?: string;
+  'text-secondary'?: string;
+  'text-muted'?: string;
+  'text-on-dark'?: string;
+  accent?: string;
+  'accent-hover'?: string;
+  danger?: string;
+  'danger-surface'?: string;
+  success?: string;
+  warning?: string;
+  'focus-ring'?: string;
+  'text-on-accent'?: string;
+}
+
+export interface AdminUIThemeConfig {
+  light?: AdminUIThemeTokens;
+  dark?: AdminUIThemeTokens;
+}
+
 export interface AdminUIPluginEntityConfig {
   path: string;
   label: string;

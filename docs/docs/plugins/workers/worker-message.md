@@ -10,13 +10,16 @@ description: Route messages through templates to concrete delivery workers
 Routes messages through template resolvers to create concrete delivery work items (email, SMS, push notifications, etc.).
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.
 :::
 
-## Installation
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/worker/message';
+import { pluginRegistry } from '@unchainedshop/core';
+import { MessagePlugin } from '@unchainedshop/plugins/worker/message';
+
+pluginRegistry.register(MessagePlugin);
 ```
 
 ## Purpose
@@ -105,19 +108,22 @@ MessagingDirector.registerTemplate('ORDER_CONFIRMATION', async (payload, context
 ```json
 {
   "forked": [
-    { "_id": "email-work-id", "type": "EMAIL", "status": "ALLOCATED" },
-    { "_id": "push-work-id", "type": "PUSH", "status": "ALLOCATED" }
+    { "_id": "email-work-id", "type": "EMAIL", "status": "NEW" },
+    { "_id": "push-work-id", "type": "PUSH", "status": "NEW" }
   ]
 }
 ```
 
 ## Built-in Templates
 
-Unchained uses the following templates internally:
+The platform registers these templates during `startPlatform` (re-register the same name afterwards to override):
 
 - `ACCOUNT_ACTION` - Email verification, password reset
-- `ORDER_CONFIRMATION` - Order confirmed
 - `DELIVERY` - Delivery notifications
+- `ORDER_CONFIRMATION` - Order confirmed
+- `ORDER_REJECTION` - Order rejected
+- `QUOTATION_STATUS` - Quotation status changes
+- `ENROLLMENT_STATUS` - Enrollment status changes
 - `ERROR_REPORT` - Daily error reports
 
 ## Adapter Details
@@ -126,7 +132,7 @@ Unchained uses the following templates internally:
 |----------|-------|
 | Key | `shop.unchained.worker-plugin.message` |
 | Type | `MESSAGE` |
-| Source | [worker/message.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/worker/message.ts) |
+| Source | [worker/message](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/worker/message) |
 
 ## Related
 

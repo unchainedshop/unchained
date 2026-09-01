@@ -46,8 +46,8 @@ When running the init command, you'll be prompted with several questions:
 # 1. Select template type
 ? What type of template do you want ›
 Full Stack E-Commerce <-- Select this
-Storefront
-Unchained Engine
+Basic Storefront
+Kitchensink Backend
 
 # 2. Enter project name (or press Enter for default)
 ? Name of project › my-shop
@@ -58,6 +58,10 @@ Unchained Engine
 # 4. Initialize git repository (choose based on your preference)
 ? Do you want Initialize git? › no / yes
 ```
+
+:::note Versioning
+The template tracks the Unchained Engine v5 alpha releases, while `npm` `latest` of the engine packages is still 4.8.x.
+:::
 
 ### Start the Engine
 
@@ -126,51 +130,9 @@ Once you've completed the Quick Start, explore [Platform Configuration](../platf
 
 ## Development Workflow / Troubleshooting
 
-### Hot Reloading
+Both sub-projects use the same scripts (`npm run dev`, `npm run build`, `npm run start`, `npm run lint`) and support hot reloading — the engine restarts on code changes, the storefront refreshes in the browser.
 
-Both engine and storefront support hot reloading:
-- Engine: Changes to code automatically restart the server
-- Storefront: Changes immediately reflect in the browser
+Unchained-specific things to check when something doesn't work:
 
-### Useful Commands
-
-**Engine Commands:**
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint        # Run linter
-```
-
-**Storefront Commands:**
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint        # Run linter
-```
-
-### Engine Issues
-
-**Port Already in Use**
-```bash
-# Find process using port 4010
-lsof -i :4010
-# Kill the process or use different port in .env
-```
-
-**MongoDB Connection Failed**
-- Ensure MongoDB is running by checking engine logs
-- Check connection string in dotenv files
-- Verify database permissions if custom connection string is used
-
-### Storefront Issues
-
-**API Connection Failed**
-- Verify engine is running
-- Check `UNCHAINED_ENDPOINT` in `.env.local`
-- Look for CORS errors in browser console
-
-**Build Errors**
-- Clear Next.js cache: `rm -rf .next`
-- Reinstall dependencies: `rm -rf node_modules && npm install`
+- **Database**: Without a `MONGO_URL` set, the engine downloads and runs a local MongoDB via mongodb-memory-server (see engine logs). Set `MONGO_URL` to use your own instance.
+- **Storefront can't reach the API**: Check `UNCHAINED_ENDPOINT` in the storefront's `.env.local` — it must point to the engine's GraphQL endpoint (default `http://localhost:4010/graphql`).

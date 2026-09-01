@@ -13,6 +13,7 @@ export default (unchainedAPI: UnchainedCore) =>
       {
         sort: {
           productMediaId: 1,
+          _id: 1,
         },
       },
     );

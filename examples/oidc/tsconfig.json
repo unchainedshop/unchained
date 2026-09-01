@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "strict": false,
     "resolveJsonModule": true,
     "rewriteRelativeImportExtensions": true,
     "erasableSyntaxOnly": true,
@@ -11,8 +12,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "target": "esnext",
-    "types": ["node"],
-    "baseUrl": "." // This must be specified if "paths" is.
+    "types": ["node"]
   },
   "exclude": ["node_modules"]
 }

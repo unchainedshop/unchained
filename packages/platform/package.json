@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/platform",
   "description": "Complete e-commerce platform bundle for the Unchained Engine",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.4",
   "main": "lib/platform-index.js",
   "types": "lib/platform-index.d.ts",
   "type": "module",
@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "engines": {
-    "node": ">=22.0.0",
+    "node": ">=24.0.0",
     "npm": ">=10.0.0"
   },
   "dependencies": {
@@ -45,11 +45,10 @@
     "@unchainedshop/mongodb": "^5.0.0-alpha.1",
     "@unchainedshop/plugins": "^5.0.0-alpha.1",
     "@unchainedshop/roles": "^5.0.0-alpha.1",
-    "@unchainedshop/utils": "^5.0.0-alpha.1",
-    "safe-stable-stringify": "^2.5.0"
+    "@unchainedshop/utils": "^5.0.0-alpha.1"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }

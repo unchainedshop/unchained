@@ -1,0 +1,797 @@
+{
+  "source": "https://ec.europa.eu/taxation_customs/tedb/#/vat-search",
+  "verifiedAt": "2026-08-20",
+  "timezone": "+01:00",
+  "countries": {
+    "AT": {
+      "standard": [
+        {
+          "validFrom": "1976-01-01",
+          "rate": 0.18
+        },
+        {
+          "validFrom": "1984-01-01",
+          "rate": 0.2
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "1984-01-01",
+          "rate": 0.1
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "2016-01-01",
+          "rate": 0.13
+        }
+      ],
+      "parking": [
+        {
+          "validFrom": "1995-01-01",
+          "rate": 0.12
+        },
+        {
+          "validFrom": "2016-01-01",
+          "rate": 0.13
+        }
+      ]
+    },
+    "BE": {
+      "standard": [
+        {
+          "validFrom": "1994-01-01",
+          "rate": 0.205
+        },
+        {
+          "validFrom": "1996-01-01",
+          "rate": 0.21
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "1971-01-01",
+          "rate": 0.06
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "1992-04-01",
+          "rate": 0.12
+        }
+      ],
+      "parking": [
+        {
+          "validFrom": "1994-01-01",
+          "rate": 0.12
+        }
+      ]
+    },
+    "BG": {
+      "standard": [
+        {
+          "validFrom": "1996-07-01",
+          "rate": 0.22
+        },
+        {
+          "validFrom": "1999-01-01",
+          "rate": 0.2
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2007-01-01",
+          "rate": 0.07
+        },
+        {
+          "validFrom": "2011-04-01",
+          "rate": 0.09
+        }
+      ]
+    },
+    "CY": {
+      "standard": [
+        {
+          "validFrom": "2013-01-14",
+          "rate": 0.18
+        },
+        {
+          "validFrom": "2014-01-13",
+          "rate": 0.19
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2005-08-01",
+          "rate": 0.08
+        },
+        {
+          "validFrom": "2014-01-13",
+          "rate": 0.09
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "2000-07-01",
+          "rate": 0.05
+        }
+      ],
+      "super_reduced": [
+        {
+          "validFrom": "2023-07-21",
+          "rate": 0.03
+        }
+      ]
+    },
+    "CZ": {
+      "standard": [
+        {
+          "validFrom": "2010-01-01",
+          "rate": 0.2
+        },
+        {
+          "validFrom": "2013-01-01",
+          "rate": 0.21
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2013-01-01",
+          "rate": 0.15
+        },
+        {
+          "validFrom": "2024-01-01",
+          "rate": 0.12
+        }
+      ]
+    },
+    "DE": {
+      "standard": [
+        {
+          "validFrom": "1998-04-01",
+          "rate": 0.16
+        },
+        {
+          "validFrom": "2007-01-01",
+          "rate": 0.19
+        },
+        {
+          "validFrom": "2020-07-01",
+          "rate": 0.16
+        },
+        {
+          "validFrom": "2021-01-01",
+          "rate": 0.19
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "1983-07-01",
+          "rate": 0.07
+        },
+        {
+          "validFrom": "2020-07-01",
+          "rate": 0.05
+        },
+        {
+          "validFrom": "2021-01-01",
+          "rate": 0.07
+        }
+      ]
+    },
+    "DK": {
+      "standard": [
+        {
+          "validFrom": "1980-06-30",
+          "rate": 0.22
+        },
+        {
+          "validFrom": "1992-01-01",
+          "rate": 0.25
+        }
+      ]
+    },
+    "EE": {
+      "standard": [
+        {
+          "validFrom": "2009-07-01",
+          "rate": 0.2
+        },
+        {
+          "validFrom": "2024-01-01",
+          "rate": 0.22
+        },
+        {
+          "validFrom": "2025-07-01",
+          "rate": 0.24
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2009-01-01",
+          "rate": 0.09
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "2025-01-01",
+          "rate": 0.13
+        }
+      ]
+    },
+    "ES": {
+      "standard": [
+        {
+          "validFrom": "2010-07-01",
+          "rate": 0.18
+        },
+        {
+          "validFrom": "2012-09-01",
+          "rate": 0.21
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2010-07-01",
+          "rate": 0.08
+        },
+        {
+          "validFrom": "2012-09-01",
+          "rate": 0.1
+        }
+      ],
+      "super_reduced": [
+        {
+          "validFrom": "1995-01-01",
+          "rate": 0.04
+        }
+      ]
+    },
+    "FI": {
+      "standard": [
+        {
+          "validFrom": "2013-01-01",
+          "rate": 0.24
+        },
+        {
+          "validFrom": "2024-09-01",
+          "rate": 0.255
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2013-01-01",
+          "rate": 0.14
+        },
+        {
+          "validFrom": "2026-01-01",
+          "rate": 0.135
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "2013-01-01",
+          "rate": 0.1
+        }
+      ]
+    },
+    "FR": {
+      "standard": [
+        {
+          "validFrom": "2000-04-01",
+          "rate": 0.196
+        },
+        {
+          "validFrom": "2014-01-01",
+          "rate": 0.2
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "1982-07-01",
+          "rate": 0.055
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "2012-01-01",
+          "rate": 0.07
+        },
+        {
+          "validFrom": "2014-01-01",
+          "rate": 0.1
+        }
+      ],
+      "super_reduced": [
+        {
+          "validFrom": "1986-07-01",
+          "rate": 0.021
+        }
+      ]
+    },
+    "GR": {
+      "standard": [
+        {
+          "validFrom": "2010-07-01",
+          "rate": 0.23
+        },
+        {
+          "validFrom": "2016-06-01",
+          "rate": 0.24
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2011-01-01",
+          "rate": 0.13
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "2011-01-01",
+          "rate": 0.065
+        },
+        {
+          "validFrom": "2015-07-20",
+          "rate": 0.06
+        }
+      ]
+    },
+    "HR": {
+      "standard": [
+        {
+          "validFrom": "2009-08-01",
+          "rate": 0.23
+        },
+        {
+          "validFrom": "2012-03-01",
+          "rate": 0.25
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2006-01-01",
+          "rate": 0.1
+        },
+        {
+          "validFrom": "2014-01-01",
+          "rate": 0.13
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "2013-01-01",
+          "rate": 0.05
+        }
+      ]
+    },
+    "HU": {
+      "standard": [
+        {
+          "validFrom": "2009-07-01",
+          "rate": 0.25
+        },
+        {
+          "validFrom": "2012-01-01",
+          "rate": 0.27
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2009-07-01",
+          "rate": 0.18
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "2004-01-01",
+          "rate": 0.05
+        }
+      ]
+    },
+    "IE": {
+      "standard": [
+        {
+          "validFrom": "2012-01-01",
+          "rate": 0.23
+        },
+        {
+          "validFrom": "2020-09-01",
+          "rate": 0.21
+        },
+        {
+          "validFrom": "2021-03-01",
+          "rate": 0.23
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2003-01-01",
+          "rate": 0.135
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "2011-07-01",
+          "rate": 0.09
+        }
+      ],
+      "super_reduced": [
+        {
+          "validFrom": "2005-01-01",
+          "rate": 0.048
+        }
+      ],
+      "parking": [
+        {
+          "validFrom": "2003-01-01",
+          "rate": 0.135
+        }
+      ]
+    },
+    "IT": {
+      "standard": [
+        {
+          "validFrom": "2011-09-17",
+          "rate": 0.21
+        },
+        {
+          "validFrom": "2013-10-01",
+          "rate": 0.22
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "1995-02-24",
+          "rate": 0.1
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "2016-01-01",
+          "rate": 0.05
+        }
+      ],
+      "super_reduced": [
+        {
+          "validFrom": "1989-01-01",
+          "rate": 0.04
+        }
+      ]
+    },
+    "LT": {
+      "standard": [
+        {
+          "validFrom": "2009-01-01",
+          "rate": 0.19
+        },
+        {
+          "validFrom": "2009-09-01",
+          "rate": 0.21
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2001-01-01",
+          "rate": 0.09
+        },
+        {
+          "validFrom": "2026-01-01",
+          "rate": 0.12
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "2000-05-01",
+          "rate": 0.05
+        }
+      ]
+    },
+    "LU": {
+      "standard": [
+        {
+          "validFrom": "1992-01-01",
+          "rate": 0.15
+        },
+        {
+          "validFrom": "2015-01-01",
+          "rate": 0.17
+        },
+        {
+          "validFrom": "2023-01-01",
+          "rate": 0.16
+        },
+        {
+          "validFrom": "2024-01-01",
+          "rate": 0.17
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2015-01-01",
+          "rate": 0.08
+        },
+        {
+          "validFrom": "2023-01-01",
+          "rate": 0.07
+        },
+        {
+          "validFrom": "2024-01-01",
+          "rate": 0.08
+        }
+      ],
+      "super_reduced": [
+        {
+          "validFrom": "1983-07-01",
+          "rate": 0.03
+        }
+      ],
+      "parking": [
+        {
+          "validFrom": "2015-01-01",
+          "rate": 0.14
+        },
+        {
+          "validFrom": "2023-01-01",
+          "rate": 0.13
+        },
+        {
+          "validFrom": "2024-01-01",
+          "rate": 0.14
+        }
+      ]
+    },
+    "LV": {
+      "standard": [
+        {
+          "validFrom": "2011-01-01",
+          "rate": 0.22
+        },
+        {
+          "validFrom": "2012-07-01",
+          "rate": 0.21
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2011-01-01",
+          "rate": 0.12
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "2018-01-01",
+          "rate": 0.05
+        }
+      ]
+    },
+    "MT": {
+      "standard": [
+        {
+          "validFrom": "1995-01-01",
+          "rate": 0.15
+        },
+        {
+          "validFrom": "2004-01-01",
+          "rate": 0.18
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2011-01-01",
+          "rate": 0.07
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "1995-01-01",
+          "rate": 0.05
+        }
+      ],
+      "parking": [
+        {
+          "validFrom": "2024-01-01",
+          "rate": 0.12
+        }
+      ]
+    },
+    "NL": {
+      "standard": [
+        {
+          "validFrom": "2001-01-01",
+          "rate": 0.19
+        },
+        {
+          "validFrom": "2012-10-01",
+          "rate": 0.21
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "1986-10-01",
+          "rate": 0.06
+        },
+        {
+          "validFrom": "2019-01-01",
+          "rate": 0.09
+        }
+      ]
+    },
+    "PL": {
+      "standard": [
+        {
+          "validFrom": "1993-07-05",
+          "rate": 0.22
+        },
+        {
+          "validFrom": "2011-01-01",
+          "rate": 0.23
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "1993-07-05",
+          "rate": 0.07
+        },
+        {
+          "validFrom": "2011-01-01",
+          "rate": 0.08
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "2000-09-04",
+          "rate": 0.03
+        },
+        {
+          "validFrom": "2011-01-01",
+          "rate": 0.05
+        }
+      ]
+    },
+    "PT": {
+      "standard": [
+        {
+          "validFrom": "2010-07-01",
+          "rate": 0.21
+        },
+        {
+          "validFrom": "2011-01-01",
+          "rate": 0.23
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "1992-03-24",
+          "rate": 0.05
+        },
+        {
+          "validFrom": "2010-07-01",
+          "rate": 0.06
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "1996-07-01",
+          "rate": 0.12
+        },
+        {
+          "validFrom": "2010-07-01",
+          "rate": 0.13
+        }
+      ],
+      "parking": [
+        {
+          "validFrom": "2002-06-05",
+          "rate": 0.12
+        },
+        {
+          "validFrom": "2010-07-01",
+          "rate": 0.13
+        }
+      ]
+    },
+    "RO": {
+      "standard": [
+        {
+          "validFrom": "2016-01-01",
+          "rate": 0.2
+        },
+        {
+          "validFrom": "2017-01-01",
+          "rate": 0.19
+        },
+        {
+          "validFrom": "2025-08-01",
+          "rate": 0.21
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2004-01-01",
+          "rate": 0.09
+        },
+        {
+          "validFrom": "2025-08-01",
+          "rate": 0.11
+        }
+      ]
+    },
+    "SE": {
+      "standard": [
+        {
+          "validFrom": "1990-07-01",
+          "rate": 0.25
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "1993-07-01",
+          "rate": 0.12
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "1996-01-01",
+          "rate": 0.06
+        }
+      ]
+    },
+    "SI": {
+      "standard": [
+        {
+          "validFrom": "2002-01-01",
+          "rate": 0.2
+        },
+        {
+          "validFrom": "2013-07-01",
+          "rate": 0.22
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2002-01-01",
+          "rate": 0.085
+        },
+        {
+          "validFrom": "2013-07-01",
+          "rate": 0.095
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "2020-01-01",
+          "rate": 0.05
+        }
+      ]
+    },
+    "SK": {
+      "standard": [
+        {
+          "validFrom": "2011-01-01",
+          "rate": 0.2
+        },
+        {
+          "validFrom": "2025-01-01",
+          "rate": 0.23
+        }
+      ],
+      "reduced": [
+        {
+          "validFrom": "2011-01-01",
+          "rate": 0.1
+        },
+        {
+          "validFrom": "2025-01-01",
+          "rate": 0.19
+        }
+      ],
+      "reduced2": [
+        {
+          "validFrom": "2023-01-01",
+          "rate": 0.05
+        }
+      ]
+    }
+  }
+}

@@ -2,7 +2,7 @@
   "name": "@unchainedshop/example-kitchensink",
   "description": "Kitchensink for Unchained Engine (Fastify)",
   "private": true,
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.4",
   "license": "EUPL-1.2",
   "type": "module",
   "homepage": "https://unchained.shop",
@@ -22,7 +22,7 @@
   },
   "engineStrict": true,
   "engines": {
-    "node": ">=22.0.0",
+    "node": ">=24.0.0",
     "npm": ">=10.0.0"
   },
   "scripts": {
@@ -34,11 +34,12 @@
     "integration-test": "npx -y node@22 --no-warnings --env-file=.env.defaults --env-file ../../.env.tests --env-file-if-exists=../../.env --import ./load_env.js --watch --experimental-strip-types src/boot.ts"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.7",
-    "@ai-sdk/openai-compatible": "^2.0.4",
+    "@ai-sdk/openai": "^4.0.47",
+    "@ai-sdk/openai-compatible": "^3.0.37",
     "@fastify/cookie": "^11.0.2",
     "@fastify/multipart": "^10.0.0",
     "@fastify/session": "^11.1.0",
+    "@modelcontextprotocol/server": "^2.0.0",
     "@scure/bip32": "^2.0.0",
     "@scure/btc-signer": "^2.0.0",
     "@unchainedshop/admin-ui": "^5.0.0-alpha.3",
@@ -50,8 +51,8 @@
     "@unchainedshop/ticketing": "^5.0.0-alpha.1",
     "expiry-map": "^2.0.0",
     "fastify": "^5.4.0",
-    "graphql": "^16.11.0",
-    "graphql-yoga": "^5.15.1",
+    "graphql": "^17.0.2",
+    "graphql-yoga": "^5.22.0",
     "nodemailer": "^9.0.0",
     "p-memoize": "^8.0.0",
     "resolve-accept-language": "^3.2.2",
@@ -63,6 +64,6 @@
     "@types/node": "^26.2.0",
     "mongodb-memory-server": "^11.0.0",
     "prettier": "^3.6.2",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }

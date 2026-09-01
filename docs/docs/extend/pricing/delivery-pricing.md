@@ -27,7 +27,7 @@ registerDeliveryPricing({
 });
 ```
 
-`calculate(sheet, context)` receives the running `sheet` and the delivery pricing `context` (`provider`, `order`, `modules`, `currencyCode`).
+`calculate(sheet, context)` receives a fresh result sheet for this adapter (it contains only the rows you add) and the delivery pricing `context` (`provider`, `order`, `orderDelivery`, `currencyCode`).
 
 ## Examples
 
@@ -39,7 +39,10 @@ registerDeliveryPricing({
   isActivatedFor: (context) => context.provider?.type === 'SHIPPING',
   calculate: async (sheet, context) => {
     const zoneRates = { CH: 800, DE: 1500, AT: 1500, FR: 1500, IT: 1500, default: 2500 };
-    const countryCode = context.order?.delivery?.address?.countryCode;
+    // shipping address is stored on the order delivery; fall back to the billing address
+    const countryCode =
+      context.orderDelivery?.context?.address?.countryCode ??
+      context.order?.billingAddress?.countryCode;
     sheet.addFee({
       amount: zoneRates[countryCode] ?? zoneRates.default,
       isTaxable: true,
@@ -52,15 +55,23 @@ registerDeliveryPricing({
 
 ### Free-shipping threshold
 
+Your `sheet` never contains rows of other adapters, so read the order item total from the order's last calculation instead and skip the fee above the threshold:
+
 ```typescript
+import { OrderPricingSheet, registerDeliveryPricing } from '@unchainedshop/core';
+
 registerDeliveryPricing({
-  adapterId: 'free-shipping',
-  orderIndex: 10, // after base shipping
+  adapterId: 'threshold-shipping',
+  isActivatedFor: (context) => context.provider?.type === 'SHIPPING',
   calculate: async (sheet, context) => {
-    const productTotal = sheet.sum({ category: 'ITEMS' }); // order item total
-    const deliveryTotal = sheet.sum({ category: 'DELIVERY' });
-    if (productTotal >= 10000 && deliveryTotal > 0) {
-      sheet.addDiscount({ amount: -deliveryTotal, isTaxable: true, isNetPrice: true, discountId: 'free-shipping', meta: { threshold: 10000 } });
+    const itemsTotal = OrderPricingSheet({
+      calculation: context.order?.calculation ?? [],
+      currencyCode: context.currencyCode,
+    }).total({ category: 'ITEMS' }).amount;
+
+    if (itemsTotal < 10000) {
+      // 8.00 shipping below 100.00, free above
+      sheet.addFee({ amount: 800, isTaxable: true, isNetPrice: true, meta: { threshold: 10000 } });
     }
   },
 });

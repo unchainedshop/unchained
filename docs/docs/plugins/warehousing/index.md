@@ -9,10 +9,10 @@ description: Warehousing and inventory plugins for Unchained Engine
 
 Warehousing plugins manage inventory, stock levels, and product fulfillment.
 
-| Adapter Key | Description |
-|-------------|-------------|
-| [`shop.unchained.warehousing.store`](./warehousing-store.md) | Basic inventory management |
-| [`shop.unchained.warehousing.infinite-minter`](./warehousing-eth-minter.md) | Ethereum NFT minting |
+| Adapter Key | Description | Preset |
+|-------------|-------------|--------|
+| [`shop.unchained.warehousing.store`](./warehousing-store.md) | Basic inventory management | `base` |
+| [`shop.unchained.warehousing.infinite-minter`](./warehousing-eth-minter.md) | Ethereum NFT minting | `crypto` |
 
 ## Creating Custom Warehousing Plugins
 

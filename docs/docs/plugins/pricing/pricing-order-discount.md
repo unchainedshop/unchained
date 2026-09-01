@@ -10,13 +10,16 @@ description: Apply discounts to total order value
 Applies discounts to the total order value, including items, delivery, and payment fees. This is the most comprehensive discount type.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.
 :::
 
-## Installation
+## Registration
 
 ```typescript
-import '@unchainedshop/plugins/pricing/order-discount';
+import { pluginRegistry } from '@unchainedshop/core';
+import { OrderDiscountPlugin } from '@unchainedshop/plugins/pricing/order-discount';
+
+pluginRegistry.register(OrderDiscountPlugin);
 ```
 
 ## How It Works
@@ -64,10 +67,9 @@ Result:
 | Key | `shop.unchained.pricing.order-discount` |
 | Version | `1.0.0` |
 | Order Index | `40` |
-| Source | [pricing/order-discount.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/pricing/order-discount.ts) |
+| Source | [pricing/order-discount](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/pricing/order-discount) |
 
 ## Related
 
-- [Order Items Discount](./pricing-order-items-discount.md) - Items-only discounts
 - [Discount 100 Off](./pricing-discount-100-off.md) - Example fixed discount
 - [Order Discounts](../../extend/pricing/order-discounts.md) - Creating custom discounts

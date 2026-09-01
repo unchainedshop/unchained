@@ -16,8 +16,12 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
-import { generateThemeCSS, type AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
-import { preparePluginAssets, resolveAdminUIPath, type AdminUIPluginConfig } from '../adminUiPlugins.ts';
+import {
+  preparePluginAssets,
+  resolveAdminUIPath,
+  type AdminUIPluginConfig,
+  type AdminUIThemeConfig,
+} from '../adminUiPlugins.ts';
 
 export type {
   AdminUIPluginConfig,
@@ -26,9 +30,9 @@ export type {
   AdminUIPluginTabConfig,
   AdminUIPluginWidgetConfig,
   AdminUIPluginSlotConfig,
+  AdminUIThemeTokens,
+  AdminUIThemeConfig,
 } from '../adminUiPlugins.ts';
-
-export type { AdminUIThemeTokens, AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
 
 export interface AdminUIRouterOptions {
   prefix?: string;
@@ -244,18 +248,40 @@ export const connect = async (
     const adminUIOptions = typeof adminUI === 'object' ? adminUI : undefined;
     const adminUIPlugins: AdminUIPluginConfig[] = adminUIOptions?.plugins || [];
 
-    const themeCSS = generateThemeCSS(adminUIOptions?.theme);
-    const themeHash = createHash('sha256').update(themeCSS).digest('hex').slice(0, 8);
-    const themeEtag = `"${themeHash}"`;
+    // generateThemeCSS without a theme yields the same default, so the optional
+    // @unchainedshop/admin-ui dependency is only resolved when a theme is set.
+    // Resolution happens lazily on first request: connect() is not awaited by
+    // callers, so nothing may suspend here before the routes are registered.
+    // We resolve the specifier at runtime via import.meta.resolve so the engine
+    // builds and boots without admin-ui being compiled first (it ships its own
+    // build artefacts) — keeping this a runtime-only, optional dependency.
+    let themePromise: Promise<{ css: string; etag: string }> | undefined;
+    const resolveThemeCSS = async () => {
+      let css = '/* default theme */';
+      if (adminUIOptions?.theme) {
+        try {
+          const themeModuleUrl = import.meta.resolve('@unchainedshop/admin-ui/theme');
+          const { generateThemeCSS } = await import(themeModuleUrl);
+          css = generateThemeCSS(adminUIOptions.theme);
+        } catch {
+          fastify.log.warn(
+            "npm dependency @unchainedshop/admin-ui is not installed, can't apply admin-ui theme",
+          );
+        }
+      }
+      const etag = `"${createHash('sha256').update(css).digest('hex').slice(0, 8)}"`;
+      return { css, etag };
+    };
     fastify.get('/admin-ui-theme.css', async (request, reply) => {
-      if (request.headers['if-none-match'] === themeEtag) {
+      const { css, etag } = await (themePromise ||= resolveThemeCSS());
+      if (request.headers['if-none-match'] === etag) {
         return reply.code(304).send();
       }
       return reply
         .header('Cache-Control', 'public, max-age=0, must-revalidate')
-        .header('ETag', themeEtag)
+        .header('ETag', etag)
         .type('text/css')
-        .send(themeCSS);
+        .send(css);
     });
 
     const devMode = process.env.NODE_ENV !== 'production';

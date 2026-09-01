@@ -1,6 +1,6 @@
-import { Locker, MongoAdapter } from '@kontsedal/locco';
 import { generateDbFilterById, type ModuleInput, mongodb } from '@unchainedshop/mongodb';
 import { OrderDeliveriesCollection } from '../db/OrderDeliveriesCollection.ts';
+import { OrderLocksCollection, acquireLock } from '../db/OrderLocksCollection.ts';
 import { OrderDiscountsCollection } from '../db/OrderDiscountsCollection.ts';
 import { OrderPaymentsCollection } from '../db/OrderPaymentsCollection.ts';
 import { OrderPositionsCollection } from '../db/OrderPositionsCollection.ts';
@@ -44,16 +44,7 @@ export const configureOrdersModule = async ({
   const OrderDiscounts = await OrderDiscountsCollection(db);
   const OrderPayments = await OrderPaymentsCollection(db);
   const OrderPositions = await OrderPositionsCollection(db);
-
-  const mongoAdapter = new MongoAdapter({
-    client: {
-      db: () => db,
-    },
-  });
-  const locker = new Locker({
-    adapter: mongoAdapter,
-    retrySettings: { retryDelay: 200, retryTimes: 10 },
-  });
+  const OrderLocks = await OrderLocksCollection(db);
 
   const orderQueries = configureOrdersModuleQueries({ Orders });
 
@@ -177,7 +168,7 @@ export const configureOrdersModule = async ({
     },
 
     acquireLock: async (orderId: string, identifier: string, timeout = 5000) => {
-      return await locker.lock(`order:${identifier}:${orderId}`, timeout).acquire();
+      return acquireLock(OrderLocks, `order:${identifier}:${orderId}`, timeout);
     },
 
     setDeliveryProvider: async (orderId: string, deliveryProviderId: string) => {

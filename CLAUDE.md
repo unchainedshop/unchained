@@ -63,7 +63,7 @@ import { startPlatform } from '@unchainedshop/platform';
 ```
 
 ### Rationale
-- Native Node.js 22+ ESM TypeScript execution
+- Native Node.js 24+ ESM TypeScript execution
 - TypeScript config: `"allowImportingTsExtensions": true`, `"module": "NodeNext"`
 - No compilation required for development/testing: `node --watch src/file.ts`, `node --test path/to/test.ts`
 
@@ -121,7 +121,7 @@ core         → Business logic coordination, integrates all core-* modules
     ↓
 core-*       → Domain-specific modules (users, products, orders, payments, delivery, etc.)
     ↓
-infrastructure → Base utilities (mongodb, events, logger, utils, roles, file-upload)
+infrastructure → Base utilities (mongodb, events, logger, utils, roles)
 ```
 
 ### Key Packages
@@ -130,7 +130,7 @@ infrastructure → Base utilities (mongodb, events, logger, utils, roles, file-u
 - **@unchainedshop/core**: Orchestrates all core-* modules and provides cross-module services
 - **@unchainedshop/plugins**: Plugin system with Directors and Adapters for payment, delivery, pricing, and warehousing
 - **@unchainedshop/ticketing**: Event ticketing functionality
-- **Infrastructure packages**: mongodb, events, logger, utils, roles, file-upload - foundational utilities used across all layers
+- **Infrastructure packages**: mongodb, events, logger, utils, roles - foundational utilities used across all layers
 
 ### Plugin Architecture
 The plugin system uses a Director/Adapter pattern:
@@ -140,44 +140,41 @@ The plugin system uses a Director/Adapter pattern:
 - **Side-effect free**: Plugin files export pure adapter objects without auto-registration
 
 #### Plugin Registration Pattern
-Plugins are registered explicitly before starting the platform:
+Plugins are registered explicitly before starting the platform. The presets have no default export, and `startPlatform` needs no `modules` argument for built-ins (core modules are defaulted internally):
 
 ```typescript
-// Import preset registration function
-import defaultModules, { registerAllPlugins } from '@unchainedshop/plugins/presets/all.js';
+import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
 import { startPlatform } from '@unchainedshop/platform';
 
 // Register all plugins before starting platform
 registerAllPlugins();
 
-// Start platform
-const platform = await startPlatform({
-  modules: defaultModules,
-});
+const platform = await startPlatform({});
 ```
+
+Note: import preset and plugin subpaths WITHOUT a file extension — the package `exports` map (`"./presets/*": "./lib/presets/*.js"`) appends `.js` itself, so `presets/all.js` would resolve to `all.js.js` and fail.
 
 #### Available Presets
 - **base**: Essential plugins (Invoice payment, Post delivery, core pricing, workers)
-  - Use `registerBasePlugins()` from `@unchainedshop/plugins/presets/base.js`
+  - Use `registerBasePlugins()` from `@unchainedshop/plugins/presets/base`
 - **all**: Complete plugin bundle (includes base + additional payment gateways, filters, workers)
-  - Use `registerAllPlugins()` from `@unchainedshop/plugins/presets/all.js`
+  - Use `registerAllPlugins()` from `@unchainedshop/plugins/presets/all`
 - **crypto**: Cryptocurrency plugins (Cryptopay, token minting, rate conversion)
-  - Use `registerCryptoPlugins()` from `@unchainedshop/plugins/presets/crypto.js`
+  - Use `registerCryptoPlugins()` from `@unchainedshop/plugins/presets/crypto`
 
 #### Registering Individual Plugins
-For custom configurations, import and register individual adapters:
+`Director.registerAdapter()` is removed in v5. Built-in plugins export an `IPlugin` object (named `XPlugin` and as default export) that bundles the adapter with its HTTP routes and DB modules — register it via `pluginRegistry`:
 
 ```typescript
-import { PaymentDirector, ProductDiscountDirector } from '@unchainedshop/core';
-import { Stripe } from '@unchainedshop/plugins/payment/stripe/index.js';
-import { DiscountHalfPrice } from '@unchainedshop/plugins/pricing/discount-half-price.js';
+import { pluginRegistry } from '@unchainedshop/core';
+import { StripePlugin } from '@unchainedshop/plugins/payment/stripe';
+import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
 
-// Register specific adapters
-PaymentDirector.registerAdapter(Stripe);
-ProductDiscountDirector.registerAdapter(DiscountHalfPrice);
+pluginRegistry.register(StripePlugin);
+pluginRegistry.register(HalfPriceManualPlugin);
 ```
 
-All plugin files export their adapters as named exports, making cherry-picking straightforward.
+Custom adapters are authored with the typed `registerX()` factories re-exported from `@unchainedshop/core` (e.g. `registerPaymentProvider`, `registerProductPricing`, `registerWorker`) — see `packages/core/src/factory/`.
 
 ### Core Module Pattern
 Each core-* module follows a consistent pattern:
@@ -220,6 +217,6 @@ The API package supports multiple server frameworks:
 - Use `.env` files for local configuration
 - Default values in `.env.defaults`
 - Integration tests use `.env.tests` with `.env` as fallback
-- Node.js 22+ required (25 in .nvmrc)
+- Node.js 24+ required (26 in .nvmrc)
 - MongoDB required (or use MongoDB Memory Server for testing)
  No newline at end of file

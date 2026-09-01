@@ -23,7 +23,7 @@ registerOrderDiscount({
   // apply when the buyer enters a matching code:
   isValidForCodeTriggering: async (code) => code === 'SAVE10',
   discountForPricingAdapterKey: ({ pricingAdapterKey }) =>
-    pricingAdapterKey === 'shop.unchained.pricing.order-items' ? { rate: 0.1 } : null,
+    pricingAdapterKey === 'shop.unchained.pricing.order-discount' ? { rate: 0.1 } : null,
 });
 ```
 
@@ -45,7 +45,7 @@ registerOrderDiscount({
   adapterId: 'coupon',
   isValidForCodeTriggering: async (code) => code in codes,
   discountForPricingAdapterKey: ({ pricingAdapterKey }, context) =>
-    pricingAdapterKey === 'shop.unchained.pricing.order-items' ? codes[context.code] ?? null : null,
+    pricingAdapterKey === 'shop.unchained.pricing.order-discount' ? codes[context.code] ?? null : null,
   reserve: async (code) => db.collection('coupons').updateOne({ code }, { $inc: { usageCount: 1 } }),
   release: async (context) => db.collection('coupons').updateOne({ code: context.code }, { $inc: { usageCount: -1 } }),
 });
@@ -61,7 +61,7 @@ registerOrderDiscount({
     return previous === 0;
   },
   discountForPricingAdapterKey: ({ pricingAdapterKey }) =>
-    pricingAdapterKey === 'shop.unchained.pricing.order-items' ? { rate: 0.15 } : null,
+    pricingAdapterKey === 'shop.unchained.pricing.order-discount' ? { rate: 0.15 } : null,
 });
 ```
 

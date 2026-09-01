@@ -20,8 +20,6 @@ const PAYMENT_PROVIDER_EVENTS: string[] = [
   'PAYMENT_PROVIDER_REMOVE',
 ];
 
-const allProvidersTtlMs = process.env.NODE_ENV === 'production' ? 60000 : 1;
-
 export interface PaymentProviderQuery {
   paymentProviderIds?: string[];
   type?: PaymentProviderType;
@@ -58,9 +56,10 @@ export const configurePaymentProvidersModule = (
 ) => {
   registerEvents(PAYMENT_PROVIDER_EVENTS);
 
-  const allProviders = memoizeWithTTL(async function () {
-    return PaymentProviders.find({ deleted: null }, { sort: { created: 1 } }).toArray();
-  }, allProvidersTtlMs);
+  const allProviders = memoizeWithTTL(
+    async () => PaymentProviders.find({ deleted: null }, { sort: { created: 1, _id: 1 } }).toArray(),
+    { ttl: process.env.NODE_ENV === 'production' ? 60000 : 1 },
+  );
 
   return {
     // Queries
@@ -86,7 +85,7 @@ export const configurePaymentProvidersModule = (
 
     findProviders: async (
       query: PaymentProviderQuery = {},
-      options: mongodb.FindOptions = { sort: { created: 1 } },
+      options: mongodb.FindOptions = { sort: { created: 1, _id: 1 } },
     ): Promise<PaymentProvider[]> => {
       const providers = PaymentProviders.find(buildFindSelector(query), options);
       return providers.toArray();

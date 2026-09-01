@@ -7,31 +7,36 @@ description: Simple manual quotation adapter with configurable expiry
 
 # Manual Quotations
 
-A simple quotation adapter that creates quotations with a 1-hour expiration time. Ideal for manual price negotiation workflows.
+A quotation adapter for human-reviewed price negotiation: an admin proposes a price via `makeQuotationProposal`, and the resulting quote expires after 1 hour by default.
 
 :::info Included in Base Preset
-This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
+Registered automatically by `registerBasePlugins()` and `registerAllPlugins()`.
 :::
 
-## Installation
+If you register plugins individually instead of using a preset:
 
 ```typescript
-import '@unchainedshop/plugins/quotations/manual';
+import { pluginRegistry } from '@unchainedshop/core';
+import { ManualOfferingPlugin } from '@unchainedshop/plugins/quotations/manual';
+
+pluginRegistry.register(ManualOfferingPlugin);
 ```
 
-## Features
+## Adapter Details
 
-- **Automatic Activation**: Activated for all products
-- **1-Hour Expiry**: Quotations expire after 1 hour by default
-- **Simple Implementation**: Minimal configuration required
-- **Manual Workflow**: Designed for human-reviewed quotations
+| Property | Value |
+|----------|-------|
+| Key | `shop.unchained.quotations.manual` |
+| Order Index | `0` |
+| Activation | All products (`isActivatedFor` returns `true`) |
+| Source | [quotations/manual](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/quotations/manual) |
 
-## How It Works
+## Behavior
 
-1. Customer requests a quotation for a product
-2. The adapter creates a quotation that expires in 1 hour
-3. Admin reviews and can adjust the quotation
-4. Customer accepts or the quotation expires
+`quote()` derives the proposal from the persisted quotation context:
+
+- `price`: taken from `quotation.context.price` (minor units of the quotation's currency), i.e. whatever was passed to `makeQuotationProposal`
+- `expires`: `quotation.context.expires` if set, otherwise now + 1 hour
 
 ## Usage
 
@@ -49,6 +54,33 @@ mutation RequestQuotation {
     _id
     status
     expires
+  }
+}
+```
+
+### Admin: Make a Proposal
+
+`quotationContext` is stored on the quotation and read by `quote()`:
+
+```graphql
+mutation MakeProposal {
+  makeQuotationProposal(
+    quotationId: "quotation-id"
+    quotationContext: { price: 8999 }
+  ) {
+    _id
+    status
+  }
+}
+```
+
+### Verify a Request
+
+```graphql
+mutation VerifyQuotation {
+  verifyQuotation(quotationId: "quotation-id") {
+    _id
+    status
   }
 }
 ```
@@ -71,47 +103,19 @@ query MyQuotations {
 }
 ```
 
-### Admin: Make Quotation Proposal
-
-```graphql
-mutation MakeProposal {
-  makeQuotationProposal(
-    quotationId: "quotation-id"
-    quotationContext: {
-      price: 8999
-      currency: "CHF"
-    }
-  ) {
-    _id
-    status
-  }
-}
-```
-
-### Accept Quotation
-
-```graphql
-mutation AcceptQuotation {
-  verifyQuotation(quotationId: "quotation-id") {
-    _id
-    status
-  }
-}
-```
-
 ## Quotation States
 
 | Status | Description |
 |--------|-------------|
-| `REQUESTED` | Customer has requested a quotation |
-| `PROCESSING` | Quotation is being processed |
+| `REQUESTED` | Request for proposal |
+| `PROCESSING` | Awaiting offer |
 | `PROPOSED` | A price has been proposed |
 | `FULFILLED` | Quotation has been accepted and used |
-| `REJECTED` | Quotation was rejected or expired |
+| `REJECTED` | Quotation was rejected |
 
-## Extending the Adapter
+## Custom Quotation Logic
 
-For custom quotation logic, use `registerQuotation`:
+Use the `registerQuotation` factory:
 
 ```typescript
 import { registerQuotation } from '@unchainedshop/core';
@@ -133,16 +137,6 @@ registerQuotation({
 });
 ```
 
-## Adapter Details
-
-| Property | Value |
-|----------|-------|
-| Key | `shop.unchained.quotations.manual` |
-| Version | `1.0.0` |
-| Order Index | `0` |
-| Source | [quotations/manual.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/quotations/manual.ts) |
-
 ## Related
 
-- [Plugins Overview](./) - All available plugins
 - [Custom Quotation Plugins](../../extend/quotation.md) - Write your own

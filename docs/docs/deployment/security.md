@@ -2,92 +2,68 @@
 sidebar_position: 3
 title: Security
 sidebar_label: Security
-description: Security features, compliance support, and best practices for Unchained Engine
+description: Security features and best practices for Unchained Engine
 ---
 
 # Security
 
-Unchained Engine implements security best practices for e-commerce applications, supporting compliance with PCI DSS, ISO 27001, SOC 2, and other standards.
+Unchained Engine implements security best practices for e-commerce applications.
 
 :::info Full Security Documentation
-For detailed security documentation including compliance matrices, FIPS 140-3 configuration, and deployment recommendations, see the [SECURITY.md](https://github.com/unchainedshop/unchained/blob/master/SECURITY.md) file in the repository.
+For detailed security documentation including compliance information and deployment recommendations, see the [SECURITY.md](https://github.com/unchainedshop/unchained/blob/master/SECURITY.md) file in the repository.
 :::
-
-## Compliance Support
-
-| Standard | Support Level | What This Means |
-|----------|---------------|-----------------|
-| **PCI DSS SAQ-A** | Compatible | No card data storage; uses tokenization |
-| **ISO 27001** | Technical Controls | Access control, audit logging, cryptographic standards |
-| **FIPS 140-3** | Algorithm Compatible | Uses FIPS-approved algorithms (PBKDF2, SHA-256/512, AES-256-GCM) |
-| **SOC 2** | Audit Support | OCSF audit event stream for evidence collection in your SIEM |
-| **GDPR** | Technical Measures | Audit logging supports Article 30 requirements |
 
 ## Cryptographic Standards
 
 ### Password Hashing
 
-Unchained uses PBKDF2 with industry-leading parameters:
-
 - **Algorithm**: PBKDF2 with SHA-512
 - **Iterations**: 300,000 (exceeds OWASP recommendation of 210,000)
 - **Salt**: 16 bytes, cryptographically random
-- **Key Length**: 256 bytes
+- **Key Length**: 256 bits (32 bytes)
 - **Implementation**: Web Crypto API (`crypto.subtle`)
 
-### Token Security
+### Access Tokens (Sessions)
+
+- **Format**: JWT, signed with HS256 (`jose`)
+- **Secret**: `UNCHAINED_TOKEN_SECRET`, minimum 32 characters (enforced at boot)
+- **Expiry**: `UNCHAINED_TOKEN_EXPIRY_SECONDS`, default 3600 (1 hour)
+
+### Verification & Reset Tokens
 
 - **Generation**: `crypto.randomUUID()` (CSPRNG-based)
 - **Storage**: SHA-256 hashed before database storage
-- **Expiration**: Time-limited (1 hour for verification tokens)
-- **Single Use**: Tokens invalidated after use
 
-### Session Encryption
+## Payment Security
 
-- **Algorithm**: AES-256-GCM (authenticated encryption)
-- **Key Size**: 32 bytes
-- **Implementation**: kruptein library
-
-## Payment Security (PCI DSS)
-
-Unchained is designed for **PCI DSS SAQ-A eligibility**:
+Unchained never stores card data:
 
 - Credit card numbers (PAN) are **never stored**
 - CVV/CVC codes are **never stored**
-- Only payment provider tokens are stored
+- Payment adapters only store provider-side transaction references and tokens
 
-All payment integrations use tokenization:
-
-| Provider | Tokenization Method |
-|----------|-------------------|
-| Stripe | PaymentIntent / SetupIntent |
-| Datatrans | Secure Fields |
-| Saferpay | Redirect with token |
-| Braintree | Client SDK tokenization |
-| PayPal | Order ID reference |
+Bundled payment integrations: Stripe, Datatrans, PostFinance Checkout, Saferpay, Payrexx, Apple IAP, Cryptopay, and invoice-based flows. See [Payment Integration](../guides/payment-integration).
 
 ## Access Control
 
 ### Role-Based Access Control (RBAC)
 
-- **128+ defined actions** covering all API operations
-- **Built-in roles**: admin, logged-in user, guest
+- **Over 100 defined actions** covering all API operations
+- **Built-in roles**: admin, logged-in user, plus special roles for guests
 - **Ownership validation**: Users can only access their own resources
-- **Field-level permissions**: GraphQL type resolvers enforce access
 
 ```typescript
 // Example permission check
-role.allow(actions.updateOrder, async (obj, params, context) => {
-  const order = await modules.orders.findOrder({ orderId: params.orderId });
+role.allow(actions.updateOrder, async (order, params, context) => {
   return order.userId === context.userId;
 });
 ```
 
+See [Permissions](../concepts/permissions) for defining custom roles via `rolesOptions`.
+
 ## Audit Logging
 
-Unchained provides **OCSF-compliant** (Open Cybersecurity Schema Framework) audit logging designed for consumption by external monitoring agents.
-
-### Features
+Unchained provides **OCSF-compliant** (Open Cybersecurity Schema Framework) audit logging designed for consumption by external monitoring agents:
 
 - **OCSF v1.4.0 schema** - Industry-standard format supported by AWS Security Lake, Datadog, Splunk, Google Chronicle
 - **Structured emission by default** - Every event as one JSON log line on stdout (`UNCHAINED_LOG_FORMAT=json`), scrapeable by any log agent
@@ -95,35 +71,22 @@ Unchained provides **OCSF-compliant** (Open Cybersecurity Schema Framework) audi
 
 The engine does not persist audit events itself — retention, queries, and integrity guarantees are the consuming log pipeline's or SIEM's concern.
 
-### Quick Start
-
 Audit logging is automatically enabled when using `startPlatform()` — events are emitted through the `unchained:audit` logger; OTLP push is opt-in.
 
 ```typescript
-import { startPlatform } from '@unchainedshop/platform';
-
-// Audit logging enabled by default (structured log emission)
-const platform = await startPlatform({ modules: defaultModules });
-
 // Opt-in OTLP push:
 const platform = await startPlatform({
-  modules: defaultModules,
   auditLog: {
     collectorUrl: 'http://otel-collector:4318/v1/logs',
   },
 });
 
-// Events automatically captured:
-// - Login/logout/failed login (97 event types total)
-// - User creation/deletion
-// - Password changes
-// - Role changes
-// - Order checkout
-// - Payments
-// - Access denied
+// Automatically captured (97 event types): login/logout/failed login,
+// user creation/deletion, password changes, role changes, order checkout,
+// payments, access denied
 ```
 
-See [Audit Logging](../extend/events#audit-logging) for detailed documentation.
+See [Audit Logging](../extend/events#audit-logging-ocsf) for detailed documentation.
 
 ## Input Validation
 
@@ -134,7 +97,6 @@ All user-supplied strings used in regular expressions are escaped:
 ```typescript
 import { escapeRegexString } from '@unchainedshop/mongodb';
 
-// User input is escaped before regex construction
 const regex = new RegExp(escapeRegexString(userInput), 'i');
 ```
 
@@ -145,44 +107,39 @@ Security-sensitive string comparisons use constant-time algorithms:
 ```typescript
 import { timingSafeStringEqual } from '@unchainedshop/utils';
 
-// Constant-time comparison for tokens/secrets
 if (await timingSafeStringEqual(providedToken, expectedToken)) {
   // Token is valid
 }
 ```
 
-## Session Security
+## Session Cookies
 
-### Cookie Configuration
+The JWT is delivered as an `httpOnly` cookie with these defaults:
 
 ```typescript
-// Secure defaults
 {
-  httpOnly: true,           // Prevent XSS access
-  secure: true,             // HTTPS only
-  sameSite: 'none',         // Configurable
-  maxAge: 604800,           // 7 days
+  httpOnly: true,           // always true, prevents XSS access
+  secure: true,             // unless UNCHAINED_COOKIE_INSECURE is set
+  sameSite: 'lax',          // OWASP: CSRF protection
+  maxAge: 3600 * 1000,      // follows UNCHAINED_TOKEN_EXPIRY_SECONDS
 }
 ```
 
-### Environment Variables
-
 | Variable | Purpose | Default |
 |----------|---------|---------|
-| `UNCHAINED_TOKEN_SECRET` | Session encryption (min 32 chars) | Required |
+| `UNCHAINED_TOKEN_SECRET` | JWT signing secret (min 32 chars) | Required |
+| `UNCHAINED_TOKEN_EXPIRY_SECONDS` | Token and cookie lifetime | `3600` |
 | `UNCHAINED_COOKIE_NAME` | Cookie name | `unchained_token` |
 | `UNCHAINED_COOKIE_DOMAIN` | Cookie domain restriction | - |
-| `UNCHAINED_COOKIE_SAMESITE` | SameSite attribute | `none` |
-| `UNCHAINED_COOKIE_INSECURE` | Disable secure flag | `false` |
+| `UNCHAINED_COOKIE_SAMESITE` | SameSite attribute (`strict`, `lax`, `none`) | `lax` |
+| `UNCHAINED_COOKIE_INSECURE` | Disable secure flag (development only) | - |
 
 ## Error Handling
 
 Errors are designed to prevent information leakage:
 
-- **Authentication errors**: Generic "Invalid credentials" message
-- **Token errors**: "Token invalid or expired" (doesn't distinguish)
-- **Permission errors**: "Not authorized" (no action details)
-- **User enumeration prevention**: Password reset returns success regardless of user existence
+- **Permission errors**: Generic "not authorized" responses
+- **User enumeration prevention**: `forgotPassword` returns success regardless of whether the user exists
 
 ## Rate Limiting
 
@@ -196,12 +153,10 @@ limit_req_zone $binary_remote_addr zone=api:10m rate=100r/s;
 server {
     location /graphql {
         limit_req zone=api burst=50 nodelay;
-        proxy_pass http://unchained:4000;
+        proxy_pass http://unchained:3000;
     }
 }
 ```
-
-### Recommended Limits
 
 | Endpoint | Recommended Limit | Rationale |
 |----------|------------------|-----------|
@@ -209,24 +164,6 @@ server {
 | Password reset | 3/hour per IP | Prevent enumeration |
 | Registration | 10/hour per IP | Prevent spam |
 | GraphQL queries | 100/second per IP | General protection |
-
-## FIPS 140-3 Mode
-
-For environments requiring FIPS compliance, use a FIPS-validated runtime:
-
-```dockerfile
-# Using Chainguard FIPS image
-FROM cgr.dev/chainguard/node-fips:latest
-
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-
-CMD ["node", "index.js"]
-```
-
-See [SECURITY.md](https://github.com/unchainedshop/unchained/blob/master/SECURITY.md#fips-140-3-compatibility) for detailed FIPS configuration.
 
 ## Reporting Vulnerabilities
 
@@ -241,5 +178,5 @@ We will acknowledge receipt within 48 hours and provide a detailed response with
 
 - [Production Checklist](./production-checklist) - Pre-launch security checklist
 - [Authentication](../concepts/authentication) - Authentication patterns
-- [Audit Logging](../extend/events#audit-logging) - Detailed audit logging docs
+- [Audit Logging](../extend/events#audit-logging-ocsf) - Detailed audit logging docs
 - [SECURITY.md](https://github.com/unchainedshop/unchained/blob/master/SECURITY.md) - Full security documentation

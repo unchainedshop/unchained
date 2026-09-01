@@ -13,7 +13,7 @@ However, unchained is flexible and can be extended to support any data or data s
 In order to view the additional information in your unchained engine you need to provide admin UI a configuration object
 that contains fragments of the additional types and inject to the unchained platform on start up.
 
-the configuration object `AdminUiConfig` has a field called `customProperties` that is an array of `AdminUiConfigCustomEntityInterface` objects where `AdminUiConfigCustomEntityInterface` type has two fields: `entityName`, which is a non-nullable string, and `inlineFragment`, which is also a non-nullable string that holds the fragment definition.
+The configuration object `AdminUiConfig` has a field called `customProperties` that is an array of `CustomAdminUiProperties` objects. `CustomAdminUiProperties` has two required string fields: `entityName` and `inlineFragment` (the fragment definition).
 
 
 ```js

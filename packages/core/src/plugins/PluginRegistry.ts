@@ -187,7 +187,7 @@ class PluginRegistry {
       }
     }
 
-    // Store skipped plugins for logging purposes
+    // Skipped plugins are excluded from getAdapters() and getRoutes()
     this.skippedPlugins = skippedPlugins;
   }
 
@@ -268,6 +268,10 @@ class PluginRegistry {
    * Get all adapters of a specific type across all plugins
    * Uses the `adapterType` symbol defined on base adapters for type discrimination
    *
+   * Adapters are sorted by ascending `orderIndex` (missing counts as 0); adapters
+   * with equal orderIndex keep their plugin registration order. Pricing chains
+   * depend on this (base price before discounts before taxes).
+   *
    * @param adapterType Symbol identifying the adapter type (e.g., PaymentAdapter.adapterType)
    * @returns Array of adapters matching the specified type
    *
@@ -278,10 +282,12 @@ class PluginRegistry {
    * ```
    */
   getAdapters(adapterType: symbol): IBaseAdapter[] {
-    const result: IBaseAdapter[] = [];
+    const result: (IBaseAdapter & { orderIndex?: number })[] = [];
 
     for (const plugin of this.plugins.values()) {
       if (!plugin.adapters) continue;
+      // Plugins whose onRegister failed are skipped entirely, like their routes
+      if (this.skippedPlugins.has(plugin.key)) continue;
 
       for (const adapter of plugin.adapters) {
         if (adapter.adapterType === adapterType) {
@@ -290,7 +296,8 @@ class PluginRegistry {
       }
     }
 
-    return result;
+    // toSorted is stable, so ties preserve registration order
+    return result.toSorted((left, right) => (left.orderIndex ?? 0) - (right.orderIndex ?? 0));
   }
 
   /**

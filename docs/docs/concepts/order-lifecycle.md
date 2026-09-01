@@ -245,8 +245,10 @@ Order status changes trigger asynchronous notifications:
 | `ORDER_CONFIRMED` | Order confirmed |
 | `ORDER_REJECTED` | Order rejected |
 | `ORDER_FULFILLED` | Order fulfilled |
-| `ORDER_PAYMENT_STATUS_CHANGED` | Payment status changes |
-| `ORDER_DELIVERY_STATUS_CHANGED` | Delivery status changes |
+| `ORDER_PAY` | Order payment marked as paid |
+| `ORDER_UPDATE_PAYMENT` | Order payment context updated |
+| `ORDER_DELIVER` | Order delivery marked as delivered |
+| `ORDER_UPDATE_DELIVERY` | Order delivery context updated |
 
 Subscribe to these events for:
 - Sending customer notifications

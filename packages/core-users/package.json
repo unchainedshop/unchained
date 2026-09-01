@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-users",
   "description": "User management module for the Unchained Engine with authentication support",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.4",
   "main": "lib/users-index.js",
   "types": "lib/users-index.d.ts",
   "type": "module",
@@ -39,7 +39,6 @@
     "@unchainedshop/events": "^5.0.0-alpha.1",
     "@unchainedshop/logger": "^5.0.0-alpha.1",
     "@unchainedshop/mongodb": "^5.0.0-alpha.1",
-    "@unchainedshop/roles": "^5.0.0-alpha.1",
     "@unchainedshop/utils": "^5.0.0-alpha.1",
     "bcryptjs": "^3.0.2"
   },
@@ -59,6 +58,6 @@
     "@noble/curves": "^2.0.0",
     "@noble/hashes": "^2.0.0",
     "@types/node": "^26.2.0",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }

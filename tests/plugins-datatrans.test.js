@@ -226,6 +226,18 @@ test.describe('Plugins: Datatrans', () => {
   });
 
   test.describe('Checkout', () => {
+    // These tests build a fresh cart (emptyCart + addCartProduct) and then check
+    // out the user's "current" cart. Cart selection sorts open carts (status: null)
+    // by `updated` desc with no tie-break, and the seeded open carts still left for
+    // this user (simple-order, datatrans-order2) share the same seeded `updated`
+    // timestamp. When the tie resolves to a pre-populated cart, the fresh product
+    // lands on top of existing positions, the charged amount no longer matches the
+    // datatrans authorization fixture, and the checkout flakes. Clear the user's
+    // open carts so each checkout starts from a single, freshly-created cart.
+    test.before(async () => {
+      await db.collection('orders').deleteMany({ userId: User._id, status: null });
+    });
+
     test('checkout with stored alias', async () => {
       const paymentProviderId = 'd4d4d4d4d4';
       const transactionId = 'card_check_authorized';

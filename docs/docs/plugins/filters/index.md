@@ -9,10 +9,10 @@ description: Search and filtering plugins for Unchained Engine
 
 Filter plugins implement product search and filtering functionality.
 
-| Adapter Key | Description |
-|-------------|-------------|
-| [`shop.unchained.filters.local-search`](./filter-local-search.md) | MongoDB full-text search |
-| [`shop.unchained.filters.strict-equal`](./filter-strict-equal.md) | Exact match filtering |
+| Adapter Key | Description | Preset |
+|-------------|-------------|--------|
+| [`shop.unchained.filters.local-search`](./filter-local-search.md) | MongoDB full-text search | `all` |
+| [`shop.unchained.filters.strict-qual`](./filter-strict-equal.md) | Exact match filtering | `all` |
 
 ## Creating Custom Filter Plugins
 

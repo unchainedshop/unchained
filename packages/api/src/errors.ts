@@ -219,6 +219,11 @@ export const WarehousingProviderNotFoundError = createError(
 
 export const InvalidIdError = createError('InvalidIdError', 'Invalid ID provided');
 
+export const BulkOperationTooLargeError = createError(
+  'BulkOperationTooLargeError',
+  'Bulk operation exceeds the maximum number of entities',
+);
+
 export const ProviderConfigurationInvalid = createError(
   'ProviderConfigurationInvalid',
   'Provider Configuration invalid (check if the Adapter Key exists)',

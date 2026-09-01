@@ -57,8 +57,6 @@ export const buildFindSelector = ({
   return selector;
 };
 
-const allProvidersTtlMs = process.env.NODE_ENV === 'production' ? 60000 : 1;
-
 export const configureDeliveryModule = async ({
   db,
   options: deliveryOptions = {},
@@ -69,9 +67,10 @@ export const configureDeliveryModule = async ({
 
   const DeliveryProviders = await DeliveryProvidersCollection(db);
 
-  const allProviders = memoizeWithTTL(async function () {
-    return DeliveryProviders.find({ deleted: null }, { sort: { created: 1 } }).toArray();
-  }, allProvidersTtlMs);
+  const allProviders = memoizeWithTTL(
+    async () => DeliveryProviders.find({ deleted: null }, { sort: { created: 1, _id: 1 } }).toArray(),
+    { ttl: process.env.NODE_ENV === 'production' ? 60000 : 1 },
+  );
 
   return {
     // Queries
@@ -97,7 +96,7 @@ export const configureDeliveryModule = async ({
 
     findProviders: async (
       query: DeliveryProviderQuery = {},
-      options: mongodb.FindOptions = { sort: { created: 1 } },
+      options: mongodb.FindOptions = { sort: { created: 1, _id: 1 } },
     ): Promise<DeliveryProvider[]> => {
       const providers = DeliveryProviders.find(buildFindSelector(query), options);
       return providers.toArray();

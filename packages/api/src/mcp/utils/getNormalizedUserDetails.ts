@@ -53,6 +53,7 @@ export async function getNormalizedUserDetails(userId: string, context: Context)
     {
       sort: {
         created: -1,
+        _id: -1,
       },
     },
   );

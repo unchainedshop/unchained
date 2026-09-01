@@ -30,7 +30,7 @@ registerWorker<{ wait?: number; fails?: boolean }, { wait?: number }>({
 
 | Option | Description |
 |---|---|
-| `type` | Work type — passed to `modules.worker.addWork({ type })` to enqueue this work. Keyed `shop.unchained.worker.<type>`. |
+| `type` | Work type — passed to `modules.worker.addWork({ type })` to enqueue this work. Keyed `shop.unchained.worker.<type lower-cased>`. |
 | `process(input, workId)` | The work logic. Return a result (→ `{ success: true, result }`); a thrown error becomes `{ success: false }`. |
 | `external` | `true` if the work is processed outside the engine (default `false`). |
 | `maxParallelAllocations` | Concurrency cap for this work type. |
@@ -39,13 +39,15 @@ registerWorker<{ wait?: number; fails?: boolean }, { wait?: number }>({
 
 ## Scheduling recurring work
 
+`schedule` takes a `ScheduleData` structure — build it with the `schedule` helper exported from `@unchainedshop/core` (`schedule.parse.cron(...)` or `schedule.parse.text('every 30 minutes')`):
+
 ```typescript
-import { WorkerDirector } from '@unchainedshop/core';
+import { WorkerDirector, schedule } from '@unchainedshop/core';
 
 WorkerDirector.configureAutoscheduling({
   type: 'HEARTBEAT',
-  schedule: '0 * * * *', // every hour (cron syntax)
-  input: () => ({ wait: 1000 }),
+  schedule: schedule.parse.cron('0 * * * *'), // every hour
+  input: async () => ({ wait: 1000 }),
 });
 ```
 

@@ -4,6 +4,31 @@
 
 ---
 
+## v4.8.x MCP: SDK v2, stateless `/mcp`
+
+The MCP integration migrated from the monolithic MCP TypeScript SDK v1 to the split v2 SDK. The optional peer dependency was **renamed**: `@modelcontextprotocol/sdk` is no longer supported.
+
+**If you have MCP enabled**, swap the peer (this shrinks the installed MCP footprint from ~94 transitive packages to 3):
+
+```bash
+npm uninstall @modelcontextprotocol/sdk
+npm install @modelcontextprotocol/server
+```
+
+**If you have chat enabled**, the chat handlers no longer import any `@modelcontextprotocol/*` client package — the shop-configuration resources are read in-process. Chat deployments need `ai` and `@ai-sdk/mcp` (unchanged) **and** `@modelcontextprotocol/server`, because the chat tools are still derived through the engine's own `/mcp` endpoint. The engine still boots without any of these packages installed; `/mcp` then answers `503` and logs a warning naming the missing package instead of failing.
+
+**Wire-behavior changes** (all spec-conformant; MCP Inspector, `@ai-sdk/mcp` and other current clients handle them transparently):
+
+- `/mcp` is now **stateless**: every request is served by a fresh, per-request MCP server built from that request's authenticated context. No `Mcp-Session-Id` is issued or required, and the endpoint is safe behind load balancers and in multi-replica deployments.
+- `/mcp` validates `Host` and browser `Origin` headers against the hostname in `ROOT_URL` (plus localhost aliases) before SDK dispatch. Set `ROOT_URL` to the public engine URL and configure reverse proxies to preserve the external `Host` header.
+- `GET /mcp` (standalone SSE stream) and `DELETE /mcp` (session termination) now return `405`. The engine never used server-initiated notifications, so no capability is lost.
+- Clients speaking the modern MCP protocol era (revision 2026-07-28, `server/discover`) are now supported in addition to the legacy `initialize` handshake era.
+- Tool input schemas in `tools/list` now declare JSON Schema draft 2020-12 instead of draft-07; the schema content itself (properties, enums, descriptions, required fields) is unchanged.
+
+Auth is unchanged: every request passes the same 401/403 admin wall as before (including the `WWW-Authenticate` / `.well-known/oauth-protected-resource` metadata used by OAuth setups).
+
+The `zod` dependency range of `@unchainedshop/api` and `@unchainedshop/core` narrowed from `^3.25.76 || ^4` to `^4.2.0` (both packages only ever used the zod-4 API).
+
 ## v4.8.x DocumentDB Compatibility Mode Removed
 
 `UNCHAINED_DOCUMENTDB_COMPAT_MODE` is no longer read. The helpers `isDocumentDBCompatModeEnabled` and `assertDocumentDBCompatMode` have been deleted from `@unchainedshop/mongodb`. Text indexes are now created unconditionally on every collection and `$text` queries run unconditionally. **If you still target AWS DocumentDB ≤4.0 or FerretDB 1.x, do not upgrade** — those runtimes do not support text indexes and startup will fail. Supported text-search targets now:
@@ -81,6 +106,10 @@ const cryptopay = await configureCryptopayModule({ db });
 
 `DATATRANS_SUCCESS_PATH`, `DATATRANS_ERROR_PATH`, `DATATRANS_CANCEL_PATH` → `PAYREXX_SUCCESS_PATH`, `PAYREXX_ERROR_PATH`, `PAYREXX_CANCEL_PATH`.
 
+### Saferpay env vars renamed
+
+`SAFERPAY_USER`, `SAFERPAY_PW` → `SAFERPAY_API_USER`, `SAFERPAY_API_PASSWORD`. The old names are still read as deprecated fallbacks, but the new names take precedence — if you ever set placeholder `SAFERPAY_API_*` values (early v5 alphas required them to pass the boot guard), remove them or set the real credentials there, otherwise the placeholders now win. Plugin registration additionally requires `SAFERPAY_CUSTOMER_ID` and `SAFERPAY_TERMINAL_ID`; without valid credentials the plugin's adapter and webhook route are skipped at boot (a warning is logged).
+
 ### Breaking: Stripe API + SDK version
 
 Stripe SDK peer range widened from `>=19 <21` to `>=19 <23`. The plugin now uses Stripe API version `2026-03-25.dahlia`. Upgrade your installed `stripe` package to v22 to match the devDependency.
@@ -92,6 +121,10 @@ Stripe SDK peer range widened from `>=19 <21` to `>=19 <23`. The plugin now uses
 ---
 
 ## v4 → v5 (Breaking Changes)
+
+### Index Conflicts on v4.8-era Databases (Ops Note)
+
+Some indexes changed shape without changing name (e.g. `orders.orderNumber_1` and `products.warehousing.sku_1` are now `sparse`). On databases created by v4.8, boot logs `MongoServerError: An existing index has the same name as the requested index` for these — the engine continues and the old index stays in place. To adopt the new index shape, drop the conflicting index once (`db.orders.dropIndex('orderNumber_1')`, `db.products.dropIndex('warehousing.sku_1')`) and restart; `buildDbIndexes` recreates them.
 
 ### Plugin System Modernization
 
@@ -126,14 +159,16 @@ import { StripePlugin } from '@unchainedshop/plugins/payment/stripe/index.js';
 PaymentDirector.registerAdapter(StripePlugin);
 
 // ✅ USE - Register via preset functions
-import { registerAllPlugins } from '@unchainedshop/plugins/presets/all.js';
+import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
 registerAllPlugins(); // Registers all plugins including Stripe
 
 // ✅ OR USE - Direct plugin registry for custom setups
 import { pluginRegistry } from '@unchainedshop/core';
-import { StripePlugin } from '@unchainedshop/plugins/payment/stripe/index.js';
+import { StripePlugin } from '@unchainedshop/plugins/payment/stripe';
 pluginRegistry.register(StripePlugin);
 ```
+
+Note: import plugin subpaths WITHOUT a file extension. The package `exports` map (e.g. `"./presets/*": "./lib/presets/*.js"`) appends `.js` itself, so `presets/all.js` would resolve to `all.js.js` and fail.
 
 **Affected Directors:**
 - PaymentDirector
@@ -160,15 +195,15 @@ Default exports from preset modules have been removed. Use named registration fu
 import defaultModules from '@unchainedshop/plugins/presets/base.js';
 
 // ✅ USE - Import named registration function
-import { registerBasePlugins } from '@unchainedshop/plugins/presets/base.js';
+import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
 registerBasePlugins();
 ```
 
 #### Available Registration Functions
 
-- `registerBasePlugins()` - Essential plugins (from `@unchainedshop/plugins/presets/base.js`)
-- `registerAllPlugins()` - All available plugins (from `@unchainedshop/plugins/presets/all.js`)
-- `registerCryptoPlugins()` - Cryptocurrency plugins (from `@unchainedshop/plugins/presets/crypto.js`)
+- `registerBasePlugins()` - Essential plugins (from `@unchainedshop/plugins/presets/base`)
+- `registerAllPlugins()` - All available plugins (from `@unchainedshop/plugins/presets/all`)
+- `registerCryptoPlugins()` - Cryptocurrency plugins (from `@unchainedshop/plugins/presets/crypto`)
 
 ### GraphQL API Breaking Changes
 
@@ -227,10 +262,11 @@ import { adminUIRouter } from '@unchainedshop/api/fastify';
 import { PaypalCheckoutPlugin } from '@unchainedshop/plugins/payment/paypal-checkout-plugin.ts';
 ```
 
+The Braintree plugin was also dropped in v5 (it only exists on the v4.8.x branch), so it is not a migration target.
+
 **Migration Options:**
-- Use Braintree plugin (supports PayPal via Braintree)
-- Implement custom PayPal integration using `@paypal/paypal-server-sdk` (new official SDK)
-- Use alternative payment providers
+- Implement a custom PayPal integration using `@paypal/paypal-server-sdk` (new official SDK) via `registerPaymentProvider()`
+- Use alternative payment providers (Stripe, Datatrans, Saferpay, Payrexx, PostFinance Checkout)
 
 ### PluginRegistry Internal Changes
 

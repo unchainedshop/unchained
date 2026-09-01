@@ -13,6 +13,7 @@ export default (unchainedAPI: UnchainedCore) =>
       {
         sort: {
           assortmentId: 1,
+          _id: 1,
         },
       },
     );

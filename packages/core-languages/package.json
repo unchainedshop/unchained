@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-languages",
   "description": "Language management module for the Unchained Engine",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-alpha.4",
   "main": "lib/languages-index.js",
   "types": "lib/languages-index.d.ts",
   "type": "module",
@@ -36,10 +36,11 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@unchainedshop/events": "^5.0.0-alpha.1",
+    "@unchainedshop/mongodb": "^5.0.0-alpha.1",
     "@unchainedshop/utils": "^5.0.0-alpha.1"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }
