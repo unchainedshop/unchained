@@ -32,7 +32,6 @@ const ROUTE_ROLES: Record<string, string> = {
   '/quotations': 'viewQuotations',
   '/enrollments': 'viewEnrollments',
   '/tokens': 'viewTokens',
-  '/ticketing': 'gateControl',
   '/copilot': 'viewProducts',
   '/exports': 'viewWorkQueue',
 };
@@ -52,7 +51,6 @@ const UNRESTRICTED_PAGES = [
   '/403',
   '/500',
   '/external',
-  '/ticketing/gate',
 ];
 
 const PUBLIC_ONLY_PAGES = [
@@ -83,11 +81,9 @@ export const checkAccess = (
   pathname: string,
 ) => {
   if (UNRESTRICTED_PAGES.includes(pathname)) return true;
+  if (pathname.startsWith('/ext/') || pathname === '/ext') return true;
   if (!user?._id) return false;
   if (user?.isGuest) return false;
-  if (pathname.startsWith('/ext/') || pathname === '/ext') {
-    return !!user?._id;
-  }
   if (!ROUTE_ROLES[pathname]) {
     if (process.env.NODE_ENV === 'development') {
       console.warn(

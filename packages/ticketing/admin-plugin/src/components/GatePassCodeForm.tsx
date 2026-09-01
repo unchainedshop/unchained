@@ -31,8 +31,7 @@ const GatePassCodeForm = ({ onAuthenticated }) => {
         <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
           {formatMessage({
             id: 'gate_enter_passcode',
-            defaultMessage:
-              'Enter the scanner pass code to activate the gate control.',
+            defaultMessage: 'Enter the scanner pass code to activate the gate control.',
           })}
         </p>
         <form onSubmit={handleSubmit}>

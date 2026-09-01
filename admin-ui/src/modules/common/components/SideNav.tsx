@@ -76,25 +76,38 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
               </div>
               {item.children
                 .filter((f) => !f?.requiredRole || hasRole(f.requiredRole))
-                .map((subItem) => (
-                  <Link
-                    key={subItem.name}
-                    href={subItem.href}
-                    className={clsx(
-                      'block px-4 py-2 text-sm text-text-secondary hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-focus-ring',
-                      {
-                        'bg-surface-raised text-text-primary':
-                          router.pathname === subItem.href,
-                      },
-                    )}
-                    onClick={() => {
-                      setIsOpen(false);
-                      onSelected?.();
-                    }}
-                  >
-                    {subItem.name}
-                  </Link>
-                ))}
+                .map((subItem) => {
+                  const className = clsx(
+                    'block px-4 py-2 text-sm text-text-secondary hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-focus-ring',
+                    {
+                      'bg-surface-raised text-text-primary':
+                        router.pathname === subItem.href,
+                    },
+                  );
+                  const handleClick = () => {
+                    setIsOpen(false);
+                    onSelected?.();
+                  };
+                  return subItem.external ? (
+                    <a
+                      key={subItem.name}
+                      href={subItem.href}
+                      className={className}
+                      onClick={handleClick}
+                    >
+                      {subItem.name}
+                    </a>
+                  ) : (
+                    <Link
+                      key={subItem.name}
+                      href={subItem.href}
+                      className={className}
+                      onClick={handleClick}
+                    >
+                      {subItem.name}
+                    </Link>
+                  );
+                })}
             </div>
           </div>
         )}
@@ -135,21 +148,24 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
           <DisclosurePanel className="pl-6 space-y-1" onClick={onSelected}>
             {item.children
               .filter((f) => !f?.requiredRole || hasRole(f.requiredRole))
-              .map((subItem) => (
-                <Link
-                  key={subItem.name}
-                  href={subItem.href}
-                  className={clsx(
-                    'group flex w-full items-center rounded-md py-2 pl-5 pr-2 text-sm font-medium text-text-secondary hover:bg-surface-raised hover:text-text-primary focus:outline-hidden focus:ring-2 focus:ring-focus-ring',
-                    {
-                      'text-text-primary bg-surface-raised':
-                        router.pathname === subItem.href,
-                    },
-                  )}
-                >
-                  {subItem.name}
-                </Link>
-              ))}
+              .map((subItem) => {
+                const className = clsx(
+                  'group flex w-full items-center rounded-md py-2 pl-5 pr-2 text-sm font-medium text-text-secondary hover:bg-surface-raised hover:text-text-primary focus:outline-hidden focus:ring-2 focus:ring-focus-ring',
+                  {
+                    'text-text-primary bg-surface-raised':
+                      router.pathname === subItem.href,
+                  },
+                );
+                return subItem.external ? (
+                  <a key={subItem.name} href={subItem.href} className={className}>
+                    {subItem.name}
+                  </a>
+                ) : (
+                  <Link key={subItem.name} href={subItem.href} className={className}>
+                    {subItem.name}
+                  </Link>
+                );
+              })}
           </DisclosurePanel>
         </>
       )}

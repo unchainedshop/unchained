@@ -1,32 +1,26 @@
 import { useState } from 'react';
 import { useIntl } from 'react-intl';
-import Loading from '../../../components/ui/Loading';
-import NoData from '../../../components/ui/NoData';
+import { Loading, NoData } from '@unchainedshop/admin-ui/ui';
 import useGateEvents from '../hooks/useGateEvents';
 import useGateEventDetail from '../hooks/useGateEventDetail';
 import useIsPassCodeValid from '../hooks/useIsPassCodeValid';
 import GateEventList from './GateEventList';
 import GateAttendeeList from './GateAttendeeList';
 
-const GateControl = ({ onLogout, isAdmin = false }) => {
+const GateControl = ({ onLogout }) => {
   const { formatMessage } = useIntl();
   const { clearPassCode } = useIsPassCodeValid();
   const { events, loading: eventsLoading } = useGateEvents({
-    onlyInvalidateable: !isAdmin,
+    onlyInvalidateable: true,
   });
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
-  const {
-    event: selectedEvent,
-    loading: detailLoading,
-    refetch,
-  } = useGateEventDetail(selectedEventId);
+  const { event: selectedEvent, loading: detailLoading, refetch } = useGateEventDetail(selectedEventId);
 
   const selectedEventFromList: any = selectedEventId
     ? events.find((e: any) => e._id === selectedEventId)
     : null;
 
-  const title =
-    selectedEventFromList?.texts?.title || (selectedEvent as any)?.texts?.title;
+  const title = selectedEventFromList?.texts?.title || (selectedEvent as any)?.texts?.title;
 
   return (
     <div>
@@ -45,11 +39,7 @@ const GateControl = ({ onLogout, isAdmin = false }) => {
                 strokeWidth="2"
                 stroke="currentColor"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 19l-7-7 7-7"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
               {formatMessage({ id: 'gate_back', defaultMessage: 'Back' })}
             </button>
@@ -58,8 +48,8 @@ const GateControl = ({ onLogout, isAdmin = false }) => {
             {selectedEventId
               ? title
               : formatMessage({
-                  id: isAdmin ? 'gate_all_events' : 'gate_active_events',
-                  defaultMessage: isAdmin ? 'All Events' : 'Active Events',
+                  id: 'gate_active_events',
+                  defaultMessage: 'Active Events',
                 })}
           </h2>
         </div>
@@ -91,10 +81,7 @@ const GateControl = ({ onLogout, isAdmin = false }) => {
       ) : eventsLoading ? (
         <Loading />
       ) : events.length ? (
-        <GateEventList
-          events={events}
-          onSelectEvent={(e) => setSelectedEventId(e._id)}
-        />
+        <GateEventList events={events} onSelectEvent={(e) => setSelectedEventId(e._id)} />
       ) : (
         <NoData
           message={formatMessage({
