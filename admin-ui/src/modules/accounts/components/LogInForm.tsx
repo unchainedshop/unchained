@@ -18,6 +18,7 @@ import useLoginWithPassword from '../hooks/useLoginWithPassword';
 import useLoginWithWebAuthn from '../hooks/useLoginWithWebAuthn';
 import { useCallback, useState } from 'react';
 import useUnchainedContext from '../../UnchainedContext/useUnchainedContext';
+import { usePlugins } from '../../plugins/PluginContext';
 
 const GetCurrentStep = ({ step }) => {
   const { formatMessage } = useIntl();
@@ -75,6 +76,11 @@ const LogInForm = () => {
   const { logInWithPassword } = useLoginWithPassword();
   const { loginWithWebAuthn } = useLoginWithWebAuthn();
   const { singleSignOnURL } = useUnchainedContext();
+  const { manifests } = usePlugins();
+
+  const pluginLinks = manifests.flatMap(
+    (m) => (m.slots.links || []).filter((l) => l.showOnLoginPage),
+  );
 
   const [step, setStep] = useState(1);
 
@@ -302,19 +308,21 @@ const LogInForm = () => {
                   })}
                 </Link>
               </div>
-              <div className="text-sm text-slate-400 dark:text-slate-200">
-                <Link
-                  href="/ticketing/gate"
-                  className="font-medium text-slate-950 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300"
-                >
-                  {intl.formatMessage({
-                    id: 'open_gate_control',
-                    defaultMessage: 'Open Gate Control',
-                  })}
-                </Link>
-              </div>
             </Form>
           </FormWrapper>
+          {pluginLinks.length > 0 && (
+            <div className="mt-4 flex flex-wrap justify-center gap-3">
+              {pluginLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm font-medium text-slate-950 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300"
+                >
+                  {link.label} &rarr;
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </>

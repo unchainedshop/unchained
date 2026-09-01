@@ -1,10 +1,7 @@
 import Link from 'next/link';
 import { useIntl } from 'react-intl';
-import Table from '../../common/components/Table';
-import Badge from '../../../components/ui/Badge';
-import useFormatDateTime from '../../common/utils/useFormatDateTime';
-import formatUsername from '../../common/utils/formatUsername';
-import MediaAvatar from '../../common/components/MediaAvatar';
+import { Table, Badge, MediaAvatar } from '@unchainedshop/admin-ui/ui';
+import { useFormatDateTime, formatUsername } from '../utils/misc';
 
 const EventTokenListItem = ({ token, onCancelTicket, onInvalidateTicket }) => {
   const { formatMessage } = useIntl();
@@ -14,7 +11,7 @@ const EventTokenListItem = ({ token, onCancelTicket, onInvalidateTicket }) => {
     <Table.Row key={token._id}>
       <Table.Cell>
         <Link
-          href={`/tokens?tokenId=${token._id}`}
+          href={`/ext/tokens/${token._id}`}
           className="font-medium text-slate-800 dark:text-slate-200 hover:underline"
         >
           {token.tokenSerialNumber || token._id?.slice(-8)}
@@ -33,9 +30,7 @@ const EventTokenListItem = ({ token, onCancelTicket, onInvalidateTicket }) => {
       </Table.Cell>
       <Table.Cell>
         <span className="text-sm text-slate-600 dark:text-slate-400">
-          {token.user?.lastContact?.emailAddress ||
-            token.user?.primaryEmail?.address ||
-            '-'}
+          {token.user?.lastContact?.emailAddress || token.user?.primaryEmail?.address || '-'}
         </span>
       </Table.Cell>
       <Table.Cell>

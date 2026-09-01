@@ -72,6 +72,14 @@ export interface AdminUIPluginSlotConfig {
   component: string;
 }
 
+export interface AdminUIPluginLinkConfig {
+  href: string;
+  label: string;
+  icon?: string;
+  sortOrder?: number;
+  showOnLoginPage?: boolean;
+}
+
 // Keep in sync with admin-ui/src/sdk/plugins.ts PluginConfig
 export interface AdminUIPluginConfig {
   name: string;
@@ -86,6 +94,7 @@ export interface AdminUIPluginConfig {
   slots: {
     entities?: AdminUIPluginEntityConfig[];
     pages?: AdminUIPluginPageConfig[];
+    links?: AdminUIPluginLinkConfig[];
     'dashboard:widgets'?: AdminUIPluginWidgetConfig[];
     'product:tabs'?: AdminUIPluginTabConfig[];
     'assortment:tabs'?: AdminUIPluginTabConfig[];
@@ -98,6 +107,7 @@ export interface AdminUIPluginConfig {
       | AdminUIPluginEntityConfig[]
       | AdminUIPluginPageConfig[]
       | AdminUIPluginWidgetConfig[]
+      | AdminUIPluginLinkConfig[]
       | undefined;
   };
 }
