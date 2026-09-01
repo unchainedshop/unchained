@@ -51,18 +51,16 @@ The `/mcp` endpoint has its own built-in Origin/Host validation based on `ROOT_U
 
 ## Audit Logging
 
-- [ ] **Audit logging enabled** - OCSF-compliant audit logging configured
-- [ ] **Log storage configured** - Audit logs persisted to file or pushed to a collector/SIEM
+- [ ] **Audit events shipped** - `UNCHAINED_LOG_FORMAT=json` set and a log agent scrapes the `unchained:audit` lines, or OTLP push configured
+- [ ] **Collector reachable** (if pushing) - `collectorUrl` / `OTEL_EXPORTER_OTLP_ENDPOINT` points at your OTLP collector
+- [ ] **Retention in the log pipeline** - your SIEM/log store retains audit events per your compliance requirements
 
 ```typescript
-import { createAuditLog, configureAuditIntegration } from '@unchainedshop/events';
-
-const auditLog = createAuditLog({
-  directory: './audit-logs',
-  collectorUrl: process.env.AUDIT_COLLECTOR_URL, // optional HTTP push
+const platform = await startPlatform({
+  auditLog: {
+    collectorUrl: process.env.OTEL_EXPORTER_OTLP_LOGS_ENDPOINT, // or rely on the env fallback
+  },
 });
-
-configureAuditIntegration(auditLog);
 ```
 
 ## Database

@@ -63,20 +63,27 @@ See [Permissions](../concepts/permissions) for defining custom roles via `rolesO
 
 ## Audit Logging
 
-Unchained provides **OCSF-compliant** (Open Cybersecurity Schema Framework) audit logging with tamper-evident hash chains:
+Unchained provides **OCSF-compliant** (Open Cybersecurity Schema Framework) audit logging designed for consumption by external monitoring agents:
 
 - **OCSF v1.4.0 schema** - Industry-standard format supported by AWS Security Lake, Datadog, Splunk, Google Chronicle
-- **Tamper-evident** - SHA-256 hash chain for integrity verification
-- **Append-only** - No update or delete operations
+- **Structured emission by default** - Every event as one JSON log line on stdout (`UNCHAINED_LOG_FORMAT=json`), scrapeable by any log agent
+- **OTLP push** - Optional OTLP/HTTP push to any OpenTelemetry-compatible collector (`collectorUrl` or `OTEL_EXPORTER_OTLP_*` env)
+
+The engine does not persist audit events itself — retention, queries, and integrity guarantees are the consuming log pipeline's or SIEM's concern.
+
+Audit logging is automatically enabled when using `startPlatform()` — events are emitted through the `unchained:audit` logger; OTLP push is opt-in.
 
 ```typescript
-import { createAuditLog, configureAuditIntegration } from '@unchainedshop/events';
+// Opt-in OTLP push:
+const platform = await startPlatform({
+  auditLog: {
+    collectorUrl: 'http://otel-collector:4318/v1/logs',
+  },
+});
 
-const auditLog = createAuditLog('./audit-logs');
-configureAuditIntegration(auditLog);
-
-// Automatically captured: login/logout, user creation/deletion,
-// password changes, role changes, order checkout, payments
+// Automatically captured (97 event types): login/logout/failed login,
+// user creation/deletion, password changes, role changes, order checkout,
+// payments, access denied
 ```
 
 See [Audit Logging](../extend/events#audit-logging-ocsf) for detailed documentation.

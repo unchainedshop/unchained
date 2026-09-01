@@ -273,52 +273,130 @@ To query the *emitted* event documents instead, use `events { _id type }` (pagin
 
 Unchained provides enterprise-grade audit logging based on the **OCSF (Open Cybersecurity Schema Framework)** - an industry-standard schema supported by AWS Security Lake, Datadog, Splunk, Google Chronicle, and other SIEM systems.
 
+Audit events are designed to be consumed by an external monitoring agent: by default every event is emitted as a structured log line (scrape it from stdout with any log shipper), and optionally pushed directly to an OTLP-compatible collector. The engine does not persist audit events itself — retention, queries, and integrity guarantees are the consuming log pipeline's or SIEM's concern.
+
 ### Features
 
 - **OCSF v1.4.0 compliant** - Industry-standard event schema
-- **Tamper-evident** - SHA-256 hash chain for integrity verification
-- **Append-only** - No update or delete operations
-- **JSON Lines format** - Easy parsing and integration
-- **SIEM-ready** - Direct ingestion into security monitoring tools
-- **HTTP push** - Optional push to OpenTelemetry Collector, Fluentd, or Vector
+- **Structured log emission** - Every event as one JSON log line on stdout (default)
+- **OTLP push** - Optional OTLP/HTTP push to any OpenTelemetry-compatible collector
+- **SIEM-ready** - OCSF format for direct ingestion into security monitoring tools
 
 ### Quick Start
 
+Audit logging is automatically enabled when using `startPlatform()` — every captured event is emitted through the `unchained:audit` logger:
+
 ```typescript
-import { createAuditLog, configureAuditIntegration } from '@unchainedshop/events';
+import { startPlatform } from '@unchainedshop/platform';
 
-// Create audit log instance
-const auditLog = createAuditLog('./audit-logs');
+// Default: audit events are emitted as structured log lines
+const platform = await startPlatform({
+  modules: defaultModules,
+});
 
-// Enable automatic event capture for all security-relevant events
-configureAuditIntegration(auditLog);
+// Opt into OTLP push:
+const platform = await startPlatform({
+  modules: defaultModules,
+  auditLog: {
+    collectorUrl: 'http://otel-collector:4318/v1/logs', // push to an OTLP collector
+  },
+});
 
-// Events automatically captured:
-// - API_LOGIN_TOKEN_CREATED → Authentication (LOGON)
-// - API_LOGOUT → Authentication (LOGOFF)
-// - USER_CREATE → Account Change (CREATE)
-// - USER_REMOVE → Account Change (DELETE)
-// - USER_UPDATE_PASSWORD → Account Change (PASSWORD_CHANGE)
-// - USER_ADD_ROLES → Account Change (ATTACH_POLICY)
-// - ORDER_CREATE → API Activity (CREATE)
-// - ORDER_CHECKOUT → API Activity (CHECKOUT)
-// - ORDER_PAY → API Activity (PAYMENT)
-// - And more...
+// To disable audit logging:
+const platform = await startPlatform({
+  modules: defaultModules,
+  auditLog: false,
+});
 ```
+
+When enabled, the following events are automatically captured (97 event types in total, see `AUDITED_EVENTS`):
+
+- `API_LOGIN_TOKEN_CREATED` → Authentication (LOGON)
+- `API_LOGIN_FAILED` → Authentication (LOGON, failure)
+- `API_LOGOUT` → Authentication (LOGOFF)
+- `USER_CREATE` → Account Change (CREATE)
+- `USER_REMOVE` → Account Change (DELETE)
+- `USER_UPDATE_PASSWORD` → Account Change (PASSWORD_CHANGE)
+- `USER_ADD_ROLES` → Account Change (ATTACH_POLICY)
+- `ORDER_CREATE` → API Activity (CREATE)
+- `ORDER_CHECKOUT` → API Activity (CHECKOUT)
+- `ORDER_PAY` → API Activity (PAYMENT)
+- And more...
+
+### Structured Log Emission (default)
+
+Each audit event is logged at `info` level on the `unchained:audit` logger with the full OCSF event under the `ocsf` key. Set `UNCHAINED_LOG_FORMAT=json` so stdout carries one machine-parseable JSON line per event:
+
+```json
+{"timestamp":"2026-09-01T09:12:00.000Z","level":"INFO","name":"unchained:audit","message":"User Login","ocsf":{"category_uid":3,"class_uid":3002,"activity_id":1,"severity_id":1,"status_id":1,"time":1788253920000,"metadata":{"version":"1.4.0","uid":"..."},"user":{"uid":"...","name":"admin"},"src_endpoint":{"ip":"203.0.113.7"}}}
+```
+
+Any log-shipping agent can pick these lines up from container stdout. Example OpenTelemetry Collector configuration using the `filelog` receiver:
+
+```yaml
+receivers:
+  filelog:
+    include: [/var/log/containers/unchained-*.log]
+    operators:
+      - type: json_parser
+      - type: filter
+        expr: 'attributes.name != "unchained:audit"'
+
+exporters:
+  otlphttp:
+    endpoint: https://your-siem.example.com
+
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
+      exporters: [otlphttp]
+```
+
+Vector, Fluent Bit, Promtail/Alloy and vendor agents (Datadog, Splunk, Elastic) work the same way: parse the JSON line, route on `name == "unchained:audit"`, and forward the `ocsf` payload.
+
+To silence the log emission (e.g. when only using OTLP push), set `auditLog: { log: false }`.
+
+### OTLP Push (opt-in)
+
+The engine can push audit events directly to any OTLP/HTTP-compatible logs endpoint (OpenTelemetry Collector, Vector, Fluent Bit, vendor OTLP intakes). Events are sent as OTLP `resourceLogs` — the full OCSF event forms the log record body, with key fields (`ocsf.class_uid`, `user.id`, `client.address`, ...) duplicated as attributes for routing and filtering:
+
+```typescript
+const platform = await startPlatform({
+  modules: defaultModules,
+  auditLog: {
+    collectorUrl: 'http://otel-collector:4318/v1/logs',
+    collectorHeaders: {
+      Authorization: 'Bearer <token>',
+    },
+    batchSize: 10, // Flush after 10 events (default: 10)
+    flushIntervalMs: 5000, // Or flush every 5 seconds (default: 5000)
+  },
+});
+```
+
+The standard OpenTelemetry environment variables are honored as fallbacks, so an operator can enable push without code changes:
+
+- `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` — used verbatim as the logs endpoint
+- `OTEL_EXPORTER_OTLP_ENDPOINT` — base endpoint, `/v1/logs` is appended
+- `OTEL_EXPORTER_OTLP_HEADERS` / `OTEL_EXPORTER_OTLP_LOGS_HEADERS` — `key=value,key=value` header lists
+- `OTEL_SERVICE_NAME` — sets the `service.name` resource attribute (default: `unchained-engine`)
+
+If the collector is unreachable, batches are re-queued and retried on the next flush. The queue is capped (`maxQueueSize`, default 1000); beyond the cap the oldest events are dropped and a warning is logged.
 
 ### Manual Logging
 
-For custom audit events:
+For custom audit events, use the singleton instance:
 
 ```typescript
 import {
-  createAuditLog,
+  getAuditLogInstance,
   OCSF_AUTH_ACTIVITY,
   OCSF_ACCOUNT_ACTIVITY,
   OCSF_API_ACTIVITY,
 } from '@unchainedshop/events';
 
-const auditLog = createAuditLog('./audit-logs');
+const auditLog = getAuditLogInstance();
 
 // Log authentication event
 await auditLog.logAuthentication({
@@ -366,48 +444,6 @@ await auditLog.logApiActivity({
 });
 ```
 
-### HTTP Collector Push
-
-Push audit logs to OpenTelemetry Collector, Fluentd, or Vector:
-
-```typescript
-const auditLog = createAuditLog({
-  directory: './audit-logs',
-  collectorUrl: 'http://otel-collector:4318/v1/logs',
-  collectorHeaders: {
-    'Authorization': 'Bearer <token>',
-  },
-  batchSize: 10,
-  flushIntervalMs: 5000,
-});
-```
-
-### Querying Audit Logs
-
-```typescript
-import { OCSF_CLASS } from '@unchainedshop/events';
-
-// Find failed login attempts
-const failedLogins = await auditLog.find({
-  classUids: [OCSF_CLASS.AUTHENTICATION],
-  success: false,
-  startTime: new Date('2024-01-01'),
-  limit: 100,
-});
-
-// Get failed login count for rate limiting
-const attempts = await auditLog.getFailedLogins({
-  remoteAddress: '192.168.1.1',
-  since: new Date(Date.now() - 15 * 60 * 1000), // Last 15 minutes
-});
-
-// Verify integrity of audit log chain
-const result = await auditLog.verify();
-if (!result.valid) {
-  console.error('Audit log tampering detected:', result.error);
-}
-```
-
 ### OCSF Event Classes
 
 | Class | UID | Use Cases |
@@ -418,38 +454,33 @@ if (!result.valid) {
 
 ### SIEM Integration
 
-Audit log files (`audit-YYYY-MM-DD.jsonl`) can be directly ingested by SIEM systems:
+Audit events use the OCSF v1.4.0 format and reach SIEM systems through:
 
-**Filebeat (Elastic):**
-```yaml
-filebeat.inputs:
-  - type: log
-    paths:
-      - /path/to/audit-logs/*.jsonl
-    json.keys_under_root: true
-```
+1. **Structured log scraping** (default) — Ship the `unchained:audit` JSON lines from stdout with any log agent (OpenTelemetry Collector `filelog`, Vector, Fluent Bit, Promtail/Alloy, vendor agents)
+2. **OTLP Push** — Real-time OTLP/HTTP push to a collector via `collectorUrl` or the `OTEL_EXPORTER_OTLP_*` environment variables
 
-**Promtail (Loki/Grafana):**
-```yaml
-scrape_configs:
-  - job_name: unchained-audit
-    static_configs:
-      - targets: [localhost]
-        labels:
-          job: audit
-          __path__: /path/to/audit-logs/*.jsonl
-```
+**Supported SIEM systems** (via OCSF format):
+- AWS Security Lake (direct ingestion)
+- Splunk (OCSF add-on)
+- Datadog Cloud SIEM
+- Google Chronicle / SecOps
+- CrowdStrike Falcon LogScale
+- Elastic Security
+
+### Configuration Reference
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `log` | `boolean` | `true` | Emit each event as a structured log line via the `unchained:audit` logger |
+| `collectorUrl` | `string` | `OTEL_EXPORTER_OTLP_*` env | OTLP/HTTP logs endpoint for real-time push |
+| `collectorHeaders` | `Record<string, string>` | `OTEL_EXPORTER_OTLP_*_HEADERS` env | HTTP headers for collector auth |
+| `batchSize` | `number` | `10` | Number of events to batch before pushing |
+| `flushIntervalMs` | `number` | `5000` | Max interval (ms) between pushes |
+| `maxQueueSize` | `number` | `1000` | Push queue cap; oldest events are dropped beyond it |
 
 ### Shutdown
 
-Always close the audit log on shutdown to flush pending events:
-
-```typescript
-process.on('SIGTERM', async () => {
-  await auditLog.close();
-  process.exit(0);
-});
-```
+When using `startPlatform()`, audit log shutdown is handled automatically. The platform flushes pending HTTP collector events and waits for the write lock to complete before exiting.
 
 ## Related
 

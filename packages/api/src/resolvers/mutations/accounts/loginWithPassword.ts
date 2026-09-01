@@ -1,5 +1,7 @@
 import { log } from '@unchainedshop/logger';
+import { emit } from '@unchainedshop/events';
 import { InvalidCredentialsError, UsernameOrEmailRequiredError } from '../../../errors.ts';
+import { API_EVENTS } from '../../../events.ts';
 import type { Context } from '../../../context.ts';
 import type { User } from '@unchainedshop/core-users';
 
@@ -21,13 +23,27 @@ export default async function loginWithPassword(
     ? await context.modules.users.findUserByUsername(username)
     : await context.modules.users.findUserByEmail(email!);
 
-  if (!user) throw new InvalidCredentialsError({ username, email });
+  if (!user) {
+    await emit(API_EVENTS.API_LOGIN_FAILED, {
+      username,
+      email,
+      remoteAddress: context.remoteAddress,
+    });
+    throw new InvalidCredentialsError({ username, email });
+  }
 
   const verified =
     user.services?.password &&
     (await context.modules.users.verifyPassword(user.services.password, password));
 
-  if (!verified) throw new InvalidCredentialsError({ username, email });
+  if (!verified) {
+    await emit(API_EVENTS.API_LOGIN_FAILED, {
+      userId: user._id,
+      username: user.username,
+      remoteAddress: context.remoteAddress,
+    });
+    throw new InvalidCredentialsError({ username, email });
+  }
 
   if (user.guest) {
     await context.modules.users.updateGuest(user, false);
