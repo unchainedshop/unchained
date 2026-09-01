@@ -2,6 +2,7 @@ import { createLogger } from '@unchainedshop/logger';
 import { stripe } from './stripe.ts';
 import { createRegistrationIntent, retrieveSetupIntentCredentials } from './setup-intents.ts';
 import {
+  ACP_SPT_STRIPE_VERSION,
   createAcpSharedPaymentTokenIntent,
   createOrderPaymentIntent,
   createStoredCredentialPaymentIntent,
@@ -118,10 +119,25 @@ const Stripe: IPaymentAdapter = {
           });
 
           if (paymentIntentObject.status === 'succeeded') {
+            // Persist an agent-payment evidence trail alongside the charge (stored on
+            // the order payment's `info`). The merchant stays merchant-of-record and
+            // owns chargeback liability for agent-initiated purchases, so keep the
+            // delegated-token reference, resulting charge and API version to later
+            // reconstruct agent identity/consent (Stripe `agent_details`/`usage_limits`).
             return {
               transactionId: paymentIntentObject.id,
               status: paymentIntentObject.status,
               paymentMethod: paymentIntentObject.payment_method,
+              acp: {
+                handlerId: chargeRequest.acpHandlerId || 'stripe_spt',
+                sharedPaymentToken: chargeRequest.acpToken,
+                chargeId:
+                  typeof paymentIntentObject.latest_charge === 'string'
+                    ? paymentIntentObject.latest_charge
+                    : (paymentIntentObject.latest_charge?.id ?? null),
+                stripeApiVersion: ACP_SPT_STRIPE_VERSION,
+                capturedAt: new Date().toISOString(),
+              },
             };
           }
 

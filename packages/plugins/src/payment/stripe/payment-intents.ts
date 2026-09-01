@@ -13,6 +13,11 @@ type AcpSharedPaymentMethodData = Stripe.PaymentIntentCreateParams.PaymentMethod
   shared_payment_granted_token: string;
 };
 
+// Stripe's Shared Payment Token surface is still Preview-versioned (distinct from the
+// stable `.dahlia` apiVersion the base client uses for ordinary PaymentIntents). As of
+// 2026-09 there is no newer preview and no GA — do NOT collapse this into the stable pin.
+export const ACP_SPT_STRIPE_VERSION = '2026-04-22.preview';
+
 export const createOrderPaymentIntent = async (
   {
     userId,
@@ -110,7 +115,7 @@ export const createAcpSharedPaymentTokenIntent = async (
       } as AcpSharedPaymentMethodData,
     },
     {
-      apiVersion: '2026-04-22.preview',
+      apiVersion: ACP_SPT_STRIPE_VERSION,
       idempotencyKey: `acp-${orderPayment._id}`,
     },
   );

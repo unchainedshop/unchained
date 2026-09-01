@@ -1,5 +1,5 @@
 import e from 'express';
-import { acpConfig } from '../acp/config.ts';
+import { ACP_API_VERSION, acpConfig } from '../acp/config.ts';
 import { handleACPRequest } from '../acp/handler.ts';
 
 export const createACPMiddleware = e.Router();
@@ -24,8 +24,8 @@ createACPMiddleware.all(/(.*)/, async (req, res) => {
 export const wellKnownACPHandler = (_req: e.Request, res: e.Response) => {
   res.json({
     protocol: 'agentic-commerce-protocol',
-    api_versions: ['2026-04-17'],
+    api_versions: [ACP_API_VERSION],
     checkout_endpoint: `${acpConfig.apiPath}/checkout_sessions`,
-    capabilities: ['checkout', 'stripe_spt'],
+    capabilities: ['checkout', acpConfig.paymentHandler.id],
   });
 };

@@ -7,6 +7,9 @@ import { acpConfig } from './config.ts';
 
 const logger = createLogger('unchained:api:acp-webhook');
 let configured = false;
+const DEDUPE_WINDOW = 60_000;
+// In-process, single-instance dedupe. Multi-instance deployments should move this
+// (and outbound delivery) to the worker queue for durable, cluster-wide at-least-once.
 const recentlyDelivered = new Map<string, number>();
 
 export const signACPWebhookPayload = (
@@ -101,10 +104,15 @@ export const configureACPWebhooks = () => {
   const register = (name: string, created: boolean) => {
     subscribe(name, async ({ payload }: RawPayloadType<{ order: Order }>) => {
       if (!payload.order?.context?.acp) return;
+      const now = Date.now();
+      // prune expired entries so the dedupe map can't grow unbounded
+      for (const [key, deliveredAt] of recentlyDelivered) {
+        if (now - deliveredAt >= DEDUPE_WINDOW) recentlyDelivered.delete(key);
+      }
       const dedupeKey = `${name}:${payload.order._id}:${payload.order.status}`;
       const lastDelivered = recentlyDelivered.get(dedupeKey);
-      if (lastDelivered && Date.now() - lastDelivered < 60_000) return;
-      recentlyDelivered.set(dedupeKey, Date.now());
+      if (lastDelivered && now - lastDelivered < DEDUPE_WINDOW) return;
+      recentlyDelivered.set(dedupeKey, now);
       await sendWebhook(payload.order, created);
     });
   };

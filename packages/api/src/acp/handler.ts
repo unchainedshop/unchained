@@ -1,7 +1,13 @@
 import type { User } from '@unchainedshop/core-users';
 import type { Context } from '../context.ts';
 import { getHeader, type ACPHeaders, verifyACPRequest } from './auth.ts';
-import { acpConfig } from './config.ts';
+import {
+  acpAcceptedHandlerIds,
+  acpConfig,
+  acpPaymentHandler,
+  isAcpAdapterKeyAllowed,
+  isAcpHandlerAccepted,
+} from './config.ts';
 import { ACPError } from './error.ts';
 import { buildACPProductFeed } from './feed.ts';
 import { withIdempotency } from './idempotency.ts';
@@ -146,12 +152,12 @@ const createSession = async (context: Context, body: any) => {
   const paymentProvider = await context.modules.payment.paymentProviders.findProvider({
     paymentProviderId: acpConfig.paymentProviderId,
   });
-  if (paymentProvider?.adapterKey !== 'shop.unchained.payment.stripe') {
+  if (!isAcpAdapterKeyAllowed(paymentProvider?.adapterKey)) {
     throw new ACPError(
       503,
       'api_error',
       'payment_provider_not_configured',
-      'UNCHAINED_ACP_PAYMENT_PROVIDER_ID must use shop.unchained.payment.stripe',
+      `UNCHAINED_ACP_PAYMENT_PROVIDER_ID must use an ACP-capable payment adapter. Allowed: ${acpConfig.paymentAdapterKeys.join(', ')}`,
     );
   }
 
@@ -189,7 +195,7 @@ const createSession = async (context: Context, body: any) => {
 
 const extractPaymentData = (paymentData: any) => {
   const token = paymentData?.instrument?.credential?.token || paymentData?.token;
-  const provider = paymentData?.handler_id || paymentData?.provider || 'stripe_spt';
+  const provider = paymentData?.handler_id || paymentData?.provider || acpPaymentHandler.id;
   if (!token) {
     throw new ACPError(
       400,
@@ -199,12 +205,12 @@ const extractPaymentData = (paymentData: any) => {
       '$.payment_data',
     );
   }
-  if (provider !== 'stripe_spt' && provider !== 'stripe') {
+  if (!isAcpHandlerAccepted(provider)) {
     throw new ACPError(
       400,
       'invalid_request',
       'unsupported_payment_handler',
-      `Unsupported payment handler: ${provider}`,
+      `Unsupported payment handler: ${provider}. Supported: ${acpAcceptedHandlerIds.join(', ')}`,
       '$.payment_data.handler_id',
     );
   }

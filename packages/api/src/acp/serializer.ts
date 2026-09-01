@@ -1,6 +1,7 @@
 import { OrderPricingRowCategory, OrderPricingSheet } from '@unchainedshop/core';
 import { OrderStatus, type Order } from '@unchainedshop/core-orders';
 import type { Context } from '../context.ts';
+import { acpConfig } from './config.ts';
 
 const statusForOrder = async (order: Order, context: Context) => {
   if (order.context?.acp?.canceled) return 'canceled';
@@ -102,24 +103,7 @@ export const serializeCheckoutSession = async (order: Order, context: Context) =
     links: [],
     capabilities: {
       payment: {
-        handlers: [
-          {
-            id: 'stripe_spt',
-            name: 'dev.acp.tokenized.card',
-            display_name: 'Card',
-            version: '2026-01-22',
-            spec: 'https://github.com/agentic-commerce-protocol/agentic-commerce-protocol/blob/main/rfcs/rfc.payment_handlers.md',
-            requires_delegate_payment: true,
-            requires_pci_compliance: false,
-            psp: 'stripe',
-            config_schema:
-              'https://raw.githubusercontent.com/agentic-commerce-protocol/agentic-commerce-protocol/main/spec/2026-04-17/json-schema/schema.agentic_checkout.json#/$defs/PaymentHandler',
-            instrument_schemas: [
-              'https://raw.githubusercontent.com/agentic-commerce-protocol/agentic-commerce-protocol/main/spec/2026-04-17/json-schema/schema.agentic_checkout.json#/$defs/PaymentData',
-            ],
-            config: {},
-          },
-        ],
+        handlers: [acpConfig.paymentHandler],
       },
       interventions: {},
       extensions: [],

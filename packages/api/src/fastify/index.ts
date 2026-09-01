@@ -28,6 +28,7 @@ import { connectChat } from './chatHandler.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
 import { readFileSync } from 'node:fs';
 import { configureACPWebhooks } from '../acp/webhook.ts';
+import { ACP_API_VERSION, acpConfig } from '../acp/config.ts';
 export interface AdminUIRouterOptions {
   prefix: string;
   enabled?: boolean;
@@ -251,9 +252,9 @@ export const connect = (
 
   fastify.get('/.well-known/acp.json', async () => ({
     protocol: 'agentic-commerce-protocol',
-    api_versions: ['2026-04-17'],
+    api_versions: [ACP_API_VERSION],
     checkout_endpoint: `${ACP_API_PATH}/checkout_sessions`,
-    capabilities: ['checkout', 'stripe_spt'],
+    capabilities: ['checkout', acpConfig.paymentHandler.id],
   }));
   configureACPWebhooks();
 
