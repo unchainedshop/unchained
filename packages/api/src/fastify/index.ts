@@ -16,7 +16,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
-import { generateThemeCSS, type AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
+import { generateThemeCSS, type AdminUIThemeConfig as AdminUIThemeConfigFromTheme } from '@unchainedshop/admin-ui/theme';
 import {
   preparePluginAssets,
   buildImportMapTag,

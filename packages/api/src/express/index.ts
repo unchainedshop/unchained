@@ -16,7 +16,7 @@ import type { ChatConfiguration } from '../chat/utils.ts';
 import { connectChat } from './chatHandler.ts';
 import { mountRoutes } from './mountRoutes.ts';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
-import { generateThemeCSS, type AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
+import { generateThemeCSS, type AdminUIThemeConfig as AdminUIThemeConfigFromTheme } from '@unchainedshop/admin-ui/theme';
 import {
   preparePluginAssets,
   buildImportMapTag,
