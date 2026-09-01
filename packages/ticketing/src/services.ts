@@ -133,7 +133,7 @@ async function isPassCodeValid(this: Modules, passCode: string, productId?: stri
 
   const products = await this.products.findProducts({
     type: ProductType.TOKENIZED_PRODUCT,
-    includeDrafts: false,
+    includeDrafts: true,
   });
 
   const matchingProducts = productId ? products.filter((p) => p._id === productId) : products;
@@ -152,7 +152,7 @@ async function productIdsForPassCode(this: Modules, passCode: string): Promise<s
 
   const products = await this.products.findProducts({
     type: ProductType.TOKENIZED_PRODUCT,
-    includeDrafts: false,
+    includeDrafts: true,
   });
 
   return products

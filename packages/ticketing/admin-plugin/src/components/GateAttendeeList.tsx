@@ -1,11 +1,9 @@
 import { useCallback } from 'react';
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
-import Table from '../../common/components/Table';
-import Badge from '../../../components/ui/Badge';
-import useFormatDateTime from '../../common/utils/useFormatDateTime';
-import formatUsername from '../../common/utils/formatUsername';
-import useInvalidateTicket from '../../token/hooks/useInvalidateTicket';
+import { Table, Badge } from '@unchainedshop/admin-ui/ui';
+import { useFormatDateTime, formatUsername } from '../utils/misc';
+import useInvalidateTicket from '../hooks/useInvalidateTicket';
 
 const GateAttendeeList = ({ event, onRefetch }) => {
   const { formatMessage } = useIntl();
@@ -27,12 +25,11 @@ const GateAttendeeList = ({ event, onRefetch }) => {
         }),
       );
       onRefetch?.();
-    } catch (e) {
+    } catch {
       toast.error(
         formatMessage({
           id: 'gate_redeem_error',
-          defaultMessage:
-            'Could not redeem ticket. It may already be redeemed or not yet redeemable.',
+          defaultMessage: 'Could not redeem ticket. It may already be redeemed or not yet redeemable.',
         }),
       );
     }
@@ -52,9 +49,7 @@ const GateAttendeeList = ({ event, onRefetch }) => {
           )}
         </div>
         <div className="text-right">
-          <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-            {redeemedCount}
-          </span>
+          <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{redeemedCount}</span>
           <span className="text-slate-400"> / {activeTokens.length}</span>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             {formatMessage({
@@ -121,9 +116,7 @@ const GateAttendeeList = ({ event, onRefetch }) => {
                 </Table.Cell>
                 <Table.Cell>
                   <span className="text-sm text-slate-600 dark:text-slate-400">
-                    {token.user?.lastContact?.emailAddress ||
-                      token.user?.primaryEmail?.address ||
-                      '-'}
+                    {token.user?.lastContact?.emailAddress || token.user?.primaryEmail?.address || '-'}
                   </span>
                 </Table.Cell>
                 <Table.Cell>

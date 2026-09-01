@@ -3,6 +3,7 @@ import { usePlugins } from '../../modules/plugins/PluginContext';
 import { PluginRuntimeProvider } from '../../modules/plugins/PluginRuntimeContext';
 import PluginErrorBoundary from '../../modules/plugins/PluginErrorBoundary';
 import useAuth from '../../modules/Auth/useAuth';
+import useCurrentUser from '../../modules/accounts/hooks/useCurrentUser';
 import Loading from '@/components/ui/Loading';
 
 const PluginEntityPage = () => {
@@ -10,6 +11,8 @@ const PluginEntityPage = () => {
   const { slug } = router.query;
   const { manifests, getComponent, loading } = usePlugins();
   const { hasRole } = useAuth();
+  const { currentUser } = useCurrentUser();
+  const isAuthenticated = !!currentUser?._id;
 
   if (loading) return <Loading />;
 
@@ -32,6 +35,10 @@ const PluginEntityPage = () => {
       (e) => e.path.replace(/^\//, '') === pathStr,
     );
     if (entity) {
+      if (!isAuthenticated) {
+        router.replace('/log-in');
+        return <Loading />;
+      }
       if (entity.requiredRole && !hasRole(entity.requiredRole)) {
         router.replace('/403');
         return <Loading />;
@@ -78,9 +85,15 @@ const PluginEntityPage = () => {
       (p) => p.path.replace(/^\//, '') === pathStr,
     );
     if (page) {
-      if (page.requiredRole && !hasRole(page.requiredRole)) {
-        router.replace('/403');
-        return <Loading />;
+      if (page.requiredRole) {
+        if (!isAuthenticated) {
+          router.replace('/log-in');
+          return <Loading />;
+        }
+        if (!hasRole(page.requiredRole)) {
+          router.replace('/403');
+          return <Loading />;
+        }
       }
       const Component = getComponent(manifest.name, page.component);
       if (Component)
