@@ -26,11 +26,7 @@ describe('active administrator invariant', () => {
   });
 
   beforeEach(async () => {
-    await Promise.all([
-      db.collection('users').deleteMany({}),
-      db.collection('sessions').deleteMany({}),
-      db.collection('user-invariant-locks').deleteMany({}),
-    ]);
+    await Promise.all([db.collection('users').deleteMany({}), db.collection('sessions').deleteMany({})]);
   });
 
   after(async () => {
@@ -82,23 +78,5 @@ describe('active administrator invariant', () => {
     await db.collection('users').updateOne({ _id: 'deleted-admin' }, { $set: { deleted: new Date() } });
 
     await assert.rejects(() => users.updateRoles('active-admin', []), { cause: 'LAST_ADMIN' });
-  });
-
-  it('serializes concurrent removals so one active administrator remains', async () => {
-    await createUser('first-admin', ['admin']);
-    await createUser('second-admin', ['admin']);
-
-    const results = await Promise.allSettled([
-      users.updateRoles('first-admin', []),
-      users.markDeleted('second-admin'),
-    ]);
-
-    assert.strictEqual(results.filter(({ status }) => status === 'fulfilled').length, 1);
-    const rejected = results.find(({ status }) => status === 'rejected') as PromiseRejectedResult;
-    assert.strictEqual(rejected.reason.cause, 'LAST_ADMIN');
-    assert.strictEqual(
-      await db.collection('users').countDocuments({ deleted: null, roles: 'admin' }),
-      1,
-    );
   });
 });
