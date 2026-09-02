@@ -6,7 +6,7 @@ import {
   createAnonymousGraphqlFetch,
   disconnect,
 } from './helpers.js';
-import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
+import { Admin, User, ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 
 let graphqlFetchAsAdmin;
 let graphqlFetchAsUser;
@@ -319,6 +319,71 @@ test.describe('User Removal', () => {
 
       assert.ok(errors);
       assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+    });
+
+    test('does not treat updateUser as permission to remove another user', async () => {
+      const Users = db.collection('users');
+      await Users.updateOne({ _id: User._id }, { $set: { roles: ['userManager'] } });
+
+      try {
+        const { errors } = await graphqlFetchAsUser({
+          query: /* GraphQL */ `
+            mutation RemoveUser($userId: ID!) {
+              removeUser(userId: $userId) {
+                _id
+              }
+            }
+          `,
+          variables: { userId: Admin._id },
+        });
+
+        assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+      } finally {
+        await Users.updateOne({ _id: User._id }, { $set: { roles: [] } });
+      }
+    });
+
+    test('allows a role with removeUser permission and audits the action', async () => {
+      const Users = db.collection('users');
+      const removableUserId = 'user-removable-by-role';
+      await Users.insertOne({
+        _id: removableUserId,
+        username: removableUserId,
+        emails: [{ address: `${removableUserId}@example.com`, verified: true }],
+        created: new Date(),
+        roles: [],
+        guest: false,
+      });
+      await Users.updateOne({ _id: User._id }, { $set: { roles: ['userRemover'] } });
+
+      try {
+        const { data: { removeUser } = {}, errors } = await graphqlFetchAsUser({
+          query: /* GraphQL */ `
+            mutation RemoveUser($userId: ID!) {
+              removeUser(userId: $userId) {
+                _id
+              }
+            }
+          `,
+          variables: { userId: removableUserId },
+        });
+
+        assert.strictEqual(errors, undefined);
+        assert.strictEqual(removeUser._id, removableUserId);
+
+        let auditEvent;
+        for (let index = 0; index < 20 && !auditEvent; index += 1) {
+          auditEvent = await db.collection('events').findOne({
+            type: 'ACL_GRANTED_SENSITIVE',
+            'payload.userId': User._id,
+            'payload.action': 'removeUser',
+          });
+          if (!auditEvent) await new Promise((resolve) => setTimeout(resolve, 10));
+        }
+        assert.ok(auditEvent);
+      } finally {
+        await Users.updateOne({ _id: User._id }, { $set: { roles: [] } });
+      }
     });
   });
 

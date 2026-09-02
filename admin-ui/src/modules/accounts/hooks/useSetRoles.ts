@@ -4,15 +4,13 @@ import {
   ISetRolesMutation,
   ISetRolesMutationVariables,
 } from '../../../gql/types';
-import UserFragment from '../fragment/UserFragment';
 
 const SetRoleMutation = gql`
   mutation SetRoles($roles: [String!]!, $userId: ID!) {
     setRoles(roles: $roles, userId: $userId) {
-      ...UserFragment
+      _id
     }
   }
-  ${UserFragment}
 `;
 
 const useSetRoles = () => {
@@ -30,7 +28,7 @@ const useSetRoles = () => {
         roles,
         userId,
       },
-      refetchQueries: ['User'],
+      refetchQueries: ['UserPermissions', 'User', 'CurrentUser'],
     });
   };
 

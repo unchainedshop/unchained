@@ -1,3 +1,22 @@
+export const AdminViewerAllowedUserActions = [
+  'impersonate',
+  'logoutAllSessions',
+  'manageUsers',
+  'removeUser',
+  'updateUser',
+  'updateUsername',
+  'uploadUserAvatar',
+  'viewUser',
+  'viewUserEnrollments',
+  'viewUserOrders',
+  'viewUserPrivateInfos',
+  'viewUserProductReviews',
+  'viewUserPublicInfos',
+  'viewUserQuotations',
+  'viewUserRoles',
+  'viewUserTokens',
+];
+
 export const CurrentUserResponse = {
   data: {
     impersonator: null,
@@ -61,6 +80,7 @@ export const CurrentUserResponse = {
         'markOrderRejected',
         'pageView',
         'registerPaymentCredentials',
+        'removeUser',
         'requestQuotation',
         'resetPassword',
         'reviewProduct',
@@ -125,6 +145,7 @@ export const CurrentUserResponse = {
         'viewWarehousingProviders',
         'voteProductReview',
       ],
+      viewerAllowedActions: AdminViewerAllowedUserActions,
       paymentCredentials: [],
       primaryEmail: {
         address: 'admin@unchained.local',
@@ -690,7 +711,24 @@ export const UserListResponse = {
 
 export const SingleUserResponse = {
   data: {
-    user: UserListResponse.data.users[0],
+    user: {
+      ...UserListResponse.data.users[0],
+      viewerAllowedActions: AdminViewerAllowedUserActions,
+    },
+  },
+};
+
+export const TargetUserResponse = {
+  data: {
+    user: {
+      ...UserListResponse.data.users[0],
+      _id: 'target-user-with-specific-permissions',
+      email: 'target-user@unchained.local',
+      name: 'target-user@unchained.local',
+      username: 'target-user',
+      roles: [],
+      viewerAllowedActions: [],
+    },
   },
 };
 
@@ -1953,6 +1991,7 @@ export const UserOperations = {
   UserWebAuthnCredentials: 'UserWebAuthnCredentials',
   CurrentUser: 'CurrentUser',
   GetUserList: 'Users',
+  GetPermissions: 'UserPermissions',
   GetSingle: 'User',
   CreateUser: 'EnrollUser',
   UpdateUser: 'UpdateUserProfile',

@@ -4,15 +4,13 @@ import {
   IRemoveEmailMutation,
   IRemoveEmailMutationVariables,
 } from '../../../gql/types';
-import UserFragment from '../fragment/UserFragment';
 
 const RemoveEmailMutation = gql`
   mutation RemoveEmail($email: String!, $userId: ID) {
     removeEmail(email: $email, userId: $userId) {
-      ...UserFragment
+      _id
     }
   }
-  ${UserFragment}
 `;
 
 const useRemoveEmail = () => {
@@ -30,6 +28,7 @@ const useRemoveEmail = () => {
         email,
         userId,
       },
+      refetchQueries: ['UserPermissions', 'User', 'CurrentUser'],
     });
   };
 

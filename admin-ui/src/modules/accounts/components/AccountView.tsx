@@ -22,10 +22,18 @@ const AccountView = ({
   tags,
   isInitialPassword,
   primaryEmail,
+  viewerAllowedActions,
 }) => {
   const { formatMessage } = useIntl();
   const { currentUser } = useCurrentUser();
   const { hasRole } = useAuth();
+  const isOwnUser = currentUser?._id === _id;
+  const can = (action: IRoleAction) =>
+    viewerAllowedActions?.includes(action) ?? false;
+  const canViewPrivateInfos = can(IRoleAction.ViewUserPrivateInfos);
+  const canViewUserRoles = can(IRoleAction.ViewUserRoles);
+  const canUpdateUser = can(IRoleAction.UpdateUser);
+  const canManageUsers = can(IRoleAction.ManageUsers);
   return (
     <>
       <SelfDocumentingView
@@ -40,11 +48,14 @@ const AccountView = ({
         })}
       >
         <div className="overflow-hidden rounded-md p-3 shadow-sm bg-surface sm:p-6">
-          <UserNameView username={username} _id={_id} />
+          <UserNameView
+            username={username}
+            _id={_id}
+            canEdit={can(IRoleAction.UpdateUsername)}
+          />
         </div>
       </SelfDocumentingView>
-      {(currentUser?._id === _id ||
-        hasRole(IRoleAction.ViewUserPrivateInfos)) && (
+      {canViewPrivateInfos && (
         <SelfDocumentingView
           documentationLabel={formatMessage({
             id: 'email_addresses',
@@ -57,11 +68,13 @@ const AccountView = ({
               enableVerification
               userId={_id}
               emailBodyContainer="rounded-md shadow-sm"
+              canUpdate={canUpdateUser}
+              canSendVerification={isOwnUser || hasRole(IRoleAction.SendEmail)}
             />
           </div>
         </SelfDocumentingView>
       )}
-      {currentUser?._id === _id && (
+      {isOwnUser && (
         <SelfDocumentingView
           documentationLabel={formatMessage({
             id: 'web3_addresses',
@@ -92,18 +105,20 @@ const AccountView = ({
         </SelfDocumentingView>
       )}
 
-      <SelfDocumentingView
-        documentationLabel={formatMessage({
-          id: 'tags',
-          defaultMessage: 'Tags',
-        })}
-      >
-        <div className="my-2 rounded-md px-4 py-5 shadow-sm bg-surface sm:p-6">
-          <UserTagsView tags={tags} userId={_id} />
-        </div>
-      </SelfDocumentingView>
+      {canViewPrivateInfos && (
+        <SelfDocumentingView
+          documentationLabel={formatMessage({
+            id: 'tags',
+            defaultMessage: 'Tags',
+          })}
+        >
+          <div className="my-2 rounded-md px-4 py-5 shadow-sm bg-surface sm:p-6">
+            <UserTagsView tags={tags} userId={_id} canEdit={canManageUsers} />
+          </div>
+        </SelfDocumentingView>
+      )}
 
-      {hasRole(IRoleAction.ManageUsers) ? (
+      {canViewUserRoles ? (
         <SelfDocumentingView
           documentationLabel={formatMessage({
             id: 'roles',
@@ -111,12 +126,16 @@ const AccountView = ({
           })}
         >
           <div className="overflow-hidden rounded-md border-b bg-surface text-text-primary border-border-default px-4 py-5 shadow-sm sm:p-6">
-            <UserRolesView roles={roles} userId={_id} />
+            <UserRolesView
+              roles={roles}
+              userId={_id}
+              canEdit={canManageUsers}
+            />
           </div>
         </SelfDocumentingView>
       ) : null}
 
-      {hasRole(IRoleAction.UpdateUser) && currentUser?._id !== _id ? (
+      {canUpdateUser && !isOwnUser ? (
         <SelfDocumentingView
           documentationLabel={formatMessage({
             id: 'set_password',
@@ -128,12 +147,14 @@ const AccountView = ({
               userId={_id}
               isInitialPassword={isInitialPassword}
               primaryEmail={primaryEmail}
+              canUpdate={canUpdateUser}
+              canSendEnrollmentEmail={hasRole(IRoleAction.SendEmail)}
             />
           </div>
         </SelfDocumentingView>
       ) : null}
 
-      {currentUser?._id === _id && (
+      {isOwnUser && (
         <SelfDocumentingView
           documentationLabel={formatMessage({
             id: 'change_password',
@@ -146,7 +167,7 @@ const AccountView = ({
         </SelfDocumentingView>
       )}
 
-      {hasRole(IRoleAction.ManageUsers) && (
+      {isOwnUser && (
         <SelfDocumentingView
           documentationLabel={formatMessage({
             id: 'web_authentication',
@@ -159,7 +180,7 @@ const AccountView = ({
         </SelfDocumentingView>
       )}
 
-      {(currentUser?._id === _id || hasRole(IRoleAction.UpdateUser)) && (
+      {can(IRoleAction.LogoutAllSessions) && (
         <SelfDocumentingView
           documentationLabel={formatMessage({
             id: 'sessions',

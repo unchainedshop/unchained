@@ -3992,6 +3992,7 @@ export type IUpdateProviderInput = {
 export type IUser = {
   _id: Scalars['ID']['output'];
   allowedActions: Array<IRoleAction>;
+  viewerAllowedActions: Array<IRoleAction>;
   avatar?: Maybe<IMedia>;
   bookmarks: Array<IBookmark>;
   cart?: Maybe<IOrder>;

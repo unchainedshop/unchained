@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { IRoleAction } from '../../../gql/types';
 
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
@@ -8,12 +7,6 @@ import MiniUserAvatar from '../../common/components/MiniUserAvatar';
 import Table from '../../common/components/Table';
 import TableActionsMenu from '../../common/components/TableActionsMenu';
 import formatUsername from '../../common/utils/formatUsername';
-import useCurrentUser from '../hooks/useCurrentUser';
-import useAuth from '../../Auth/useAuth';
-import useModal from '../../modal/hooks/useModal';
-import DangerMessage from '../../modal/components/DangerMessage';
-import useDeleteUser from '../hooks/useDeleteUser';
-import Loading from '@/components/ui/Loading';
 import { ShoppingBagIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
 
 const UserLastLogin = ({ lastLogin }) => {
@@ -42,39 +35,12 @@ const UserListItem = ({
   onToggleSelect = undefined,
   showCheckbox = false,
 }) => {
-  const { formatMessage, locale } = useIntl();
+  const { formatMessage } = useIntl();
   const router = useRouter();
-  const { currentUser, loading } = useCurrentUser();
-  const { hasRole } = useAuth();
-  const { setModal } = useModal();
-  const { deleteUser } = useDeleteUser();
   const isVerified = !!user?.primaryEmail?.verified;
-
-  if (loading && !currentUser) return <Loading />;
 
   const handleEdit = () => {
     router.push(`/users?userId=${user._id}`);
-  };
-
-  const handleDelete = async () => {
-    await setModal(
-      <DangerMessage
-        onCancelClick={async () => setModal('')}
-        message={formatMessage({
-          id: 'delete_user_warning',
-          defaultMessage:
-            'This action will permanently delete this user and all associated data. Are you sure you want to continue?',
-        })}
-        onOkClick={async () => {
-          setModal('');
-          await deleteUser({ userId: user._id });
-        }}
-        okText={formatMessage({
-          id: 'delete_user',
-          defaultMessage: 'Delete User',
-        })}
-      />,
-    );
   };
 
   return (
@@ -183,12 +149,7 @@ const UserListItem = ({
       </Table.Cell>
 
       <Table.Cell className="text-right">
-        <TableActionsMenu
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          showEdit={true}
-          showDelete={hasRole(IRoleAction.RemoveUser)}
-        />
+        <TableActionsMenu onEdit={handleEdit} showDelete={false} />
       </Table.Cell>
     </Table.Row>
   );

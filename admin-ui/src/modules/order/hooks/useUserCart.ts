@@ -1,6 +1,5 @@
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-import OrderFragment from '../fragments/OrderFragment';
 import { IUserCartQuery, IUserCartQueryVariables } from '@/gql/types';
 
 const UserCartQuery = gql`
@@ -8,7 +7,13 @@ const UserCartQuery = gql`
     user(userId: $userId) {
       _id
       cart {
-        ...OrderFragment
+        _id
+        created
+        updated
+        total {
+          amount
+          currencyCode
+        }
         country {
           _id
           isoCode
@@ -45,7 +50,6 @@ const UserCartQuery = gql`
       }
     }
   }
-  ${OrderFragment}
 `;
 
 const useUserCart = ({ userId = null }: { userId?: string } = {}) => {

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { IRoleAction } from '../../../gql/types';
 
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
@@ -8,13 +7,11 @@ import FormErrors from '@/components/ui/form/FormErrors';
 import TextField from '@/components/ui/form/TextField';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import useSetUserName from '../hooks/useSetUsername';
-import useAuth from '../../Auth/useAuth';
 
-const UserNameView = ({ _id: userId, username }) => {
+const UserNameView = ({ _id: userId, username, canEdit = false }) => {
   const { setUserName } = useSetUserName();
   const [isEdit, setIsEdit] = useState(false);
   const { formatMessage } = useIntl();
-  const { hasRole } = useAuth();
   const onUpdateUserName: OnSubmitType = async ({ username: newUsername }) => {
     const result = await setUserName({ username: newUsername, userId });
     setIsEdit(false);
@@ -68,7 +65,7 @@ const UserNameView = ({ _id: userId, username }) => {
           </div>
           <div className="flex flex-wrap items-baseline gap-4 text-sm sm:col-span-2 sm:mt-0 sm:gap-0">
             <FormErrors />
-            {hasRole(IRoleAction.ManageUsers) && (
+            {canEdit && (
               <span className="flex shrink-0 items-center space-x-4">
                 <button
                   data-id="cancel_update"

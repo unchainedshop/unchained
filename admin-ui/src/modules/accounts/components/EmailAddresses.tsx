@@ -1,6 +1,4 @@
 import { useIntl } from 'react-intl';
-import { IRoleAction } from '../../../gql/types';
-
 import { toast } from 'react-toastify';
 import clsx from 'clsx';
 import Form from '../../forms/components/Form';
@@ -15,7 +13,6 @@ import DangerMessage from '../../modal/components/DangerMessage';
 import ActiveInActive from '@/components/ui/ActiveInActive';
 import Button from '@/components/ui/Button';
 import { TrashIcon } from '@heroicons/react/20/solid';
-import useAuth from '../../Auth/useAuth';
 import { CombinedGraphQLErrors } from '@apollo/client';
 import FormErrors from '@/components/ui/form/FormErrors';
 
@@ -24,13 +21,14 @@ const EmailAddresses = ({
   userId,
   enableVerification,
   emailBodyContainer,
+  canUpdate = false,
+  canSendVerification = false,
 }) => {
   const { removeEmail } = useRemoveEmail();
   const { sendVerificationEmail } = useSendVerificationEmail();
   const { addEmail } = useAddEmail();
   const { formatMessage } = useIntl();
   const { setModal } = useModal();
-  const { hasRole } = useAuth();
 
   const onAddEmail: OnSubmitType = async ({ email }) => {
     await addEmail({ email, userId });
@@ -139,24 +137,22 @@ const EmailAddresses = ({
                 />
               </div>
               <div className="my-1 flex items-center cursor-pointer">
-                {enableVerification &&
-                  !verified &&
-                  hasRole(IRoleAction.SendEmail) && (
-                    <a
-                      id="send_verification_mail"
-                      onClick={async () => {
-                        await onSendVerification({ email: address });
-                      }}
-                      className="inline-flex items-center rounded-md dark:text-slate-500 dark:hover:text-slate-200 border border-border-default bg-surface px-4 py-2 text-sm font-medium text-slate-700 shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
-                    >
-                      {formatMessage({
-                        id: 'send_verification_mail',
-                        defaultMessage: 'Send verification mail',
-                      })}
-                    </a>
-                  )}
+                {enableVerification && !verified && canSendVerification && (
+                  <a
+                    id="send_verification_mail"
+                    onClick={async () => {
+                      await onSendVerification({ email: address });
+                    }}
+                    className="inline-flex items-center rounded-md dark:text-slate-500 dark:hover:text-slate-200 border border-border-default bg-surface px-4 py-2 text-sm font-medium text-slate-700 shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
+                  >
+                    {formatMessage({
+                      id: 'send_verification_mail',
+                      defaultMessage: 'Send verification mail',
+                    })}
+                  </a>
+                )}
 
-                {hasRole(IRoleAction.UpdateUser) && (
+                {canUpdate && (
                   <Button
                     variant="danger"
                     size="xs"
@@ -176,7 +172,7 @@ const EmailAddresses = ({
         ))}
       </ul>
 
-      {hasRole(IRoleAction.UpdateUser) && (
+      {canUpdate && (
         <Form form={form}>
           <div className="mt-4 border-t border-t-border-subtle">
             <div className="items-between mt-4 flex space-x-4">

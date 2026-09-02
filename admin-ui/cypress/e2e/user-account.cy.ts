@@ -34,15 +34,13 @@ describe('User', () => {
         aliasQuery(req, UserOperations.GetUserList);
         req.reply(UserListResponse);
       }
+      if (hasOperationName(req, UserOperations.GetPermissions)) {
+        aliasQuery(req, UserOperations.GetPermissions);
+        req.reply(SingleUserResponse);
+      }
       if (hasOperationName(req, UserOperations.GetSingle)) {
         aliasQuery(req, UserOperations.GetSingle);
-        req.reply({
-          data: {
-            user: UserListResponse.data.users.find(
-              ({ _id }) => _id === req.body.variables.userId,
-            ),
-          },
-        });
+        req.reply(SingleUserResponse);
       }
       if (hasOperationName(req, UserOperations.SystemRoles)) {
         aliasQuery(req, UserOperations.SystemRoles);

@@ -5,7 +5,6 @@ import {
   IUserOrderQuery,
   IUserOrderQueryVariables,
 } from '../../../gql/types';
-import OrderFragment from '../fragments/OrderFragment';
 
 const UserOrdersQuery = gql`
   query UserOrder(
@@ -20,11 +19,17 @@ const UserOrdersQuery = gql`
         sort: $sort
         includeCarts: $includeCarts
       ) {
-        ...OrderFragment
+        _id
+        status
+        ordered
+        orderNumber
+        total {
+          amount
+          currencyCode
+        }
       }
     }
   }
-  ${OrderFragment}
 `;
 
 const useUserOrders = ({

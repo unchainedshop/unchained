@@ -12,7 +12,6 @@ import { useCallback } from 'react';
 import useModal from '../../modules/modal/hooks/useModal';
 import DangerMessage from '../../modules/modal/components/DangerMessage';
 import { toast } from 'react-toastify';
-import useAuth from '../../modules/Auth/useAuth';
 import formatUsername from '../../modules/common/utils/formatUsername';
 import UserExport from '../../modules/accounts/components/UserExport';
 
@@ -23,7 +22,9 @@ const UserDetailPage = ({ userId }) => {
   const { deleteUser } = useDeleteUser();
   const { user, extendedData } = useUser({ userId: userId as string });
   const router = useRouter();
-  const { hasRole } = useAuth();
+  const canRemoveUser = user?.viewerAllowedActions?.includes(
+    IRoleAction.RemoveUser,
+  );
 
   const onDeleteUser = useCallback(async () => {
     await setModal(
@@ -63,11 +64,7 @@ const UserDetailPage = ({ userId }) => {
             defaultMessage: 'User settings',
           })
         }
-        onDelete={
-          !user?.deleted && hasRole(IRoleAction.RemoveUser)
-            ? onDeleteUser
-            : null
-        }
+        onDelete={!user?.deleted && canRemoveUser ? onDeleteUser : null}
         title={formatMessage(
           {
             id: 'user_detail_title',
@@ -76,7 +73,7 @@ const UserDetailPage = ({ userId }) => {
           { id: user?.username },
         )}
       >
-        <UserExport userId={userId} />
+        <UserExport userId={userId} disabled={!user} />
       </PageHeader>
       <UserSettings user={user} extendedData={extendedData} />
     </div>

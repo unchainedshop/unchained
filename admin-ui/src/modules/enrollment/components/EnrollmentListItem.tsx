@@ -81,7 +81,7 @@ const EnrollmentListItem = ({ enrollment, showUser }) => {
           className="flex items-center text-sm text-slate-800 dark:text-slate-700 hover:text-decoration"
         >
           <MediaAvatar
-            file={enrollment?.plan?.product?.media?.file}
+            file={enrollment?.plan?.product?.media?.[0]?.file}
             className="mr-3"
           />
           <span className="ml-2">

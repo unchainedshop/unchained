@@ -12,6 +12,8 @@ export const GetCurrentUserQuery = (inlineFragment = '') => gql`
   query CurrentUser {
     me {
       ...UserFragment
+      allowedActions
+      viewerAllowedActions
       ${inlineFragment}
     }
   }

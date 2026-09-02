@@ -21,7 +21,7 @@ const TokenStatusColor = {
 };
 
 const UserTokens = ({ _id: userId }) => {
-  const { tokens, web3Addresses, loading } = useUserTokens({ userId });
+  const { tokens, loading } = useUserTokens({ userId });
   const { formatMessage } = useIntl();
   const { formatPrice } = useFormatPrice();
 

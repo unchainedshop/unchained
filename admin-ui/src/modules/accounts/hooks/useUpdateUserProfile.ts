@@ -4,15 +4,13 @@ import {
   IUpdateUserProfileMutation,
   IUpdateUserProfileMutationVariables,
 } from '../../../gql/types';
-import UserFragment from '../fragment/UserFragment';
 
 const UpdateUserProfileMutation = gql`
   mutation UpdateUserProfile($profile: UserProfileInput!, $userId: ID) {
     updateUserProfile(profile: $profile, userId: $userId) {
-      ...UserFragment
+      _id
     }
   }
-  ${UserFragment}
 `;
 
 const useUpdateUserProfile = () => {
@@ -30,6 +28,7 @@ const useUpdateUserProfile = () => {
         profile,
         userId,
       },
+      refetchQueries: ['UserPermissions', 'User', 'CurrentUser'],
     });
   };
 

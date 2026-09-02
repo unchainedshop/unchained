@@ -5,20 +5,17 @@ import {
   IUserTokensQueryVariables,
 } from '../../../gql/types';
 import ProductBriefFragment from '../fragments/ProductBriefFragment';
-import TokenFragment from '../fragments/TokenFragment';
 
 const UserTokensQuery = gql`
   query UserTokens($userId: ID!, $forceLocale: Locale) {
     user(userId: $userId) {
       _id
-      web3Addresses {
-        address
-        nonce
-        verified
-      }
-
       tokens {
-        ...TokenFragment
+        _id
+        walletAddress
+        status
+        chainId
+        tokenSerialNumber
         product {
           ...ProductBriefFragment
           simulatedPrice {
@@ -29,7 +26,6 @@ const UserTokensQuery = gql`
       }
     }
   }
-  ${TokenFragment}
   ${ProductBriefFragment}
 `;
 
@@ -41,11 +37,9 @@ const useUserTokens = ({ userId = null }: IUserTokensQueryVariables) => {
     variables: { userId },
   });
   const tokens = data?.user?.tokens || [];
-  const web3Addresses = data?.user?.web3Addresses || [];
 
   return {
     tokens,
-    web3Addresses,
     loading,
     error,
   };

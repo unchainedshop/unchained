@@ -50,7 +50,11 @@ const OrderList = ({ orders, showUser, loading, sortable }) => {
           </Table.Row>
         ))}
         {(orders || [])?.map((order) => (
-          <OrderListItem key={`${order?._id}-body`} order={order} showUser />
+          <OrderListItem
+            key={`${order?._id}-body`}
+            order={order}
+            showUser={showUser}
+          />
         ))}
       </Table>
     </>

@@ -4,7 +4,6 @@ import {
   IEnrollUserMutation,
   IEnrollUserMutationVariables,
 } from '../../../gql/types';
-import UserFragment from '../fragment/UserFragment';
 
 const EnrollUserMutation = gql`
   mutation EnrollUser(
@@ -13,10 +12,9 @@ const EnrollUserMutation = gql`
     $profile: UserProfileInput!
   ) {
     enrollUser(email: $email, password: $plainPassword, profile: $profile) {
-      ...UserFragment
+      _id
     }
   }
-  ${UserFragment}
 `;
 
 const useEnrollUser = () => {

@@ -4,15 +4,13 @@ import {
   IAddEmailMutation,
   IAddEmailMutationVariables,
 } from '../../../gql/types';
-import UserFragment from '../fragment/UserFragment';
 
 const AddEmailMutation = gql`
   mutation AddEmail($email: String!, $userId: ID) {
     addEmail(email: $email, userId: $userId) {
-      ...UserFragment
+      _id
     }
   }
-  ${UserFragment}
 `;
 
 const useAddEmail = () => {
@@ -24,6 +22,7 @@ const useAddEmail = () => {
   const addEmail = async ({ email, userId }: IAddEmailMutationVariables) => {
     return addEmailMutation({
       variables: { email, userId },
+      refetchQueries: ['UserPermissions', 'User', 'CurrentUser'],
     });
   };
 

@@ -133,6 +133,26 @@ export async function initializeTestPlatform() {
 
   // Start platform with in-memory MongoDB
   platform = await startPlatform({
+    rolesOptions: {
+      additionalRoles: {
+        sessionManager: (role, actions) => {
+          role.allow(actions.viewUser, (_, params) => params?.userId === 'admin');
+          role.allow(actions.logoutAllSessions, (_, params) => params?.userId === 'admin');
+        },
+        userManager: (role, actions) => {
+          role.allow(actions.viewUser, (_, params) => params?.userId === 'admin');
+          role.allow(actions.updateUser, (_, params) => params?.userId === 'admin');
+        },
+        userDataViewer: (role, actions) => {
+          role.allow(actions.viewUser, () => true);
+          role.allow(actions.viewUserRoles, () => true);
+          role.allow(actions.viewUserTokens, () => true);
+        },
+        userRemover: (role, actions) => {
+          role.allow(actions.removeUser, () => true);
+        },
+      },
+    },
     workQueueOptions: {
       // Workers enabled for work queue tests
       pollInterval: 500, // Process work every 500ms for faster tests

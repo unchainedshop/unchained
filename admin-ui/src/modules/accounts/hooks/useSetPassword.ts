@@ -4,15 +4,13 @@ import {
   ISetPasswordMutation,
   ISetPasswordMutationVariables,
 } from '../../../gql/types';
-import UserFragment from '../fragment/UserFragment';
 
 const SetPasswordMutation = gql`
   mutation SetPassword($newPlainPassword: String!, $userId: ID!) {
     setPassword(newPassword: $newPlainPassword, userId: $userId) {
-      ...UserFragment
+      _id
     }
   }
-  ${UserFragment}
 `;
 
 const useSetPassword = () => {
@@ -26,7 +24,10 @@ const useSetPassword = () => {
     userId,
   }: ISetPasswordMutationVariables) => {
     const variables = { newPlainPassword, userId };
-    return setPasswordMutation({ variables });
+    return setPasswordMutation({
+      variables,
+      refetchQueries: ['UserPermissions', 'User', 'CurrentUser'],
+    });
   };
 
   return {
