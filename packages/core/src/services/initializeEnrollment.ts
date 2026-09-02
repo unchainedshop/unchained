@@ -25,16 +25,18 @@ export async function initializeEnrollmentService(
   if (periods.length > 0) {
     const [firstPeriod, ...remainingPeriods] = periods;
 
-    updatedEnrollment = (await this.enrollments.addEnrollmentPeriod(enrollment._id, {
-      ...firstPeriod,
-      orderId: params.orderIdForFirstPeriod,
-    })) as Enrollment;
+    if (params.orderIdForFirstPeriod || firstPeriod.isTrial) {
+      updatedEnrollment = (await this.enrollments.addEnrollmentPeriod(enrollment._id, {
+        ...firstPeriod,
+        orderId: params.orderIdForFirstPeriod,
+      })) as Enrollment;
 
-    if (remainingPeriods.length > 0) {
-      updatedEnrollment = (await this.enrollments.addEnrollmentPeriods(
-        enrollment._id,
-        remainingPeriods,
-      )) as Enrollment;
+      if (remainingPeriods.length > 0) {
+        updatedEnrollment = (await this.enrollments.addEnrollmentPeriods(
+          enrollment._id,
+          remainingPeriods,
+        )) as Enrollment;
+      }
     }
   }
 
@@ -46,10 +48,7 @@ export async function initializeEnrollmentService(
   const referenceDate = new Date();
   const commitmentEnd = await director.minimumCommitmentEnd({ referenceDate });
   if (commitmentEnd) {
-    updatedEnrollment = (await this.enrollments.updateContractStartDate(
-      enrollment._id,
-      referenceDate,
-    )) as Enrollment;
+    await this.enrollments.updateContractStartDate(enrollment._id, referenceDate);
     updatedEnrollment = (await this.enrollments.updateMinimumCommitmentEnd(
       enrollment._id,
       commitmentEnd,

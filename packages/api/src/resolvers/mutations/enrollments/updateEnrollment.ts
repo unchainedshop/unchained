@@ -5,6 +5,7 @@ import type { Context } from '../../../context.ts';
 import type { EnrollmentPlan, Enrollment } from '@unchainedshop/core-enrollments';
 import {
   EnrollmentNotFoundError,
+  EnrollmentTerminationNotAllowedError,
   EnrollmentWrongStatusError,
   EnrollmentPlanChangeNotSupportedError,
   InvalidIdError,
@@ -22,7 +23,7 @@ interface UpdateEnrollmentParams {
   payment?: Enrollment['payment'];
   delivery?: Enrollment['delivery'];
   meta?: any;
-  expires?: Date;
+  expires?: Date | null;
   cancelAtPeriodEnd?: boolean;
 }
 export default async function updateEnrollment(
@@ -86,7 +87,17 @@ export default async function updateEnrollment(
   }
 
   if (expires !== undefined) {
-    enrollment = (await modules.enrollments.updateExpiry(enrollmentId, expires)) as Enrollment;
+    if (expires === null) {
+      enrollment = (await modules.enrollments.updateExpiry(enrollmentId, null)) as Enrollment;
+    } else {
+      const terminationDate = await services.enrollments.resolveEnrollmentTerminationDate(enrollment, {
+        requestedDate: expires,
+      });
+      if (!terminationDate) {
+        throw new EnrollmentTerminationNotAllowedError({ enrollmentId });
+      }
+      enrollment = (await modules.enrollments.updateExpiry(enrollmentId, terminationDate)) as Enrollment;
+    }
   }
 
   if (cancelAtPeriodEnd !== undefined) {
@@ -95,7 +106,13 @@ export default async function updateEnrollment(
       const currentPeriod = enrollment.periods?.find((p) => {
         return new Date(p.start).getTime() <= now && new Date(p.end).getTime() >= now;
       });
-      const terminationDate = currentPeriod ? new Date(currentPeriod.end) : new Date();
+      const requestedDate = currentPeriod ? new Date(currentPeriod.end) : new Date();
+      const terminationDate = await services.enrollments.resolveEnrollmentTerminationDate(enrollment, {
+        requestedDate,
+      });
+      if (!terminationDate) {
+        throw new EnrollmentTerminationNotAllowedError({ enrollmentId });
+      }
       enrollment = (await modules.enrollments.updateRequestedTerminationDate(
         enrollmentId,
         terminationDate,

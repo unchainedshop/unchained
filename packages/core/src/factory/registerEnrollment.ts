@@ -34,7 +34,10 @@ export default function registerEnrollment({
   } | null>;
   isOverdue?: (context: EnrollmentContext) => Promise<boolean>;
   isValidForActivation?: (context: EnrollmentContext) => Promise<boolean>;
-  nextPeriod?: (context: EnrollmentContext) => Promise<EnrollmentPeriod | null>;
+  nextPeriod?: (
+    context: EnrollmentContext,
+    params?: { referenceDate?: Date },
+  ) => Promise<EnrollmentPeriod | null>;
 }): IPlugin {
   const adapter: IEnrollmentAdapter = {
     ...EnrollmentAdapter,
@@ -54,8 +57,9 @@ export default function registerEnrollment({
     },
 
     actions: (context) => {
+      const baseActions = EnrollmentAdapter.actions(context);
       return {
-        ...EnrollmentAdapter.actions(context),
+        ...baseActions,
 
         configurationForOrder: async (params) => {
           return configurationForOrder(params, context);
@@ -69,8 +73,8 @@ export default function registerEnrollment({
           return isValidForActivation ? isValidForActivation(context) : false;
         },
 
-        nextPeriod: async () => {
-          return nextPeriod ? nextPeriod(context) : EnrollmentAdapter.actions(context).nextPeriod();
+        nextPeriod: async (params) => {
+          return nextPeriod ? nextPeriod(context, params) : baseActions.nextPeriod(params);
         },
       };
     },

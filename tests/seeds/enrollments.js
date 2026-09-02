@@ -225,6 +225,14 @@ export const CommitmentEnrollment = {
   quantity: 1,
 };
 
+export const UserCommitmentEnrollment = {
+  ...CommitmentEnrollment,
+  _id: 'user-commitment-enrollment',
+  enrollmentNumber: 'RANDOM-user-commitment',
+  minimumCommitmentEnd: new Date('2035/01/01'),
+  userId: 'user',
+};
+
 export const TerminatedEnrollment = {
   ...ActiveEnrollment,
   _id: 'terminatedenrollment',
@@ -244,6 +252,7 @@ export const AllEnrollmentIds = [
   ActiveEnrollmentForCancelAtPeriodEnd._id,
   SuspendedWithResumeAtEnrollment._id,
   CommitmentEnrollment._id,
+  UserCommitmentEnrollment._id,
   TerminatedEnrollment._id,
 ];
 
@@ -259,5 +268,6 @@ export default async function seedEnrollment(db) {
   await db.collection('enrollments').findOrInsertOne(ActiveEnrollmentForCancelAtPeriodEnd);
   await db.collection('enrollments').findOrInsertOne(SuspendedWithResumeAtEnrollment);
   await db.collection('enrollments').findOrInsertOne(CommitmentEnrollment);
+  await db.collection('enrollments').findOrInsertOne(UserCommitmentEnrollment);
   await db.collection('enrollments').findOrInsertOne(TerminatedEnrollment);
 }
