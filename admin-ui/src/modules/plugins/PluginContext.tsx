@@ -14,9 +14,31 @@ import {
   useApolloClient,
 } from '@apollo/client/react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { useIntl, FormattedMessage, defineMessages } from 'react-intl';
 import { toast } from 'react-toastify';
 import { usePluginRuntime } from './PluginRuntimeContext';
+
+import {
+  Badge,
+  Button,
+  Loading,
+  NoData,
+  ImageWithFallback,
+  NoImage,
+  PageHeader,
+  ListHeader,
+  AnimatedCounter,
+  BreadCrumbs,
+  SearchField,
+  DetailHeader,
+  Pagination,
+} from '../../components/ui';
+import Table from '../common/components/Table';
+import MediaAvatar from '../common/components/MediaAvatar';
+import DangerMessage from '../modal/components/DangerMessage';
+import useModal from '../modal/hooks/useModal';
+import ModalContext from '../modal/utils/ModalContext';
 
 declare global {
   interface Window {
@@ -95,9 +117,28 @@ const setupPluginRuntime = () => {
       useApolloClient,
     },
     'next/router': { useRouter },
+    'next/link': Link,
     'react-intl': { useIntl, FormattedMessage, defineMessages },
     'react-toastify': { toast },
     '@unchainedshop/admin-ui/plugins': { usePluginRuntime },
+    '@unchainedshop/admin-ui/ui': {
+      Badge,
+      Button,
+      Loading,
+      NoData,
+      ImageWithFallback,
+      NoImage,
+      PageHeader,
+      ListHeader,
+      AnimatedCounter,
+      BreadCrumbs,
+      SearchField,
+      DetailHeader,
+      Pagination,
+      Table,
+      MediaAvatar,
+    },
+    '@unchainedshop/admin-ui/modal': { DangerMessage, useModal, ModalContext },
   };
 };
 

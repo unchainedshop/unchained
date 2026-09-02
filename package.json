@@ -53,6 +53,7 @@
     "packages/api",
     "packages/plugins",
     "packages/ticketing",
+    "packages/ticketing/admin-plugin",
     "packages/platform",
     "examples/kitchensink",
     "examples/kitchensink-express",
@@ -99,6 +100,10 @@
     "@mongodb-js/zstd"
   ],
   "dependencies": {
+    "@esbuild/linux-x64": "^0.27.7",
+    "@rollup/rollup-linux-x64-gnu": "^4.63.1",
+    "@tailwindcss/oxide-linux-x64-gnu": "^4.3.3",
+    "lightningcss-linux-x64-gnu": "^1.32.0",
     "react-hook-form": "^7.81.0"
   }
 }
