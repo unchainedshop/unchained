@@ -73,6 +73,7 @@ Registers the base, crypto, and Swiss tax presets plus:
 - **Delivery**: Send Message, Pick-Mup (store pickup)
 - **Filters**: Strict Equal, Local Search
 - **Workers**: Twilio SMS, BulkGate SMS, BudgetSMS, Push Notification, Enrollment Order Generator
+- **Agentic commerce**: ACP (Agentic Commerce Protocol), inactive until `UNCHAINED_ACP_API_KEY` is set
 
 Plugins that fail their `onRegister` configuration checks log a warning and skip their adapters and routes. This lets the all preset start with only the gateways you have configured. See [plugin lifecycle behavior](../concepts/director-adapter-pattern.md#how-to-register-a-plugin).
 

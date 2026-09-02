@@ -158,7 +158,7 @@ Note: import preset and plugin subpaths WITHOUT a file extension — the package
 #### Available Presets
 - **base**: Essential plugins (Invoice payment, Post delivery, core pricing, workers) and the in-memory event emitter
   - Use `registerBasePlugins()` from `@unchainedshop/plugins/presets/base`
-- **all**: base + crypto + Swiss tax presets plus the remaining payment gateways, filters and workers; needs the optional crypto peers (`@scure/*`, `@noble/*`)
+- **all**: base + crypto + Swiss tax presets plus the remaining payment gateways, filters, workers and the ACP plugin; needs the optional crypto peers (`@scure/*`, `@noble/*`)
   - Use `registerAllPlugins()` from `@unchainedshop/plugins/presets/all`
 - **crypto**: Cryptocurrency plugins (Cryptopay, token minting, rate conversion)
   - Use `registerCryptoPlugins()` from `@unchainedshop/plugins/presets/crypto`

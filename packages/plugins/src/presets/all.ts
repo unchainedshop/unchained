@@ -1,6 +1,7 @@
 // All preset: base + crypto + Swiss tax presets plus the remaining payment, delivery, filter and
-// worker plugins. Needs the optional crypto peers (@scure/*, @noble/*). Not included: MinIO, the
-// 100-off and half-price-manual discounts, the EU/UK/US tax presets and the Redis/EventBridge emitters.
+// worker plugins and the ACP plugin. Needs the optional crypto peers (@scure/*, @noble/*). Not
+// included: MinIO, the 100-off and half-price-manual discounts, the EU/UK/US tax presets and the
+// Redis/EventBridge emitters.
 
 // Import base and crypto presets
 import { registerBasePlugins } from './base.ts';
@@ -22,6 +23,9 @@ import { AppleIAPPlugin } from '../payment/apple-iap/index.ts';
 import { PayrexxPlugin } from '../payment/payrexx/index.ts';
 import { PostfinanceCheckoutPlugin } from '../payment/postfinance-checkout/index.ts';
 import { SaferpayPlugin } from '../payment/saferpay/index.ts';
+
+// Import agentic-commerce plugins
+import { ACPPlugin } from '../acp/index.ts';
 
 // Import filter plugins
 import { StrictEqualFilterPlugin } from '../filters/strict-equal/index.ts';
@@ -54,6 +58,9 @@ export function registerAllPlugins() {
   pluginRegistry.register(InvoicePrepaidPlugin);
   pluginRegistry.register(SendMessagePlugin);
   pluginRegistry.register(PickMupPlugin);
+
+  // Agentic Commerce Protocol (self-gates via onRegister when UNCHAINED_ACP_API_KEY is unset)
+  pluginRegistry.register(ACPPlugin);
 
   // Filters
   pluginRegistry.register(StrictEqualFilterPlugin);

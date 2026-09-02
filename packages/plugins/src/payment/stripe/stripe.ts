@@ -8,6 +8,7 @@ const logger = createLogger('unchained:stripe');
 const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = process.env;
 
 export const STRIPE_API_VERSION = '2026-09-30.endive';
+export const ACP_SPT_STRIPE_VERSION = '2026-04-22.preview';
 export const stripeEnvironment = STRIPE_WEBHOOK_ENVIRONMENT || '';
 
 export let stripe: StripeClient;
@@ -171,4 +172,48 @@ export const createOrderPaymentIntent = async (
       environment: stripeEnvironment,
     },
   });
+};
+
+// Stripe's Shared Payment Token surface is Preview-versioned independently of
+// the stable API used for ordinary PaymentIntents. The token is single-use and
+// must never be stored by the adapter.
+export const createAcpSharedPaymentTokenIntent = async (
+  {
+    acpToken,
+    order,
+    orderPayment,
+    pricing,
+    descriptorPrefix,
+  }: {
+    acpToken: string;
+    order: Order;
+    orderPayment: OrderPayment;
+    pricing: IOrderPricingSheet;
+    descriptorPrefix?: string;
+  },
+  stripeClient: StripeClient = stripe,
+) => {
+  const { currencyCode, amount } = pricing.total({ useNetPrice: false });
+  const description = `${descriptorPrefix || EMAIL_WEBSITE_NAME || 'Unchained agentic checkout'}`.trim();
+
+  return stripeClient.paymentIntents.create(
+    {
+      amount: Math.round(amount),
+      currency: currencyCode.toLowerCase(),
+      confirm: true,
+      description,
+      statement_descriptor_suffix: `${order._id.substring(0, 4)}..${order._id.substring(order._id.length - 4)}`,
+      receipt_email: order.contact?.emailAddress,
+      metadata: {
+        orderPaymentId: orderPayment._id,
+        orderId: order._id,
+        environment: stripeEnvironment,
+      },
+      payment_method_data: { shared_payment_granted_token: acpToken } as any,
+    },
+    {
+      apiVersion: ACP_SPT_STRIPE_VERSION,
+      idempotencyKey: `acp-${orderPayment._id}`,
+    },
+  );
 };
