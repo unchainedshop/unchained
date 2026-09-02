@@ -76,13 +76,13 @@ describe('uk-tax-rates.json', () => {
   });
 
   it('has strictly ascending eras with plausible rates', () => {
+    assert.doesNotThrow(() => new Intl.DateTimeFormat('en-US', { timeZone: ukTaxRates.timezone }));
     for (const [category, eras] of Object.entries(ukTaxRates.categories)) {
-      let previous = 0;
+      let previous = '';
       for (const era of eras) {
-        const validFrom = new Date(`${era.validFrom}T00:00:00.000${ukTaxRates.timezone}`);
-        assert.ok(Number.isFinite(validFrom.getTime()), `${category}: invalid ${era.validFrom}`);
-        assert.ok(validFrom.getTime() > previous, `${category}: eras out of order`);
-        previous = validFrom.getTime();
+        assert.match(era.validFrom, /^\d{4}-\d{2}-\d{2}$/, `${category}: invalid ${era.validFrom}`);
+        assert.ok(era.validFrom > previous, `${category}: eras out of order`);
+        previous = era.validFrom;
         assert.ok(era.rate >= 0 && era.rate < 0.3, `${category}: implausible rate ${era.rate}`);
       }
     }

@@ -1,7 +1,7 @@
 {
   "source": "https://www.estv.admin.ch/estv/en/home/value-added-tax/vat-rates-switzerland.html",
   "verifiedAt": "2026-08-20",
-  "timezone": "+01:00",
+  "timezone": "Europe/Zurich",
   "categories": {
     "default": [
       { "validFrom": "2001-01-01", "rate": 0.076 },

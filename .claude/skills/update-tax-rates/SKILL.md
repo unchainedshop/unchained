@@ -31,8 +31,11 @@ workflow.
 - **Cross-check every change against a second source** before writing. If
   sources are unreachable, contradict each other, or are ambiguous: **abort
   without changes** and report what you saw.
-- Rates are decimal fractions (8.1% → `0.081`), `validFrom` is the legal
-  effective date. Do not change a file's `timezone` field.
+- Rates are decimal fractions (8.1% → `0.081`), and `validFrom` is the legal
+  effective date in the jurisdiction's local time. Preserve the IANA zones in
+  `timezone` (CH/UK) or `timezones` (EU/US); add a jurisdiction mapping when a
+  new jurisdiction is added. Do not replace them with fixed UTC offsets,
+  because those do not model daylight-saving changes.
 - Scope reclassifications (a product class moving between existing
   categories) are NOT rate changes — note them in your report, don't touch
   the tables.
