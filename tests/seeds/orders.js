@@ -22,8 +22,13 @@ export const SimpleOrder = {
       category: 'ITEMS',
       amount: 30000,
     },
-    { category: 'ITEMS', amount: -2144.8467966573808 },
-    { category: 'TAXES', amount: 2144.8467966573808, baseCategory: 'ITEMS' },
+    { category: 'ITEMS', amount: -2144.8467966573808, isNetPrice: true },
+    {
+      category: 'TAXES',
+      amount: 2144.8467966573808,
+      baseCategory: 'ITEMS',
+      isNetPrice: false,
+    },
     {
       category: 'PAYMENT',
       amount: 0,
@@ -221,11 +226,13 @@ export const DiscountedOrder = {
     {
       category: 'ITEMS',
       amount: -7149.489322191272,
+      isNetPrice: true,
     },
     {
       category: 'TAXES',
       amount: 7149.489322191272,
       baseCategory: 'ITEMS',
+      isNetPrice: false,
     },
     {
       category: 'PAYMENT',
@@ -244,12 +251,14 @@ export const DiscountedOrder = {
       category: 'DISCOUNTS',
       amount: 714.9489322191266,
       discountId: 'discounted-order-discount',
+      isNetPrice: true,
     },
     {
       category: 'TAXES',
       amount: -714.9489322191266,
       baseCategory: 'DISCOUNTS',
       discountId: 'discounted-order-discount',
+      isNetPrice: false,
     },
   ],
 };
