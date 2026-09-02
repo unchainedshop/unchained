@@ -10,7 +10,11 @@ import { useErrorHandler } from '@envelop/core';
 
 import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
 import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
-import { registerProductDiscoverabilityFilter, pluginRegistry } from '@unchainedshop/core';
+import {
+  registerProductDiscoverabilityFilter,
+  pluginRegistry,
+  type UnchainedCore,
+} from '@unchainedshop/core';
 import type { AdminUIThemeConfig } from '@unchainedshop/admin-ui/theme';
 import { definePlugin } from '@unchainedshop/admin-ui/plugins';
 
@@ -68,6 +72,72 @@ const imageProvider =
     apiKey: process.env.OPENAI_API_KEY,
   });
 
+type UserRoleTarget = { _id: string; tags?: string[] };
+type UserRoleParams = { userId?: string };
+type UserRoleContext = { modules?: UnchainedCore['modules'] };
+
+const userManagerRole = (role, actions) => {
+  const findTargetUser = async (
+    user: UserRoleTarget | null | undefined,
+    params: UserRoleParams | null | undefined,
+    context: UserRoleContext | null | undefined,
+  ) => {
+    if (user?._id) return user;
+    if (!params?.userId || !context?.modules) return null;
+    return context.modules.users.findUser({ userIds: [params.userId] });
+  };
+  const targetHasTag =
+    (tag: string) =>
+    async (
+      user: UserRoleTarget | null | undefined,
+      params: UserRoleParams | null | undefined,
+      context: UserRoleContext | null | undefined,
+    ) => {
+      const targetUser = await findTargetUser(user, params, context);
+      return targetUser?.tags?.includes(tag) ?? false;
+    };
+  const canEditTarget = async (
+    user: UserRoleTarget | null | undefined,
+    params: UserRoleParams | null | undefined,
+    context: UserRoleContext | null | undefined,
+  ) => {
+    const targetUser = await findTargetUser(user, params, context);
+    return (
+      targetUser?.tags?.includes('permission-test-managed') ||
+      targetUser?.tags?.includes('permission-test-disposable') ||
+      false
+    );
+  };
+
+  // Keep the user list and all read-only detail tabs available. The target-aware
+  // actions below deliberately vary by seed-user tag so every UI state is easy to test.
+  [
+    actions.viewUsers,
+    actions.viewUserCount,
+    actions.viewUser,
+    actions.viewUserPublicInfos,
+    actions.viewUserPrivateInfos,
+    actions.viewUserRoles,
+    actions.viewUserOrders,
+    actions.viewUserEnrollments,
+    actions.viewUserQuotations,
+    actions.viewUserProductReviews,
+    actions.viewUserTokens,
+  ].forEach((action) => role.allow(action, () => true));
+
+  [
+    actions.updateUser,
+    actions.updateUsername,
+    actions.uploadUserAvatar,
+    actions.manageUsers,
+    actions.logoutAllSessions,
+    actions.impersonate,
+  ].forEach((action) => role.allow(action, canEditTarget));
+
+  role.allow(actions.removeUser, targetHasTag('permission-test-disposable'));
+  role.allow(actions.sendEmail, () => true);
+};
+
 try {
   // Register all plugins before starting platform
   registerAllPlugins();
@@ -78,6 +148,11 @@ try {
   registerProductDiscoverabilityFilter({ hiddenTagValue: 'device' });
 
   const platform = await startPlatform({
+    rolesOptions: {
+      additionalRoles: {
+        userManager: userManagerRole,
+      },
+    },
     plugins: [
       useErrorHandler(({ errors }) => {
         for (const error of errors) {

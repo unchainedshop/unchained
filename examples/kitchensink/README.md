@@ -33,6 +33,18 @@ Server starts at http://localhost:4010 with:
 - GraphQL endpoint: `/graphql`
 - Admin UI: `/`
 - Default login: `admin@unchained.local` / `password`
+- Target-permission test login: `user-manager@unchained.local` / `password`
+
+The `userManager` role is configured to expose all read-only user tabs while varying mutations by
+the target user's seed tag. Use the user manager login and compare these users in the Admin UI:
+
+| Target user                       | Expected permissions                                        |
+| --------------------------------- | ----------------------------------------------------------- |
+| `admin` or `user-manager-peer`    | Read-only; no set-password, force-logout, or delete control |
+| `user-manager` (your own account) | Normal logged-in self-service permissions                   |
+| `readonly-customer`               | Read-only; all user-data tabs remain visible                |
+| `managed-customer`                | Editable and force-logout capable, but cannot be deleted    |
+| `disposable-customer`             | Editable, force-logout capable, and deletable               |
 
 ## Scripts
 

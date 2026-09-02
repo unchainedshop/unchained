@@ -20,20 +20,60 @@ const seedPassword =
 export default async (unchainedAPI: UnchainedCore) => {
   const { modules } = unchainedAPI;
   try {
-    if ((await modules.users.count({ username: 'admin' })) > 0) {
-      return;
-    }
-    await modules.users.createUser(
-      {
-        email: 'admin@unchained.local',
-        guest: false,
-        initialPassword: seedPassword ? true : undefined,
-        password: seedPassword ? seedPassword : undefined,
-        roles: ['admin'],
-        username: 'admin',
-      },
-      { skipMessaging: true },
-    );
+    const createUserIfMissing = async ({ email, roles = [], tags = [], username }) => {
+      if ((await modules.users.count({ username })) > 0) return;
+      await modules.users.createUser(
+        {
+          email,
+          guest: false,
+          initialPassword: seedPassword ? true : undefined,
+          password: seedPassword ? seedPassword : undefined,
+          roles,
+          tags,
+          username,
+        },
+        { skipMessaging: true },
+      );
+    };
+
+    const isInitialized = (await modules.users.count({ username: 'admin' })) > 0;
+
+    await createUserIfMissing({
+      email: 'admin@unchained.local',
+      roles: ['admin'],
+      username: 'admin',
+    });
+
+    // Recreate these fixtures on startup after destructive local permission tests.
+    await Promise.all([
+      createUserIfMissing({
+        email: 'user-manager@unchained.local',
+        roles: ['userManager'],
+        username: 'user-manager',
+      }),
+      createUserIfMissing({
+        email: 'user-manager-peer@unchained.local',
+        roles: ['userManager'],
+        username: 'user-manager-peer',
+      }),
+      createUserIfMissing({
+        email: 'readonly-customer@unchained.local',
+        tags: ['permission-test-readonly'],
+        username: 'readonly-customer',
+      }),
+      createUserIfMissing({
+        email: 'managed-customer@unchained.local',
+        tags: ['permission-test-managed'],
+        username: 'managed-customer',
+      }),
+      createUserIfMissing({
+        email: 'disposable-customer@unchained.local',
+        tags: ['permission-test-disposable'],
+        username: 'disposable-customer',
+      }),
+    ]);
+
+    if (isInitialized) return;
 
     const languages = await Promise.all(
       [UNCHAINED_LANG ? UNCHAINED_LANG.toLowerCase() : 'de'].map(async (code) => {
@@ -112,7 +152,8 @@ currencies: ${currencies.join(',')}
 languages: ${languages.join(',')}
 deliveryProvider: ${deliveryProvider._id} (${deliveryProvider.adapterKey})
 paymentProvider: ${paymentProvider._id} (${paymentProvider.adapterKey})
-user: admin@unchained.local / ${seedPassword}`);
+admin user: admin@unchained.local / ${seedPassword}
+user manager: user-manager@unchained.local / ${seedPassword}`);
   } catch (e) {
     logger.error(e);
   }
