@@ -3,6 +3,24 @@ import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 import Badge from '../Badge';
 
+export interface TagOption {
+  label: string;
+  value: string;
+}
+
+interface TagInputProps {
+  tagList?: string[] | string;
+  onChange: (tags: string[]) => void;
+  disabled?: boolean;
+  name?: string;
+  id?: string;
+  placeholder?: string;
+  selectOptions?: TagOption[];
+  className?: string;
+  buttonText?: string;
+  showTagsInline?: boolean;
+}
+
 const normalizeTagValue = (tags) => {
   if (tags) {
     if (Array.isArray(tags)) return tags;
@@ -25,7 +43,7 @@ const TagInput = ({
   className = '',
   buttonText = '',
   showTagsInline = true,
-}) => {
+}: TagInputProps) => {
   const { formatMessage } = useIntl();
   const [tagList, setTagList] = useState(normalizeTagValue(tags));
   const [inputValue, setInputValue] = useState('');
@@ -61,20 +79,33 @@ const TagInput = ({
 
   const addTag = useCallback(
     (tag: string) => {
-      if (!tagList.includes(tag) && tag) {
-        const newTags = [...tagList, tag];
+      const trimmedTag = tag.trim();
+      const existingOption = selectOptions.find(
+        (option) => option.value.toLowerCase() === trimmedTag.toLowerCase(),
+      );
+      const resolvedTag = existingOption?.value || trimmedTag;
+      const isAlreadySelected = tagList.some(
+        (selectedTag) =>
+          selectedTag.toLowerCase() === resolvedTag.toLowerCase(),
+      );
+
+      if (!isAlreadySelected && resolvedTag) {
+        const newTags = [...tagList, resolvedTag];
         setTagList(newTags);
         onChange(newTags);
         setInputValue('');
         setIsOpen(false);
       }
     },
-    [tagList, onChange],
+    [tagList, onChange, selectOptions],
   );
 
   const filteredOptions = useMemo(() => {
     const available = selectOptions.filter(
-      (option) => !(tagList || []).includes(option.value),
+      (option) =>
+        !tagList.some(
+          (tag) => tag.toLowerCase() === option.value.toLowerCase(),
+        ),
     );
     if (!inputValue) return available;
     return available.filter((opt) =>
@@ -82,17 +113,19 @@ const TagInput = ({
     );
   }, [selectOptions, tagList, inputValue]);
 
-  const showCreateOption =
-    inputValue.trim() &&
-    !tagList.includes(inputValue.trim()) &&
-    !filteredOptions.some(
-      (opt) => opt.value.toLowerCase() === inputValue.trim().toLowerCase(),
-    );
+  const normalizedInput = inputValue.trim().toLowerCase();
+  const showCreateOption = Boolean(
+    normalizedInput &&
+    !tagList.some((tag) => tag.toLowerCase() === normalizedInput) &&
+    !selectOptions.some(
+      (option) => option.value.toLowerCase() === normalizedInput,
+    ),
+  );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputValue.trim()) {
       e.preventDefault();
-      addTag(inputValue.trim());
+      addTag(filteredOptions[0]?.value || inputValue.trim());
     }
   };
 
@@ -124,11 +157,25 @@ const TagInput = ({
           role="listbox"
           className="absolute z-9999999 mt-1 max-h-60 w-full overflow-auto rounded-md bg-surface border border-border-subtle py-1 text-sm shadow-lg"
         >
+          {filteredOptions.map((opt) => (
+            <li
+              key={opt.value}
+              role="option"
+              aria-selected={false}
+              className="cursor-pointer select-none py-2 px-4 text-text-primary hover:bg-surface-raised"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                addTag(opt.value);
+              }}
+            >
+              {opt.label}
+            </li>
+          ))}
           {showCreateOption && (
             <li
               role="option"
               aria-selected={false}
-              className="cursor-pointer select-none py-2 px-4 text-text-primary hover:bg-surface-raised"
+              className="cursor-pointer select-none border-t border-border-subtle py-2 px-4 text-text-primary hover:bg-surface-raised"
               onMouseDown={(e) => {
                 e.preventDefault();
                 addTag(inputValue.trim());
@@ -144,20 +191,6 @@ const TagInput = ({
                 )}
             </li>
           )}
-          {filteredOptions.map((opt) => (
-            <li
-              key={opt.value}
-              role="option"
-              aria-selected={false}
-              className="cursor-pointer select-none py-2 px-4 text-text-primary hover:bg-surface-raised"
-              onMouseDown={(e) => {
-                e.preventDefault();
-                addTag(opt.value);
-              }}
-            >
-              {opt.label}
-            </li>
-          ))}
         </ul>
       )}
     </div>

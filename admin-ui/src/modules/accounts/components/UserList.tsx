@@ -15,7 +15,7 @@ import useBulkUserOperations from '../hooks/useBulkUserOperations';
 import useBulkActionConfirmation from '../../common/hooks/useBulkActionConfirmation';
 import UserListItem from './UserListItem';
 
-const UserList = ({ users }) => {
+const UserList = ({ users, availableTagOptions = [] }) => {
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
   const allIds = users?.map((user) => user._id) || [];
@@ -53,6 +53,7 @@ const UserList = ({ users }) => {
                 onSubmit={onSubmit}
                 onCancel={onCancel}
                 loading={loading}
+                availableTagOptions={availableTagOptions}
               />
             ),
             onAction: (ids: string[], data?: unknown) => {

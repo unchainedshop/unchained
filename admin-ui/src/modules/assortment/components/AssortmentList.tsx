@@ -14,7 +14,12 @@ import useBulkAssortmentOperations from '../hooks/useBulkAssortmentOperations';
 import useBulkActionConfirmation from '../../common/hooks/useBulkActionConfirmation';
 import AssortmentListItem from './AssortmentListItem';
 
-const AssortmentList = ({ assortments, showAvatar = true, sortable }) => {
+const AssortmentList = ({
+  assortments,
+  showAvatar = true,
+  sortable,
+  availableTagOptions = [],
+}) => {
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
   const allIds = assortments?.map((assortment) => assortment._id) || [];
@@ -83,6 +88,7 @@ const AssortmentList = ({ assortments, showAvatar = true, sortable }) => {
                 onSubmit={onSubmit}
                 onCancel={onCancel}
                 loading={formLoading}
+                availableTagOptions={availableTagOptions}
               />
             ),
             onAction: (ids: string[], data?: unknown) => {

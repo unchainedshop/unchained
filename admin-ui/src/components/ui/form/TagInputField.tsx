@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import TagInput from '../Tag/TagInput';
+import TagInput, { type TagOption } from '../Tag/TagInput';
 
 import useField, {
   FieldHookProps,
@@ -12,7 +12,7 @@ const TagInputField = ({
   validators = [],
   selectOptions = [],
   ...props
-}: FieldHookProps & { selectOption?: string[] }) => {
+}: FieldHookProps & { selectOptions?: TagOption[] }) => {
   const field = useField({
     validators: [...validators, validateRequiredTag(props?.required)],
     label: 'Tags',
