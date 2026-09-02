@@ -8,6 +8,16 @@ const arrayBufferToBase64url = (buffer: ArrayBuffer | Uint8Array): string => {
   return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 };
 
+interface WebAuthnRequestOptions {
+  challenge: string;
+  allowCredentials?: Array<{
+    id: string;
+    type?: 'public-key';
+    transports?: Array<'ble' | 'hybrid' | 'internal' | 'nfc' | 'usb'>;
+  }>;
+  requestId: string;
+}
+
 const useGenerateLoginCredentials = () => {
   const { createWebAuthnCredentialRequestOptions } =
     useCreateWebAuthnCredentialRequestOptions();
@@ -16,36 +26,40 @@ const useGenerateLoginCredentials = () => {
       username,
     });
 
-    const publicKey = data?.createWebAuthnCredentialRequestOptions;
+    const publicKey =
+      data?.createWebAuthnCredentialRequestOptions as WebAuthnRequestOptions | null;
     if (!publicKey?.allowCredentials?.length) return null;
 
-    publicKey.challenge = base64ToArrayBuffer(publicKey.challenge);
+    const preparedKey = {
+      challenge: base64ToArrayBuffer(publicKey.challenge),
+      allowCredentials:
+        publicKey.allowCredentials?.map(({ id, type, ...rest }) => ({
+          id: base64ToArrayBuffer(id),
+          type: type || 'public-key',
+          ...rest,
+        })) || [],
+    };
 
-    publicKey.allowCredentials =
-      publicKey.allowCredentials?.map(({ id, ...rest }) => ({
-        id: base64ToArrayBuffer(id),
-        ...rest,
-      })) || [];
+    const PublicKeyCredentials = (await navigator.credentials.get({
+      publicKey: preparedKey,
+    })) as PublicKeyCredential | null;
 
-    const PublicKeyCredentials: any = await navigator.credentials.get({
-      publicKey,
-    });
+    if (!PublicKeyCredentials) return null;
+
+    const response =
+      PublicKeyCredentials.response as AuthenticatorAssertionResponse;
 
     const authenticatorData = arrayBufferToBase64url(
-      PublicKeyCredentials.response.authenticatorData,
+      response.authenticatorData,
     );
 
-    const signature = arrayBufferToBase64url(
-      PublicKeyCredentials.response.signature,
-    );
+    const signature = arrayBufferToBase64url(response.signature);
 
-    const userHandle = PublicKeyCredentials.response.userHandle
-      ? arrayBufferToBase64url(PublicKeyCredentials.response.userHandle)
+    const userHandle = response.userHandle
+      ? arrayBufferToBase64url(response.userHandle)
       : arrayBufferToBase64url(new TextEncoder().encode(username));
 
-    const clientDataJSON = arrayBufferToBase64url(
-      PublicKeyCredentials.response.clientDataJSON,
-    );
+    const clientDataJSON = arrayBufferToBase64url(response.clientDataJSON);
 
     const id = arrayBufferToBase64url(PublicKeyCredentials.rawId);
 

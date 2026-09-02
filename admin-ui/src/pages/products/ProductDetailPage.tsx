@@ -1,5 +1,5 @@
 import { useIntl } from 'react-intl';
-import { IRoleAction } from '../../gql/types';
+import { IRoleAction, IProductDetailFragment } from '../../gql/types';
 
 import { toast } from 'react-toastify';
 
@@ -23,7 +23,6 @@ import { useRouter } from 'next/router';
 import useAuth from '../../modules/Auth/useAuth';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useMemo } from 'react';
-import { IProduct } from '../../gql/types';
 import AlertMessage from '../../modules/modal/components/AlertMessage';
 
 const ProductDetailPage = ({ slug }) => {
@@ -403,7 +402,9 @@ const ProductDetailPage = ({ slug }) => {
       />
 
       <ProductDetail
-        product={product as IProduct & { __typename: string }}
+        product={
+          product as unknown as IProductDetailFragment & { __typename: string }
+        }
         extendedData={extendedData}
       />
     </div>

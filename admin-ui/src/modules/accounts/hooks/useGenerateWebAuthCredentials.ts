@@ -7,6 +7,13 @@ const arrayBufferToBase64url = (buffer: ArrayBuffer): string => {
   return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 };
 
+interface WebAuthnCreationOptions {
+  challenge: string;
+  rp: { id?: string; name: string };
+  pubKeyCredParams: Array<{ alg: number; type: 'public-key' }>;
+  [key: string]: unknown;
+}
+
 const useGenerateWebAuthCredentials = () => {
   const { createWebAuthnCredentialCreationOptions } =
     useCreateWebAuthnCredentialCreationOptions();
@@ -16,49 +23,53 @@ const useGenerateWebAuthCredentials = () => {
       username,
     });
 
-    const { createWebAuthnCredentialCreationOptions: publicKey } = data;
+    const options =
+      data.createWebAuthnCredentialCreationOptions as WebAuthnCreationOptions | null;
 
     const textEncoder = new TextEncoder();
-    publicKey.challenge = base64ToArrayBuffer(publicKey.challenge);
-    publicKey.user = {
-      id: textEncoder.encode(username),
-      name: username,
-      displayName: username,
+    const publicKey = {
+      ...options,
+      challenge: base64ToArrayBuffer(options.challenge),
+      user: {
+        id: textEncoder.encode(username),
+        name: username,
+        displayName: username,
+      },
     };
 
-    const publicKeyCredentials: any = await navigator.credentials.create({
+    const publicKeyCredentials = (await navigator.credentials.create({
       publicKey,
-    });
+    })) as PublicKeyCredential | null;
+
+    if (!publicKeyCredentials) return null;
+
+    const response =
+      publicKeyCredentials.response as AuthenticatorAttestationResponse;
 
     const attestationObject = arrayBufferToBase64url(
-      publicKeyCredentials.response.attestationObject,
+      response.attestationObject,
     );
-    const clientDataJSON = arrayBufferToBase64url(
-      publicKeyCredentials.response.clientDataJSON,
-    );
+    const clientDataJSON = arrayBufferToBase64url(response.clientDataJSON);
     const rawId = arrayBufferToBase64url(publicKeyCredentials.rawId);
 
     // Get authenticatorData from the response (available in newer browsers)
-    const authenticatorData = publicKeyCredentials.response.getAuthenticatorData
-      ? arrayBufferToBase64url(
-          publicKeyCredentials.response.getAuthenticatorData(),
-        )
+    const authenticatorData = response.getAuthenticatorData
+      ? arrayBufferToBase64url(response.getAuthenticatorData())
       : '';
 
     // Get public key from the response (available in newer browsers)
-    const responsePublicKey = publicKeyCredentials.response.getPublicKey
-      ? arrayBufferToBase64url(publicKeyCredentials.response.getPublicKey())
+    const responsePublicKey = response.getPublicKey
+      ? arrayBufferToBase64url(response.getPublicKey())
       : '';
 
     // Get public key algorithm
-    const publicKeyAlgorithm = publicKeyCredentials.response
-      .getPublicKeyAlgorithm
-      ? publicKeyCredentials.response.getPublicKeyAlgorithm()
+    const publicKeyAlgorithm = response.getPublicKeyAlgorithm
+      ? response.getPublicKeyAlgorithm()
       : -7; // Default to ES256
 
     // Get transports if available
-    const transports = publicKeyCredentials.response.getTransports
-      ? publicKeyCredentials.response.getTransports()
+    const transports = response.getTransports
+      ? response.getTransports()
       : ['internal'];
 
     return {

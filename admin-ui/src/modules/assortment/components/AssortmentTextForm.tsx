@@ -113,7 +113,7 @@ const AssortmentTextForm = ({ assortmentId }) => {
             locale &&
             languageDialectList?.find(({ isoCode }) => isoCode === locale),
         );
-        setSelectedLocale(firstAvailableText?.locale);
+        setSelectedLocale(firstAvailableText?.locale as string);
       }
     }
   }, [shopInfoLoading, translatedAssortmentTexts]);
