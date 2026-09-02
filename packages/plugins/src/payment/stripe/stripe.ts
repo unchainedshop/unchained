@@ -134,3 +134,50 @@ export const createOrderPaymentIntent = async (
   });
   return paymentIntent;
 };
+
+// Stripe's Shared Payment Token surface is still Preview-versioned (distinct from
+// the stable `.dahlia` apiVersion the base client uses for ordinary PaymentIntents).
+// As of 2026-09 there is no newer preview and no GA — do NOT collapse this into the
+// stable pin.
+export const ACP_SPT_STRIPE_VERSION = '2026-04-22.preview';
+
+// Consume an ACP delegated Shared Payment Token: a single confirmed PaymentIntent
+// on the merchant's own Stripe account (merchant stays merchant-of-record). The
+// token is effectively single-use — never vault it.
+export const createAcpSharedPaymentTokenIntent = async ({
+  acpToken,
+  order,
+  orderPayment,
+  pricing,
+  descriptorPrefix,
+}: {
+  acpToken: string;
+  order: Order;
+  orderPayment: OrderPayment;
+  pricing: IOrderPricingSheet;
+  descriptorPrefix?: string;
+}) => {
+  const { currencyCode, amount } = pricing.total({ useNetPrice: false });
+  const description = `${descriptorPrefix || EMAIL_WEBSITE_NAME || 'Unchained agentic checkout'}`.trim();
+
+  return stripe.paymentIntents.create(
+    {
+      amount: Math.round(amount),
+      currency: currencyCode.toLowerCase(),
+      confirm: true,
+      description,
+      statement_descriptor_suffix: `${order._id.substring(0, 4)}..${order._id.substring(order._id.length - 4)}`,
+      receipt_email: order.contact?.emailAddress,
+      metadata: {
+        orderPaymentId: orderPayment._id,
+        orderId: order._id,
+        environment,
+      },
+      payment_method_data: { shared_payment_granted_token: acpToken } as any,
+    },
+    {
+      apiVersion: ACP_SPT_STRIPE_VERSION,
+      idempotencyKey: `acp-${orderPayment._id}`,
+    },
+  );
+};
