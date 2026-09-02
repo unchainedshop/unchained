@@ -1,9 +1,9 @@
 import { createHmac } from 'node:crypto';
-import { OrderPricingSheet } from '@unchainedshop/core';
-import { OrderStatus, type Order } from '@unchainedshop/core-orders';
+import type { Order } from '@unchainedshop/core-orders';
 import { subscribe } from '@unchainedshop/events';
 import { createLogger } from '@unchainedshop/logger';
 import { acpConfig } from './config.ts';
+import { serializeACPOrder } from './order.ts';
 
 const logger = createLogger('unchained:acp:webhook');
 let configured = false;
@@ -21,61 +21,21 @@ export const signACPWebhookPayload = (
   return `t=${timestamp},v1=${signature}`;
 };
 
-const orderStatus = (order: Order) => {
-  if ((order.context as any)?.acp?.canceled || order.status === OrderStatus.REJECTED) return 'canceled';
-  if (order.status === OrderStatus.FULFILLED) return 'completed';
-  if (order.status === OrderStatus.CONFIRMED) return 'confirmed';
-  if (order.status === OrderStatus.PENDING) return 'processing';
-  return 'created';
-};
-
-const serializeOrder = async (order: Order) => {
-  const pricing = OrderPricingSheet({
-    calculation: order.calculation,
-    currencyCode: order.currencyCode,
-  });
-  const permalinkBase = acpConfig.continueUrl?.replace(/\/$/, '');
-
-  return {
-    type: 'order',
-    id: order._id,
-    checkout_session_id: order._id,
-    order_number: order.orderNumber,
-    permalink_url: permalinkBase
-      ? `${permalinkBase}/${order.orderNumber || order._id}`
-      : `https://example.invalid/orders/${order.orderNumber || order._id}`,
-    status: orderStatus(order),
-    totals: [
-      {
-        type: 'total',
-        display_text: 'Total',
-        amount: pricing.total({ useNetPrice: false }).amount,
-      },
-    ],
-  };
-};
-
-const eventName = (created: boolean) => {
-  if (acpConfig.webhookEventTense === 'present') {
-    return created ? 'order_create' : 'order_update';
-  }
-  return created ? 'order_created' : 'order_updated';
-};
-
 const wait = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 const sendWebhook = async (order: Order, created: boolean) => {
   if (!acpConfig.webhookUrl || !acpConfig.webhookSecret) return;
 
   const rawBody = JSON.stringify({
-    type: eventName(created),
-    data: await serializeOrder(order),
+    type: created ? 'order_create' : 'order_update',
+    data: serializeACPOrder(order),
   });
 
   for (let attempt = 0; attempt <= acpConfig.webhookRetries; attempt += 1) {
     try {
       const response = await fetch(acpConfig.webhookUrl, {
         method: 'POST',
+        signal: AbortSignal.timeout(10_000),
         headers: {
           'Content-Type': 'application/json',
           'Merchant-Signature': signACPWebhookPayload(rawBody, acpConfig.webhookSecret),

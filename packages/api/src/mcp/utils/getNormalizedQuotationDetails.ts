@@ -1,6 +1,5 @@
 import { removeConfidentialServiceHashes } from '@unchainedshop/core-users';
 import type { Context } from '../../context.ts';
-import normalizeMediaUrl from './normalizeMediaUrl.ts';
 
 export async function getNormalizedQuotationDetails(quotationId: string, context: Context) {
   const { modules, loaders, locale } = context;
@@ -24,7 +23,9 @@ export async function getNormalizedQuotationDetails(quotationId: string, context
     status: modules.quotations.normalizedStatus(quotation),
     user: {
       ...removeConfidentialServiceHashes(user),
-      avatar: user?.avatarId ? await normalizeMediaUrl([{ mediaId: user?.avatarId }], context) : null,
+      avatar: user?.avatarId
+        ? await context.services.files.resolveMediaFiles([{ mediaId: user.avatarId }])
+        : null,
     },
     product: product
       ? {
