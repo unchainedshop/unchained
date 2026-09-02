@@ -89,7 +89,7 @@ The `cancellationReason` and `cancellationComment` fields are stored on the enro
 
 ### Cancel at Period End
 
-Instead of immediate or adapter-computed termination, you can set `cancelAtPeriodEnd: true` on the `updateEnrollment` mutation. This sets `requestedTerminationDate` to the end of the current billing period — the subscription won't renew but access continues until the period ends. Set `cancelAtPeriodEnd: false` to undo this and continue the subscription.
+Set `cancelAtPeriodEnd: true` on the `updateEnrollment` mutation to request cancellation at the end of the current billing period. The adapter's termination policy still applies, so a notice period or minimum commitment can move `requestedTerminationDate` later. Set `cancelAtPeriodEnd: false` to undo this and continue the subscription.
 
 ### Suspend with Scheduled Resume
 
@@ -107,7 +107,7 @@ Both `contractStartDate` and `minimumCommitmentEnd` are exposed in the GraphQL A
 
 ### Trial Ending Notification
 
-The enrollment order generator worker emits an `ENROLLMENT_TRIAL_ENDING` event when a trial period is within 3 days of ending. This enables sending reminder emails or triggering conversion flows before the trial expires.
+The enrollment order generator worker emits one `ENROLLMENT_TRIAL_ENDING` event when an active trial period is within 3 days of ending. This enables sending reminder emails or triggering conversion flows before the trial expires.
 
 ### Plan Changes
 

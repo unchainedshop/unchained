@@ -2,6 +2,7 @@ import { type Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollmen
 import type { Modules } from '../modules.ts';
 import { EnrollmentDirector } from '../core-index.ts';
 import { createServiceError } from '../errors.ts';
+import { emit } from '@unchainedshop/events';
 
 const findNextStatus = async (
   enrollment: Enrollment,
@@ -59,7 +60,7 @@ export async function processEnrollmentService(this: Modules, enrollment: Enroll
   }
 
   if (status && status !== enrollment.status) {
-    const updatedEnrollment = (await this.enrollments.updateStatus(enrollment._id, {
+    let updatedEnrollment = (await this.enrollments.updateStatus(enrollment._id, {
       status,
       info: 'enrollment processed',
     })) as Enrollment;
@@ -69,7 +70,8 @@ export async function processEnrollmentService(this: Modules, enrollment: Enroll
       status === EnrollmentStatus.ACTIVE &&
       enrollment.resumeAt
     ) {
-      await this.enrollments.updateResumeAt(enrollment._id, null);
+      updatedEnrollment = (await this.enrollments.updateResumeAt(enrollment._id, null)) as Enrollment;
+      await emit('ENROLLMENT_RESUME', { enrollment: updatedEnrollment });
     }
 
     return updatedEnrollment;

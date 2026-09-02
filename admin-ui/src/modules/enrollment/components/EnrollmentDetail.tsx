@@ -32,7 +32,7 @@ import {
 } from '../../../gql/types';
 import useAuth from '../../Auth/useAuth';
 import useProducts from '../../product/hooks/useProducts';
-import UnchainedSelect from '../../common/components/UnchainedSelect';
+import Combobox from '@/components/ui/form/Combobox';
 import deBounce from '../../common/utils/deBounce';
 
 const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
@@ -57,6 +57,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
   const { products: planProducts, loading: productsLoading } = useProducts({
     queryString: productQuery,
     limit: 20,
+    includeDrafts: false,
     sort: [{ key: 'created', value: ISortDirection.Desc }],
     types: [IProductType.PlanProduct],
   });
@@ -425,8 +426,6 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
                   </dd>
                 </div>
               </div>
-
-              
               {canChangePlan && (
                 <div className="flex-auto border-t border-border-default pt-4 lg:col-span-6 lg:border-0">
                   <dt className="font-medium text-slate-900 mb-2">
@@ -435,15 +434,20 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
                       defaultMessage: 'Change Plan',
                     })}
                   </dt>
-                  <UnchainedSelect
+                  <Combobox
                     name="planProductId"
                     placeholder={formatMessage({
                       id: 'search_plan_product',
                       defaultMessage: 'Search plan product...',
                     })}
                     isLoading={productsLoading}
-                    onChange={onChangePlan}
-                    onInputChange={debouncedSetProductQuery}
+                    onChange={(value) => {
+                      const option = planProductOptions.find(
+                        ({ value: optionValue }) => optionValue === value,
+                      );
+                      if (option) void onChangePlan(option);
+                    }}
+                    onSearch={debouncedSetProductQuery}
                     options={planProductOptions}
                     className="w-full text-sm"
                   />

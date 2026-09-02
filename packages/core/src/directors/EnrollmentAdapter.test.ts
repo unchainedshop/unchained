@@ -109,4 +109,25 @@ describe('EnrollmentAdapter base actions', () => {
     assert.strictEqual(periods.length, 1);
     assert.strictEqual(periods[0].start.getTime(), refDate.getTime());
   });
+
+  it('initialPeriods delegates to an overridden nextPeriod action', async () => {
+    const refDate = new Date('2029-01-15T00:00:00Z');
+    const baseActions = EnrollmentAdapter.actions(makeContext());
+    const expectedPeriod = {
+      start: refDate,
+      end: new Date('2029-02-15T00:00:00Z'),
+      isTrial: false,
+    };
+    const actions = {
+      ...baseActions,
+      nextPeriod: async ({ referenceDate }: { referenceDate?: Date } = {}) => ({
+        ...expectedPeriod,
+        start: referenceDate || expectedPeriod.start,
+      }),
+    };
+
+    const periods = await actions.initialPeriods({ referenceDate: refDate });
+
+    assert.deepStrictEqual(periods, [expectedPeriod]);
+  });
 });

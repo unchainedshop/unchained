@@ -33,9 +33,9 @@ registerEnrollment({
     );
   },
 
-  nextPeriod: async (context) => {
+  nextPeriod: async (context, { referenceDate } = {}) => {
     const last = context.enrollment?.periods?.at(-1);
-    const start = last ? new Date(last.end) : new Date();
+    const start = last ? new Date(last.end) : (referenceDate ?? new Date());
     return { start, end: addDays(start, 30), isTrial: false };
   },
 
@@ -139,10 +139,10 @@ registerEnrollment({
         return null;
       },
 
-      initialPeriods: async ({ referenceDate }) => {
+      initialPeriods: async function ({ referenceDate }) {
         // Return the initial periods to create when the enrollment is set up
         // Defaults to delegating to nextPeriod()
-        const period = await baseActions.nextPeriod({ referenceDate });
+        const period = await this.nextPeriod({ referenceDate });
         return period ? [period] : [];
       },
 
@@ -167,7 +167,7 @@ registerEnrollment({
 | `isActivatedFor(productPlan)` | does this adapter handle the given plan? (check `usageCalculationType`) |
 | `transformOrderItem(orderPosition, api)` | turn the purchased item into enrollment data when the subscription is created |
 | `configurationForOrder({ period }, context)` | **required** — generate the order for a billing period; return `null` to skip |
-| `nextPeriod(context)` | the next billing window; `null` ends the subscription |
+| `nextPeriod(context, { referenceDate? })` | the next billing window; `null` ends the subscription |
 | `isValidForActivation(context)` | should the subscription currently grant access? |
 | `isOverdue(context)` | is payment overdue? (drives dunning/suspension) |
 

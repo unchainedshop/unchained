@@ -31,29 +31,35 @@ export async function updateEnrollmentPlanService(
 
   const { plan: newPlan, effectiveDate } = result;
 
-  await this.enrollments.removeFuturePeriods(enrollment._id, effectiveDate);
-
-  let updatedEnrollment = (await this.enrollments.updatePlan(enrollment._id, newPlan)) as Enrollment;
-
   const newProduct = await this.products.findProduct({
     productId: newPlan.productId,
   });
   if (!newProduct) throw new Error('New product not found');
 
+  const retainedPeriods = enrollment.periods.filter(
+    (period) => Boolean(period.orderId) || new Date(period.start).getTime() < effectiveDate.getTime(),
+  );
+  const candidateEnrollment: Enrollment = {
+    ...enrollment,
+    productId: newPlan.productId,
+    quantity: newPlan.quantity,
+    configuration: newPlan.configuration,
+    periods: retainedPeriods,
+  };
+
   const newDirector = await EnrollmentDirector.actions(
-    { enrollment: updatedEnrollment, product: newProduct },
+    { enrollment: candidateEnrollment, product: newProduct },
     { modules: this },
   );
 
   const newPeriods = await newDirector.initialPeriods({
     referenceDate: effectiveDate,
   });
-  if (newPeriods.length > 0) {
-    updatedEnrollment = (await this.enrollments.addEnrollmentPeriods(
-      enrollment._id,
-      newPeriods,
-    )) as Enrollment;
-  }
+
+  let updatedEnrollment = (await this.enrollments.updatePlanAndPeriods(enrollment._id, newPlan, [
+    ...retainedPeriods,
+    ...newPeriods,
+  ])) as Enrollment;
 
   updatedEnrollment = await processEnrollmentService.bind(this)(updatedEnrollment);
 
