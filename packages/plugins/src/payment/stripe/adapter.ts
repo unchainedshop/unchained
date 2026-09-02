@@ -167,9 +167,17 @@ export const Stripe: IPaymentAdapter = {
         const paymentIntentObject = paymentIntentId
           ? await stripe.paymentIntents.retrieve(paymentIntentId)
           : await createOrderPaymentIntent(
-              { userId, name, email, orderPayment, order, pricing, descriptorPrefix },
               {
-                customer: paymentCredentials.meta?.customer,
+                userId,
+                name,
+                email,
+                orderPayment,
+                order,
+                pricing,
+                descriptorPrefix,
+                customerId: paymentCredentials.meta?.customer,
+              },
+              {
                 confirm: true,
                 payment_method: paymentCredentials.token,
                 payment_method_types: paymentCredentials.meta?.payment_method_types,
