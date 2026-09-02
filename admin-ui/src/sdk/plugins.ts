@@ -15,6 +15,13 @@ export type PageProps = Record<string, never>;
 
 export type DashboardWidgetProps = Record<string, never>;
 
+export interface PluginRuntimeContext {
+  pluginName: string;
+  version?: string;
+  slotId: string;
+  config: Record<string, any>;
+}
+
 // Keep in sync with packages/api/src/adminUiPlugins.ts AdminUIPluginConfig
 
 export interface PluginEntityConfig {
@@ -85,4 +92,14 @@ export interface PluginConfig {
 
 export function definePlugin(config: PluginConfig): PluginConfig {
   return config;
+}
+
+/**
+ * The browser import map replaces this SDK placeholder with the host hook.
+ * Calling it outside a plugin component is unsupported.
+ */
+export function usePluginRuntime(): PluginRuntimeContext {
+  throw new Error(
+    'usePluginRuntime is only available inside an admin-ui plugin component at runtime',
+  );
 }

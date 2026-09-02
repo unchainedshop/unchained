@@ -47,6 +47,10 @@ manifest.json
 .qodo
 
 dist
+
+# Generated shim files (produced by generate-shims.mjs)
+src/sdk/shims/*.ts
+!src/sdk/shims/host.ts
 # TypeScript build info
 tsconfig.tsbuildinfo
 client/tsconfig.tsbuildinfo

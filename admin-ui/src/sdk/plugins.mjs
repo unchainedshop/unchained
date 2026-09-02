@@ -6,3 +6,12 @@
 export function definePlugin(config) {
   return config;
 }
+
+// The browser import map redirects this module to a host shim that supplies
+// the real hook. Keeping the export here makes the runtime surface visible to
+// shim generation and gives accidental server-side calls a useful failure.
+export function usePluginRuntime() {
+  throw new Error(
+    'usePluginRuntime is only available inside an admin-ui plugin component at runtime',
+  );
+}
