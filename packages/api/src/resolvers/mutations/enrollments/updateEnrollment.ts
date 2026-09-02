@@ -3,13 +3,12 @@ import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import type { Context } from '../../../context.ts';
 import type { EnrollmentPlan, Enrollment } from '@unchainedshop/core-enrollments';
 import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.ts';
-import type { Address, Contact } from '@unchainedshop/mongodb';
 
 interface UpdateEnrollmentParams {
   enrollmentId: string;
-  contact?: Contact;
+  contact?: NonNullable<Enrollment['contact']>;
   plan: EnrollmentPlan;
-  billingAddress: Address;
+  billingAddress: NonNullable<Enrollment['billingAddress']>;
   payment?: Enrollment['payment'];
   delivery?: Enrollment['delivery'];
   meta?: any;

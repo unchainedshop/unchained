@@ -3,7 +3,7 @@ import assert from 'node:assert';
 import http from 'node:http';
 import { once } from 'node:events';
 import { setTimeout as sleep } from 'node:timers/promises';
-import { toWebRequest, sendWebResponse } from './nodeHttpBridge.ts';
+import { toWebRequest, sendWebResponse } from '../http/nodeHttpBridge.ts';
 
 const servers: http.Server[] = [];
 

@@ -130,7 +130,11 @@ test.describe('Plugins: ACP Shared Payment Token charge (real Stripe)', () => {
       idempotencyKey: idem(),
       body: {
         selected_fulfillment_options: [
-          { option_id: optionId, item_ids: withOptions.line_items.map((item) => item.id) },
+          {
+            type: withOptions.fulfillment_options[0].type,
+            option_id: optionId,
+            item_ids: withOptions.line_items.map((item) => item.id),
+          },
         ],
       },
     });
@@ -143,22 +147,25 @@ test.describe('Plugins: ACP Shared Payment Token charge (real Stripe)', () => {
         idempotencyKey: idem(),
         body: {
           buyer: { email: 'agent-buyer@example.com' },
-          payment_data: { token: sptId, handler_id: 'stripe_spt' },
+          payment_data: {
+            handler_id: 'stripe_spt',
+            instrument: { type: 'card', credential: { type: 'spt', token: sptId } },
+          },
         },
       });
       const completedBody = await completed.json();
       assert.strictEqual(completed.status, 200, JSON.stringify(completedBody));
       assert.strictEqual(completedBody.status, 'completed');
-      assert.ok(['confirmed', 'fulfilled'].includes(completedBody.order.status));
+      assert.ok(['confirmed', 'completed'].includes(completedBody.order.status));
 
-      // 5. the SPT charge landed on the order payment with the evidence trail
+      // 5. the SPT charge landed on the order payment without persisting the bearer credential
       const orderDoc = await db.collection('orders').findOne({ _id: orderId });
       const orderPayment = await db.collection('order_payments').findOne({ _id: orderDoc.paymentId });
       assert.ok(orderPayment, `no active order payment for order ${orderId}`);
       assert.strictEqual(orderPayment.status, 'PAID', `orderPayment=${JSON.stringify(orderPayment)}`);
       assert.match(orderPayment.transactionId, /^pi_/);
       const serialized = JSON.stringify(orderPayment);
-      assert.ok(serialized.includes(sptId), 'expected the shared payment token id in the evidence');
+      assert.ok(!serialized.includes(sptId), 'shared payment credentials must not be persisted');
       assert.ok(serialized.includes(SPT_STRIPE_VERSION), 'expected the SPT api version in the evidence');
     } finally {
       await revokeSPT(sptId);

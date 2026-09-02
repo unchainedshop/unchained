@@ -1,19 +1,27 @@
 import { createHash } from 'node:crypto';
-import { acpConfig } from './config.ts';
 import { ACPError } from './error.ts';
 
-interface StoredResponse {
-  requestHash: string;
+export interface ACPRouteResult {
   status: number;
   body: unknown;
   contentType?: string;
-  expiresAt: number;
+  headers?: Record<string, string>;
 }
 
-// In-process, single-instance cache. A durable, cluster-wide store is a
-// deliberate follow-up spanning the whole payment system, not this port.
-const entries = new Map<string, StoredResponse | Promise<StoredResponse>>();
+interface StoredResponse extends ACPRouteResult {
+  requestHash: string;
+  expiresAt: number;
+  storedAt: number;
+}
+
+interface PendingResponse {
+  requestHash: string;
+  promise: Promise<StoredResponse>;
+}
+
+const entries = new Map<string, StoredResponse | PendingResponse>();
 const TTL = 24 * 60 * 60 * 1000;
+const MAX_ENTRIES = 10_000;
 
 const canonicalize = (value: unknown): unknown => {
   if (Array.isArray(value)) return value.map(canonicalize);
@@ -27,48 +35,86 @@ const canonicalize = (value: unknown): unknown => {
   return value;
 };
 
-const requestHash = (body: unknown) =>
+const hash = (value: unknown) =>
   createHash('sha256')
-    .update(JSON.stringify(canonicalize(body)))
+    .update(JSON.stringify(canonicalize(value)))
     .digest('hex');
+
+const prune = (now: number) => {
+  for (const [key, entry] of entries) {
+    if ('expiresAt' in entry && entry.expiresAt <= now) entries.delete(key);
+  }
+  if (entries.size < MAX_ENTRIES) return;
+
+  const completed = [...entries.entries()]
+    .filter((entry): entry is [string, StoredResponse] => 'storedAt' in entry[1])
+    .sort((left, right) => left[1].storedAt - right[1].storedAt);
+  for (const [key] of completed) {
+    entries.delete(key);
+    if (entries.size < MAX_ENTRIES) return;
+  }
+};
+
+export const createIdempotencyScope = ({
+  authorization,
+  operation,
+  resourceId,
+}: {
+  authorization?: string | null;
+  operation: string;
+  resourceId?: string;
+}) => hash({ authorization: authorization || '', operation, resourceId: resourceId || '' });
 
 export const withIdempotency = async (
   scope: string,
   key: string,
   body: unknown,
-  execute: () => Promise<{ status: number; body: unknown; contentType?: string }>,
+  execute: () => Promise<ACPRouteResult>,
 ) => {
-  const cacheKey = `${scope}:${key}`;
-  const hash = requestHash(body);
+  const now = Date.now();
+  prune(now);
+  const cacheKey = hash({ scope, key });
+  const requestHash = hash(body);
   const existing = entries.get(cacheKey);
 
-  if (existing instanceof Promise) {
-    throw new ACPError(
-      409,
-      'conflict_error',
-      'idempotency_in_flight',
-      'A request with this Idempotency-Key is still processing',
-    );
-  }
-
-  if (existing && existing.expiresAt > Date.now()) {
-    if (existing.requestHash !== hash) {
+  if (existing) {
+    if (existing.requestHash !== requestHash) {
       throw new ACPError(
-        acpConfig.idempotencyConflictStatus,
-        'conflict_error',
+        422,
+        'invalid_request',
         'idempotency_conflict',
         'The Idempotency-Key was already used with a different request body',
+      );
+    }
+    if ('promise' in existing) {
+      throw new ACPError(
+        409,
+        'invalid_request',
+        'idempotency_in_flight',
+        'A request with this Idempotency-Key is still processing',
+        { headers: { 'Retry-After': '1' } },
       );
     }
     return { ...existing, replayed: true };
   }
 
+  if (entries.size >= MAX_ENTRIES) {
+    throw new ACPError(
+      503,
+      'service_unavailable',
+      'idempotency_store_capacity',
+      'The idempotency store is temporarily at capacity',
+      { headers: { 'Retry-After': '1' } },
+    );
+  }
+
   const pending = execute().then((response) => ({
     ...response,
-    requestHash: hash,
+    requestHash,
     expiresAt: Date.now() + TTL,
+    storedAt: Date.now(),
   }));
-  entries.set(cacheKey, pending);
+  entries.set(cacheKey, { requestHash, promise: pending });
 
   try {
     const stored = await pending;

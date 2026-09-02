@@ -16,7 +16,8 @@
     "./payment/*": "./lib/payment/*/index.js",
     "./files/*": "./lib/files/*/index.js",
     "./pricing/*": "./lib/pricing/*/index.js",
-    "./worker/*": "./lib/worker/*/index.js"
+    "./worker/*": "./lib/worker/*/index.js",
+    "./acp": "./lib/acp/index.js"
   },
   "type": "module",
   "scripts": {

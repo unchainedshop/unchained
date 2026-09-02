@@ -1,20 +1,15 @@
 import type { Context } from '../../../context.ts';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 import { log } from '@unchainedshop/logger';
-import {
-  InvalidIdError,
-  OrderNotFoundError,
-  OrderPaymentNotFoundError,
-  OrderPaymentTypeError,
-  OrderWrongStatusError,
-} from '../../../errors.ts';
+import { InvalidIdError, OrderNotFoundError } from '../../../errors.ts';
+import { rethrowPaymentProviderServiceError } from './mapOrderServiceError.ts';
 
 export default async function updateCartPaymentGeneric(
   root: never,
   params: { orderId: string; paymentProviderId: string; meta?: any },
   context: Context,
 ) {
-  const { modules, services, userId, user } = context;
+  const { services, userId, user } = context;
   const { orderId, paymentProviderId, meta } = params;
   log(`mutation updateCartPaymentGeneric provider ${paymentProviderId}`, {
     userId,
@@ -22,32 +17,21 @@ export default async function updateCartPaymentGeneric(
 
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
 
-  let order = await services.orders.findOrInitCart({
+  const order = await services.orders.findOrInitCart({
     orderId,
     user: user!,
     countryCode: context.countryCode,
   });
   if (!order) throw new OrderNotFoundError({ orderId });
-  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
-  const provider = await modules.payment.paymentProviders.findProvider({
-    paymentProviderId,
-  });
-  const paymentProviderType = provider?.type;
-
-  if (paymentProviderType !== PaymentProviderType.GENERIC)
-    throw new OrderPaymentTypeError({
+  try {
+    return await services.orders.selectPaymentProvider({
       orderId: order._id,
-      received: paymentProviderType,
-      required: PaymentProviderType.GENERIC,
+      paymentProviderId,
+      expectedType: PaymentProviderType.GENERIC,
+      paymentContext: { meta },
     });
-
-  order = (await modules.orders.setPaymentProvider(order._id, paymentProviderId)) || order;
-
-  if (!order.paymentId) throw new OrderPaymentNotFoundError({ orderId: order._id });
-
-  await modules.orders.payments.updateContext(order.paymentId, {
-    meta,
-  });
-  return services.orders.updateCalculation(order._id);
+  } catch (error) {
+    rethrowPaymentProviderServiceError(error);
+  }
 }

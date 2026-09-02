@@ -133,17 +133,14 @@ export const Stripe: IPaymentAdapter = {
           });
 
           if (paymentIntentObject.status === 'succeeded') {
-            // Persist an agent-payment evidence trail (stored on the order payment
-            // `info`). The merchant stays merchant-of-record and owns chargeback
-            // liability, so keep the delegated-token reference, resulting charge and
-            // API version to later reconstruct agent identity/consent.
+            // Persist the resulting Stripe references, never the delegated payment
+            // credential itself. The SPT is a bearer secret even though it is single-use.
             return {
               transactionId: paymentIntentObject.id,
               status: paymentIntentObject.status,
               paymentMethod: paymentIntentObject.payment_method,
               acp: {
                 handlerId: acpHandlerId || 'stripe_spt',
-                sharedPaymentToken: acpToken,
                 chargeId:
                   typeof paymentIntentObject.latest_charge === 'string'
                     ? paymentIntentObject.latest_charge
