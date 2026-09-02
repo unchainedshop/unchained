@@ -1,5 +1,5 @@
 import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
-import { User, Admin, USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
+import { User, Admin, Guest, USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
@@ -73,6 +73,114 @@ test.describe('Auth for logged in users', () => {
         },
       });
       assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
+    });
+
+    test('returns actions allowed for the viewer on themselves', async () => {
+      const { data: { user } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            user {
+              viewerAllowedActions
+            }
+          }
+        `,
+      });
+
+      assert.ok(user.viewerAllowedActions.includes('updateUser'));
+      assert.ok(user.viewerAllowedActions.includes('logoutAllSessions'));
+      assert.ok(user.viewerAllowedActions.includes('uploadUserAvatar'));
+      assert.ok(user.viewerAllowedActions.includes('viewUserPrivateInfos'));
+      assert.ok(!user.viewerAllowedActions.includes('manageUsers'));
+    });
+
+    test('distinguishes update and session permissions for another user', async () => {
+      const Users = db.collection('users');
+
+      await Users.updateOne({ _id: User._id }, { $set: { roles: ['userManager'] } });
+      try {
+        const { data: { user } = {} } = await graphqlFetch({
+          query: /* GraphQL */ `
+            query ViewerAllowedActions($userId: ID!) {
+              user(userId: $userId) {
+                viewerAllowedActions
+              }
+            }
+          `,
+          variables: { userId: Admin._id },
+        });
+
+        assert.ok(user.viewerAllowedActions.includes('updateUser'));
+        assert.ok(!user.viewerAllowedActions.includes('removeUser'));
+        assert.ok(!user.viewerAllowedActions.includes('logoutAllSessions'));
+
+        const { errors } = await graphqlFetch({
+          query: /* GraphQL */ `
+            query ViewerAllowedActions($userId: ID!) {
+              user(userId: $userId) {
+                viewerAllowedActions
+              }
+            }
+          `,
+          variables: { userId: Guest._id },
+        });
+
+        assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+      } finally {
+        await Users.updateOne({ _id: User._id }, { $set: { roles: [] } });
+      }
+
+      await Users.updateOne({ _id: User._id }, { $set: { roles: ['sessionManager'] } });
+      try {
+        const { data: { user } = {} } = await graphqlFetch({
+          query: /* GraphQL */ `
+            query ViewerAllowedActions($userId: ID!) {
+              user(userId: $userId) {
+                viewerAllowedActions
+              }
+            }
+          `,
+          variables: { userId: Admin._id },
+        });
+
+        assert.ok(user.viewerAllowedActions.includes('logoutAllSessions'));
+        assert.ok(!user.viewerAllowedActions.includes('updateUser'));
+        assert.ok(!user.viewerAllowedActions.includes('removeUser'));
+      } finally {
+        await Users.updateOne({ _id: User._id }, { $set: { roles: [] } });
+      }
+    });
+
+    test('uses dedicated permissions for another user roles and tokens', async () => {
+      const Users = db.collection('users');
+      await Users.updateOne({ _id: User._id }, { $set: { roles: ['userDataViewer'] } });
+
+      try {
+        const { data: { user } = {}, errors } = await graphqlFetch({
+          query: /* GraphQL */ `
+            query UserData($userId: ID!) {
+              user(userId: $userId) {
+                roles
+                allowedActions
+                tokens {
+                  _id
+                }
+                viewerAllowedActions
+              }
+            }
+          `,
+          variables: { userId: Admin._id },
+        });
+
+        assert.strictEqual(errors, undefined);
+        assert.deepStrictEqual(user.roles, ['admin']);
+        assert.ok(user.allowedActions.includes('manageUsers'));
+        assert.ok(user.tokens.length > 0);
+        assert.ok(user.viewerAllowedActions.includes('viewUserRoles'));
+        assert.ok(user.viewerAllowedActions.includes('viewUserTokens'));
+        assert.ok(!user.viewerAllowedActions.includes('viewUserPrivateInfos'));
+      } finally {
+        await Users.updateOne({ _id: User._id }, { $set: { roles: [] } });
+      }
     });
   });
 

@@ -4,15 +4,13 @@ import {
   ISetUsernameMutation,
   ISetUsernameMutationVariables,
 } from '../../../gql/types';
-import UserFragment from '../fragment/UserFragment';
 
 const SetUserNameMutation = gql`
   mutation SetUsername($username: String!, $userId: ID!) {
     setUsername(username: $username, userId: $userId) {
-      ...UserFragment
+      _id
     }
   }
-  ${UserFragment}
 `;
 
 const useSetUserName = () => {
@@ -30,7 +28,7 @@ const useSetUserName = () => {
         username,
         userId,
       },
-      refetchQueries: ['User'],
+      refetchQueries: ['UserPermissions', 'User', 'CurrentUser'],
     });
   };
 

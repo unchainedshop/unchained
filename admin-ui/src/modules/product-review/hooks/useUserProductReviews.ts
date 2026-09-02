@@ -7,7 +7,6 @@ import {
 } from '../../../gql/types';
 
 import ProductBriefFragment from '../../product/fragments/ProductBriefFragment';
-import ProductReviewDetailFragment from '../fragments/ProductReviewDetailFragment';
 import useApp from '../../common/hooks/useApp';
 
 const ProductReviewQuery = gql`
@@ -21,15 +20,33 @@ const ProductReviewQuery = gql`
     user(userId: $userId) {
       _id
       reviews(limit: $limit, offset: $offset, sort: $sort) {
-        ...ProductReviewDetailFragment
+        _id
+        created
+        updated
+        deleted
+        author {
+          _id
+          name
+          avatar {
+            _id
+            url
+          }
+        }
         product {
           ...ProductBriefFragment
+        }
+        title
+        review
+        upVote: voteCount(type: UPVOTE)
+        downVote: voteCount(type: DOWNVOTE)
+        ownVotes {
+          timestamp
+          type
         }
       }
       reviewsCount
     }
   }
-  ${ProductReviewDetailFragment}
   ${ProductBriefFragment}
 `;
 

@@ -55,7 +55,7 @@ const EnrollmentList = ({ enrollments, showUser = null, sortable = false }) => {
       ))}
       {enrollments?.map((enrollment) => (
         <EnrollmentListItem
-          showUser
+          showUser={showUser}
           key={`${enrollment?._id}-body`}
           enrollment={enrollment}
         />

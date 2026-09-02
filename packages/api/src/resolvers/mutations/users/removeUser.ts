@@ -2,7 +2,7 @@ import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
 import { UserNotFoundError } from '../../../errors.ts';
 
-// Note: This resolver is protected by the 'updateUser' ACL action (see mutations/index.ts)
+// Note: This resolver is protected by the 'removeUser' ACL action (see mutations/index.ts)
 // Logged-in users can only remove themselves (isMyself check in loggedIn.ts)
 // Admin users can remove any user
 export default async function removeUser(

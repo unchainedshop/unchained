@@ -66,6 +66,7 @@ export interface UserHelperTypes {
   lastContact: HelperType<any, Contact>;
   lastLogin: HelperType<any, UserType['lastLogin']>;
   allowedActions: HelperType<any, string[]>;
+  viewerAllowedActions: HelperType<any, string[]>;
   name: HelperType<any, string>;
   orders: HelperType<
     {
@@ -105,13 +106,44 @@ export interface UserHelperTypes {
 }
 
 const {
+  impersonate,
+  logoutAllSessions,
+  manageUsers,
+  removeUser,
+  updateUser,
+  updateUsername,
+  uploadUserAvatar,
+  viewUser,
+  viewUserRoles,
   viewUserPrivateInfos,
   viewUserPublicInfos,
   viewUserOrders,
   viewUserEnrollments,
   viewUserQuotations,
   viewUserProductReviews,
+  viewUserTokens,
 } = actions as Record<string, string>;
+
+// Only evaluate actions whose rules can be answered from a User target. Resource-specific
+// actions need their own concrete arguments and would produce misleading capability results here.
+const USER_TARGET_ACTIONS = [
+  impersonate,
+  logoutAllSessions,
+  manageUsers,
+  removeUser,
+  updateUser,
+  updateUsername,
+  uploadUserAvatar,
+  viewUser,
+  viewUserEnrollments,
+  viewUserOrders,
+  viewUserPrivateInfos,
+  viewUserProductReviews,
+  viewUserPublicInfos,
+  viewUserQuotations,
+  viewUserRoles,
+  viewUserTokens,
+];
 
 export const User: UserHelperTypes = {
   _id: checkTypeResolver(viewUserPublicInfos, '_id'),
@@ -123,7 +155,7 @@ export const User: UserHelperTypes = {
   lastContact: checkTypeResolver(viewUserPrivateInfos, 'lastContact'),
   lastLogin: checkTypeResolver(viewUserPrivateInfos, 'lastLogin'),
   profile: checkTypeResolver(viewUserPrivateInfos, 'profile'),
-  roles: checkTypeResolver(viewUserPrivateInfos, 'roles'),
+  roles: checkTypeResolver(viewUserRoles, 'roles'),
   tags: checkTypeResolver(viewUserPrivateInfos, 'tags'),
   username: checkTypeResolver(viewUserPrivateInfos, 'username'),
 
@@ -178,7 +210,7 @@ export const User: UserHelperTypes = {
   },
 
   async tokens(user, params, context) {
-    await checkAction(context, viewUserPrivateInfos, [user, params]);
+    await checkAction(context, viewUserTokens, [user, params]);
     const walletAddresses =
       user.services?.web3?.flatMap((service) => {
         return service.verified ? [service.address] : [];
@@ -215,10 +247,27 @@ export const User: UserHelperTypes = {
   },
 
   allowedActions: async (user, params, context) => {
-    await checkAction(context, viewUserPrivateInfos, [user, params]);
+    await checkAction(context, viewUserRoles, [user, params]);
 
     const userRoles = context.roles!.getUserRoles(user?._id, user.roles, true);
     return permissions(userRoles, context.roles!.roles) as Promise<string[]>;
+  },
+
+  viewerAllowedActions: async (user, params, context) => {
+    const targetArgs: [UserType, { userId: string }] = [user, { userId: user._id }];
+    await checkAction(context, viewUser, targetArgs);
+
+    const allowedActions = await Promise.all(
+      USER_TARGET_ACTIONS.map(async (action) => {
+        try {
+          return (await context.roles!.userHasPermission(context, action, targetArgs)) ? action : null;
+        } catch {
+          return null;
+        }
+      }),
+    );
+
+    return allowedActions.filter((action): action is string => action !== null).toSorted();
   },
 
   orders: async (user, params, context) => {

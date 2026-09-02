@@ -5,6 +5,7 @@ import {
   LockClosedIcon,
   StarIcon,
   PuzzlePieceIcon,
+  ShoppingBagIcon,
   ShoppingCartIcon,
   UserIcon,
   CurrencyDollarIcon,
@@ -23,29 +24,57 @@ import UserProductReviews from './UserProductReviews';
 import AccountView from './AccountView';
 import PaymentCredentialsView from './PaymentCredentialsView';
 import ProfileView from './ProfileView';
+import UserCart from './UserCart';
 import UserEnrollments from './UserEnrollments';
 import UserOrders from './UserOrders';
 import UserQuotations from './UserQuotations';
 import UserTokens from './UserTokens';
 import useAuth from '../../Auth/useAuth';
-import useCurrentUser from '../hooks/useCurrentUser';
+
+const viewerCan = (user, action: IRoleAction) =>
+  user?.viewerAllowedActions?.includes(action) ?? false;
+const canAccessPluginTab = (config, hasRole) =>
+  !config.requiredRole || hasRole(config.requiredRole);
 
 const GetCurrentTab = ({ user, selectedView, ...extendedData }) => {
+  const { hasRole } = useAuth();
   if (!user) return <Loading />;
   if (selectedView === 'profile') return <ProfileView {...user} />;
   if (selectedView === 'account') return <AccountView {...user} />;
-  if (selectedView === 'orders') return <UserOrders {...user} />;
-  if (selectedView === 'quotations') return <UserQuotations {...user} />;
-  if (selectedView === 'enrollments') return <UserEnrollments {...user} />;
-  if (selectedView === 'reviews') return <UserProductReviews {...user} />;
+  if (selectedView === 'orders' && viewerCan(user, IRoleAction.ViewUserOrders))
+    return <UserOrders {...user} />;
+  if (selectedView === 'cart' && viewerCan(user, IRoleAction.ViewUserOrders))
+    return <UserCart {...user} />;
+  if (
+    selectedView === 'quotations' &&
+    viewerCan(user, IRoleAction.ViewUserQuotations)
+  )
+    return <UserQuotations {...user} />;
+  if (
+    selectedView === 'enrollments' &&
+    viewerCan(user, IRoleAction.ViewUserEnrollments)
+  )
+    return <UserEnrollments {...user} />;
+  if (
+    selectedView === 'reviews' &&
+    viewerCan(user, IRoleAction.ViewUserProductReviews)
+  )
+    return <UserProductReviews {...user} />;
 
-  if (selectedView === 'payment_credentials')
+  if (
+    selectedView === 'payment_credentials' &&
+    viewerCan(user, IRoleAction.ViewUserPrivateInfos)
+  )
     return <PaymentCredentialsView {...user} />;
-  if (selectedView === 'tokens') return <UserTokens {...user} />;
+  if (selectedView === 'tokens' && viewerCan(user, IRoleAction.ViewUserTokens))
+    return <UserTokens {...user} />;
   if (selectedView === 'extended') {
     return <DisplayExtendedFields data={extendedData} />;
   }
-  if (selectedView === 'logs') {
+  if (
+    selectedView === 'logs' &&
+    viewerCan(user, IRoleAction.ViewUserPrivateInfos)
+  ) {
     return <DisplayUserLastLogs {...user} />;
   }
   if (selectedView?.startsWith('plugin:')) {
@@ -53,7 +82,8 @@ const GetCurrentTab = ({ user, selectedView, ...extendedData }) => {
     return (
       <PluginSlot slot="user:tabs" entityId={user?._id}>
         {(Component, config) =>
-          config.component === componentName ? (
+          config.component === componentName &&
+          canAccessPluginTab(config, hasRole) ? (
             <Component entityId={user?._id} entity={user} />
           ) : null
         }
@@ -65,8 +95,6 @@ const GetCurrentTab = ({ user, selectedView, ...extendedData }) => {
 const UserSettings = ({ user, extendedData }) => {
   const { formatMessage } = useIntl();
   const { hasRole } = useAuth();
-  const { currentUser } = useCurrentUser();
-  const isOwnUser = currentUser?._id === user?._id;
   const { getSlotPlugins } = usePlugins();
 
   const userProfileSettingOptions = [
@@ -80,12 +108,17 @@ const UserSettings = ({ user, extendedData }) => {
       title: formatMessage({ id: 'account', defaultMessage: 'Account' }),
       Icon: <LockClosedIcon className="h-5 w-5" />,
     },
-    (isOwnUser || hasRole(IRoleAction.ViewUserOrders)) && {
+    viewerCan(user, IRoleAction.ViewUserOrders) && {
       id: 'orders',
       title: formatMessage({ id: 'orders', defaultMessage: 'Orders' }),
+      Icon: <ShoppingBagIcon className="h-5 w-5" />,
+    },
+    viewerCan(user, IRoleAction.ViewUserOrders) && {
+      id: 'cart',
+      title: formatMessage({ id: 'cart', defaultMessage: 'Cart' }),
       Icon: <ShoppingCartIcon className="h-5 w-5" />,
     },
-    hasRole(IRoleAction.ViewUserQuotations) && {
+    viewerCan(user, IRoleAction.ViewUserQuotations) && {
       id: 'quotations',
       title: formatMessage({
         id: 'quotations',
@@ -93,7 +126,7 @@ const UserSettings = ({ user, extendedData }) => {
       }),
       Icon: <BanknotesIcon className="h-5 w-5" />,
     },
-    hasRole(IRoleAction.ViewUserEnrollments) && {
+    viewerCan(user, IRoleAction.ViewUserEnrollments) && {
       id: 'enrollments',
       title: formatMessage({
         id: 'enrollments',
@@ -101,7 +134,7 @@ const UserSettings = ({ user, extendedData }) => {
       }),
       Icon: <ClipboardDocumentListIcon className="h-5 w-5" />,
     },
-    (isOwnUser || hasRole(IRoleAction.ViewUserPrivateInfos)) && {
+    viewerCan(user, IRoleAction.ViewUserPrivateInfos) && {
       id: 'payment_credentials',
       title: formatMessage({
         id: 'payment_credentials',
@@ -109,7 +142,7 @@ const UserSettings = ({ user, extendedData }) => {
       }),
       Icon: <CreditCardIcon className="h-5 w-5" />,
     },
-    (isOwnUser || hasRole(IRoleAction.ViewUserTokens)) && {
+    viewerCan(user, IRoleAction.ViewUserTokens) && {
       id: 'tokens',
       title: formatMessage({
         id: 'tokens',
@@ -117,7 +150,7 @@ const UserSettings = ({ user, extendedData }) => {
       }),
       Icon: <CurrencyDollarIcon className="h-5 w-5" />,
     },
-    hasRole(IRoleAction.ViewUserProductReviews) && {
+    viewerCan(user, IRoleAction.ViewUserProductReviews) && {
       id: 'reviews',
       title: formatMessage({
         id: 'reviews',
@@ -125,7 +158,7 @@ const UserSettings = ({ user, extendedData }) => {
       }),
       Icon: <StarIcon className="h-5 w-5" />,
     },
-    (isOwnUser || hasRole(IRoleAction.ViewUserPrivateInfos)) && {
+    viewerCan(user, IRoleAction.ViewUserPrivateInfos) && {
       id: 'logs',
       title: formatMessage({
         id: 'user-activities',
@@ -141,11 +174,13 @@ const UserSettings = ({ user, extendedData }) => {
       }),
       Icon: <PuzzlePieceIcon className="h-5 w-5" />,
     },
-    ...getSlotPlugins('user:tabs').map(({ config }) => ({
-      id: `plugin:${config.component}`,
-      title: config.label,
-      Icon: <PuzzlePieceIcon className="h-5 w-5" />,
-    })),
+    ...getSlotPlugins('user:tabs')
+      .filter(({ config }) => canAccessPluginTab(config, hasRole))
+      .map(({ config }) => ({
+        id: `plugin:${config.component}`,
+        title: config.label,
+        Icon: <PuzzlePieceIcon className="h-5 w-5" />,
+      })),
   ].filter(Boolean);
   return (
     <Tab tabItems={userProfileSettingOptions} defaultTab="profile">

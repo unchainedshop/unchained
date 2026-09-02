@@ -1,9 +1,7 @@
 import clsx from 'clsx';
-import { IRoleAction } from '../../../gql/types';
 
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
-import useAuth from '../../Auth/useAuth';
 import DangerMessage from '../../modal/components/DangerMessage';
 import useModal from '../../modal/hooks/useModal';
 import useAddWebAuthnCredentials from '../hooks/useAddWebAuthnCredentials';
@@ -21,8 +19,6 @@ const UserWebAuthCredentials = ({ userId }) => {
     userId,
   });
   const { setModal } = useModal();
-  const { hasRole } = useAuth();
-
   const { generateWebAuthCredentials } = useGenerateWebAuthCredentials();
   const { removeWebAuthCredentials } = useRemoveWebAuthCredentials();
 
@@ -78,9 +74,7 @@ const UserWebAuthCredentials = ({ userId }) => {
               {...credential}
               key={credential?._id}
               onRemoveCredential={handleRemoveWebAuthCredential}
-              removeDisabled={
-                userId !== currentUser?._id && !hasRole(IRoleAction.UpdateUser)
-              }
+              removeDisabled={userId !== currentUser?._id}
             />
           ))}
         </ul>

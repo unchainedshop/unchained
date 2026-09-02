@@ -26,6 +26,10 @@ describe('User', () => {
         aliasQuery(req, UserOperations.GetUserList);
         req.reply(UserListResponse);
       }
+      if (hasOperationName(req, UserOperations.GetPermissions)) {
+        aliasQuery(req, UserOperations.GetPermissions);
+        req.reply(SingleUserResponse);
+      }
       if (hasOperationName(req, UserOperations.GetSingle)) {
         aliasQuery(req, UserOperations.GetSingle);
         req.reply(SingleUserResponse);

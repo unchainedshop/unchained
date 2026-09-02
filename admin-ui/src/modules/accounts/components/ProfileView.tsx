@@ -14,21 +14,25 @@ import SaveAndCancelButtons from '@/components/ui/SaveAndCancelButtons';
 import AddressFields from './AddressFields';
 import { UserCircleIcon } from '@heroicons/react/24/outline';
 
-import useAuth from '../../Auth/useAuth';
 import FormWrapper from '../../common/components/FormWrapper';
-import useCurrentUser from '../hooks/useCurrentUser';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { validateBirthdate } from '../../forms/lib/validators';
 
-const ProfileView = ({ profile, avatar, _id }) => {
+const ProfileView = ({ profile, avatar, _id, viewerAllowedActions }) => {
   const { address } = profile || {};
   const fileInputRef = useRef(undefined);
   const { formatMessage } = useIntl();
-  const { currentUser } = useCurrentUser();
   const { formatDateTime } = useFormatDateTime();
   const { updateUserProfile } = useUpdateUserProfile();
   const { updateUserAvatar } = useUpdateUserAvatar();
-  const { hasRole } = useAuth();
+  const canUpdateUser = viewerAllowedActions?.includes(IRoleAction.UpdateUser);
+  const canUploadAvatar = viewerAllowedActions?.includes(
+    IRoleAction.UploadUserAvatar,
+  );
+  const canViewPrivateInfos = viewerAllowedActions?.includes(
+    IRoleAction.ViewUserPrivateInfos,
+  );
+  const canEditProfile = canUpdateUser && canViewPrivateInfos;
 
   const [isEdit, setIsEdit] = useState(false);
   const onUpdateProfile: OnSubmitType = async (updatedProfile) => {
@@ -144,8 +148,7 @@ const ProfileView = ({ profile, avatar, _id }) => {
                   })}
                 </p>
               </div>
-              {(hasRole(IRoleAction.UpdateUser) ||
-                currentUser?._id === _id) && (
+              {canEditProfile && (
                 <SaveAndCancelButtons
                   showSubmit={isEdit}
                   onCancel={() => setIsEdit(!isEdit)}
@@ -200,7 +203,7 @@ const ProfileView = ({ profile, avatar, _id }) => {
                         </span>
                       )}
                     </span>
-                    {hasRole(IRoleAction.UploadUserAvatar) && (
+                    {canUploadAvatar && (
                       <span className="mt-1 ml-4 flex shrink-0 items-start space-x-4">
                         <button
                           onClick={() => {
@@ -278,8 +281,7 @@ const ProfileView = ({ profile, avatar, _id }) => {
                   </div>
                 </div>
 
-                {(currentUser?._id === _id ||
-                  hasRole(IRoleAction.ViewUserPrivateInfos)) && (
+                {canViewPrivateInfos && (
                   <>
                     <div className="py-4 sm:grid sm:py-2">
                       <label className="text-sm text-text-muted">
@@ -364,8 +366,7 @@ const ProfileView = ({ profile, avatar, _id }) => {
                 </p>
               </div>
 
-              {(hasRole(IRoleAction.UpdateUser) ||
-                currentUser?._id === _id) && (
+              {canEditProfile && (
                 <SaveAndCancelButtons
                   showSubmit={isEdit}
                   onCancel={() => setIsEdit(!isEdit)}

@@ -1,7 +1,4 @@
 import { useIntl } from 'react-intl';
-import { IRoleAction } from '../../../gql/types';
-
-import useAuth from '../../Auth/useAuth';
 import useSystemRoles from '../../common/hooks/useSystemRoles';
 import ChoicesField from '@/components/ui/form/ChoicesField';
 import Form from '../../forms/components/Form';
@@ -12,11 +9,10 @@ import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 
 import useSetRoles from '../hooks/useSetRoles';
 
-const UserRolesView = ({ roles, userId }) => {
+const UserRolesView = ({ roles, userId, canEdit = false }) => {
   const { formatMessage } = useIntl();
 
   const { setRoles } = useSetRoles();
-  const { hasRole } = useAuth();
   const { systemRoles } = useSystemRoles();
   const onSubmit: OnSubmitType = async ({ updatedRoles }) => {
     await setRoles({ roles: updatedRoles, userId });
@@ -55,11 +51,11 @@ const UserRolesView = ({ roles, userId }) => {
           defaultMessage: 'Select role',
         })}
         multiple
+        disabled={!canEdit}
       />
       <FormErrors />
-      {hasRole(IRoleAction.ManageUsers) && (
+      {canEdit && (
         <SubmitButton
-          disabled={!hasRole(IRoleAction.ManageUsers)}
           label={formatMessage({
             id: 'update_role',
             defaultMessage: 'Update role',

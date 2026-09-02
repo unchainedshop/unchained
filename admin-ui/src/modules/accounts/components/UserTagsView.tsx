@@ -1,12 +1,9 @@
 import useSetUserTags from '../hooks/useSetUserTags';
-import { IRoleAction } from '../../../gql/types';
 
 import TagList from '@/components/ui/Tag/TagList';
-import useAuth from '../../Auth/useAuth';
 import useApp from '../../common/hooks/useApp';
 
-const UserTagsView = ({ tags: defaultTags = [], userId }) => {
-  const { hasRole } = useAuth();
+const UserTagsView = ({ tags: defaultTags = [], userId, canEdit = false }) => {
   const { setUserTags } = useSetUserTags();
   const { shopInfo } = useApp();
   const updateUserTags = async ({ tags }) => {
@@ -16,7 +13,7 @@ const UserTagsView = ({ tags: defaultTags = [], userId }) => {
     <TagList
       defaultValue={defaultTags}
       onSubmit={updateUserTags}
-      enableEdit={hasRole(IRoleAction.ManageUsers)}
+      enableEdit={canEdit}
       availableTagOptions={
         shopInfo?.adminUiConfig?.userTags
           ?.filter((t) => !(defaultTags || [])?.includes(t))

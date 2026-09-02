@@ -4,18 +4,37 @@ import {
   IUserQuotationsQuery,
   IUserQuotationsQueryVariables,
 } from '../../../gql/types';
-import QuotationFragment from '../fragments/QuotationFragment';
 
 const UserQuotationsQuery = gql`
   query UserQuotations($userId: ID!, $queryString: String) {
     user(userId: $userId) {
       _id
       quotations(queryString: $queryString) {
-        ...QuotationFragment
+        _id
+        status
+        created
+        expires
+        isExpired
+        quotationNumber
+        product {
+          _id
+          texts {
+            _id
+            slug
+            subtitle
+            title
+          }
+          media {
+            _id
+            file {
+              _id
+              url
+            }
+          }
+        }
       }
     }
   }
-  ${QuotationFragment}
 `;
 
 const useUserQuotations = ({

@@ -11,6 +11,7 @@ const SENSITIVE_ACTION_PREFIXES = [
   'forgot',
   'impersonate',
   'updateUser',
+  'removeUser',
   'createUser',
   // Bulk user mutations wrap the same privileged operations as their single-op
   // counterparts (manageUsers/updateUser), so they must emit ACL_GRANTED_SENSITIVE

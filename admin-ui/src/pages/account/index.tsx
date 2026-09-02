@@ -12,6 +12,7 @@ import DangerMessage from '../../modules/modal/components/DangerMessage';
 import { toast } from 'react-toastify';
 import { useApollo } from '../../modules/apollo/apolloClient';
 import logOut from '../../modules/accounts/hooks/logOut';
+import { IRoleAction } from '../../gql/types';
 
 const Profile = () => {
   const { formatMessage } = useIntl();
@@ -20,6 +21,9 @@ const Profile = () => {
   const { deleteUser } = useDeleteUser();
   const { setModal } = useModal();
   const apollo = useApollo({});
+  const canRemoveUser = currentUser?.viewerAllowedActions?.includes(
+    IRoleAction.RemoveUser,
+  );
 
   const onDeleteUser = async () => {
     await setModal(
@@ -58,7 +62,7 @@ const Profile = () => {
           id: 'account',
           defaultMessage: 'Account',
         })}
-        onDelete={onDeleteUser}
+        onDelete={canRemoveUser ? onDeleteUser : null}
       />
       <UserSettings user={currentUser} extendedData={extendedData} />
     </div>

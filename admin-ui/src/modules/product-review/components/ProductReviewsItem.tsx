@@ -135,7 +135,7 @@ const ProductReviewsItem = ({
         {showProduct ? (
           <ImageWithFallback
             src={product?.media[0]?.file?.url}
-            alt={review?.author?.username}
+            alt={review?.author?.name || review?.author?.username}
             width={48}
             height={48}
             className="h-12 w-12 rounded-full aspect-square object-cover object-center"
@@ -143,7 +143,7 @@ const ProductReviewsItem = ({
         ) : (
           <ImageWithFallback
             src={review?.author?.avatar?.url}
-            alt={review?.author?.username}
+            alt={review?.author?.name || review?.author?.username}
             width={48}
             height={48}
             className="h-12 w-12 rounded-full aspect-square object-cover object-center"

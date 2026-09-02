@@ -6,17 +6,14 @@ import ExportOptionsForm, {
   ExportOption,
 } from '../../common/components/ExportOptionsForm';
 import useModal from '../../modal/hooks/useModal';
-import useUser from '../hooks/useUser';
 
 interface UserExportProps {
   userId: string;
+  disabled?: boolean;
 }
 
-const UserExport = ({ userId }: UserExportProps) => {
+const UserExport = ({ userId, disabled = false }: UserExportProps) => {
   const { setModal } = useModal();
-  const { user, loading } = useUser({
-    userId,
-  });
   const { exportUser, isExporting } = useUserExport();
   const { formatMessage } = useIntl();
 
@@ -82,8 +79,6 @@ const UserExport = ({ userId }: UserExportProps) => {
     [userId, exportUser, setModal],
   );
 
-  if (loading) return null;
-
   return (
     <Button
       onClick={() => {
@@ -95,7 +90,7 @@ const UserExport = ({ userId }: UserExportProps) => {
           />,
         );
       }}
-      disabled={isExporting || !user}
+      disabled={isExporting || disabled}
       variant="secondary"
       text={
         isExporting

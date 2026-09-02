@@ -29,7 +29,14 @@ const useSetUserTags = () => {
         tags,
         userId,
       },
-      refetchQueries: ['Users', 'User', 'ShopStatus', 'ShopInfo'],
+      refetchQueries: [
+        'Users',
+        'UserPermissions',
+        'User',
+        'CurrentUser',
+        'ShopStatus',
+        'ShopInfo',
+      ],
     });
   };
 

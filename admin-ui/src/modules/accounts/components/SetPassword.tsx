@@ -1,8 +1,6 @@
 import { useIntl } from 'react-intl';
-import { IRoleAction } from '../../../gql/types';
 
 import { toast } from 'react-toastify';
-import useAuth from '../../Auth/useAuth';
 import Form from '../../forms/components/Form';
 import FormErrors from '@/components/ui/form/FormErrors';
 import PasswordField from '@/components/ui/form/PasswordField';
@@ -14,8 +12,13 @@ import useSetPassword from '../hooks/useSetPassword';
 import Button from '@/components/ui/Button';
 import { CombinedGraphQLErrors } from '@apollo/client';
 
-const SetPassword = ({ userId, isInitialPassword, primaryEmail }) => {
-  const { hasRole } = useAuth();
+const SetPassword = ({
+  userId,
+  isInitialPassword,
+  primaryEmail,
+  canUpdate = false,
+  canSendEnrollmentEmail = false,
+}) => {
   const { setPassword } = useSetPassword();
   const { formatMessage } = useIntl();
   const { sendEnrollmentEmail } = useSendEnrollmentEmail();
@@ -91,7 +94,7 @@ const SetPassword = ({ userId, isInitialPassword, primaryEmail }) => {
         <FormErrors />
       </div>
       <div className="border-t-slate-100 border-t align-baseline flex items-center justify-between dark:border-t-slate-700 space-y-6 bg-surface text-right sm:p-6">
-        {isInitialPassword && hasRole(IRoleAction.SendEmail) && (
+        {isInitialPassword && canSendEnrollmentEmail && (
           <Button
             text={formatMessage({
               id: 'send__enrollment_email_button',
@@ -101,7 +104,7 @@ const SetPassword = ({ userId, isInitialPassword, primaryEmail }) => {
             onClick={onSendEnrollmentEmail}
           />
         )}
-        {hasRole(IRoleAction.UpdateUser) && (
+        {canUpdate && (
           <SubmitButton
             label={formatMessage({
               id: 'change_password',

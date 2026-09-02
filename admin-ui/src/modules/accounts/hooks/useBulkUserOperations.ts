@@ -44,6 +44,7 @@ const BulkSetUserRolesMutation = gql`
 `;
 
 const refetchQueries = ['Users', 'UsersCount'];
+const setRolesRefetchQueries = [...refetchQueries, 'CurrentUser'];
 
 const useBulkUserOperations = () => {
   const [bulkUpdateTagsMutation] = useMutation<
@@ -81,7 +82,7 @@ const useBulkUserOperations = () => {
     bulkSetUserRoles: (userIds: string[], roles: string[]) =>
       bulkSetRolesMutation({
         variables: { userIds, roles },
-        refetchQueries,
+        refetchQueries: setRolesRefetchQueries,
         awaitRefetchQueries: true,
       }),
   };

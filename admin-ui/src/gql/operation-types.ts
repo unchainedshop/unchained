@@ -28,7 +28,6 @@ export type IMd5MetaDataFragmentVariables = Exact<{ [key: string]: never }>;
 
 export type IUserFragment = {
   _id: string;
-  allowedActions: Array<Types.IRoleAction>;
   username: string | null;
   isGuest: boolean;
   isInitialPassword: boolean;
@@ -137,110 +136,7 @@ export type IAddEmailMutationVariables = Exact<{
   userId?: string | number | null | undefined;
 }>;
 
-export type IAddEmailMutation = {
-  addEmail: {
-    _id: string;
-    allowedActions: Array<Types.IRoleAction>;
-    username: string | null;
-    isGuest: boolean;
-    isInitialPassword: boolean;
-    name: string;
-    roles: Array<string> | null;
-    tags: Array<unknown> | null;
-    deleted: unknown;
-    lastBillingAddress: {
-      firstName: string | null;
-      lastName: string | null;
-      company: string | null;
-      addressLine: string | null;
-      addressLine2: string | null;
-      postalCode: string | null;
-      countryCode: string | null;
-      regionCode: string | null;
-      city: string | null;
-    } | null;
-    lastContact: {
-      emailAddress: string | null;
-      telNumber: string | null;
-    } | null;
-    lastLogin: {
-      countryCode: string | null;
-      locale: unknown;
-      remoteAddress: string | null;
-      remotePort: number | null;
-      timestamp: unknown;
-      userAgent: string | null;
-    } | null;
-    avatar: {
-      _id: string;
-      name: string;
-      size: number;
-      type: string;
-      url: string | null;
-    } | null;
-    paymentCredentials: Array<{
-      _id: string;
-      isValid: boolean;
-      isPreferred: boolean;
-      paymentProvider: {
-        _id: string;
-        type: Types.IPaymentProviderType | null;
-        interface: {
-          _id: string;
-          label: string | null;
-          version: string | null;
-        } | null;
-      };
-    }>;
-    emails: Array<{ verified: boolean; address: string }> | null;
-    web3Addresses: Array<{
-      address: string;
-      nonce: string | null;
-      verified: boolean;
-    }>;
-    webAuthnCredentials: Array<{
-      _id: string;
-      created: unknown;
-      aaguid: string;
-      counter: number;
-      mdsMetadata: {
-        legalHeader: string | null;
-        description: string | null;
-        authenticatorVersion: number | null;
-        protocolFamily: string | null;
-        schema: number | null;
-        authenticationAlgorithms: Array<string> | null;
-        publicKeyAlgAndEncodings: Array<string> | null;
-        attestationTypes: Array<string> | null;
-        keyProtection: Array<string> | null;
-        upv: Array<unknown> | null;
-        tcDisplay: Array<unknown> | null;
-        icon: string | null;
-        authenticatorGetInfo: unknown;
-      } | null;
-    }>;
-    profile: {
-      displayName: string | null;
-      phoneMobile: string | null;
-      gender: string | null;
-      birthday: unknown;
-      address: {
-        firstName: string | null;
-        lastName: string | null;
-        company: string | null;
-        addressLine: string | null;
-        addressLine2: string | null;
-        postalCode: string | null;
-        countryCode: string | null;
-        regionCode: string | null;
-        city: string | null;
-      } | null;
-    } | null;
-    primaryEmail: { verified: boolean; address: string } | null;
-    cart: { _id: string; items: Array<{ _id: string }> | null } | null;
-    orders: Array<{ _id: string; items: Array<{ _id: string }> | null }>;
-  };
-};
+export type IAddEmailMutation = { addEmail: { _id: string } };
 
 export type IAddWeb3AddressMutationVariables = Exact<{
   address: string;
@@ -249,7 +145,6 @@ export type IAddWeb3AddressMutationVariables = Exact<{
 export type IAddWeb3AddressMutation = {
   addWeb3Address: {
     _id: string;
-    allowedActions: Array<Types.IRoleAction>;
     username: string | null;
     isGuest: boolean;
     isInitialPassword: boolean;
@@ -358,7 +253,6 @@ export type IAddWebAuthnCredentialsMutationVariables = Exact<{
 export type IAddWebAuthnCredentialsMutation = {
   addWebAuthnCredentials: {
     _id: string;
-    allowedActions: Array<Types.IRoleAction>;
     username: string | null;
     isGuest: boolean;
     isInitialPassword: boolean;
@@ -540,8 +434,9 @@ export type ICurrentUserQueryVariables = Exact<{ [key: string]: never }>;
 
 export type ICurrentUserQuery = {
   me: {
-    _id: string;
     allowedActions: Array<Types.IRoleAction>;
+    viewerAllowedActions: Array<Types.IRoleAction>;
+    _id: string;
     username: string | null;
     isGuest: boolean;
     isInitialPassword: boolean;
@@ -560,10 +455,7 @@ export type ICurrentUserQuery = {
       regionCode: string | null;
       city: string | null;
     } | null;
-    lastContact: {
-      emailAddress: string | null;
-      telNumber: string | null;
-    } | null;
+    lastContact: { emailAddress: string | null; telNumber: string | null } | null;
     lastLogin: {
       countryCode: string | null;
       locale: unknown;
@@ -572,13 +464,7 @@ export type ICurrentUserQuery = {
       timestamp: unknown;
       userAgent: string | null;
     } | null;
-    avatar: {
-      _id: string;
-      name: string;
-      size: number;
-      type: string;
-      url: string | null;
-    } | null;
+    avatar: { _id: string; name: string; size: number; type: string; url: string | null } | null;
     paymentCredentials: Array<{
       _id: string;
       isValid: boolean;
@@ -586,19 +472,11 @@ export type ICurrentUserQuery = {
       paymentProvider: {
         _id: string;
         type: Types.IPaymentProviderType | null;
-        interface: {
-          _id: string;
-          label: string | null;
-          version: string | null;
-        } | null;
+        interface: { _id: string; label: string | null; version: string | null } | null;
       };
     }>;
     emails: Array<{ verified: boolean; address: string }> | null;
-    web3Addresses: Array<{
-      address: string;
-      nonce: string | null;
-      verified: boolean;
-    }>;
+    web3Addresses: Array<{ address: string; nonce: string | null; verified: boolean }>;
     webAuthnCredentials: Array<{
       _id: string;
       created: unknown;
@@ -655,110 +533,7 @@ export type IEnrollUserMutationVariables = Exact<{
   profile: Types.IUserProfileInput;
 }>;
 
-export type IEnrollUserMutation = {
-  enrollUser: {
-    _id: string;
-    allowedActions: Array<Types.IRoleAction>;
-    username: string | null;
-    isGuest: boolean;
-    isInitialPassword: boolean;
-    name: string;
-    roles: Array<string> | null;
-    tags: Array<unknown> | null;
-    deleted: unknown;
-    lastBillingAddress: {
-      firstName: string | null;
-      lastName: string | null;
-      company: string | null;
-      addressLine: string | null;
-      addressLine2: string | null;
-      postalCode: string | null;
-      countryCode: string | null;
-      regionCode: string | null;
-      city: string | null;
-    } | null;
-    lastContact: {
-      emailAddress: string | null;
-      telNumber: string | null;
-    } | null;
-    lastLogin: {
-      countryCode: string | null;
-      locale: unknown;
-      remoteAddress: string | null;
-      remotePort: number | null;
-      timestamp: unknown;
-      userAgent: string | null;
-    } | null;
-    avatar: {
-      _id: string;
-      name: string;
-      size: number;
-      type: string;
-      url: string | null;
-    } | null;
-    paymentCredentials: Array<{
-      _id: string;
-      isValid: boolean;
-      isPreferred: boolean;
-      paymentProvider: {
-        _id: string;
-        type: Types.IPaymentProviderType | null;
-        interface: {
-          _id: string;
-          label: string | null;
-          version: string | null;
-        } | null;
-      };
-    }>;
-    emails: Array<{ verified: boolean; address: string }> | null;
-    web3Addresses: Array<{
-      address: string;
-      nonce: string | null;
-      verified: boolean;
-    }>;
-    webAuthnCredentials: Array<{
-      _id: string;
-      created: unknown;
-      aaguid: string;
-      counter: number;
-      mdsMetadata: {
-        legalHeader: string | null;
-        description: string | null;
-        authenticatorVersion: number | null;
-        protocolFamily: string | null;
-        schema: number | null;
-        authenticationAlgorithms: Array<string> | null;
-        publicKeyAlgAndEncodings: Array<string> | null;
-        attestationTypes: Array<string> | null;
-        keyProtection: Array<string> | null;
-        upv: Array<unknown> | null;
-        tcDisplay: Array<unknown> | null;
-        icon: string | null;
-        authenticatorGetInfo: unknown;
-      } | null;
-    }>;
-    profile: {
-      displayName: string | null;
-      phoneMobile: string | null;
-      gender: string | null;
-      birthday: unknown;
-      address: {
-        firstName: string | null;
-        lastName: string | null;
-        company: string | null;
-        addressLine: string | null;
-        addressLine2: string | null;
-        postalCode: string | null;
-        countryCode: string | null;
-        regionCode: string | null;
-        city: string | null;
-      } | null;
-    } | null;
-    primaryEmail: { verified: boolean; address: string } | null;
-    cart: { _id: string; items: Array<{ _id: string }> | null } | null;
-    orders: Array<{ _id: string; items: Array<{ _id: string }> | null }>;
-  };
-};
+export type IEnrollUserMutation = { enrollUser: { _id: string } };
 
 export type IForgotPasswordMutationVariables = Exact<{
   email: string;
@@ -799,110 +574,7 @@ export type IRemoveEmailMutationVariables = Exact<{
   userId?: string | number | null | undefined;
 }>;
 
-export type IRemoveEmailMutation = {
-  removeEmail: {
-    _id: string;
-    allowedActions: Array<Types.IRoleAction>;
-    username: string | null;
-    isGuest: boolean;
-    isInitialPassword: boolean;
-    name: string;
-    roles: Array<string> | null;
-    tags: Array<unknown> | null;
-    deleted: unknown;
-    lastBillingAddress: {
-      firstName: string | null;
-      lastName: string | null;
-      company: string | null;
-      addressLine: string | null;
-      addressLine2: string | null;
-      postalCode: string | null;
-      countryCode: string | null;
-      regionCode: string | null;
-      city: string | null;
-    } | null;
-    lastContact: {
-      emailAddress: string | null;
-      telNumber: string | null;
-    } | null;
-    lastLogin: {
-      countryCode: string | null;
-      locale: unknown;
-      remoteAddress: string | null;
-      remotePort: number | null;
-      timestamp: unknown;
-      userAgent: string | null;
-    } | null;
-    avatar: {
-      _id: string;
-      name: string;
-      size: number;
-      type: string;
-      url: string | null;
-    } | null;
-    paymentCredentials: Array<{
-      _id: string;
-      isValid: boolean;
-      isPreferred: boolean;
-      paymentProvider: {
-        _id: string;
-        type: Types.IPaymentProviderType | null;
-        interface: {
-          _id: string;
-          label: string | null;
-          version: string | null;
-        } | null;
-      };
-    }>;
-    emails: Array<{ verified: boolean; address: string }> | null;
-    web3Addresses: Array<{
-      address: string;
-      nonce: string | null;
-      verified: boolean;
-    }>;
-    webAuthnCredentials: Array<{
-      _id: string;
-      created: unknown;
-      aaguid: string;
-      counter: number;
-      mdsMetadata: {
-        legalHeader: string | null;
-        description: string | null;
-        authenticatorVersion: number | null;
-        protocolFamily: string | null;
-        schema: number | null;
-        authenticationAlgorithms: Array<string> | null;
-        publicKeyAlgAndEncodings: Array<string> | null;
-        attestationTypes: Array<string> | null;
-        keyProtection: Array<string> | null;
-        upv: Array<unknown> | null;
-        tcDisplay: Array<unknown> | null;
-        icon: string | null;
-        authenticatorGetInfo: unknown;
-      } | null;
-    }>;
-    profile: {
-      displayName: string | null;
-      phoneMobile: string | null;
-      gender: string | null;
-      birthday: unknown;
-      address: {
-        firstName: string | null;
-        lastName: string | null;
-        company: string | null;
-        addressLine: string | null;
-        addressLine2: string | null;
-        postalCode: string | null;
-        countryCode: string | null;
-        regionCode: string | null;
-        city: string | null;
-      } | null;
-    } | null;
-    primaryEmail: { verified: boolean; address: string } | null;
-    cart: { _id: string; items: Array<{ _id: string }> | null } | null;
-    orders: Array<{ _id: string; items: Array<{ _id: string }> | null }>;
-  };
-};
+export type IRemoveEmailMutation = { removeEmail: { _id: string } };
 
 export type IRemoveWeb3AddressMutationVariables = Exact<{
   address: string;
@@ -911,7 +583,6 @@ export type IRemoveWeb3AddressMutationVariables = Exact<{
 export type IRemoveWeb3AddressMutation = {
   removeWeb3Address: {
     _id: string;
-    allowedActions: Array<Types.IRoleAction>;
     username: string | null;
     isGuest: boolean;
     isInitialPassword: boolean;
@@ -1020,7 +691,6 @@ export type IRemoveWebAuthCredentialsMutationVariables = Exact<{
 export type IRemoveWebAuthCredentialsMutation = {
   removeWebAuthnCredentials: {
     _id: string;
-    allowedActions: Array<Types.IRoleAction>;
     username: string | null;
     isGuest: boolean;
     isInitialPassword: boolean;
@@ -1144,220 +814,14 @@ export type ISetPasswordMutationVariables = Exact<{
   userId: string | number;
 }>;
 
-export type ISetPasswordMutation = {
-  setPassword: {
-    _id: string;
-    allowedActions: Array<Types.IRoleAction>;
-    username: string | null;
-    isGuest: boolean;
-    isInitialPassword: boolean;
-    name: string;
-    roles: Array<string> | null;
-    tags: Array<unknown> | null;
-    deleted: unknown;
-    lastBillingAddress: {
-      firstName: string | null;
-      lastName: string | null;
-      company: string | null;
-      addressLine: string | null;
-      addressLine2: string | null;
-      postalCode: string | null;
-      countryCode: string | null;
-      regionCode: string | null;
-      city: string | null;
-    } | null;
-    lastContact: {
-      emailAddress: string | null;
-      telNumber: string | null;
-    } | null;
-    lastLogin: {
-      countryCode: string | null;
-      locale: unknown;
-      remoteAddress: string | null;
-      remotePort: number | null;
-      timestamp: unknown;
-      userAgent: string | null;
-    } | null;
-    avatar: {
-      _id: string;
-      name: string;
-      size: number;
-      type: string;
-      url: string | null;
-    } | null;
-    paymentCredentials: Array<{
-      _id: string;
-      isValid: boolean;
-      isPreferred: boolean;
-      paymentProvider: {
-        _id: string;
-        type: Types.IPaymentProviderType | null;
-        interface: {
-          _id: string;
-          label: string | null;
-          version: string | null;
-        } | null;
-      };
-    }>;
-    emails: Array<{ verified: boolean; address: string }> | null;
-    web3Addresses: Array<{
-      address: string;
-      nonce: string | null;
-      verified: boolean;
-    }>;
-    webAuthnCredentials: Array<{
-      _id: string;
-      created: unknown;
-      aaguid: string;
-      counter: number;
-      mdsMetadata: {
-        legalHeader: string | null;
-        description: string | null;
-        authenticatorVersion: number | null;
-        protocolFamily: string | null;
-        schema: number | null;
-        authenticationAlgorithms: Array<string> | null;
-        publicKeyAlgAndEncodings: Array<string> | null;
-        attestationTypes: Array<string> | null;
-        keyProtection: Array<string> | null;
-        upv: Array<unknown> | null;
-        tcDisplay: Array<unknown> | null;
-        icon: string | null;
-        authenticatorGetInfo: unknown;
-      } | null;
-    }>;
-    profile: {
-      displayName: string | null;
-      phoneMobile: string | null;
-      gender: string | null;
-      birthday: unknown;
-      address: {
-        firstName: string | null;
-        lastName: string | null;
-        company: string | null;
-        addressLine: string | null;
-        addressLine2: string | null;
-        postalCode: string | null;
-        countryCode: string | null;
-        regionCode: string | null;
-        city: string | null;
-      } | null;
-    } | null;
-    primaryEmail: { verified: boolean; address: string } | null;
-    cart: { _id: string; items: Array<{ _id: string }> | null } | null;
-    orders: Array<{ _id: string; items: Array<{ _id: string }> | null }>;
-  };
-};
+export type ISetPasswordMutation = { setPassword: { _id: string } };
 
 export type ISetRolesMutationVariables = Exact<{
   roles: Array<string>;
   userId: string | number;
 }>;
 
-export type ISetRolesMutation = {
-  setRoles: {
-    _id: string;
-    allowedActions: Array<Types.IRoleAction>;
-    username: string | null;
-    isGuest: boolean;
-    isInitialPassword: boolean;
-    name: string;
-    roles: Array<string> | null;
-    tags: Array<unknown> | null;
-    deleted: unknown;
-    lastBillingAddress: {
-      firstName: string | null;
-      lastName: string | null;
-      company: string | null;
-      addressLine: string | null;
-      addressLine2: string | null;
-      postalCode: string | null;
-      countryCode: string | null;
-      regionCode: string | null;
-      city: string | null;
-    } | null;
-    lastContact: {
-      emailAddress: string | null;
-      telNumber: string | null;
-    } | null;
-    lastLogin: {
-      countryCode: string | null;
-      locale: unknown;
-      remoteAddress: string | null;
-      remotePort: number | null;
-      timestamp: unknown;
-      userAgent: string | null;
-    } | null;
-    avatar: {
-      _id: string;
-      name: string;
-      size: number;
-      type: string;
-      url: string | null;
-    } | null;
-    paymentCredentials: Array<{
-      _id: string;
-      isValid: boolean;
-      isPreferred: boolean;
-      paymentProvider: {
-        _id: string;
-        type: Types.IPaymentProviderType | null;
-        interface: {
-          _id: string;
-          label: string | null;
-          version: string | null;
-        } | null;
-      };
-    }>;
-    emails: Array<{ verified: boolean; address: string }> | null;
-    web3Addresses: Array<{
-      address: string;
-      nonce: string | null;
-      verified: boolean;
-    }>;
-    webAuthnCredentials: Array<{
-      _id: string;
-      created: unknown;
-      aaguid: string;
-      counter: number;
-      mdsMetadata: {
-        legalHeader: string | null;
-        description: string | null;
-        authenticatorVersion: number | null;
-        protocolFamily: string | null;
-        schema: number | null;
-        authenticationAlgorithms: Array<string> | null;
-        publicKeyAlgAndEncodings: Array<string> | null;
-        attestationTypes: Array<string> | null;
-        keyProtection: Array<string> | null;
-        upv: Array<unknown> | null;
-        tcDisplay: Array<unknown> | null;
-        icon: string | null;
-        authenticatorGetInfo: unknown;
-      } | null;
-    }>;
-    profile: {
-      displayName: string | null;
-      phoneMobile: string | null;
-      gender: string | null;
-      birthday: unknown;
-      address: {
-        firstName: string | null;
-        lastName: string | null;
-        company: string | null;
-        addressLine: string | null;
-        addressLine2: string | null;
-        postalCode: string | null;
-        countryCode: string | null;
-        regionCode: string | null;
-        city: string | null;
-      } | null;
-    } | null;
-    primaryEmail: { verified: boolean; address: string } | null;
-    cart: { _id: string; items: Array<{ _id: string }> | null } | null;
-    orders: Array<{ _id: string; items: Array<{ _id: string }> | null }>;
-  };
-};
+export type ISetRolesMutation = { setRoles: { _id: string } };
 
 export type ISetUserTagsMutationVariables = Exact<{
   tags: Array<unknown>;
@@ -1373,110 +837,7 @@ export type ISetUsernameMutationVariables = Exact<{
   userId: string | number;
 }>;
 
-export type ISetUsernameMutation = {
-  setUsername: {
-    _id: string;
-    allowedActions: Array<Types.IRoleAction>;
-    username: string | null;
-    isGuest: boolean;
-    isInitialPassword: boolean;
-    name: string;
-    roles: Array<string> | null;
-    tags: Array<unknown> | null;
-    deleted: unknown;
-    lastBillingAddress: {
-      firstName: string | null;
-      lastName: string | null;
-      company: string | null;
-      addressLine: string | null;
-      addressLine2: string | null;
-      postalCode: string | null;
-      countryCode: string | null;
-      regionCode: string | null;
-      city: string | null;
-    } | null;
-    lastContact: {
-      emailAddress: string | null;
-      telNumber: string | null;
-    } | null;
-    lastLogin: {
-      countryCode: string | null;
-      locale: unknown;
-      remoteAddress: string | null;
-      remotePort: number | null;
-      timestamp: unknown;
-      userAgent: string | null;
-    } | null;
-    avatar: {
-      _id: string;
-      name: string;
-      size: number;
-      type: string;
-      url: string | null;
-    } | null;
-    paymentCredentials: Array<{
-      _id: string;
-      isValid: boolean;
-      isPreferred: boolean;
-      paymentProvider: {
-        _id: string;
-        type: Types.IPaymentProviderType | null;
-        interface: {
-          _id: string;
-          label: string | null;
-          version: string | null;
-        } | null;
-      };
-    }>;
-    emails: Array<{ verified: boolean; address: string }> | null;
-    web3Addresses: Array<{
-      address: string;
-      nonce: string | null;
-      verified: boolean;
-    }>;
-    webAuthnCredentials: Array<{
-      _id: string;
-      created: unknown;
-      aaguid: string;
-      counter: number;
-      mdsMetadata: {
-        legalHeader: string | null;
-        description: string | null;
-        authenticatorVersion: number | null;
-        protocolFamily: string | null;
-        schema: number | null;
-        authenticationAlgorithms: Array<string> | null;
-        publicKeyAlgAndEncodings: Array<string> | null;
-        attestationTypes: Array<string> | null;
-        keyProtection: Array<string> | null;
-        upv: Array<unknown> | null;
-        tcDisplay: Array<unknown> | null;
-        icon: string | null;
-        authenticatorGetInfo: unknown;
-      } | null;
-    }>;
-    profile: {
-      displayName: string | null;
-      phoneMobile: string | null;
-      gender: string | null;
-      birthday: unknown;
-      address: {
-        firstName: string | null;
-        lastName: string | null;
-        company: string | null;
-        addressLine: string | null;
-        addressLine2: string | null;
-        postalCode: string | null;
-        countryCode: string | null;
-        regionCode: string | null;
-        city: string | null;
-      } | null;
-    } | null;
-    primaryEmail: { verified: boolean; address: string } | null;
-    cart: { _id: string; items: Array<{ _id: string }> | null } | null;
-    orders: Array<{ _id: string; items: Array<{ _id: string }> | null }>;
-  };
-};
+export type ISetUsernameMutation = { setUsername: { _id: string } };
 
 export type IPrepareUserAvatarUploadMutationVariables = Exact<{
   mediaName: string;
@@ -1492,218 +853,111 @@ export type IUpdateUserProfileMutationVariables = Exact<{
   userId?: string | number | null | undefined;
 }>;
 
-export type IUpdateUserProfileMutation = {
-  updateUserProfile: {
-    _id: string;
-    allowedActions: Array<Types.IRoleAction>;
-    username: string | null;
-    isGuest: boolean;
-    isInitialPassword: boolean;
-    name: string;
-    roles: Array<string> | null;
-    tags: Array<unknown> | null;
-    deleted: unknown;
-    lastBillingAddress: {
-      firstName: string | null;
-      lastName: string | null;
-      company: string | null;
-      addressLine: string | null;
-      addressLine2: string | null;
-      postalCode: string | null;
-      countryCode: string | null;
-      regionCode: string | null;
-      city: string | null;
-    } | null;
-    lastContact: {
-      emailAddress: string | null;
-      telNumber: string | null;
-    } | null;
-    lastLogin: {
-      countryCode: string | null;
-      locale: unknown;
-      remoteAddress: string | null;
-      remotePort: number | null;
-      timestamp: unknown;
-      userAgent: string | null;
-    } | null;
-    avatar: {
-      _id: string;
-      name: string;
-      size: number;
-      type: string;
-      url: string | null;
-    } | null;
-    paymentCredentials: Array<{
-      _id: string;
-      isValid: boolean;
-      isPreferred: boolean;
-      paymentProvider: {
-        _id: string;
-        type: Types.IPaymentProviderType | null;
-        interface: {
-          _id: string;
-          label: string | null;
-          version: string | null;
-        } | null;
-      };
-    }>;
-    emails: Array<{ verified: boolean; address: string }> | null;
-    web3Addresses: Array<{
-      address: string;
-      nonce: string | null;
-      verified: boolean;
-    }>;
-    webAuthnCredentials: Array<{
-      _id: string;
-      created: unknown;
-      aaguid: string;
-      counter: number;
-      mdsMetadata: {
-        legalHeader: string | null;
-        description: string | null;
-        authenticatorVersion: number | null;
-        protocolFamily: string | null;
-        schema: number | null;
-        authenticationAlgorithms: Array<string> | null;
-        publicKeyAlgAndEncodings: Array<string> | null;
-        attestationTypes: Array<string> | null;
-        keyProtection: Array<string> | null;
-        upv: Array<unknown> | null;
-        tcDisplay: Array<unknown> | null;
-        icon: string | null;
-        authenticatorGetInfo: unknown;
-      } | null;
-    }>;
-    profile: {
-      displayName: string | null;
-      phoneMobile: string | null;
-      gender: string | null;
-      birthday: unknown;
-      address: {
-        firstName: string | null;
-        lastName: string | null;
-        company: string | null;
-        addressLine: string | null;
-        addressLine2: string | null;
-        postalCode: string | null;
-        countryCode: string | null;
-        regionCode: string | null;
-        city: string | null;
-      } | null;
-    } | null;
-    primaryEmail: { verified: boolean; address: string } | null;
-    cart: { _id: string; items: Array<{ _id: string }> | null } | null;
-    orders: Array<{ _id: string; items: Array<{ _id: string }> | null }>;
-  };
+export type IUpdateUserProfileMutation = { updateUserProfile: { _id: string } };
+
+export type IUserPermissionsQueryVariables = Exact<{
+  userId: string | number;
+}>;
+
+export type IUserPermissionsQuery = {
+  user: { _id: string; viewerAllowedActions: Array<Types.IRoleAction> } | null;
 };
 
 export type IUserQueryVariables = Exact<{
-  userId?: string | number | null | undefined;
+  userId: string | number;
+  includePrivateInfos: boolean;
+  includeRoles: boolean;
+  includeOrders: boolean;
 }>;
 
 export type IUserQuery = {
-  user: {
-    _id: string;
-    allowedActions: Array<Types.IRoleAction>;
-    username: string | null;
-    isGuest: boolean;
-    isInitialPassword: boolean;
-    name: string;
-    roles: Array<string> | null;
-    tags: Array<unknown> | null;
-    deleted: unknown;
-    lastBillingAddress: {
-      firstName: string | null;
-      lastName: string | null;
-      company: string | null;
-      addressLine: string | null;
-      addressLine2: string | null;
-      postalCode: string | null;
-      countryCode: string | null;
-      regionCode: string | null;
-      city: string | null;
-    } | null;
-    lastContact: {
-      emailAddress: string | null;
-      telNumber: string | null;
-    } | null;
-    lastLogin: {
-      countryCode: string | null;
-      locale: unknown;
-      remoteAddress: string | null;
-      remotePort: number | null;
-      timestamp: unknown;
-      userAgent: string | null;
-    } | null;
-    avatar: {
-      _id: string;
-      name: string;
-      size: number;
-      type: string;
-      url: string | null;
-    } | null;
-    paymentCredentials: Array<{
-      _id: string;
-      isValid: boolean;
-      isPreferred: boolean;
-      paymentProvider: {
+  user:
+    | ({
         _id: string;
-        type: Types.IPaymentProviderType | null;
-        interface: {
-          _id: string;
-          label: string | null;
-          version: string | null;
+        name: string;
+        avatar: { _id: string; name: string; size: number; type: string; url: string | null } | null;
+      } & {
+        username?: string | null;
+        isGuest?: boolean;
+        isInitialPassword?: boolean;
+        tags?: Array<unknown> | null;
+        deleted?: unknown;
+        lastBillingAddress?: {
+          firstName: string | null;
+          lastName: string | null;
+          company: string | null;
+          addressLine: string | null;
+          addressLine2: string | null;
+          postalCode: string | null;
+          countryCode: string | null;
+          regionCode: string | null;
+          city: string | null;
         } | null;
-      };
-    }>;
-    emails: Array<{ verified: boolean; address: string }> | null;
-    web3Addresses: Array<{
-      address: string;
-      nonce: string | null;
-      verified: boolean;
-    }>;
-    webAuthnCredentials: Array<{
-      _id: string;
-      created: unknown;
-      aaguid: string;
-      counter: number;
-      mdsMetadata: {
-        legalHeader: string | null;
-        description: string | null;
-        authenticatorVersion: number | null;
-        protocolFamily: string | null;
-        schema: number | null;
-        authenticationAlgorithms: Array<string> | null;
-        publicKeyAlgAndEncodings: Array<string> | null;
-        attestationTypes: Array<string> | null;
-        keyProtection: Array<string> | null;
-        upv: Array<unknown> | null;
-        tcDisplay: Array<unknown> | null;
-        icon: string | null;
-        authenticatorGetInfo: unknown;
-      } | null;
-    }>;
-    profile: {
-      displayName: string | null;
-      phoneMobile: string | null;
-      gender: string | null;
-      birthday: unknown;
-      address: {
-        firstName: string | null;
-        lastName: string | null;
-        company: string | null;
-        addressLine: string | null;
-        addressLine2: string | null;
-        postalCode: string | null;
-        countryCode: string | null;
-        regionCode: string | null;
-        city: string | null;
-      } | null;
-    } | null;
-    primaryEmail: { verified: boolean; address: string } | null;
-    cart: { _id: string; items: Array<{ _id: string }> | null } | null;
-    orders: Array<{ _id: string; items: Array<{ _id: string }> | null }>;
-  } | null;
+        lastContact?: { emailAddress: string | null; telNumber: string | null } | null;
+        lastLogin?: {
+          countryCode: string | null;
+          locale: unknown;
+          remoteAddress: string | null;
+          remotePort: number | null;
+          timestamp: unknown;
+          userAgent: string | null;
+        } | null;
+        paymentCredentials?: Array<{
+          _id: string;
+          isValid: boolean;
+          isPreferred: boolean;
+          paymentProvider: {
+            _id: string;
+            type: Types.IPaymentProviderType | null;
+            interface: { _id: string; label: string | null; version: string | null } | null;
+          };
+        }>;
+        emails?: Array<{ verified: boolean; address: string }> | null;
+        web3Addresses?: Array<{ address: string; nonce: string | null; verified: boolean }>;
+        webAuthnCredentials?: Array<{
+          _id: string;
+          created: unknown;
+          aaguid: string;
+          counter: number;
+          mdsMetadata: {
+            legalHeader: string | null;
+            description: string | null;
+            authenticatorVersion: number | null;
+            protocolFamily: string | null;
+            schema: number | null;
+            authenticationAlgorithms: Array<string> | null;
+            publicKeyAlgAndEncodings: Array<string> | null;
+            attestationTypes: Array<string> | null;
+            keyProtection: Array<string> | null;
+            upv: Array<unknown> | null;
+            tcDisplay: Array<unknown> | null;
+            icon: string | null;
+            authenticatorGetInfo: unknown;
+          } | null;
+        }>;
+        profile?: {
+          displayName: string | null;
+          phoneMobile: string | null;
+          gender: string | null;
+          birthday: unknown;
+          address: {
+            firstName: string | null;
+            lastName: string | null;
+            company: string | null;
+            addressLine: string | null;
+            addressLine2: string | null;
+            postalCode: string | null;
+            countryCode: string | null;
+            regionCode: string | null;
+            city: string | null;
+          } | null;
+        } | null;
+        primaryEmail?: { verified: boolean; address: string } | null;
+      } & { roles?: Array<string> | null } & {
+        cart?: { _id: string; items: Array<{ _id: string }> | null } | null;
+        orders?: Array<{ _id: string; items: Array<{ _id: string }> | null }>;
+      })
+    | null;
 };
 
 export type IUserWebAuthnCredentialsQueryVariables = Exact<{
@@ -1751,7 +1005,6 @@ export type IUsersQuery = {
   usersCount: number;
   users: Array<{
     _id: string;
-    allowedActions: Array<Types.IRoleAction>;
     username: string | null;
     isGuest: boolean;
     isInitialPassword: boolean;
@@ -1888,7 +1141,6 @@ export type IVerifyEmailMutation = {
     tokenExpires: unknown;
     user: {
       _id: string;
-      allowedActions: Array<Types.IRoleAction>;
       username: string | null;
       isGuest: boolean;
       isInitialPassword: boolean;
@@ -1999,7 +1251,6 @@ export type IVerifyWeb3AddressMutationVariables = Exact<{
 export type IVerifyWeb3AddressMutation = {
   verifyWeb3Address: {
     _id: string;
-    allowedActions: Array<Types.IRoleAction>;
     username: string | null;
     isGuest: boolean;
     isInitialPassword: boolean;
@@ -4282,32 +3533,17 @@ export type IUserEnrollmentsQuery = {
     enrollments: Array<{
       _id: string;
       enrollmentNumber: string | null;
-      updated: unknown;
       status: Types.IEnrollmentStatus;
       created: unknown;
       expires: unknown;
       isExpired: boolean | null;
-      country: { _id: string; isoCode: string | null } | null;
-      currency: { _id: string; isoCode: string } | null;
-      periods: Array<{ start: unknown; end: unknown; isTrial: boolean }>;
-      payment: { provider: { _id: string } | null } | null;
-      delivery: { provider: { _id: string } | { _id: string } | null } | null;
       plan: {
         quantity: number;
         product: {
           _id: string;
-          media: Array<{
-            _id: string;
-            file: { _id: string; url: string | null } | null;
-          }>;
+          media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
           texts: { _id: string; title: string | null } | null;
         };
-      };
-      user: {
-        _id: string;
-        username: string | null;
-        name: string;
-        avatar: { _id: string; url: string | null } | null;
       };
     }>;
   } | null;
@@ -6000,6 +5236,80 @@ export type IRemoveOrderMutationVariables = Exact<{
 
 export type IRemoveOrderMutation = { removeOrder: { _id: string } };
 
+export type IUserCartQueryVariables = Exact<{
+  userId?: string | number | null | undefined;
+}>;
+
+export type IUserCartQuery = {
+  user: {
+    _id: string;
+    cart: {
+      _id: string;
+      created: unknown;
+      updated: unknown;
+      total: { amount: number; currencyCode: string } | null;
+      country: { _id: string; isoCode: string | null; flagEmoji: string | null } | null;
+      items: Array<{
+        _id: string;
+        quantity: number;
+        unitPrice: { amount: number; currencyCode: string } | null;
+        total: { amount: number; currencyCode: string } | null;
+        product:
+          | {
+              _id: string;
+              texts: {
+                _id: string;
+                slug: string | null;
+                title: string | null;
+                subtitle: string | null;
+              } | null;
+              media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
+            }
+          | {
+              _id: string;
+              texts: {
+                _id: string;
+                slug: string | null;
+                title: string | null;
+                subtitle: string | null;
+              } | null;
+              media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
+            }
+          | {
+              _id: string;
+              texts: {
+                _id: string;
+                slug: string | null;
+                title: string | null;
+                subtitle: string | null;
+              } | null;
+              media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
+            }
+          | {
+              _id: string;
+              texts: {
+                _id: string;
+                slug: string | null;
+                title: string | null;
+                subtitle: string | null;
+              } | null;
+              media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
+            }
+          | {
+              _id: string;
+              texts: {
+                _id: string;
+                slug: string | null;
+                title: string | null;
+                subtitle: string | null;
+              } | null;
+              media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
+            };
+      }> | null;
+    } | null;
+  } | null;
+};
+
 export type IUserOrderQueryVariables = Exact<{
   userId?: string | number | null | undefined;
   queryString?: string | null | undefined;
@@ -6012,29 +5322,9 @@ export type IUserOrderQuery = {
     orders: Array<{
       _id: string;
       status: Types.IOrderStatus | null;
-      created: unknown;
-      updated: unknown;
       ordered: unknown;
       orderNumber: string | null;
-      confirmed: unknown;
-      fulfilled: unknown;
-      contact: { telNumber: string | null; emailAddress: string | null } | null;
-      total: {
-        isTaxable: boolean;
-        isNetPrice: boolean;
-        amount: number;
-        currencyCode: string;
-      } | null;
-      user: {
-        _id: string;
-        username: string | null;
-        isGuest: boolean;
-        avatar: { _id: string; url: string | null } | null;
-        profile: {
-          displayName: string | null;
-          address: { firstName: string | null; lastName: string | null } | null;
-        } | null;
-      } | null;
+      total: { amount: number; currencyCode: string } | null;
     }>;
   } | null;
 };
@@ -6812,12 +6102,11 @@ export type IUserProductReviewsQuery = {
       created: unknown;
       updated: unknown;
       deleted: unknown;
-      rating: number | null;
       title: string | null;
       review: string | null;
       upVote: number | null;
       downVote: number | null;
-      voteReport: number | null;
+      author: { _id: string; name: string; avatar: { _id: string; url: string | null } | null };
       product:
         | {
             _id: string;
@@ -6826,39 +6115,12 @@ export type IUserProductReviewsQuery = {
             tags: Array<unknown> | null;
             updated: unknown;
             published: unknown;
+            proxies: Array<{ __typename: 'BundleProduct' } | { __typename: 'ConfigurableProduct' }>;
             texts: {
               _id: string;
+              slug: string | null;
               title: string | null;
               subtitle: string | null;
-              slug: string | null;
-              description: string | null;
-              vendor: string | null;
-              brand: string | null;
-              labels: Array<string> | null;
-              locale: unknown;
-            } | null;
-            media: Array<{
-              _id: string;
-              tags: Array<unknown> | null;
-              file: { _id: string; url: string | null } | null;
-            }>;
-            proxies: Array<
-              | { __typename: 'BundleProduct' }
-              | { __typename: 'ConfigurableProduct' }
-            >;
-          }
-        | {
-            _id: string;
-            sequence: number;
-            status: Types.IProductStatus;
-            tags: Array<unknown> | null;
-            updated: unknown;
-            published: unknown;
-            texts: {
-              _id: string;
-              title: string | null;
-              subtitle: string | null;
-              slug: string | null;
               description: string | null;
               vendor: string | null;
               brand: string | null;
@@ -6880,9 +6142,9 @@ export type IUserProductReviewsQuery = {
             published: unknown;
             texts: {
               _id: string;
+              slug: string | null;
               title: string | null;
               subtitle: string | null;
-              slug: string | null;
               description: string | null;
               vendor: string | null;
               brand: string | null;
@@ -6894,24 +6156,21 @@ export type IUserProductReviewsQuery = {
               tags: Array<unknown> | null;
               file: { _id: string; url: string | null } | null;
             }>;
+          }
+        | {
+            _id: string;
+            sequence: number;
+            status: Types.IProductStatus;
+            tags: Array<unknown> | null;
+            updated: unknown;
+            published: unknown;
             catalogPrice: { amount: number; currencyCode: string } | null;
-            proxies: Array<
-              | { __typename: 'BundleProduct' }
-              | { __typename: 'ConfigurableProduct' }
-            >;
-          }
-        | {
-            _id: string;
-            sequence: number;
-            status: Types.IProductStatus;
-            tags: Array<unknown> | null;
-            updated: unknown;
-            published: unknown;
+            proxies: Array<{ __typename: 'BundleProduct' } | { __typename: 'ConfigurableProduct' }>;
             texts: {
               _id: string;
+              slug: string | null;
               title: string | null;
               subtitle: string | null;
-              slug: string | null;
               description: string | null;
               vendor: string | null;
               brand: string | null;
@@ -6923,11 +6182,32 @@ export type IUserProductReviewsQuery = {
               tags: Array<unknown> | null;
               file: { _id: string; url: string | null } | null;
             }>;
+          }
+        | {
+            _id: string;
+            sequence: number;
+            status: Types.IProductStatus;
+            tags: Array<unknown> | null;
+            updated: unknown;
+            published: unknown;
             catalogPrice: { amount: number; currencyCode: string } | null;
-            proxies: Array<
-              | { __typename: 'BundleProduct' }
-              | { __typename: 'ConfigurableProduct' }
-            >;
+            proxies: Array<{ __typename: 'BundleProduct' } | { __typename: 'ConfigurableProduct' }>;
+            texts: {
+              _id: string;
+              slug: string | null;
+              title: string | null;
+              subtitle: string | null;
+              description: string | null;
+              vendor: string | null;
+              brand: string | null;
+              labels: Array<string> | null;
+              locale: unknown;
+            } | null;
+            media: Array<{
+              _id: string;
+              tags: Array<unknown> | null;
+              file: { _id: string; url: string | null } | null;
+            }>;
           }
         | {
             _id: string;
@@ -6938,9 +6218,9 @@ export type IUserProductReviewsQuery = {
             published: unknown;
             texts: {
               _id: string;
+              slug: string | null;
               title: string | null;
               subtitle: string | null;
-              slug: string | null;
               description: string | null;
               vendor: string | null;
               brand: string | null;
@@ -6953,21 +6233,7 @@ export type IUserProductReviewsQuery = {
               file: { _id: string; url: string | null } | null;
             }>;
           };
-      author: {
-        _id: string;
-        username: string | null;
-        name: string;
-        isGuest: boolean;
-        profile: {
-          displayName: string | null;
-          address: { firstName: string | null; lastName: string | null } | null;
-        } | null;
-        avatar: { _id: string; url: string | null } | null;
-      };
-      ownVotes: Array<{
-        timestamp: unknown;
-        type: Types.IProductReviewVoteType;
-      }>;
+      ownVotes: Array<{ timestamp: unknown; type: Types.IProductReviewVoteType }>;
     }>;
   } | null;
 };
@@ -10948,24 +10214,12 @@ export type IUserTokensQueryVariables = Exact<{
 export type IUserTokensQuery = {
   user: {
     _id: string;
-    web3Addresses: Array<{
-      address: string;
-      nonce: string | null;
-      verified: boolean;
-    }>;
     tokens: Array<{
       _id: string;
       walletAddress: string | null;
       status: Types.ITokenExportStatus;
-      quantity: number;
-      contractAddress: string | null;
       chainId: string | null;
       tokenSerialNumber: string | null;
-      invalidatedDate: unknown;
-      expiryDate: unknown;
-      ercMetadata: unknown;
-      accessKey: string;
-      isInvalidateable: boolean;
       product: {
         _id: string;
         sequence: number;
@@ -11627,18 +10881,8 @@ export type IUserQuotationsQuery = {
       status: Types.IQuotationStatus;
       created: unknown;
       expires: unknown;
-      updated: unknown;
       isExpired: boolean | null;
       quotationNumber: string | null;
-      fulfilled: unknown;
-      rejected: unknown;
-      user: {
-        _id: string;
-        username: string | null;
-        name: string;
-        avatar: { _id: string; url: string | null } | null;
-        primaryEmail: { verified: boolean; address: string } | null;
-      };
       product:
         | {
             _id: string;
@@ -11647,12 +10891,8 @@ export type IUserQuotationsQuery = {
               slug: string | null;
               subtitle: string | null;
               title: string | null;
-              description: string | null;
             } | null;
-            media: Array<{
-              _id: string;
-              file: { _id: string; type: string; url: string | null } | null;
-            }>;
+            media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
           }
         | {
             _id: string;
@@ -11661,12 +10901,8 @@ export type IUserQuotationsQuery = {
               slug: string | null;
               subtitle: string | null;
               title: string | null;
-              description: string | null;
             } | null;
-            media: Array<{
-              _id: string;
-              file: { _id: string; type: string; url: string | null } | null;
-            }>;
+            media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
           }
         | {
             _id: string;
@@ -11675,12 +10911,8 @@ export type IUserQuotationsQuery = {
               slug: string | null;
               subtitle: string | null;
               title: string | null;
-              description: string | null;
             } | null;
-            media: Array<{
-              _id: string;
-              file: { _id: string; type: string; url: string | null } | null;
-            }>;
+            media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
           }
         | {
             _id: string;
@@ -11689,12 +10921,8 @@ export type IUserQuotationsQuery = {
               slug: string | null;
               subtitle: string | null;
               title: string | null;
-              description: string | null;
             } | null;
-            media: Array<{
-              _id: string;
-              file: { _id: string; type: string; url: string | null } | null;
-            }>;
+            media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
           }
         | {
             _id: string;
@@ -11703,19 +10931,9 @@ export type IUserQuotationsQuery = {
               slug: string | null;
               subtitle: string | null;
               title: string | null;
-              description: string | null;
             } | null;
-            media: Array<{
-              _id: string;
-              file: { _id: string; type: string; url: string | null } | null;
-            }>;
+            media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
           };
-      currency: {
-        _id: string;
-        contractAddress: string | null;
-        decimals: number | null;
-        isoCode: string;
-      } | null;
     }>;
   } | null;
 };

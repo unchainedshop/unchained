@@ -4,18 +4,38 @@ import {
   IUserEnrollmentsQuery,
   IUserEnrollmentsQueryVariables,
 } from '../../../gql/types';
-import EnrollmentFragment from '../fragments/EnrollmentFragment';
 
 const UserEnrollmentsQuery = gql`
   query UserEnrollments($userId: ID!, $queryString: String) {
     user(userId: $userId) {
       _id
       enrollments(queryString: $queryString) {
-        ...EnrollmentFragment
+        _id
+        enrollmentNumber
+        status
+        created
+        expires
+        isExpired
+        plan {
+          product {
+            _id
+            media {
+              _id
+              file {
+                _id
+                url
+              }
+            }
+            texts {
+              _id
+              title
+            }
+          }
+          quantity
+        }
       }
     }
   }
-  ${EnrollmentFragment}
 `;
 
 const useUserEnrollments = ({

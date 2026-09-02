@@ -197,7 +197,7 @@ export default {
   addEmail: acl(actions.updateUser)(addEmail),
   removeEmail: acl(actions.updateUser)(removeEmail),
   updateUserProfile: acl(actions.updateUser)(updateUserProfile),
-  removeUser: acl(actions.updateUser)(removeUser),
+  removeUser: acl(actions.removeUser)(removeUser),
   setPassword: acl(actions.updateUser)(setPassword),
   prepareUserAvatarUpload: acl(actions.uploadUserAvatar)(prepareUserAvatarUpload),
   setUserTags: acl(actions.manageUsers)(setUserTags),

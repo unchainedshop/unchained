@@ -134,6 +134,10 @@ export default [
         sort: [SortOptionInput!]
       ): [Enrollment!]!
       allowedActions: [RoleAction!]!
+      """
+      Built-in user-target actions the current viewer can perform on this user.
+      """
+      viewerAllowedActions: [RoleAction!]! @cacheControl(maxAge: 0, scope: PRIVATE)
       tokens: [Token!]!
       reviews(limit: Int = 10, offset: Int = 0, sort: [SortOptionInput!]): [ProductReview!]!
       reviewsCount: Int!
