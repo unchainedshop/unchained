@@ -248,7 +248,7 @@ mutation TerminateSubscription {
 
 ### Cancel at Period End
 
-Instead of computing termination via the adapter's notice period, use `cancelAtPeriodEnd` to simply stop renewing at the end of the current billing period:
+Use `cancelAtPeriodEnd` to request cancellation at the end of the current billing period. The licensed adapter still enforces its notice period and any minimum commitment, so the returned `requestedTerminationDate` may be later:
 
 ```graphql
 mutation CancelAtPeriodEnd {
@@ -301,7 +301,7 @@ mutation ChangeSubscriptionPlan {
 
 ### Set Expiry
 
-Set an explicit expiry date on an enrollment. The enrollment will be terminated automatically when processed after this date.
+Set an explicit expiry date on an enrollment. If the requested date is earlier than the adapter's first allowed termination date, it is moved to that date. The enrollment will be terminated automatically when processed after the effective expiry.
 
 ```graphql
 mutation SetEnrollmentExpiry {
