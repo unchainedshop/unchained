@@ -8,6 +8,25 @@ import { addMessageService } from './addMessage.ts';
 import { EnrollmentDirector } from '../core-index.ts';
 import type { Modules } from '../modules.ts';
 
+export async function resolveEnrollmentTerminationDateService(
+  this: Modules,
+  enrollment: Enrollment,
+  params: { requestedDate?: Date; referenceDate?: Date } = {},
+) {
+  const product = await this.products.findProduct({ productId: enrollment.productId });
+  if (!product) throw new Error('Product not found for enrollment');
+
+  const director = await EnrollmentDirector.actions({ enrollment, product }, { modules: this });
+  const terminationDate = await director.terminationDate({
+    referenceDate: params.referenceDate || new Date(),
+  });
+
+  if (!terminationDate || !params.requestedDate) return terminationDate;
+  return params.requestedDate.getTime() > terminationDate.getTime()
+    ? params.requestedDate
+    : terminationDate;
+}
+
 export async function terminateEnrollmentService(
   this: Modules,
   enrollment: Enrollment,
@@ -15,11 +34,7 @@ export async function terminateEnrollmentService(
 ) {
   if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;
 
-  const product = await this.products.findProduct({ productId: enrollment.productId });
-  if (!product) throw new Error('Product not found for enrollment');
-
-  const director = await EnrollmentDirector.actions({ enrollment, product }, { modules: this });
-  const terminationDate = await director.terminationDate({ referenceDate: new Date() });
+  const terminationDate = await resolveEnrollmentTerminationDateService.bind(this)(enrollment);
 
   if (terminationDate === null) {
     throw new Error('Enrollment termination is not allowed at this time');

@@ -128,8 +128,11 @@ export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'vers
 
       minimumCommitmentEnd: async () => null,
 
-      initialPeriods: async ({ referenceDate }: { referenceDate: Date }) => {
-        const period = await baseActions.nextPeriod({ referenceDate });
+      initialPeriods: async function (
+        this: EnrollmentAdapterActions,
+        { referenceDate }: { referenceDate: Date },
+      ) {
+        const period = await this.nextPeriod({ referenceDate });
         return period ? [period] : [];
       },
 

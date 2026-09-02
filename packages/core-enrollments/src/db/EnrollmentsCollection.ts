@@ -11,6 +11,7 @@ export interface EnrollmentPeriod {
   end: Date;
   orderId?: string;
   isTrial?: boolean;
+  trialEndingNotifiedAt?: Date;
 }
 
 export interface EnrollmentPlan {

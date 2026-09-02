@@ -17,8 +17,14 @@ import {
   PausedEnrollment,
   ActiveEnrollmentForCancelAtPeriodEnd,
   CommitmentEnrollment,
+  UserCommitmentEnrollment,
 } from './seeds/enrollments.js';
-import { SimpleProduct, DraftPlanProduct, CommitmentPlanProduct } from './seeds/products.js';
+import {
+  SimpleProduct,
+  DraftPlanProduct,
+  CommitmentPlanProduct,
+  ProxyPlanProduct1,
+} from './seeds/products.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -119,7 +125,7 @@ test.describe('Enrollments', () => {
   });
 
   test.describe('Mutation.createEnrollment', () => {
-    test('create a new enrollment manually activates when adapter validates periods', async () => {
+    test('a manual enrollment without an order or trial remains initial', async () => {
       const { data: { createEnrollment } = {} } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
           mutation createEnrollment($plan: EnrollmentPlanInput!) {
@@ -184,7 +190,7 @@ test.describe('Enrollments', () => {
         },
       });
       assert.partialDeepStrictEqual(createEnrollment, {
-        status: 'ACTIVE',
+        status: 'INITIAL',
         plan: {
           product: {
             _id: PlanProduct._id,
@@ -1079,6 +1085,7 @@ test.describe('Enrollments', () => {
             activateEnrollment(enrollmentId: $enrollmentId) {
               _id
               status
+              enrollmentNumber
             }
           }
         `,
@@ -1087,6 +1094,7 @@ test.describe('Enrollments', () => {
         },
       });
       assert.strictEqual(activateEnrollment.status, 'ACTIVE');
+      assert.strictEqual(activateEnrollment.enrollmentNumber, ActiveEnrollment.enrollmentNumber);
     });
 
     test('return EnrollmentWrongStatusError when suspending a terminated enrollment', async () => {
@@ -1268,6 +1276,45 @@ test.describe('Enrollments', () => {
         },
       });
       assert.strictEqual(errors[0]?.extensions?.code, 'ProductNotFoundError');
+    });
+
+    test('failed adapter resolution leaves the existing plan unchanged', async () => {
+      const { errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation updateEnrollment($enrollmentId: ID, $plan: EnrollmentPlanInput) {
+            updateEnrollment(enrollmentId: $enrollmentId, plan: $plan) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: ActiveEnrollment._id,
+          plan: {
+            productId: ProxyPlanProduct1._id,
+            quantity: 1,
+          },
+        },
+      });
+      assert.ok(errors?.length);
+
+      const {
+        data: { enrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query enrollment($enrollmentId: ID!) {
+            enrollment(enrollmentId: $enrollmentId) {
+              _id
+              plan {
+                product {
+                  _id
+                }
+              }
+            }
+          }
+        `,
+        variables: { enrollmentId: ActiveEnrollment._id },
+      });
+      assert.strictEqual(enrollment.plan.product._id, PlanProduct._id);
     });
 
     test('plan change on TERMINATED enrollment returns EnrollmentWrongStatusError', async () => {
@@ -1570,7 +1617,7 @@ test.describe('Enrollments', () => {
   });
 
   test.describe('cancelAtPeriodEnd via updateEnrollment', () => {
-    test('setting cancelAtPeriodEnd sets requestedTerminationDate to current period end', async () => {
+    test('setting cancelAtPeriodEnd schedules a policy-compliant termination', async () => {
       const {
         data: { updateEnrollment },
       } = await graphqlFetchAsAdminUser({
@@ -1655,6 +1702,56 @@ test.describe('Enrollments', () => {
       });
       assert.ok(enrollment.contractStartDate);
       assert.ok(enrollment.minimumCommitmentEnd);
+    });
+
+    test('an owner cannot set expires before the minimum commitment ends', async () => {
+      const {
+        data: { updateEnrollment },
+      } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation updateEnrollment($enrollmentId: ID, $expires: DateTime) {
+            updateEnrollment(enrollmentId: $enrollmentId, expires: $expires) {
+              _id
+              expires
+              minimumCommitmentEnd
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: UserCommitmentEnrollment._id,
+          expires: new Date().toISOString(),
+        },
+      });
+
+      assert.ok(
+        new Date(updateEnrollment.expires).getTime() >=
+          new Date(updateEnrollment.minimumCommitmentEnd).getTime(),
+      );
+    });
+
+    test('an owner cannot cancel before the minimum commitment ends', async () => {
+      const {
+        data: { updateEnrollment },
+      } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation updateEnrollment($enrollmentId: ID, $cancelAtPeriodEnd: Boolean) {
+            updateEnrollment(enrollmentId: $enrollmentId, cancelAtPeriodEnd: $cancelAtPeriodEnd) {
+              _id
+              requestedTerminationDate
+              minimumCommitmentEnd
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: UserCommitmentEnrollment._id,
+          cancelAtPeriodEnd: true,
+        },
+      });
+
+      assert.ok(
+        new Date(updateEnrollment.requestedTerminationDate).getTime() >=
+          new Date(updateEnrollment.minimumCommitmentEnd).getTime(),
+      );
     });
 
     test('terminating commitment enrollment schedules termination at commitment end', async () => {
