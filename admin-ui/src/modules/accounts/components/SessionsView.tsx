@@ -90,6 +90,7 @@ const SessionsView = ({ userId }) => {
       </p>
       <Button
         variant="danger"
+        fullWidth
         icon={<ArrowRightStartOnRectangleIcon className="h-5 w-5" />}
         onClick={isOwnUser ? onLogoutOwnSessions : onForceLogoutUser}
         text={
