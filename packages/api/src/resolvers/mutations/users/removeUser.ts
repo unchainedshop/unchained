@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import { UserNotFoundError } from '../../../errors.ts';
+import { LastAdminError, UserNotFoundError } from '../../../errors.ts';
 
 // Note: This resolver is protected by the 'updateUser' ACL action (see mutations/index.ts)
 // Logged-in users can only remove themselves (isMyself check in loggedIn.ts)
@@ -21,5 +21,10 @@ export default async function removeUser(
   if (removeUserReviews) {
     await modules.products.reviews.deleteByAuthorId(normalizedUserId!);
   }
-  return services.users.deleteUser({ userId: normalizedUserId! });
+  try {
+    return await services.users.deleteUser({ userId: normalizedUserId! });
+  } catch (e) {
+    if (e.cause === 'LAST_ADMIN') throw new LastAdminError({ userId: normalizedUserId });
+    throw e;
+  }
 }

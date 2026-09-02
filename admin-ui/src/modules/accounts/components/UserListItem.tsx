@@ -15,6 +15,8 @@ import DangerMessage from '../../modal/components/DangerMessage';
 import useDeleteUser from '../hooks/useDeleteUser';
 import Loading from '../../common/components/Loading';
 import { ShoppingBagIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
+import { toast } from 'react-toastify';
+import getUserManagementErrorMessage from '../getUserManagementErrorMessage';
 
 const UserLastLogin = ({ lastLogin }) => {
   const { locale } = useIntl();
@@ -62,7 +64,11 @@ const UserListItem = ({ user }) => {
         })}
         onOkClick={async () => {
           setModal('');
-          await deleteUser({ userId: user._id });
+          try {
+            await deleteUser(user._id);
+          } catch (error) {
+            toast.error(getUserManagementErrorMessage(error, formatMessage));
+          }
         }}
         okText={formatMessage({
           id: 'delete_user',

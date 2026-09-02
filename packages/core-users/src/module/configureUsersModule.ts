@@ -56,6 +56,9 @@ const USER_EVENTS = [
   'USER_UPDATE_WEB3_ADDRESS',
   'USER_REMOVE',
 ];
+
+const ADMIN_ROLE = 'admin';
+
 export const removeConfidentialServiceHashes = (rawUser: User): User => {
   const user = { ...rawUser };
   delete user?.services;
@@ -134,6 +137,21 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
   const webAuthn = await configureUsersWebAuthnModule(moduleInput);
+
+  const assertAnotherActiveAdminExists = async (userId: string) => {
+    const user = await Users.findOne({ _id: userId, deleted: null as any });
+    if (!user?.roles?.includes(ADMIN_ROLE)) return;
+
+    const activeAdminCount = await Users.countDocuments(
+      { deleted: null as any, roles: ADMIN_ROLE },
+      { limit: 2 },
+    );
+    if (activeAdminCount <= 1)
+      throw new Error(
+        'At least one active administrator is required. Assign another administrator before removing this account or revoking its admin role.',
+        { cause: 'LAST_ADMIN' },
+      );
+  };
 
   return {
     // Queries
@@ -862,6 +880,8 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     markDeleted: async (userId: string) => {
+      await assertAnotherActiveAdminExists(userId);
+
       // Invalidate every active session belonging to the user so that deletion
       // immediately revokes access. Sessions are stored as serialized JSON in the
       // `session` field; the owner id appears as `"user":"<id>"` (express/passport)
@@ -901,6 +921,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     deletePermanently: async ({ userId }: { userId: string }) => {
+      await assertAnotherActiveAdminExists(userId);
       return Users.findOneAndDelete({ _id: userId });
     },
 
@@ -1036,16 +1057,18 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     updateRoles: async (_id: string, roles: string[]) => {
-      const modifier = {
-        $set: {
-          updated: new Date(),
-          roles,
-        },
-      };
+      if (!roles.includes(ADMIN_ROLE)) await assertAnotherActiveAdminExists(_id);
 
-      const user = await Users.findOneAndUpdate(generateDbFilterById(_id), modifier, {
-        returnDocument: 'after',
-      });
+      const user = await Users.findOneAndUpdate(
+        generateDbFilterById(_id),
+        {
+          $set: {
+            updated: new Date(),
+            roles,
+          },
+        },
+        { returnDocument: 'after' },
+      );
       if (!user) return null;
       await emit('USER_UPDATE_ROLE', {
         user: removeConfidentialServiceHashes(user),
