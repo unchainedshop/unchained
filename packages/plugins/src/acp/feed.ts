@@ -1,126 +1,169 @@
-import { getFileAdapter } from '@unchainedshop/core';
-import { ProductStatus } from '@unchainedshop/core-products';
+import type { Product, ProductAssignment } from '@unchainedshop/core-products';
 import { acpConfig, type ACPContext } from './config.ts';
 import { ACPError } from './error.ts';
 
-const formatPrice = (amount: number, currencyCode: string, decimals = 2) =>
-  `${(amount / 10 ** decimals).toFixed(decimals)} ${currencyCode.toUpperCase()}`;
+const productURL = (product: Product, slug?: string) =>
+  `${acpConfig.productUrlBase!.replace(/\/$/, '')}/${slug || product.slugs[0] || product._id}`;
 
-// Resolve a product media reference to an absolute, downloadable URL — the plugin
-// equivalent of the api-layer normalizeMediaUrl (files module + file adapter).
-const resolveMediaUrl = async (context: ACPContext, mediaId: string): Promise<string | null> => {
+const seller = () => ({
+  name: acpConfig.sellerName,
+  links: [
+    ...(acpConfig.sellerPrivacyPolicy
+      ? [
+          {
+            type: 'privacy_policy',
+            title: 'Privacy policy',
+            url: acpConfig.sellerPrivacyPolicy,
+          },
+        ]
+      : []),
+    ...(acpConfig.sellerTerms
+      ? [
+          {
+            type: 'terms_of_service',
+            title: 'Terms of service',
+            url: acpConfig.sellerTerms,
+          },
+        ]
+      : []),
+  ],
+});
+
+const mediaForProduct = async (product: Product, context: ACPContext, altText: string) => {
+  const medias = await context.modules.products.media.findProductMedias({
+    productId: product._id,
+  });
+  const resolved = await context.services.files.resolveMediaFiles(medias);
+  return resolved.map(({ file }) => ({ type: 'image', url: file.url, alt_text: altText }));
+};
+
+const availabilityForProduct = async (product: Product, context: ACPContext) => {
   try {
-    const file = await context.modules.files.findFile({ fileId: mediaId });
-    if (!file) return null;
-    const fileAdapter = getFileAdapter();
-    const url = await fileAdapter.createDownloadURL(file);
-    if (!url) return null;
-    return context.modules.files.normalizeUrl(url, {});
+    const inventory = await context.services.products.simulateProductInventory({ product });
+    const quantities = (inventory || [])
+      .map(({ quantity }: any) => quantity)
+      .filter((quantity: unknown): quantity is number => typeof quantity === 'number');
+    if (!quantities.length) return { available: true, status: 'unknown' };
+    const available = quantities.some((quantity) => quantity > 0);
+    return { available, status: available ? 'in_stock' : 'out_of_stock' };
   } catch {
-    return null;
+    return { available: true, status: 'unknown' };
   }
 };
 
+const variantForProduct = async (
+  product: Product,
+  assignment: ProductAssignment | undefined,
+  context: ACPContext,
+) => {
+  const text = await context.modules.products.texts.findLocalizedText({
+    productId: product._id,
+    locale: context.locale,
+  });
+  const title = text?.title || product.warehousing?.sku || product._id;
+  const pricing = await context.services.products
+    .simulateProductPricing({
+      product,
+      countryCode: context.countryCode,
+      currencyCode: context.currencyCode,
+      quantity: 1,
+      discounts: [],
+    })
+    .catch(() => null);
+  const unitPrice = pricing?.unitPrice({ useNetPrice: false });
+
+  return {
+    id: product._id,
+    title,
+    ...(text?.description ? { description: { plain: text.description } } : {}),
+    url: productURL(product, text?.slug),
+    ...(product.warehousing?.sku ? { barcodes: [{ type: 'SKU', value: product.warehousing.sku }] } : {}),
+    ...(unitPrice
+      ? {
+          price: {
+            amount: unitPrice.amount,
+            currency: unitPrice.currencyCode.toUpperCase(),
+          },
+        }
+      : {}),
+    availability: await availabilityForProduct(product, context),
+    condition: ['new'],
+    ...(assignment
+      ? {
+          variant_options: Object.entries(assignment.vector).map(([name, value]) => ({
+            name,
+            value,
+          })),
+        }
+      : {}),
+    media: await mediaForProduct(product, context, title),
+    seller: seller(),
+  };
+};
+
+const feedProduct = async (product: Product, context: ACPContext) => {
+  const text = await context.modules.products.texts.findLocalizedText({
+    productId: product._id,
+    locale: context.locale,
+  });
+  const title = text?.title || product._id;
+  const assignedProducts = product.proxy?.assignments?.length
+    ? await context.modules.products.proxyProducts(product, [], { includeInactive: false })
+    : [product];
+  const assignments = new Map(
+    (product.proxy?.assignments || []).map((assignment) => [assignment.productId, assignment]),
+  );
+  const variants = await Promise.all(
+    assignedProducts.map((variant) => variantForProduct(variant, assignments.get(variant._id), context)),
+  );
+
+  return {
+    id: product._id,
+    title,
+    ...(text?.description ? { description: { plain: text.description } } : {}),
+    url: productURL(product, text?.slug),
+    media: await mediaForProduct(product, context, title),
+    variants,
+  };
+};
+
 export const buildACPProductFeed = async (context: ACPContext) => {
-  if (!acpConfig.sellerName || !acpConfig.sellerUrl || !acpConfig.productUrlBase) {
+  if (!acpConfig.sellerName || !acpConfig.productUrlBase) {
     throw new ACPError(
       503,
-      'api_error',
+      'service_unavailable',
       'feed_not_configured',
-      'ACP_SELLER_NAME, ACP_SELLER_URL, and ACP_PRODUCT_URL_BASE are required',
+      'ACP_SELLER_NAME and ACP_PRODUCT_URL_BASE are required',
     );
   }
 
-  const targetCountries = acpConfig.targetCountries?.length
-    ? acpConfig.targetCountries
-    : [context.countryCode.toUpperCase()];
-  const rows: Record<string, unknown>[] = [];
   const limit = 250;
-
-  for (let offset = 0; ; offset += limit) {
-    const products = await context.modules.products.findProducts(
-      { includeDrafts: false, limit, offset },
-      {},
-    );
-    if (!products.length) break;
-
-    for (const product of products) {
-      const text = await context.modules.products.texts.findLocalizedText({
-        productId: product._id,
-        locale: context.locale,
-      });
-      if (!text?.title || !text.description) continue;
-
-      const pricing = await context.services.products.simulateProductPricing({
-        product,
-        countryCode: context.countryCode,
-        currencyCode: context.currencyCode,
-        quantity: 1,
-        discounts: [],
-      });
-      const unitPrice = pricing?.unitPrice({ useNetPrice: false });
-      if (!unitPrice) continue;
-
-      const currency = await context.modules.currencies.findCurrency({
-        isoCode: unitPrice.currencyCode,
-      });
-      const medias = await context.modules.products.media.findProductMedias({
-        productId: product._id,
-      });
-      const imageUrls = (
-        await Promise.all(medias.map((media: any) => resolveMediaUrl(context, media.mediaId)))
-      ).filter(Boolean) as string[];
-      const imageUrl = imageUrls[0];
-      if (!imageUrl) continue;
-
-      const inventory = await context.services.products.simulateProductInventory({ product });
-      const knownStock = (inventory || [])
-        .map(({ quantity }: any) => quantity)
-        .filter((quantity: unknown): quantity is number => typeof quantity === 'number');
-      const availability = knownStock.length
-        ? knownStock.some((quantity: number) => quantity > 0)
-          ? 'in_stock'
-          : 'out_of_stock'
-        : 'unknown';
-      const checkoutEligible = Boolean(
-        acpConfig.paymentProviderId &&
-        acpConfig.sellerPrivacyPolicy &&
-        acpConfig.sellerTerms &&
-        availability !== 'out_of_stock',
+  const rows = (async function* () {
+    for (let offset = 0; ; offset += limit) {
+      const products = await context.modules.products.findProducts(
+        { includeDrafts: false, limit, offset },
+        {},
       );
-      const slug = text.slug || product.slugs[0] || product._id;
-      const productUrl = `${acpConfig.productUrlBase.replace(/\/$/, '')}/${slug}`;
-
-      rows.push({
-        item_id: product._id,
-        title: text.title,
-        description: text.description,
-        url: productUrl,
-        image_url: imageUrl,
-        ...(imageUrls.length > 1 ? { additional_image_urls: imageUrls.slice(1).join(',') } : {}),
-        brand: text.brand || text.vendor || acpConfig.sellerName,
-        price: formatPrice(unitPrice.amount, unitPrice.currencyCode, currency?.decimals ?? 2),
-        availability,
-        is_eligible_search: product.status === ProductStatus.ACTIVE,
-        is_eligible_checkout: checkoutEligible,
-        seller_name: acpConfig.sellerName,
-        seller_url: acpConfig.sellerUrl,
-        ...(checkoutEligible
-          ? {
-              seller_privacy_policy: acpConfig.sellerPrivacyPolicy,
-              seller_tos: acpConfig.sellerTerms,
-            }
-          : {}),
-        target_countries: targetCountries,
-        store_country: context.countryCode.toUpperCase(),
-        group_id: product._id,
-        listing_has_variations: Boolean(product.proxy?.assignments?.length),
-        mpn: product.warehousing?.sku,
-      });
+      if (!products.length) return;
+      const page = await Promise.all(products.map((product) => feedProduct(product, context)));
+      for (const row of page) yield `${JSON.stringify(row)}\n`;
+      if (products.length < limit) return;
     }
+  })();
+  const encoder = new TextEncoder();
 
-    if (products.length < limit) break;
-  }
-
-  return rows.map((row) => JSON.stringify(row)).join('\n') + (rows.length ? '\n' : '');
+  return new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      try {
+        const next = await rows.next();
+        if (next.done) controller.close();
+        else controller.enqueue(encoder.encode(next.value));
+      } catch (error) {
+        controller.error(error);
+      }
+    },
+    async cancel() {
+      await rows.return?.();
+    },
+  });
 };

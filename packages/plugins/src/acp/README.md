@@ -21,6 +21,8 @@ Required checkout configuration:
 UNCHAINED_ACP_API_KEY=<inbound bearer token>
 UNCHAINED_ACP_PAYMENT_PROVIDER_ID=<GENERIC provider id>
 ACP_CHECKOUT_CONTINUE_URL=https://shop.example.com/orders
+ACP_PAYMENT_MERCHANT_ID=<merchant identifier authorized to use delegated tokens>
+ACP_API_BASE_URL=https://api.example.com/acp # optional; defaults to ROOT_URL + ACP_API_PATH
 ```
 
 The configured payment provider's adapter must be on the ACP allowlist
@@ -55,10 +57,13 @@ ACP_PAYMENT_HANDLER_PSP=stripe
 ACP_PAYMENT_HANDLER_CONFIG={}                             # JSON surfaced to the agent's PSP (e.g. publishable key / connected account)
 ```
 
-On a successful SPT charge the adapter persists an evidence trail on the order
-payment `info` (delegated-token reference, resulting charge id, Stripe API
-version, timestamp) so the merchant — who stays merchant-of-record and owns
-chargeback liability — can later reconstruct agent identity/consent.
+The advertised handler `config` always contains both `merchant_id` and `psp`.
+`config_schema` and `instrument_schemas` point to schemas served by the plugin
+under `/.well-known/acp/schemas/`.
+
+On a successful SPT charge the adapter persists the resulting charge id, handler,
+Stripe API version, and timestamp on the order payment `info`. The delegated
+payment credential itself is never persisted.
 
 Product-feed and webhook configuration:
 
@@ -73,12 +78,10 @@ ACP_TARGET_COUNTRIES=US,CH
 ACP_WEBHOOK_URL=https://example.openai.com/agentic_checkout/webhooks/order_events
 ACP_WEBHOOK_SECRET=<shared signing secret>
 ACP_WEBHOOK_RETRIES=5
-ACP_WEBHOOK_EVENT_TENSE=past
 ```
 
 `OPENAI_WEBHOOK_URL`/`OPENAI_WEBHOOK_SECRET` are accepted as aliases.
-`ACP_WEBHOOK_EVENT_TENSE=present` emits the canonical repository values
-`order_create`/`order_update`; the default emits OpenAI's `order_created`/`order_updated`.
+Webhook events use the protocol values `order_create` and `order_update`.
 
 Every request requires `Authorization: Bearer` and `API-Version: 2026-04-17`, and
 every POST also requires `Idempotency-Key`.

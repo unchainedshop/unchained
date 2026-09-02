@@ -35,4 +35,23 @@ describe('ACP idempotency', () => {
     await withIdempotency('scope', 'key-3', {}, exec);
     assert.equal(calls, 2);
   });
+
+  it('returns a retry hint while the same request is in flight', async () => {
+    let release!: () => void;
+    const wait = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const first = withIdempotency('scope', 'key-in-flight', {}, async () => {
+      await wait;
+      return { status: 200, body: {} };
+    });
+
+    await assert.rejects(
+      () => withIdempotency('scope', 'key-in-flight', {}, async () => ({ status: 200, body: {} })),
+      (error: any) =>
+        error.code === 'idempotency_in_flight' && error.options.headers['Retry-After'] === '1',
+    );
+    release();
+    await first;
+  });
 });
