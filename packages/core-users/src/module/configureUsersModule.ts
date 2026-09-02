@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcryptjs';
+import { setTimeout as sleep } from 'node:timers/promises';
 import {
   type ModuleInput,
   type Address,
@@ -56,6 +57,20 @@ const USER_EVENTS = [
   'USER_UPDATE_WEB3_ADDRESS',
   'USER_REMOVE',
 ];
+
+const ADMIN_ROLE = 'admin';
+const ADMIN_INVARIANT_LOCK_ID = 'active-admin-invariant';
+const ADMIN_INVARIANT_LOCK_TTL_MS = 30_000;
+const ADMIN_INVARIANT_LOCK_RETRIES = 20;
+const ADMIN_INVARIANT_LOCK_RETRY_DELAY_MS = 50;
+const DUPLICATE_KEY_ERROR = 11000;
+
+interface AdminInvariantLock {
+  _id: string;
+  token: string;
+  expiresAt: Date;
+}
+
 export const removeConfidentialServiceHashes = (rawUser: User): User => {
   const user = { ...rawUser };
   delete user?.services;
@@ -133,7 +148,58 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
   userSettings.configureSettings(options || {}, db);
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
+  const AdminInvariantLocks = db.collection<AdminInvariantLock>('user-invariant-locks');
   const webAuthn = await configureUsersWebAuthnModule(moduleInput);
+
+  const withAdminInvariantLock = async <T>(operation: () => Promise<T>): Promise<T> => {
+    const token = crypto.randomUUID();
+
+    for (let attempt = 0; attempt < ADMIN_INVARIANT_LOCK_RETRIES; attempt += 1) {
+      try {
+        await AdminInvariantLocks.updateOne(
+          { _id: ADMIN_INVARIANT_LOCK_ID, expiresAt: { $lt: new Date() } },
+          {
+            $set: {
+              token,
+              expiresAt: new Date(Date.now() + ADMIN_INVARIANT_LOCK_TTL_MS),
+            },
+          },
+          { upsert: true },
+        );
+      } catch (error) {
+        if ((error as { code?: number })?.code !== DUPLICATE_KEY_ERROR) throw error;
+        if (attempt < ADMIN_INVARIANT_LOCK_RETRIES - 1) {
+          await sleep(ADMIN_INVARIANT_LOCK_RETRY_DELAY_MS);
+        }
+        continue;
+      }
+
+      try {
+        return await operation();
+      } finally {
+        await AdminInvariantLocks.deleteOne({ _id: ADMIN_INVARIANT_LOCK_ID, token }).catch(
+          () => undefined,
+        );
+      }
+    }
+
+    throw new Error('Could not acquire the active administrator invariant lock');
+  };
+
+  const assertAnotherActiveAdminExists = async (userId: string) => {
+    const user = await Users.findOne({ _id: userId, deleted: null as any });
+    if (!user?.roles?.includes(ADMIN_ROLE)) return;
+
+    const activeAdminCount = await Users.countDocuments(
+      { deleted: null as any, roles: ADMIN_ROLE },
+      { limit: 2 },
+    );
+    if (activeAdminCount <= 1)
+      throw new Error(
+        'At least one active administrator is required. Assign another administrator before removing this account or revoking its admin role.',
+        { cause: 'LAST_ADMIN' },
+      );
+  };
 
   return {
     // Queries
@@ -862,36 +928,40 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     markDeleted: async (userId: string) => {
-      // Invalidate every active session belonging to the user so that deletion
-      // immediately revokes access. Sessions are stored as serialized JSON in the
-      // `session` field; the owner id appears as `"user":"<id>"` (express/passport)
-      // or `"userId":"<id>"` (fastify). A substring (non-anchored) match is required
-      // because the id is embedded inside the larger serialized session document.
-      await db.collection('sessions').deleteMany({
-        session: { $regex: `"user(Id)?":"${escapeRegexString(userId)}"` },
+      const user = await withAdminInvariantLock(async () => {
+        await assertAnotherActiveAdminExists(userId);
+
+        // Invalidate every active session belonging to the user so that deletion
+        // immediately revokes access. Sessions are stored as serialized JSON in the
+        // `session` field; the owner id appears as `"user":"<id>"` (express/passport)
+        // or `"userId":"<id>"` (fastify). A substring (non-anchored) match is required
+        // because the id is embedded inside the larger serialized session document.
+        await db.collection('sessions').deleteMany({
+          session: { $regex: `"user(Id)?":"${escapeRegexString(userId)}"` },
+        });
+        return Users.findOneAndUpdate(
+          { _id: userId },
+          {
+            $set: {
+              username: `deleted-${Date.now()}`,
+              deleted: new Date(),
+              emails: [],
+              roles: [],
+              services: {},
+              pushSubscriptions: [],
+              initialPassword: false,
+            },
+            $unset: {
+              profile: 1,
+              lastBillingAddress: 1,
+              lastContact: 1,
+              lastLogin: 1,
+              avatarId: 1,
+            },
+          },
+          { returnDocument: 'after' },
+        );
       });
-      const user = await Users.findOneAndUpdate(
-        { _id: userId },
-        {
-          $set: {
-            username: `deleted-${Date.now()}`,
-            deleted: new Date(),
-            emails: [],
-            roles: [],
-            services: {},
-            pushSubscriptions: [],
-            initialPassword: false,
-          },
-          $unset: {
-            profile: 1,
-            lastBillingAddress: 1,
-            lastContact: 1,
-            lastLogin: 1,
-            avatarId: 1,
-          },
-        },
-        { returnDocument: 'after' },
-      );
       if (!user) return null;
 
       await emit('USER_REMOVE', {
@@ -900,9 +970,11 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       return user;
     },
 
-    deletePermanently: async ({ userId }: { userId: string }) => {
-      return Users.findOneAndDelete({ _id: userId });
-    },
+    deletePermanently: async ({ userId }: { userId: string }) =>
+      withAdminInvariantLock(async () => {
+        await assertAnotherActiveAdminExists(userId);
+        return Users.findOneAndDelete({ _id: userId });
+      }),
 
     updateProfile: async (userId: string, updatedData: { profile?: UserProfile; meta?: any }) => {
       const userFilter = generateDbFilterById(userId);
@@ -1036,15 +1108,19 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     updateRoles: async (_id: string, roles: string[]) => {
-      const modifier = {
-        $set: {
-          updated: new Date(),
-          roles,
-        },
-      };
+      const user = await withAdminInvariantLock(async () => {
+        if (!roles.includes(ADMIN_ROLE)) await assertAnotherActiveAdminExists(_id);
 
-      const user = await Users.findOneAndUpdate(generateDbFilterById(_id), modifier, {
-        returnDocument: 'after',
+        return Users.findOneAndUpdate(
+          generateDbFilterById(_id),
+          {
+            $set: {
+              updated: new Date(),
+              roles,
+            },
+          },
+          { returnDocument: 'after' },
+        );
       });
       if (!user) return null;
       await emit('USER_UPDATE_ROLE', {

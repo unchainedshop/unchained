@@ -1,7 +1,7 @@
 import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import { Roles } from '@unchainedshop/roles';
-import { InvalidIdError, UserNotFoundError } from '../../../errors.ts';
+import { InvalidIdError, LastAdminError, UserNotFoundError } from '../../../errors.ts';
 
 // Note: This resolver is protected by the 'manageUsers' ACL action (see mutations/index.ts)
 // Only users with the 'admin' role have the 'manageUsers' permission by default
@@ -23,5 +23,10 @@ export default async function setRoles(
     throw new Error(`Invalid role names: ${invalidRoles.join(', ')}`);
   }
 
-  return modules.users.updateRoles(foreignUserId, params.roles);
+  try {
+    return await modules.users.updateRoles(foreignUserId, params.roles);
+  } catch (e) {
+    if (e.cause === 'LAST_ADMIN') throw new LastAdminError({ userId: foreignUserId });
+    throw e;
+  }
 }

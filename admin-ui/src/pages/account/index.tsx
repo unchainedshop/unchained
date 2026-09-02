@@ -12,6 +12,7 @@ import DangerMessage from '../../modules/modal/components/DangerMessage';
 import { toast } from 'react-toastify';
 import { useApollo } from '../../modules/apollo/apolloClient';
 import logOut from '../../modules/accounts/hooks/logOut';
+import getUserManagementErrorMessage from '../../modules/accounts/getUserManagementErrorMessage';
 
 const Profile = () => {
   const { formatMessage } = useIntl();
@@ -32,15 +33,19 @@ const Profile = () => {
         })}
         onOkClick={async () => {
           setModal('');
-          await deleteUser();
-          toast.success(
-            formatMessage({
-              id: 'account_deleted',
-              defaultMessage: 'Account deleted successfully',
-            }),
-          );
-          await logOut(apollo, router);
-          // No goodbye message needed for account deletion
+          try {
+            await deleteUser();
+            toast.success(
+              formatMessage({
+                id: 'account_deleted',
+                defaultMessage: 'Account deleted successfully',
+              }),
+            );
+            await logOut(apollo, router);
+            // No goodbye message needed for account deletion
+          } catch (error) {
+            toast.error(getUserManagementErrorMessage(error, formatMessage));
+          }
         }}
         okText={formatMessage({
           id: 'delete_account',
