@@ -1,6 +1,5 @@
 import { removeConfidentialServiceHashes, type User } from '@unchainedshop/core-users';
 import type { Context } from '../../context.ts';
-import normalizeMediaUrl from './normalizeMediaUrl.ts';
 
 const getPrimaryEmail = (user: User) => {
   return (user.emails || []).toSorted(
@@ -13,10 +12,9 @@ export async function getNormalizedUserDetails(userId: string, context: Context)
   const user = await modules.users.findUserById(userId);
   if (!user) return null;
 
-  const avatar = await loaders.fileLoader.load({
-    fileId: user.avatarId!,
-  });
-  const normalizedAvatar = await normalizeMediaUrl([{ mediaId: avatar?._id } as any], context);
+  const normalizedAvatar = user.avatarId
+    ? await context.services.files.resolveMediaFiles([{ mediaId: user.avatarId }])
+    : [];
 
   const primaryEmail = getPrimaryEmail(user);
   const { profile } = user;

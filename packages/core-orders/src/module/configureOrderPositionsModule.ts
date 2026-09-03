@@ -218,6 +218,64 @@ export const configureOrderPositionsModule = ({
       await emit('ORDER_ADD_PRODUCT', { orderPosition: upsertedOrderPosition });
       return upsertedOrderPosition;
     },
+
+    replaceProductItems: async ({
+      orderId,
+      items,
+    }: {
+      orderId: string;
+      items: {
+        context?: any;
+        configuration?: { key: string; value: string }[] | null;
+        originalProductId: string;
+        productId: string;
+        quantity: number;
+        quotationId?: string;
+      }[];
+    }): Promise<OrderPosition[]> => {
+      const previousPositions = await OrderPositions.find({ orderId }).toArray();
+      const timestamp = new Date();
+      const replacementPositions: OrderPosition[] = items.map((item) => ({
+        _id: generateDbObjectId(),
+        calculation: [],
+        configuration: item.configuration ?? null,
+        created: timestamp,
+        orderId,
+        originalProductId: item.originalProductId,
+        productId: item.productId,
+        quantity: item.quantity,
+        scheduling: [],
+        updated: timestamp,
+        ...(item.context !== undefined ? { context: item.context } : {}),
+        ...(item.quotationId !== undefined ? { quotationId: item.quotationId } : {}),
+      }));
+
+      await OrderPositions.deleteMany({ orderId });
+      try {
+        if (replacementPositions.length) {
+          await OrderPositions.insertMany(replacementPositions);
+        }
+      } catch (replacementError) {
+        await OrderPositions.deleteMany({ orderId });
+        try {
+          if (previousPositions.length) await OrderPositions.insertMany(previousPositions);
+        } catch (rollbackError) {
+          throw new AggregateError(
+            [replacementError, rollbackError],
+            `Could not replace or restore positions for order ${orderId}`,
+            { cause: rollbackError },
+          );
+        }
+        throw replacementError;
+      }
+
+      await emit('ORDER_EMPTY_CART', { orderId, count: previousPositions.length });
+      await Promise.all(
+        replacementPositions.map((orderPosition) => emit('ORDER_ADD_PRODUCT', { orderPosition })),
+      );
+      return replacementPositions;
+    },
+
     deleteOrderPositions: async (orderId: string) => {
       const { deletedCount } = await OrderPositions.deleteMany({ orderId });
       return deletedCount;

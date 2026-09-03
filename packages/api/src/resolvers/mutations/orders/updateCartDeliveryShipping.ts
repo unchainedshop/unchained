@@ -1,20 +1,15 @@
 import type { Context } from '../../../context.ts';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { log } from '@unchainedshop/logger';
-import {
-  InvalidIdError,
-  OrderDeliveryNotFoundError,
-  OrderDeliveryTypeError,
-  OrderNotFoundError,
-  OrderWrongStatusError,
-} from '../../../errors.ts';
+import { InvalidIdError, OrderNotFoundError } from '../../../errors.ts';
+import { rethrowDeliveryProviderServiceError } from './mapOrderServiceError.ts';
 
 export default async function updateCartDeliveryShipping(
   root: never,
   params: { orderId: string; deliveryProviderId: string; address: any; meta: any },
   context: Context,
 ) {
-  const { modules, services, userId, user } = context;
+  const { services, userId, user } = context;
   const { orderId, deliveryProviderId, address, meta } = params;
   log(`mutation updateCartDeliveryShipping provider ${deliveryProviderId}`, {
     userId,
@@ -22,33 +17,21 @@ export default async function updateCartDeliveryShipping(
 
   if (!deliveryProviderId) throw new InvalidIdError({ deliveryProviderId });
 
-  let order = await services.orders.findOrInitCart({
+  const order = await services.orders.findOrInitCart({
     orderId,
     user: user!,
     countryCode: context.countryCode,
   });
   if (!order) throw new OrderNotFoundError({ orderId });
-  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
-  const provider = await modules.delivery.findProvider({
-    deliveryProviderId,
-  });
-  const deliveryProviderType = provider?.type;
-
-  if (deliveryProviderType !== DeliveryProviderType.SHIPPING)
-    throw new OrderDeliveryTypeError({
+  try {
+    return await services.orders.selectDeliveryProvider({
       orderId: order._id,
-      received: deliveryProviderType,
-      required: DeliveryProviderType.SHIPPING,
+      deliveryProviderId,
+      expectedType: DeliveryProviderType.SHIPPING,
+      deliveryContext: { address, meta },
     });
-
-  order = (await modules.orders.setDeliveryProvider(order._id, deliveryProviderId)) || order;
-
-  if (!order.deliveryId) throw new OrderDeliveryNotFoundError({ orderId: order._id });
-
-  await modules.orders.deliveries.updateContext(order.deliveryId, {
-    address,
-    meta,
-  });
-  return services.orders.updateCalculation(order._id);
+  } catch (error) {
+    rethrowDeliveryProviderServiceError(error);
+  }
 }

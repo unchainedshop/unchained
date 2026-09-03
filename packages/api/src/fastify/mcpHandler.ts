@@ -1,9 +1,10 @@
 import type { FastifyRequest, RouteHandlerMethod } from 'fastify';
 import type { Context } from '../context.ts';
-import { Readable } from 'node:stream';
 import { createLogger } from '@unchainedshop/logger';
+import { runWithAuditContext } from '@unchainedshop/events';
 import handleMcpHttpRequest from '../mcp/handleMcpHttpRequest.ts';
-import { toWebRequest } from '../mcp/nodeHttpBridge.ts';
+import { toWebRequest } from '../http/nodeHttpBridge.ts';
+import { sendFastifyWebResponse } from './sendWebResponse.ts';
 
 const logger = createLogger('unchained:api:mcp');
 
@@ -14,22 +15,16 @@ const mcpHandler: RouteHandlerMethod = async (
   try {
     const bodyText =
       req.method === 'POST' && req.body !== undefined ? JSON.stringify(req.body) : undefined;
-    const response = await handleMcpHttpRequest(
-      req.unchainedContext,
-      toWebRequest(req.raw, res.raw, bodyText),
-      req.method === 'POST' ? req.body : undefined,
-    );
-
-    res.status(response.status);
-    response.headers.forEach((value, key) => {
-      if (key === 'set-cookie') return;
-      res.header(key, value);
-    });
-    const setCookie = response.headers.getSetCookie();
-    if (setCookie.length) res.header('set-cookie', setCookie);
-
-    if (!response.body) return res.send();
-    return res.send(Readable.fromWeb(response.body as Parameters<typeof Readable.fromWeb>[0]));
+    const execute = async () => {
+      const response = await handleMcpHttpRequest(
+        req.unchainedContext,
+        toWebRequest(req.raw, res.raw, bodyText),
+        req.method === 'POST' ? req.body : undefined,
+      );
+      return sendFastifyWebResponse(res, response);
+    };
+    const auditContext = (req as any)._auditContext;
+    return await (auditContext ? runWithAuditContext(auditContext, execute) : execute());
   } catch (error) {
     logger.error(error);
     if (!res.sent) {

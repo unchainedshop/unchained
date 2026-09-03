@@ -1,7 +1,6 @@
 import type { Context } from '../../../../context.ts';
 import { AssortmentNotFoundError } from '../../../../errors.ts';
 import { getNormalizedAssortmentDetails } from '../../../utils/getNormalizedAssortmentDetails.ts';
-import normalizeMediaUrl from '../../../utils/normalizeMediaUrl.ts';
 import type { Params } from '../schemas.ts';
 
 export default async function getAssortmentMedia(context: Context, params: Params<'GET_MEDIA'>) {
@@ -22,6 +21,6 @@ export default async function getAssortmentMedia(context: Context, params: Param
   } else {
     media = (await loaders.assortmentMediasLoader.load({ assortmentId })).slice(offset, offset + limit);
   }
-  const media_normalized = await normalizeMediaUrl(media, context);
+  const media_normalized = await context.services.files.resolveMediaFiles(media);
   return { assortment, media: media_normalized };
 }

@@ -6,11 +6,29 @@ import type { mongodb } from '@unchainedshop/mongodb';
 const logger = createLogger('unchained:core');
 
 /**
- * HTTP route definition using WHATWG Fetch API
+ * Transport-neutral request context available to every plugin HTTP route.
  *
- * This uses standard web APIs (Request/Response) making handlers familiar
- * to developers and compatible with modern JavaScript environments.
+ * Domain capabilities come from UnchainedCore. Request metadata is deliberately
+ * expressed without Express/Fastify types so route handlers remain portable.
  */
+export type PluginHttpRequestContext = UnchainedCore & {
+  /** URL path parameters extracted from the route pattern */
+  params: Record<string, string>;
+  /** Read a request header by its case-insensitive name */
+  getHeader: (name: string) => string | undefined;
+  /** Set a response header */
+  setHeader: (name: string, value: string) => void;
+  locale: Intl.Locale;
+  countryCode: string;
+  currencyCode: string;
+  remoteAddress?: string;
+  remotePort?: number;
+  /** Authenticated user ID if present */
+  userId?: string;
+  /** Impersonator user ID if present */
+  impersonatorId?: string;
+};
+
 export interface PluginHttpRoute {
   /** Route path (e.g., /payment/webhook or /files/:directoryName/:fileName) */
   path: string;
@@ -42,17 +60,7 @@ export interface PluginHttpRoute {
    * }
    * ```
    */
-  handler: (
-    request: Request,
-    context: UnchainedCore & {
-      /** URL path parameters extracted from route pattern */
-      params: Record<string, string>;
-      /** Authenticated user ID if present */
-      userId?: string;
-      /** Impersonator user ID if present */
-      impersonatorId?: string;
-    },
-  ) => Response | Promise<Response>;
+  handler: (request: Request, context: PluginHttpRequestContext) => Response | Promise<Response>;
 }
 
 /**

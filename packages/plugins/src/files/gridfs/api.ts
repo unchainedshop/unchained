@@ -2,7 +2,7 @@ import { Readable, PassThrough } from 'node:stream';
 import { finished, pipeline } from 'node:stream/promises';
 import { buildHashedFilename } from '@unchainedshop/core-files';
 import sign from './sign.ts';
-import { getFileAdapter, type UnchainedCore } from '@unchainedshop/core';
+import { getFileAdapter, type PluginHttpRequestContext } from '@unchainedshop/core';
 import type { GridFSFileUploadsModule } from './module.ts';
 import { createLogger } from '@unchainedshop/logger';
 import { timingSafeStringEqual } from '@unchainedshop/utils';
@@ -11,16 +11,10 @@ const { GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;
 
 const logger = createLogger('unchained:gridfs');
 
-export const gridfsRouteHandler = async (
-  request: Request,
-  context: UnchainedCore & {
-    params: Record<string, string>;
-    modules: GridFSFileUploadsModule;
-    rawRequest?: any; // Raw Node.js IncomingMessage
-  },
-) => {
+export const gridfsRouteHandler = async (request: Request, context: PluginHttpRequestContext) => {
   try {
-    const { services, modules, params } = context;
+    const { services, params } = context;
+    const modules = context.modules as typeof context.modules & GridFSFileUploadsModule;
     const directoryName = decodeURIComponent(params.directoryName);
     const fileName = decodeURIComponent(params.fileName);
 
@@ -98,15 +92,13 @@ export const gridfsRouteHandler = async (
         },
       );
 
-      // Use WHATWG Request body as stream
-      // The ponyfill ReadableStream from @whatwg-node/server can be piped directly
+      // Node's pipeline accepts the WHATWG request body directly.
       const bodyStream = request.body;
 
       if (!bodyStream) {
         throw new Error('No request body');
       }
 
-      // Pipeline works with ponyfill streams
       await pipeline(
         bodyStream as any,
         new PassThrough({ highWaterMark: 1024 * 1024 * 4 }), // 4MB Buffer
