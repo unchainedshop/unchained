@@ -27,6 +27,8 @@ export type IEnrollmentDirector = IBaseDirector<IEnrollmentAdapter> & {
       Pick<Partial<Enrollment>, '_id' | 'created'>
   >;
 
+  findSupportedAdapter: (productPlan?: ProductPlan) => IEnrollmentAdapter | null;
+
   actions: (
     enrollmentContext: EnrollmentContext,
     unchainedAPI: { modules: Modules },
@@ -63,8 +65,11 @@ export const EnrollmentDirector: IEnrollmentDirector = {
     return adapters.filter(adapterFilter || (() => true));
   },
 
+  // Returns the highest-priority adapter that supports the given plan configuration, or null.
+  findSupportedAdapter: (productPlan?: ProductPlan) => findAppropriateAdapters(productPlan)?.[0] || null,
+
   transformOrderItemToEnrollment: async ({ orderPosition, product }, doc, unchainedAPI) => {
-    const Adapter = findAppropriateAdapters(product.plan)?.[0];
+    const Adapter = EnrollmentDirector.findSupportedAdapter(product.plan);
     if (!Adapter) {
       throw new Error('No suitable enrollment plugin available for this item');
     }
@@ -81,7 +86,7 @@ export const EnrollmentDirector: IEnrollmentDirector = {
   actions: async (enrollmentContext, unchainedAPI) => {
     const context = { ...enrollmentContext, ...unchainedAPI };
 
-    const Adapter = findAppropriateAdapters(enrollmentContext.product.plan)?.[0];
+    const Adapter = EnrollmentDirector.findSupportedAdapter(enrollmentContext.product.plan);
 
     if (!Adapter) {
       throw new Error('No suitable enrollment plugin available for this plan configuration');
