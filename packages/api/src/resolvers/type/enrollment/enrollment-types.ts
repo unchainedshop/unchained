@@ -42,7 +42,7 @@ export const Enrollment = {
   },
 
   country: async (obj: EnrollmentType, _: never, { loaders }: Context) =>
-    obj.countryCode ? loaders.currencyLoader.load({ isoCode: obj.countryCode }) : null,
+    obj.countryCode ? loaders.countryLoader.load({ isoCode: obj.countryCode }) : null,
   currency: async (obj: EnrollmentType, _: never, { loaders }: Context) =>
     obj.currencyCode ? loaders.currencyLoader.load({ isoCode: obj.currencyCode }) : null,
   user: async (obj: EnrollmentType, _: never, { loaders }: Context) =>

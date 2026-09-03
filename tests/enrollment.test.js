@@ -24,6 +24,7 @@ import {
   DraftPlanProduct,
   CommitmentPlanProduct,
   ProxyPlanProduct1,
+  MeteredPlanProduct,
 } from './seeds/products.js';
 import { USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
@@ -235,6 +236,92 @@ test.describe('Enrollments', () => {
         },
       });
       assert.strictEqual(errors[0]?.extensions?.code, 'InvalidIdError');
+    });
+  });
+
+  test.describe('Mutation enrollment with a plan that has no supported adapter', () => {
+    test('createEnrollment fails with EnrollmentPlanNotSupportedError and persists nothing', async () => {
+      const {
+        data: { enrollmentsCount: before },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query {
+            enrollmentsCount
+          }
+        `,
+      });
+
+      const { data, errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation createEnrollment($plan: EnrollmentPlanInput!) {
+            createEnrollment(plan: $plan) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          plan: {
+            productId: MeteredPlanProduct._id,
+          },
+        },
+      });
+
+      // F1: a clean, typed error instead of a generic INTERNAL_SERVER_ERROR
+      assert.strictEqual(errors[0]?.extensions?.code, 'EnrollmentPlanNotSupportedError');
+      assert.strictEqual(data?.createEnrollment ?? null, null);
+
+      // F2: no orphaned enrollment left behind
+      const {
+        data: { enrollmentsCount: after },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query {
+            enrollmentsCount
+          }
+        `,
+      });
+      assert.strictEqual(after, before);
+    });
+
+    test('updateEnrollment plan change is rejected without mutating the enrollment', async () => {
+      const { data, errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation updateEnrollment($enrollmentId: ID, $plan: EnrollmentPlanInput) {
+            updateEnrollment(enrollmentId: $enrollmentId, plan: $plan) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: ActiveEnrollment._id,
+          plan: { productId: MeteredPlanProduct._id },
+        },
+      });
+
+      // F1: clean error for the plan-change path
+      assert.strictEqual(errors[0]?.extensions?.code, 'EnrollmentPlanChangeNotSupportedError');
+      assert.strictEqual(data?.updateEnrollment ?? null, null);
+
+      // the plan must not be half-applied: enrollment keeps its original product and status
+      const {
+        data: { enrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          query ($enrollmentId: ID!) {
+            enrollment(enrollmentId: $enrollmentId) {
+              status
+              plan {
+                product {
+                  _id
+                }
+              }
+            }
+          }
+        `,
+        variables: { enrollmentId: ActiveEnrollment._id },
+      });
+      assert.strictEqual(enrollment.plan.product._id, PlanProduct._id);
+      assert.strictEqual(enrollment.status, 'ACTIVE');
     });
   });
 
