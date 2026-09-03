@@ -1,4 +1,5 @@
 import { log } from '@unchainedshop/logger';
+import { EnrollmentDirector } from '@unchainedshop/core';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { ProductStatus, ProductType } from '@unchainedshop/core-products';
 import type { Context } from '../../../context.ts';
@@ -133,11 +134,20 @@ export default async function updateEnrollment(
     if (planProduct.type !== ProductType.PLAN_PRODUCT)
       throw new ProductWrongTypeError({ type: planProduct.type });
 
+    // Reject a plan whose configuration has no registered enrollment plugin up-front, so the
+    // change fails cleanly instead of throwing mid-way (and leaving the plan half-applied).
+    if (!EnrollmentDirector.findSupportedAdapter(planProduct.plan)) {
+      throw new EnrollmentPlanChangeNotSupportedError({ enrollmentId });
+    }
+
     if (enrollment.status !== EnrollmentStatus.INITIAL) {
       try {
         enrollment = await services.enrollments.updateEnrollmentPlan(enrollment, { plan });
       } catch (e) {
-        if (e.message === 'Plan change is not supported for this enrollment') {
+        if (
+          e.message === 'Plan change is not supported for this enrollment' ||
+          e.message?.startsWith('No suitable enrollment plugin')
+        ) {
           throw new EnrollmentPlanChangeNotSupportedError({ enrollmentId });
         }
         throw e;
