@@ -263,6 +263,36 @@ export const DraftPlanProduct = {
   },
 };
 
+export const MeteredPlanProduct = {
+  _id: 'metered-plan-product',
+  created: new Date('2019-07-30T09:23:26.253+0000'),
+  type: 'PLAN_PRODUCT',
+  status: 'ACTIVE',
+  sequence: 23,
+  slugs: ['metered-plan'],
+  updated: new Date('2019-09-10T14:29:37.015+0000'),
+  published: new Date('2019-07-30T09:23:57.329+0000'),
+  commerce: {
+    pricing: [
+      {
+        amount: 5000,
+        minQuantity: 0,
+        isTaxable: true,
+        isNetPrice: false,
+        currencyCode: 'CHF',
+        countryCode: 'CH',
+      },
+    ],
+  },
+  // METERED has no registered enrollment adapter in the default plugin set, so this
+  // product cannot back an enrollment — used to exercise the "no supported plugin" path.
+  plan: {
+    billingInterval: 'MONTHS',
+    billingIntervalCount: 1,
+    usageCalculationType: 'METERED',
+  },
+};
+
 export const GermanProductText = {
   _id: 'german',
   locale: 'de',
@@ -682,6 +712,7 @@ export default async function seedProducts(db) {
       PlanProduct,
       CommitmentPlanProduct,
       DraftPlanProduct,
+      MeteredPlanProduct,
       TokenizedProduct1,
       LeveledPricingProduct,
     ]);
