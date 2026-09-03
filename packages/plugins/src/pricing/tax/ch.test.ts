@@ -63,14 +63,14 @@ describe('ch-tax-rates.json', () => {
   });
 
   it('has strictly ascending eras with plausible rates', () => {
+    assert.doesNotThrow(() => new Intl.DateTimeFormat('en-US', { timeZone: swissTaxRates.timezone }));
     for (const eras of Object.values(swissTaxRates.categories)) {
       assert.ok(eras.length > 0);
-      let previous = 0;
+      let previous = '';
       for (const era of eras) {
-        const validFrom = new Date(`${era.validFrom}T00:00:00.000${swissTaxRates.timezone}`);
-        assert.ok(Number.isFinite(validFrom.getTime()), `invalid validFrom ${era.validFrom}`);
-        assert.ok(validFrom.getTime() > previous, `eras out of order at ${era.validFrom}`);
-        previous = validFrom.getTime();
+        assert.match(era.validFrom, /^\d{4}-\d{2}-\d{2}$/, `invalid validFrom ${era.validFrom}`);
+        assert.ok(era.validFrom > previous, `eras out of order at ${era.validFrom}`);
+        previous = era.validFrom;
         assert.ok(era.rate > 0 && era.rate < 0.15, `implausible rate ${era.rate}`);
       }
     }

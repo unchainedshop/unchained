@@ -199,6 +199,30 @@ connectPlugins(app)
 - Swiss tax calculation for products
 - Swiss tax calculation for delivery
 
+#### European Union (`@unchainedshop/plugins/presets/countries/eu`)
+
+```ts
+import '@unchainedshop/plugins/presets/countries/eu.js';
+```
+
+Registers destination-based EU VAT pricing for products and delivery fees. Load the base preset separately, as shown in the Switzerland example above.
+
+#### United Kingdom (`@unchainedshop/plugins/presets/countries/uk`)
+
+```ts
+import '@unchainedshop/plugins/presets/countries/uk.js';
+```
+
+Registers UK VAT pricing for products and delivery fees. Load the base preset separately.
+
+#### United States (`@unchainedshop/plugins/presets/countries/us`)
+
+```ts
+import '@unchainedshop/plugins/presets/countries/us.js';
+```
+
+Registers statewide US sales-tax pricing for products and delivery fees. This preset uses the documented statewide-rate approximation and requires an address `regionCode`. Load the base preset separately.
+
 ## Plugins Not Included in Presets
 
 Some plugins are **not** automatically loaded by any preset and must be imported explicitly:

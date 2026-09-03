@@ -23,7 +23,9 @@ export const US_SALES_TAX_EXEMPT_VALUE = 'exempt';
 const stateRates: Record<string, (referenceDate?: Date) => number> = Object.fromEntries(
   Object.entries(usTaxRates.states).map(([stateCode, eras]) => [
     stateCode,
-    rateForDate(compileEraRates(eras, usTaxRates.timezone)),
+    rateForDate(
+      compileEraRates(eras, usTaxRates.timezones[stateCode as keyof typeof usTaxRates.timezones]),
+    ),
   ]),
 );
 
