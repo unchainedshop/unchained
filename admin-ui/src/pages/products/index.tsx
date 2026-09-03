@@ -122,6 +122,7 @@ const Products = () => {
           <LocaleWrapper onlyFull>
             <ProductList
               sortable
+              availableTagOptions={tagFilterOptions}
               {...{ queryString, includeDrafts, limit, offset, tags, sortKeys }}
             />
           </LocaleWrapper>

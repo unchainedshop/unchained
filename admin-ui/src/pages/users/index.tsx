@@ -85,6 +85,9 @@ const Users = () => {
           },
           { count: <AnimatedCounter value={usersCount} /> },
         );
+  const userTagOptions = (shopInfo?.adminUiConfig?.userTags || []).map(
+    (tag) => ({ label: tag, value: tag }),
+  );
 
   return (
     <div className="mb-10">
@@ -119,9 +122,7 @@ const Users = () => {
         onSearchChange={setQueryString}
         defaultSearchValue={queryString}
         showTagFilter
-        availableTagOptions={(shopInfo?.adminUiConfig?.userTags || []).map(
-          (tag) => ({ label: tag, value: tag }),
-        )}
+        availableTagOptions={userTagOptions}
       >
         <InfiniteScroll
           loading={loading}
@@ -131,7 +132,7 @@ const Users = () => {
           {loading && users?.length === 0 ? (
             <Loading />
           ) : (
-            <UserList users={users} />
+            <UserList users={users} availableTagOptions={userTagOptions} />
           )}
           {!loading && !users?.length && (
             <NoData
