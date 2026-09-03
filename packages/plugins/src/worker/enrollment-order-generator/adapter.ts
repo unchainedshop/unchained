@@ -1,10 +1,58 @@
-import { enrollmentsSettings, EnrollmentStatus } from '@unchainedshop/core-enrollments';
+import {
+  enrollmentsSettings,
+  EnrollmentStatus,
+  type Enrollment,
+  type EnrollmentPeriod,
+  type EnrollmentsModule,
+} from '@unchainedshop/core-enrollments';
 import {
   EnrollmentDirector,
   WorkerDirector,
   WorkerAdapter,
   type IWorkerAdapter,
 } from '@unchainedshop/core';
+import { emit } from '@unchainedshop/events';
+
+const TRIAL_ENDING_DAYS = 3;
+const TRIAL_ENDING_WINDOW_MS = TRIAL_ENDING_DAYS * 24 * 60 * 60 * 1000;
+
+const findDueUnbilledPeriod = (enrollment: Enrollment, referenceDate: Date): EnrollmentPeriod | null => {
+  return (
+    enrollment.periods
+      ?.filter(
+        (period) =>
+          !period.isTrial &&
+          !period.orderId &&
+          new Date(period.start).getTime() <= referenceDate.getTime(),
+      )
+      .sort((left, right) => new Date(left.start).getTime() - new Date(right.start).getTime())[0] || null
+  );
+};
+
+const emitTrialEndingIfNeeded = async (
+  enrollment: Enrollment,
+  enrollments: EnrollmentsModule,
+  referenceDate: Date,
+) => {
+  const trialPeriod = enrollment.periods?.find((period) => {
+    if (!period.isTrial || period.trialEndingNotifiedAt) return false;
+    if (new Date(period.start).getTime() > referenceDate.getTime()) return false;
+    const remaining = new Date(period.end).getTime() - referenceDate.getTime();
+    return remaining > 0 && remaining <= TRIAL_ENDING_WINDOW_MS;
+  });
+  if (!trialPeriod) return;
+
+  const claimedEnrollment = await enrollments.markEnrollmentTrialEndingNotified(
+    enrollment._id,
+    trialPeriod,
+  );
+  if (claimedEnrollment) {
+    await emit('ENROLLMENT_TRIAL_ENDING', {
+      enrollment: claimedEnrollment,
+      trialEnd: trialPeriod.end,
+    });
+  }
+};
 
 export const GenerateOrderWorker: IWorkerAdapter<never, any> = {
   ...WorkerAdapter,
@@ -18,26 +66,54 @@ export const GenerateOrderWorker: IWorkerAdapter<never, any> = {
     const { modules, services } = unchainedAPI;
 
     const enrollments = await modules.enrollments.findEnrollments({
-      status: [EnrollmentStatus.ACTIVE, EnrollmentStatus.PAUSED],
+      status: [EnrollmentStatus.ACTIVE, EnrollmentStatus.PAUSED, EnrollmentStatus.SUSPENDED],
     });
 
     const errors = (
       await Promise.all(
         enrollments.map(async (enrollment) => {
           try {
-            const product = await unchainedAPI.modules.products.findProduct({
-              productId: enrollment.productId,
+            const processedEnrollment = await services.enrollments.processEnrollment(enrollment);
+
+            if (processedEnrollment.status === EnrollmentStatus.TERMINATED) {
+              return null;
+            }
+
+            if (processedEnrollment.status === EnrollmentStatus.SUSPENDED) {
+              return null;
+            }
+
+            const referenceDate = new Date();
+            await emitTrialEndingIfNeeded(processedEnrollment, modules.enrollments, referenceDate);
+
+            const product = await modules.products.findProduct({
+              productId: processedEnrollment.productId,
             });
             const director = await EnrollmentDirector.actions(
-              { enrollment, product: product! },
+              { enrollment: processedEnrollment, product: product! },
               unchainedAPI,
             );
-            const period = await director.nextPeriod();
+            const unbilledPeriod = findDueUnbilledPeriod(processedEnrollment, referenceDate);
+            const period = unbilledPeriod || (await director.nextPeriod());
+
             if (period) {
+              if (
+                processedEnrollment.expires &&
+                period.start.getTime() >= new Date(processedEnrollment.expires).getTime()
+              ) {
+                return null;
+              }
+
               if (period.isTrial) {
-                await modules.enrollments.addEnrollmentPeriod(enrollment._id, {
-                  ...period,
-                });
+                const updatedEnrollment = await modules.enrollments.addEnrollmentPeriod(
+                  processedEnrollment._id,
+                  {
+                    ...period,
+                  },
+                );
+                if (updatedEnrollment) {
+                  await emitTrialEndingIfNeeded(updatedEnrollment, modules.enrollments, referenceDate);
+                }
                 return null;
               }
               const configuration = await director.configurationForOrder({
@@ -45,14 +121,22 @@ export const GenerateOrderWorker: IWorkerAdapter<never, any> = {
               });
               if (configuration) {
                 const order = await services.enrollments.generateOrderFromEnrollment(
-                  enrollment,
+                  processedEnrollment,
                   configuration,
                 );
                 if (order) {
-                  await modules.enrollments.addEnrollmentPeriod(enrollment._id, {
-                    ...period,
-                    orderId: order._id,
-                  });
+                  if (unbilledPeriod) {
+                    await modules.enrollments.linkEnrollmentPeriodOrder(
+                      processedEnrollment._id,
+                      period,
+                      order._id,
+                    );
+                  } else {
+                    await modules.enrollments.addEnrollmentPeriod(processedEnrollment._id, {
+                      ...period,
+                      orderId: order._id,
+                    });
+                  }
                 }
               }
             }

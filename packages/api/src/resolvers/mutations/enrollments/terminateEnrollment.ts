@@ -1,14 +1,20 @@
 import type { Context } from '../../../context.ts';
-import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
+import { EnrollmentStatus, type EnrollmentTerminationReason } from '@unchainedshop/core-enrollments';
 import { log } from '@unchainedshop/logger';
-import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.ts';
+import {
+  EnrollmentNotFoundError,
+  EnrollmentWrongStatusError,
+  EnrollmentTerminationNotAllowedError,
+  InvalidIdError,
+} from '../../../errors.ts';
 
 export default async function terminateEnrollment(
   root: never,
-  { enrollmentId }: { enrollmentId: string },
+  params: { enrollmentId: string; reason?: string; comment?: string },
   context: Context,
 ) {
   const { modules, services, userId } = context;
+  const { enrollmentId, reason, comment } = params;
 
   log('mutation terminateEnrollment', { userId });
 
@@ -25,5 +31,15 @@ export default async function terminateEnrollment(
     throw new EnrollmentWrongStatusError({ status: enrollment.status });
   }
 
-  return services.enrollments.terminateEnrollment(enrollment);
+  try {
+    return await services.enrollments.terminateEnrollment(enrollment, {
+      reason: reason as EnrollmentTerminationReason,
+      comment,
+    });
+  } catch (e) {
+    if (e.message === 'Enrollment termination is not allowed at this time') {
+      throw new EnrollmentTerminationNotAllowedError({ enrollmentId });
+    }
+    throw e;
+  }
 }

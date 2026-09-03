@@ -206,6 +206,18 @@ export const PaymentCredentialsNotFoundError = createError(
   'PaymentCredentialsNotFoundError',
   'Payment credentials not found',
 );
+export const EnrollmentTerminationNotAllowedError = createError(
+  'EnrollmentTerminationNotAllowedError',
+  'Enrollment termination is not allowed at this time',
+);
+export const EnrollmentPlanChangeNotSupportedError = createError(
+  'EnrollmentPlanChangeNotSupportedError',
+  'Plan change is not supported for this enrollment',
+);
+export const EnrollmentPlanNotSupportedError = createError(
+  'EnrollmentPlanNotSupportedError',
+  'No enrollment plugin supports this plan configuration',
+);
 export const EnrollmentWrongStatusError = createError(
   'EnrollmentWrongStatusError',
   'The current status of the enrollment does not allow this operation',

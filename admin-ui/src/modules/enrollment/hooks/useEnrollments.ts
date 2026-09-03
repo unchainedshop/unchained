@@ -23,7 +23,7 @@ const EnrollmentsQuery = gql`
     ) {
       ...EnrollmentFragment
     }
-    enrollmentsCount
+    enrollmentsCount(queryString: $queryString, status: $status)
   }
   ${EnrollmentFragment}
 `;

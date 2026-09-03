@@ -17,8 +17,32 @@ export const Enrollment = {
     return expires ?? [...(periods || [])].filter(Boolean)?.pop()?.end;
   },
 
+  requestedTerminationDate(obj: EnrollmentType) {
+    return obj.requestedTerminationDate;
+  },
+
+  resumeAt(obj: EnrollmentType) {
+    return obj.resumeAt;
+  },
+
+  contractStartDate(obj: EnrollmentType) {
+    return obj.contractStartDate;
+  },
+
+  minimumCommitmentEnd(obj: EnrollmentType) {
+    return obj.minimumCommitmentEnd;
+  },
+
+  cancellationReason(obj: EnrollmentType) {
+    return obj.cancellationReason;
+  },
+
+  cancellationComment(obj: EnrollmentType) {
+    return obj.cancellationComment;
+  },
+
   country: async (obj: EnrollmentType, _: never, { loaders }: Context) =>
-    obj.countryCode ? loaders.currencyLoader.load({ isoCode: obj.countryCode }) : null,
+    obj.countryCode ? loaders.countryLoader.load({ isoCode: obj.countryCode }) : null,
   currency: async (obj: EnrollmentType, _: never, { loaders }: Context) =>
     obj.currencyCode ? loaders.currencyLoader.load({ isoCode: obj.currencyCode }) : null,
   user: async (obj: EnrollmentType, _: never, { loaders }: Context) =>

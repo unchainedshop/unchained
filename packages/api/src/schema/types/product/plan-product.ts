@@ -19,6 +19,7 @@ export default [
       billingIntervalCount: Int
       trialInterval: ProductPlanConfigurationInterval
       trialIntervalCount: Int
+      minimumCommitmentPeriods: Int
     }
 
     input UpdateProductPlanInput {
@@ -27,6 +28,7 @@ export default [
       billingIntervalCount: Int
       trialInterval: ProductPlanConfigurationInterval
       trialIntervalCount: Int
+      minimumCommitmentPeriods: Int
     }
 
     """
