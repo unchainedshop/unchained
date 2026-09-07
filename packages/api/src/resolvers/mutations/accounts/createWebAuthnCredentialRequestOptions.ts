@@ -11,7 +11,7 @@ export default async function createWebAuthnCredentialRequestOptions(
   });
 
   const options = await modules.users.webAuthn.createCredentialRequestOptions(
-    getHeader('origin'),
+    getHeader('origin') || '',
     username,
     extensionOptions,
   );

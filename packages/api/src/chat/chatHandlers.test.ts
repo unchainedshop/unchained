@@ -8,7 +8,7 @@ import { MockLanguageModelV4 } from 'ai/test';
 import { connectChat as connectExpressChat } from '../express/chatHandler.ts';
 import { connectChat as connectFastifyChat } from '../fastify/chatHandler.ts';
 import handleMcpHttpRequest from '../mcp/handleMcpHttpRequest.ts';
-import { sendWebResponse, toWebRequest } from '../mcp/nodeHttpBridge.ts';
+import { sendWebResponse, toWebRequest } from '../http/nodeHttpBridge.ts';
 import type { Context } from '../context.ts';
 
 const servers: http.Server[] = [];

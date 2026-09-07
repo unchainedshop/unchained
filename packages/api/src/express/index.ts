@@ -8,8 +8,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { runWithAuditContext } from '@unchainedshop/events';
-import { getCurrentContextResolver } from '../context.ts';
-import { createAuthContext, type AuthContextParams } from '../middleware/createAuthMiddleware.ts';
+import type { AuthContextParams } from '../middleware/createAuthMiddleware.ts';
 import type { AuthConfig } from '../auth.ts';
 import createMCPMiddleware from './createMCPMiddleware.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
@@ -22,6 +21,11 @@ import {
   type AdminUIPluginConfig,
   type AdminUIThemeConfig,
 } from '../adminUiPlugins.ts';
+import {
+  createRequestContext,
+  headerValue,
+  resolveRemoteAddress,
+} from '../http/createRequestContext.ts';
 
 export type {
   AdminUIPluginConfig,
@@ -130,48 +134,18 @@ export const adminUIRouter = (
   return router;
 };
 
-/**
- * Resolve the user's remote address
- * SECURITY: Proxy headers (x-forwarded-for, x-real-ip) can be spoofed unless:
- * - The application is behind a properly configured reverse proxy
- * - The proxy strips/validates these headers from untrusted sources
- * When trustProxy is false, we only use the socket's remote address
- */
-const resolveUserRemoteAddress = (req: e.Request, trustProxy = false) => {
-  let remoteAddress: string | undefined;
-
-  if (trustProxy) {
-    // Only trust proxy headers when explicitly enabled
-    // Per RFC 7239: use the LAST IP in X-Forwarded-For as it's the one added by our trusted proxy
-    // Earlier IPs in the chain can be spoofed by malicious clients
-    const forwardedFor = req.headers['x-forwarded-for'] as string | undefined;
-    const forwardedIps = forwardedFor?.split(',').map((ip) => ip.trim());
-    remoteAddress =
-      (req.headers['x-real-ip'] as string) ||
-      forwardedIps?.[forwardedIps.length - 1] ||
-      req.socket?.remoteAddress;
-  } else {
-    // Default: only use socket address (cannot be spoofed)
-    remoteAddress = req.socket?.remoteAddress;
-  }
-
-  const remotePort = req.socket?.remotePort;
-
-  return { remoteAddress, remotePort };
-};
-
 const { MCP_API_PATH = '/mcp' } = process.env;
 
 const createAddContextMiddleware = (authConfig?: AuthConfig, trustProxy = false) =>
   async function middlewareWithContext(req: e.Request, res: e.Response, next: e.NextFunction) {
     try {
       const setHeader = (key: string, value: string) => res.setHeader(key, value);
-      const getHeader = (key: string) => req.headers[key] as string;
+      const getHeader = (key: string) => headerValue(req.headers, key);
       const getCookie = (name: string) => (req as any).cookies?.[name];
       const setCookie = (name: string, value: string, options: any) => res.cookie(name, value, options);
       const clearCookie = (name: string, options: any) =>
         res.clearCookie(name, { ...options, maxAge: 0 });
-      const { remoteAddress, remotePort } = resolveUserRemoteAddress(req, trustProxy);
+      const { remoteAddress, remotePort } = resolveRemoteAddress(req, trustProxy);
 
       const authContextParams: AuthContextParams = {
         setHeader,
@@ -183,37 +157,14 @@ const createAddContextMiddleware = (authConfig?: AuthConfig, trustProxy = false)
         remotePort,
       };
 
-      // Create auth context (handles JWT verification and login/logout functions)
-      const authContext = await createAuthContext(authContextParams, authConfig);
-
-      // Get the context resolver
-      const context = getCurrentContextResolver();
-
-      // Build full context
-      const unchainedContext = await context(
-        {
-          setHeader,
-          getHeader,
-          remoteAddress,
-          remotePort,
-          login: authContext.login,
-          logout: authContext.logout,
-          accessToken: authContext.accessToken,
-          userId: authContext.userId,
-          impersonatorId: authContext.impersonatorId,
-          tokenVersion: authContext.tokenVersion,
-        },
+      const { context, auditContext } = await createRequestContext(
+        authContextParams,
+        authConfig,
         req,
         res,
       );
-      (req as any).unchainedContext = unchainedContext;
-      // NOTE: no sessionId — authContext.accessToken is the raw API key for
-      // API-key-authenticated requests and must never reach the audit sinks
-      (req as any)._auditContext = {
-        userId: unchainedContext.userId,
-        userName: unchainedContext.user?.username || unchainedContext.user?.emails?.[0]?.address,
-        remoteAddress,
-      };
+      (req as any).unchainedContext = context;
+      (req as any)._auditContext = auditContext;
 
       next();
     } catch (error) {

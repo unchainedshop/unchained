@@ -1,5 +1,11 @@
 import { createLogger } from '@unchainedshop/logger';
-import { stripe, createOrderPaymentIntent, createRegistrationIntent } from './stripe.ts';
+import {
+  stripe,
+  createOrderPaymentIntent,
+  createRegistrationIntent,
+  createAcpSharedPaymentTokenIntent,
+  ACP_SPT_STRIPE_VERSION,
+} from './stripe.ts';
 import {
   OrderPricingSheet,
   type IPaymentAdapter,
@@ -102,28 +108,76 @@ export const Stripe: IPaymentAdapter = {
         return paymentIntent.client_secret;
       },
 
-      charge: async ({ paymentIntentId, paymentCredentials }) => {
-        if (!paymentIntentId && !paymentCredentials) {
-          throw new Error('You have to provide paymentIntentId or paymentCredentials');
-        }
+      charge: async (chargeContext: any = {}) => {
+        const { paymentIntentId, paymentCredentials, acpToken, acpHandlerId } = chargeContext;
 
         const { order, orderPayment } = context;
 
         if (!order) throw new Error('order not found in context');
         if (!orderPayment) throw new Error('orderPayment not found in context');
 
-        const { userId, name, email } = await assertUserData(order?.userId);
         const pricing = OrderPricingSheet({
           calculation: order.calculation,
           currencyCode: order.currencyCode,
         });
 
+        // ACP delegated Shared Payment Token path (agentic checkout). The token
+        // flows in generically via paymentContext; PSP-specific handling stays here.
+        if (acpToken) {
+          const paymentIntentObject = await createAcpSharedPaymentTokenIntent({
+            acpToken,
+            order,
+            orderPayment,
+            pricing,
+            descriptorPrefix,
+          });
+
+          if (paymentIntentObject.status === 'succeeded') {
+            // Persist the resulting Stripe references, never the delegated payment
+            // credential itself. The SPT is a bearer secret even though it is single-use.
+            return {
+              transactionId: paymentIntentObject.id,
+              status: paymentIntentObject.status,
+              paymentMethod: paymentIntentObject.payment_method,
+              acp: {
+                handlerId: acpHandlerId || 'stripe_spt',
+                chargeId:
+                  typeof paymentIntentObject.latest_charge === 'string'
+                    ? paymentIntentObject.latest_charge
+                    : (paymentIntentObject.latest_charge?.id ?? null),
+                stripeApiVersion: ACP_SPT_STRIPE_VERSION,
+                capturedAt: new Date().toISOString(),
+              },
+            };
+          }
+
+          logger.info('ACP SPT charge postponed because paymentIntent has wrong status', {
+            orderPaymentId: paymentIntentObject.id,
+          });
+
+          return false;
+        }
+
+        if (!paymentIntentId && !paymentCredentials) {
+          throw new Error('You have to provide paymentIntentId or paymentCredentials');
+        }
+
+        const { userId, name, email } = await assertUserData(order?.userId);
+
         const paymentIntentObject = paymentIntentId
           ? await stripe.paymentIntents.retrieve(paymentIntentId)
           : await createOrderPaymentIntent(
-              { userId, name, email, orderPayment, order, pricing, descriptorPrefix },
               {
-                customer: paymentCredentials.meta?.customer,
+                userId,
+                name,
+                email,
+                orderPayment,
+                order,
+                pricing,
+                descriptorPrefix,
+                customerId: paymentCredentials.meta?.customer,
+              },
+              {
                 confirm: true,
                 payment_method: paymentCredentials.token,
                 payment_method_types: paymentCredentials.meta?.payment_method_types,

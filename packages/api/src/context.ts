@@ -1,4 +1,4 @@
-import type { UnchainedCore } from '@unchainedshop/core';
+import type { PluginHttpRequestContext, UnchainedCore } from '@unchainedshop/core';
 import type { RolesInterface } from '@unchainedshop/roles';
 import instantiateLoaders, { type UnchainedLoaders } from './loaders/index.ts';
 import { getLocaleContext, type UnchainedLocaleContext } from './locale-context.ts';
@@ -42,12 +42,12 @@ export interface AdminUiConfig {
 
 export interface UnchainedHTTPServerContext {
   setHeader: (key: string, value: string) => void;
-  getHeader: (key: string) => string;
+  getHeader: (key: string) => string | undefined;
   remoteAddress?: string;
   remotePort?: number;
 }
 
-export type Context = UnchainedCore & {
+export type Context = Omit<PluginHttpRequestContext, 'params'> & {
   version?: string;
   roles?: RolesInterface;
   adminUiConfig?: AdminUiConfig;

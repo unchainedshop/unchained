@@ -23,6 +23,9 @@ import { PayrexxPlugin } from '../payment/payrexx/index.ts';
 import { PostfinanceCheckoutPlugin } from '../payment/postfinance-checkout/index.ts';
 import { SaferpayPlugin } from '../payment/saferpay/index.ts';
 
+// Import agentic-commerce plugins
+import { ACPPlugin } from '../acp/index.ts';
+
 // Import filter plugins
 import { StrictQualFilterPlugin } from '../filters/strict-equal/index.ts';
 import { LocalSearchPlugin } from '../filters/local-search/index.ts';
@@ -54,6 +57,9 @@ export function registerAllPlugins() {
   pluginRegistry.register(InvoicePrepaidPlugin);
   pluginRegistry.register(SendMessagePlugin);
   pluginRegistry.register(PickMupPlugin);
+
+  // Agentic Commerce Protocol (self-gates via onRegister when UNCHAINED_ACP_API_KEY is unset)
+  pluginRegistry.register(ACPPlugin);
 
   // Filters
   pluginRegistry.register(StrictQualFilterPlugin);
