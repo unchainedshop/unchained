@@ -145,6 +145,27 @@ than the one running.
 
 ## Development workflow
 
+### Client project with the packaged Admin UI
+
+The engine can serve the prebuilt Admin UI from the installed
+`@unchainedshop/admin-ui` npm package while you develop local extensions.
+Register the local plugin's `dist/index.js` as its `bundlePath`, build the
+plugin before starting the engine, and run its build watcher alongside the
+engine. Open the engine's Admin UI URL and refresh after a successful rebuild.
+Only the local extension needs rebuilding; the packaged Admin UI stays prebuilt.
+
+Both Kitchensink examples provide this workflow through `npm run dev` in the
+example directory: an initial plugin build followed by backend and plugin
+watchers. `npm run dev:server` starts only the backend. The repository root's
+`npm run dev` also starts Next.js for development of the Admin UI itself.
+
+In a standalone project, use published package versions instead of the
+examples' repository-local `file:` dependencies, and use the same
+`@unchainedshop/admin-ui` version for the engine and plugin build. Install the
+plugin's dependencies separately if it is not included in your npm workspaces.
+
+### Rebuilds and refreshes
+
 Run the plugin build in watch mode next to the engine:
 
 ```bash
@@ -155,6 +176,10 @@ In dev mode (`NODE_ENV !== 'production'`) the engine picks up bundle changes
 on the next manifest request — reload the admin-ui to get the new bundle. In
 production, bundles are read once at startup and served with immutable
 caching, keyed by content hash.
+
+The plugin bundle must exist when the engine starts. If it was missing at
+startup, build it and restart the engine. This workflow uses browser refreshes;
+it does not provide React Fast Refresh or preserve component state across edits.
 
 ## Content-Security-Policy
 

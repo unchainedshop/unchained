@@ -145,7 +145,7 @@ const BookmarkList = () => {
             </div>
             <input
               type="text"
-              className={`${styles.input} pl-9`}
+              className={`${styles.input} pl-10`}
               placeholder="Search bookmarks by product title or slug..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
