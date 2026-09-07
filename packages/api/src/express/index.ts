@@ -4,8 +4,6 @@ import type { YogaServerInstance } from 'graphql-yoga';
 import type { UnchainedCore } from '@unchainedshop/core';
 import { pluginRegistry } from '@unchainedshop/core';
 import { createHash } from 'node:crypto';
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
 
 import { runWithAuditContext } from '@unchainedshop/events';
 import { getCurrentContextResolver } from '../context.ts';
@@ -18,6 +16,10 @@ import { mountRoutes } from './mountRoutes.ts';
 import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
 import {
   preparePluginAssets,
+  prepareAdminUIHTML,
+  resolveAdminUIHTML,
+  injectAdminUIImportMap,
+  buildImportMapTag,
   resolveAdminUIPath,
   type AdminUIPluginConfig,
   type AdminUIThemeConfig,
@@ -89,7 +91,11 @@ export const adminUIRouter = (
 
     const log = { info: console.info, warn: console.warn };
     const devMode = process.env.NODE_ENV !== 'production';
-    const { routes: pluginRoutes } = preparePluginAssets(plugins, log, { devMode });
+    const {
+      routes: pluginRoutes,
+      importMapTag,
+      importMapJSON,
+    } = preparePluginAssets(plugins, log, { devMode });
 
     for (const [path, asset] of pluginRoutes) {
       router.get(path, (req, res) => {
@@ -109,22 +115,34 @@ export const adminUIRouter = (
       });
     }
 
-    router.use(e.static(adminUIPath));
+    // With an import map to inject, index.html must not be served directly by
+    // the static handler so that / falls through to the injecting catch-all.
+    router.use(e.static(adminUIPath, importMapTag ? { index: false } : undefined));
 
-    // SPA fallback: the admin-ui is a Next.js static export where plugin
-    // entity/page routes live under /ext/*, pre-rendered to a dedicated HTML
-    // file. Hard loads of /ext/* must get that file, everything else gets the
-    // root index.html.
-    const extHtmlPath = join(adminUIPath, 'ext', '[[...slug]]', 'index.html');
-    const hasExtHtml = existsSync(extHtmlPath);
+    // The admin-ui is a Next.js static export. Serve exact pre-rendered pages
+    // first, use the dedicated catch-all for /ext/*, and fall back to root for
+    // unknown application routes.
+    if (importMapJSON) {
+      const preparedHTML = prepareAdminUIHTML(adminUIPath);
 
-    router.get(/(.*)/, (req, res) => {
-      const urlPath = req.path.replace(/\/+$/, '');
-      if (hasExtHtml && (urlPath === '/ext' || urlPath.startsWith('/ext/'))) {
-        return res.sendFile(extHtmlPath);
-      }
-      return res.sendFile(join(adminUIPath, 'index.html'));
-    });
+      router.get(/(.*)/, (req, res) => {
+        if (devMode) res.set('Cache-Control', 'no-cache');
+
+        // CSP nonce convention (Express/helmet): a middleware upstream sets
+        // res.locals.cspNonce (see helmet's CSP nonce docs) and references it
+        // as `'nonce-...'` in script-src. When present, the injected import
+        // map tag carries it; without it, strict CSPs will block the tag.
+        const nonce = (res as any).locals?.cspNonce as string | undefined;
+        const tag = nonce ? buildImportMapTag(importMapJSON, nonce) : importMapTag!;
+        return res.type('text/html').send(injectAdminUIImportMap(preparedHTML, req.path, tag));
+      });
+    } else {
+      const preparedHTML = prepareAdminUIHTML(adminUIPath);
+
+      router.get(/(.*)/, (req, res) => {
+        return res.type('text/html').send(resolveAdminUIHTML(preparedHTML, req.path));
+      });
+    }
   }
 
   return router;

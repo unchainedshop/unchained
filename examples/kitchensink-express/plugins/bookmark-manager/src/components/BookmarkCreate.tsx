@@ -118,7 +118,7 @@ const BookmarkCreate = () => {
             </div>
             <input
               type="text"
-              className={`${styles.input} pl-9`}
+              className={`${styles.input} pl-10`}
               placeholder="Search products by title..."
               value={search}
               onChange={(e) => handleSearchChange(e.target.value)}

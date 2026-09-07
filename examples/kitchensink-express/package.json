@@ -30,7 +30,11 @@
     "clean": "tsc -b --clean",
     "build": "tsc -b",
     "start": "node --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js lib/boot.js",
-    "dev": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js  --watch src/boot.ts",
+    "predev": "npm run build:plugin",
+    "dev": "run-p dev:server dev:plugin",
+    "dev:server": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js --watch src/boot.ts",
+    "dev:plugin": "npm --prefix plugins/bookmark-manager run build:watch",
+    "build:plugin": "npm --prefix plugins/bookmark-manager run build",
     "test-mcp": "npx @modelcontextprotocol/inspector"
   },
   "dependencies": {
@@ -60,6 +64,7 @@
     "@types/express": "^5.0.3",
     "@types/node": "^26.2.0",
     "mongodb-memory-server": "^11.0.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "^3.6.2",
     "typescript": "^6.0.3"
   }

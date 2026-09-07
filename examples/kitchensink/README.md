@@ -18,13 +18,14 @@ Full-featured example of the Unchained Engine using Fastify as the HTTP server. 
 
 ## Prerequisites
 
-- Node.js >= 22
+- Node.js >= 24
 - MongoDB (or uses in-memory MongoDB for development)
 
 ## Quick Start
 
 ```bash
 npm install
+npm --prefix plugins/bookmark-manager install
 npm run dev
 ```
 
@@ -46,11 +47,34 @@ the target user's seed tag. Use the user manager login and compare these users i
 | `managed-customer`                | Editable and force-logout capable, but cannot be deleted    |
 | `disposable-customer`             | Editable, force-logout capable, and deletable               |
 
+## Developing Admin UI extensions
+
+Run `npm run dev` from this example directory and open http://localhost:4010.
+The backend serves the prebuilt `@unchainedshop/admin-ui` package and the local
+Bookmark Manager extension. The command builds the extension before starting
+the backend, then watches both the backend and extension source files.
+
+Edit `plugins/bookmark-manager/src/`, wait for the plugin build to succeed, and
+refresh the browser. The backend reads the updated bundle without a restart
+when `NODE_ENV` is not `production`. Changes to the plugin registration in
+`src/boot.ts` restart the backend through Node's watcher.
+
+For a standalone client project, install published versions of
+`@unchainedshop/admin-ui` and `@unchainedshop/client` in the plugin package in
+place of this repository's `file:` dependencies. Keep the host and plugin on
+the same Admin UI version. No Admin UI source checkout or Next.js dev server
+is needed. Inside this monorepo, build the Admin UI and client once with
+`npm run build:admin-ui` and `npm --prefix admin-ui run build:client` from the
+repository root to supply the artifacts that the published packages include.
+
 ## Scripts
 
 | Command                    | Description                              |
 | -------------------------- | ---------------------------------------- |
-| `npm run dev`              | Start development server with watch mode |
+| `npm run dev`              | Build plugin, then watch backend and plugin |
+| `npm run dev:server`       | Watch backend only |
+| `npm run dev:plugin`       | Watch and rebuild the local Admin UI plugin |
+| `npm run build:plugin`     | Build the local Admin UI plugin once |
 | `npm run build`            | Build TypeScript to `lib/`               |
 | `npm start`                | Start production server                  |
 | `npm run integration-test` | Run with integration test environment    |
