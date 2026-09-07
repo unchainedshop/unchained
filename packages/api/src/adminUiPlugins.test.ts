@@ -40,6 +40,22 @@ test('resolves route-specific static export HTML before using fallbacks', (t) =>
   assert.match(resolveAdminUIHTML(prepared, '/unknown'), /<title>root<\/title>/);
 });
 
+test('normalizes slash-heavy routes and mount prefixes', (t) => {
+  const root = mkdtempSync(join(tmpdir(), 'unchained-admin-ui-'));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  writePage(root, '/', 'root');
+  writePage(root, '/products', 'products');
+  const prepared = prepareAdminUIHTML(root);
+  const slashes = '/'.repeat(50_000);
+
+  assert.match(
+    resolveAdminUIHTML(prepared, `/admin/products${slashes}?q=test`, `${slashes}admin${slashes}`),
+    /<title>products<\/title>/,
+  );
+  assert.match(resolveAdminUIHTML(prepared, `/products${slashes}unknown`), /<title>root<\/title>/);
+  assert.match(resolveAdminUIHTML(prepared, slashes), /<title>root<\/title>/);
+});
+
 test('injects import-map tags with an optional CSP nonce', (t) => {
   const root = mkdtempSync(join(tmpdir(), 'unchained-admin-ui-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));

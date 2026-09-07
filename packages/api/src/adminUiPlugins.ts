@@ -153,9 +153,15 @@ export const resolveAdminUIPath = (): string | null => {
   }
 };
 
+const trimTrailingSlashes = (value: string): string => {
+  let end = value.length;
+  while (end > 0 && value[end - 1] === '/') end -= 1;
+  return value.slice(0, end);
+};
+
 const normalizeAdminUIRoute = (urlPath: string, prefix = '/'): string => {
   let pathOnly = urlPath.split('?')[0];
-  const normalizedPrefix = `/${prefix.replace(/^\/+|\/+$/g, '')}`;
+  const normalizedPrefix = `/${trimTrailingSlashes(prefix.replace(/^\/+/, ''))}`;
   if (
     normalizedPrefix !== '/' &&
     (pathOnly === normalizedPrefix || pathOnly.startsWith(`${normalizedPrefix}/`))
@@ -163,7 +169,7 @@ const normalizeAdminUIRoute = (urlPath: string, prefix = '/'): string => {
     pathOnly = pathOnly.slice(normalizedPrefix.length) || '/';
   }
   const withLeadingSlash = pathOnly.startsWith('/') ? pathOnly : `/${pathOnly}`;
-  return withLeadingSlash.replace(/\/+$/, '') || '/';
+  return trimTrailingSlashes(withLeadingSlash) || '/';
 };
 
 /**
