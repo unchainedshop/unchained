@@ -40,7 +40,7 @@ const GateAttendeeList = ({ event, onRefetch }) => {
       <div className="flex items-center justify-between mb-4">
         <div>
           {slot && (
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-text-muted">
               {formatDateTime(slot, {
                 dateStyle: 'full',
                 timeStyle: 'short',
@@ -49,9 +49,9 @@ const GateAttendeeList = ({ event, onRefetch }) => {
           )}
         </div>
         <div className="text-right">
-          <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{redeemedCount}</span>
-          <span className="text-slate-400"> / {activeTokens.length}</span>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <span className="text-2xl font-bold text-text-primary">{redeemedCount}</span>
+          <span className="text-text-muted"> / {activeTokens.length}</span>
+          <p className="text-xs text-text-muted">
             {formatMessage({
               id: 'gate_redeemed',
               defaultMessage: 'redeemed',
@@ -61,14 +61,14 @@ const GateAttendeeList = ({ event, onRefetch }) => {
       </div>
 
       {!activeTokens.length ? (
-        <p className="py-4 text-sm text-slate-500 dark:text-slate-400">
+        <p className="py-4 text-sm text-text-muted">
           {formatMessage({
             id: 'gate_no_tickets',
             defaultMessage: 'No tickets for this event.',
           })}
         </p>
       ) : (
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+        <div className="bg-surface rounded-lg shadow-sm border border-border-subtle">
           <Table className="min-w-full">
             <Table.Row header>
               <Table.Cell>
@@ -105,17 +105,17 @@ const GateAttendeeList = ({ event, onRefetch }) => {
             {activeTokens.map((token) => (
               <Table.Row key={token._id}>
                 <Table.Cell>
-                  <span className="font-medium text-slate-800 dark:text-slate-200">
+                  <span className="font-medium text-text-primary">
                     {token.tokenSerialNumber || token._id?.slice(-8)}
                   </span>
                 </Table.Cell>
                 <Table.Cell>
-                  <span className="text-sm text-slate-800 dark:text-slate-200">
+                  <span className="text-sm text-text-primary">
                     {token.user ? formatUsername(token.user) : '-'}
                   </span>
                 </Table.Cell>
                 <Table.Cell>
-                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                  <span className="text-sm text-text-secondary">
                     {token.user?.lastContact?.emailAddress || token.user?.primaryEmail?.address || '-'}
                   </span>
                 </Table.Cell>

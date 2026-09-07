@@ -7,7 +7,7 @@ const EventTokenList = ({ tokens, onCancelTicket, onInvalidateTicket }) => {
 
   if (!tokens?.length) {
     return (
-      <p className="py-4 text-sm text-slate-500 dark:text-slate-400">
+      <p className="py-4 text-sm text-text-muted">
         {formatMessage({
           id: 'no_tickets_issued',
           defaultMessage: 'No tickets have been issued yet.',

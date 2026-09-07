@@ -12,7 +12,14 @@ import setupTicketing, {
 } from '@unchainedshop/ticketing';
 import connectTicketingToFastify from '@unchainedshop/ticketing/lib/fastify.js';
 import ticketingServices from '@unchainedshop/ticketing/lib/services.js';
-import { ticketingAdminPlugin } from '@unchainedshop/ticketing/admin-plugin';
+import { definePlugin } from '@unchainedshop/admin-ui/plugins';
+import {
+  ticketingBundlePath,
+  ticketingEntities,
+  ticketingPages,
+  ticketingLinks,
+  ticketingNavigation,
+} from '@unchainedshop/ticketing/admin-plugin';
 import seed from './seed.ts';
 
 const fastify = Fastify({
@@ -48,7 +55,19 @@ try {
   connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
     adminUI: {
-      plugins: [ticketingAdminPlugin()],
+      plugins: [
+        definePlugin({
+          name: 'ticketing',
+          version: '1.0.0',
+          bundlePath: ticketingBundlePath,
+          navigation: ticketingNavigation,
+          slots: {
+            entities: ticketingEntities,
+            pages: ticketingPages,
+            links: ticketingLinks,
+          },
+        }),
+      ],
     },
   });
 

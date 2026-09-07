@@ -41,10 +41,10 @@ const TicketEventDetail = ({ product }) => {
               defaultMessage:
                 'Are you sure you want to cancel this event? All tickets will be cancelled.',
             })}
-            <label className="mt-3 flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+            <label className="mt-3 flex items-center gap-2 text-sm text-text-secondary">
               <input
                 type="checkbox"
-                className="rounded border-slate-300 dark:border-slate-600"
+                className="rounded border-border-default"
                 onChange={(e) => {
                   generateDiscount = e.target.checked;
                 }}
@@ -89,10 +89,10 @@ const TicketEventDetail = ({ product }) => {
               id: 'cancel_ticket_confirmation',
               defaultMessage: 'Are you sure you want to cancel this ticket?',
             })}
-            <label className="mt-3 flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+            <label className="mt-3 flex items-center gap-2 text-sm text-text-secondary">
               <input
                 type="checkbox"
-                className="rounded border-slate-300 dark:border-slate-600"
+                className="rounded border-border-default"
                 onChange={(e) => {
                   generateDiscount = e.target.checked;
                 }}
@@ -149,12 +149,12 @@ const TicketEventDetail = ({ product }) => {
 
   return (
     <div className="grid gap-6">
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
+      <div className="bg-surface rounded-lg shadow-md p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <Link
               href={`/products?slug=${generateUniqueId(product)}`}
-              className="block overflow-hidden rounded-lg bg-slate-50 dark:bg-slate-700 hover:opacity-90"
+              className="block overflow-hidden rounded-lg bg-surface-raised hover:opacity-90"
             >
               <ImageWithFallback
                 src={product?.media?.[0]?.file?.url || '/no-image.jpg'}
@@ -168,27 +168,23 @@ const TicketEventDetail = ({ product }) => {
             </Link>
           </div>
           <div className="md:col-span-2">
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
-              {product?.texts?.title}
-            </h2>
+            <h2 className="text-2xl font-semibold text-text-primary">{product?.texts?.title}</h2>
             {product?.texts?.subtitle && (
-              <p className="mt-1 text-lg text-slate-600 dark:text-slate-400">{product.texts.subtitle}</p>
+              <p className="mt-1 text-lg text-text-secondary">{product.texts.subtitle}</p>
             )}
             {product?.texts?.description && (
-              <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-                {product.texts.description}
-              </p>
+              <p className="mt-3 text-sm text-text-muted">{product.texts.description}</p>
             )}
 
             <div className="mt-6 grid grid-cols-2 gap-4">
               <div>
-                <span className="block text-sm font-medium text-slate-500 dark:text-slate-400">
+                <span className="block text-sm font-medium text-text-muted">
                   {formatMessage({
                     id: 'event_date',
                     defaultMessage: 'Event Date',
                   })}
                 </span>
-                <p className="mt-1 text-slate-900 dark:text-slate-100">
+                <p className="mt-1 text-text-primary">
                   {slot
                     ? formatDateTime(slot, {
                         dateStyle: 'full',
@@ -198,7 +194,7 @@ const TicketEventDetail = ({ product }) => {
                 </p>
               </div>
               <div>
-                <span className="block text-sm font-medium text-slate-500 dark:text-slate-400">
+                <span className="block text-sm font-medium text-text-muted">
                   {formatMessage({ id: 'status', defaultMessage: 'Status' })}
                 </span>
                 <div className="mt-1">
@@ -218,27 +214,27 @@ const TicketEventDetail = ({ product }) => {
                 </div>
               </div>
               <div>
-                <span className="block text-sm font-medium text-slate-500 dark:text-slate-400">
+                <span className="block text-sm font-medium text-text-muted">
                   {formatMessage({
                     id: 'tickets_sold',
                     defaultMessage: 'Tickets Sold',
                   })}
                 </span>
-                <p className="mt-1 text-slate-900 dark:text-slate-100">
+                <p className="mt-1 text-text-primary">
                   <span className="text-lg font-semibold">{sold}</span>
-                  <span className="text-slate-400"> / {supply}</span>
+                  <span className="text-text-muted"> / {supply}</span>
                 </p>
               </div>
               <div>
-                <span className="block text-sm font-medium text-slate-500 dark:text-slate-400">
+                <span className="block text-sm font-medium text-text-muted">
                   {formatMessage({
                     id: 'tickets_redeemed',
                     defaultMessage: 'Tickets Redeemed',
                   })}
                 </span>
-                <p className="mt-1 text-slate-900 dark:text-slate-100">
+                <p className="mt-1 text-text-primary">
                   <span className="text-lg font-semibold">{redeemedTokens.length}</span>
-                  <span className="text-slate-400"> / {activeTokens.length}</span>
+                  <span className="text-text-muted"> / {activeTokens.length}</span>
                 </p>
               </div>
             </div>
@@ -261,14 +257,14 @@ const TicketEventDetail = ({ product }) => {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
+      <div className="bg-surface rounded-lg shadow-md p-6">
+        <h3 className="text-lg font-semibold text-text-primary mb-2">
           {formatMessage({
             id: 'gate_control_settings',
             defaultMessage: 'Gate Control',
           })}
         </h3>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+        <p className="text-sm text-text-muted mb-4">
           {formatMessage({
             id: 'gate_control_description',
             defaultMessage:
@@ -279,7 +275,7 @@ const TicketEventDetail = ({ product }) => {
           <div className="flex-1">
             <label
               htmlFor="scannerPassCode"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+              className="block text-sm font-medium text-text-secondary mb-1"
             >
               {formatMessage({
                 id: 'scanner_pass_code',
@@ -302,7 +298,7 @@ const TicketEventDetail = ({ product }) => {
                       defaultMessage: 'Enter a pass code for gate operators',
                     })
               }
-              className="block w-full rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="block w-full rounded-md border border-border-default bg-surface-input px-3 py-2 text-sm text-text-primary placeholder-text-muted focus:border-focus-ring focus:outline-none focus:ring-1 focus:ring-focus-ring"
             />
           </div>
           <button
@@ -325,7 +321,7 @@ const TicketEventDetail = ({ product }) => {
                 toast.error(e.message);
               }
             }}
-            className="inline-flex items-center rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-950 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center rounded-md bg-accent px-4 py-2 text-sm font-medium text-text-on-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {formatMessage({ id: 'save', defaultMessage: 'Save' })}
           </button>
@@ -365,8 +361,8 @@ const TicketEventDetail = ({ product }) => {
         )}
       </div>
 
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
+      <div className="bg-surface rounded-lg shadow-md p-6">
+        <h3 className="text-lg font-semibold text-text-primary mb-4">
           {formatMessage(
             {
               id: 'attendee_list',

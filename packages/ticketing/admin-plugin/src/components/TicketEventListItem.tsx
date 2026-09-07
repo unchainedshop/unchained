@@ -20,10 +20,7 @@ const TicketEventListItem = ({ product }) => {
   return (
     <Table.Row key={product._id}>
       <Table.Cell>
-        <Link
-          href={ticketUrl}
-          className="block w-12 h-12 overflow-hidden rounded-md bg-slate-50 dark:bg-slate-700"
-        >
+        <Link href={ticketUrl} className="block w-12 h-12 overflow-hidden rounded-md bg-surface-raised">
           <ImageWithFallback
             src={product?.media?.[0]?.file?.url || '/no-image.jpg'}
             loader={defaultNextImageLoader}
@@ -35,20 +32,15 @@ const TicketEventListItem = ({ product }) => {
         </Link>
       </Table.Cell>
       <Table.Cell>
-        <Link
-          href={ticketUrl}
-          className="font-medium text-slate-800 dark:text-slate-200 hover:underline"
-        >
+        <Link href={ticketUrl} className="font-medium text-text-primary hover:underline">
           {product?.texts?.title || 'Untitled'}
           {product?.texts?.subtitle && (
-            <span className="ml-2 text-sm text-slate-500 dark:text-slate-400">
-              {product.texts.subtitle}
-            </span>
+            <span className="ml-2 text-sm text-text-muted">{product.texts.subtitle}</span>
           )}
         </Link>
       </Table.Cell>
       <Table.Cell>
-        <div className="text-sm text-slate-700 dark:text-slate-300">
+        <div className="text-sm text-text-secondary">
           {slot
             ? formatDateTime(slot, {
                 month: 'short',
@@ -62,11 +54,11 @@ const TicketEventListItem = ({ product }) => {
       </Table.Cell>
       <Table.Cell>
         <div className="flex items-center gap-2 text-sm">
-          <span className="font-medium text-slate-800 dark:text-slate-200">{sold}</span>
-          <span className="text-slate-400">/</span>
-          <span className="text-slate-500 dark:text-slate-400">{supply}</span>
+          <span className="font-medium text-text-primary">{sold}</span>
+          <span className="text-text-muted">/</span>
+          <span className="text-text-muted">{supply}</span>
           {supply > 0 && (
-            <div className="ml-2 h-2 w-20 rounded-full bg-slate-200 dark:bg-slate-600">
+            <div className="ml-2 h-2 w-20 rounded-full bg-surface-raised">
               <div
                 className="h-2 rounded-full bg-emerald-500"
                 style={{
