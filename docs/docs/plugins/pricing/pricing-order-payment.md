@@ -26,7 +26,7 @@ pluginRegistry.register(OrderPaymentPlugin);
 
 1. Checks if order has a payment method set
 2. Creates a PaymentPricingSheet from the payment calculation
-3. Extracts gross price and tax sum
+3. Extracts net price and tax sum
 4. Adds payment amount and tax to the order pricing sheet
 
 ## Prerequisites

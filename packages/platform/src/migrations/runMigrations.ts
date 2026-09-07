@@ -56,13 +56,9 @@ export const runMigrations = async ({
 
   const [lastMigrationId, operationCount] = await runner.run();
 
-  if (operationCount !== null) {
-    if (operationCount > 0) {
-      logger.info(`All ${operationCount} migrations completed with most recent id: ${lastMigrationId}`);
-    } else {
-      logger.debug(`No migrations run, already at latest id: ${currentId}`);
-    }
+  if (operationCount > 0) {
+    logger.info(`All ${operationCount} migrations completed with most recent id: ${lastMigrationId}`);
   } else {
-    logger.warn(`Some migrations failed, last successful id: ${lastMigrationId}`);
+    logger.debug(`No migrations run, already at latest id: ${currentId}`);
   }
 };

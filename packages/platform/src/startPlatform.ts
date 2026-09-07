@@ -16,6 +16,7 @@ import { setupUploadHandlers } from './setup/setupUploadHandlers.ts';
 import { setupTemplates, MessageTypes } from './setup/setupTemplates.ts';
 import { type SetupWorkqueueOptions, stopWorkqueue, setupWorkqueue } from './setup/setupWorkqueue.ts';
 import { createMigrationRepository } from './migrations/migrationRepository.ts';
+import { runMigrations } from './migrations/runMigrations.ts';
 import type { IRoleOptionConfig } from '@unchainedshop/roles';
 
 const { UNCHAINED_API_VERSION, npm_package_version } = process.env;
@@ -145,10 +146,34 @@ export const startPlatform = async ({
     configureAuditIntegration(auditLog);
   }
 
+  // Preserve initialization order while migrating before workers and completed
+  // startup, including instances with workers disabled.
+  try {
+    await runMigrations({ migrationRepository, unchainedAPI });
+  } catch (error) {
+    // Shutdown hooks are installed after startup. Release initialized resources
+    // here, continuing cleanup if one hook fails, and preserve the migration error.
+    for (const shutdown of [
+      () => pluginRegistry.shutdown(unchainedAPI),
+      () => getEmitAdapter()?.shutdown?.(),
+      () => graphqlHandler.dispose(),
+      () => auditLog?.close(),
+      () => stopDb(),
+    ]) {
+      try {
+        await shutdown();
+      } catch (cleanupError) {
+        defaultLogger.error('Error during failed startup cleanup', {
+          error: cleanupError instanceof Error ? cleanupError.message : String(cleanupError),
+        });
+      }
+    }
+    throw error;
+  }
+
   // Setup Work Queue
   await setupWorkqueue({
     unchainedAPI,
-    migrationRepository,
     ...workQueueOptions,
   });
 

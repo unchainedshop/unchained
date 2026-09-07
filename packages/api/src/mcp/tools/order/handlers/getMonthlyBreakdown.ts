@@ -1,3 +1,4 @@
+import { OrderPricingRowCategory, OrderPricingSheet } from '@unchainedshop/core';
 import type { Context } from '../../../../context.ts';
 import { formatSummaryMap, resolveDateRange, resolveOrderFilters } from '../../../utils/orderFilters.ts';
 import type { Params } from '../schemas.ts';
@@ -44,7 +45,14 @@ export default async function getMonthlyBreakdown(
     if (orderDate < startDate || orderDate > endDate) continue;
 
     orderCount++;
-    const itemsAmount = order.calculation?.find((c) => c.category === 'ITEMS')?.amount || 0;
+    const pricing = OrderPricingSheet({
+      calculation: order.calculation,
+      currencyCode: order.currencyCode,
+    });
+    // Preserve fractional gross amounts, as in customer-spending statistics.
+    const itemsAmount =
+      pricing.sum({ category: OrderPricingRowCategory.Items }) +
+      pricing.taxSum({ baseCategory: OrderPricingRowCategory.Items });
     totalSalesAmount += itemsAmount;
 
     const label = `${orderDate.getFullYear()}-${String(orderDate.getMonth() + 1).padStart(2, '0')}`;

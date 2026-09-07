@@ -8,8 +8,6 @@ import {
   type IWorker,
   type UnchainedCore,
 } from '@unchainedshop/core';
-import { runMigrations } from '../migrations/runMigrations.ts';
-import type { MigrationRepository } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
 const logger = createLogger('unchained:worker');
 
@@ -39,16 +37,11 @@ export const queueWorkers: any[] = [];
 
 export async function setupWorkqueue({
   unchainedAPI,
-  migrationRepository,
   ...workQueueOptions
 }: {
   unchainedAPI: UnchainedCore;
-  migrationRepository: MigrationRepository<UnchainedCore>;
 } & SetupWorkqueueOptions) {
   if (workQueueOptions.disableWorker || UNCHAINED_DISABLE_WORKER) return;
-
-  // Run migrations
-  await runMigrations({ migrationRepository, unchainedAPI });
 
   // Start queue managers
   (workQueueOptions?.enabledQueueManagers || defaultQueueManagers).forEach((f) => {

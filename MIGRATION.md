@@ -295,6 +295,55 @@ Custom adapters can now be registered with a single typed call instead of a hand
 ]                                            ]
 ```
 
+### Order calculations: gross → net category balances
+
+Order category balances (`ITEMS`, `DELIVERY`, `PAYMENT`, `DISCOUNTS`) now exclude tax.
+Separate `TAXES` rows contribute to the gross total, as they already do in product,
+delivery and payment pricing sheets.
+
+The automatic startup migration `20260907120000-order-calculation-net` converts all
+persisted order calculations, including carts and completed or rejected orders.
+It retains the original rows and adds offsets using their recorded tax amounts.
+Where floating-point cancellation would change a historical balance, it adds a
+precision adjustment with migration metadata. Adjustments for the whole order or
+a discount spanning categories use `ROUNDING` (prefixed with `_` if that category
+already exists). These are ordinary additive rows; no legacy runtime reader is
+needed. The migration does not rerun pricing adapters, look up current rates, round
+recorded amounts or change order timestamps. It verifies historical gross/net
+balances and rounded discount amounts before writing each order, including prices
+on half-cent boundaries.
+Already marked net calculations are skipped, and each order is updated atomically
+so interrupted runs can safely resume. Item, delivery and payment calculations
+already have the required representation and are left intact.
+
+The existing initialization order is retained: plugins and API setup precede
+migrations, and workers start afterward. Migrations run even with `disableWorker`
+or `UNCHAINED_DISABLE_WORKER` enabled, and must finish before `startPlatform`
+returns so the application can start serving requests. A failed migration rejects
+platform startup. Tax rows without `baseCategory` are attributed to their preceding
+category row (the built-in adapters' historical layout); an unresolvable tax row
+stops migration with the order ID so its attribution can be repaired. Invalid
+amounts or contradictory historical discount views also stop startup without
+rewriting that order. Successful conversions remain safe to resume. Failed startup
+closes initialized plugins, API resources and its database connection before
+rejecting.
+
+Stop older application instances before upgrading: they must not write gross order
+calculations after the migration. Restore a database backup before rolling back to
+a release that expects gross order rows. Custom integrations using `initCore`
+directly must run the registered migrations before serving requests.
+
+Custom order pricing adapters must pass **net** `amount` values and the separate
+`taxAmount` to `addItems`, `addDelivery`, `addPayment` and `addDiscount`. For example,
+a gross price of 10,000 with 715 tax becomes `{ amount: 9285, taxAmount: 715 }`.
+Public `gross()`, `net()`, `total()` and discount breakdowns retain their price
+semantics; the runtime no longer infers legacy formats.
+
+Consumers must sum category balances through the pricing sheet instead of reading
+the first row: migrated calculations retain their original rows and add offsets.
+MCP sales summaries, monthly reports and customer-spending statistics use gross
+item balances for both migrated and newly calculated orders.
+
 ### Events: explicit emit-adapter registration
 
 **BREAKING CHANGE for Redis / AWS EventBridge users.** These transports no longer self-register as a side effect of being imported. Register the emit adapter explicitly before `startPlatform`:
