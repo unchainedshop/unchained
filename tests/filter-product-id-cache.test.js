@@ -6,6 +6,7 @@ import { FilterDirector } from '@unchainedshop/core';
 import assert from 'node:assert';
 import test from 'node:test';
 import { setTimeout } from 'node:timers/promises';
+import { Collection } from 'mongodb';
 
 let db;
 let graphqlFetch;
@@ -125,6 +126,40 @@ test.describe('Filter: product id cache invalidation', () => {
       .collection('filter_productId_cache')
       .findOne({ filterId: FILTER_ID, filterOptionValue: null });
     assert.deepStrictEqual([...base.productIds].sort(), ['p1', 'p2', 'p3']);
+  });
+
+  test('rebuilding an unchanged cache never trips a duplicate-key error in mongod', async () => {
+    await seedFilter(['a']);
+    const rebuild = () => filtersSettings.setCachedProductIds(FILTER_ID, ['p1'], { a: ['p1'] }, 1);
+    // A guarded upsert that finds nothing to match tries to insert the _id again. The backend
+    // used to swallow the resulting E11000, but mongod had already logged it - and stable
+    // catalogs are rebuilt all day long. So the write itself must not raise for unchanged rows.
+    const raised = [];
+    const original = Collection.prototype.updateOne;
+    Collection.prototype.updateOne = async function updateOneSpy(...args) {
+      try {
+        return await original.apply(this, args);
+      } catch (e) {
+        if (this.collectionName === 'filter_productId_cache') raised.push(e?.code);
+        throw e;
+      }
+    };
+
+    try {
+      await rebuild();
+      await rebuild();
+      await rebuild();
+    } finally {
+      Collection.prototype.updateOne = original;
+    }
+
+    assert.deepStrictEqual(raised, []);
+    assert.deepStrictEqual(await cacheRowIds(), [`${FILTER_ID}:`, `${FILTER_ID}:a`]);
+    const row = await db
+      .collection('filter_productId_cache')
+      .findOne({ filterId: FILTER_ID, filterOptionValue: 'a' });
+    assert.deepStrictEqual(row.productIds, ['p1']);
+    assert.strictEqual(row.computedAt, 1);
   });
 
   test('a key rename is caught even though the option values are unchanged', async () => {

@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { FolderIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import Badge from '@/components/ui/Badge';
 import generateUniqueId from '../../common/utils/getUniqueId';
+import useFormatDateTime from '@/modules/common/utils/useFormatDateTime';
 
 interface AssortmentListItemProps {
   assortment: any;
@@ -16,6 +17,7 @@ const AssortmentListItem: React.FC<AssortmentListItemProps> = ({
   className,
 }) => {
   const { formatMessage } = useIntl();
+  const { formatDateTime } = useFormatDateTime();
 
   const getStatusBadge = (isActive: boolean) => {
     return (
@@ -58,7 +60,7 @@ const AssortmentListItem: React.FC<AssortmentListItemProps> = ({
 
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString();
+    return formatDateTime(dateString, { dateStyle: 'medium' });
   };
 
   return (

@@ -45,6 +45,7 @@ const GetCurrentView = ({
             options={rest}
             queryString={queryString}
             sortable
+            availableTagOptions={availableTagOptions}
           />
         )}
       </LocaleWrapper>

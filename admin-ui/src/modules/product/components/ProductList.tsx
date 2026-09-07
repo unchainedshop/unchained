@@ -27,6 +27,7 @@ const ProductList = ({
   sortKeys,
   includeDrafts,
   sortable,
+  availableTagOptions = [],
 }) => {
   const { formatMessage } = useIntl();
   const { selectedLocale } = useApp();
@@ -103,6 +104,7 @@ const ProductList = ({
                 onSubmit={onSubmit}
                 onCancel={onCancel}
                 loading={formLoading}
+                availableTagOptions={availableTagOptions}
               />
             ),
             onAction: (ids: string[], data?: unknown) => {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
+import TagInput, { type TagOption } from '@/components/ui/Tag/TagInput';
 
 export interface BulkTagData {
   add?: string[];
@@ -10,35 +11,27 @@ interface BulkTagFormProps {
   onSubmit: (data: BulkTagData) => void | Promise<void>;
   onCancel: () => void;
   loading?: boolean;
+  availableTagOptions?: TagOption[];
 }
 
 const BulkTagForm: React.FC<BulkTagFormProps> = ({
   onSubmit,
   onCancel,
   loading = false,
+  availableTagOptions = [],
 }) => {
   const { formatMessage } = useIntl();
-  const [addTags, setAddTags] = useState('');
-  const [removeTags, setRemoveTags] = useState('');
+  const [addTags, setAddTags] = useState<string[]>([]);
+  const [removeTags, setRemoveTags] = useState<string[]>([]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
     const add = [
-      ...new Set(
-        addTags
-          .split(',')
-          .map((t) => t.trim().toLowerCase())
-          .filter(Boolean),
-      ),
+      ...new Set(addTags.map((t) => t.trim().toLowerCase()).filter(Boolean)),
     ];
     const remove = [
-      ...new Set(
-        removeTags
-          .split(',')
-          .map((t) => t.trim().toLowerCase())
-          .filter(Boolean),
-      ),
+      ...new Set(removeTags.map((t) => t.trim().toLowerCase()).filter(Boolean)),
     ];
     void onSubmit({
       add: add.length ? add : undefined,
@@ -48,49 +41,55 @@ const BulkTagForm: React.FC<BulkTagFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
-      <div className="flex flex-col gap-1">
+      <div className="flex w-56 flex-col gap-1">
         <label
           htmlFor="bulk-add-tags"
           className="text-xs text-slate-500 dark:text-slate-300"
         >
           {formatMessage({
             id: 'bulk_add_tags',
-            defaultMessage: 'Add tags (comma-separated)',
+            defaultMessage: 'Add tags',
           })}
         </label>
-        <input
+        <TagInput
           id="bulk-add-tags"
-          type="text"
-          value={addTags}
+          name="bulk-add-tags"
+          tagList={addTags}
           disabled={loading}
-          onChange={(e) => setAddTags(e.target.value)}
-          placeholder="tag1, tag2"
-          className="text-sm px-2 py-1 rounded bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-500 text-slate-900 dark:text-white placeholder:text-slate-400 w-48"
+          onChange={setAddTags}
+          selectOptions={availableTagOptions}
+          placeholder={formatMessage({
+            id: 'enter_tag',
+            defaultMessage: 'Enter tag...',
+          })}
         />
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex w-56 flex-col gap-1">
         <label
           htmlFor="bulk-remove-tags"
           className="text-xs text-slate-500 dark:text-slate-300"
         >
           {formatMessage({
             id: 'bulk_remove_tags',
-            defaultMessage: 'Remove tags (comma-separated)',
+            defaultMessage: 'Remove tags',
           })}
         </label>
-        <input
+        <TagInput
           id="bulk-remove-tags"
-          type="text"
-          value={removeTags}
+          name="bulk-remove-tags"
+          tagList={removeTags}
           disabled={loading}
-          onChange={(e) => setRemoveTags(e.target.value)}
-          placeholder="tag1, tag2"
-          className="text-sm px-2 py-1 rounded bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-500 text-slate-900 dark:text-white placeholder:text-slate-400 w-48"
+          onChange={setRemoveTags}
+          selectOptions={availableTagOptions}
+          placeholder={formatMessage({
+            id: 'enter_tag',
+            defaultMessage: 'Enter tag...',
+          })}
         />
       </div>
       <button
         type="submit"
-        disabled={loading || (!addTags.trim() && !removeTags.trim())}
+        disabled={loading || (!addTags.length && !removeTags.length)}
         className="text-xs font-medium px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-900 text-white dark:bg-white/10 dark:hover:bg-white/20 disabled:opacity-50"
       >
         {formatMessage({ id: 'apply', defaultMessage: 'Apply' })}

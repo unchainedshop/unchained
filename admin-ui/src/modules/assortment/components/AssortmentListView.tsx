@@ -5,7 +5,12 @@ import useAssortments from '../hooks/useAssortments';
 import AssortmentList from './AssortmentList';
 import useApp from '../../common/hooks/useApp';
 
-const AssortmentListView = ({ options, queryString, sortable }) => {
+const AssortmentListView = ({
+  options,
+  queryString,
+  sortable,
+  availableTagOptions,
+}) => {
   const { includeInactive, includeLeaves, limit, offset, tags, slug, sort } =
     options;
   const { selectedLocale } = useApp();
@@ -29,7 +34,11 @@ const AssortmentListView = ({ options, queryString, sortable }) => {
 
   return (
     <InfiniteScroll loading={loading} hasMore={hasMore} onLoadMore={loadMore}>
-      <AssortmentList assortments={assortments} sortable={sortable} />
+      <AssortmentList
+        assortments={assortments}
+        sortable={sortable}
+        availableTagOptions={availableTagOptions}
+      />
     </InfiniteScroll>
   );
 };

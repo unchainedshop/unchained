@@ -108,6 +108,15 @@ test.describe('MCP server (stateless, SDK v2)', () => {
       'Maximum number of results to return',
     );
     assert.ok(filterTool.description.startsWith('Comprehensive filter management'));
+
+    const usersTool = message.result.tools.find((tool) => tool.name === 'users_management');
+    const supportedUserActions = usersTool.inputSchema.properties.action.enum;
+    for (const action of supportedUserActions) {
+      assert.match(usersTool.description, new RegExp(`\\b${action}\\b`));
+    }
+    for (const unsupportedAction of ['SET_ROLES', 'SET_PASSWORD', 'GET_CART']) {
+      assert.doesNotMatch(usersTool.description, new RegExp(`\\b${unsupportedAction}\\b`));
+    }
   });
 
   test('executes a tool call end-to-end', async () => {

@@ -79,6 +79,7 @@ const Orders = () => {
       ',',
     ) as IPaymentProviderType[],
   });
+
   if (orderId) return <OrderDetailPage orderId={orderId} />;
 
   const headerText =

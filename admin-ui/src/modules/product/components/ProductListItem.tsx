@@ -163,14 +163,14 @@ const ProductListItem = ({
       <Table.Cell>
         {product?.status !== 'DELETED' ? (
           <Link href={productUrl} className="block">
-            <div className="flex flex-wrap gap-2">
+            <div className="flex max-w-xs flex-wrap gap-2">
               {product.tags?.map((t) => (
                 <Badge key={t} text={t} color="slate" />
               ))}
             </div>
           </Link>
         ) : (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex max-w-xs flex-wrap gap-2">
             {product.tags?.map((t) => (
               <Badge key={t} text={t} color="slate" />
             ))}
