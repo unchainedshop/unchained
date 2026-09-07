@@ -36,6 +36,7 @@ export interface ProductQuery {
   skus?: string[];
   bundleItemProductIds?: string[];
   proxyAssignmentProductIds?: string[];
+  types?: ProductType[];
 }
 
 export interface ProductDiscount {
@@ -83,6 +84,7 @@ export const buildFindSelector = ({
   skus,
   bundleItemProductIds,
   proxyAssignmentProductIds,
+  types,
 }: ProductQuery) => {
   const selector: mongodb.Filter<Product> = productSelector ? { ...productSelector } : {};
 
@@ -119,6 +121,10 @@ export const buildFindSelector = ({
 
   if (queryString && !selector.$text) {
     (selector as any).$text = { $search: queryString };
+  }
+
+  if (types?.length) {
+    selector.type = types.length === 1 ? types[0] : { $in: types };
   }
 
   if (!selector.status) {

@@ -11,6 +11,7 @@ export interface EnrollmentPeriod {
   end: Date;
   orderId?: string;
   isTrial?: boolean;
+  trialEndingNotifiedAt?: Date;
 }
 
 export interface EnrollmentPlan {
@@ -23,8 +24,20 @@ export const EnrollmentStatus = {
   INITIAL: 'INITIAL',
   ACTIVE: 'ACTIVE',
   PAUSED: 'PAUSED',
+  SUSPENDED: 'SUSPENDED',
   TERMINATED: 'TERMINATED',
 } as const;
+
+export const EnrollmentTerminationReason = {
+  USER_REQUESTED: 'USER_REQUESTED',
+  PAYMENT_FAILED: 'PAYMENT_FAILED',
+  EXPIRED: 'EXPIRED',
+  ADMIN_ACTION: 'ADMIN_ACTION',
+  OTHER: 'OTHER',
+} as const;
+
+export type EnrollmentTerminationReason =
+  (typeof EnrollmentTerminationReason)[keyof typeof EnrollmentTerminationReason];
 
 export type EnrollmentStatus = (typeof EnrollmentStatus)[keyof typeof EnrollmentStatus];
 
@@ -52,6 +65,12 @@ export type Enrollment = {
   enrollmentNumber?: string;
   orderIdForFirstPeriod?: string;
   expires?: Date;
+  requestedTerminationDate?: Date;
+  resumeAt?: Date;
+  contractStartDate?: Date;
+  minimumCommitmentEnd?: Date;
+  cancellationReason?: EnrollmentTerminationReason;
+  cancellationComment?: string;
   meta?: any;
   payment?: {
     paymentProviderId: string;

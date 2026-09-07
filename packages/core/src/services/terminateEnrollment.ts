@@ -1,16 +1,68 @@
-import { type Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
+import {
+  type Enrollment,
+  type EnrollmentTerminationReason,
+  EnrollmentStatus,
+} from '@unchainedshop/core-enrollments';
 import { processEnrollmentService } from './processEnrollment.ts';
 import { addMessageService } from './addMessage.ts';
+import { EnrollmentDirector } from '../core-index.ts';
+import type { Modules } from '../modules.ts';
 
-export async function terminateEnrollmentService(enrollment: Enrollment) {
-  if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;
+export async function resolveEnrollmentTerminationDateService(
+  this: Modules,
+  enrollment: Enrollment,
+  params: { requestedDate?: Date; referenceDate?: Date } = {},
+) {
+  const product = await this.products.findProduct({ productId: enrollment.productId });
+  if (!product) throw new Error('Product not found for enrollment');
 
-  let updatedEnrollment = await this.enrollments.updateStatus(enrollment._id, {
-    status: EnrollmentStatus.TERMINATED,
-    info: 'terminated manually',
+  const director = await EnrollmentDirector.actions({ enrollment, product }, { modules: this });
+  const terminationDate = await director.terminationDate({
+    referenceDate: params.referenceDate || new Date(),
   });
 
-  updatedEnrollment = await processEnrollmentService.bind(this)(updatedEnrollment);
+  if (!terminationDate || !params.requestedDate) return terminationDate;
+  return params.requestedDate.getTime() > terminationDate.getTime()
+    ? params.requestedDate
+    : terminationDate;
+}
+
+export async function terminateEnrollmentService(
+  this: Modules,
+  enrollment: Enrollment,
+  params?: { reason?: EnrollmentTerminationReason; comment?: string },
+) {
+  if (enrollment.status === EnrollmentStatus.TERMINATED) return enrollment;
+
+  const terminationDate = await resolveEnrollmentTerminationDateService.bind(this)(enrollment);
+
+  if (terminationDate === null) {
+    throw new Error('Enrollment termination is not allowed at this time');
+  }
+
+  if (params?.reason || params?.comment) {
+    await this.enrollments.updateCancellation(enrollment._id, {
+      reason: params.reason,
+      comment: params.comment,
+    });
+  }
+
+  const now = new Date();
+  let updatedEnrollment: Enrollment;
+
+  if (terminationDate.getTime() > now.getTime()) {
+    updatedEnrollment = (await this.enrollments.updateRequestedTerminationDate(
+      enrollment._id,
+      terminationDate,
+    )) as Enrollment;
+  } else {
+    updatedEnrollment = (await this.enrollments.updateStatus(enrollment._id, {
+      status: EnrollmentStatus.TERMINATED,
+      info: 'terminated manually',
+    })) as Enrollment;
+
+    updatedEnrollment = await processEnrollmentService.bind(this)(updatedEnrollment);
+  }
 
   const user = await this.users.findUserById(enrollment.userId);
   const locale = this.users.userLocale(user);

@@ -455,7 +455,10 @@ export type ICurrentUserQuery = {
       regionCode: string | null;
       city: string | null;
     } | null;
-    lastContact: { emailAddress: string | null; telNumber: string | null } | null;
+    lastContact: {
+      emailAddress: string | null;
+      telNumber: string | null;
+    } | null;
     lastLogin: {
       countryCode: string | null;
       locale: unknown;
@@ -464,7 +467,13 @@ export type ICurrentUserQuery = {
       timestamp: unknown;
       userAgent: string | null;
     } | null;
-    avatar: { _id: string; name: string; size: number; type: string; url: string | null } | null;
+    avatar: {
+      _id: string;
+      name: string;
+      size: number;
+      type: string;
+      url: string | null;
+    } | null;
     paymentCredentials: Array<{
       _id: string;
       isValid: boolean;
@@ -472,11 +481,19 @@ export type ICurrentUserQuery = {
       paymentProvider: {
         _id: string;
         type: Types.IPaymentProviderType | null;
-        interface: { _id: string; label: string | null; version: string | null } | null;
+        interface: {
+          _id: string;
+          label: string | null;
+          version: string | null;
+        } | null;
       };
     }>;
     emails: Array<{ verified: boolean; address: string }> | null;
-    web3Addresses: Array<{ address: string; nonce: string | null; verified: boolean }>;
+    web3Addresses: Array<{
+      address: string;
+      nonce: string | null;
+      verified: boolean;
+    }>;
     webAuthnCredentials: Array<{
       _id: string;
       created: unknown;
@@ -567,6 +584,14 @@ export type ILoginWithWebAuthnMutationVariables = Exact<{
 
 export type ILoginWithWebAuthnMutation = {
   loginWithWebAuthn: { _id: string; tokenExpires: unknown } | null;
+};
+
+export type ILogoutAllSessionsMutationVariables = Exact<{
+  userId?: string | number | null | undefined;
+}>;
+
+export type ILogoutAllSessionsMutation = {
+  logoutAllSessions: { success: boolean | null } | null;
 };
 
 export type IRemoveEmailMutationVariables = Exact<{
@@ -875,7 +900,13 @@ export type IUserQuery = {
     | ({
         _id: string;
         name: string;
-        avatar: { _id: string; name: string; size: number; type: string; url: string | null } | null;
+        avatar: {
+          _id: string;
+          name: string;
+          size: number;
+          type: string;
+          url: string | null;
+        } | null;
       } & {
         username?: string | null;
         isGuest?: boolean;
@@ -893,7 +924,10 @@ export type IUserQuery = {
           regionCode: string | null;
           city: string | null;
         } | null;
-        lastContact?: { emailAddress: string | null; telNumber: string | null } | null;
+        lastContact?: {
+          emailAddress: string | null;
+          telNumber: string | null;
+        } | null;
         lastLogin?: {
           countryCode: string | null;
           locale: unknown;
@@ -909,11 +943,19 @@ export type IUserQuery = {
           paymentProvider: {
             _id: string;
             type: Types.IPaymentProviderType | null;
-            interface: { _id: string; label: string | null; version: string | null } | null;
+            interface: {
+              _id: string;
+              label: string | null;
+              version: string | null;
+            } | null;
           };
         }>;
         emails?: Array<{ verified: boolean; address: string }> | null;
-        web3Addresses?: Array<{ address: string; nonce: string | null; verified: boolean }>;
+        web3Addresses?: Array<{
+          address: string;
+          nonce: string | null;
+          verified: boolean;
+        }>;
         webAuthnCredentials?: Array<{
           _id: string;
           created: unknown;
@@ -3210,6 +3252,9 @@ export type IEnrollmentDetailFragment = {
   status: Types.IEnrollmentStatus;
   created: unknown;
   expires: unknown;
+  requestedTerminationDate: unknown;
+  contractStartDate: unknown;
+  minimumCommitmentEnd: unknown;
   isExpired: boolean | null;
   country: { _id: string; isoCode: string | null } | null;
   billingAddress: {
@@ -3286,9 +3331,9 @@ export type IEnrollmentDetailFragment = {
     } | null;
   } | null;
   periods: Array<{
+    start: unknown;
     end: unknown;
     isTrial: boolean;
-    start: unknown;
     order: { _id: string } | null;
   }>;
   plan: {
@@ -3318,6 +3363,9 @@ export type IEnrollmentFragment = {
   status: Types.IEnrollmentStatus;
   created: unknown;
   expires: unknown;
+  requestedTerminationDate: unknown;
+  contractStartDate: unknown;
+  minimumCommitmentEnd: unknown;
   isExpired: boolean | null;
   country: { _id: string; isoCode: string | null } | null;
   currency: { _id: string; isoCode: string } | null;
@@ -3365,6 +3413,9 @@ export type IEnrollmentQuery = {
     status: Types.IEnrollmentStatus;
     created: unknown;
     expires: unknown;
+    requestedTerminationDate: unknown;
+    contractStartDate: unknown;
+    minimumCommitmentEnd: unknown;
     isExpired: boolean | null;
     country: { _id: string; isoCode: string | null } | null;
     billingAddress: {
@@ -3441,9 +3492,9 @@ export type IEnrollmentQuery = {
       } | null;
     } | null;
     periods: Array<{
+      start: unknown;
       end: unknown;
       isTrial: boolean;
-      start: unknown;
       order: { _id: string } | null;
     }>;
     plan: {
@@ -3480,6 +3531,9 @@ export type IEnrollmentsQuery = {
     status: Types.IEnrollmentStatus;
     created: unknown;
     expires: unknown;
+    requestedTerminationDate: unknown;
+    contractStartDate: unknown;
+    minimumCommitmentEnd: unknown;
     isExpired: boolean | null;
     country: { _id: string; isoCode: string | null } | null;
     currency: { _id: string; isoCode: string } | null;
@@ -3514,12 +3568,38 @@ export type ISendEnrollmentEmailMutation = {
   sendEnrollmentEmail: { success: boolean | null } | null;
 };
 
+export type ISuspendEnrollmentMutationVariables = Exact<{
+  enrollmentId: string | number;
+}>;
+
+export type ISuspendEnrollmentMutation = { suspendEnrollment: { _id: string } };
+
 export type ITerminateEnrollmentMutationVariables = Exact<{
   enrollmentId: string | number;
 }>;
 
 export type ITerminateEnrollmentMutation = {
   terminateEnrollment: { _id: string };
+};
+
+export type IUpdateEnrollmentPlanMutationVariables = Exact<{
+  enrollmentId: string | number;
+  plan: Types.IEnrollmentPlanInput;
+}>;
+
+export type IUpdateEnrollmentPlanMutation = {
+  updateEnrollment: {
+    _id: string;
+    status: Types.IEnrollmentStatus;
+    plan: {
+      quantity: number;
+      product: {
+        _id: string;
+        texts: { _id: string; title: string | null } | null;
+      };
+      configuration: Array<{ key: string; value: string }> | null;
+    };
+  };
 };
 
 export type IUserEnrollmentsQueryVariables = Exact<{
@@ -3541,7 +3621,10 @@ export type IUserEnrollmentsQuery = {
         quantity: number;
         product: {
           _id: string;
-          media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
+          media: Array<{
+            _id: string;
+            file: { _id: string; url: string | null } | null;
+          }>;
           texts: { _id: string; title: string | null } | null;
         };
       };
@@ -5248,7 +5331,11 @@ export type IUserCartQuery = {
       created: unknown;
       updated: unknown;
       total: { amount: number; currencyCode: string } | null;
-      country: { _id: string; isoCode: string | null; flagEmoji: string | null } | null;
+      country: {
+        _id: string;
+        isoCode: string | null;
+        flagEmoji: string | null;
+      } | null;
       items: Array<{
         _id: string;
         quantity: number;
@@ -5263,7 +5350,10 @@ export type IUserCartQuery = {
                 title: string | null;
                 subtitle: string | null;
               } | null;
-              media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
+              media: Array<{
+                _id: string;
+                file: { _id: string; url: string | null } | null;
+              }>;
             }
           | {
               _id: string;
@@ -5273,7 +5363,10 @@ export type IUserCartQuery = {
                 title: string | null;
                 subtitle: string | null;
               } | null;
-              media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
+              media: Array<{
+                _id: string;
+                file: { _id: string; url: string | null } | null;
+              }>;
             }
           | {
               _id: string;
@@ -5283,7 +5376,10 @@ export type IUserCartQuery = {
                 title: string | null;
                 subtitle: string | null;
               } | null;
-              media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
+              media: Array<{
+                _id: string;
+                file: { _id: string; url: string | null } | null;
+              }>;
             }
           | {
               _id: string;
@@ -5293,7 +5389,10 @@ export type IUserCartQuery = {
                 title: string | null;
                 subtitle: string | null;
               } | null;
-              media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
+              media: Array<{
+                _id: string;
+                file: { _id: string; url: string | null } | null;
+              }>;
             }
           | {
               _id: string;
@@ -5303,7 +5402,10 @@ export type IUserCartQuery = {
                 title: string | null;
                 subtitle: string | null;
               } | null;
-              media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
+              media: Array<{
+                _id: string;
+                file: { _id: string; url: string | null } | null;
+              }>;
             };
       }> | null;
     } | null;
@@ -6106,7 +6208,11 @@ export type IUserProductReviewsQuery = {
       review: string | null;
       upVote: number | null;
       downVote: number | null;
-      author: { _id: string; name: string; avatar: { _id: string; url: string | null } | null };
+      author: {
+        _id: string;
+        name: string;
+        avatar: { _id: string; url: string | null } | null;
+      };
       product:
         | {
             _id: string;
@@ -6115,7 +6221,10 @@ export type IUserProductReviewsQuery = {
             tags: Array<unknown> | null;
             updated: unknown;
             published: unknown;
-            proxies: Array<{ __typename: 'BundleProduct' } | { __typename: 'ConfigurableProduct' }>;
+            proxies: Array<
+              | { __typename: 'BundleProduct' }
+              | { __typename: 'ConfigurableProduct' }
+            >;
             texts: {
               _id: string;
               slug: string | null;
@@ -6165,7 +6274,10 @@ export type IUserProductReviewsQuery = {
             updated: unknown;
             published: unknown;
             catalogPrice: { amount: number; currencyCode: string } | null;
-            proxies: Array<{ __typename: 'BundleProduct' } | { __typename: 'ConfigurableProduct' }>;
+            proxies: Array<
+              | { __typename: 'BundleProduct' }
+              | { __typename: 'ConfigurableProduct' }
+            >;
             texts: {
               _id: string;
               slug: string | null;
@@ -6191,7 +6303,10 @@ export type IUserProductReviewsQuery = {
             updated: unknown;
             published: unknown;
             catalogPrice: { amount: number; currencyCode: string } | null;
-            proxies: Array<{ __typename: 'BundleProduct' } | { __typename: 'ConfigurableProduct' }>;
+            proxies: Array<
+              | { __typename: 'BundleProduct' }
+              | { __typename: 'ConfigurableProduct' }
+            >;
             texts: {
               _id: string;
               slug: string | null;
@@ -6233,7 +6348,10 @@ export type IUserProductReviewsQuery = {
               file: { _id: string; url: string | null } | null;
             }>;
           };
-      ownVotes: Array<{ timestamp: unknown; type: Types.IProductReviewVoteType }>;
+      ownVotes: Array<{
+        timestamp: unknown;
+        type: Types.IProductReviewVoteType;
+      }>;
     }>;
   } | null;
 };
@@ -6841,6 +6959,7 @@ export type IProductPlanConfigurationFragment = {
   trialInterval: Types.IProductPlanConfigurationInterval | null;
   trialIntervalCount: number | null;
   billingIntervalCount: number | null;
+  minimumCommitmentPeriods: number | null;
 };
 
 export type IProductPlanConfigurationFragmentVariables = Exact<{
@@ -8279,6 +8398,7 @@ export type IProductPlanQuery = {
           trialInterval: Types.IProductPlanConfigurationInterval | null;
           trialIntervalCount: number | null;
           billingIntervalCount: number | null;
+          minimumCommitmentPeriods: number | null;
         } | null;
       }
     | { _id: string }
@@ -8511,6 +8631,7 @@ export type IProductsQueryVariables = Exact<{
   includeDrafts?: boolean | null | undefined;
   sort?: Array<Types.ISortOptionInput> | null | undefined;
   forceLocale?: unknown;
+  types?: Array<Types.IProductType> | null | undefined;
 }>;
 
 export type IProductsQuery = {
@@ -10892,7 +11013,10 @@ export type IUserQuotationsQuery = {
               subtitle: string | null;
               title: string | null;
             } | null;
-            media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
+            media: Array<{
+              _id: string;
+              file: { _id: string; url: string | null } | null;
+            }>;
           }
         | {
             _id: string;
@@ -10902,7 +11026,10 @@ export type IUserQuotationsQuery = {
               subtitle: string | null;
               title: string | null;
             } | null;
-            media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
+            media: Array<{
+              _id: string;
+              file: { _id: string; url: string | null } | null;
+            }>;
           }
         | {
             _id: string;
@@ -10912,7 +11039,10 @@ export type IUserQuotationsQuery = {
               subtitle: string | null;
               title: string | null;
             } | null;
-            media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
+            media: Array<{
+              _id: string;
+              file: { _id: string; url: string | null } | null;
+            }>;
           }
         | {
             _id: string;
@@ -10922,7 +11052,10 @@ export type IUserQuotationsQuery = {
               subtitle: string | null;
               title: string | null;
             } | null;
-            media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
+            media: Array<{
+              _id: string;
+              file: { _id: string; url: string | null } | null;
+            }>;
           }
         | {
             _id: string;
@@ -10932,7 +11065,10 @@ export type IUserQuotationsQuery = {
               subtitle: string | null;
               title: string | null;
             } | null;
-            media: Array<{ _id: string; file: { _id: string; url: string | null } | null }>;
+            media: Array<{
+              _id: string;
+              file: { _id: string; url: string | null } | null;
+            }>;
           };
     }>;
   } | null;

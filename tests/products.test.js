@@ -46,7 +46,7 @@ test.describe('Products', () => {
         variables: {},
       });
 
-      assert.strictEqual(productsCount, 12);
+      assert.strictEqual(productsCount, 13);
     });
 
     test('return only total number of products that include a slug', async () => {
@@ -99,6 +99,80 @@ test.describe('Products', () => {
 
       assert.ok(productsCount >= 12);
     });
+
+    test('return only products matching the types filter', async () => {
+      const {
+        data: { productsCount },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query productsCount($types: [ProductType!]) {
+            productsCount(types: $types)
+          }
+        `,
+        variables: {
+          types: ['PLAN_PRODUCT'],
+        },
+      });
+
+      assert.ok(productsCount >= 4);
+    });
+
+    test('return products list filtered by types', async () => {
+      const {
+        data: { products },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query products($types: [ProductType!]) {
+            products(types: $types) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          types: ['PLAN_PRODUCT'],
+        },
+      });
+
+      assert.ok(products.length >= 4);
+    });
+
+    test('return only SIMPLE_PRODUCT when filtering by that type', async () => {
+      const {
+        data: { products },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query products($types: [ProductType!]) {
+            products(types: $types, includeDrafts: true) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          types: ['SIMPLE_PRODUCT'],
+        },
+      });
+
+      assert.ok(products.length >= 2);
+    });
+
+    test('return products matching multiple types', async () => {
+      const {
+        data: { products },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query products($types: [ProductType!]) {
+            products(types: $types, includeDrafts: true) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          types: ['PLAN_PRODUCT', 'SIMPLE_PRODUCT'],
+        },
+      });
+
+      assert.ok(products.length >= 6);
+    });
   });
 
   test.describe('query.productsCount for anonymous user should', () => {
@@ -114,7 +188,7 @@ test.describe('Products', () => {
         variables: {},
       });
 
-      assert.strictEqual(productsCount, 12);
+      assert.strictEqual(productsCount, 13);
     });
   });
 
@@ -131,7 +205,7 @@ test.describe('Products', () => {
         variables: {},
       });
 
-      assert.strictEqual(productsCount, 12);
+      assert.strictEqual(productsCount, 13);
     });
   });
 

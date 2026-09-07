@@ -60,12 +60,21 @@ const enrollments = await enrollmentsModule.findEnrollments({
 | `delete` | Delete an enrollment |
 | `activate` | Activate an enrollment |
 | `terminate` | Terminate an enrollment |
+| `updatePlan` | Change the enrollment's product plan |
+| `updateExpiry` | Set or update the enrollment's expiry date |
+| `updateRequestedTerminationDate` | Set or clear a scheduled termination date |
+| `updateResumeAt` | Set or clear a scheduled resume date |
+| `updateContractStartDate` | Set or clear the contract start date |
+| `updateMinimumCommitmentEnd` | Set or clear the minimum commitment end date |
+| `updateCancellation` | Store cancellation reason and comment |
 
 ### Period Management
 
 | Method | Description |
 |--------|-------------|
-| `addPeriod` | Add a billing period |
+| `addPeriod` | Add a single billing period |
+| `addEnrollmentPeriods` | Add multiple billing periods at once |
+| `removeFuturePeriods` | Remove future periods without linked orders (used during plan changes) |
 | `findPeriod` | Find a specific period |
 | `isExpired` | Check if enrollment is expired |
 
@@ -79,7 +88,8 @@ const enrollments = await enrollmentsModule.findEnrollments({
 
 | Export | Description |
 |--------|-------------|
-| `EnrollmentStatus` | Status values (INITIAL, ACTIVE, PAUSED, TERMINATED) |
+| `EnrollmentStatus` | Status values (INITIAL, ACTIVE, PAUSED, SUSPENDED, TERMINATED) |
+| `EnrollmentTerminationReason` | Cancellation reason values (USER_REQUESTED, PAYMENT_FAILED, EXPIRED, ADMIN_ACTION, OTHER) |
 
 ### Settings
 
@@ -92,6 +102,7 @@ const enrollments = await enrollmentsModule.findEnrollments({
 | Export | Description |
 |--------|-------------|
 | `Enrollment` | Enrollment document type |
+| `EnrollmentPlan` | Plan document type |
 | `EnrollmentPeriod` | Period document type |
 | `EnrollmentsModule` | Module interface type |
 
@@ -102,8 +113,11 @@ const enrollments = await enrollmentsModule.findEnrollments({
 | `ENROLLMENT_CREATE` | Enrollment created |
 | `ENROLLMENT_UPDATE` | Enrollment updated |
 | `ENROLLMENT_REMOVE` | Enrollment deleted |
-| `ENROLLMENT_ACTIVATE` | Enrollment activated |
-| `ENROLLMENT_TERMINATE` | Enrollment terminated |
+| `ENROLLMENT_ADD_PERIOD` | Period added to enrollment |
+| `ENROLLMENT_SUSPEND` | Enrollment suspended |
+| `ENROLLMENT_RESUME` | Suspended enrollment resumed |
+| `ENROLLMENT_PLAN_CHANGE` | Enrollment plan changed |
+| `ENROLLMENT_TRIAL_ENDING` | Trial period ending within 3 days |
 
 ## License
 
