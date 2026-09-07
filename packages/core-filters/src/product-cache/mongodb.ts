@@ -9,8 +9,6 @@ export interface FilterProductIdCacheRecord {
   computedAt?: number;
 }
 
-const DUPLICATE_KEY = 11000;
-
 /*
  * Rebuilding scans the catalog once per option, so on a large catalog a rebuild is in flight long
  * enough for the filter to change underneath it. Rows record the generation they were computed
@@ -26,33 +24,47 @@ const notNewerThan = (computedAt: number) => ({
   $or: [{ computedAt: { $lte: computedAt } }, { computedAt: { $exists: false } }],
 });
 
+/* Aggregation-expression twin of notNewerThan, evaluated against the row inside the update. */
+const missingOrNotNewerThan = (field: string, computedAt: number) => ({
+  $or: [{ $in: [{ $type: field }, ['missing', 'null']] }, { $lte: [field, computedAt] }],
+});
+
+const literal = (value: unknown) => ({ $literal: value });
+
 const updateIfHashChanged = async (Collection, selector, doc, computedAt: number) => {
   const _id = Object.values(selector).join(':');
   try {
     const hash = await sha256(JSON.stringify(doc));
+    // The generation and hash guards are decided inside the update, not in the filter. Guards in
+    // the filter turn an unchanged row (or one a newer generation owns) into a non-match, so the
+    // upsert tries to insert the _id a second time and mongod logs an E11000 for every rebuild of
+    // a stable catalog - thousands an hour on a busy cluster, all harmless, all indistinguishable
+    // in the logs from a real duplicate-key bug. Here the row is always addressed by _id (created
+    // if absent) and the server keeps the existing values whenever this generation may not write.
+    const mayWrite = {
+      $and: [{ $ne: ['$hash', hash] }, missingOrNotNewerThan('$computedAt', computedAt)],
+    };
+    const writeOrKeep = (field: string, value: unknown) => ({
+      $cond: [mayWrite, literal(value), `$${field}`],
+    });
     await Collection.updateOne(
-      {
-        ...selector,
-        ...notNewerThan(computedAt),
-        hash: { $ne: hash },
-      },
-      {
-        $set: {
-          ...doc,
-          hash,
-          computedAt,
+      { _id },
+      [
+        {
+          $set: {
+            ...Object.fromEntries(Object.entries(selector).map(([k, v]) => [k, literal(v)])),
+            ...Object.fromEntries(
+              Object.entries({ ...doc, hash, computedAt }).map(([k, v]) => [k, writeOrKeep(k, v)]),
+            ),
+          },
         },
-        $setOnInsert: {
-          _id,
-        },
-      },
+      ],
       { upsert: true },
     );
-  } catch (e) {
-    // The row already holds this hash, or a newer generation already claimed it. Either way the
-    // upsert collides on _id and there is nothing to do. Anything else means we did not write,
-    // which the caller has to know before it starts deleting the rows this was meant to replace.
-    if (e?.code !== DUPLICATE_KEY) return { _id, written: false };
+  } catch {
+    // We did not write, which the caller has to know before it starts deleting the rows this was
+    // meant to replace.
+    return { _id, written: false };
   }
   return { _id, written: true };
 };
