@@ -8,6 +8,7 @@ import setupTicketing, {
   ticketingModules,
   ticketingTypeDefs,
   ticketingResolvers,
+  ticketingActions,
   configureTicketingRoles,
   type TicketingAPI,
 } from '@unchainedshop/ticketing';
@@ -34,6 +35,7 @@ try {
     typeDefs: ticketingTypeDefs,
     resolvers: [ticketingResolvers],
     rolesOptions: {
+      additionalActions: ticketingActions,
       additionalRoles: {
         ticketing: configureTicketingRoles,
       },

@@ -27,18 +27,19 @@ npm run dev
 ```
 
 Server starts at http://localhost:4010 with:
+
 - GraphQL endpoint: `/graphql`
 - Default login: `admin@unchained.local` / `password`
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server with watch mode |
-| `npm run build` | Build TypeScript to `lib/` |
-| `npm start` | Start production server |
-| `npm run test:run:integration` | Run integration tests |
-| `npm run lint` | Format code with Prettier |
+| Command                        | Description                              |
+| ------------------------------ | ---------------------------------------- |
+| `npm run dev`                  | Start development server with watch mode |
+| `npm run build`                | Build TypeScript to `lib/`               |
+| `npm start`                    | Start production server                  |
+| `npm run test:run:integration` | Run integration tests                    |
+| `npm run lint`                 | Format code with Prettier                |
 
 ## Environment Variables
 
@@ -56,12 +57,12 @@ Server starts at http://localhost:4010 with:
 
 ### Seeding
 
-| Variable | Description | Default |
-|----------|-------------|---------|
+| Variable                  | Description                            | Default    |
+| ------------------------- | -------------------------------------- | ---------- |
 | `UNCHAINED_SEED_PASSWORD` | Admin password (`generate` for random) | `password` |
-| `UNCHAINED_COUNTRY` | Default country ISO code | `CH` |
-| `UNCHAINED_CURRENCY` | Default currency ISO code | `CHF` |
-| `UNCHAINED_LANG` | Default language ISO code | `de` |
+| `UNCHAINED_COUNTRY`       | Default country ISO code               | `CH`       |
+| `UNCHAINED_CURRENCY`      | Default currency ISO code              | `CHF`      |
+| `UNCHAINED_LANG`          | Default language ISO code              | `de`       |
 
 ## Ticketing Setup
 
@@ -69,9 +70,15 @@ The example includes placeholder implementations for ticket rendering:
 
 ```typescript
 setupTicketing(platform.unchainedAPI, {
-  renderOrderPDF: () => { /* Implement PDF generation */ },
-  createAppleWalletPass: () => { /* Implement Apple Wallet pass */ },
-  createGoogleWalletPass: () => { /* Implement Google Wallet pass */ },
+  renderOrderPDF: () => {
+    /* Implement PDF generation */
+  },
+  createAppleWalletPass: () => {
+    /* Implement Apple Wallet pass */
+  },
+  createGoogleWalletPass: () => {
+    /* Implement Google Wallet pass */
+  },
 });
 ```
 
@@ -93,6 +100,7 @@ See the [@unchainedshop/ticketing](../../packages/ticketing/README.md) documenta
 ## Database Seeding
 
 On first start, the seed script creates:
+
 - Admin user: `admin@unchained.local`
 - Country: Switzerland (CH)
 - Currency: Swiss Franc (CHF)
