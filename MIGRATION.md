@@ -295,6 +295,38 @@ Custom adapters can now be registered with a single typed call instead of a hand
 ]                                            ]
 ```
 
+### Order calculations: gross → net category balances
+
+Order category balances (`ITEMS`, `DELIVERY`, `PAYMENT`, `DISCOUNTS`) now exclude tax.
+Separate `TAXES` rows contribute to the gross total, as they already do in product,
+delivery and payment pricing sheets.
+
+The automatic startup migration `20260907120000-order-calculation-net` converts all
+persisted order calculations, including carts and completed or rejected orders.
+It retains the original rows and adds offsets using their recorded tax amounts;
+it does not rerun pricing adapters, look up current rates, round amounts or change
+order timestamps. Gross totals, net totals and discount amounts are preserved.
+Already marked net calculations are skipped, and each order is updated atomically
+so interrupted runs can safely resume. Item, delivery and payment calculations
+already have the required representation and are left intact.
+
+Migrations now run before plugin initialization, API setup and workers, even with
+`disableWorker` or `UNCHAINED_DISABLE_WORKER` enabled. A failed migration rejects
+platform startup. Tax rows without `baseCategory` are attributed to their preceding
+category row (the built-in adapters' historical layout); an unresolvable tax row
+stops migration with the order ID so its attribution can be repaired.
+
+Stop older application instances before upgrading: they must not write gross order
+calculations after the migration. Restore a database backup before rolling back to
+a release that expects gross order rows. Custom integrations using `initCore`
+directly must run the registered migrations before serving requests.
+
+Custom order pricing adapters must pass **net** `amount` values and the separate
+`taxAmount` to `addItems`, `addDelivery`, `addPayment` and `addDiscount`. For example,
+a gross price of 10,000 with 715 tax becomes `{ amount: 9285, taxAmount: 715 }`.
+Public `gross()`, `net()`, `total()` and discount breakdowns retain their price
+semantics; the runtime no longer infers legacy formats.
+
 ### Events: explicit emit-adapter registration
 
 **BREAKING CHANGE for Redis / AWS EventBridge users.** These transports no longer self-register as a side effect of being imported. Register the emit adapter explicitly before `startPlatform`:

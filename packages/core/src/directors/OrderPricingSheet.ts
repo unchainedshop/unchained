@@ -48,13 +48,6 @@ export const OrderPricingSheet = (
     }
   };
 
-  // Order calculations created before net aggregation stored gross category amounts.
-  // Explicitly marked rows let persisted calculations retain those legacy semantics.
-  const usesNetPriceRepresentation = () =>
-    basePricingSheet.calculation.some(
-      ({ category, isNetPrice }) => category !== OrderPricingRowCategory.Taxes && isNetPrice === true,
-    );
-
   const pricingSheet: IOrderPricingSheet = {
     ...basePricingSheet,
 
@@ -115,28 +108,6 @@ export const OrderPricingSheet = (
         category: OrderPricingRowCategory.Discounts,
         discountId,
       });
-    },
-
-    gross() {
-      const amount = basePricingSheet.sum();
-      return usesNetPriceRepresentation() ? amount : amount - this.taxSum();
-    },
-
-    net() {
-      return this.gross() - this.taxSum();
-    },
-
-    total({ category, useNetPrice, discountId } = { useNetPrice: false }) {
-      const taxAmount = this.taxSum({ baseCategory: category, discountId });
-      const amount = this.sum({ category, discountId });
-      const netAmount = usesNetPriceRepresentation()
-        ? amount - (category ? 0 : taxAmount)
-        : amount - (category ? taxAmount : taxAmount * 2);
-
-      return {
-        amount: Math.round(useNetPrice ? netAmount : netAmount + taxAmount),
-        currencyCode: this.currencyCode,
-      };
     },
 
     discountPrices(explicitDiscountId) {

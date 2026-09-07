@@ -16,6 +16,7 @@ import { setupUploadHandlers } from './setup/setupUploadHandlers.ts';
 import { setupTemplates, MessageTypes } from './setup/setupTemplates.ts';
 import { type SetupWorkqueueOptions, stopWorkqueue, setupWorkqueue } from './setup/setupWorkqueue.ts';
 import { createMigrationRepository } from './migrations/migrationRepository.ts';
+import { runMigrations } from './migrations/runMigrations.ts';
 import type { IRoleOptionConfig } from '@unchainedshop/roles';
 
 const { UNCHAINED_API_VERSION, npm_package_version } = process.env;
@@ -114,6 +115,10 @@ export const startPlatform = async ({
     bulkExporter,
   });
 
+  // Persisted data must match the runtime format before plugins, APIs or workers
+  // can use it. This also runs on instances with workers disabled.
+  await runMigrations({ migrationRepository, unchainedAPI });
+
   // Initialize plugins (call onRegister hooks)
   await pluginRegistry.initialize(unchainedAPI);
 
@@ -148,7 +153,6 @@ export const startPlatform = async ({
   // Setup Work Queue
   await setupWorkqueue({
     unchainedAPI,
-    migrationRepository,
     ...workQueueOptions,
   });
 

@@ -217,10 +217,10 @@ describe('order pricing contracts', () => {
     assert.equal(sheet.sum(), 100);
   });
 
-  test('continues to interpret persisted pre-change order rows consistently', () => {
+  test('reads persisted net order rows without inferring a legacy format', () => {
     const sheet = OrderPricingSheet({
       calculation: [
-        { category: OrderPricingRowCategory.Items, amount: 10_000 },
+        { category: OrderPricingRowCategory.Items, amount: 9_285 },
         {
           category: OrderPricingRowCategory.Taxes,
           baseCategory: OrderPricingRowCategory.Items,

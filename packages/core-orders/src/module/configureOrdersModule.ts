@@ -16,6 +16,7 @@ import { emit, registerEvents } from '@unchainedshop/events';
 
 import renameCurrencyCode from '../migrations/20250502111800-currency-code.ts';
 import normalizeOrderContactPhone from '../migrations/20260625120000-normalize-contact-phone.ts';
+import migrateOrderCalculationToNet from '../migrations/20260907120000-order-calculation-net.ts';
 
 // NOTE: Renamed from ORDER_FULLFILLED to ORDER_FULFILLED in v5.0.0
 // This is a breaking change for event subscribers
@@ -34,6 +35,7 @@ export const configureOrdersModule = async ({
   // Migration v3 -> v4
   renameCurrencyCode(migrationRepository);
   normalizeOrderContactPhone(migrationRepository);
+  migrateOrderCalculationToNet(migrationRepository);
 
   registerEvents(ORDER_EVENTS);
 

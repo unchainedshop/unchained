@@ -48,18 +48,13 @@ export const createMigrationRunner = ({
       .map(this.operationFactory('up'));
   },
   async run() {
-    try {
-      const migrations = this.migrateToLatest();
+    const migrations = this.migrateToLatest();
 
-      const mostRecentId = await migrations.reduce(
-        (idPromise, migration) => Promise.resolve(idPromise).then(migration),
-        currentId,
-      );
+    const mostRecentId = await migrations.reduce(
+      (idPromise, migration) => Promise.resolve(idPromise).then(migration),
+      currentId,
+    );
 
-      return [mostRecentId, migrations.length];
-    } catch (e) {
-      logger.error(`Migration failed: ${e.name} - ${e.message}`);
-      return [e.migrationId, null];
-    }
+    return [mostRecentId, migrations.length];
   },
 });
