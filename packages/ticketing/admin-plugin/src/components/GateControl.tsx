@@ -30,7 +30,7 @@ const GateControl = ({ onLogout }) => {
             <button
               type="button"
               onClick={() => setSelectedEventId(null)}
-              className="inline-flex items-center rounded-md border border-slate-300 dark:border-slate-600 px-2 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700"
+              className="inline-flex items-center rounded-md border border-border-default px-2 py-1.5 text-xs font-medium text-text-secondary hover:bg-surface-raised"
             >
               <svg
                 className="h-4 w-4 mr-1"
@@ -44,7 +44,7 @@ const GateControl = ({ onLogout }) => {
               {formatMessage({ id: 'gate_back', defaultMessage: 'Back' })}
             </button>
           )}
-          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+          <h2 className="text-xl font-semibold text-text-primary">
             {selectedEventId
               ? title
               : formatMessage({
@@ -60,7 +60,7 @@ const GateControl = ({ onLogout }) => {
               await clearPassCode();
               onLogout();
             }}
-            className="inline-flex items-center rounded-md border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700"
+            className="inline-flex items-center rounded-md border border-border-default px-3 py-1.5 text-xs font-medium text-text-secondary hover:bg-surface-raised"
           >
             {formatMessage({
               id: 'gate_deactivate',

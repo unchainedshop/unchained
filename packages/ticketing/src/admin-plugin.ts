@@ -3,50 +3,42 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-export interface TicketingAdminPluginOptions {
-  version?: string;
-}
+export const ticketingBundlePath = resolve(__dirname, '../admin-plugin/dist/index.js');
 
-export function ticketingAdminPlugin(options: TicketingAdminPluginOptions = {}) {
-  return {
-    name: 'ticketing',
-    version: options.version || '1.0.0',
-    bundlePath: resolve(__dirname, '../admin-plugin/dist/index.js'),
-    navigation: {
-      label: 'Ticketing',
-      icon: 'ticket',
-      sortOrder: 90,
+export const ticketingEntities = [
+  {
+    path: '/ticketing',
+    label: 'Events',
+    icon: 'ticket',
+    sortOrder: 90,
+    components: {
+      list: 'TicketingPage',
+      detail: 'TicketEventDetailPage',
     },
-    slots: {
-      entities: [
-        {
-          path: '/ticketing',
-          label: 'Events',
-          icon: 'ticket',
-          sortOrder: 90,
-          components: {
-            list: 'TicketingPage',
-            detail: 'TicketEventDetailPage',
-          },
-        },
-      ],
-      pages: [
-        {
-          path: '/gate-control',
-          label: 'Gate Control',
-          icon: 'shield-check',
-          sortOrder: 92,
-          component: 'GateControlPage',
-        },
-      ],
-      links: [
-        {
-          href: '/ext/gate-control',
-          label: 'Gate Control',
-          icon: 'shield-check',
-          showOnLoginPage: true,
-        },
-      ],
-    },
-  };
-}
+  },
+];
+
+export const ticketingPages = [
+  {
+    path: '/gate-control',
+    label: 'Gate Control',
+    icon: 'shield-check',
+    sortOrder: 92,
+    component: 'GateControlPage',
+  },
+];
+
+export const ticketingLinks = [
+  {
+    href: '/ext/gate-control',
+    label: 'Gate Control',
+    icon: 'shield-check',
+    showOnLoginPage: true,
+  },
+];
+
+export const ticketingNavigation = {
+  label: 'Ticketing',
+  icon: 'ticket',
+  sortOrder: 90,
+};
