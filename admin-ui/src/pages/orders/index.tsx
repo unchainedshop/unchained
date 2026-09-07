@@ -25,6 +25,7 @@ import {
 } from '../../gql/types';
 import usePaymentProviders from '../../modules/payment-providers/hooks/usePaymentProviders';
 import useDeliveryProviders from '../../modules/delivery-provider/hooks/useDeliveryProviders';
+import useScrollRestoration from '../../modules/common/hooks/useScrollRestoration';
 
 const Orders = () => {
   const { formatMessage } = useIntl();
@@ -79,6 +80,8 @@ const Orders = () => {
       ',',
     ) as IPaymentProviderType[],
   });
+  useScrollRestoration(!orderId);
+
   if (orderId) return <OrderDetailPage orderId={orderId} />;
 
   const headerText =
