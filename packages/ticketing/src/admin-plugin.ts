@@ -11,7 +11,7 @@ export function ticketingAdminPlugin(options: TicketingAdminPluginOptions = {}) 
   return {
     name: 'ticketing',
     version: options.version || '1.0.0',
-    bundlePath: resolve(__dirname, '../admin-plugin/dist/index.global.js'),
+    bundlePath: resolve(__dirname, '../admin-plugin/dist/index.js'),
     navigation: {
       label: 'Ticketing',
       icon: 'ticket',

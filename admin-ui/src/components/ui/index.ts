@@ -63,3 +63,6 @@ export {
   ChartStyle,
 } from './chart';
 export type { ChartConfig } from './chart';
+
+export { default as Table } from '../../modules/common/components/Table';
+export { default as MediaAvatar } from '../../modules/common/components/MediaAvatar';

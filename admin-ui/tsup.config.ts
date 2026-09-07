@@ -98,6 +98,86 @@ const shimEntries = Object.fromEntries(
   }),
 );
 
+// Replace CJS use-sync-external-store with ESM that imports react properly
+// (the CJS version uses require('react') which fails in browser ESM context)
+const cjsToEsmPlugin = {
+  name: 'cjs-to-esm-externals',
+  setup(build: any) {
+    build.onResolve(
+      { filter: /^use-sync-external-store/ },
+      (args: any) => ({
+        path: args.path,
+        namespace: 'use-sync-external-store-esm',
+      }),
+    );
+
+    build.onLoad(
+      { filter: /.*/, namespace: 'use-sync-external-store-esm' },
+      (args: any) => {
+        if (args.path.includes('with-selector')) {
+          return {
+            contents: `
+import { useSyncExternalStore, useRef, useEffect, useMemo, useDebugValue } from 'react';
+function is(x, y) {
+  return (x === y && (0 !== x || 1 / x === 1 / y)) || (x !== x && y !== y);
+}
+var objectIs = typeof Object.is === 'function' ? Object.is : is;
+export function useSyncExternalStoreWithSelector(subscribe, getSnapshot, getServerSnapshot, selector, isEqual) {
+  var instRef = useRef(null);
+  if (instRef.current === null) {
+    var inst = { hasValue: false, value: null };
+    instRef.current = inst;
+  } else {
+    inst = instRef.current;
+  }
+  var _ref = useMemo(function () {
+    var hasMemo = false, memoizedSnapshot, memoizedSelection;
+    var maybeGetServerSnapshot = getServerSnapshot === undefined ? null : getServerSnapshot;
+    function memoizedSelector(nextSnapshot) {
+      if (!hasMemo) {
+        hasMemo = true;
+        memoizedSnapshot = nextSnapshot;
+        var nextSelection = selector(nextSnapshot);
+        if (isEqual !== undefined && inst.hasValue) {
+          var currentSelection = inst.value;
+          if (isEqual(currentSelection, nextSelection)) {
+            memoizedSelection = currentSelection;
+            return currentSelection;
+          }
+        }
+        memoizedSelection = nextSelection;
+        return nextSelection;
+      }
+      var prevSelection = memoizedSelection;
+      if (objectIs(memoizedSnapshot, nextSnapshot)) return prevSelection;
+      var nextSelection2 = selector(nextSnapshot);
+      if (isEqual !== undefined && isEqual(prevSelection, nextSelection2)) {
+        memoizedSnapshot = nextSnapshot;
+        return prevSelection;
+      }
+      memoizedSnapshot = nextSnapshot;
+      memoizedSelection = nextSelection2;
+      return nextSelection2;
+    }
+    return [function () { return memoizedSelector(getSnapshot()); }, maybeGetServerSnapshot === null ? undefined : function () { return memoizedSelector(maybeGetServerSnapshot()); }];
+  }, [getSnapshot, getServerSnapshot, selector, isEqual]);
+  var value = useSyncExternalStore(subscribe, _ref[0], _ref[1]);
+  useEffect(function () { inst.hasValue = true; inst.value = value; }, [value]);
+  useDebugValue(value);
+  return value;
+}`,
+            loader: 'js',
+          };
+        }
+        return {
+          contents: `export { useSyncExternalStore } from 'react';`,
+          loader: 'js',
+        };
+      },
+    );
+  },
+};
+
 const shimPlugin = {
   name: 'unchained-shim-generator',
   setup(build: any) {
@@ -171,7 +251,7 @@ export default defineConfig({
   clean: true,
   outDir: 'dist',
   external: Object.keys(SHARED_DEP_SHIMS),
-  esbuildPlugins: [shimPlugin],
+  esbuildPlugins: [cjsToEsmPlugin, shimPlugin],
   esbuildOptions(options) {
     options.alias = {
       '@/*': './src/*',
