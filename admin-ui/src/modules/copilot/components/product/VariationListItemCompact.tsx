@@ -1,5 +1,6 @@
 import React from 'react';
 import { useIntl } from 'react-intl';
+import useFormatDateTime from '@/modules/common/utils/useFormatDateTime';
 
 interface VariationListItemCompactProps {
   variation: {
@@ -17,6 +18,7 @@ const VariationListItemCompact: React.FC<VariationListItemCompactProps> = ({
   variation,
 }) => {
   const { formatMessage } = useIntl();
+  const { formatDateTime } = useFormatDateTime();
 
   return (
     <div className="flex items-center gap-4 p-3 bg-surface rounded-lg shadow-sm border border-border-subtle hover:shadow-md transition-shadow duration-200 w-full overflow-hidden">
@@ -58,14 +60,22 @@ const VariationListItemCompact: React.FC<VariationListItemCompactProps> = ({
             id: 'created',
             defaultMessage: 'Created',
           })}
-          : {new Date(variation.created).toLocaleString()}
+          :{' '}
+          {formatDateTime(variation.created, {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+          })}
         </span>
         <span>
           {formatMessage({
             id: 'updated',
             defaultMessage: 'Updated',
           })}
-          : {new Date(variation.updated).toLocaleString()}
+          :{' '}
+          {formatDateTime(variation.updated, {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+          })}
         </span>
       </div>
     </div>

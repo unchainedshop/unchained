@@ -5,6 +5,7 @@ import Badge from '@/components/ui/Badge';
 import { useIntl } from 'react-intl';
 import CopyableId from './shared/CopyableId';
 import ConfigurationDisplay from './shared/ConfigurationDisplay';
+import useFormatDateTime from '@/modules/common/utils/useFormatDateTime';
 
 const getNormalizedDetailPageLink = (type, provider) => {
   if (type === 'PAYMENT')
@@ -16,6 +17,7 @@ const getNormalizedDetailPageLink = (type, provider) => {
 };
 export const CopilotProviderListItem = ({ provider, type }) => {
   const { formatMessage } = useIntl();
+  const { formatDateTime } = useFormatDateTime();
   return (
     <div className="relative border rounded-xl p-4 shadow-sm bg-surface-input space-y-4 w-full">
       <Link
@@ -45,7 +47,7 @@ export const CopilotProviderListItem = ({ provider, type }) => {
             />
             <span>
               {formatMessage({ id: 'created', defaultMessage: 'Created' })}:{' '}
-              {new Date(provider.created).toLocaleDateString()}
+              {formatDateTime(provider.created, { dateStyle: 'medium' })}
             </span>
             <span>
               {formatMessage({

@@ -5,9 +5,11 @@ import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import Badge from '@/components/ui/Badge';
 import generateUniqueId from '../../common/utils/getUniqueId';
 import CopyableId from './shared/CopyableId';
+import useFormatDateTime from '@/modules/common/utils/useFormatDateTime';
 
 const AssortmentListItemCompact = ({ assortment, children = null }) => {
   const { formatMessage } = useIntl();
+  const { formatDateTime } = useFormatDateTime();
   if (!assortment) return null;
 
   const {
@@ -29,7 +31,7 @@ const AssortmentListItemCompact = ({ assortment, children = null }) => {
   const thumbnailUrl = media[0]?.file?.url;
 
   const formatDate = (dateString?: string) =>
-    dateString ? new Date(dateString).toLocaleDateString() : '';
+    dateString ? formatDateTime(dateString, { dateStyle: 'medium' }) : '';
 
   return (
     <div className="relative border rounded-xl p-4 shadow-sm bg-surface-input space-y-4">

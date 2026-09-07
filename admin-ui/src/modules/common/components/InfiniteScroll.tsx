@@ -30,8 +30,15 @@ const InfiniteScroll = ({
     if (!sentinel) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && hasMoreRef.current && !loadingRef.current) {
+      (entries) => {
+        // One sentinel is observed, but its transitions can arrive in a batch.
+        // The newest record describes whether it is currently visible.
+        const entry = entries.at(-1);
+        if (
+          entry?.isIntersecting &&
+          hasMoreRef.current &&
+          !loadingRef.current
+        ) {
           onLoadMoreRef.current();
         }
       },

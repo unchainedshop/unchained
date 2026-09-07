@@ -22,7 +22,6 @@ import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import ProductExport from '../../modules/product/components/ProductExport';
 import ProductImport from '../../modules/product/components/ProductImport';
 import useApp from '../../modules/common/hooks/useApp';
-import useScrollRestoration from '../../modules/common/hooks/useScrollRestoration';
 
 const Products = () => {
   const { formatMessage } = useIntl();
@@ -55,7 +54,6 @@ const Products = () => {
     includeDrafts,
     tags,
   });
-  useScrollRestoration(!slug);
 
   if (slug) return <ProductDetailPage slug={slug} />;
   const headerText =
