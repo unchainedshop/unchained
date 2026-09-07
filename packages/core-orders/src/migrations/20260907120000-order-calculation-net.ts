@@ -11,15 +11,17 @@ const legacyCalculationSelector = {
   },
 };
 
-const convertCalculation = (calculation: PricingCalculation[]): PricingCalculation[] => {
+export const convertOrderCalculationToNet = (
+  calculation: PricingCalculation[],
+): PricingCalculation[] => {
   let previousBaseRow: PricingCalculation | undefined;
-  return calculation.flatMap((row) => {
+  const attributed = calculation.map((row) => {
     if (!row || !Number.isFinite(row.amount)) {
       throw new Error('Calculation contains an invalid amount');
     }
     if (row.category !== 'TAXES') {
       previousBaseRow = row;
-      return [row];
+      return row;
     }
 
     // Older calculations omitted tax attribution. The built-in order adapters
@@ -31,22 +33,101 @@ const convertCalculation = (calculation: PricingCalculation[]): PricingCalculati
     const discountId =
       row.discountId ??
       (previousBaseRow?.category === baseCategory ? previousBaseRow.discountId : undefined);
-    const tax = { ...row, baseCategory, discountId, isNetPrice: false };
+    return { ...row, baseCategory, discountId, isNetPrice: false };
+  });
 
+  const converted = attributed.flatMap((row) => {
+    if (row.category !== 'TAXES') return [row];
     // Preserve the original rows and their audit metadata. An offset turns the
     // category balance into net while the recorded tax remains a separate row.
     // Do not round or recalculate historical tax using today's rates.
     return [
       {
-        category: baseCategory,
+        category: row.baseCategory!,
         amount: -row.amount,
-        discountId,
+        discountId: row.discountId,
         isNetPrice: true,
         meta: row.meta,
       },
-      tax,
+      row,
     ];
   });
+
+  const sum = (rows: PricingCalculation[], category?: string, discountId?: string) =>
+    rows.reduce(
+      (total, row) =>
+        (category === undefined || row.category === category) &&
+        (discountId === undefined || row.discountId === discountId)
+          ? total + row.amount
+          : total,
+      0,
+    );
+  const taxes = attributed.filter((row) => row.category === 'TAXES');
+  const taxSum = (category?: string, discountId?: string) =>
+    sum(
+      category === undefined ? taxes : taxes.filter((row) => row.baseCategory === category),
+      undefined,
+      discountId,
+    );
+  const categories = [
+    ...new Set(attributed.map((row) => (row.category === 'TAXES' ? row.baseCategory! : row.category))),
+  ];
+  const discountIds = [...new Set(attributed.map((row) => row.discountId))].filter(
+    (discountId): discountId is string => discountId !== undefined,
+  );
+  // Global adjustments must not change an existing custom category balance.
+  let roundingCategory = 'ROUNDING';
+  while (categories.includes(roundingCategory)) roundingCategory = `_${roundingCategory}`;
+
+  // Floating-point cancellation is not associative. Preserve the legacy sum
+  // minus tax for every public scope, so half-cent prices keep their charged
+  // amount. These ordinary additive rows need no special runtime reader.
+  const scopes = [
+    ...categories.flatMap((category) => [
+      ...discountIds.map((discountId) => ({ category, discountId })),
+      { category, discountId: undefined },
+    ]),
+    ...discountIds.map((discountId) => ({ category: undefined, discountId })),
+    { category: undefined, discountId: undefined },
+  ];
+  const balances = scopes.map(({ category, discountId }) => ({
+    category,
+    discountId,
+    amount: sum(attributed, category, discountId) - taxSum(category, discountId),
+  }));
+  for (const { category, discountId, amount } of balances) {
+    const difference = amount - sum(converted, category, discountId);
+    if (!Number.isFinite(amount) || !Number.isFinite(difference)) {
+      throw new Error('Calculation contains an invalid balance');
+    }
+    if (difference) {
+      converted.push({
+        category: category ?? roundingCategory,
+        discountId,
+        amount: difference,
+        isNetPrice: true,
+        meta: { migration: 20260907120000, reason: 'Preserve historical floating-point balance' },
+      });
+    }
+  }
+
+  // Verify the completed conversion before its atomic write. A custom history
+  // with contradictory totals must be repaired, never silently charged anew.
+  for (const { category, discountId, amount } of balances) {
+    if (sum(converted, category, discountId) !== amount) {
+      throw new Error(
+        `Cannot preserve historical balance for ${category ?? 'order'} ${discountId ?? ''}`,
+      );
+    }
+  }
+  for (const discountId of discountIds) {
+    const before = sum(attributed, 'DISCOUNTS', discountId);
+    const after = sum(converted, 'DISCOUNTS', discountId) + taxSum('DISCOUNTS', discountId);
+    if (Math.round(before) !== Math.round(after) || Boolean(before) !== Boolean(after)) {
+      throw new Error(`Cannot preserve historical discount ${discountId}`);
+    }
+  }
+  return converted;
 };
 
 export default function migrateOrderCalculationToNet(repository: MigrationRepository) {
@@ -63,7 +144,7 @@ export default function migrateOrderCalculationToNet(repository: MigrationReposi
       for await (const order of Orders.find(legacyCalculationSelector, { projection })) {
         let calculation: PricingCalculation[];
         try {
-          calculation = convertCalculation(order.calculation);
+          calculation = convertOrderCalculationToNet(order.calculation);
         } catch (error) {
           throw new Error(`Cannot migrate order ${order._id}: ${error.message}`, { cause: error });
         }

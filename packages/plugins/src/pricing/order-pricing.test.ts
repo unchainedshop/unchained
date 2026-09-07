@@ -205,6 +205,24 @@ describe('order pricing contracts', () => {
     ]);
   });
 
+  test('retains fractional discount entries that round to zero', () => {
+    const sheet = OrderPricingSheet({ currencyCode });
+    sheet.addDiscount({ amount: -0.25, taxAmount: -0.125, discountId: 'fractional-discount' });
+    sheet.addDiscount({ amount: 0.25, taxAmount: 0.125, discountId: 'fractional-reversal' });
+    sheet.addDiscount({ amount: -10, taxAmount: -1, discountId: 'cancelled' });
+    sheet.addDiscount({ amount: 10, taxAmount: 1, discountId: 'cancelled' });
+
+    assert.deepEqual(sheet.discountPrices(), [
+      { discountId: 'fractional-discount', amount: -0, currencyCode },
+      { discountId: 'fractional-reversal', amount: 0, currencyCode },
+    ]);
+    assert.deepEqual(sheet.discountPrices('fractional-discount'), [
+      { discountId: 'fractional-discount', amount: -0, currencyCode },
+    ]);
+    assert.equal(sheet.total({ discountId: 'fractional-discount' }).amount, -0);
+    assert.deepEqual(sheet.discountPrices('cancelled'), []);
+  });
+
   test('keeps the public calculation property authoritative', () => {
     const sheet = BasePricingSheet<PricingCalculation>({ calculation: [], currencyCode });
     const replacement = [{ category: 'ITEM', amount: 100 }];

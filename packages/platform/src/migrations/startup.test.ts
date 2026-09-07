@@ -77,8 +77,9 @@ describe('startup migration barrier', () => {
           console.error(error);
           process.exit(1);
         }
-        // The parent owns the disposable MongoDB server; exiting closes our sockets.
-        process.exit(0);
+        // Failed startup must close its database connection and exit naturally.
+        // Successful startup still owns resources managed by its shutdown hooks.
+        if (${mode !== 'failed-migration'}) process.exit(0);
       `;
       await exec(process.execPath, ['--input-type=module', '--eval', script], {
         env: {

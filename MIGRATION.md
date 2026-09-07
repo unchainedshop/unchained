@@ -303,9 +303,15 @@ delivery and payment pricing sheets.
 
 The automatic startup migration `20260907120000-order-calculation-net` converts all
 persisted order calculations, including carts and completed or rejected orders.
-It retains the original rows and adds offsets using their recorded tax amounts;
-it does not rerun pricing adapters, look up current rates, round amounts or change
-order timestamps. Gross totals, net totals and discount amounts are preserved.
+It retains the original rows and adds offsets using their recorded tax amounts.
+Where floating-point cancellation would change a historical balance, it adds a
+precision adjustment with migration metadata. Adjustments for the whole order or
+a discount spanning categories use `ROUNDING` (prefixed with `_` if that category
+already exists). These are ordinary additive rows; no legacy runtime reader is
+needed. The migration does not rerun pricing adapters, look up current rates, round
+recorded amounts or change order timestamps. It verifies historical gross/net
+balances and rounded discount amounts before writing each order, including prices
+on half-cent boundaries.
 Already marked net calculations are skipped, and each order is updated atomically
 so interrupted runs can safely resume. Item, delivery and payment calculations
 already have the required representation and are left intact.
@@ -314,7 +320,10 @@ Migrations now run before plugin initialization, API setup and workers, even wit
 `disableWorker` or `UNCHAINED_DISABLE_WORKER` enabled. A failed migration rejects
 platform startup. Tax rows without `baseCategory` are attributed to their preceding
 category row (the built-in adapters' historical layout); an unresolvable tax row
-stops migration with the order ID so its attribution can be repaired.
+stops migration with the order ID so its attribution can be repaired. Invalid
+amounts or contradictory historical discount views also stop startup without
+rewriting that order. Successful conversions remain safe to resume. Failed startup
+closes its database connection before rejecting.
 
 Stop older application instances before upgrading: they must not write gross order
 calculations after the migration. Restore a database backup before rolling back to
@@ -326,6 +335,11 @@ Custom order pricing adapters must pass **net** `amount` values and the separate
 a gross price of 10,000 with 715 tax becomes `{ amount: 9285, taxAmount: 715 }`.
 Public `gross()`, `net()`, `total()` and discount breakdowns retain their price
 semantics; the runtime no longer infers legacy formats.
+
+Consumers must sum category balances through the pricing sheet instead of reading
+the first row: migrated calculations retain their original rows and add offsets.
+MCP sales summaries, monthly reports and customer-spending statistics use gross
+item balances for both migrated and newly calculated orders.
 
 ### Events: explicit emit-adapter registration
 

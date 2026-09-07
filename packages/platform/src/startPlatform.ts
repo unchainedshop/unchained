@@ -117,7 +117,13 @@ export const startPlatform = async ({
 
   // Persisted data must match the runtime format before plugins, APIs or workers
   // can use it. This also runs on instances with workers disabled.
-  await runMigrations({ migrationRepository, unchainedAPI });
+  try {
+    await runMigrations({ migrationRepository, unchainedAPI });
+  } catch (error) {
+    // Shutdown hooks are installed after startup, so release the database here.
+    await stopDb();
+    throw error;
+  }
 
   // Initialize plugins (call onRegister hooks)
   await pluginRegistry.initialize(unchainedAPI);

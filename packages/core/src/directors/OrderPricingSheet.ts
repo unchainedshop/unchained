@@ -121,17 +121,22 @@ export const OrderPricingSheet = (
 
       return [...new Set(discountIds)]
         .map((discountId) => {
-          const { amount, currencyCode } = pricingSheet.total({
-            category: OrderPricingRowCategory.Discounts,
-            discountId,
-          });
+          const amount =
+            pricingSheet.sum({
+              category: OrderPricingRowCategory.Discounts,
+              discountId,
+            }) +
+            pricingSheet.taxSum({
+              baseCategory: OrderPricingRowCategory.Discounts,
+              discountId,
+            });
           if (!amount) {
             return null;
           }
           return {
             discountId,
-            amount,
-            currencyCode,
+            amount: Math.round(amount),
+            currencyCode: pricingSheet.currencyCode,
           };
         })
         .filter(Boolean) as { discountId: string; amount: number; currencyCode: string }[];

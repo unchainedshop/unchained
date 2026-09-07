@@ -165,6 +165,143 @@ describe('persisted order pricing migration', () => {
     assert.equal(sheet.net(), 3.3125);
   });
 
+  test('preserves the charged amount at a historical half-cent rounding boundary', async () => {
+    // Recorded output of the gross-format item and 10% order-discount adapters.
+    const original = {
+      _id: 'historical-rounding',
+      status: 'CONFIRMED',
+      currencyCode: 'CHF',
+      calculation: [
+        { category: 'ITEMS', amount: 135 },
+        { category: 'TAXES', baseCategory: 'ITEMS', amount: 9.651810584958213 },
+        { category: 'DISCOUNTS', amount: -13.5, discountId: 'promo' },
+        {
+          category: 'TAXES',
+          baseCategory: 'DISCOUNTS',
+          amount: -0.9651810584958209,
+          discountId: 'promo',
+        },
+      ],
+    };
+    await db.collection('orders').insertOne(original);
+    await migrate();
+
+    const migrated = await db.collection('orders').findOne({ _id: original._id });
+    const sheet = OrderPricingSheet(migrated);
+    assert.equal(sheet.gross(), 121.49999999999999);
+    assert.equal(sheet.total().amount, 121);
+    assert.equal(sheet.total({ useNetPrice: true }).amount, 113);
+    assert.deepEqual(sheet.discountPrices(), [
+      { discountId: 'promo', amount: -13, currencyCode: 'CHF' },
+    ]);
+    await migrate();
+    assert.deepEqual(await db.collection('orders').findOne({ _id: original._id }), migrated);
+  });
+
+  test('preserves legacy price views across fractional, multirate and multiple-discount histories', async () => {
+    const originals = [];
+    for (const gross of [1, 5, 7.5, 135, 999.5, 4_095.5, 10_000, 1_000_000_000.5]) {
+      for (const rate of [0.026, 0.077, 0.2]) {
+        for (const discountRate of [0.1, 0.15, 0.5]) {
+          const calculation = [];
+          for (const [category, amount, taxRate, discountId] of [
+            ['ITEMS', gross, rate],
+            ['ITEMS', gross / 3, 0.081],
+            ['DELIVERY', 12.5, rate],
+            ['PAYMENT', 5, 0.2],
+            ['ROUNDING', 0.125, 0], // A custom historical category must remain intact.
+            ['DISCOUNTS', -gross * discountRate, rate, 'first'],
+            ['DISCOUNTS', (-gross / 3) * discountRate, 0.081, 'first'],
+            ['DISCOUNTS', -0.5, rate, 'second'],
+          ] as const) {
+            calculation.push(
+              { category, amount, discountId },
+              {
+                category: 'TAXES',
+                baseCategory: category,
+                amount: amount - amount / (1 + taxRate),
+                discountId,
+              },
+            );
+          }
+          originals.push({
+            _id: `price-parity-${originals.length}`,
+            status: 'FULFILLED',
+            currencyCode: 'CHF',
+            calculation,
+          });
+        }
+      }
+    }
+    await db.collection('orders').insertMany(originals);
+    await migrate();
+    const migrated = await db
+      .collection('orders')
+      .find({ _id: { $in: originals.map(({ _id }) => _id) } })
+      .toArray();
+
+    for (const original of originals) {
+      const sheet = OrderPricingSheet(migrated.find(({ _id }) => _id === original._id));
+      // Freeze the old public arithmetic, independently of the migration's offsets.
+      const sum = (filter = {}) =>
+        original.calculation
+          .filter((row) =>
+            Object.entries(filter).every(([key, value]) => value === undefined || row[key] === value),
+          )
+          .reduce((total, row) => total + row.amount, 0);
+      const tax = sum({ category: 'TAXES' });
+      assert.equal(sheet.gross(), sum() - tax, `${original._id}: gross`);
+      assert.equal(sheet.net(), sum() - tax - tax, `${original._id}: net`);
+      assert.equal(sheet.taxSum(), tax, `${original._id}: tax`);
+      for (const category of [
+        undefined,
+        'ITEMS',
+        'DELIVERY',
+        'PAYMENT',
+        'DISCOUNTS',
+        'ROUNDING',
+        'TAXES',
+      ]) {
+        for (const discountId of [undefined, 'first', 'second']) {
+          const scopeTax = sum({ category: 'TAXES', baseCategory: category, discountId });
+          const amount = sum({ category, discountId }) - scopeTax;
+          const net = category ? amount : amount - scopeTax;
+          for (const useNetPrice of [false, true]) {
+            assert.equal(
+              sheet.total({ category, discountId, useNetPrice }).amount,
+              Math.round(useNetPrice ? net : net + scopeTax),
+              `${original._id}: ${JSON.stringify({ category, discountId, useNetPrice })}`,
+            );
+          }
+        }
+      }
+      assert.deepEqual(
+        sheet.discountPrices(),
+        ['first', 'second'].map((discountId) => ({
+          discountId,
+          amount: Math.round(sum({ category: 'DISCOUNTS', discountId })),
+          currencyCode: 'CHF',
+        })),
+      );
+    }
+  });
+
+  test('rejects contradictory historical discount views without rewriting the order', async () => {
+    const original = {
+      _id: 'contradictory-discount',
+      calculation: [
+        { category: 'DISCOUNTS', amount: -4_095.5, discountId: 'custom' },
+        { category: 'TAXES', baseCategory: 'DISCOUNTS', amount: 1.1, discountId: 'custom' },
+      ],
+    };
+    await db.collection('orders').insertOne(original);
+    await assert.rejects(
+      migrate(),
+      /Cannot migrate order contradictory-discount: Cannot preserve historical discount custom/,
+    );
+    assert.deepEqual(await db.collection('orders').findOne({ _id: original._id }), original);
+  });
+
   test('customer spending statistics agree for migrated and newly calculated orders', async () => {
     const newSheet = OrderPricingSheet({ currencyCode: 'CHF' });
     newSheet.addItems({ amount: 9_285, taxAmount: 715 });
