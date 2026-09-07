@@ -115,16 +115,6 @@ export const startPlatform = async ({
     bulkExporter,
   });
 
-  // Persisted data must match the runtime format before plugins, APIs or workers
-  // can use it. This also runs on instances with workers disabled.
-  try {
-    await runMigrations({ migrationRepository, unchainedAPI });
-  } catch (error) {
-    // Shutdown hooks are installed after startup, so release the database here.
-    await stopDb();
-    throw error;
-  }
-
   // Initialize plugins (call onRegister hooks)
   await pluginRegistry.initialize(unchainedAPI);
 
@@ -154,6 +144,31 @@ export const startPlatform = async ({
   // Configure audit integration after all events are registered
   if (auditLog) {
     configureAuditIntegration(auditLog);
+  }
+
+  // Preserve initialization order while migrating before workers and completed
+  // startup, including instances with workers disabled.
+  try {
+    await runMigrations({ migrationRepository, unchainedAPI });
+  } catch (error) {
+    // Shutdown hooks are installed after startup. Release initialized resources
+    // here, continuing cleanup if one hook fails, and preserve the migration error.
+    for (const shutdown of [
+      () => pluginRegistry.shutdown(unchainedAPI),
+      () => getEmitAdapter()?.shutdown?.(),
+      () => graphqlHandler.dispose(),
+      () => auditLog?.close(),
+      () => stopDb(),
+    ]) {
+      try {
+        await shutdown();
+      } catch (cleanupError) {
+        defaultLogger.error('Error during failed startup cleanup', {
+          error: cleanupError instanceof Error ? cleanupError.message : String(cleanupError),
+        });
+      }
+    }
+    throw error;
   }
 
   // Setup Work Queue

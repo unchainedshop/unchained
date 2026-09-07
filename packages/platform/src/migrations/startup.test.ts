@@ -21,8 +21,8 @@ describe('startup migration barrier', () => {
     await server?.stop();
   });
 
-  for (const mode of ['disabled-option', 'disabled-env', 'failed-migration']) {
-    test(`migrates before plugins and serving requests: ${mode}`, async () => {
+  for (const mode of ['enabled-worker', 'disabled-option', 'disabled-env', 'failed-migration']) {
+    test(`preserves initialization and migrates before workers and completed startup: ${mode}`, async () => {
       const db = client.db(mode);
       await db.collection('orders').insertOne({
         _id: 'historical' as any,
@@ -37,24 +37,69 @@ describe('startup migration barrier', () => {
       const script = `
         import assert from 'node:assert/strict';
         import { startPlatform } from ${JSON.stringify(new URL('../startPlatform.ts', import.meta.url).href)};
-        import { pluginRegistry, OrderPricingSheet } from '@unchainedshop/core';
-        let pluginGross;
+        import { pluginRegistry, OrderPricingSheet, MessagingDirector } from '@unchainedshop/core';
+        import { getAuditLogInstance, setEmitAdapter } from '@unchainedshop/events';
+        const lifecycle = [];
+        let readOrder;
+        let pluginTimer;
+        let auditClosed = false;
+        setEmitAdapter({
+          publish() {}, subscribe() {},
+          shutdown() { lifecycle.push('emitter-shutdown'); },
+        });
         pluginRegistry.register({
           key: 'test.migration-barrier', label: 'Migration barrier', version: '1.0.0',
-          onRegister: async ({ modules }) => {
-            const order = await modules.orders.findOrder({ orderId: 'historical' });
-            pluginGross = OrderPricingSheet(order).gross();
+          onRegister: ({ modules }) => {
+            lifecycle.push('plugin');
+            readOrder = () => modules.orders.findOrder({ orderId: 'historical' });
+            pluginTimer = setInterval(() => {}, 60_000);
+          },
+          onShutdown: () => {
+            clearInterval(pluginTimer);
+            lifecycle.push('plugin-shutdown');
           },
         });
         const options = {
-          auditLog: false,
-          workQueueOptions: { disableWorker: ${mode !== 'disabled-env'} },
+          auditLog: { log: false },
+          plugins: [{
+            onYogaInit: () => { lifecycle.push('api'); },
+            onDispose: () => { lifecycle.push('api-shutdown'); },
+          }],
+          typeDefs: ['extend type Query { migrationGross: Int! }'],
+          resolvers: [{ Query: {
+            migrationGross: async () => OrderPricingSheet(await readOrder()).total().amount,
+          } }],
+          workQueueOptions: {
+            disableWorker: ${mode === 'disabled-option'},
+            invalidateProviders: false,
+            skipInvalidationOnStartup: true,
+            enabledQueueManagers: [{ actions: () => ({
+              start() {
+                assert.deepEqual(lifecycle, ['plugin', 'api', 'migration']);
+                lifecycle.push('worker');
+              },
+              stop() {},
+            }) }],
+          },
           modules: {
             migrationProbe: {
               configure: ({ migrationRepository }) => {
-                if (${mode === 'failed-migration'}) migrationRepository.register({
-                  id: 20260907120001, name: 'Test failure',
-                  up: async () => { throw new Error('conversion failed'); },
+                migrationRepository.register({
+                  id: 20260907120001, name: 'Initialization probe',
+                  up: async () => {
+                    assert.deepEqual(lifecycle, ['plugin', 'api']);
+                    assert.ok(MessagingDirector.getTemplate('ERROR_REPORT'));
+                    const auditLog = getAuditLogInstance();
+                    assert.ok(auditLog);
+                    const closeAuditLog = auditLog.close.bind(auditLog);
+                    auditLog.close = async () => {
+                      await closeAuditLog();
+                      auditClosed = true;
+                    };
+                    assert.equal(OrderPricingSheet(await readOrder()).gross(), 10_000);
+                    lifecycle.push('migration');
+                    if (${mode === 'failed-migration'}) throw new Error('conversion failed');
+                  },
                 });
                 return {};
               },
@@ -64,12 +109,22 @@ describe('startup migration barrier', () => {
         try {
           if (${mode === 'failed-migration'}) {
             await assert.rejects(startPlatform(options), /conversion failed/);
-            assert.equal(pluginGross, undefined);
+            assert.deepEqual(lifecycle, [
+              'plugin', 'api', 'migration', 'plugin-shutdown', 'emitter-shutdown', 'api-shutdown',
+            ]);
+            assert.equal(auditClosed, true);
           } else {
             const platform = await startPlatform(options);
-            assert.equal(pluginGross, 10_000);
+            assert.deepEqual(lifecycle, [
+              'plugin', 'api', 'migration', ...(${mode === 'enabled-worker'} ? ['worker'] : []),
+            ]);
             const order = await platform.unchainedAPI.modules.orders.findOrder({ orderId: 'historical' });
             assert.equal(OrderPricingSheet(order).net(), 9_285);
+            const response = await platform.graphqlHandler.fetch('http://localhost/graphql', {
+              method: 'POST', headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({ query: '{ migrationGross }' }),
+            });
+            assert.deepEqual(await response.json(), { data: { migrationGross: 10_000 } });
             await platform.graphqlHandler.dispose();
           }
         } catch (error) {
@@ -98,7 +153,7 @@ describe('startup migration barrier', () => {
       assert.ok(await db.collection('last-migration').findOne({ _id: 20260907120000 as any }));
       assert.equal(
         await db.collection('last-migration').countDocuments({ _id: 20260907120001 as any }),
-        0,
+        mode === 'failed-migration' ? 0 : 1,
       );
     });
   }

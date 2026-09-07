@@ -316,14 +316,17 @@ Already marked net calculations are skipped, and each order is updated atomicall
 so interrupted runs can safely resume. Item, delivery and payment calculations
 already have the required representation and are left intact.
 
-Migrations now run before plugin initialization, API setup and workers, even with
-`disableWorker` or `UNCHAINED_DISABLE_WORKER` enabled. A failed migration rejects
+The existing initialization order is retained: plugins and API setup precede
+migrations, and workers start afterward. Migrations run even with `disableWorker`
+or `UNCHAINED_DISABLE_WORKER` enabled, and must finish before `startPlatform`
+returns so the application can start serving requests. A failed migration rejects
 platform startup. Tax rows without `baseCategory` are attributed to their preceding
 category row (the built-in adapters' historical layout); an unresolvable tax row
 stops migration with the order ID so its attribution can be repaired. Invalid
 amounts or contradictory historical discount views also stop startup without
 rewriting that order. Successful conversions remain safe to resume. Failed startup
-closes its database connection before rejecting.
+closes initialized plugins, API resources and its database connection before
+rejecting.
 
 Stop older application instances before upgrading: they must not write gross order
 calculations after the migration. Restore a database backup before rolling back to
