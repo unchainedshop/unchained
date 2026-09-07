@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { ISortOptionInput, IWorkStatus, IWorkType } from '../../../gql/types';
 import useWorkQueue from './useWorkQueue';
+import useFormatDateTime from '@/modules/common/utils/useFormatDateTime';
 
 interface ExportFileInfo {
   url: string;
@@ -34,14 +35,22 @@ interface RecentExportsResult {
   exports: ExportGroup[];
 }
 
+type FormatDateTime = ReturnType<typeof useFormatDateTime>['formatDateTime'];
+
 const getActiveFilesAndCount = (
   workQueue: ExportedWork[],
+  formatDateTime: FormatDateTime,
 ): RecentExportsResult => {
   if (!workQueue?.length) {
     return { exports: [], count: 0 };
   }
 
   const now = Date.now();
+  const formatTimestamp = (timestamp: number | string | Date) =>
+    formatDateTime(timestamp, {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
 
   const groupedData = workQueue
     .map((work): ExportGroup | null => {
@@ -56,7 +65,7 @@ const getActiveFilesAndCount = (
         .map(([key, file]) => ({
           name: key.toUpperCase(),
           url: file!.url,
-          expiresAt: new Date(finishedTime + file!.expires).toLocaleString(),
+          expiresAt: formatTimestamp(finishedTime + file!.expires),
         }));
 
       if (activeFiles.length === 0) return null;
@@ -64,7 +73,7 @@ const getActiveFilesAndCount = (
       return {
         id: work._id,
         type: work.input?.type,
-        finished: new Date(work.finished).toLocaleString(),
+        finished: formatTimestamp(work.finished),
         files: activeFiles,
       };
     })
@@ -94,6 +103,7 @@ const useRecentExports = ({
     [],
   );
 
+  const { formatDateTime } = useFormatDateTime();
   const { workQueue } = useWorkQueue({
     types: [IWorkType.BulkExport],
     queryString,
@@ -103,7 +113,7 @@ const useRecentExports = ({
     skip,
   });
 
-  return getActiveFilesAndCount(workQueue as ExportedWork[]);
+  return getActiveFilesAndCount(workQueue as ExportedWork[], formatDateTime);
 };
 
 export default useRecentExports;

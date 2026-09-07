@@ -7,24 +7,23 @@ import MiniUserAvatar from '../../common/components/MiniUserAvatar';
 import Table from '../../common/components/Table';
 import TableActionsMenu from '../../common/components/TableActionsMenu';
 import formatUsername from '../../common/utils/formatUsername';
+import useFormatDateTime from '@/modules/common/utils/useFormatDateTime';
 import { ShoppingBagIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
 
 const UserLastLogin = ({ lastLogin }) => {
-  const { locale } = useIntl();
+  const { formatDateTime } = useFormatDateTime();
   const loginDate = new Date(lastLogin?.timestamp);
-  if (!loginDate?.getTime()) return null;
-  const formattedDate = loginDate.toLocaleDateString(locale, {
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-  });
-  const formattedTime = loginDate.toLocaleTimeString(locale, {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  if (lastLogin?.timestamp == null || Number.isNaN(loginDate.getTime()))
+    return null;
   return (
     <div className="text-sm text-slate-500">
-      {formattedDate}, {formattedTime}
+      {formatDateTime(lastLogin.timestamp, {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })}
     </div>
   );
 };

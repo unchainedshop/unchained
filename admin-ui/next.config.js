@@ -22,4 +22,9 @@ export default {
   images: {
     unoptimized: true,
   },
+  experimental: {
+    // Preserve each history entry's position, including query-based detail
+    // views. useScrollRestoration retries after asynchronous list loads.
+    scrollRestoration: true,
+  },
 };

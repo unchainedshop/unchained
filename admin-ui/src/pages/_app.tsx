@@ -22,6 +22,7 @@ import { ChatProvider } from '../modules/copilot/ChatContext';
 import { PluginProvider } from '../modules/plugins/PluginContext';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { AppContextWrapper } from '../modules/common/components/AppContext';
+import useScrollRestoration from '@/modules/common/hooks/useScrollRestoration';
 
 const handleRouteChange = (url) => {
   matomo.pageView(document.location.origin + url, document.title);
@@ -29,6 +30,7 @@ const handleRouteChange = (url) => {
 
 const UnchainedAdmin = ({ Component, componentName, pageProps, router }) => {
   const apollo = useApollo(pageProps);
+  useScrollRestoration();
 
   const getLayout = Component.getLayout
     ? (page) => (
