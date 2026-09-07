@@ -143,7 +143,6 @@ export const all = (role, actions) => {
   role.allow(actions.viewUserEnrollments, isInLoginMutationResponse);
   role.allow(actions.viewUserProductReviews, isInLoginMutationResponse);
 
-  // special case: access to token sometimes works via a X-Token-AccessKey Header and thus should also be allowed for anonymous users
   role.allow(actions.updateToken, isOwnedToken);
   role.allow(actions.viewToken, isOwnedToken);
 

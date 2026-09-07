@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import { IRoleAction } from '../../gql/types';
 
 import useToken from '../../modules/token/hooks/useToken';
@@ -30,23 +29,23 @@ const TokenDetailPage = ({ tokenId }) => {
       <DangerMessage
         onCancelClick={() => setModal('')}
         message={formatMessage({
-          id: 'delete_paymentProvider_confirmation',
+          id: 'invalidate_token_confirmation',
           defaultMessage:
-            'This action might cause inconsistencies with other data that relates to it. Are you sure you want to delete this Payment provider? ',
+            'Are you sure you want to invalidate this token? This marks it as redeemed.',
         })}
         onOkClick={async () => {
           setModal('');
           await invalidateTicket({ tokenId });
           toast.success(
             formatMessage({
-              id: 'payment_provider_deleted',
-              defaultMessage: 'Payment provider deleted successfully',
+              id: 'token_invalidated',
+              defaultMessage: 'Token invalidated successfully',
             }),
           );
         }}
         okText={formatMessage({
-          id: 'delete_payment_provider',
-          defaultMessage: 'Delete payment provider',
+          id: 'invalidate_token',
+          defaultMessage: 'Invalidate',
         })}
       />,
     );
@@ -73,19 +72,21 @@ const TokenDetailPage = ({ tokenId }) => {
               </div>
             )}
         </PageHeader>
-        {!token.invalidatedDate &&
-        token.isInvalidateable &&
-        hasRole(IRoleAction.UpdateToken) ? (
-          <Button
-            variant="danger"
-            icon={<XMarkIcon className="h-5 w-5" />}
-            text={formatMessage({
-              id: 'invalidate-token',
-              defaultMessage: 'Invalidate',
-            })}
-            onClick={onInvalidateToken}
-          />
-        ) : null}
+        <div className="flex items-center gap-2">
+          {!token.invalidatedDate &&
+          token.isInvalidateable &&
+          hasRole(IRoleAction.UpdateToken) ? (
+            <Button
+              variant="danger"
+              icon={<XMarkIcon className="h-5 w-5" />}
+              text={formatMessage({
+                id: 'invalidate-token',
+                defaultMessage: 'Invalidate',
+              })}
+              onClick={onInvalidateToken}
+            />
+          ) : null}
+        </div>
       </div>
       <TokenDetail token={token} />
     </>

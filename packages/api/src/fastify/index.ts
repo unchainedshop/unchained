@@ -33,6 +33,7 @@ export type {
   AdminUIPluginTabConfig,
   AdminUIPluginWidgetConfig,
   AdminUIPluginSlotConfig,
+  AdminUIPluginLinkConfig,
   AdminUIThemeTokens,
   AdminUIThemeConfig,
 } from '../adminUiPlugins.ts';
@@ -110,6 +111,9 @@ const createMiddlewareHook = (authConfig?: AuthConfig, trustProxy = false) =>
       {
         setHeader,
         getHeader,
+        getCookie,
+        setCookie,
+        clearCookie,
         remoteAddress,
         remotePort,
         login: authContext.login,

@@ -44,7 +44,6 @@ const SDK_ENTRY_KEYS = [
   'modules/product',
   'modules/product-review',
   'modules/quotation',
-  'modules/token',
   'modules/warehousing-providers',
   'modules/work',
 ];

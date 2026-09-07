@@ -9,6 +9,8 @@ import { resolveOrderConfirmationTemplate } from '../templates/resolveOrderConfi
 import { resolveQuotationStatusTemplate } from '../templates/resolveQuotationStatusTemplate.ts';
 import { resolveEnrollmentStatusTemplate } from '../templates/resolveEnrollmentStatusTemplate.ts';
 import { resolveErrorReportTemplate } from '../templates/resolveErrorReportTemplate.ts';
+import { resolveEventCancelledTemplate } from '../templates/resolveEventCancelledTemplate.ts';
+import { resolveTicketCancelledTemplate } from '../templates/resolveTicketCancelledTemplate.ts';
 
 export const MessageTypes = {
   ACCOUNT_ACTION: 'ACCOUNT_ACTION',
@@ -18,6 +20,8 @@ export const MessageTypes = {
   QUOTATION_STATUS: 'QUOTATION_STATUS',
   ENROLLMENT_STATUS: 'ENROLLMENT_STATUS',
   ERROR_REPORT: 'ERROR_REPORT',
+  EVENT_CANCELLED: 'EVENT_CANCELLED',
+  TICKET_CANCELLED: 'TICKET_CANCELLED',
 } as const;
 
 export type MessageTypes = (typeof MessageTypes)[keyof typeof MessageTypes];
@@ -30,6 +34,8 @@ export const setupTemplates = (unchainedAPI: UnchainedCore) => {
   MessagingDirector.registerTemplate(MessageTypes.QUOTATION_STATUS, resolveQuotationStatusTemplate);
   MessagingDirector.registerTemplate(MessageTypes.ENROLLMENT_STATUS, resolveEnrollmentStatusTemplate);
   MessagingDirector.registerTemplate(MessageTypes.ERROR_REPORT, resolveErrorReportTemplate);
+  MessagingDirector.registerTemplate(MessageTypes.EVENT_CANCELLED, resolveEventCancelledTemplate);
+  MessagingDirector.registerTemplate(MessageTypes.TICKET_CANCELLED, resolveTicketCancelledTemplate);
 
   subscribe('ORDER_CHECKOUT', async ({ payload }: RawPayloadType<{ order: Order }>) => {
     const { order } = payload;
