@@ -6,14 +6,39 @@ import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:worker:event-listener');
 
-function debounce<T extends (...args: any[]) => Promise<any>>(
+export function debounce<T extends (...args: any[]) => Promise<any>>(
   func: T,
   wait: number,
-): T & { cancel: () => void } {
+): ((...args: Parameters<T>) => Promise<void>) & { cancel: () => void } {
   let abortController: AbortController | null = null;
+  let running: Promise<void> | null = null;
+  let runAgain = false;
+
+  // Never run `func` concurrently with itself. The work queue processes one item
+  // per pass and relies on `maxParallelAllocations` being checked against an
+  // up-to-date in-flight count; overlapping passes race that check and allocate
+  // the same-typed work twice. If a new trigger arrives while a pass is running,
+  // remember it and run exactly one more pass afterwards so no work is missed.
+  const runExclusively = async (...args: Parameters<T>): Promise<void> => {
+    if (running) {
+      runAgain = true;
+      return running;
+    }
+    running = (async () => {
+      try {
+        do {
+          runAgain = false;
+          await func(...args);
+        } while (runAgain);
+      } finally {
+        running = null;
+      }
+    })();
+    return running;
+  };
 
   const debounced = (async (...args: Parameters<T>) => {
-    // Cancel any pending execution
+    // Coalesce a burst of events into a single trailing pass.
     if (abortController) {
       abortController.abort();
     }
@@ -26,9 +51,8 @@ function debounce<T extends (...args: any[]) => Promise<any>>(
       await setTimeout(wait, undefined, { signal: abortController.signal });
 
       // If we reach here, the timeout completed without being aborted
-      const result = await func(...args);
       abortController = null;
-      return result;
+      await runExclusively(...args);
     } catch (error) {
       // If the operation was aborted, don't execute the function
       if (error.name === 'AbortError') {
@@ -37,7 +61,7 @@ function debounce<T extends (...args: any[]) => Promise<any>>(
       // Re-throw any other errors
       throw error;
     }
-  }) as T & { cancel: () => void };
+  }) as ((...args: Parameters<T>) => Promise<void>) & { cancel: () => void };
 
   debounced.cancel = () => {
     if (abortController) {

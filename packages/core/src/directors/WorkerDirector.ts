@@ -29,6 +29,25 @@ export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
 
 const AutoScheduleMap = new Map<string, WorkScheduleConfiguration>();
 
+// Serializes the allocation decision (read in-flight counts -> claim one work
+// item). `maxParallelAllocations` is enforced by reading `allocationMap()` and
+// then allocating, and those two steps must not interleave across concurrent
+// `processNextWork()` callers — both the event-listener and the interval worker
+// drive it, and the event-listener can even re-enter itself. Without this, two
+// callers read the same stale in-flight count and both allocate, exceeding the
+// per-type cap (e.g. two BULK_IMPORT jobs running at once despite the limit of
+// 1). Only the fast allocation is serialized; doWork() still runs concurrently
+// up to each adapter's own maxParallelAllocations.
+let allocationChain: Promise<unknown> = Promise.resolve();
+const allocateExclusively = <T>(fn: () => Promise<T>): Promise<T> => {
+  const result = allocationChain.then(fn, fn);
+  allocationChain = result.then(
+    () => undefined,
+    () => undefined,
+  );
+  return result;
+};
+
 const baseDirector = BaseDirector<IWorkerAdapter<any, any>>('WorkerDirector', {
   adapterKeyField: 'key',
 });
@@ -112,27 +131,32 @@ export const WorkerDirector: IWorkerDirector = {
   },
 
   processNextWork: async (unchainedAPI: { modules: Modules }, workerId?: string) => {
-    const adapters = WorkerDirector.getAdapters();
-
-    const allocationMap = await unchainedAPI.modules.worker.allocationMap();
-
-    const types = adapters
-      .filter((adapter) => {
-        // Filter out the external
-        if (adapter.external) return false;
-        if (
-          adapter.maxParallelAllocations &&
-          adapter.maxParallelAllocations <= allocationMap[adapter.type]
-        )
-          return false;
-        return true;
-      })
-      .map((adapter) => adapter.type);
-
     const worker = workerId ?? unchainedAPI.modules.worker.workerId;
-    const work = await unchainedAPI.modules.worker.allocateWork({
-      types,
-      worker,
+
+    // Read the in-flight counts and claim a work item as one atomic step so the
+    // per-type `maxParallelAllocations` cap holds under concurrent callers.
+    const work = await allocateExclusively(async () => {
+      const adapters = WorkerDirector.getAdapters();
+
+      const allocationMap = await unchainedAPI.modules.worker.allocationMap();
+
+      const types = adapters
+        .filter((adapter) => {
+          // Filter out the external
+          if (adapter.external) return false;
+          if (
+            adapter.maxParallelAllocations &&
+            adapter.maxParallelAllocations <= allocationMap[adapter.type]
+          )
+            return false;
+          return true;
+        })
+        .map((adapter) => adapter.type);
+
+      return unchainedAPI.modules.worker.allocateWork({
+        types,
+        worker,
+      });
     });
 
     if (work) {
