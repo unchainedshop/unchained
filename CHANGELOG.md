@@ -140,6 +140,7 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 - Imported draft products are stored the way every selector reads them (`@unchainedshop/core`): the bulk importer persisted `status: "DRAFT"` verbatim while selectors and publish flows represent a draft as `status: null` — imported drafts were invisible to draft queries and could not be published.
 - Failed MCP tool calls now set the protocol's `isError` flag (`@unchainedshop/api`) instead of hiding the failure inside text content.
 - Tokens GraphQL resolver fixed to remove N+1 query pattern.
+- User role changes and deletion now prevent removing the sole active administrator (`@unchainedshop/core-users`). GraphQL reports a typed `LastAdminError`, and Admin UI explains that another active user must be promoted before the sole administrator can be removed or demoted.
 
 # Unchained Engine v4.7
 

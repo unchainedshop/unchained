@@ -8,6 +8,7 @@ import SubmitButton from '@/components/ui/form/SubmitButton';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 
 import useSetRoles from '../hooks/useSetRoles';
+import getUserManagementErrorMessage from '../getUserManagementErrorMessage';
 
 const UserRolesView = ({ roles, userId, canEdit = false }) => {
   const { formatMessage } = useIntl();
@@ -26,6 +27,8 @@ const UserRolesView = ({ roles, userId, canEdit = false }) => {
   const form = useForm({
     submit: onSubmit,
     successMessage,
+    getSubmitErrorMessage: (error) =>
+      getUserManagementErrorMessage(error, formatMessage),
     initialValues: {
       updatedRoles: [...(roles || [])],
     },

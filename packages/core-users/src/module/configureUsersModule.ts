@@ -56,6 +56,9 @@ const USER_EVENTS = [
   'USER_UPDATE_WEB3_ADDRESS',
   'USER_REMOVE',
 ];
+
+const ADMIN_ROLE = 'admin';
+
 export const removeConfidentialServiceHashes = (rawUser: User): User => {
   const user = { ...rawUser };
   delete user?.services;
@@ -135,7 +138,23 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
   const Users = await UsersCollection(db);
   const webAuthn = await configureUsersWebAuthnModule(moduleInput);
 
+  const assertAnotherActiveAdminExists = async (userId: string) => {
+    const user = await Users.findOne({ _id: userId, deleted: null as any });
+    if (!user?.roles?.includes(ADMIN_ROLE)) return;
+
+    const activeAdminCount = await Users.countDocuments(
+      { deleted: null as any, roles: ADMIN_ROLE },
+      { limit: 2 },
+    );
+    if (activeAdminCount <= 1)
+      throw new Error(
+        'At least one active administrator is required. Assign another administrator before removing this account or revoking its admin role.',
+        { cause: 'LAST_ADMIN' },
+      );
+  };
+
   const updateUserRoles = async (_id: string, roles: string[]) => {
+    if (!roles.includes(ADMIN_ROLE)) await assertAnotherActiveAdminExists(_id);
     const user = await Users.findOneAndUpdate(
       generateDbFilterById(_id),
       {
@@ -894,6 +913,8 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     markDeleted: async (userId: string) => {
+      await assertAnotherActiveAdminExists(userId);
+
       // Increment token version to invalidate all existing JWT tokens
       await Users.updateOne({ _id: userId }, { $inc: { tokenVersion: 1 } });
       const user = await Users.findOneAndUpdate(
@@ -927,6 +948,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     deletePermanently: async ({ userId }: { userId: string }) => {
+      await assertAnotherActiveAdminExists(userId);
       return Users.findOneAndDelete({ _id: userId });
     },
 

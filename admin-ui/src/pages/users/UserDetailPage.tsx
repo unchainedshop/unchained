@@ -14,6 +14,7 @@ import DangerMessage from '../../modules/modal/components/DangerMessage';
 import { toast } from 'react-toastify';
 import formatUsername from '../../modules/common/utils/formatUsername';
 import UserExport from '../../modules/accounts/components/UserExport';
+import getUserManagementErrorMessage from '../../modules/accounts/getUserManagementErrorMessage';
 
 const UserDetailPage = ({ userId }) => {
   const { formatMessage } = useIntl();
@@ -37,14 +38,18 @@ const UserDetailPage = ({ userId }) => {
         })}
         onOkClick={async () => {
           setModal('');
-          await deleteUser(user._id);
-          toast.success(
-            formatMessage({
-              id: 'user_deleted',
-              defaultMessage: 'User deleted successfully',
-            }),
-          );
-          router.push('/users');
+          try {
+            await deleteUser(user._id);
+            toast.success(
+              formatMessage({
+                id: 'user_deleted',
+                defaultMessage: 'User deleted successfully',
+              }),
+            );
+            router.push('/users');
+          } catch (error) {
+            toast.error(getUserManagementErrorMessage(error, formatMessage));
+          }
         }}
         okText={formatMessage({
           id: 'delete_user_account',

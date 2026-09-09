@@ -79,6 +79,10 @@ export const DeliverProviderNotFoundError = createError(
 export const LanguageNotFoundError = createError('LanguageNotFoundError', 'Language not found');
 
 export const UserNotFoundError = createError('UserNotFoundError', 'User not found');
+export const LastAdminError = createError(
+  'LastAdminError',
+  'At least one active administrator is required. Assign another administrator before removing this account or revoking its admin role.',
+);
 export const UserWebAuthnCredentialsNotFoundError = createError(
   'UserWebAuthnCredentialsNotFoundError',
   'User WebAuth Credentials not found',
