@@ -37,7 +37,7 @@ export const AssortmentUpdatePayloadSchema = z.object({
 
 export default async function updateAssortment(
   payload: z.infer<typeof AssortmentUpdatePayloadSchema>,
-  { logger, defer, createShouldUpsertIfIDExists, updateShouldUpsertIfIDNotExists },
+  { logger, createShouldUpsertIfIDExists, updateShouldUpsertIfIDNotExists },
   unchainedAPI: { modules: Modules; services: Services },
 ) {
   const { modules } = unchainedAPI;
@@ -54,7 +54,7 @@ export default async function updateAssortment(
           children,
           filters,
         } as z.infer<typeof AssortmentCreatePayloadSchema>,
-        { logger, defer, createShouldUpsertIfIDExists },
+        { logger, createShouldUpsertIfIDExists },
         unchainedAPI,
       );
     }
@@ -84,52 +84,42 @@ export default async function updateAssortment(
     }
   }
 
+  if (products) {
+    logger.debug('update product products', products);
+    await upsertAssortmentProducts(
+      {
+        products: products || [],
+        assortmentId: _id,
+      },
+      unchainedAPI,
+    );
+  }
+
+  if (children) {
+    logger.debug('update assortment children', children);
+    await upsertAssortmentChildren(
+      {
+        children: children || [],
+        assortmentId: _id,
+      },
+      unchainedAPI,
+    );
+  }
+
+  if (filters) {
+    logger.debug('update assortment filters', filters);
+    await upsertAssortmentFilters(
+      {
+        filters: filters || [],
+        assortmentId: _id,
+      },
+      unchainedAPI,
+    );
+  }
   if (media) {
     logger.debug('update assortment media', media);
     await upsertMedia({ media: media || [], assortmentId: _id }, unchainedAPI);
   }
-
-  // Products, children and filters link to other entities that may be imported
-  // later in the same batch. Defer them so they resolve once every entity
-  // exists (see createBulkImporter). When called outside the bulk importer
-  // (no defer), run inline as before.
-  const linkOperations = async () => {
-    if (products) {
-      logger.debug('update product products', products);
-      await upsertAssortmentProducts(
-        {
-          products: products || [],
-          assortmentId: _id,
-        },
-        unchainedAPI,
-      );
-    }
-
-    if (children) {
-      logger.debug('update assortment children', children);
-      await upsertAssortmentChildren(
-        {
-          children: children || [],
-          assortmentId: _id,
-        },
-        unchainedAPI,
-      );
-    }
-
-    if (filters) {
-      logger.debug('update assortment filters', filters);
-      await upsertAssortmentFilters(
-        {
-          filters: filters || [],
-          assortmentId: _id,
-        },
-        unchainedAPI,
-      );
-    }
-  };
-
-  if (defer) defer(linkOperations);
-  else await linkOperations();
 
   return {
     entity: 'ASSORTMENT',

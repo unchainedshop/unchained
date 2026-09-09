@@ -34,7 +34,7 @@ export const AssortmentCreatePayloadSchema = z.object({
 
 export default async function createAssortment(
   payload: z.infer<typeof AssortmentCreatePayloadSchema>,
-  { logger, defer, createShouldUpsertIfIDExists },
+  { logger, createShouldUpsertIfIDExists },
   unchainedAPI: { modules: Modules; services: Services },
 ) {
   const { modules } = unchainedAPI;
@@ -74,44 +74,35 @@ export default async function createAssortment(
     );
   }
 
+  logger.debug('create assortment products', products);
+  await upsertAssortmentProducts(
+    {
+      products: products || [],
+      assortmentId: _id,
+    },
+    unchainedAPI,
+  );
+
+  logger.debug('create assortment children', children);
+  await upsertAssortmentChildren(
+    {
+      children: children || [],
+      assortmentId: _id,
+    },
+    unchainedAPI,
+  );
+
+  logger.debug('create assortment filters', filters);
+  await upsertAssortmentFilters(
+    {
+      filters: filters || [],
+      assortmentId: _id,
+    },
+    unchainedAPI,
+  );
+
   logger.debug('create assortment media', media);
   await upsertMedia({ media: media || [], assortmentId: _id }, unchainedAPI);
-
-  // Products, children and filters link to other entities that may be imported
-  // later in the same batch. Defer them so they resolve once every entity
-  // exists (see createBulkImporter). When called outside the bulk importer
-  // (no defer), run inline as before.
-  const linkOperations = async () => {
-    logger.debug('create assortment products', products);
-    await upsertAssortmentProducts(
-      {
-        products: products || [],
-        assortmentId: _id,
-      },
-      unchainedAPI,
-    );
-
-    logger.debug('create assortment children', children);
-    await upsertAssortmentChildren(
-      {
-        children: children || [],
-        assortmentId: _id,
-      },
-      unchainedAPI,
-    );
-
-    logger.debug('create assortment filters', filters);
-    await upsertAssortmentFilters(
-      {
-        filters: filters || [],
-        assortmentId: _id,
-      },
-      unchainedAPI,
-    );
-  };
-
-  if (defer) defer(linkOperations);
-  else await linkOperations();
 
   return {
     entity: 'ASSORTMENT',
