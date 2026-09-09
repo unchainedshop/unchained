@@ -1,7 +1,7 @@
 import { createLoggedInGraphqlFetch, disconnect, setupDatabase, getServerBaseUrl } from './helpers.js';
 import { USER_TOKEN, User } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
-import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
+import { SimpleOrder, SimplePosition, SimplePayment, SimpleDelivery } from './seeds/orders.js';
 import test from 'node:test';
 import assert from 'node:assert';
 
@@ -16,14 +16,6 @@ test.describe('Plugins: Datatrans', () => {
   test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
-
-    // The checkout tests operate on the user's "most recent" open cart, which is
-    // selected by an `updated` sort where all seeded carts tie. If the seeded
-    // discounted cart (100%-off => total 0) wins the tie-break, checkout charges
-    // 0 while the datatrans transaction fixtures carry 10000, and the mock
-    // declines the payment. This file never tests discounts, so drop that cart
-    // to make cart selection deterministic regardless of test-file ordering.
-    await db.collection('orders').deleteOne({ _id: 'discounted-order' });
 
     // Add a datatrans provider
     await db.collection('payment-providers').findOrInsertOne({
@@ -55,26 +47,30 @@ test.describe('Plugins: Datatrans', () => {
       paymentId: '1111112222',
     });
 
-    // Add a second demo order ready to checkout
-    await db.collection('order_payments').findOrInsertOne({
-      ...SimplePayment,
-      _id: 'datatrans-payment2',
-      paymentProviderId: 'd4d4d4d4d4',
-      orderId: 'datatrans-order2',
-    });
+    // Give each alias checkout its own cart, payment, and delivery without seeded discounts.
+    for (const orderId of ['datatrans-stored-alias', 'datatrans-preferred-alias']) {
+      await db.collection('order_payments').findOrInsertOne({
+        ...SimplePayment,
+        _id: `${orderId}-payment`,
+        paymentProviderId: 'd4d4d4d4d4',
+        orderId,
+      });
 
-    await db.collection('order_positions').findOrInsertOne({
-      ...SimplePosition,
-      _id: 'datatrans-order-position2',
-      orderId: 'datatrans-order2',
-    });
+      await db.collection('order_deliveries').findOrInsertOne({
+        ...SimpleDelivery,
+        _id: `${orderId}-delivery`,
+        orderId,
+      });
 
-    await db.collection('orders').findOrInsertOne({
-      ...SimpleOrder,
-      _id: 'datatrans-order2',
-      orderNumber: 'datatrans2',
-      paymentId: 'datatrans-payment2',
-    });
+      await db.collection('orders').findOrInsertOne({
+        ...SimpleOrder,
+        _id: orderId,
+        orderNumber: orderId,
+        paymentId: `${orderId}-payment`,
+        deliveryId: `${orderId}-delivery`,
+        calculation: [],
+      });
+    }
   });
 
   test.after(async () => {
@@ -226,19 +222,8 @@ test.describe('Plugins: Datatrans', () => {
   });
 
   test.describe('Checkout', () => {
-    // These tests build a fresh cart (emptyCart + addCartProduct) and then check
-    // out the user's "current" cart. Cart selection sorts open carts (status: null)
-    // by `updated` desc with no tie-break, and the seeded open carts still left for
-    // this user (simple-order, datatrans-order2) share the same seeded `updated`
-    // timestamp. When the tie resolves to a pre-populated cart, the fresh product
-    // lands on top of existing positions, the charged amount no longer matches the
-    // datatrans authorization fixture, and the checkout flakes. Clear the user's
-    // open carts so each checkout starts from a single, freshly-created cart.
-    test.before(async () => {
-      await db.collection('orders').deleteMany({ userId: User._id, status: null });
-    });
-
     test('checkout with stored alias', async () => {
+      const orderId = 'datatrans-stored-alias';
       const paymentProviderId = 'd4d4d4d4d4';
       const transactionId = 'card_check_authorized';
       const userId = User._id;
@@ -294,69 +279,80 @@ test.describe('Plugins: Datatrans', () => {
 
       const credentials = me?.paymentCredentials?.[0];
 
-      const { data: { addCartProduct, updateCart, checkoutCart } = {} } = await graphqlFetch({
+      const { data, errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation addAndCheckout($productId: ID!, $paymentContext: JSON) {
-            emptyCart {
+          mutation addAndCheckout($orderId: ID!, $productId: ID!, $paymentContext: JSON) {
+            emptyCart(orderId: $orderId) {
               _id
             }
-            addCartProduct(productId: $productId) {
+            addCartProduct(orderId: $orderId, productId: $productId) {
               _id
             }
-            updateCart(paymentProviderId: "d4d4d4d4d4") {
+            updateCart(orderId: $orderId, paymentProviderId: "d4d4d4d4d4") {
               _id
               status
             }
-            checkoutCart(paymentContext: $paymentContext) {
+            checkoutCart(orderId: $orderId, paymentContext: $paymentContext) {
               _id
               status
             }
           }
         `,
         variables: {
+          orderId,
           productId: 'simpleproduct',
           paymentContext: {
             paymentCredentials: credentials,
           },
         },
       });
+      assert.strictEqual(errors, undefined);
+      const { addCartProduct, updateCart, checkoutCart } = data;
       assert.ok(addCartProduct);
       assert.partialDeepStrictEqual(updateCart, {
+        _id: orderId,
         status: 'OPEN',
       });
       assert.partialDeepStrictEqual(checkoutCart, {
+        _id: orderId,
         status: 'CONFIRMED',
       });
     });
     test('checkout with preferred alias', async () => {
-      const { data: { addCartProduct, updateCart, checkoutCart } = {} } = await graphqlFetch({
+      const orderId = 'datatrans-preferred-alias';
+      const { data, errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation addAndCheckout($productId: ID!) {
-            emptyCart {
+          mutation addAndCheckout($orderId: ID!, $productId: ID!) {
+            emptyCart(orderId: $orderId) {
               _id
             }
-            addCartProduct(productId: $productId) {
+            addCartProduct(orderId: $orderId, productId: $productId) {
               _id
             }
-            updateCart(paymentProviderId: "d4d4d4d4d4") {
+            updateCart(orderId: $orderId, paymentProviderId: "d4d4d4d4d4") {
               _id
               status
             }
-            checkoutCart {
+            checkoutCart(orderId: $orderId) {
               _id
               status
             }
           }
         `,
         variables: {
+          orderId,
           productId: 'simpleproduct',
         },
       });
+      assert.strictEqual(errors, undefined);
+      const { addCartProduct, updateCart, checkoutCart } = data;
       assert.ok(addCartProduct);
       assert.partialDeepStrictEqual(updateCart, {
+        _id: orderId,
         status: 'OPEN',
       });
       assert.partialDeepStrictEqual(checkoutCart, {
+        _id: orderId,
         status: 'CONFIRMED',
       });
     });
