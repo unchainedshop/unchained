@@ -39,7 +39,7 @@ test.describe('Bulk Importer', () => {
                     sequence: 1,
                     tags: ['nice'],
                     type: 'SIMPLE_PRODUCT',
-                    published: '2020-01-01T00:00Z',
+                    published: '2020-01-01T00:00:00Z',
                     commerce: {
                       salesUnit: 'ST',
                       salesQuantityPerUnit: '1',
@@ -208,7 +208,7 @@ test.describe('Bulk Importer', () => {
                     sequence: 2,
                     tags: ['awesome2'],
                     type: 'SIMPLE_PRODUCT',
-                    published: '2020-01-01T00:00Z',
+                    published: '2020-01-01T00:00:00Z',
                     commerce: {
                       salesUnit: 'ST',
                       salesQuantityPerUnit: '1',

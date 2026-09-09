@@ -118,7 +118,7 @@ test.describe('Product draft status through bulk import', () => {
     const work = await runImport([
       productEvent('import-active-status', {
         status: 'ACTIVE',
-        published: '2020-01-01T00:00Z',
+        published: '2020-01-01T00:00:00Z',
         meta: { statusProbe: 'yes' },
       }),
     ]);
