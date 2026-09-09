@@ -514,4 +514,98 @@ test.describe('Bulk Importer', () => {
       assert.strictEqual(productLinkHasBeenReplaced, true);
     }, 10000);
   });
+
+  test.describe('Import Assortments out of order', () => {
+    test('links a parent to a child and filter that are created later in the same import', async () => {
+      // The parent (with its child + filter links) is imported BEFORE the child
+      // assortment and the filter it references. Link resolution is deferred
+      // until every entity in the import exists, so the order does not matter.
+      const { data: { addWork } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addWork($input: JSON) {
+            addWork(type: BULK_IMPORT, input: $input, retries: 0, priority: 10) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          input: {
+            events: [
+              {
+                entity: 'ASSORTMENT',
+                operation: 'CREATE',
+                payload: {
+                  _id: 'ooo-parent',
+                  specification: {
+                    sequence: 1,
+                    isActive: true,
+                    isRoot: true,
+                    content: {
+                      de: { title: 'Out of order parent', slug: 'ooo-parent' },
+                    },
+                  },
+                  children: [{ _id: 'ooo-link', sortKey: 0, assortmentId: 'ooo-child', tags: [] }],
+                  filters: [{ _id: 'ooo-filter-link', filterId: 'ooo-filter', tags: [] }],
+                },
+              },
+              {
+                entity: 'ASSORTMENT',
+                operation: 'CREATE',
+                payload: {
+                  _id: 'ooo-child',
+                  specification: {
+                    sequence: 2,
+                    isActive: true,
+                    isRoot: false,
+                    content: {
+                      de: { title: 'Out of order child', slug: 'ooo-child' },
+                    },
+                  },
+                },
+              },
+              {
+                entity: 'FILTER',
+                operation: 'CREATE',
+                payload: {
+                  _id: 'ooo-filter',
+                  specification: {
+                    key: 'ooo',
+                    isActive: true,
+                    type: 'SINGLE_CHOICE',
+                    options: [{ value: 'x', content: { de: { title: 'X', subtitle: '' } } }],
+                    content: { de: { title: 'Out of order filter', subtitle: '' } },
+                    meta: {},
+                  },
+                },
+              },
+            ],
+          },
+        },
+      });
+
+      assert.ok(addWork);
+
+      const AssortmentLinks = db.collection('assortment_links');
+      const AssortmentFilters = db.collection('assortment_filters');
+
+      const childLinked = await intervalUntilTimeout(async () => {
+        const link = await AssortmentLinks.findOne({
+          parentAssortmentId: 'ooo-parent',
+          childAssortmentId: 'ooo-child',
+        });
+        return !!link;
+      }, 5000);
+
+      const filterLinked = await intervalUntilTimeout(async () => {
+        const link = await AssortmentFilters.findOne({
+          assortmentId: 'ooo-parent',
+          filterId: 'ooo-filter',
+        });
+        return !!link;
+      }, 5000);
+
+      assert.strictEqual(childLinked, true);
+      assert.strictEqual(filterLinked, true);
+    }, 15000);
+  });
 });

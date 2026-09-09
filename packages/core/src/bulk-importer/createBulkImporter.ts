@@ -21,6 +21,12 @@ export type BulkImportOperation<T> = { payloadSchema?: z.ZodMiniObject } & ((
   payload: any,
   options: {
     bulk: (collection: string) => typeof mongodb.BulkOperationBase;
+    // Register work that resolves cross-entity links (e.g. assortment → child
+    // assortment / filter / product). It runs in execute(), after every entity
+    // in the import has been written, so a single import stays order-independent
+    // (a parent may be imported before its child/filter). Handlers that don't
+    // link anything never call it.
+    defer?: (task: () => Promise<void>) => void;
     createShouldUpsertIfIDExists?: boolean;
     updateShouldUpsertIfIDNotExists?: boolean;
     skipCacheInvalidation?: boolean;
@@ -75,6 +81,17 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
       errorMessage: string;
     }[] = [];
     const processedOperations = {};
+    // Cross-entity links are resolved against the live database, so they can
+    // only run once every entity in the import exists. Handlers register that
+    // work here via `defer`; execute() runs it after all entity writes, which
+    // makes a single import order-independent regardless of the order the events
+    // arrive in.
+    const deferredOperations: {
+      entity: string;
+      operation: string;
+      payloadId: string;
+      task: () => Promise<void>;
+    }[] = [];
     const { createShouldUpsertIfIDExists, skipCacheInvalidation, updateShouldUpsertIfIDNotExists } =
       options;
 
@@ -119,7 +136,10 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
         logger.debug(`🏃‍♂️ ${entity}.${operation}.${payloadId}`);
 
         try {
-          await handler(event.payload, { bulk, logger, ...options }, unchainedAPI);
+          const defer = (task: () => Promise<void>) => {
+            deferredOperations.push({ entity, operation, payloadId, task });
+          };
+          await handler(event.payload, { bulk, defer, logger, ...options }, unchainedAPI);
           if (!processedOperations[entity]) processedOperations[entity] = {};
           if (!processedOperations[entity][operation]) processedOperations[entity][operation] = [];
           processedOperations[entity][operation].push(payloadId);
@@ -142,6 +162,26 @@ export default function createBulkImporterFactory(db, bulkImporterOptions: any) 
         const processedBulkOperations = await Promise.allSettled(
           Object.values(bulkOperations).map(async (o: any) => o.execute()),
         );
+        // Every entity in the import now exists, so deferred cross-entity links
+        // (see the `defer` option) can be resolved regardless of the order their
+        // events arrived in. Run them sequentially and record link failures the
+        // same way prepare() records handler failures.
+        for (const deferred of deferredOperations) {
+          try {
+            await deferred.task();
+          } catch (e) {
+            logger.debug(
+              `💥 ${deferred.entity}.${deferred.operation}.${deferred.payloadId} (${e.message})`,
+            );
+            preparationIssues.push({
+              operation: deferred.operation,
+              entity: deferred.entity,
+              payloadId: deferred.payloadId,
+              errorCode: e.name,
+              errorMessage: e.message,
+            });
+          }
+        }
         const operationResults = {
           processedOperations,
           processedBulkOperations,
