@@ -1,14 +1,15 @@
 import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
+import { WorkerDirector } from '@unchainedshop/core';
 
 export default async function allocateWork(
   root: never,
   { types, worker }: { types: string[]; worker: string },
-  { modules, userId }: Context,
+  context: Context,
 ) {
   log(`mutation allocateWork ${(types || []).join(',')} ${worker}`, {
-    userId,
+    userId: context.userId,
   });
 
-  return modules.worker.allocateWork({ types, worker });
+  return WorkerDirector.allocateWork(context, { types, worker });
 }

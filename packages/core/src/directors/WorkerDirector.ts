@@ -25,6 +25,10 @@ export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
   configureAutoscheduling: (workScheduleConfiguration: WorkScheduleConfiguration) => void;
   getAutoSchedules: () => [string, WorkScheduleConfiguration][];
   doWork: (work: Work, unchainedAPI) => Promise<WorkResult>;
+  allocateWork: (
+    unchainedAPI: { modules: Modules },
+    options?: { types?: string[] | null; worker?: string },
+  ) => Promise<Work | null>;
   processNextWork: (unchainedAPI: { modules: Modules }, workerId?: string) => Promise<Work | null>;
 };
 
@@ -108,27 +112,42 @@ export const WorkerDirector: IWorkerDirector = {
     }
   },
 
+  allocateWork: async (
+    unchainedAPI,
+    { types: requestedTypes, worker = unchainedAPI.modules.worker.workerId } = {},
+  ) => {
+    // Reuse the Mongo lock with a reserved key shared by every worker instance.
+    // Hold it through counting and claiming, then release before executing work.
+    const lock = await unchainedAPI.modules.orders.acquireLock('allocation', 'worker');
+    try {
+      const adapters = WorkerDirector.getAdapters();
+      const allocationMap = await unchainedAPI.modules.worker.allocationMap();
+
+      const types = adapters
+        .filter((adapter) => {
+          if (requestedTypes && !requestedTypes.includes(adapter.type)) return false;
+          if (
+            adapter.maxParallelAllocations &&
+            adapter.maxParallelAllocations <= allocationMap[adapter.type]
+          )
+            return false;
+          return true;
+        })
+        .map((adapter) => adapter.type);
+
+      return await unchainedAPI.modules.worker.allocateWork({
+        types,
+        worker,
+      });
+    } finally {
+      await lock.release();
+    }
+  },
+
   processNextWork: async (unchainedAPI: { modules: Modules }, workerId?: string) => {
-    const adapters = WorkerDirector.getAdapters();
-
-    const allocationMap = await unchainedAPI.modules.worker.allocationMap();
-
-    const types = adapters
-      .filter((adapter) => {
-        // Filter out the external
-        if (adapter.external) return false;
-        if (
-          adapter.maxParallelAllocations &&
-          adapter.maxParallelAllocations <= allocationMap[adapter.type]
-        )
-          return false;
-        return true;
-      })
-      .map((adapter) => adapter.type);
-
     const worker = workerId ?? unchainedAPI.modules.worker.workerId;
-    const work = await unchainedAPI.modules.worker.allocateWork({
-      types,
+    const work = await WorkerDirector.allocateWork(unchainedAPI, {
+      types: WorkerDirector.getActivePluginTypes({ external: false }),
       worker,
     });
 
