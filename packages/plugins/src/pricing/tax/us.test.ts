@@ -36,12 +36,33 @@ describe('resolveUsSalesTaxRate', () => {
 
   it('applies already-enacted future eras only from their effective date (DC 7% from 2026-10-01)', () => {
     assert.strictEqual(
-      resolveUsSalesTaxRate({ regionCode: 'DC', referenceDate: new Date('2026-09-15T12:00:00Z') }),
+      resolveUsSalesTaxRate({
+        regionCode: 'DC',
+        referenceDate: new Date('2026-10-01T03:59:59.999Z'),
+      }),
       0.06,
     );
     assert.strictEqual(
-      resolveUsSalesTaxRate({ regionCode: 'DC', referenceDate: new Date('2026-10-15T12:00:00Z') }),
+      resolveUsSalesTaxRate({
+        regionCode: 'DC',
+        referenceDate: new Date('2026-10-01T04:00:00.000Z'),
+      }),
       0.07,
+    );
+  });
+
+  it('preserves the temporary South Dakota cut and its enacted restoration', () => {
+    assert.strictEqual(
+      resolveUsSalesTaxRate({ regionCode: 'SD', referenceDate: new Date('2023-06-30T12:00:00Z') }),
+      0.045,
+    );
+    assert.strictEqual(
+      resolveUsSalesTaxRate({ regionCode: 'SD', referenceDate: new Date('2023-07-01T12:00:00Z') }),
+      0.042,
+    );
+    assert.strictEqual(
+      resolveUsSalesTaxRate({ regionCode: 'SD', referenceDate: new Date('2027-07-01T12:00:00Z') }),
+      0.045,
     );
   });
 
@@ -86,12 +107,13 @@ describe('us-tax-rates.json', () => {
 
   it('has strictly ascending eras with plausible rates', () => {
     for (const [stateCode, eras] of Object.entries(usTaxRates.states)) {
-      let previous = 0;
+      const timeZone = usTaxRates.timezones[stateCode as keyof typeof usTaxRates.timezones];
+      assert.doesNotThrow(() => new Intl.DateTimeFormat('en-US', { timeZone }));
+      let previous = '';
       for (const era of eras as { validFrom: string; rate: number }[]) {
-        const validFrom = new Date(`${era.validFrom}T00:00:00.000${usTaxRates.timezone}`);
-        assert.ok(Number.isFinite(validFrom.getTime()), `${stateCode}: invalid ${era.validFrom}`);
-        assert.ok(validFrom.getTime() > previous, `${stateCode}: eras out of order`);
-        previous = validFrom.getTime();
+        assert.match(era.validFrom, /^\d{4}-\d{2}-\d{2}$/, `${stateCode}: invalid ${era.validFrom}`);
+        assert.ok(era.validFrom > previous, `${stateCode}: eras out of order`);
+        previous = era.validFrom;
         assert.ok(era.rate >= 0 && era.rate < 0.12, `${stateCode}: implausible rate ${era.rate}`);
       }
     }
@@ -100,5 +122,6 @@ describe('us-tax-rates.json', () => {
   it('carries source and verification metadata', () => {
     assert.match(usTaxRates.source, /^https:\/\//);
     assert.ok(Number.isFinite(new Date(usTaxRates.verifiedAt).getTime()));
+    assert.deepStrictEqual(Object.keys(usTaxRates.timezones).sort(), [...US_STATE_CODES].sort());
   });
 });

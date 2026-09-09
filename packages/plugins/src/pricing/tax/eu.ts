@@ -29,7 +29,9 @@ const countryRates: Record<
     Object.fromEntries(
       Object.entries(categories).map(([category, eras]) => [
         category,
-        rateForDate(compileEraRates(eras, euTaxRates.timezone)),
+        rateForDate(
+          compileEraRates(eras, euTaxRates.timezones[countryCode as keyof typeof euTaxRates.timezones]),
+        ),
       ]),
     ),
   ]),

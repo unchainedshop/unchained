@@ -1,7 +1,35 @@
 {
   "source": "https://ec.europa.eu/taxation_customs/tedb/#/vat-search",
   "verifiedAt": "2026-08-20",
-  "timezone": "+01:00",
+  "timezones": {
+    "AT": "Europe/Vienna",
+    "BE": "Europe/Brussels",
+    "BG": "Europe/Sofia",
+    "CY": "Asia/Nicosia",
+    "CZ": "Europe/Prague",
+    "DE": "Europe/Berlin",
+    "DK": "Europe/Copenhagen",
+    "EE": "Europe/Tallinn",
+    "ES": "Europe/Madrid",
+    "FI": "Europe/Helsinki",
+    "FR": "Europe/Paris",
+    "GR": "Europe/Athens",
+    "HR": "Europe/Zagreb",
+    "HU": "Europe/Budapest",
+    "IE": "Europe/Dublin",
+    "IT": "Europe/Rome",
+    "LT": "Europe/Vilnius",
+    "LU": "Europe/Luxembourg",
+    "LV": "Europe/Riga",
+    "MT": "Europe/Malta",
+    "NL": "Europe/Amsterdam",
+    "PL": "Europe/Warsaw",
+    "PT": "Europe/Lisbon",
+    "RO": "Europe/Bucharest",
+    "SE": "Europe/Stockholm",
+    "SI": "Europe/Ljubljana",
+    "SK": "Europe/Bratislava"
+  },
   "countries": {
     "AT": {
       "standard": [
@@ -213,6 +241,10 @@
         }
       ],
       "reduced2": [
+        {
+          "validFrom": "2009-01-01",
+          "rate": 0.09
+        },
         {
           "validFrom": "2025-01-01",
           "rate": 0.13

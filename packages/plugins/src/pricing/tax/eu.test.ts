@@ -52,6 +52,42 @@ describe('resolveEuTaxRate', () => {
     );
   });
 
+  it('preserves the previous Estonian accommodation rate', () => {
+    assert.strictEqual(
+      resolveEuTaxRate({
+        countryCode: 'EE',
+        category: 'reduced2',
+        referenceDate: new Date('2024-08-01T12:00:00Z'),
+      }),
+      0.09,
+    );
+    assert.strictEqual(
+      resolveEuTaxRate({
+        countryCode: 'EE',
+        category: 'reduced2',
+        referenceDate: new Date('2025-02-01T12:00:00Z'),
+      }),
+      0.13,
+    );
+  });
+
+  it('switches Romanian rates at midnight in Romania', () => {
+    assert.strictEqual(
+      resolveEuTaxRate({
+        countryCode: 'RO',
+        referenceDate: new Date('2025-07-31T20:59:59.999Z'),
+      }),
+      0.19,
+    );
+    assert.strictEqual(
+      resolveEuTaxRate({
+        countryCode: 'RO',
+        referenceDate: new Date('2025-07-31T21:00:00.000Z'),
+      }),
+      0.21,
+    );
+  });
+
   it('resolves non-standard categories where the country has them', () => {
     const at = new Date('2026-08-01T12:00:00Z');
     assert.strictEqual(
@@ -149,19 +185,17 @@ describe('eu-tax-rates.json', () => {
 
   it('has strictly ascending eras with plausible rates', () => {
     for (const [countryCode, categories] of Object.entries(euTaxRates.countries)) {
+      const timeZone = euTaxRates.timezones[countryCode as keyof typeof euTaxRates.timezones];
+      assert.doesNotThrow(() => new Intl.DateTimeFormat('en-US', { timeZone }));
       for (const [category, eras] of Object.entries(categories)) {
-        let previous = 0;
+        let previous = '';
         for (const era of eras as { validFrom: string; rate: number }[]) {
-          const validFrom = new Date(`${era.validFrom}T00:00:00.000${euTaxRates.timezone}`);
+          assert.match(era.validFrom, /^\d{4}-\d{2}-\d{2}$/);
           assert.ok(
-            Number.isFinite(validFrom.getTime()),
-            `${countryCode}.${category}: invalid validFrom ${era.validFrom}`,
-          );
-          assert.ok(
-            validFrom.getTime() > previous,
+            era.validFrom > previous,
             `${countryCode}.${category}: eras out of order at ${era.validFrom}`,
           );
-          previous = validFrom.getTime();
+          previous = era.validFrom;
           assert.ok(
             era.rate > 0 && era.rate < 0.3,
             `${countryCode}.${category}: implausible rate ${era.rate}`,
@@ -174,5 +208,9 @@ describe('eu-tax-rates.json', () => {
   it('carries source and verification metadata', () => {
     assert.match(euTaxRates.source, /^https:\/\/ec\.europa\.eu\//);
     assert.ok(Number.isFinite(new Date(euTaxRates.verifiedAt).getTime()));
+    assert.deepStrictEqual(
+      Object.keys(euTaxRates.timezones).sort(),
+      [...EU_MEMBER_COUNTRY_CODES].sort(),
+    );
   });
 });

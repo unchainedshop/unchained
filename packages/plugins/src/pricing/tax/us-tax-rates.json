@@ -1,7 +1,59 @@
 {
   "source": "https://taxfoundation.org/data/all/state/2026-sales-tax-rates-midyear/",
   "verifiedAt": "2026-08-20",
-  "timezone": "-06:00",
+  "timezones": {
+    "AK": "America/Anchorage",
+    "AL": "America/Chicago",
+    "AR": "America/Chicago",
+    "AZ": "America/Phoenix",
+    "CA": "America/Los_Angeles",
+    "CO": "America/Denver",
+    "CT": "America/New_York",
+    "DC": "America/New_York",
+    "DE": "America/New_York",
+    "FL": "America/New_York",
+    "GA": "America/New_York",
+    "HI": "Pacific/Honolulu",
+    "IA": "America/Chicago",
+    "ID": "America/Boise",
+    "IL": "America/Chicago",
+    "IN": "America/Indiana/Indianapolis",
+    "KS": "America/Chicago",
+    "KY": "America/New_York",
+    "LA": "America/Chicago",
+    "MA": "America/New_York",
+    "MD": "America/New_York",
+    "ME": "America/New_York",
+    "MI": "America/Detroit",
+    "MN": "America/Chicago",
+    "MO": "America/Chicago",
+    "MS": "America/Chicago",
+    "MT": "America/Denver",
+    "NC": "America/New_York",
+    "ND": "America/Chicago",
+    "NE": "America/Chicago",
+    "NH": "America/New_York",
+    "NJ": "America/New_York",
+    "NM": "America/Denver",
+    "NV": "America/Los_Angeles",
+    "NY": "America/New_York",
+    "OH": "America/New_York",
+    "OK": "America/Chicago",
+    "OR": "America/Los_Angeles",
+    "PA": "America/New_York",
+    "RI": "America/New_York",
+    "SC": "America/New_York",
+    "SD": "America/Chicago",
+    "TN": "America/Chicago",
+    "TX": "America/Chicago",
+    "UT": "America/Denver",
+    "VA": "America/New_York",
+    "VT": "America/New_York",
+    "WA": "America/Los_Angeles",
+    "WI": "America/Chicago",
+    "WV": "America/New_York",
+    "WY": "America/Denver"
+  },
   "states": {
     "AK": [
       {
@@ -269,9 +321,17 @@
     ],
     "SD": [
       {
+        "validFrom": "2016-06-01",
+        "rate": 0.045
+      },
+      {
         "validFrom": "2023-07-01",
-        "rate": 0.042,
-        "note": "HB 1137 temporary cut; reverts to 4.5% on 2027-07-01 unless extended"
+        "rate": 0.042
+      },
+      {
+        "validFrom": "2027-07-01",
+        "rate": 0.045,
+        "note": "HB 1137 temporary cut expires after 2027-06-30"
       }
     ],
     "TN": [
