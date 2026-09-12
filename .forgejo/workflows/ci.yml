@@ -1,0 +1,112 @@
+name: CI
+
+# Forgejo Actions pipeline (replaces the root Jenkinsfile).
+# Runs the mongo-backed lint/test suite and builds + publishes the `docs` image
+# to the git.ucc.dev package registry, gated by a Trivy scan. The admin-ui image
+# has its own workflow (admin-ui.yml). The @unchainedshop/* npm packages are
+# published separately and are NOT handled here (they weren't in Jenkins either).
+# See MIGRATION.md for repo/secret setup and the GitHub push-mirror (phase 2).
+
+on:
+  push:
+    branches: [master, develop, 'v*.x', 'v*.*.x']
+    tags: ['*']
+  pull_request:
+  workflow_dispatch:
+
+env:
+  REGISTRY: git.ucc.dev
+  REGISTRY_REPO: unchained/unchained
+
+jobs:
+  # Faithful port of the Jenkins Test stage: build the mongo-based CI image
+  # (root Dockerfile: mongo:8.2.3 + Node via nvm + MONGOMS_SYSTEM_BINARY, runs
+  # `npm ci` + `npm run build`), then lint (gate) and test (non-blocking, exactly
+  # as Jenkins ran `npm run test || :`). Uses the host docker daemon (docker.sock).
+  test:
+    name: Lint + tests (mongo-backed)
+    runs-on: docker
+    steps:
+      - uses: actions/checkout@v4
+      - name: Seed test dotenv
+        # Replaces the Jenkins `unchained-dotenv` credential copied to ./env.
+        # Pass via env (not inline ${{ }}) so dotenv metacharacters ($, ", `) are
+        # never re-parsed by the shell.
+        env:
+          TESTS_DOTENV: ${{ secrets.TESTS_DOTENV }}
+        run: printf '%s' "$TESTS_DOTENV" > ./env
+      - name: Build CI image
+        run: docker build -t unchained-ci:${{ github.sha }} .
+      - name: Lint
+        run: docker run --rm unchained-ci:${{ github.sha }} npm run lint
+      - name: Tests (non-blocking, as in Jenkins)
+        run: docker run --rm unchained-ci:${{ github.sha }} sh -c "npm run test || :"
+
+  # Source-dependency scan across the whole monorepo (incl. admin-ui).
+  # Hard-gates on fixable HIGH/CRITICAL (ADR-003).
+  trivy:
+    name: Trivy vuln gate
+    runs-on: docker
+    container:
+      image: ghcr.io/aquasecurity/trivy:0.72.0@sha256:cffe3f5161a47a6823fbd23d985795b3ed72a4c806da4c4df16266c02accdd6f
+    env:
+      TRIVY_CACHE_DIR: /tmp/trivy-cache
+    steps:
+      - uses: https://data.forgejo.org/actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - id: trivydate
+        run: echo "d=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+      - uses: https://code.forgejo.org/actions/cache@v4
+        with:
+          path: /tmp/trivy-cache
+          # Date-rotating key + restore-keys: warm-start from the previous day's
+          # DB, then let Trivy refresh it (and re-save under today's key) so the
+          # vuln DB never freezes. A constant key would pin the DB forever.
+          key: trivy-db-${{ runner.os }}-${{ steps.trivydate.outputs.d }}
+          restore-keys: |
+            trivy-db-${{ runner.os }}-
+      - name: trivy fs (fixable HIGH/CRITICAL gate)
+        run: |
+          trivy fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 --ignore-unfixed \
+            --no-progress --disable-telemetry .
+
+  docs:
+    name: Build docs
+    runs-on: docker
+    needs: [trivy, test]
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+        with:
+          buildkitd-config-inline: |
+            [registry."${{ env.REGISTRY }}"]
+              mirrors = ["${{ env.REGISTRY }}"]
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.REGISTRY_REPO }}/docs
+          # Jenkins docs tagging: <branch>-latest always; next@develop;
+          # latest@master; stable@tag.
+          tags: |
+            type=sha,prefix=sha-,format=short
+            type=raw,value=${{ github.ref_name }}-latest,enable=${{ github.ref_type == 'branch' }}
+            type=raw,value=next,enable=${{ github.ref_name == 'develop' }}
+            type=raw,value=latest,enable=${{ github.ref_name == 'master' }}
+            type=raw,value=stable,enable=${{ github.ref_type == 'tag' }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: ./docs
+          file: ./docs/Dockerfile
+          push: true
+          provenance: false
+          build-args: |
+            GIT_COMMIT=${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REGISTRY_REPO }}/docs:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REGISTRY_REPO }}/docs:buildcache,mode=max,ignore-error=true

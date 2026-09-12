@@ -1,0 +1,118 @@
+name: admin-ui
+
+# Forgejo Actions pipeline for the admin-ui image (replaces admin-ui/Jenkinsfile).
+# Scoped by `paths` so it only rebuilds when admin-ui/ changes. The admin-ui
+# Dockerfile runs `npm run lint && npm run build` internally, so building the
+# image is its own lint/build gate; a Trivy scan of admin-ui/ gates the publish.
+# Semver tags mirror the Jenkinsfile and ARE consumed in prod (adminui:1|v2|v3).
+
+on:
+  push:
+    branches: [master, develop, 'v*.x', 'v*.*.x']
+    tags: ['*']
+    paths:
+      - 'admin-ui/**'
+      - '.forgejo/workflows/admin-ui.yml'
+  pull_request:
+    paths:
+      - 'admin-ui/**'
+      - '.forgejo/workflows/admin-ui.yml'
+  workflow_dispatch:
+
+env:
+  REGISTRY: git.ucc.dev
+  REGISTRY_REPO: unchained/unchained
+
+jobs:
+  trivy:
+    name: Trivy vuln gate (admin-ui)
+    runs-on: docker
+    container:
+      image: ghcr.io/aquasecurity/trivy:0.72.0@sha256:cffe3f5161a47a6823fbd23d985795b3ed72a4c806da4c4df16266c02accdd6f
+    env:
+      TRIVY_CACHE_DIR: /tmp/trivy-cache
+    steps:
+      - uses: https://data.forgejo.org/actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - id: trivydate
+        run: echo "d=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+      - uses: https://code.forgejo.org/actions/cache@v4
+        with:
+          path: /tmp/trivy-cache
+          # Date-rotating key + restore-keys: warm-start from the previous day's
+          # DB, then let Trivy refresh it (and re-save under today's key) so the
+          # vuln DB never freezes. A constant key would pin the DB forever.
+          key: trivy-db-${{ runner.os }}-${{ steps.trivydate.outputs.d }}
+          restore-keys: |
+            trivy-db-${{ runner.os }}-
+      - name: trivy fs admin-ui (fixable HIGH/CRITICAL gate)
+        run: |
+          trivy fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 --ignore-unfixed \
+            --no-progress --disable-telemetry ./admin-ui
+
+  build:
+    name: Build admin-ui
+    runs-on: docker
+    needs: [trivy]
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      # Reproduce the Jenkinsfile's branch-pattern semver:
+      #   master | v?.x   -> vMAJOR.MINOR.PATCH, vMAJOR.MINOR, vMAJOR
+      #   v?.*.x          -> vMAJOR.MINOR.PATCH, vMAJOR.MINOR
+      #   tag             -> vMAJOR.MINOR.PATCH
+      - id: tagplan
+        env:
+          REF: ${{ github.ref_name }}
+          TYPE: ${{ github.ref_type }}
+        run: |
+          set -e
+          V=$(node -p "require('./admin-ui/package.json').version")
+          echo "full=$V" >> "$GITHUB_OUTPUT"
+          echo "minor=${V%.*}" >> "$GITHUB_OUTPUT"
+          echo "major=${V%%.*}" >> "$GITHUB_OUTPUT"
+          pfull=false; pminor=false; pmajor=false
+          if [ "$TYPE" = "tag" ]; then
+            pfull=true
+          else
+            case "$REF" in
+              master)                    pfull=true; pminor=true; pmajor=true ;;
+              v[0-9].x|v[0-9][0-9].x)    pfull=true; pminor=true; pmajor=true ;;
+              v[0-9]*.[0-9]*.x)          pfull=true; pminor=true ;;
+            esac
+          fi
+          echo "pfull=$pfull" >> "$GITHUB_OUTPUT"
+          echo "pminor=$pminor" >> "$GITHUB_OUTPUT"
+          echo "pmajor=$pmajor" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+        with:
+          buildkitd-config-inline: |
+            [registry."${{ env.REGISTRY }}"]
+              mirrors = ["${{ env.REGISTRY }}"]
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.REGISTRY_REPO }}/adminui
+          tags: |
+            type=sha,prefix=sha-,format=short
+            type=raw,value=${{ github.ref_name }}-latest,enable=${{ github.ref_type == 'branch' }}
+            type=raw,value=next,enable=${{ github.ref_name == 'develop' }}
+            type=raw,value=v${{ steps.tagplan.outputs.full }},enable=${{ steps.tagplan.outputs.pfull == 'true' }}
+            type=raw,value=v${{ steps.tagplan.outputs.minor }},enable=${{ steps.tagplan.outputs.pminor == 'true' }}
+            type=raw,value=v${{ steps.tagplan.outputs.major }},enable=${{ steps.tagplan.outputs.pmajor == 'true' }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: ./admin-ui
+          file: ./admin-ui/Dockerfile
+          push: true
+          provenance: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REGISTRY_REPO }}/adminui:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REGISTRY_REPO }}/adminui:buildcache,mode=max,ignore-error=true
