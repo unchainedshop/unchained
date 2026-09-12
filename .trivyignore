@@ -1,0 +1,11 @@
+# Trivy suppressions for the CI vuln gate (.forgejo/workflows/*.yml).
+#
+# The `trivy` jobs fail on fixable HIGH/CRITICAL findings. To accept a specific
+# advisory (e.g. a false positive or an unavoidable transitive), add its ID on
+# its own line, ideally with a short justification + review date. Keep this file
+# small and reviewed — every entry weakens the gate.
+#
+# Format: one vulnerability ID per line, e.g.
+#   CVE-2024-12345   # transitive via <pkg>; no fix upstream yet — review 2026-12
+#
+# (no suppressions yet)

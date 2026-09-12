@@ -160,14 +160,29 @@ test.describe('Quotation: negotiated checkout flow', async () => {
   test('checkout of a quotation cart succeeds (no isExpired TypeError)', async () => {
     await graphqlFetchAsUser({
       query: /* GraphQL */ `
-        mutation updateCart($orderId: ID, $billingAddress: AddressInput, $contact: ContactInput) {
-          updateCart(orderId: $orderId, billingAddress: $billingAddress, contact: $contact) {
+        mutation updateCart(
+          $orderId: ID
+          $billingAddress: AddressInput
+          $contact: ContactInput
+          $paymentProviderId: ID
+        ) {
+          updateCart(
+            orderId: $orderId
+            billingAddress: $billingAddress
+            contact: $contact
+            paymentProviderId: $paymentProviderId
+          ) {
             _id
           }
         }
       `,
       variables: {
         orderId,
+        // Pin the invoice provider: the default provider is inherited from the
+        // user's "most recent" seeded order, which is an `updated` tie-break that
+        // can select the cryptopay provider depending on test-file ordering —
+        // leaving the checkout PENDING instead of CONFIRMED.
+        paymentProviderId: 'simple-payment-provider',
         billingAddress: {
           firstName: 'Agentic',
           lastName: 'Buyer',

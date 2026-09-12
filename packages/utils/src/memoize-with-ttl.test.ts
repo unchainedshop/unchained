@@ -104,20 +104,25 @@ describe('memoizeWithTTL', () => {
   });
 
   it('shares an in-flight invocation even after the ttl has elapsed', async () => {
+    let releaseFirst: () => void;
+    const gate = new Promise<void>((resolve) => {
+      releaseFirst = resolve;
+    });
     let calls = 0;
     const memoized = memoizeWithTTL(
       async () => {
         calls += 1;
-        await sleep(30);
+        await gate;
         return calls;
       },
-      { ttl: 1 },
+      { ttl: 20 },
     );
 
     const first = memoized();
-    await sleep(10);
+    await sleep(40);
     // ttl is long gone, but the first invocation is still pending — join it
     const second = memoized();
+    releaseFirst!();
     assert.strictEqual(await first, 1);
     assert.strictEqual(await second, 1);
     assert.strictEqual(calls, 1);
