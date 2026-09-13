@@ -89,37 +89,35 @@ jobs:
     if: github.event_name != 'pull_request'
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-        with:
-          buildkitd-config-inline: |
-            [registry."${{ env.REGISTRY }}"]
-              mirrors = ["${{ env.REGISTRY }}"]
-      - uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.REGISTRY_USER }}
-          password: ${{ secrets.REGISTRY_TOKEN }}
-      - id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.REGISTRY_REPO }}/docs
-          # Jenkins docs tagging: <branch>-latest always; next@develop;
-          # latest@master; stable@tag.
-          tags: |
-            type=sha,prefix=sha-,format=short
-            type=raw,value=${{ github.ref_name }}-latest,enable=${{ github.ref_type == 'branch' }}
-            type=raw,value=next,enable=${{ github.ref_name == 'develop' }}
-            type=raw,value=latest,enable=${{ github.ref_name == 'master' }}
-            type=raw,value=stable,enable=${{ github.ref_type == 'tag' }}
-      - uses: docker/build-push-action@v6
-        with:
-          context: ./docs
-          file: ./docs/Dockerfile
-          push: true
-          provenance: false
-          build-args: |
-            GIT_COMMIT=${{ github.sha }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REGISTRY_REPO }}/docs:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REGISTRY_REPO }}/docs:buildcache,mode=max,ignore-error=true
+      # Raw docker login with the org-wide write:package PAT (secret
+      # PKG_PUSH_TOKEN); the automatic Actions token cannot push packages.
+      # Username = the REGISTRY_USER variable, else the pusher (the PAT owner
+      # must have package-write on the org). Matches unchained-ch / infrastructure.
+      - name: Log in to the Forgejo container registry
+        run: echo "${{ secrets.PKG_PUSH_TOKEN }}" | docker login "${{ env.REGISTRY }}" -u "${{ vars.REGISTRY_USER || github.actor }}" --password-stdin
+      # Plain docker build + push over the host docker.sock. buildx /
+      # build-push-action fails to push to the Forgejo registry
+      # ("failed to push ...: unknown"), so avoid buildx here.
+      - name: Build and push docs image
+        run: |
+          set -euo pipefail
+          IMAGE="${REGISTRY}/${REGISTRY_REPO}/docs"
+          # Jenkins docs tagging: sha-<short>, <branch>-latest (branch only),
+          # next@develop, latest@master, stable@tag.
+          TAGS="sha-${GITHUB_SHA:0:7}"
+          [ "$GITHUB_REF_TYPE" = "branch" ] && TAGS="$TAGS ${GITHUB_REF_NAME}-latest" || true
+          case "$GITHUB_REF_NAME" in
+            develop) TAGS="$TAGS next" ;;
+            master)  TAGS="$TAGS latest" ;;
+          esac
+          [ "$GITHUB_REF_TYPE" = "tag" ] && TAGS="$TAGS stable" || true
+          TAG_ARGS=""
+          for t in $TAGS; do TAG_ARGS="$TAG_ARGS -t ${IMAGE}:${t}"; done
+          docker build --platform linux/amd64 \
+            --label "org.opencontainers.image.source=https://git.ucc.dev/${GITHUB_REPOSITORY}" \
+            --build-arg GIT_COMMIT="${GITHUB_SHA}" \
+            $TAG_ARGS -f ./docs/Dockerfile ./docs
+          for t in $TAGS; do
+            echo "==> Pushing ${IMAGE}:${t}"
+            docker push "${IMAGE}:${t}"
+          done

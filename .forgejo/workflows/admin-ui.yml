@@ -70,62 +70,46 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Reproduce the Jenkinsfile's branch-pattern semver:
-      #   master | v?.x   -> vMAJOR.MINOR.PATCH, vMAJOR.MINOR, vMAJOR
-      #   v?.*.x          -> vMAJOR.MINOR.PATCH, vMAJOR.MINOR
+      # Raw docker login with the org-wide write:package PAT (secret
+      # PKG_PUSH_TOKEN); the automatic Actions token cannot push packages.
+      # Username = the REGISTRY_USER variable, else the pusher (the PAT owner
+      # must have package-write on the org). Matches unchained-ch / infrastructure.
+      - name: Log in to the Forgejo container registry
+        run: echo "${{ secrets.PKG_PUSH_TOKEN }}" | docker login "${{ env.REGISTRY }}" -u "${{ vars.REGISTRY_USER || github.actor }}" --password-stdin
+      # Plain docker build + push (buildx fails to push to the Forgejo registry).
+      # Reproduce the Jenkinsfile's branch-pattern semver from admin-ui's version:
+      #   master | vN.x   -> vMAJOR.MINOR.PATCH, vMAJOR.MINOR, vMAJOR
+      #   vN.M.x          -> vMAJOR.MINOR.PATCH, vMAJOR.MINOR
       #   tag             -> vMAJOR.MINOR.PATCH
-      - id: tagplan
-        env:
-          REF: ${{ github.ref_name }}
-          TYPE: ${{ github.ref_type }}
+      - name: Build and push admin-ui image
         run: |
-          set -e
+          set -euo pipefail
+          IMAGE="${REGISTRY}/${REGISTRY_REPO}/adminui"
           V=$(node -p "require('./admin-ui/package.json').version")
-          echo "full=$V" >> "$GITHUB_OUTPUT"
-          echo "minor=${V%.*}" >> "$GITHUB_OUTPUT"
-          echo "major=${V%%.*}" >> "$GITHUB_OUTPUT"
+          FULL="$V"; MINOR="${V%.*}"; MAJOR="${V%%.*}"
+          TAGS="sha-${GITHUB_SHA:0:7}"
+          [ "$GITHUB_REF_TYPE" = "branch" ] && TAGS="$TAGS ${GITHUB_REF_NAME}-latest" || true
+          [ "$GITHUB_REF_NAME" = "develop" ] && TAGS="$TAGS next" || true
           pfull=false; pminor=false; pmajor=false
-          if [ "$TYPE" = "tag" ]; then
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
             pfull=true
           else
-            case "$REF" in
-              master)                    pfull=true; pminor=true; pmajor=true ;;
-              v[0-9].x|v[0-9][0-9].x)    pfull=true; pminor=true; pmajor=true ;;
-              v[0-9]*.[0-9]*.x)          pfull=true; pminor=true ;;
+            case "$GITHUB_REF_NAME" in
+              master)                 pfull=true; pminor=true; pmajor=true ;;
+              v[0-9].x|v[0-9][0-9].x) pfull=true; pminor=true; pmajor=true ;;
+              v[0-9]*.[0-9]*.x)       pfull=true; pminor=true ;;
             esac
           fi
-          echo "pfull=$pfull" >> "$GITHUB_OUTPUT"
-          echo "pminor=$pminor" >> "$GITHUB_OUTPUT"
-          echo "pmajor=$pmajor" >> "$GITHUB_OUTPUT"
-
-      - uses: docker/setup-buildx-action@v3
-        with:
-          buildkitd-config-inline: |
-            [registry."${{ env.REGISTRY }}"]
-              mirrors = ["${{ env.REGISTRY }}"]
-      - uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.REGISTRY_USER }}
-          password: ${{ secrets.REGISTRY_TOKEN }}
-      - id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.REGISTRY_REPO }}/adminui
-          tags: |
-            type=sha,prefix=sha-,format=short
-            type=raw,value=${{ github.ref_name }}-latest,enable=${{ github.ref_type == 'branch' }}
-            type=raw,value=next,enable=${{ github.ref_name == 'develop' }}
-            type=raw,value=v${{ steps.tagplan.outputs.full }},enable=${{ steps.tagplan.outputs.pfull == 'true' }}
-            type=raw,value=v${{ steps.tagplan.outputs.minor }},enable=${{ steps.tagplan.outputs.pminor == 'true' }}
-            type=raw,value=v${{ steps.tagplan.outputs.major }},enable=${{ steps.tagplan.outputs.pmajor == 'true' }}
-      - uses: docker/build-push-action@v6
-        with:
-          context: ./admin-ui
-          file: ./admin-ui/Dockerfile
-          push: true
-          provenance: false
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REGISTRY_REPO }}/adminui:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REGISTRY_REPO }}/adminui:buildcache,mode=max,ignore-error=true
+          [ "$pfull"  = true ] && TAGS="$TAGS v${FULL}"  || true
+          [ "$pminor" = true ] && TAGS="$TAGS v${MINOR}" || true
+          [ "$pmajor" = true ] && TAGS="$TAGS v${MAJOR}" || true
+          TAG_ARGS=""
+          for t in $TAGS; do TAG_ARGS="$TAG_ARGS -t ${IMAGE}:${t}"; done
+          docker build --platform linux/amd64 \
+            --label "org.opencontainers.image.source=https://git.ucc.dev/${GITHUB_REPOSITORY}" \
+            --build-arg GIT_COMMIT="${GITHUB_SHA}" \
+            $TAG_ARGS -f ./admin-ui/Dockerfile ./admin-ui
+          for t in $TAGS; do
+            echo "==> Pushing ${IMAGE}:${t}"
+            docker push "${IMAGE}:${t}"
+          done
