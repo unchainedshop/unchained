@@ -11,7 +11,12 @@ export const ProductUpdateSpecificationSchema = z.object({
   type: z.optional(z.string()),
   sequence: z.optional(z.number()),
   status: z.nullish(z.enum(ProductStatus)),
-  published: z.nullish(z.iso.datetime()), // or null!
+  // Accept any Date-parseable string (the historical import contract) rather than
+  // only strict RFC 3339 — e.g. a seconds-less "2020-01-01T00:00Z" that new Date()
+  // accepts but z.iso.datetime() rejects. Persisted via new Date() during transform.
+  published: z.nullish(
+    z.string().check(z.refine((value) => !Number.isNaN(new Date(value).getTime()), 'Invalid date')),
+  ), // or null!
   tags: z.optional(z.array(z.string())),
   commerce: z.optional(
     z.object({
