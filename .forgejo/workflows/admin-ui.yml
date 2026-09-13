@@ -27,10 +27,14 @@ jobs:
   trivy:
     name: Trivy vuln gate (admin-ui)
     runs-on: docker
-    container:
-      image: ghcr.io/aquasecurity/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
+    # NB: no job-level `container:` here. The trivy image ships no Node, so Forgejo
+    # cannot run JS actions (checkout/cache exec `node` via `docker exec`) inside it
+    # -> "node: executable file not found" (exit 127). Run on the host runner and
+    # install a pinned, checksum-verified trivy binary in the step below instead.
     env:
       TRIVY_CACHE_DIR: /tmp/trivy-cache
+      TRIVY_VERSION: "0.74.0"
+      TRIVY_SHA256: "2ae6fe3ee734b7fdf11335663e18c75ea12dccc76062f09f164a3b0f8be4371a"
     steps:
       - uses: https://data.forgejo.org/actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - id: trivydate
@@ -44,9 +48,18 @@ jobs:
           key: trivy-db-${{ runner.os }}-${{ steps.trivydate.outputs.d }}
           restore-keys: |
             trivy-db-${{ runner.os }}-
+      - name: Install Trivy ${{ env.TRIVY_VERSION }} (pinned + checksum-verified)
+        run: |
+          set -eu
+          dl="${RUNNER_TEMP:-/tmp}"
+          curl -sfL -o "$dl/trivy.tar.gz" \
+            "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+          echo "${TRIVY_SHA256}  $dl/trivy.tar.gz" | sha256sum -c -
+          tar -xzf "$dl/trivy.tar.gz" -C "$dl" trivy
+          "$dl/trivy" --version
       - name: trivy fs admin-ui (fixable HIGH/CRITICAL gate)
         run: |
-          trivy fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 --ignore-unfixed \
+          "${RUNNER_TEMP:-/tmp}/trivy" fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 --ignore-unfixed \
             --no-progress --disable-telemetry ./admin-ui
 
   build:
