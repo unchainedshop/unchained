@@ -47,11 +47,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Login to Forgejo registry
-        run: >
-          docker login
-          -u ${{ secrets.REGISTRY_USER }}
-          -p ${{ secrets.REGISTRY_TOKEN }}
-          git.ucc.dev
+        # Org-wide write:package PAT (PKG_PUSH_TOKEN); the automatic Actions token
+        # cannot push packages, and REGISTRY_USER + REGISTRY_TOKEN was rejected
+        # ('unauthorized'). Matches unchained-ch / infrastructure / v4.8.x.
+        run: echo "${{ secrets.PKG_PUSH_TOKEN }}" | docker login git.ucc.dev -u "${{ vars.REGISTRY_USER || github.actor }}" --password-stdin
 
       - name: Build docs image
         run: docker build -f ./docs/Dockerfile -t docs:ci ./docs
