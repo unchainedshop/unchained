@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-worker",
   "description": "Background job and task queue module for the Unchained Engine",
-  "version": "4.8.26",
+  "version": "4.8.27",
   "main": "lib/worker-index.js",
   "types": "lib/worker-index.d.ts",
   "type": "module",
@@ -35,10 +35,10 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^4.8.12",
-    "@unchainedshop/logger": "^4.8.12",
-    "@unchainedshop/mongodb": "^4.8.12",
-    "@unchainedshop/utils": "^4.8.12"
+    "@unchainedshop/events": "^4.8.27",
+    "@unchainedshop/logger": "^4.8.27",
+    "@unchainedshop/mongodb": "^4.8.27",
+    "@unchainedshop/utils": "^4.8.27"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",

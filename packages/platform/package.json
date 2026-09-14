@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/platform",
   "description": "Complete e-commerce platform bundle for the Unchained Engine",
-  "version": "4.8.26",
+  "version": "4.8.27",
   "main": "lib/platform-index.js",
   "types": "lib/platform-index.d.ts",
   "type": "module",
@@ -41,16 +41,16 @@
     "npm": ">=10.0.0"
   },
   "dependencies": {
-    "@unchainedshop/api": "^4.8.12",
-    "@unchainedshop/core": "^4.8.12",
-    "@unchainedshop/core-orders": "^4.8.12",
-    "@unchainedshop/events": "^4.8.12",
-    "@unchainedshop/file-upload": "^4.8.12",
-    "@unchainedshop/logger": "^4.8.12",
-    "@unchainedshop/mongodb": "^4.8.12",
-    "@unchainedshop/plugins": "^4.8.12",
-    "@unchainedshop/roles": "^4.8.12",
-    "@unchainedshop/utils": "^4.8.12"
+    "@unchainedshop/api": "^4.8.27",
+    "@unchainedshop/core": "^4.8.27",
+    "@unchainedshop/core-orders": "^4.8.27",
+    "@unchainedshop/events": "^4.8.27",
+    "@unchainedshop/file-upload": "^4.8.27",
+    "@unchainedshop/logger": "^4.8.27",
+    "@unchainedshop/mongodb": "^4.8.27",
+    "@unchainedshop/plugins": "^4.8.27",
+    "@unchainedshop/roles": "^4.8.27",
+    "@unchainedshop/utils": "^4.8.27"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",

@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/file-upload",
   "description": "File upload abstraction layer for the Unchained Engine",
-  "version": "4.8.26",
+  "version": "4.8.27",
   "main": "lib/file-upload-index.js",
   "types": "lib/file-upload-index.d.ts",
   "type": "module",
@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/utils": "^4.8.12"
+    "@unchainedshop/utils": "^4.8.27"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",

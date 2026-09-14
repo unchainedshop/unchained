@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/engine",
   "description": "Unchained Engine",
-  "version": "4.8.26",
+  "version": "4.8.27",
   "license": "EUPL-1.2",
   "private": "true",
   "homepage": "https://unchained.shop",
@@ -97,5 +97,9 @@
   },
   "trustedDependencies": [
     "@mongodb-js/zstd"
-  ]
+  ],
+  "allowScripts": {
+    "cypress@15.21.1": true,
+    "mongodb-memory-server@11.2.0": true
+  }
 }
