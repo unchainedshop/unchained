@@ -163,10 +163,10 @@ describe('Product Supply', () => {
   });
 
   it('Should [ERROR] when  valid integer value is not provided', () => {
-    cy.get('input[name="width"][type="number"]').clear();
-    cy.get('input[name="height"][type="number"]').clear();
-    cy.get('input[name="weight"][type="number"]').clear();
-    cy.get('input[name="length"][type="number"]').clear().blur();
+    cy.get('input[name="width"][type="number"]').clear().type('1.5').blur();
+    cy.get('input[name="height"][type="number"]').clear().type('1.5').blur();
+    cy.get('input[name="weight"][type="number"]').clear().type('1.5').blur();
+    cy.get('input[name="length"][type="number"]').clear().type('1.5').blur();
     cy.get(`input[type="submit"][aria-label="${localizations.en.save}"]`)
       .should('have.value', localizations.en.save)
       .should('be.disabled');

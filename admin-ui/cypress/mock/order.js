@@ -559,7 +559,7 @@ export const SingleOrderOpenResponse = {
 
 export const OrderStatusResponse = {
   data: {
-    orderStatusType: {
+    statusTypes: {
       options: [
         {
           value: 'OPEN',
@@ -595,7 +595,7 @@ export const OrderStatusResponse = {
 
 export const OrderPaymentStatusResponse = {
   data: {
-    paymentStatusTypes: {
+    statusTypes: {
       options: [
         {
           value: 'OPEN',
@@ -645,7 +645,7 @@ export const PaymentProvidersTypeResponse = {
 
 export const OrderDeliveryStatusResponse = {
   data: {
-    deliveryStatusType: {
+    statusTypes: {
       options: [
         {
           value: 'OPEN',
@@ -723,6 +723,7 @@ export const PayOrderResponse = {
 export const OrderOperations = {
   GetOrderList: 'Orders',
   GetSingleOrder: 'Order',
+  StatusTypes: 'StatusTypes',
   OrderStatus: 'OrderStatus',
   OrderPaymentStatus: 'OrderPaymentStatus',
   PaymentProvidersType: 'PaymentProvidersType',

@@ -47,21 +47,20 @@ describe('Order', () => {
           req.reply(SingleOrderResponse);
         }
       }
-      if (hasOperationName(req, OrderOperations.OrderStatus)) {
-        aliasQuery(req, OrderOperations.OrderStatus);
-        req.reply(OrderStatusResponse);
-      }
-      if (hasOperationName(req, OrderOperations.OrderPaymentStatus)) {
-        aliasQuery(req, OrderOperations.OrderPaymentStatus);
-        req.reply(OrderPaymentStatusResponse);
+      if (hasOperationName(req, OrderOperations.StatusTypes)) {
+        aliasQuery(req, OrderOperations.StatusTypes);
+        const enumName = req.body.variables?.enumName;
+        if (enumName === 'OrderStatus') {
+          req.reply(OrderStatusResponse);
+        } else if (enumName === 'OrderPaymentStatus') {
+          req.reply(OrderPaymentStatusResponse);
+        } else if (enumName === 'OrderDeliveryStatus') {
+          req.reply(OrderDeliveryStatusResponse);
+        }
       }
       if (hasOperationName(req, OrderOperations.PaymentProvidersType)) {
         aliasQuery(req, OrderOperations.PaymentProvidersType);
         req.reply(PaymentProvidersTypeResponse);
-      }
-      if (hasOperationName(req, OrderOperations.OrderDeliveryStatus)) {
-        aliasQuery(req, OrderOperations.OrderDeliveryStatus);
-        req.reply(OrderDeliveryStatusResponse);
       }
       if (hasOperationName(req, OrderOperations.DeliveryProvidersType)) {
         aliasQuery(req, OrderOperations.DeliveryProvidersType);

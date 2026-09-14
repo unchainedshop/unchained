@@ -168,7 +168,7 @@ describe('Languages', () => {
     const { language } = SingleLanguageResponse.data;
 
     cy.location('pathname').should('eq', '/language/');
-    cy.visit(`/language?languageId=${language._id}`);
+    cy.visit(`/language/?languageId=${language._id}`);
     cy.url().should('include', `/language/?languageId=${language._id}`);
     cy.wait(fullAliasName(LanguageOperations.GetSingleLanguage)).then(
       (currentSubject) => {
@@ -185,7 +185,7 @@ describe('Languages', () => {
   it('Show [UPDATE LANGUAGE] successfully', () => {
     const { language } = SingleLanguageResponse.data;
     cy.location('pathname').should('eq', '/language/');
-    cy.visit(`/language?languageId=${language._id}`);
+    cy.visit(`/language/?languageId=${language._id}`);
     cy.url().should('include', `/language/?languageId=${language._id}`);
     cy.get('input[type="submit"]')
       .contains(localizations.en.update_language)
@@ -210,7 +210,7 @@ describe('Languages', () => {
     const { language } = SingleLanguageResponse.data;
 
     cy.location('pathname').should('eq', '/language/');
-    cy.visit(`/language?languageId=${language._id}`);
+    cy.visit(`/language/?languageId=${language._id}`);
     cy.url().should('include', `/language/?languageId=${language._id}`);
     cy.get('button')
       .contains(localizations.en.delete)

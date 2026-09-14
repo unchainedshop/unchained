@@ -544,11 +544,11 @@ describe('Filter', () => {
       );
       cy.get('input[name="key"]').type(SingleFilterResponse.data.filter.key);
       cy.get('select[name="type"]').select(firstFilterType.value);
-      cy.get('input[name="options[0]"]').type('option 1');
+      cy.get('input[name="options.0"]').type('option 1');
       cy.get('button[type="button"]')
         .contains(localizations.en.add_option)
         .click();
-      cy.get('input[name="options[1]"]').type('option 2');
+      cy.get('input[name="options.1"]').type('option 2');
       cy.get('input[type="submit"]')
         .contains(localizations.en.create_filter)
         .click();
@@ -578,7 +578,7 @@ describe('Filter', () => {
         .contains(localizations.en.create_filter)
         .click();
 
-      cy.get('label[for="options[0]"]').should(
+      cy.get('label[for="options.0"]').should(
         'contain.text',
         replaceIntlPlaceholder(
           localizations.en.error_required,

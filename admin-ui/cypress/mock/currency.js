@@ -39,7 +39,7 @@ export const CreateCurrencyResponse = {
   data: {
     createCurrency: {
       _id: 'e2b0b1852edbe9697f02c38b',
-      __typename: 'Country',
+      __typename: 'Currency',
     },
   },
 };

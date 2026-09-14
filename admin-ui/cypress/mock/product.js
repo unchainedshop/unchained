@@ -284,11 +284,28 @@ export const CreateProductResponse = {
   data: {
     createProduct: {
       _id: 'draft-product',
+      sequence: 48,
+      status: 'DRAFT',
+      created: '2022-04-20T12:31:12.369Z',
+      tags: [],
+      updated: '2022-04-20T12:20:56.274Z',
+      published: null,
+      media: [],
+      reviews: [],
+      siblings: [],
       texts: {
         _id: '6650fb29c79052c6d682dee5',
+        locale: 'en',
         slug: DRAFT_PRODUCT_SLUG,
+        title: 'test',
+        subtitle: null,
+        description: null,
+        vendor: null,
+        brand: null,
+        labels: null,
         __typename: 'ProductTexts',
       },
+      __typename: 'SimpleProduct',
     },
   },
 };

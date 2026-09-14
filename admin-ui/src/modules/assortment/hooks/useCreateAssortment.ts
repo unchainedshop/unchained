@@ -14,6 +14,10 @@ const CreateAssortmentMutation = gql`
   ) {
     createAssortment(assortment: $assortment, texts: $texts) {
       _id
+      texts {
+        _id
+        slug
+      }
     }
   }
 `;
