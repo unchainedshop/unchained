@@ -1,0 +1,82 @@
+name: Admin UI E2E
+
+# Cypress e2e for the Admin UI. The backend is fully mocked via cy.intercept,
+# so no engine/MongoDB is needed — only the static export served on :3000.
+# Conventions kept consistent with ci.yml: docker runner, node container,
+# actions/checkout + actions/cache only (no marketplace actions).
+
+on:
+  push:
+    branches: [master, develop]
+    paths:
+      - 'admin-ui/**'
+      - '.forgejo/workflows/admin-ui-e2e.yml'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'admin-ui/**'
+      - '.forgejo/workflows/admin-ui-e2e.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Cypress e2e
+    runs-on: docker
+    container: node:25-bookworm
+    steps:
+      - uses: actions/checkout@v4
+
+      # Cypress' bundled Electron needs these libs on Debian bookworm.
+      - name: Install Cypress OS dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 \
+            libasound2 libxtst6 xauth xvfb
+          rm -rf /var/lib/apt/lists/*
+
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: npm-
+
+      - name: Cache Cypress binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: cypress-
+
+      - name: Install dependencies
+        run: npm ci
+
+      # admin-ui has `dependencies: {}` and no build-time @unchainedshop
+      # imports, so it builds standalone without compiling the engine.
+      - name: Build admin-ui (static export)
+        run: npm run build:admin-ui
+
+      # The e2e specs assert trailing-slash pathnames (next.config.js sets
+      # `trailingSlash: true`); the static server must enforce that redirect,
+      # otherwise ~24 route assertions fail.
+      - name: Serve static export and run Cypress
+        working-directory: admin-ui
+        run: |
+          echo '{ "trailingSlash": true }' > out/serve.json
+          npx --yes serve out -l 3000 &
+          npx --yes wait-on@8 http://127.0.0.1:3000 -t 120000
+          npx cypress run --e2e
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: admin-ui/cypress/screenshots
+          if-no-files-found: ignore
+          retention-days: 7
