@@ -16,7 +16,7 @@ This plugin is part of the `base` preset and loaded automatically. Using the bas
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/enrollments/licensed';
+import '@unchainedshop/plugins/enrollments/licensed.js';
 ```
 
 ## Features
@@ -190,7 +190,7 @@ mutation TerminateSubscription {
 Use the [Enrollment Order Generator Worker](../workers/worker-enrollment-order-generator.md) to automatically generate orders:
 
 ```typescript
-import { configureGenerateOrderAutoscheduling } from '@unchainedshop/plugins/worker/enrollment-order-generator';
+import { configureGenerateOrderAutoscheduling } from '@unchainedshop/plugins/worker/enrollment-order-generator.js';
 import { enrollmentsSettings } from '@unchainedshop/core-enrollments';
 import { schedule } from '@unchainedshop/core';
 

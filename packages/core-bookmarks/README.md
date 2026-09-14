@@ -16,7 +16,7 @@ npm install @unchainedshop/core-bookmarks
 ```typescript
 import { configureBookmarksModule } from '@unchainedshop/core-bookmarks';
 
-const bookmarksModule = await configureBookmarksModule({ db });
+const bookmarksModule = await configureBookmarksModule({ db, migrationRepository });
 
 // Create a bookmark
 const bookmarkId = await bookmarksModule.create({

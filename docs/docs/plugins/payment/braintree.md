@@ -20,7 +20,7 @@ This plugin is **not** included in the default plugin presets. You need to impor
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/payment/braintree';
+import '@unchainedshop/plugins/payment/braintree.js';
 ```
 
 Requires the `braintree` npm package as a peer dependency:

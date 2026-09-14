@@ -12,7 +12,7 @@ Applies the statewide base sales tax rate to delivery fees for US orders. Shares
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/delivery-us-sales-tax';
+import '@unchainedshop/plugins/pricing/delivery-us-sales-tax.js';
 ```
 
 ## How It Works

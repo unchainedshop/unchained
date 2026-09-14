@@ -105,27 +105,27 @@ const S3Adapter: IFileAdapter = {
   version: '1.0.0',
 
   async createSignedURL(directoryName, fileName, unchainedAPI) {
-    // Generate presigned S3 URL
+    throw new Error('Implement: Generate presigned S3 URL');
   },
 
   async createDownloadURL(file, expiry) {
-    // Generate presigned download URL
+    throw new Error('Implement: Generate presigned download URL');
   },
 
   async uploadFileFromStream(directoryName, rawFile, unchainedAPI) {
-    // Stream upload to S3
+    throw new Error('Implement: Stream upload to S3');
   },
 
   async removeFiles(files, unchainedContext) {
-    // Delete objects from S3
+    throw new Error('Implement: Delete objects from S3');
   },
 
   async createDownloadStream(file, unchainedAPI) {
-    // Return S3 object as stream
+    throw new Error('Implement: Return S3 object as stream');
   },
 
   async uploadFileFromURL(directoryName, fileInput, unchainedAPI) {
-    // Fetch and upload from URL
+    throw new Error('Implement: Fetch and upload from URL');
   },
 };
 ```

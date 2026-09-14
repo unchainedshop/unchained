@@ -325,24 +325,28 @@ export function createApolloClient(locale: string) {
 
 Unchained resolves the locale automatically from the `Accept-Language` HTTP header. The locale is available in the GraphQL context and affects how `texts` fields are resolved.
 
-The resolution order is:
-1. `Accept-Language` header from the request
-2. Default language from the `LANG` environment variable
-3. Fallback to `en`
+The resolver matches `Accept-Language` against active languages and countries. `x-shop-country` can constrain the country. Fallback selection prefers `UNCHAINED_LANG` (default `de`) and `UNCHAINED_COUNTRY` (default `CH`) when active, then the first active language and country. If no valid configured locale can be constructed, it uses the system locale from those environment variables.
 
 ## Bulk Import with Translations
 
 ```typescript
-await modules.bulkImporter.prepare({
-  entity: 'PRODUCT',
-  data: {
-    _id: 'product-123',
-    type: 'SIMPLE',
-    texts: [
-      { locale: 'en', title: 'T-Shirt', slug: 't-shirt' },
-      { locale: 'de', title: 'T-Shirt', slug: 't-shirt-de' },
-    ],
-    // ... other fields
+await unchainedAPI.modules.worker.addWork({
+  type: 'BULK_IMPORT',
+  input: {
+    events: [{
+      entity: 'PRODUCT',
+      operation: 'CREATE',
+      payload: {
+        _id: 'product-123',
+        specification: {
+          type: 'SIMPLE_PRODUCT',
+          content: {
+            en: { title: 'T-Shirt', slug: 't-shirt' },
+            de: { title: 'T-Shirt', slug: 't-shirt-de' },
+          },
+        },
+      },
+    }],
   },
 });
 ```

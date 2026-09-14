@@ -8,7 +8,7 @@ import {
 } from '@unchainedshop/mongodb';
 import type { DateFilterInput } from '@unchainedshop/utils';
 
-// NOTE: Renamed from FULLFILLED to FULFILLED in v5.0.0
+// Use FULFILLED; the old FULLFILLED spelling is not a supported status.
 // Migration for status: db.orders.updateMany({ status: 'FULLFILLED' }, { $set: { status: 'FULFILLED' } })
 // Migration for field: db.orders.updateMany({ fullfilled: { $exists: true } }, { $rename: { fullfilled: 'fulfilled' } })
 export const OrderStatus = {

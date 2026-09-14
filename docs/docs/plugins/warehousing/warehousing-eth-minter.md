@@ -12,7 +12,7 @@ The ETH Minter adapter enables tokenization for NFT and Web3 products, supportin
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/warehousing/eth-minter';
+import '@unchainedshop/plugins/warehousing/eth-minter.js';
 ```
 
 ## Configuration

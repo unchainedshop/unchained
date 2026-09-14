@@ -17,94 +17,95 @@ npm install @unchainedshop/plugins
 
 | Plugin | Import Path | Description |
 |--------|-------------|-------------|
-| Invoice | `payment/invoice` | Simple invoice-based payment |
-| Invoice Prepaid | `payment/invoice-prepaid` | Prepaid invoice payment |
-| Stripe | `payment/stripe` | Stripe payment integration |
-| Datatrans V2 | `payment/datatrans-v2` | Datatrans payment gateway |
-| Saferpay | `payment/saferpay` | Saferpay payment gateway |
-| PayPal Checkout | `payment/paypal-checkout` | PayPal Checkout integration |
-| Braintree | `payment/braintree` | Braintree payments |
-| Payrexx | `payment/payrexx` | Payrexx payment gateway |
-| Apple IAP | `payment/apple-iap` | Apple In-App Purchase |
-| Cryptopay | `payment/cryptopay` | Cryptocurrency payments |
+| Invoice | `payment/invoice.js` | Simple invoice-based payment |
+| Invoice Prepaid | `payment/invoice-prepaid.js` | Prepaid invoice payment |
+| Stripe | `payment/stripe/index.js` | Stripe payment integration |
+| Datatrans V2 | `payment/datatrans-v2/index.js` | Datatrans payment gateway |
+| Saferpay | `payment/saferpay/index.js` | Saferpay payment gateway |
+| PayPal Checkout | `payment/paypal-checkout.js` | PayPal Checkout integration |
+| Braintree | `payment/braintree.js` | Braintree payments |
+| Payrexx | `payment/payrexx/index.js` | Payrexx payment gateway |
+| Apple IAP | `payment/apple-iap/index.js` | Apple In-App Purchase |
+| Cryptopay | `payment/cryptopay/index.js` | Cryptocurrency payments |
 
 ### Delivery Adapters
 
 | Plugin | Import Path | Description |
 |--------|-------------|-------------|
-| Post | `delivery/post` | Standard postal delivery |
-| Stores | `delivery/stores` | Store pickup delivery |
-| Send Message | `delivery/send-message` | Digital delivery via messaging |
+| Post | `delivery/post.js` | Standard postal delivery |
+| Stores | `delivery/stores.js` | Store pickup delivery |
+| Send Message | `delivery/send-message.js` | Digital delivery via messaging |
 
 ### Pricing Adapters
 
 | Plugin | Import Path | Description |
 |--------|-------------|-------------|
-| Product Catalog Price | `pricing/product-catalog-price` | Base catalog pricing |
-| Product Price Rate Conversion | `pricing/product-price-rateconversion` | Currency conversion |
-| Product Round | `pricing/product-round` | Price rounding |
-| Product Discount | `pricing/product-discount` | Product-level discounts |
-| Order Items | `pricing/order-items` | Order item pricing |
-| Order Delivery | `pricing/order-delivery` | Delivery pricing |
-| Order Payment | `pricing/order-payment` | Payment fee pricing |
-| Order Discount | `pricing/order-discount` | Order-level discounts |
-| Order Round | `pricing/order-round` | Order total rounding |
-| Free Delivery | `pricing/free-delivery` | Free delivery conditions |
-| Free Payment | `pricing/free-payment` | Free payment processing |
-| Swiss Tax (CH) | `pricing/tax/ch` | Swiss VAT calculation |
+| Product Catalog Price | `pricing/product-catalog-price.js` | Base catalog pricing |
+| Product Price Rate Conversion | `pricing/product-price-rateconversion.js` | Currency conversion |
+| Product Round | `pricing/product-round.js` | Price rounding |
+| Product Discount | `pricing/product-discount.js` | Product-level discounts |
+| Order Items | `pricing/order-items.js` | Order item pricing |
+| Order Delivery | `pricing/order-delivery.js` | Delivery pricing |
+| Order Payment | `pricing/order-payment.js` | Payment fee pricing |
+| Order Discount | `pricing/order-discount.js` | Order-level discounts |
+| Order Round | `pricing/order-round.js` | Order total rounding |
+| Free Delivery | `pricing/free-delivery.js` | Free delivery conditions |
+| Free Payment | `pricing/free-payment.js` | Free payment processing |
+| Swiss Product Tax | `pricing/product-swiss-tax.js` | Swiss VAT on products |
+| Swiss Delivery Tax | `pricing/delivery-swiss-tax.js` | Swiss VAT on delivery |
 
 ### Filter Adapters
 
 | Plugin | Import Path | Description |
 |--------|-------------|-------------|
-| Strict Equal | `filters/strict-equal` | Exact match filtering |
-| Local Search | `filters/local-search` | Full-text search |
+| Strict Equal | `filters/strict-equal.js` | Exact match filtering |
+| Local Search | `filters/local-search.js` | Full-text search |
 
 ### File Storage Adapters
 
 | Plugin | Import Path | Description |
 |--------|-------------|-------------|
-| GridFS | `files/gridfs` | MongoDB GridFS storage |
-| MinIO | `files/minio` | MinIO/S3-compatible storage |
+| GridFS | `files/gridfs/index.js` | MongoDB GridFS storage |
+| MinIO | `files/minio/index.js` | MinIO/S3-compatible storage |
 
 ### Worker Adapters
 
 | Plugin | Import Path | Description |
 |--------|-------------|-------------|
-| Email | `worker/email` | Email sending worker |
-| Heartbeat | `worker/heartbeat` | Keep-alive heartbeat |
-| HTTP Request | `worker/http-request` | HTTP request worker |
-| Bulk Import | `worker/bulk-import` | Bulk data import |
-| External | `worker/external` | External service calls |
-| Twilio | `worker/twilio` | Twilio SMS integration |
-| Push Notification | `worker/push-notification` | Push notifications |
-| Update ECB Rates | `worker/update-ecb-rates` | ECB exchange rates |
-| Update Coinbase Rates | `worker/update-coinbase-rates` | Crypto exchange rates |
-| Update Token Ownership | `worker/update-token-ownership` | NFT ownership sync |
-| Zombie Killer | `worker/zombie-killer` | Stale job cleanup |
-| Error Notifications | `worker/error-notifications` | Error alerting |
+| Email | `worker/email.js` | Email sending worker |
+| Heartbeat | `worker/heartbeat.js` | Keep-alive heartbeat |
+| HTTP Request | `worker/http-request.js` | HTTP request worker |
+| Bulk Import | `worker/bulk-import.js` | Bulk data import |
+| External | `worker/external.js` | External service calls |
+| Twilio | `worker/twilio.js` | Twilio SMS integration |
+| Push Notification | `worker/push-notification.js` | Push notifications |
+| Update ECB Rates | `worker/update-ecb-rates.js` | ECB exchange rates |
+| Update Coinbase Rates | `worker/update-coinbase-rates.js` | Crypto exchange rates |
+| Update Token Ownership | `worker/update-token-ownership.js` | NFT ownership sync |
+| Zombie Killer | `worker/zombie-killer.js` | Remove carts whose owners no longer exist |
+| Error Notifications | `worker/error-notifications.js` | Error alerting |
 
 ### Event Adapters
 
 | Plugin | Import Path | Description |
 |--------|-------------|-------------|
-| Node Event Emitter | `events/node-event-emitter` | Default Node.js emitter |
-| Redis | `events/redis` | Redis pub/sub |
-| AWS EventBridge | `events/aws-eventbridge` | AWS EventBridge |
+| Node Event Emitter | `events/node-event-emitter.js` | Default Node.js emitter |
+| Redis | `events/redis.js` | Redis pub/sub |
+| AWS EventBridge | `events/aws-eventbridge.js` | AWS EventBridge |
 
 ### Warehousing Adapters
 
 | Plugin | Import Path | Description |
 |--------|-------------|-------------|
-| Store | `warehousing/store` | Basic inventory |
-| ETH Minter | `warehousing/eth-minter` | Ethereum NFT minting |
+| Store | `warehousing/store.js` | Basic inventory |
+| ETH Minter | `warehousing/eth-minter.js` | Ethereum NFT minting |
 
 ### Other Adapters
 
 | Plugin | Import Path | Description |
 |--------|-------------|-------------|
-| Licensed Enrollment | `enrollments/licensed` | License-based subscriptions |
-| Manual Quotation | `quotations/manual` | Manual quote handling |
+| Licensed Enrollment | `enrollments/licensed.js` | License-based subscriptions |
+| Manual Quotation | `quotations/manual.js` | Manual quote handling |
 
 ## Usage
 
@@ -114,9 +115,9 @@ Import and register plugins during platform initialization:
 import { startPlatform } from '@unchainedshop/platform';
 
 // Import specific plugins
-import '@unchainedshop/plugins/payment/stripe';
-import '@unchainedshop/plugins/delivery/post';
-import '@unchainedshop/plugins/pricing/product-catalog-price';
+import '@unchainedshop/plugins/payment/stripe/index.js';
+import '@unchainedshop/plugins/delivery/post.js';
+import '@unchainedshop/plugins/pricing/product-catalog-price.js';
 
 const platform = await startPlatform({
   // ...
@@ -125,38 +126,17 @@ const platform = await startPlatform({
 
 ## Security
 
-### Payment Plugin Security
+Payment integrations use different mechanisms: Stripe uses PaymentIntent/SetupIntent references, PayPal uses order references, and Cryptopay derives wallet addresses. Payment compliance and cryptography requirements depend on the plugins and deployment; see [SECURITY.md](../../SECURITY.md).
 
-All payment plugins implement secure tokenization patterns for PCI DSS SAQ-A eligibility:
+Install the optional peer dependencies needed by your selected plugins. Import paths include `.js` (and `/index.js` for directory entry points) because the package exports compiled files directly.
 
-| Plugin | Security Method |
-|--------|-----------------|
-| Stripe | PaymentIntent/SetupIntent tokenization |
-| Datatrans | Secure Fields with HMAC-SHA-256 signatures |
-| Saferpay | Redirect with SHA-256 transaction signatures |
-| PayPal | Order ID references |
-| Braintree | Client SDK tokenization |
-| Cryptopay | BIP-32 HD wallet address derivation |
+## PostFinance Checkout
 
-**Signature Algorithms:**
-- HMAC-SHA-256: Datatrans, Payrexx, GridFS file uploads
-- HMAC-SHA-512: PostFinance Checkout
-- SHA-256: Saferpay
+The PostFinance Checkout plugin is included in compilation and uses the bundled API client. Import it with:
 
-### FIPS 140-3 Compatibility
-
-All cryptographic operations use FIPS-approved algorithms. When deployed on FIPS-enabled Node.js (e.g., Chainguard node-fips), plugins operate in FIPS-compliant mode.
-
-See [SECURITY.md](../../SECURITY.md) for complete security documentation.
-
-## Notes
-
-### Postfinance Checkout Plugin
-
-Due to a TypeScript issue with the upstream "postfinancecheckout" package, the Postfinance plugin has been disabled from transpilation. To use it:
-1. Import the source TypeScript files directly from `src`
-2. Enable `node_modules` TypeScript compilation, or
-3. Copy `src/payment/postfinance-checkout` to your project
+```typescript
+import '@unchainedshop/plugins/payment/postfinance-checkout/index.js';
+```
 
 ## License
 

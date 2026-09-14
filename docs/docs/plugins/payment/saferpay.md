@@ -16,9 +16,9 @@ Unchained payment plugin for Worldline Saferpay, supporting the Payment Page API
 
 **Express:**
 ```typescript
-import saferpayTransactionsModule from '@unchainedshop/plugins/payment/saferpay';
-import '@unchainedshop/plugins/payment/saferpay';
-import { saferpayHandler } from '@unchainedshop/plugins/payment/saferpay/handler-express';
+import saferpayTransactionsModule from '@unchainedshop/plugins/payment/saferpay/index.js';
+import '@unchainedshop/plugins/payment/saferpay/index.js';
+import { saferpayHandler } from '@unchainedshop/plugins/payment/saferpay/handler-express.js';
 
 const { SAFERPAY_WEBHOOK_PATH = '/payment/saferpay/webhook' } = process.env;
 
@@ -35,9 +35,9 @@ app.get(SAFERPAY_WEBHOOK_PATH, saferpayHandler);
 
 **Fastify:**
 ```typescript
-import saferpayTransactionsModule from '@unchainedshop/plugins/payment/saferpay';
-import '@unchainedshop/plugins/payment/saferpay';
-import { saferpayHandler } from '@unchainedshop/plugins/payment/saferpay/handler-fastify';
+import saferpayTransactionsModule from '@unchainedshop/plugins/payment/saferpay/index.js';
+import '@unchainedshop/plugins/payment/saferpay/index.js';
+import { saferpayHandler } from '@unchainedshop/plugins/payment/saferpay/handler-fastify.js';
 
 const { SAFERPAY_WEBHOOK_PATH = '/payment/saferpay/webhook' } = process.env;
 

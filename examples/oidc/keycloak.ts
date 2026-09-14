@@ -173,7 +173,7 @@ export default async function setupKeycloak(app: FastifyInstance) {
   });
 
   app.addHook('onRequest', async (req, reply) => {
-    // Some code
+    // Verify bearer tokens for requests to the MCP endpoint.
     if (req.url === MCP_API_PATH) {
       try {
         const encodedToken = req.headers.authorization?.replace('Bearer ', '');

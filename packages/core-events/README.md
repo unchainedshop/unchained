@@ -16,18 +16,18 @@ npm install @unchainedshop/core-events
 ```typescript
 import { configureEventsModule } from '@unchainedshop/core-events';
 
-const eventsModule = await configureEventsModule({ db });
+const eventsModule = await configureEventsModule({ db, migrationRepository });
 
 // Find events by type
 const orderEvents = await eventsModule.findEvents({
-  types: ['ORDER_CREATE', 'ORDER_PAID'],
+  types: ['ORDER_CREATE', 'ORDER_CONFIRMED'],
   limit: 100,
 });
 
 // Get event statistics
 const report = await eventsModule.getReport({
   types: ['ORDER_CREATE'],
-  dateRange: { start: '2024-01-01', end: '2024-12-31' },
+  dateRange: { start: new Date(Date.now() - 24 * 60 * 60 * 1000) },
 });
 ```
 

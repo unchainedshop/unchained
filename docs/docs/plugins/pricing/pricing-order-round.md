@@ -12,7 +12,7 @@ Rounds all order pricing categories (items, delivery, payment, discounts, taxes)
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/order-round';
+import '@unchainedshop/plugins/pricing/order-round.js';
 ```
 
 ## How It Works
@@ -31,7 +31,7 @@ import '@unchainedshop/plugins/pricing/order-round';
 Configure the rounding behavior before starting the engine:
 
 ```typescript
-import { OrderPriceRound } from '@unchainedshop/plugins/pricing/order-round';
+import { OrderPriceRound } from '@unchainedshop/plugins/pricing/order-round.js';
 
 // Round to nearest 5 cents (default)
 OrderPriceRound.configure({

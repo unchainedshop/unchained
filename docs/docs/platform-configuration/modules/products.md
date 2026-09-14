@@ -25,8 +25,8 @@ export interface ProductsSettingsOptions {
 
 ```typescript
 import slugify from 'slugify';
-const options = {
-  modules: {
+const platformOptions = {
+  options: {
     products: {
       slugify,
     },

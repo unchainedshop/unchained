@@ -13,7 +13,7 @@ description: Guides upgrading Unchained Engine to a new major version. Use when 
 4. Once a target version is selected (e.g., `4.5.0`), fetch these resources:
    - Migration guide: `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/MIGRATION.md`
    - Changelog: `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/CHANGELOG.md`
-   - README: `https://raw.githubusercontent.com/unchainedshop/unchained/refs/heads/master/README.md`
+   - README: `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/README.md`
 5. Execute the upgrade by:
    - Updating npm dependencies
    - Removing deprecated dependencies
@@ -27,10 +27,10 @@ Fetch example boot files for the target version to understand current patterns:
 | Framework | Example URL |
 |-----------|-------------|
 | Express | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/kitchensink-express/src/boot.ts` |
-| Fastify | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/kitchensink/src/boot.ts` |
-| Minimal | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/minimal/src/boot.ts` |
-| Ticketing | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/ticketing/src/boot.ts` |
-| OIDC | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/oidc/src/boot.ts` |
+| Fastify | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/kitchensink/boot.ts` |
+| Minimal | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/minimal/boot.ts` |
+| Ticketing | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/ticketing/boot.ts` |
+| OIDC | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/oidc/boot.ts` |
 
 ## Additional Resources
 

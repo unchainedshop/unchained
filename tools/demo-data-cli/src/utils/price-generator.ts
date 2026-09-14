@@ -1,6 +1,6 @@
 // Price generation utilities with multi-currency support
 
-// Exchange rate: 1 CHF = 0.92 USD (approximate)
+// Fixed demo conversion factor for repeatable fixture prices; not a market exchange rate.
 const CHF_TO_USD_RATE = 0.92;
 
 export interface PriceConfig {

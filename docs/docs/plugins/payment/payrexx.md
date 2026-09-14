@@ -16,8 +16,8 @@ Unchained payment plugin for Payrexx, a Swiss payment service provider supportin
 **Express:**
 ```typescript
 import express from 'express';
-import '@unchainedshop/plugins/payment/payrexx';
-import { payrexxHandler } from '@unchainedshop/plugins/payment/payrexx/handler-express';
+import '@unchainedshop/plugins/payment/payrexx/index.js';
+import { payrexxHandler } from '@unchainedshop/plugins/payment/payrexx/handler-express.js';
 
 const { PAYREXX_WEBHOOK_PATH = '/payment/payrexx' } = process.env;
 
@@ -26,8 +26,8 @@ app.use(PAYREXX_WEBHOOK_PATH, express.json({ type: 'application/json' }), payrex
 
 **Fastify:**
 ```typescript
-import '@unchainedshop/plugins/payment/payrexx';
-import { payrexxHandler } from '@unchainedshop/plugins/payment/payrexx/handler-fastify';
+import '@unchainedshop/plugins/payment/payrexx/index.js';
+import { payrexxHandler } from '@unchainedshop/plugins/payment/payrexx/handler-fastify.js';
 
 const { PAYREXX_WEBHOOK_PATH = '/payment/payrexx' } = process.env;
 

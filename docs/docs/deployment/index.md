@@ -44,7 +44,7 @@ See [Docker Deployment](./docker) for details.
 
 ### Infrastructure
 
-- **Node.js 22+** - Runtime environment
+- **Node.js 26.8.2 or newer** - Runtime environment
 - **MongoDB 6+** - Primary database
 - **File Storage** - S3, MinIO, or GridFS for media
 - **Redis** (optional) - For distributed events and caching

@@ -12,7 +12,7 @@ The Strict Equal filter provides simple exact-match filtering on product fields.
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/filters/strict-equal';
+import '@unchainedshop/plugins/filters/strict-equal.js';
 ```
 
 ## Adapter Details

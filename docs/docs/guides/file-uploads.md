@@ -55,7 +55,7 @@ MINIO_SECRET_KEY=minioadmin
 MINIO_BUCKET_NAME=unchained-files
 
 # Webhook (for automatic confirmation)
-MINIO_WEBHOOK_AUTH_TOKEN=your-secure-jwt-token
+MINIO_WEBHOOK_AUTH_TOKEN=your-secure-webhook-token
 ```
 
 ### Bucket Setup
@@ -153,10 +153,10 @@ Import the webhook handler in your boot file:
 
 ```typescript
 // For Express
-import { minioHandler } from '@unchainedshop/plugins/files/minio/minio-webhook-express';
+import minioHandler from '@unchainedshop/plugins/files/minio/handler-express.js';
 
 // For Fastify
-import { minioHandler } from '@unchainedshop/plugins/files/minio/minio-webhook-fastify';
+import minioHandler from '@unchainedshop/plugins/files/minio/handler-fastify.js';
 ```
 
 ### Configure MinIO Webhook
@@ -167,7 +167,7 @@ import { minioHandler } from '@unchainedshop/plugins/files/minio/minio-webhook-f
 # Set webhook endpoint
 mc admin config set local notify_webhook:unchained \
   endpoint="https://your-engine.com/minio" \
-  auth_token="your-secure-jwt-token"
+  auth_token="your-secure-webhook-token"
 
 # Restart MinIO to apply
 mc admin service restart local

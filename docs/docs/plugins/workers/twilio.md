@@ -12,7 +12,7 @@ Send SMS messages through the Twilio messaging service.
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/worker/twilio';
+import '@unchainedshop/plugins/worker/twilio.js';
 ```
 
 ## Usage

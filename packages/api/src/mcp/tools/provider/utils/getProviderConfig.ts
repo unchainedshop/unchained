@@ -1,4 +1,5 @@
 import type { Context } from '../../../../context.ts';
+import type { ProviderType } from '../../../utils/providerSchemas.ts';
 import { PaymentDirector, DeliveryDirector, WarehousingDirector } from '@unchainedshop/core';
 import {
   PaymentProviderNotFoundError,
@@ -6,7 +7,7 @@ import {
   WarehousingProviderNotFoundError,
 } from '../../../../errors.ts';
 
-export type ProviderType = 'PAYMENT' | 'DELIVERY' | 'WAREHOUSING';
+export type { ProviderType } from '../../../utils/providerSchemas.ts';
 
 export interface ProviderConfig {
   module: any;

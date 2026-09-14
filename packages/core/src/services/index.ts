@@ -63,7 +63,7 @@ import { createFileDownloadURLService } from './createFileDownloadURL.ts';
 import { resolveTokenStatusService } from './resolveTokenStatus.ts';
 import { isTokenInvalidateableService } from './isTokenInvalidateable.ts';
 
-// Auto-Inject Unchained API as last parameter
+// Bind service methods to the modules object as their `this` context.
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
 
 function bindMethodsToModules(modules: Modules) {

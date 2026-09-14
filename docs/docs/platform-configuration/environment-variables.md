@@ -1,6 +1,6 @@
 # Environment Variables
 
-This document provides a comprehensive list of all environment variables used by Unchained Engine (excluding plugins and ticketing). Most of the plugins and extensions (like ticketing) have their own environment variables, check their docs individually.
+This document lists the main environment variables used by Unchained Engine. Most of the plugins and extensions (like ticketing) have their own environment variables, check their docs individually.
 
 ## Core Configuration
 
@@ -8,8 +8,8 @@ This document provides a comprehensive list of all environment variables used by
 |----------|---------|-------------|
 | `NODE_ENV` | - | Node environment (development, test, production). Affects caching, logging, and other behaviors |
 | `PORT` | - | Base port number used by the application. MongoDB memory server uses PORT+1 |
-| `MONGO_URL` | - | MongoDB connection URL. If not set, uses mongodb-memory-server in development/test |
-| `UNCHAINED_API_VERSION` | `packageJson.version` | API version returned in GraphQL context, defaults to package.json version |
+| `MONGO_URL` | - | MongoDB connection URL. If not set, starts a local MongoDB process with mongodb-memory-server; set this explicitly for production |
+| `UNCHAINED_API_VERSION` | `npm_package_version` or `n/a` | Version reported by the platform; falls back to the npm-provided package version, then `n/a` |
 | `UNCHAINED_LANG` | `de` | Default language code |
 | `UNCHAINED_COUNTRY` | `CH` | Default country code |
 | `UNCHAINED_CURRENCY` | `CHF` | Default currency code |
@@ -21,27 +21,26 @@ This document provides a comprehensive list of all environment variables used by
 
 | Variable | Default | Required | Description |
 |----------|---------|----------|-------------|
-| `UNCHAINED_SECRET` | - | Yes | Secret key used for signing magic keys and tokens. Must be kept secure |
 | `UNCHAINED_TOKEN_SECRET` | - | Yes | Secret key for session tokens. Must be at least 32 characters long and kept secret, generate randomly by using `uuidgen` |
-| `UNCHAINED_COOKIE_NAME` | `unchained_token` | Yes | Name of the session cookie |
-| `UNCHAINED_COOKIE_PATH` | `/` | Yes |Cookie path |
+| `UNCHAINED_COOKIE_NAME` | `unchained_token` | No | Name of the session cookie |
+| `UNCHAINED_COOKIE_PATH` | `/` | No |Cookie path |
 | `UNCHAINED_COOKIE_DOMAIN` | - | No |Cookie domain restriction |
-| `UNCHAINED_COOKIE_SAMESITE` | `false` | No |SameSite cookie attribute (strict, lax, none, or false) |
+| `UNCHAINED_COOKIE_SAMESITE` | `none` | No |SameSite cookie attribute (strict, lax, none, or false) |
 | `UNCHAINED_COOKIE_INSECURE` | - | No |Allow insecure cookies (set to any truthy value, defaults to secure) |
 ## Web Configuration
 
 | Variable | Default | Required | Description |
 |----------|---------|----------|-------------|
-| `ROOT_URL` | `http://localhost:4010` | Yes | Base URL of the application, used for generating absolute URLs |
+| `ROOT_URL` | - | Yes | Base URL of the application, used for generating absolute URLs |
 | `EMAIL_WEBSITE_URL` | - | Yes | Frontend website URL, used in email templates and redirects |
-| `EMAIL_WEBSITE_NAME` | `Unchained` | Yes | Name of the website shown in emails and WebAuthn |
+| `EMAIL_WEBSITE_NAME` | - | Yes | Name of the website shown in emails and WebAuthn |
 
 ## Email Configuration
 
 | Variable | Default | Required | Description |
 |----------|---------|----------|-------------|
 | `MAIL_URL` | - | - | SMTP connection URL for sending emails (e.g., `smtp://user:pass@host:port`) |
-| `EMAIL_FROM` | `noreply@unchained.local` | Yes | Default sender email address |
+| `EMAIL_FROM` | - | Yes | Default sender email address |
 | `EMAIL_ERROR_REPORT_RECIPIENT` | `support@unchained.local` | - | Email address for error reports |
 | `UNCHAINED_DISABLE_EMAIL_INTERCEPTION` | - | - | Disable email interception in non-production environments (set to any truthy value) |
 

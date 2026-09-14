@@ -18,14 +18,14 @@ export interface ScheduleData {
     D?: number[];
     /** Months (1-12) */
     M?: number[];
-    /** Days of week (1-7, where 1 is Sunday) */
+    /** Days of week (0-6, where 0 is Sunday) */
     d?: number[];
   }[];
 }
 
 /**
- * Parse a cron expression into ScheduleData
- * Supports standard 5-field cron: minute hour day-of-month month day-of-week
+ * Parse one numeric cron field into its allowed values.
+ * Supports wildcards, comma-separated values, ranges, and steps.
  */
 function parseCronField(field: string, min: number, max: number): number[] | undefined {
   if (field === '*') return undefined; // undefined means "all values"

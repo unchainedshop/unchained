@@ -2,492 +2,159 @@
 sidebar_position: 2
 title: Docker Deployment
 sidebar_label: Docker
-description: Deploying Unchained Engine with Docker
+description: Build and run Unchained Engine, Admin UI, and documentation images
 ---
 
 # Docker Deployment
 
-This guide covers deploying Unchained Engine using Docker containers.
+The checked-in Dockerfiles build from the **repository root**. Engine examples and Admin UI use the root npm lockfile with workspace paths preserved. The documentation site has its own lockfile under `docs/`.
 
-## Dockerfile
+## Build Images
 
-Create a `Dockerfile` in your project root:
+Run these commands from the repository root:
 
-```dockerfile
-# Build stage
-FROM node:22-alpine AS builder
+```bash
+# Fastify engine with the built-in Admin UI
+docker build -f examples/kitchensink/Dockerfile -t unchained-kitchensink .
 
-WORKDIR /app
+# Other engine examples
+docker build -f examples/kitchensink-express/Dockerfile -t unchained-express .
+docker build -f examples/minimal/Dockerfile -t unchained-minimal .
+docker build -f examples/ticketing/Dockerfile -t unchained-ticketing .
+docker build -f examples/oidc/Dockerfile -t unchained-oidc .
 
-# Copy package files
-COPY package*.json ./
-COPY packages/*/package*.json ./packages/
-
-# Install dependencies
-RUN npm ci --only=production
-
-# Copy source code
-COPY . .
-
-# Build TypeScript
-RUN npm run build
-
-# Production stage
-FROM node:22-alpine AS production
-
-WORKDIR /app
-
-# Create non-root user
-RUN addgroup -g 1001 -S unchained && \
-    adduser -S unchained -u 1001
-
-# Copy built files
-COPY --from=builder --chown=unchained:unchained /app/node_modules ./node_modules
-COPY --from=builder --chown=unchained:unchained /app/lib ./lib
-COPY --from=builder --chown=unchained:unchained /app/package.json ./
-
-# Set environment
-ENV NODE_ENV=production
-ENV PORT=4010
-
-# Switch to non-root user
-USER unchained
-
-# Expose port
-EXPOSE 4010
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:4010/graphql || exit 1
-
-# Start server
-CMD ["node", "lib/index.js"]
+# Standalone static sites
+docker build -f admin-ui/Dockerfile -t unchained-admin .
+docker build -f docs/Dockerfile -t unchained-docs .
 ```
 
-## Docker Compose
+All application images expose container port `3000`. Node build and engine runtime stages use Node.js `26.8.2`. Static Admin UI and documentation images serve compiled files with nginx; they do not run Next.js or the Docusaurus development server.
 
-For local development or simple deployments:
+The root `Dockerfile` builds the separate CI image, including MongoDB for integration tests. It is not the production engine entry point:
+
+```bash
+docker build -t unchained-ci .
+docker run --rm unchained-ci npm run lint:check
+docker run --rm unchained-ci npm test
+```
+
+## Run an Engine with MongoDB
+
+The engine images retain the example's `.env.defaults`; override development credentials and public URLs for your deployment. MongoDB must be reachable through `MONGO_URL` in production.
+
+This Compose example runs the Fastify kitchensink on host port `4010`, with its Admin UI at `/` and GraphQL at `/graphql`:
 
 ```yaml
-# docker-compose.yml
-version: '3.8'
-
 services:
   engine:
-    build: .
+    build:
+      context: .
+      dockerfile: examples/kitchensink/Dockerfile
     ports:
-      - "4010:4010"
+      - "4010:3000"
     environment:
-      - NODE_ENV=production
-      - ROOT_URL=http://localhost:4010
-      - MONGO_URL=mongodb://mongo:27017/unchained
-      - UNCHAINED_TOKEN_SECRET=${UNCHAINED_TOKEN_SECRET}
+      ROOT_URL: http://localhost:4010
+      MONGO_URL: mongodb://mongo:27017/unchained
+      UNCHAINED_TOKEN_SECRET: ${UNCHAINED_TOKEN_SECRET:?Set a session secret of at least 32 characters}
+      UNCHAINED_SECRET: ${UNCHAINED_SECRET:?Set an application secret}
+      UNCHAINED_SEED_PASSWORD: ${UNCHAINED_SEED_PASSWORD:?Set an initial administrator password}
+      EMAIL_WEBSITE_URL: http://localhost:4010
+      EMAIL_WEBSITE_NAME: My Shop
+      EMAIL_FROM: shop@example.com
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     restart: unless-stopped
 
   mongo:
-    image: mongo:7
+    image: mongo:8.2.12
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand('ping').ok ? 0 : 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
-
-  admin-ui:
-    image: unchainedshop/admin-ui:latest
-    ports:
-      - "4011:3000"
-    environment:
-      - UNCHAINED_ENDPOINT=http://engine:4010/graphql
-    depends_on:
-      - engine
 
 volumes:
   mongo_data:
 ```
 
-### With Redis and MinIO
-
-```yaml
-# docker-compose.production.yml
-version: '3.8'
-
-services:
-  engine:
-    build: .
-    ports:
-      - "4010:4010"
-    environment:
-      - NODE_ENV=production
-      - ROOT_URL=https://api.myshop.com
-      - MONGO_URL=mongodb://mongo:27017/unchained
-      - REDIS_URL=redis://redis:6379
-      - UNCHAINED_TOKEN_SECRET=${UNCHAINED_TOKEN_SECRET}
-      - MINIO_ENDPOINT=minio
-      - MINIO_PORT=9000
-      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
-      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-      - MINIO_BUCKET=unchained-files
-    depends_on:
-      - mongo
-      - redis
-      - minio
-    restart: unless-stopped
-
-  mongo:
-    image: mongo:7
-    volumes:
-      - mongo_data:/data/db
-    restart: unless-stopped
-
-  redis:
-    image: redis:7-alpine
-    volumes:
-      - redis_data:/data
-    restart: unless-stopped
-
-  minio:
-    image: minio/minio
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    volumes:
-      - minio_data:/data
-    environment:
-      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
-      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
-    command: server /data --console-address ":9001"
-    restart: unless-stopped
-
-volumes:
-  mongo_data:
-  redis_data:
-  minio_data:
-```
-
-## Building and Running
-
-### Build Image
+Supply the variables in your shell or a local `.env` file, then run:
 
 ```bash
-# Build the image
-docker build -t my-shop:latest .
-
-# Build with build args
-docker build \
-  --build-arg NODE_ENV=production \
-  -t my-shop:latest .
+docker compose up --build -d
+docker compose logs -f engine
+docker compose down
 ```
 
-### Run Container
+The examples are starting points: kitchensink, Express, ticketing, and OIDC generate and log an administrator access token during boot. Review their boot and seed scripts before exposing a production service. Ticketing callbacks are placeholders, and OIDC additionally requires a configured identity provider.
+
+The engine runs as the image's `node` user. Give that user access to any mounted files your adapters need, including certificates and uploaded-file storage.
+
+## Standalone Admin UI
+
+The exported Admin UI defaults to same-origin API paths. If you serve it on a separate origin, set its public URLs **during the Docker build**:
 
 ```bash
-# Run with environment variables
-docker run -d \
-  --name my-shop \
-  -p 4010:4010 \
-  -e NODE_ENV=production \
-  -e ROOT_URL=https://api.myshop.com \
-  -e MONGO_URL=mongodb://... \
-  -e UNCHAINED_TOKEN_SECRET=your-secret \
-  my-shop:latest
+docker build -f admin-ui/Dockerfile -t unchained-admin \
+  --build-arg NEXT_PUBLIC_GRAPHQL_ENDPOINT=https://engine.example.com/graphql \
+  --build-arg NEXT_PUBLIC_CHAT_URL=https://engine.example.com/chat \
+  --build-arg NEXT_PUBLIC_TEMP_FILE_UPLOAD_URL=https://engine.example.com/temp-upload \
+  --build-arg NEXT_PUBLIC_LOGO=https://cdn.example.com/logo.svg \
+  .
+docker run --rm -p 4011:3000 unchained-admin
 ```
 
-### Docker Compose Commands
+The browser must be able to reach these URLs. A Compose service name such as `engine` is normally only resolvable inside the Docker network. Configure the API's CORS and cookie settings for your frontend origin.
+
+Setting `NEXT_PUBLIC_*` with `docker run -e` does not change already compiled assets. To use the default same-origin paths, route `/graphql`, `/chat`, and `/temp-upload` to the engine in your external reverse proxy. The image serves the routes produced by `next.config.js`, including directory indexes and static assets.
+
+## Documentation Site
 
 ```bash
-# Start all services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f engine
-
-# Stop all services
-docker-compose down
-
-# Rebuild and restart
-docker-compose up -d --build
+docker build -f docs/Dockerfile -t unchained-docs \
+  --build-arg GIT_COMMIT="$(git rev-parse HEAD)" .
+docker run --rm -p 4012:3000 unchained-docs
 ```
 
-## Kubernetes
+The static site is available at `http://localhost:4012`. Its `/version` file contains the supplied commit identifier. `docs/Dockerfile.dockerignore` includes the docs source and shared nginx configuration while excluding local dependencies and generated artifacts.
 
-### Deployment
+## Health Checks and Smoke Tests
 
-```yaml
-# k8s/deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: unchained-engine
-  labels:
-    app: unchained-engine
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: unchained-engine
-  template:
-    metadata:
-      labels:
-        app: unchained-engine
-    spec:
-      containers:
-        - name: engine
-          image: my-shop:latest
-          ports:
-            - containerPort: 4010
-          envFrom:
-            - secretRef:
-                name: unchained-secrets
-            - configMapRef:
-                name: unchained-config
-          resources:
-            requests:
-              memory: "256Mi"
-              cpu: "200m"
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
-          livenessProbe:
-            httpGet:
-              path: /graphql
-              port: 4010
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /graphql
-              port: 4010
-            initialDelaySeconds: 5
-            periodSeconds: 5
-```
+Engine health checks POST `{ shopInfo { _id } }` to the configured `GRAPHQL_API_PATH` (default `/graphql`) on `PORT` (default `3000`). Both HTTP errors and GraphQL errors make the check fail. Static-site checks request the site's root page.
 
-### Service
-
-```yaml
-# k8s/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: unchained-engine
-spec:
-  selector:
-    app: unchained-engine
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 4010
-  type: ClusterIP
-```
-
-### Ingress
-
-```yaml
-# k8s/ingress.yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: unchained-ingress
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-spec:
-  tls:
-    - hosts:
-        - api.myshop.com
-      secretName: unchained-tls
-  rules:
-    - host: api.myshop.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: unchained-engine
-                port:
-                  number: 80
-```
-
-### ConfigMap and Secrets
-
-```yaml
-# k8s/configmap.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: unchained-config
-data:
-  NODE_ENV: "production"
-  ROOT_URL: "https://api.myshop.com"
-  EMAIL_FROM: "noreply@myshop.com"
-  EMAIL_WEBSITE_NAME: "My Shop"
-```
-
-```yaml
-# k8s/secrets.yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: unchained-secrets
-type: Opaque
-stringData:
-  MONGO_URL: "mongodb+srv://..."
-  UNCHAINED_TOKEN_SECRET: "your-secret-here"
-  STRIPE_SECRET_KEY: "sk_live_..."
-```
-
-## Multi-Stage Builds
-
-Optimize your Docker image with multi-stage builds:
-
-```dockerfile
-# syntax=docker/dockerfile:1
-
-# Dependencies stage
-FROM node:22-alpine AS deps
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production && npm cache clean --force
-
-# Build stage
-FROM node:22-alpine AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-RUN npm run build
-
-# Production stage
-FROM node:22-alpine AS runner
-WORKDIR /app
-
-ENV NODE_ENV=production
-
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S unchained -u 1001
-
-COPY --from=builder --chown=unchained:nodejs /app/lib ./lib
-COPY --from=deps --chown=unchained:nodejs /app/node_modules ./node_modules
-COPY --chown=unchained:nodejs package.json ./
-
-USER unchained
-
-EXPOSE 4010
-
-CMD ["node", "lib/index.js"]
-```
-
-## Environment Variables
-
-Create a `.env` file for Docker Compose:
+The normal `npm test` command includes healthcheck regression tests. Run them separately without Docker:
 
 ```bash
-# .env
-NODE_ENV=production
-ROOT_URL=https://api.myshop.com
-UNCHAINED_TOKEN_SECRET=your-32-character-secret-here
-MINIO_ACCESS_KEY=minioadmin
-MINIO_SECRET_KEY=minioadmin
+npm run test:run:docker
 ```
 
-## Health Checks
-
-### Simple Health Check
-
-```typescript
-// src/health.ts
-import express from 'express';
-
-const app = express();
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
-
-app.get('/ready', async (req, res) => {
-  try {
-    // Check database connection
-    await mongoose.connection.db.admin().ping();
-    res.json({ status: 'ready' });
-  } catch (error) {
-    res.status(503).json({ status: 'not ready', error: error.message });
-  }
-});
-```
-
-### Docker Health Check
-
-```dockerfile
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:4010/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"
-```
-
-## Logging
-
-Configure logging for containers:
-
-```typescript
-// Use JSON logging in production
-import { createLogger } from '@unchainedshop/logger';
-
-const logger = createLogger('app');
-
-// Logs will be JSON formatted
-logger.info('Server started', { port: 4010 });
-```
+After building the static images, run their container smoke tests:
 
 ```bash
-# View container logs
-docker logs -f my-shop
-
-# With timestamps
-docker logs -f --timestamps my-shop
+node docker/smoke-static.mjs unchained-admin /products/
+node docker/smoke-static.mjs unchained-docs /concepts/architecture
 ```
 
-## Best Practices
+The smoke tests wait for Docker health status, check root and nested HTML routes, load JavaScript assets, and verify that unknown paths return HTTP 404. They remove their temporary containers when finished.
 
-### 1. Use Non-Root User
+Inspect a running engine's health and logs with:
 
-```dockerfile
-RUN adduser -S unchained
-USER unchained
+```bash
+docker inspect --format '{{json .State.Health}}' CONTAINER
+docker logs CONTAINER
 ```
 
-### 2. Pin Versions
+## Build Context and Dependencies
 
-```dockerfile
-FROM node:22.0.0-alpine3.19
-```
+The root `.dockerignore` excludes local dependencies, workspace build output, local environment overrides, and `.context/`. Keep the tracked example defaults and the Admin UI's public defaults in the build context.
 
-### 3. Use .dockerignore
+Engine builds install development dependencies for compilation, then prune them before copying the runtime dependencies and workspaces into the final image. Build and lint failures stop the image build. Admin UI uses the monorepo dependency tree only in its builder stage; documentation uses its own locked dependency tree. Their nginx runtime stages contain only static assets and server configuration.
 
-```
-# .dockerignore
-node_modules
-.git
-.env
-*.log
-tests
-docs
-```
+## Related
 
-### 4. Cache Dependencies
-
-```dockerfile
-# Copy package files first
-COPY package*.json ./
-RUN npm ci
-
-# Then copy source (changes don't invalidate npm cache)
-COPY . .
-```
-
-### 5. Minimize Image Size
-
-```dockerfile
-FROM node:22-alpine  # Alpine is smaller
-RUN npm ci --only=production  # No dev dependencies
-```
-
-## Related Documentation
-
-- [Production Checklist](./production-checklist) - Pre-launch checklist
-- [Environment Variables](../platform-configuration/environment-variables) - Configuration
+- [Environment Variables](../platform-configuration/environment-variables.md)
+- [Security](./security.md)
+- [Admin UI](../admin-ui/overview.md)

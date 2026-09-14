@@ -13,24 +13,22 @@ Custom Modules enables the developer to add additional functionality to the core
 
 In many cases this goes together with [extending the API](./graphql) to include additional mutations and queries that access the module's functions.
 
-Below is an example of a custom module that will be used to change currency of a cart.
+Below is a low-level module example that updates an order's currency field. Application code must validate the cart and currency and recalculate its pricing before checkout.
 
 ```typescript
-import { OrdersCollection, Order } from '@unchainedshop/core-orders'
-import { generateDbFilterById } from '@unchainedshop/mongodb'
-import { ModuleInput } from '@unchainedshop/core';
+import { OrdersCollection } from '@unchainedshop/core-orders'
+import { generateDbFilterById, type ModuleInput } from '@unchainedshop/mongodb';
 
 const myModule = {
   configure: async ({ db }: ModuleInput<Record<string, never>>) => {
     const Orders = await OrdersCollection(db)
 
     return {
-      async changeCartCurrency(currency: string, cartId: string) {
+      async changeCartCurrency(currencyCode: string, cartId: string) {
         const selector = generateDbFilterById(cartId)
-        Orders.updateOne(selector, {
+        await Orders.updateOne(selector, {
           $set: {
             currencyCode,
-            context: { currency },
           },
         })
 
@@ -74,21 +72,20 @@ Read more about unchained context and how to access it in **Accessing Unchained 
 
 #### Custom Service
 
-Services allow you to add utility functions that can be used throughout the engine context in a similar fashion to modules. The difference between a service and a module usually is that a module doesn't have direct DB access but composes multiple module calls through the unchained context.
+Services allow you to add utility functions that can be used throughout the engine context in a similar fashion to modules. The difference between a service and a module is that a service does not access the database directly but composes multiple module calls through the unchained context.
 
 You can access built in or custom services from unchained context anywhere in the application like so:
 
 ```typescript
-unchainedAPIContext.services.serviceName.[function name]
+unchainedAPIContext.services.custom.findOrder(orderId)
 ```
 
 It is possible to create a custom service for your need and have it available throughout the engine context like the built-in services. Custom services function are bound to the core modules and have access to those through this.
 
 ```typescript
-import { Modules } from '@unchainedshop/core';
+import type { UnchainedCore } from '@unchainedshop/core';
 
-function serviceFunc(this: Modules, ...myParams: any) {
-  ...
-  this.orders.findOrder(...)
+async function findOrder(this: UnchainedCore['modules'], orderId: string) {
+  return this.orders.findOrder({ orderId });
 }
 ``` 

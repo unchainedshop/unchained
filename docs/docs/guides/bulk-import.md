@@ -41,7 +41,13 @@ mutation BulkImport {
         {
           entity: "PRODUCT"
           operation: "CREATE"
-          payload: "{}"
+          payload: {
+            _id: "example-product"
+            specification: {
+              type: "SIMPLE_PRODUCT"
+              content: { en: { title: "Example product" } }
+            }
+          }
         }
       ]
     }
@@ -54,7 +60,7 @@ mutation BulkImport {
 
 ### REST Endpoint
 
-For large imports (5K+ entities or >16MB), use the REST endpoint:
+Use the streaming REST endpoint for large imports. The uploaded JSON must contain an `events` array; a successful response means the import was queued. Query the returned work ID for completion:
 
 ```bash
 curl -X POST \
@@ -106,6 +112,8 @@ Pass options as query parameters (REST) or in the input object (GraphQL):
 # REST with options
 curl -X POST \
   "https://your-engine.com/bulk-import?createShouldUpsertIfIDExists=true" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
   --data-binary @products.json
 ```
 
@@ -291,22 +299,23 @@ curl -X POST \
 
 ## Custom Import Handlers
 
-Create custom handlers for specialized import needs:
+Create custom handlers for specialized import needs. Entity keys are uppercase and operation keys are lowercase. This example writes an application-owned inventory collection; a custom warehousing adapter must consume it to expose stock to Unchained:
 
 ```typescript
-import { UnchainedCore } from '@unchainedshop/core';
-import { BulkImportHandler, BulkImportOperation } from '@unchainedshop/platform';
+import type { UnchainedCore, BulkImportHandler } from '@unchainedshop/core';
+import { startPlatform } from '@unchainedshop/platform';
 
-const customHandlers: Record<string, BulkImportHandler> = {
+const customHandlers: Record<string, BulkImportHandler<UnchainedCore>> = {
   INVENTORY: {
-    UPDATE: async function updateInventory(
+    update: async function updateInventory(
       payload: { sku: string; quantity: number },
-      options: { logger?: any },
+      { bulk },
       unchainedAPI: UnchainedCore
     ) {
       const { sku, quantity } = payload;
 
-      await unchainedAPI.modules.warehousing.updateStock(sku, quantity);
+      // Stage a write to an application-owned inventory collection.
+      bulk('inventory').find({ sku }).upsert().updateOne({ $set: { quantity } });
 
       return {
         entity: 'INVENTORY',
@@ -374,6 +383,8 @@ Use `createShouldUpsertIfIDExists` for safe re-runs:
 ```bash
 curl -X POST \
   "https://your-engine.com/bulk-import?createShouldUpsertIfIDExists=true" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
   --data-binary @products.json
 ```
 

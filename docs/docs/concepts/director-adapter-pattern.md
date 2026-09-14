@@ -43,581 +43,135 @@ flowchart LR
 | `QuotationDirector` | RFQ processing | Manual quotes, Auto quotes |
 | `EnrollmentDirector` | Subscriptions | Recurring billing |
 
-## Base Classes
+## Adapter Objects
 
-All adapters extend from base classes provided by `@unchainedshop/utils`:
+Adapters are objects composed from base implementations. `BaseDirector` is a factory and `BaseAdapter` supplies shared logging and metadata utilities in `@unchainedshop/utils`. Domain bases such as `PaymentAdapter` and `ProductPricingAdapter` are exported by `@unchainedshop/core`.
 
-```typescript
-import { BaseAdapter, BaseDirector } from '@unchainedshop/utils';
-```
-
-- **BaseDirector**: Factory function creating a director with adapter management
-- **BaseAdapter**: Base implementation with logging and utility methods
-
-## Creating a Custom Adapter
-
-All adapters share a common structure:
-
-```typescript
-const MyAdapter = {
-  key: 'my-adapter',           // Unique identifier
-  label: 'My Custom Adapter',  // Human-readable label
-  version: '1.0.0',            // Adapter version
-
-  // Optional: order of execution (lower = first)
-  orderIndex: 10,
-
-  // Adapter-specific methods...
-};
-
-// Register with the appropriate director
-SomeDirector.registerAdapter(MyAdapter);
-```
+Spread the domain base into your adapter, then spread its action methods before overriding the behavior you need. This retains required defaults and keeps the example compatible with the domain interface.
 
 ## Payment Director
 
-Manages payment processing and orchestrates payment adapters.
+Payment adapters use `actions(configuration, context)`. The context supplies the order, order payment, payment provider, and modules. Payment types are `GENERIC` and `INVOICE`.
 
 ```typescript
-import { PaymentDirector, type IPaymentAdapter } from '@unchainedshop/core';
+import { PaymentAdapter, PaymentDirector, type IPaymentAdapter } from '@unchainedshop/core';
 
-const MyPaymentAdapter: IPaymentAdapter = {
-  key: 'my-payment',
-  label: 'My Payment Gateway',
+const ManualPayment: IPaymentAdapter = {
+  ...PaymentAdapter,
+  key: 'com.example.payment.manual',
+  label: 'Manual payment',
   version: '1.0.0',
-
-  // Which payment types this adapter supports
-  typeSupported(type) {
-    return type === 'CARD'; // CARD, INVOICE, or GENERIC
-  },
-
-  actions(config, context) {
+  typeSupported: (type) => type === 'INVOICE',
+  actions(configuration, context) {
+    const baseActions = PaymentAdapter.actions(configuration, context);
     return {
-      // Return configuration errors (e.g., missing API key)
-      configurationError() {
-        if (!process.env.PAYMENT_API_KEY) {
-          return { code: 'MISSING_API_KEY' };
-        }
-        return null;
-      },
-
-      // Is this adapter active for the current context?
-      isActive() { return true; },
-
-      // Can order be confirmed before payment completes?
-      isPayLaterAllowed() { return false; },
-
-      // Process payment charge
-      async charge() {
-        // Return { transactionId } on success
-        // Return false if payment not yet complete
-        // Throw error to abort checkout
-        return { transactionId: '...' };
-      },
-
-      // Confirm a previously authorized payment
-      async confirm() {
-        return { transactionId: '...' };
-      },
-
-      // Cancel/refund a payment
-      async cancel() {
-        return true;
-      },
-
-      // Register a payment method (e.g., save card)
-      async register() {
-        return { token: '...' };
-      },
-
-      // Sign payment request for client-side SDK
-      async sign() {
-        return '...';
-      },
-
-      // Validate a payment token
-      async validate(token) {
-        return true;
-      },
+      ...baseActions,
+      configurationError: () => null,
+      isActive: () => true,
+      isPayLaterAllowed: () => true,
+      charge: async () => false,
     };
   },
 };
 
-PaymentDirector.registerAdapter(MyPaymentAdapter);
+PaymentDirector.registerAdapter(ManualPayment);
 ```
 
-## Delivery Director
+A successful `charge()` returns payment information such as `{ transactionId }`. Returning `false` leaves the payment unpaid; throwing aborts checkout. `confirm()` and `cancel()` return booleans. `configurationError()` returns a `PaymentError` code or `null`.
 
-Manages delivery operations and coordinates shipping adapters.
+## Delivery and Warehousing Directors
 
-```typescript
-import { DeliveryDirector, type IDeliveryAdapter } from '@unchainedshop/core';
+Both use `actions(configuration, context)` and provider configuration selected in the Admin UI.
 
-const MyDeliveryAdapter: IDeliveryAdapter = {
-  key: 'my-delivery',
-  label: 'My Shipping Provider',
-  version: '1.0.0',
+| Base | Provider types | Main actions |
+|------|----------------|--------------|
+| `DeliveryAdapter` | `SHIPPING`, `PICKUP` | `send`, `isAutoReleaseAllowed`, `estimatedDeliveryThroughput`, `pickUpLocations` |
+| `WarehousingAdapter` | `PHYSICAL`, `VIRTUAL` | `stock`, `productionTime`, `commissioningTime`, `tokenize`, `tokenMetadata`, `isInvalidateable` |
 
-  // Which delivery types this adapter supports
-  typeSupported(type) {
-    return type === 'SHIPPING'; // SHIPPING, PICKUP, or DELIVERY
-  },
-
-  actions(config, context) {
-    return {
-      configurationError() { return null; },
-      isActive() { return true; },
-
-      // Can order be auto-released for delivery?
-      isAutoReleaseAllowed() { return false; },
-
-      // Trigger delivery
-      async send() {
-        return { trackingNumber: '...' };
-      },
-
-      // Estimated delivery time in milliseconds
-      estimatedDeliveryThroughput(warehousingTime) {
-        return 3 * 24 * 60 * 60 * 1000; // 3 days
-      },
-
-      // For PICKUP type: available locations
-      async pickUpLocations() {
-        return [];
-      },
-
-      async pickUpLocationById(locationId) {
-        return null;
-      },
-    };
-  },
-};
-
-DeliveryDirector.registerAdapter(MyDeliveryAdapter);
-```
-
-## Warehousing Director
-
-Manages inventory and stock operations, including NFT/token support.
-
-```typescript
-import { WarehousingDirector, type IWarehousingAdapter } from '@unchainedshop/core';
-
-const MyWarehousingAdapter: IWarehousingAdapter = {
-  key: 'my-warehouse',
-  label: 'My Inventory System',
-  version: '1.0.0',
-
-  typeSupported(type) {
-    return type === 'PHYSICAL';
-  },
-
-  actions(config, context) {
-    return {
-      configurationError() { return null; },
-      isActive() { return true; },
-
-      // Current stock quantity
-      async stock(referenceDate) {
-        return 100;
-      },
-
-      // Production time in ms (for made-to-order)
-      async productionTime(quantity) {
-        return 0;
-      },
-
-      // Time to prepare for shipping in ms
-      async commissioningTime(quantity) {
-        return 24 * 60 * 60 * 1000; // 1 day
-      },
-
-      async estimatedStock() {
-        return 100;
-      },
-
-      async estimatedDispatch() {
-        return new Date();
-      },
-
-      // For tokenized products (NFTs):
-      async tokenize() { return []; },
-      async tokenMetadata(serial, date) { return {}; },
-      async isInvalidateable(serial, date) { return false; },
-    };
-  },
-};
-
-WarehousingDirector.registerAdapter(MyWarehousingAdapter);
-```
-
-## Worker Director
-
-Manages background job processing and scheduled tasks.
-
-```typescript
-import { WorkerDirector, type IWorkerAdapter } from '@unchainedshop/core';
-
-interface MyInput { email: string; subject: string; }
-interface MyOutput { messageId: string; }
-
-const MyWorkerAdapter: IWorkerAdapter<MyInput, MyOutput> = {
-  key: 'my-worker',
-  label: 'My Background Worker',
-  version: '1.0.0',
-  type: 'MY_WORK_TYPE',          // Work type identifier
-  external: false,                // Runs in-process
-  maxParallelAllocations: 10,     // Max concurrent executions
-
-  async doWork(input, unchainedAPI, workId) {
-    const { email, subject } = input;
-
-    // Process the work item
-    // ...
-
-    return {
-      success: true,
-      result: { messageId: 'msg-123' },
-    };
-  },
-};
-
-WorkerDirector.registerAdapter(MyWorkerAdapter);
-```
-
-### Scheduling Recurring Work
-
-```typescript
-WorkerDirector.configureAutoscheduling({
-  type: 'MY_WORK_TYPE',
-  input: { email: 'test@example.com', subject: 'Test' },
-  schedule: '0 * * * *', // Every hour (cron syntax)
-});
-```
+`send()` resolves to a boolean or a queued work item. Delivery and warehousing throughput methods are asynchronous and return durations in milliseconds. Spread the relevant base actions to retain defaults for operations you do not override.
 
 ## Pricing Directors
 
-Pricing directors calculate prices using a **chain of adapters**. Each adapter can add, modify, or discount prices. Adapters execute in order of their `orderIndex`.
+Pricing adapters use `actions(params)`, where `params` contains `context`, `calculationSheet` (the accumulated rows), and discount configurations. The base actions expose a separate `resultSheet()` for the rows contributed by this adapter.
 
 ```typescript
-import { ProductPricingDirector, type IProductPricingAdapter } from '@unchainedshop/core';
+import {
+  ProductPricingAdapter,
+  ProductPricingDirector,
+  type IProductPricingAdapter,
+} from '@unchainedshop/core';
 
-const MyPricingAdapter: IProductPricingAdapter = {
-  key: 'my-pricing',
-  label: 'My Pricing Logic',
+const ExamplePrice: IProductPricingAdapter = {
+  ...ProductPricingAdapter,
+  key: 'com.example.pricing.example',
+  label: 'Example product price',
   version: '1.0.0',
-  orderIndex: 10, // Lower numbers run first
-
-  // Should this adapter run for the current context?
-  isActivatedFor(context) {
-    return true;
-  },
-
-  actions(params, pricingAdapter) {
+  orderIndex: 0,
+  isActivatedFor: ({ product, currencyCode }) =>
+    Boolean(product.tags?.includes('example-price')) && currencyCode === 'CHF',
+  actions(params) {
+    const baseActions = ProductPricingAdapter.actions(params);
     return {
-      calculate() {
-        // Access existing calculations
-        const { calculation } = pricingAdapter;
-
-        // Add price item
-        pricingAdapter.resultSheet().addItem({
-          category: 'BASE',
-          amount: 1000, // in smallest currency unit (cents)
-          isTaxable: true,
-          isNetPrice: true,
-        });
-
-        // Continue chain
-        return pricingAdapter.calculate();
+      ...baseActions,
+      async calculate() {
+        if (!params.calculationSheet.calculation.length) {
+          baseActions.resultSheet().addItem({
+            amount: 1000 * params.context.quantity,
+            isTaxable: false,
+            isNetPrice: true,
+            meta: { adapter: ExamplePrice.key },
+          });
+        }
+        return baseActions.calculate();
       },
     };
   },
 };
 
-ProductPricingDirector.registerAdapter(MyPricingAdapter);
+ProductPricingDirector.registerAdapter(ExamplePrice);
 ```
 
-### Pricing Categories
+The director executes active adapters in ascending `orderIndex`, appends each returned array, and invokes the next adapter. Returning `null` aborts the calculation; returning an empty array contributes no rows. `baseActions.calculate()` returns this adapter's rows, rather than invoking the next adapter itself.
 
-| Category | Description |
-|----------|-------------|
-| `BASE` | Base product price |
-| `TAX` | Tax amount |
-| `DISCOUNT` | Discount amount (negative) |
-| `DELIVERY` | Delivery fee |
-| `PAYMENT` | Payment fee |
+Product rows use `ITEM`, `DISCOUNT`, and `TAX`. Delivery and payment fee sheets add `DELIVERY` and `PAYMENT` respectively. Order aggregation uses `ITEMS`, `DISCOUNTS`, `TAXES`, `DELIVERY`, and `PAYMENT`. Use the sheet helpers (`addItem`, `addFee`, `addTax`, `addDiscount`) to assign the appropriate category.
+
+Choose order indexes relative to the plugins you enable; the indexes are not fixed category ranges. See [Pricing System](./pricing-system.md).
 
 ## Discount Directors
 
-Discount directors manage coupon codes and automatic discounts.
+`OrderDiscountAdapter` and `ProductDiscountAdapter` provide asynchronous trigger and reservation methods. Their `actions({ context })` method is asynchronous. `discountForPricingAdapterKey({ pricingAdapterKey, calculationSheet })` returns configuration for a matching pricing adapter or `null`. The pricing adapter applies the discount to its result sheet.
 
-```typescript
-import { OrderDiscountDirector, type IDiscountAdapter } from '@unchainedshop/core';
-
-const MyDiscountAdapter: IDiscountAdapter = {
-  key: 'my-discount',
-  label: 'My Discount System',
-  version: '1.0.0',
-  orderIndex: 10,
-
-  // Allow manual code entry starting with 'PROMO'
-  isManualAdditionAllowed(code) {
-    return code.startsWith('PROMO');
-  },
-
-  isManualRemovalAllowed() {
-    return true;
-  },
-
-  actions(context) {
-    return {
-      // Auto-apply discount without code?
-      isValidForSystemTriggering() {
-        return false;
-      },
-
-      // Apply when specific code entered?
-      isValidForCodeTriggering(code) {
-        return code === 'PROMO10';
-      },
-
-      // Return discount configuration
-      discountForPricingAdapterKey(params) {
-        return {
-          isNetPrice: false,
-          rate: 0.1, // 10% off
-        };
-      },
-
-      // Reserve discount (e.g., decrement coupon balance)
-      async reserve(code) {},
-
-      // Release reservation on order cancellation
-      async release() {},
-    };
-  },
-};
-
-OrderDiscountDirector.registerAdapter(MyDiscountAdapter);
-```
+See [Order Discounts](../extend/pricing/order-discounts.md) for a complete implementation.
 
 ## Filter Director
 
-Manages product filtering and search functionality.
+`FilterAdapter.actions(context)` supplies search and selector transformations. `aggregateProductIds({ productIds })` returns an array synchronously. `searchProducts` and `searchAssortments` resolve to ID arrays or `undefined`; they do not return paginated result objects. Selector and sort transformations are asynchronous.
 
-```typescript
-import { FilterDirector, type IFilterAdapter } from '@unchainedshop/core';
+See [Filters](../extend/catalog/filter.md) for custom filtering.
 
-const MyFilterAdapter: IFilterAdapter = {
-  key: 'my-filter',
-  label: 'My Search Filter',
-  version: '1.0.0',
-  orderIndex: 10,
+## Worker Director
 
-  actions(context) {
-    return {
-      // Return product IDs matching filter
-      async aggregateProductIds(params) {
-        return ['product-1', 'product-2'];
-      },
+Workers compose `WorkerAdapter` and implement `doWork(input, unchainedAPI, workId)`. The generic interface is `IWorkerAdapter<Input, Result>`. Return `{ success: true, result }` or `{ success: false, error }`. Use `modules.worker.addWork()` to queue a task and `WorkerDirector.configureAutoscheduling()` with a parsed schedule for recurring work.
 
-      // Search products
-      async searchProducts(params, options) {
-        return { productIds: [], totalCount: 0 };
-      },
-
-      // Search assortments
-      async searchAssortments(params, options) {
-        return { assortmentIds: [], totalCount: 0 };
-      },
-
-      // Modify MongoDB product selector
-      transformProductSelector(selector, options) {
-        return selector;
-      },
-
-      // Modify MongoDB filter selector
-      transformFilterSelector(selector, options) {
-        return selector;
-      },
-
-      // Modify MongoDB sort stage
-      transformSortStage(sort, options) {
-        return sort;
-      },
-    };
-  },
-};
-
-FilterDirector.registerAdapter(MyFilterAdapter);
-```
+See [Worker](../extend/worker.md) for registration and scheduling.
 
 ## Messaging Director
 
-The Messaging Director uses a template resolver pattern for notifications.
-
-```typescript
-import { MessagingDirector } from '@unchainedshop/core';
-
-// Register a message template
-MessagingDirector.registerTemplate('ORDER_CONFIRMATION', async (context) => {
-  const { order, user } = context;
-
-  return [
-    {
-      type: 'EMAIL',
-      input: {
-        to: user.email,
-        subject: `Order Confirmation #${order.orderNumber}`,
-        html: '<h1>Thank you for your order!</h1>',
-      },
-    },
-    {
-      type: 'SMS',
-      input: {
-        to: user.phone,
-        text: `Order #${order.orderNumber} confirmed!`,
-      },
-    },
-  ];
-});
-```
+Messaging uses template resolvers rather than an adapter action object. `MessagingDirector.registerTemplate(type, resolver)` registers a resolver that produces work items such as email or SMS tasks. Read recipients from the current user/profile or order data through module APIs; users do not have generic `email` and `phone` properties.
 
 ## Quotation Director
 
-Handles quotation/RFQ (Request for Quote) operations.
-
-```typescript
-import { QuotationDirector, type IQuotationAdapter } from '@unchainedshop/core';
-
-const MyQuotationAdapter: IQuotationAdapter = {
-  key: 'my-quotation',
-  label: 'My Quote System',
-  version: '1.0.0',
-
-  isActivatedFor(quotationContext, unchainedAPI) {
-    return true;
-  },
-
-  actions(context) {
-    return {
-      configurationError() { return null; },
-
-      // Require manual quote creation?
-      isManualProposalRequired() { return true; },
-
-      // Require manual request verification?
-      isManualRequestVerificationRequired() { return false; },
-
-      // Generate quote
-      async quote() {
-        return { price: 1000, currency: 'CHF' };
-      },
-
-      async submitRequest(quotationContext) {},
-      async verifyRequest(quotationContext) {},
-      async rejectRequest(quotationContext) {},
-
-      transformItemConfiguration(params) {
-        return params.configuration;
-      },
-    };
-  },
-};
-
-QuotationDirector.registerAdapter(MyQuotationAdapter);
-```
+Compose `QuotationAdapter` and override `isActivatedFor(quotationContext, unchainedAPI)` plus the methods returned by `actions(quotationContext)`. Proposal, request verification, and item-configuration methods are asynchronous. `quote()` returns a `QuotationProposal`, not a product price object.
 
 ## Enrollment Director
 
-Manages subscription/enrollment plans and recurring billing.
+Compose `EnrollmentAdapter`. `isActivatedFor()` receives the product's plan configuration; `transformOrderItemToEnrollmentPlan()` is asynchronous and returns a plan containing the product ID and quantity. The action context contains the enrollment and product. `nextPeriod()` returns a period including `isTrial`, and `configurationForOrder({ period })` returns order-position templates or `null`.
 
-```typescript
-import { EnrollmentDirector, type IEnrollmentAdapter } from '@unchainedshop/core';
+## Registration and Configuration
 
-const MyEnrollmentAdapter: IEnrollmentAdapter = {
-  key: 'my-enrollment',
-  label: 'My Subscription System',
-  version: '1.0.0',
+Use unique, namespaced keys, register adapters before platform initialization, and import plugin files using their exported path including `.js` (or `/index.js` for directory modules). Importing built-in plugins registers them.
 
-  isActivatedFor(productPlan) {
-    return productPlan.type === 'PLAN_PRODUCT';
-  },
-
-  transformOrderItemToEnrollmentPlan(orderPosition, unchainedAPI) {
-    return {
-      configuration: orderPosition.configuration,
-    };
-  },
-
-  actions(context) {
-    return {
-      // Calculate next billing period
-      async nextPeriod() {
-        return {
-          start: new Date(),
-          end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        };
-      },
-
-      isValidForActivation() {
-        return true;
-      },
-
-      isOverdue() {
-        return false;
-      },
-
-      // Order configuration for billing period
-      async configurationForOrder(period) {
-        return {};
-      },
-    };
-  },
-};
-
-EnrollmentDirector.registerAdapter(MyEnrollmentAdapter);
-```
-
-## Best Practices
-
-### 1. Unique Keys
-Always use unique, namespaced keys for your adapters:
-```typescript
-key: 'com.mycompany.payment.stripe-custom'
-```
-
-### 2. Error Handling
-Return `configurationError()` for missing configuration rather than throwing:
-```typescript
-configurationError() {
-  if (!process.env.API_KEY) {
-    return { code: 'MISSING_API_KEY', message: 'API key required' };
-  }
-  return null;
-}
-```
-
-### 3. Async Operations in Workers
-For long-running operations, use the Worker system instead of blocking adapters:
-```typescript
-// In delivery adapter
-async send() {
-  // Queue work instead of blocking
-  await context.modules.worker.addWork({
-    type: 'EXTERNAL_SHIPPING_API',
-    input: { orderId: order._id },
-  });
-  return false; // Not complete yet
-}
-```
-
-### 4. Order Index
-Use appropriate `orderIndex` values for pricing adapters:
-- 0-10: Base price calculation
-- 10-20: Discounts
-- 20-30: Tax calculation
-- 30+: Final adjustments
+Keep gateway-specific configuration and long-running background jobs in their respective adapters. Return the domain's configuration-error code for incomplete configuration, and use worker tasks when delivery or other external work must complete asynchronously.
 
 ## Related
 

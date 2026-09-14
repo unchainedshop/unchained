@@ -33,14 +33,11 @@ const allEvents = getRegisteredEvents();
 
 ### Event Names
 
-Events are registered as strings. You can query available events via GraphQL:
+Events are registered as strings. Query registered names via GraphQL (subject to API permissions):
 
 ```graphql
 query {
-  events {
-    _id
-    type
-  }
+  registeredEventTypes
 }
 ```
 
@@ -72,8 +69,15 @@ Each module emits events for tracking and integration. See the module documentat
 
 ## Subscribing to Events
 
+Register subscribers after the platform has registered its built-in events. The
+examples below assume an application-provided `analytics` client. Subscriber
+callbacks receive `{ payload }`; they do not receive the GraphQL context.
+The emitter does not await asynchronous subscribers, so handle failures or enqueue
+work when delivery and retry guarantees matter.
+
 ```typescript
 import { subscribe } from '@unchainedshop/events';
+import { OrderPricingSheet } from '@unchainedshop/core';
 
 // Track order confirmations
 subscribe('ORDER_CONFIRMED', async ({ payload }) => {
@@ -82,13 +86,16 @@ subscribe('ORDER_CONFIRMED', async ({ payload }) => {
   // Send to analytics
   await analytics.track('purchase', {
     orderId: order._id,
-    total: order.total,
+    total: OrderPricingSheet({
+      calculation: order.calculation,
+      currencyCode: order.currencyCode,
+    }).total({ useNetPrice: false }),
   });
 });
 
-// Track product views
-subscribe('PRODUCT_VIEW', async ({ payload }) => {
-  await analytics.track('product_view', {
+// Track product changes
+subscribe('PRODUCT_UPDATE', async ({ payload }) => {
+  await analytics.track('product_update', {
     productId: payload.productId,
   });
 });
@@ -123,57 +130,40 @@ emit('INVENTORY_LOW', {
 
 ## Custom Event Adapter
 
-Replace the default EventEmitter with a distributed queue like Redis:
+An adapter implements `publish(eventName, { payload })` and
+`subscribe(eventName, callback)`. For example, this adapter uses a local emitter:
 
 ```typescript
-import { createClient } from '@redis/client';
-import { EmitAdapter, setEmitAdapter } from '@unchainedshop/events';
+import { EventEmitter } from 'node:events';
+import { setEmitAdapter, type EmitAdapter } from '@unchainedshop/events';
 
-const { REDIS_PORT = 6379, REDIS_HOST = '127.0.0.1' } = process.env;
-
-const subscribedEvents = new Set();
-
-const RedisEventEmitter = (): EmitAdapter => {
-  const redisPublisher = createClient({
-    url: `redis://${REDIS_HOST}:${REDIS_PORT}`,
-  });
-
-  const redisSubscriber = createClient({
-    url: `redis://${REDIS_HOST}:${REDIS_PORT}`,
-  });
-
-  return {
-    publish: (eventName, payload) => {
-      redisPublisher.publish(eventName, JSON.stringify(payload));
-    },
-    subscribe: (eventName, callback) => {
-      if (!subscribedEvents.has(eventName)) {
-        redisSubscriber.subscribe(eventName, (payload) => {
-          callback(JSON.parse(payload));
-        });
-        subscribedEvents.add(eventName);
-      }
-    },
-  };
+const emitter = new EventEmitter();
+const adapter: EmitAdapter = {
+  publish: (eventName, message) => {
+    emitter.emit(eventName, message);
+  },
+  subscribe: (eventName, callback) => {
+    emitter.on(eventName, callback);
+  },
 };
 
-// Set the adapter before starting the platform
-setEmitAdapter(RedisEventEmitter());
+// Configure after importing presets and before starting the platform.
+setEmitAdapter(adapter);
 ```
+
+For a remote transport, connect clients before use, support all subscribers, and
+handle publish/subscribe errors and shutdown in your integration. The event
+interface itself does not provide connection or unsubscribe hooks. See the
+[Redis adapter](../plugins/events/events-redis.md) for the bundled adapter's current limitations.
 
 ## Use Cases
 
 ### Analytics Integration
 
-```typescript
-subscribe('ORDER_CHECKOUT', async ({ payload }) => {
-  await gtag('event', 'purchase', {
-    transaction_id: payload.order._id,
-    value: payload.order.total / 100,
-    currency: payload.order.currency,
-  });
-});
-```
+Build totals with `OrderPricingSheet` as in the subscription example above.
+The result contains `amount` and `currencyCode`. Convert minor units according
+to the currency's precision if the analytics destination expects major units;
+do not assume that every currency has two decimal places.
 
 ### Webhook Triggers
 
@@ -189,20 +179,12 @@ subscribe('ORDER_CONFIRMED', async ({ payload }) => {
 
 ### Inventory Alerts
 
-```typescript
-subscribe('ORDER_ADD_PRODUCT', async ({ payload, context }) => {
-  const product = await context.modules.products.findProduct({
-    productId: payload.orderPosition.productId,
-  });
-
-  if (product.stock < 10) {
-    emit('INVENTORY_LOW', {
-      productId: product._id,
-      currentStock: product.stock,
-    });
-  }
-});
-```
+`ORDER_ADD_PRODUCT` includes `payload.orderPosition`. Capture the initialized
+platform's `modules` and `services` in your subscriber closure, load the product
+with `modules.products.findProduct({ productId })`, and inspect the per-provider
+quantities from `services.products.simulateProductInventory({ product })`.
+Product records do not have a `stock` field. Emit your registered `INVENTORY_LOW`
+event when your application's threshold and warehouse-selection rules require it.
 
 ### Audit Logging
 
@@ -220,7 +202,7 @@ const auditEvents = [
 
 auditEvents.forEach(eventName => {
   subscribe(eventName, async ({ payload }) => {
-    await db.auditLog.insertOne({
+    await db.collection('audit_log').insertOne({
       event: eventName,
       payload,
       timestamp: new Date(),
@@ -231,14 +213,11 @@ auditEvents.forEach(eventName => {
 
 ## Querying Registered Events
 
-Use GraphQL to list all registered events:
+Use `registeredEventTypes` to list registered names. The separate `events` query returns persisted event history, not the registration list:
 
 ```graphql
 query {
-  events {
-    _id
-    type
-  }
+  registeredEventTypes
 }
 ```
 
@@ -253,7 +232,7 @@ Unchained provides enterprise-grade audit logging based on the **OCSF (Open Cybe
 - **Append-only** - No update or delete operations
 - **JSON Lines format** - Easy parsing and integration
 - **SIEM-ready** - Direct ingestion into security monitoring tools
-- **HTTP push** - Optional push to OpenTelemetry Collector, Fluentd, or Vector
+- **HTTP push** - Optional JSON batches to a receiver accepting `{ events: [...] }`
 
 ### Quick Start
 
@@ -263,7 +242,7 @@ import { createAuditLog, configureAuditIntegration } from '@unchainedshop/events
 // Create audit log instance
 const auditLog = createAuditLog('./audit-logs');
 
-// Enable automatic event capture for all security-relevant events
+// Enable capture for the built-in AUDITED_EVENTS after platform initialization
 configureAuditIntegration(auditLog);
 
 // Events automatically captured:
@@ -297,7 +276,7 @@ const auditLog = createAuditLog('./audit-logs');
 await auditLog.logAuthentication({
   activity: OCSF_AUTH_ACTIVITY.LOGON,
   userId: user._id,
-  userName: user.email,
+  userName: user.emails?.[0]?.address,
   success: true,
   remoteAddress: req.ip,
   sessionId: req.sessionID,
@@ -341,12 +320,12 @@ await auditLog.logApiActivity({
 
 ### HTTP Collector Push
 
-Push audit logs to OpenTelemetry Collector, Fluentd, or Vector:
+Push audit logs to an HTTP receiver that accepts `application/json` with an `events` array. An OTLP receiver needs a translation step; this payload is not OTLP:
 
 ```typescript
 const auditLog = createAuditLog({
   directory: './audit-logs',
-  collectorUrl: 'http://otel-collector:4318/v1/logs',
+  collectorUrl: 'http://audit-collector:8080/events',
   collectorHeaders: {
     'Authorization': 'Bearer <token>',
   },
@@ -415,7 +394,7 @@ scrape_configs:
 
 ### Shutdown
 
-Always close the audit log on shutdown to flush pending events:
+Stop event producers before closing the audit log on shutdown to flush pending events. `configureAuditIntegration` does not return an unsubscribe function:
 
 ```typescript
 process.on('SIGTERM', async () => {

@@ -11,13 +11,13 @@ description: Add custom background workers
 
 You can add different types of works to perform various task based on different input and triggers. Work can be a cron operation that run on a given interval to do a system backup or send an email to a user after a certain operation.
 
-In order to make use of work to perform any task you need to implement the `IWorkerAdapter` interface and register it to the global WorkDirector which implements the `IWorkerDirector`.
+In order to make use of work to perform any task you need to implement the `IWorkerAdapter` interface and register it to the global WorkerDirector which implements the `IWorkerDirector`.
 
 Below is an example of work adapter that checks if all works are healthy and working correctly, runs on the  `wait` interval value passed as input
 
 
 ```typescript
-import { IWorkerAdapter } from '@unchainedshop/core-worker';
+import { WorkerAdapter, type IWorkerAdapter } from '@unchainedshop/core';
 
 const wait = async (time: number) => {
   return new Promise((resolve) => {
@@ -35,6 +35,7 @@ type Arg = {
 type Result = Arg;
 
 const Heartbeat: IWorkerAdapter<Arg, Result> = {
+  ...WorkerAdapter,
 
   key: 'shop.unchained.worker-plugin.heartbeat',
   label: 'Heartbeat plugin to check if workers are working',
@@ -60,14 +61,14 @@ const Heartbeat: IWorkerAdapter<Arg, Result> = {
 };
 
 ```
-- **type**: type of the worker, this value is used to specify the worker you are targeting when adding a work to a work queue using `WorkerModule.addWork(data: WorkData, userId: string)` function
+- **type**: type of the worker, this value is used to specify the worker you are targeting when adding a work to a work queue using `unchainedAPI.modules.worker.addWork({ type, input, ...options })` function
 - **doWork**: function that defines the actual work that is going to be performed by the work adapter
 
 ## Registering Work Adapter
 Before you can add a worker in the work queue you need to register it to the global Worker director
 
 ```typescript
-import { WorkerDirector } from '@unchainedshop/core-worker';
+import { WorkerDirector } from '@unchainedshop/core';
 
 WorkerDirector.registerAdapter(Heartbeat);
 ```
@@ -86,6 +87,5 @@ unchainedAPI.modules.worker.addWork(
       },
     },
   );
-}
 
 ```

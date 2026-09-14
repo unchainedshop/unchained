@@ -7,82 +7,53 @@ description: Customize warehousing
 
 # Warehousing Provider Plugins
 
-## WarehousingAdapter
+Warehousing adapters provide stock and lead-time information for configured warehousing providers. Import adapters and directors from `@unchainedshop/core`, and provider data types from `@unchainedshop/core-warehousing`.
 
-You can define a custom Warehousing adapter to simulate the stock availability. In order to define a warehousing adapter you should implement the 
-`IWarehousingAdapter` and register it to the global warehousing director that implements the `IWarehousingDirector` interface. 
-
-A store can have multiple Warehousing adapters configured and all of them are executed ordered by there `orderIndex` value. Warehousing adapters with lower `orderIndex` are executed first.
-
-Below is a simple warehousing adapter implementation that will always show a stock is always available for all products.
+## Creating an Adapter
 
 ```typescript
+import { WarehousingAdapter, WarehousingDirector, type IWarehousingAdapter } from '@unchainedshop/core';
+import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 
-import { WarehousingAdapter, WarehousingProviderType } from '@unchainedshop/core-warehousing';
-import {
-  IWarehousingAdapter,
-  WarehousingError,
-  WarehousingAdapterActions,
-  WarehousingContext,
-  WarehousingProviderType,
-} from '@unchainedshop/core-warehousing';
-import { Context } from '../../../context.ts';
-
-const Store: IWarehousingAdapter = {
-  key: 'shop.unchained.warehousing.store',
+const AlwaysAvailable: IWarehousingAdapter = {
+  ...WarehousingAdapter,
+  key: 'my-shop.warehousing.always-available',
   version: '1.0.0',
-  label: 'Store',
+  label: 'Always available',
   orderIndex: 0,
-  initialConfiguration = [{ key: 'name', value: 'Flagship Store' }],
+  initialConfiguration: [{ key: 'name', value: 'Flagship Store' }],
 
-  typeSupported: (type: WarehousingProviderType): boolean => {
-    return type === WarehousingProviderType.PHYSICAL;
-  },
+  typeSupported: (type) => type === WarehousingProviderType.PHYSICAL,
 
-  actions: (
-    config: WarehousingConfiguration,
-    context: WarehousingContext & Context,
-  ): WarehousingAdapterActions => {
+  actions(config, context) {
     return {
-      isActive: async (): boolean => {
-        return true;
-      },
-
-      configurationError: async () => {
-        return null;
-      },
-
-      stock: async (referenceDate: Date): Promise<number> => {
-        return 99999;
-      },
-
-      productionTime: async (quantityToProduce: number): Promise<number> => {
-        return 0;
-      },
-
-      commissioningTime: async (quantity: number): Promise<number> => {
-        return 0;
-      },
+      ...WarehousingAdapter.actions(config, context),
+      isActive: () => true,
+      configurationError: () => null,
+      stock: async () => 99999,
+      productionTime: async () => 0,
+      commissioningTime: async () => 0,
     };
   },
 };
 
-
+WarehousingDirector.registerAdapter(AlwaysAvailable);
 ```
 
-- **typeSupported(type: WarehousingProviderType)**: Defines the warehousing provider type an adapter is valid for.
-- **isActive**: Defines if the adapter is valid or not based any conditions you set.
-- **configurationError(): WarehousingError**: Any error that occurred during the initialization of an adapter. it can be a missing env or any value missing for a proper functioning of the adapter.
-- **stock(referenceDate: Date)**: It should return the available stock of a product for the provided reference date. in the example above we are simply returning `99999` as stock count.
-- **productionTime(quantityToProduct: number)**: Returns an estimate to produce number of product passed as an argument.
-- **commissioningTime(quantity: number)**: number of days required to product a quantity passed as an argument 
+The example simulates availability; it does not track or decrement physical stock. Import it before startup and select its adapter key when creating a warehousing provider.
 
+## Actions
 
+| Action | Purpose |
+|--------|---------|
+| `typeSupported(type)` | Selects supported provider types |
+| `isActive()` | Indicates whether this configured provider is usable |
+| `configurationError()` | Returns a configuration error or `null` |
+| `stock(referenceDate)` | Returns available quantity for the requested date |
+| `productionTime(quantityToProduce)` | Estimates production time in milliseconds |
+| `commissioningTime(quantity)` | Estimates preparation time in milliseconds |
+| `tokenize()` | Creates token surrogates for tokenized products |
+| `tokenMetadata(serialNumber, referenceDate)` | Resolves token metadata |
+| `isInvalidateable(serialNumber, referenceDate)` | Controls token invalidation |
 
-## Register warehousing adapter
-
-```typescript
-import { WarehousingDirector } from '@unchainedshop/core-warehousing';
-
-WarehousingDirector.registerAdapter(Store);
-```
+`isActive` and `configurationError` are synchronous; stock, timing, and token actions return promises. Spread the base actions to retain defaults for methods you do not override.

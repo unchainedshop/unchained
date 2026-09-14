@@ -1,6 +1,6 @@
 import { randomInt } from 'node:crypto';
 
-// Unambiguous charset: no O/0, I/1 — matches the alphabet historically used for
+// Alphabet excludes O, 0, and 1, and matches the characters historically used for
 // order/quotation/enrollment numbers, so new ids are visually indistinguishable
 // from existing ones.
 const ALPHABET = 'ABCDEFGHIJKLMNPQRSTUVWXYZ23456789';

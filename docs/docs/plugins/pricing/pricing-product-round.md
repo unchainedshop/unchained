@@ -12,7 +12,7 @@ Rounds all product pricing calculations to a configurable precision. Typically r
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/product-round';
+import '@unchainedshop/plugins/pricing/product-round.js';
 ```
 
 ## How It Works
@@ -26,7 +26,7 @@ import '@unchainedshop/plugins/pricing/product-round';
 Configure the rounding behavior before starting the engine:
 
 ```typescript
-import { ProductRound } from '@unchainedshop/plugins/pricing/product-round';
+import { ProductRound } from '@unchainedshop/plugins/pricing/product-round.js';
 
 // Round to nearest 5 cents (default)
 ProductRound.configure({

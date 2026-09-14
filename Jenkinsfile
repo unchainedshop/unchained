@@ -14,8 +14,8 @@ pipeline {
           sh 'touch ./env && chmod 666 ./env'
           sh 'cp ${DOTENV_PATH} ./env'
           docker.build("ci:latest")
-          sh 'docker run ci:latest npm run lint'
-          sh 'docker run -t ci:latest sh -c "npm run test || :"'
+          sh 'docker run --rm ci:latest npm run lint:check'
+          sh 'docker run --rm ci:latest npm test'
         }
       }
     }
@@ -29,7 +29,7 @@ pipeline {
     stage('Building') {
       steps{
         script {
-          docs = docker.build("registry.ucc.dev/unchained/docs",'-f ./docs/Dockerfile ./docs')
+          docs = docker.build("registry.ucc.dev/unchained/docs",'-f ./docs/Dockerfile .')
         }
       }
     }

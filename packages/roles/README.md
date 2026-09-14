@@ -18,6 +18,9 @@ npm install @unchainedshop/roles
 ```typescript
 import { Roles, Role } from '@unchainedshop/roles';
 
+// Register the action before adding an allow rule
+Roles.registerAction('updateProduct');
+
 // Create a new role
 const editorRole = new Role('editor');
 
@@ -70,7 +73,7 @@ const allowed = await Roles.userHasPermission(
 | `__all__` | Automatically assigned to everyone |
 | `__loggedIn__` | Automatically assigned to authenticated users |
 | `__notLoggedIn__` | Automatically assigned to anonymous users |
-| `__notAdmin__` | Automatically assigned to non-admin users |
+| `__notAdmin__` | Automatically assigned to authenticated non-admin users |
 
 ### Utility Functions
 
@@ -99,7 +102,7 @@ const config: IRoleOptionConfig = {
   additionalRoles: {
     customRole: (roles, actions) => {
       const role = new Role('customRole');
-      role.allow(actions.READ, () => true);
+      role.allow(actions.CUSTOM_ACTION, async () => true);
     },
   },
   additionalActions: ['CUSTOM_ACTION'],

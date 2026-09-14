@@ -18,6 +18,7 @@ import { configureFilesModule } from '@unchainedshop/core-files';
 
 const filesModule = await configureFilesModule({
   db,
+  migrationRepository,
   options: {
     transformUrl: (url, params) => url, // Optional URL transformation
   },
@@ -33,7 +34,7 @@ const fileId = await filesModule.create({
 
 // Find file and normalize URL
 const file = await filesModule.findFile({ fileId });
-const normalizedUrl = filesModule.normalizeUrl(file.url, {});
+const normalizedUrl = file?.url && filesModule.normalizeUrl(file.url, {});
 ```
 
 ## API Overview
@@ -49,7 +50,7 @@ const normalizedUrl = filesModule.normalizeUrl(file.url, {});
 | Method | Description |
 |--------|-------------|
 | `findFile` | Find file by ID or URL |
-| `findFiles` | Find files with custom selector |
+| `findFiles` | Find files by IDs, path, metadata, or creation time |
 
 ### Mutations
 
@@ -88,6 +89,7 @@ const normalizedUrl = filesModule.normalizeUrl(file.url, {});
 ```typescript
 const filesModule = await configureFilesModule({
   db,
+  migrationRepository,
   options: {
     transformUrl: (url, params) => {
       // Transform URLs for CDN, thumbnails, etc.

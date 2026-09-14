@@ -11,7 +11,7 @@ This guide covers configuring multiple currencies and handling currency conversi
 
 ## Overview
 
-Unchained Engine supports multiple currencies with automatic conversion:
+Unchained Engine supports explicit prices in multiple currencies and conversion through the rate-conversion pricing plugin:
 
 ```
 ┌─────────────┐     ┌──────────────────┐     ┌─────────────────┐
@@ -30,7 +30,7 @@ Create currencies in the system:
 mutation CreateCurrency {
   createCurrency(currency: {
     isoCode: "EUR"
-    contractAddress: null  # For crypto currencies
+    contractAddress: null  # For token currencies
   }) {
     _id
     isoCode
@@ -63,7 +63,7 @@ Set the default currency via environment variable:
 
 ```bash
 # .env
-CURRENCY=CHF  # Default currency
+UNCHAINED_CURRENCY=CHF  # Fallback currency used during currency resolution
 ```
 
 ### 3. Set Country Defaults
@@ -138,171 +138,58 @@ Unchained has a generic currency conversion system that allows you to integrate 
 
 ### Product Price Rates API
 
-To insert or update rates programmatically:
+Store rates with a validity window. The numeric rate converts major units; the rate lookup accounts for currency decimals when producing a minor-unit conversion factor.
 
 ```typescript
-// Insert/update rates
-await modules.products.prices.rates.updateRates(productPriceRates);
-
-// Get a rate for a currency pair
-const rate = await modules.products.prices.rates.getRate(
-  baseCurrency,    // e.g., 'CHF'
-  quoteCurrency,   // e.g., 'EUR'
-  referenceDate    // Maximum age of rate
-);
-```
-
-The `timestamp` field in rate entries determines freshness:
-- When set to a UNIX timestamp, only rates within the specified maximum age are returned
-- When set to `null`, the rate is always returned regardless of age
-
-The system automatically handles inverse rates - if you have `CHF/EUR`, querying `EUR/CHF` returns the inverse.
-
-### Rate Conversion Plugin
-
-The built-in `shop.unchained.pricing.rate-conversion` plugin consumes these rates. Configure the maximum rate age:
-
-```bash
-# Maximum age in seconds (default: 600 = 10 minutes)
-CRYPTOPAY_MAX_RATE_AGE=600
-```
-
-### Manual Exchange Rates
-
-Set exchange rates manually via the API:
-
-```typescript
-// Update exchange rates programmatically
 await modules.products.prices.rates.updateRates([
   {
     baseCurrency: 'CHF',
     quoteCurrency: 'EUR',
-    rate: 0.92,
-    timestamp: Date.now(),
+    rate: 0.92, // Illustrative fixture rate
+    timestamp: new Date(),
+    expiresAt: new Date(Date.now() + 10 * 60 * 1000),
   },
 ]);
+
+const baseCurrency = await modules.currencies.findCurrency({ isoCode: 'CHF' });
+const quoteCurrency = await modules.currencies.findCurrency({ isoCode: 'EUR' });
+if (!baseCurrency || !quoteCurrency) throw new Error('Configure both currencies first');
+const rateData = await modules.products.prices.rates.getRate(
+  baseCurrency,
+  quoteCurrency,
+  new Date(),
+);
+// rateData is { rate, expiresAt } or null.
 ```
+
+`getRate()` takes currency objects and a reference date. It selects the newest rate whose `timestamp` is on or before that date and whose `expiresAt` is on or after it. Missing or expired validity windows do not match. Inverse pairs are supported automatically.
+
+### Rate Conversion Plugin
+
+```typescript
+import '@unchainedshop/plugins/pricing/product-catalog-price.js';
+import '@unchainedshop/plugins/pricing/product-price-rateconversion.js';
+```
+
+The catalog adapter runs first. The rate-conversion adapter (`shop.unchained.pricing.rate-conversion`, order index 10) runs when no earlier adapter has produced a price. It finds a source price for the requested country and quantity, requires both currencies to be active, and uses `modules.products.prices.rates.getRate()` to convert it. It preserves tax flags and multiplies the converted unit price by quantity.
+
+A direct price in another country does not bypass country selection: configure the relevant country prices as well as currencies. The conversion adapter uses the stored rate validity window; it does not read `CRYPTOPAY_MAX_RATE_AGE`.
 
 ### Automatic Exchange Rate Updates
 
-Use a worker to fetch rates periodically:
+The built-in Coinbase worker fetches configured currencies and registers a schedule that runs every minute:
 
 ```typescript
-import '@unchainedshop/plugins/worker/update-coinbase-rates';
-
-// Configure the worker
-WorkerDirector.configureAutoscheduling({
-  type: 'UPDATE_COINBASE_RATES',
-  input: {
-    baseCurrency: 'CHF',
-  },
-  schedule: '0 0 * * *', // Daily at midnight
-});
+import '@unchainedshop/plugins/worker/update-coinbase-rates.js';
 ```
 
-### Custom Exchange Rate Provider
+It chooses its base currency with the configured currency fallback, stores `Date` timestamps, and gives rates a five-minute validity window. It does not read a `baseCurrency` input. Keep the normal worker queue enabled so scheduled tasks execute.
 
-Create a worker to fetch rates from your preferred provider:
-
-```typescript
-import { WorkerDirector, type IWorkerAdapter } from '@unchainedshop/core';
-
-const ExchangeRateWorker: IWorkerAdapter = {
-  key: 'shop.example.worker.exchange-rates',
-  label: 'Custom Exchange Rate Worker',
-  version: '1.0.0',
-  type: 'UPDATE_EXCHANGE_RATES',
-  external: false,
-  maxParallelAllocations: 1,
-
-  async doWork(input, unchainedAPI) {
-    const { baseCurrency } = input;
-
-    // Fetch rates from your provider (e.g., Open Exchange Rates, Fixer.io)
-    const response = await fetch(
-      `https://api.exchangerate-api.com/v4/latest/${baseCurrency}`
-    );
-    const data = await response.json();
-
-    // Convert to rate entries with timestamps
-    const rates = Object.entries(data.rates).map(([currency, rate]) => ({
-      baseCurrency,
-      quoteCurrency: currency,
-      rate: rate as number,
-      timestamp: Date.now(),
-    }));
-
-    // Update rates in database
-    await unchainedAPI.modules.products.prices.rates.updateRates(rates);
-
-    return { success: true, result: { updated: rates.length } };
-  },
-};
-
-WorkerDirector.registerAdapter(ExchangeRateWorker);
-
-// Schedule hourly updates
-WorkerDirector.configureAutoscheduling({
-  type: 'UPDATE_EXCHANGE_RATES',
-  input: { baseCurrency: 'CHF' },
-  schedule: '0 * * * *',
-});
-```
+For another provider, implement a [worker adapter](../extend/worker.md) that calls `modules.products.prices.rates.updateRates()` with the same rate structure. Pass parsed schedules from `schedule.parse.cron(...)` to `WorkerDirector.configureAutoscheduling()` rather than a cron string.
 
 ## Currency Conversion Pricing Adapter
 
-Create a pricing adapter for automatic conversion:
-
-```typescript
-import {
-  ProductPricingAdapter,
-  ProductPricingDirector,
-} from '@unchainedshop/core-pricing';
-
-class CurrencyConversionAdapter extends ProductPricingAdapter {
-  static key = 'shop.unchained.pricing.currency-conversion';
-  static orderIndex = 1; // Run early
-
-  static isActivatedFor({ currencyCode, product }) {
-    // Only if product has no price in requested currency
-    const hasDirectPrice = product.commerce?.pricing?.some(
-      (p) => p.currencyCode === currencyCode
-    );
-    return !hasDirectPrice;
-  }
-
-  async calculate() {
-    const { product, currencyCode, modules } = this.context;
-
-    // Get base price
-    const basePrice = product.commerce?.pricing?.[0];
-    if (!basePrice) return super.calculate();
-
-    // Get exchange rate
-    const rate = await modules.currencies.getExchangeRate(
-      basePrice.currencyCode,
-      currencyCode
-    );
-
-    if (rate) {
-      this.result.addItem({
-        amount: Math.round(basePrice.amount * rate),
-        isTaxable: basePrice.isTaxable,
-        isNetPrice: basePrice.isNetPrice,
-        meta: {
-          adapter: this.constructor.key,
-          convertedFrom: basePrice.currencyCode,
-          rate,
-        },
-      });
-    }
-
-    return super.calculate();
-  }
-}
-
-ProductPricingDirector.registerAdapter(CurrencyConversionAdapter);
-```
+The built-in conversion adapter already handles source-price selection, active currencies, decimals, validity windows, and quantity. To customize it, compose `ProductPricingAdapter` from `@unchainedshop/core` using the current [pricing adapter pattern](../concepts/director-adapter-pattern.md#pricing-directors). Read prior rows from `params.calculationSheet`, add converted rows with `baseActions.resultSheet().addItem(...)`, and return `baseActions.calculate()`.
 
 ## Querying Prices
 
@@ -419,6 +306,7 @@ function CurrencySelector() {
 ### Format Currency
 
 ```typescript
+// This helper is for currencies with two decimal places.
 export function formatPrice(amount: number, currency: string): string {
   const formatter = new Intl.NumberFormat(getLocale(), {
     style: 'currency',
@@ -436,8 +324,9 @@ const formatters: Record<string, Intl.NumberFormat> = {
   USD: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }),
 };
 
+// This example handles CHF, EUR, and USD, all with two decimal places.
 export function formatCurrency(amount: number, currency: string): string {
-  const formatter = formatters[currency] || formatters.CHF;
+  const formatter = formatters[currency] || new Intl.NumberFormat('en', { style: 'currency', currency });
   return formatter.format(amount / 100);
 }
 ```
@@ -482,7 +371,7 @@ query CartCurrency {
 }
 ```
 
-The cart currency is automatically determined by the user's country and its default currency setting. To change the effective currency for pricing, you would typically update the user's country or configure the order's context.
+The initial cart currency is resolved from its country and configured currencies. Existing orders store `currencyCode`; changing a storefront display preference does not automatically change the cart currency. Use the cart APIs and configured checkout flow to update the order, and read its returned currency before displaying totals.
 
 ## Cryptocurrency Support
 
@@ -505,45 +394,17 @@ mutation CreateCryptoCurrency {
 
 ### Crypto Pricing
 
-```typescript
-class CryptoPricingAdapter extends ProductPricingAdapter {
-  static key = 'shop.unchained.pricing.crypto';
-  static orderIndex: 2;
-
-  static isActivatedFor({ currencyCode }) {
-    return ['ETH', 'BTC', 'USDC'].includes(currencyCode);
-  }
-
-  async calculate() {
-    const { currencyCode, modules } = this.context;
-
-    // Get crypto exchange rate
-    const rate = await fetchCryptoRate(currencyCode);
-
-    // Convert from base currency
-    const baseTotal = this.calculation.sum({ category: 'BASE' });
-
-    this.result.addItem({
-      amount: convertToCrypto(baseTotal, rate, currencyCode),
-      isTaxable: false,
-      isNetPrice: true,
-      meta: { cryptoRate: rate },
-    });
-
-    return super.calculate();
-  }
-}
-```
+The same rate-conversion adapter can convert between configured fiat and cryptocurrency entries. Configure each currency's `decimals`, provide rates with validity windows, and enable the applicable payment adapter. `getRate()` normalizes the conversion factor for source and target decimals; applying an additional decimal multiplier would double-convert the amount.
 
 ## Best Practices
 
 ### 1. Store Amounts in Smallest Unit
 
-Always use the smallest unit (cents, wei, etc.):
+Use integer amounts in the engine’s currency representation. Fiat currencies typically use cents. Product rate normalization defaults to two decimals when unspecified and caps cryptocurrency precision at nine decimals, even when the blockchain uses more (for example ETH at 18). Convert to blockchain base units at the payment boundary:
 
 ```typescript
 // Good
-const price = 4999; // 49.99 CHF
+const price = 4999; // 49.99 CHF (2 decimals)
 
 // Bad
 const price = 49.99; // Floating point issues
@@ -558,28 +419,9 @@ Be consistent with rounding:
 const converted = Math.round(basePrice * exchangeRate);
 ```
 
-### 3. Cache Exchange Rates
+### 3. Respect Rate Expiry
 
-Don't fetch rates on every request:
-
-```typescript
-// Cache rates for 1 hour
-const rateCache = new Map<string, { rate: number; expires: number }>();
-
-async function getExchangeRate(from: string, to: string): Promise<number> {
-  const key = `${from}-${to}`;
-  const cached = rateCache.get(key);
-
-  if (cached && cached.expires > Date.now()) {
-    return cached.rate;
-  }
-
-  const rate = await fetchRate(from, to);
-  rateCache.set(key, { rate, expires: Date.now() + 3600000 });
-
-  return rate;
-}
-```
+The rate store is already shared through MongoDB. If a custom integration adds an in-memory cache, expire each entry no later than the rate's `expiresAt` value, and refresh it when the underlying rates change. A fixed one-hour cache can keep serving a rate that has already expired.
 
 ### 4. Show Original and Converted Prices
 

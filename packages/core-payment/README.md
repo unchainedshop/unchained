@@ -16,19 +16,20 @@ npm install @unchainedshop/core-payment
 ```typescript
 import { configurePaymentModule, PaymentProviderType } from '@unchainedshop/core-payment';
 
-const paymentModule = await configurePaymentModule({ db });
+const paymentModule = await configurePaymentModule({ db, migrationRepository });
 
 // Create a payment provider
-const providerId = await paymentModule.create({
-  type: PaymentProviderType.CARD,
+const provider = await paymentModule.paymentProviders.create({
+  type: PaymentProviderType.GENERIC,
+  configuration: [],
   adapterKey: 'shop.unchained.payment.stripe',
 });
 
-// Find providers for a context
-const providers = await paymentModule.findSupported({
-  order: orderObject,
-});
+// Find configured providers
+const providers = await paymentModule.paymentProviders.findProviders({});
 ```
+
+Context-dependent provider selection is available through `services.orders.supportedPaymentProviders` in [`@unchainedshop/core`](../core/README.md).
 
 ## API Overview
 
@@ -38,7 +39,7 @@ const providers = await paymentModule.findSupported({
 |--------|-------------|
 | `configurePaymentModule` | Configure and return the payment module |
 
-### Queries
+### Provider queries (`payment.paymentProviders`)
 
 | Method | Description |
 |--------|-------------|
@@ -46,10 +47,8 @@ const providers = await paymentModule.findSupported({
 | `findProviders` | Find providers with filtering |
 | `count` | Count providers |
 | `providerExists` | Check if provider exists |
-| `findSupported` | Find providers supported for context |
-| `findInterface` | Get provider interface definition |
 
-### Mutations
+### Provider mutations (`payment.paymentProviders`)
 
 | Method | Description |
 |--------|-------------|
@@ -57,20 +56,20 @@ const providers = await paymentModule.findSupported({
 | `update` | Update provider configuration |
 | `delete` | Soft delete a provider |
 
-### Credentials
+### Credentials (`payment.paymentCredentials`)
 
 | Method | Description |
 |--------|-------------|
-| `findCredentials` | Find stored credentials for user |
-| `createCredentials` | Store payment credentials |
-| `deleteCredentials` | Remove stored credentials |
+| `findPaymentCredentials` | Find stored credentials for user |
+| `upsertCredentials` | Store payment credentials |
+| `removeCredentials` | Remove stored credentials |
 | `markPreferred` | Mark credentials as preferred |
 
 ### Constants
 
 | Export | Description |
 |--------|-------------|
-| `PaymentProviderType` | Provider types (CARD, INVOICE, GENERIC) |
+| `PaymentProviderType` | Provider types (INVOICE, GENERIC) |
 
 ### Settings
 
@@ -96,17 +95,17 @@ const providers = await paymentModule.findSupported({
 
 ## Security (PCI DSS)
 
-This module is designed for **PCI DSS SAQ-A eligibility**:
+This module stores payment provider tokens and metadata. PCI DSS scope depends on the payment integration and deployment; see [SECURITY.md](../../SECURITY.md).
 
 ### Tokenization
 
-- **No card data storage**: Credit card numbers (PAN) and CVV are never stored
-- **Provider tokens only**: Only payment provider-issued tokens are stored
-- **Secure credentials**: Payment credentials contain references, not card data
+- Do not place card numbers or CVV in credential tokens or metadata
+- Store provider-issued tokens in the `token` field
+- Keep provider metadata free of sensitive card data
 
 ```typescript
 // PaymentCredentials structure - tokens only, no card data
-type PaymentCredentials = {
+type StoredCredentialFields = {
   paymentProviderId: string;
   userId: string;
   token?: string;        // Provider-issued token (NOT card number)
@@ -117,7 +116,7 @@ type PaymentCredentials = {
 
 ### Payment Flow
 
-All payment integrations use tokenization patterns:
+A tokenized card integration typically follows this flow:
 1. Card data collected by payment provider (Stripe, Datatrans, etc.)
 2. Provider returns secure token
 3. Unchained stores only the token reference

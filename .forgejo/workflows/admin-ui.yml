@@ -1,8 +1,8 @@
 name: admin-ui
 
 # Forgejo Actions pipeline for the admin-ui image (replaces admin-ui/Jenkinsfile).
-# Scoped by `paths` so it only rebuilds when admin-ui/ changes. The admin-ui
-# Dockerfile runs `npm run lint && npm run build` internally, so building the
+# Scoped to the admin UI and its shared workspace/build inputs. The admin-ui
+# Dockerfile runs `npm run lint:check && npm run build` internally, so building the
 # image is its own lint/build gate; a Trivy scan of admin-ui/ gates the publish.
 # Semver tags mirror the Jenkinsfile and ARE consumed in prod (adminui:1|v2|v3).
 
@@ -12,10 +12,22 @@ on:
     tags: ['*']
     paths:
       - 'admin-ui/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.nvmrc'
+      - '.dockerignore'
+      - 'docker/**'
       - '.forgejo/workflows/admin-ui.yml'
   pull_request:
     paths:
       - 'admin-ui/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.nvmrc'
+      - '.dockerignore'
+      - 'docker/**'
       - '.forgejo/workflows/admin-ui.yml'
   workflow_dispatch:
 
@@ -108,7 +120,7 @@ jobs:
           docker build --platform linux/amd64 \
             --label "org.opencontainers.image.source=https://git.ucc.dev/${GITHUB_REPOSITORY}" \
             --build-arg GIT_COMMIT="${GITHUB_SHA}" \
-            $TAG_ARGS -f ./admin-ui/Dockerfile ./admin-ui
+            $TAG_ARGS -f ./admin-ui/Dockerfile .
           for t in $TAGS; do
             echo "==> Pushing ${IMAGE}:${t}"
             docker push "${IMAGE}:${t}"

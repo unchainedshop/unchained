@@ -12,7 +12,7 @@ An external worker placeholder for managing NFT/token minting and export process
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/worker/export-token';
+import '@unchainedshop/plugins/worker/export-token.js';
 ```
 
 ## Purpose
@@ -29,7 +29,7 @@ The Export Token Worker:
 To enable automatic ownership updates, configure the worker in your platform setup:
 
 ```typescript
-import { configureExportToken } from '@unchainedshop/plugins/worker/export-token';
+import { configureExportToken } from '@unchainedshop/plugins/worker/export-token.js';
 
 // Pass the unchained API to enable event listeners
 configureExportToken(unchainedAPI);

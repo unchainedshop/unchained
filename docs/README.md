@@ -1,41 +1,34 @@
-# Website
+# Documentation website
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+The documentation site uses [Docusaurus](https://docusaurus.io/). It has its own npm lockfile and is not a root npm workspace. Run the following commands from `docs/`.
 
-### Installation
+## Install and develop
 
-```
-$ yarn
-```
-
-### Local Development
-
-```
-$ yarn start
+```sh
+nvm use
+npm ci
+npm run dev
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+`npm run dev` starts the development server with live reload.
 
-### Build
+## Build and preview
 
-```
-$ yarn build
-```
-
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
-### Deployment
-
-Using SSH:
-
-```
-$ USE_SSH=true yarn deploy
+```sh
+npm run build
+npm start
 ```
 
-Not using SSH:
+The build writes static files to `build/`. `npm start` serves that production build locally. Deploy the contents of `build/` with a static hosting service; this package does not define a `deploy` script.
 
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
+## Validate GraphQL examples
+
+Start an engine with the relevant plugins enabled, then run:
+
+```sh
+npm run validate:graphql
+# To use another engine:
+GRAPHQL_ENDPOINT=http://localhost:4010/graphql npm run validate:graphql
 ```
 
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+The validator checks fenced `graphql` and `gql` blocks in `docs/` against the running engine's introspection schema. Custom schema examples and intentionally historical migration snippets can need separate review.

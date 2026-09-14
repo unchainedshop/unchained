@@ -33,7 +33,7 @@ flowchart TD
 
 ## Pricing Chain
 
-Adapters execute in order of their `orderIndex` (ascending). Lower numbers run first.
+Adapters execute in order of their `orderIndex` (ascending). Lower numbers run first. The example below is illustrative; built-in adapter indexes vary, so inspect the plugins you enable before assigning an index.
 
 ```mermaid
 flowchart LR
@@ -43,9 +43,9 @@ flowchart LR
 Each adapter:
 1. Receives the current calculation state
 2. Can add items to the calculation
-3. Passes control to the next adapter via `super.calculate()`
+3. Returns its contributed rows; the director appends them and invokes the next adapter
 
-### Order Index Guidelines
+### Order Index Examples
 
 | Range | Purpose | Examples |
 |-------|---------|----------|
@@ -58,9 +58,10 @@ Each adapter:
 
 | Category | Description | Typical Use |
 |----------|-------------|-------------|
-| `BASE` | Base product/service price | Initial price calculation |
-| `DISCOUNT` | Price reduction (negative amount) | Coupons, promotions |
-| `TAX` | Tax amount | VAT, sales tax |
+| `ITEM` | Base product price | Product pricing |
+| `ITEMS` | Aggregated item prices | Order pricing |
+| `DISCOUNT` / `DISCOUNTS` | Price reduction | Component / order pricing |
+| `TAX` / `TAXES` | Tax amount | Component / order pricing |
 | `DELIVERY` | Shipping fees | Delivery pricing |
 | `PAYMENT` | Payment processing fees | Card fees, invoice fees |
 
@@ -73,7 +74,7 @@ When adding items to the calculation, each item has:
 | `amount` | number | Price in smallest currency unit (cents) |
 | `isTaxable` | boolean | Should tax be calculated on this amount? |
 | `isNetPrice` | boolean | Is this a net price (excluding tax)? |
-| `category` | string | Price category (BASE, TAX, DISCOUNT, etc.) |
+| `category` | string | Assigned by the sheet helper; categories differ between component and order sheets |
 | `meta` | object | Additional metadata |
 
 ## Pricing Sheet
@@ -81,22 +82,22 @@ When adding items to the calculation, each item has:
 Access calculated prices via the pricing sheet:
 
 ```typescript
-const pricingSheet = await modules.orders.pricingSheet(order);
+import { OrderPricingSheet } from '@unchainedshop/core';
 
-// Get totals
-const total = pricingSheet.total(); // { amount, currency }
-const gross = pricingSheet.gross(); // Before discounts
-const net = pricingSheet.net(); // After discounts, before tax
-const taxes = pricingSheet.taxes(); // Tax breakdown
+// Wrap the calculation already stored on the order.
+const pricingSheet = OrderPricingSheet({
+  calculation: order.calculation,
+  currencyCode: order.currencyCode,
+});
 
-// Get items by category
-const discounts = pricingSheet.discounts();
-const delivery = pricingSheet.delivery();
-const payment = pricingSheet.payment();
-
-// Sum specific items
-const taxableAmount = pricingSheet.sum({ isTaxable: true });
-const baseAmount = pricingSheet.sum({ category: 'BASE' });
+const total = pricingSheet.total(); // { amount, currencyCode }
+const gross = pricingSheet.gross(); // Amount including tax and discounts
+const net = pricingSheet.net(); // Amount excluding tax, including discounts
+const taxes = pricingSheet.taxSum(); // Numeric tax sum
+const discounts = pricingSheet.discountPrices();
+const delivery = pricingSheet.total({ category: 'DELIVERY' });
+const payment = pricingSheet.total({ category: 'PAYMENT' });
+const items = pricingSheet.total({ category: 'ITEMS' });
 ```
 
 ## GraphQL Price Fields
@@ -159,18 +160,11 @@ query CartPricing {
 
 ## Best Practices
 
-### 1. Always Call super.calculate()
+### 1. Return the Adapter's Result Sheet
 
-```typescript
-async calculate() {
-  // Your logic here
+Compose the appropriate base adapter, create base actions with `ProductPricingAdapter.actions(params)` (or the delivery/payment/order equivalent), and return `baseActions.calculate()` after adding your rows. The director, not the adapter, advances the chain. Returning `null` aborts the current calculation; returning `[]` allows the next adapter to run.
 
-  // IMPORTANT: Continue the chain
-  return super.calculate();
-}
-```
-
-Returning without calling `super.calculate()` stops the pricing chain.
+See the [complete object-adapter example](./director-adapter-pattern.md#pricing-directors).
 
 ### 2. Handle Currency Properly
 
@@ -189,11 +183,11 @@ const amount = 19.99; // Floating point issues
 Add metadata for debugging and reporting:
 
 ```typescript
-this.result.addItem({
+baseActions.resultSheet().addTax({
   amount: 100,
-  category: 'TAX',
+  rate: 0.081,
   meta: {
-    adapter: this.constructor.key,
+    adapter: MyPricingAdapter.key,
     rate: 0.081,
   },
 });

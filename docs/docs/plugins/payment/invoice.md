@@ -16,7 +16,7 @@ This plugin is part of the `base` preset and loaded automatically. Using the bas
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/payment/invoice';
+import '@unchainedshop/plugins/payment/invoice.js';
 ```
 
 ## Setup

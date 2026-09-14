@@ -4,23 +4,27 @@ This example demonstrates how to integrate [Unchained Commerce](https://unchaine
 
 ## Prerequisites
 
-- Node.js >=22
+- Node.js 26.8.2 or newer (26.8.2 is pinned) for repository development (see [`.nvmrc`](../../.nvmrc))
 - An OIDC provider (Zitadel Cloud or Keycloak instance)
 
 ## Getting Started
 
-1. Install dependencies:
+1. Install and build from the repository root, then enter the example:
 
    ```bash
    npm install
+   npm run build
+   cd examples/oidc
    ```
 
-2. Configure your OIDC provider (see sections below)
+2. Configure one OIDC provider in `examples/oidc/.env` (see sections below). Zitadel takes precedence when both client IDs are set.
 
 3. Run the development server:
    ```bash
    npm run dev
    ```
+
+The default server URL is `http://localhost:4010`; `/login` starts the configured provider flow and `/graphql` exposes the API.
 
 ## Zitadel Setup
 
@@ -29,7 +33,7 @@ This example demonstrates how to integrate [Unchained Commerce](https://unchaine
 ### Step-by-step Configuration
 
 1. **Create a Zitadel Cloud Account**
-   - Visit [zitadel.cloud](https://zitadel.cloud) and sign up for a free account
+   - Visit [zitadel.cloud](https://zitadel.cloud) and create an account
    - Create a new project or use the default project
 
 2. **Create an Application**
@@ -39,7 +43,7 @@ This example demonstrates how to integrate [Unchained Commerce](https://unchaine
    - Select "PKCE" (Proof Key for Code Exchange) for enhanced security
 
 3. **Configure Application Settings**
-   - Set your redirect URIs (e.g., `http://localhost:4000/auth/callback`)
+   - Set your redirect URIs (e.g., `http://localhost:4010/login/zitadel/callback`)
    - Note down your Client ID
 
 4. **Environment Configuration**
@@ -48,8 +52,10 @@ This example demonstrates how to integrate [Unchained Commerce](https://unchaine
 
    ```env
    UNCHAINED_ZITADEL_CLIENT_ID=your_client_id_here
-   UNCHAINED_ZITADEL_DISCOVERY_URL=https://your-instance.zitadel.cloud/.well-known/openid-configuration
+   UNCHAINED_ZITADEL_DISCOVERY_URL=https://your-instance.zitadel.cloud
    ```
+
+Despite its name, `UNCHAINED_ZITADEL_DISCOVERY_URL` is the issuer base URL passed to `@fastify/oauth2` discovery, without the `/.well-known/openid-configuration` suffix.
 
 ### Resources
 
@@ -66,7 +72,7 @@ This example demonstrates how to integrate [Unchained Commerce](https://unchaine
 
    ```bash
    # Using Docker
-   docker run -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:latest start-dev
+   docker run -p 127.0.0.1:8080:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.7.3 start-dev
    ```
 
 2. **Access Admin Console**
@@ -75,12 +81,15 @@ This example demonstrates how to integrate [Unchained Commerce](https://unchaine
 
 3. **Create a Realm**
    - Create a new realm (e.g., "myrealm")
-   - Or use the master realm for testing
+   - Keep the master realm for Keycloak administration
 
 4. **Create a Client**
    - Navigate to "Clients" and create a new client
    - Set Client ID to "myclient" (or your preferred name)
-   - Configure appropriate redirect URIs
+   - Enable the standard authorization code flow
+   - Set the redirect URI to `http://localhost:4010/login/keycloak/callback`
+   - Set the post-logout redirect URI to `http://localhost:4010/`
+   - For a confidential client, enable client authentication and copy the client secret
 
 5. **Environment Configuration**
 
@@ -88,6 +97,7 @@ This example demonstrates how to integrate [Unchained Commerce](https://unchaine
 
    ```env
    UNCHAINED_KEYCLOAK_CLIENT_ID=myclient
+   UNCHAINED_KEYCLOAK_CLIENT_SECRET=your_client_secret
    UNCHAINED_KEYCLOAK_REALM_URL=http://localhost:8080/realms/myrealm
    ```
 
@@ -99,19 +109,19 @@ This example demonstrates how to integrate [Unchained Commerce](https://unchaine
 
 ## Advanced: MCP Server Authorization
 
-Our Keycloak example includes advanced support for **OAuth 2.1** authentication protecting the **Model Context Protocol (MCP) Server** of Unchained Engine.
+The Keycloak example demonstrates bearer-token authentication for the **Model Context Protocol (MCP) server** of Unchained Engine.
 
 ### What is MCP?
 
 The [Model Context Protocol](https://modelcontextprotocol.io) is a standardized way for AI models to securely access external data sources and tools.
 
-### OAuth 2.1 Protection
+### Authorization integration
 
-This example implements OAuth 2.1 authorization as specified in the [MCP Authorization Specification](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization).
+The Keycloak adapter exposes protected-resource metadata at `/.well-known/oauth-protected-resource`, verifies bearer tokens on `/mcp`, and maps client roles into the Unchained context. It illustrates an integration with the [MCP Authorization Specification](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization); it does not exercise every requirement of that specification.
 
 ### Usage
 
-Once configured, you can expose your MCP server to compatible MCP clients with proper OAuth 2.1 authentication, ensuring secure access to your Unchained Commerce data and operations.
+Configure the client roles in Keycloak for the Unchained operations you need. `npm run test-mcp-oauth` exercises dynamic client registration and a client-credentials token request; it requires Keycloak to allow registration and the registered service account to receive the required roles. This test is separate from the browser authorization-code login flow.
 
 ## Learn More
 

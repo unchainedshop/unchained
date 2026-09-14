@@ -16,7 +16,7 @@ npm install @unchainedshop/core-currencies
 ```typescript
 import { configureCurrenciesModule } from '@unchainedshop/core-currencies';
 
-const currenciesModule = await configureCurrenciesModule({ db });
+const currenciesModule = await configureCurrenciesModule({ db, migrationRepository });
 
 // Create a currency
 const currencyId = await currenciesModule.create({

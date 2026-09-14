@@ -16,19 +16,17 @@ npm install @unchainedshop/core-filters
 ```typescript
 import { configureFiltersModule, FilterType } from '@unchainedshop/core-filters';
 
-const filtersModule = await configureFiltersModule({ db });
+const filtersModule = await configureFiltersModule({ db, migrationRepository });
 
 // Create a filter
-const filterId = await filtersModule.create({
+const filter = await filtersModule.create({
   key: 'color',
   type: FilterType.MULTI_CHOICE,
+  options: [],
 });
 
-// Search with filters
-const result = await filtersModule.search.searchProducts({
-  filterQuery: { color: ['red', 'blue'] },
-  assortmentId: 'category-123',
-});
+// Add an option
+await filtersModule.createFilterOption(filter._id, { value: 'red' });
 ```
 
 ## API Overview
@@ -54,29 +52,25 @@ const result = await filtersModule.search.searchProducts({
 |--------|-------------|
 | `create` | Create a new filter |
 | `update` | Update filter data |
-| `delete` | Soft delete a filter |
+| `delete` | Delete a filter, its texts, and cached product IDs |
 
 ### Filter Options
 
 | Method | Description |
 |--------|-------------|
 | `createFilterOption` | Add option to filter |
-| `updateFilterOption` | Update filter option |
 | `removeFilterOption` | Remove filter option |
 
 ### Texts
 
 | Method | Description |
 |--------|-------------|
-| `findFilterTexts` | Find localized filter texts |
-| `updateTexts` | Update filter texts |
+| `texts.findTexts` | Find localized filter texts |
+| `texts.updateTexts` | Update filter texts |
 
-### Search Submodule
+### Search services
 
-| Method | Description |
-|--------|-------------|
-| `search.searchProducts` | Search products with filters |
-| `search.searchAssortments` | Search assortments |
+Product and assortment search are available through `services.filters.searchProducts` and `services.filters.searchAssortments` in [`@unchainedshop/core`](../core/README.md). Use its filter mutation services when changes need to invalidate dependent caches.
 
 ### Constants
 
@@ -95,7 +89,6 @@ const result = await filtersModule.search.searchProducts({
 | Export | Description |
 |--------|-------------|
 | `Filter` | Filter document type |
-| `FilterOption` | Filter option type |
 | `FilterQuery` | Query parameters type |
 | `FiltersModule` | Module interface type |
 | `SearchQuery` | Search query type |

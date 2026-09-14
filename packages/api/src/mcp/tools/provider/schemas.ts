@@ -1,17 +1,33 @@
 import { z } from 'zod/v4-mini';
 import { SearchSchema, createManagementSchemaFromValidators } from '../../utils/sharedSchemas.ts';
+import {
+  ProviderTypeEnum,
+  ProviderSubtypeSchema,
+  ProviderSubtypeSchemas,
+  providerSubtypeDescription,
+  type ProviderType,
+} from '../../utils/providerSchemas.ts';
 
-export const ProviderTypeEnum = z
-  .enum(['PAYMENT', 'DELIVERY', 'WAREHOUSING'])
+export {
+  ProviderTypeEnum,
+  PaymentProviderTypeEnum,
+  DeliveryProviderTypeEnum,
+  WarehousingProviderTypeEnum,
+} from '../../utils/providerSchemas.ts';
+
+const TypeFilterSchema = z
+  .optional(ProviderSubtypeSchema)
   .check(
     z.describe(
-      'Type of provider - PAYMENT for payment processing (cards, invoices), DELIVERY for shipping/pickup methods, WAREHOUSING for inventory management',
+      `Optional filter by specific subtype: ${providerSubtypeDescription}; must match providerType`,
     ),
   );
 
-export const PaymentProviderTypeEnum = z.enum(['CARD', 'INVOICE', 'GENERIC']);
-export const DeliveryProviderTypeEnum = z.enum(['PICKUP', 'SHIPPING', 'LOCAL']);
-export const WarehousingProviderTypeEnum = z.enum(['PHYSICAL', 'VIRTUAL']);
+const matchingTypeFilter = z.refine<{ providerType: ProviderType; typeFilter?: string }>(
+  ({ providerType, typeFilter }) =>
+    typeFilter === undefined || ProviderSubtypeSchemas[providerType].safeParse(typeFilter).success,
+  { message: 'Subtype must match the providerType category', path: ['typeFilter'] },
+);
 
 export const ConfigurationEntry = z.strictObject({
   key: z
@@ -30,30 +46,36 @@ export const ConfigurationEntry = z.strictObject({
 });
 
 export const ProviderConfigSchema = z.object({
-  type: z
-    .union([PaymentProviderTypeEnum, DeliveryProviderTypeEnum, WarehousingProviderTypeEnum])
-    .check(
-      z.describe(
-        'Specific provider subtype: PAYMENT types (CARD, INVOICE, GENERIC), DELIVERY types (PICKUP, SHIPPING, LOCAL), WAREHOUSING types (PHYSICAL, VIRTUAL) - must match providerType category',
-      ),
+  type: ProviderSubtypeSchema.check(
+    z.describe(
+      `Specific provider subtype: ${providerSubtypeDescription}; must match providerType category`,
     ),
+  ),
   adapterKey: z
     .string()
     .check(
       z.minLength(1),
       z.describe(
-        'Unique adapter key that identifies the specific provider implementation - get available keys from provider_interfaces tool',
+        'Unique adapter key that identifies the specific provider implementation - get available keys with the provider_management INTERFACES action',
       ),
     ),
 });
 
 export const actionValidators = {
-  CREATE: z.object({
-    providerType: ProviderTypeEnum.check(z.describe('Type of provider system to operate on')),
-    provider: ProviderConfigSchema.check(
-      z.describe('Provider configuration including type and adapter'),
+  CREATE: z
+    .object({
+      providerType: ProviderTypeEnum.check(z.describe('Type of provider system to operate on')),
+      provider: ProviderConfigSchema.check(
+        z.describe('Provider configuration including type and adapter'),
+      ),
+    })
+    .check(
+      z.refine(
+        ({ providerType, provider }) =>
+          ProviderSubtypeSchemas[providerType].safeParse(provider.type).success,
+        { message: 'Subtype must match the providerType category', path: ['provider', 'type'] },
+      ),
     ),
-  }),
 
   UPDATE: z.object({
     providerType: ProviderTypeEnum.check(z.describe('Type of provider system to operate on')),
@@ -91,32 +113,20 @@ export const actionValidators = {
       .check(z.minLength(1), z.describe('Unique identifier of the specific provider instance')),
   }),
 
-  LIST: z.object({
-    providerType: ProviderTypeEnum.check(z.describe('Type of provider system to operate on')),
-    typeFilter: z
-      .optional(
-        z.union([PaymentProviderTypeEnum, DeliveryProviderTypeEnum, WarehousingProviderTypeEnum]),
-      )
-      .check(
-        z.describe(
-          'Optional filter by specific subtype: PAYMENT (CARD, INVOICE, GENERIC), DELIVERY (PICKUP, SHIPPING, LOCAL), WAREHOUSING (PHYSICAL, VIRTUAL)',
-        ),
-      ),
-    ...SearchSchema,
-  }),
+  LIST: z
+    .object({
+      providerType: ProviderTypeEnum.check(z.describe('Type of provider system to operate on')),
+      typeFilter: TypeFilterSchema,
+      ...SearchSchema,
+    })
+    .check(matchingTypeFilter),
 
-  INTERFACES: z.object({
-    providerType: ProviderTypeEnum.check(z.describe('Type of provider system to operate on')),
-    typeFilter: z
-      .optional(
-        z.union([PaymentProviderTypeEnum, DeliveryProviderTypeEnum, WarehousingProviderTypeEnum]),
-      )
-      .check(
-        z.describe(
-          'Optional filter by specific subtype: PAYMENT (CARD, INVOICE, GENERIC), DELIVERY (PICKUP, SHIPPING, LOCAL), WAREHOUSING (PHYSICAL, VIRTUAL)',
-        ),
-      ),
-  }),
+  INTERFACES: z
+    .object({
+      providerType: ProviderTypeEnum.check(z.describe('Type of provider system to operate on')),
+      typeFilter: TypeFilterSchema,
+    })
+    .check(matchingTypeFilter),
 } as const;
 
 export const ProviderManagementSchema = createManagementSchemaFromValidators(actionValidators);

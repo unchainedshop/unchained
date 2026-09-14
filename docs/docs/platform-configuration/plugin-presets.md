@@ -23,8 +23,8 @@ connect(app, platform)
 
 // Either:
 // a) Load GridFS REST endpoints for Express.js:
-import connectPlugins from '@unchainedshop/plugins/presets/base-express.js';
-// a) Load GridFS REST endpoints for Fastify:
+// import connectPlugins from '@unchainedshop/plugins/presets/base-express.js';
+// b) Load GridFS REST endpoints for Fastify:
 import connectPlugins from '@unchainedshop/plugins/presets/base-fastify.js';
 
 connectPlugins(app);
@@ -63,6 +63,9 @@ The base preset includes essential plugins for a minimal e-commerce setup:
 **Workers:**
 - Bulk import
 - Zombie killer (cleanup)
+- Guest user garbage collection
+- Cart invalidation
+- Bulk export
 - Message handling
 - External service integration
 - HTTP request handling
@@ -85,11 +88,11 @@ connect(app, platform)
 
 // Either:
 // a) Load all custom API handlers for Express.js:
-import connectPlugins from '@unchainedshop/plugins/presets/all-express.js';
+// import connectPlugins from '@unchainedshop/plugins/presets/all-express.js';
 // b) Load all custom API handlers for Fastify:
 import connectPlugins from '@unchainedshop/plugins/presets/all-fastify.js';
 
-connectPlugins(app);
+connectPlugins(app, platform);
 ```
 
 The all preset extends the base preset with additional payment providers, delivery methods, and features:
@@ -142,14 +145,14 @@ const platform = await startPlatform({
 connect(app, platform)
 
 // a) Load Crypto API handlers for Express.js:
-import connectCryptoPlugins from '@unchainedshop/plugins/presets/crypto-express.js';
-import connectPlugins from '@unchainedshop/plugins/presets/base-express.js';
+// import connectCryptoPlugins from '@unchainedshop/plugins/presets/crypto-express.js';
+// import connectPlugins from '@unchainedshop/plugins/presets/base-express.js';
 // b) Load Crypto API handlers for Fastify:
 import connectCryptoPlugins from '@unchainedshop/plugins/presets/crypto-fastify.js';
 import connectPlugins from '@unchainedshop/plugins/presets/base-fastify.js';
 
 // Make sure you load the base plugins too as those are not part of the crypto preset!
-connectCryptoPlugins(app);
+connectCryptoPlugins(app, platform.unchainedAPI);
 connectPlugins(app)
 ```
 
@@ -184,16 +187,13 @@ const platform = await startPlatform({
 connect(app, platform)
 
 // a) Load Base API handlers for Express.js:
-import connectPlugins from '@unchainedshop/plugins/presets/base-express.js';
+// import connectPlugins from '@unchainedshop/plugins/presets/base-express.js';
 // b) Load Base API handlers for Fastify:
 import connectPlugins from '@unchainedshop/plugins/presets/base-fastify.js';
 
 // Make sure you load the base plugins too as those are not part of the ch preset!
 connectPlugins(app)
 ```
-
-**Delivery:**
-- Pick-Mup delivery service
 
 **Pricing:**
 - Swiss tax calculation for products

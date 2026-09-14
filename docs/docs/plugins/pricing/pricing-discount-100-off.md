@@ -12,7 +12,7 @@ A sample discount adapter demonstrating a fixed-amount coupon code (100 CHF off)
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/discount-100-off';
+import '@unchainedshop/plugins/pricing/discount-100-off.js';
 ```
 
 ## How It Works

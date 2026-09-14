@@ -403,7 +403,7 @@ function buildProductAssortmentMap(products: GeneratedProduct[]): Map<string, As
   return map;
 }
 
-// Sort assortments by hierarchy depth (parents before children)
+// Sort assortments by hierarchy depth (children before parents).
 function sortByHierarchyDepth(nodes: AssortmentNode[]): AssortmentNode[] {
   const depths = new Map<string, number>();
   const nodeMap = new Map<string, AssortmentNode>();
@@ -446,7 +446,7 @@ export function generateAssortments(products: GeneratedProduct[]): BulkImportEve
   const events: BulkImportEvent<AssortmentPayload>[] = [];
   const productMap = buildProductAssortmentMap(products);
 
-  // Sort nodes so parents come before children
+  // Create child assortments before parents that reference them.
   const sortedNodes = sortByHierarchyDepth(categoryHierarchy);
 
   for (let i = 0; i < sortedNodes.length; i++) {

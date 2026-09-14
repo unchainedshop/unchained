@@ -117,7 +117,7 @@ test.describe('User Removal', () => {
       const userId = createUser.user._id;
 
       // Set a known token secret for the new user so we can authenticate as them
-      // The token format is sha256(username:plainSecret)
+      // This fixture uses username:plainSecret as its opaque token and stores its SHA-256 hash
       const plainSecret = 'testsecret';
       const crypto = await import('node:crypto');
       const hashedSecret = crypto

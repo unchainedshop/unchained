@@ -7,26 +7,32 @@ Full-featured example of the Unchained Engine using Fastify as the HTTP server. 
 - **Fastify** HTTP server with custom Unchained logger
 - **GraphQL API** with GraphQL Yoga
 - **Admin UI** integration (served at `/`)
-- **All official plugins** via `@unchainedshop/plugins/presets/all`
-- **Ticketing support** with `@unchainedshop/ticketing`
-- **AI Chat integration** (OpenAI compatible, including local LLMs)
-- **Image generation** with OpenAI DALL-E
+- **Broad plugin preset** via `@unchainedshop/plugins/presets/all.js`
+- **Ticketing example** available separately in [`../ticketing`](../ticketing/README.md)
+- **AI Chat integration** with OpenAI (enabled when `OPENAI_API_KEY` is set)
+- **Image generation** with OpenAI `gpt-image-1`
 - **Discount plugins** (half-price manual, 100-off)
 - **Product discoverability filter** (hide products by tag)
 - **Database seeding** with admin user, country, currency, language, and providers
-- **Development access token** for testing (`admin` / `secret`)
+- **Development access token** generated and logged on startup for the seeded administrator
 
 ## Prerequisites
 
-- Node.js >= 22
+- Node.js 26.8.2 or newer (26.8.2 is pinned) for repository development (see [`.nvmrc`](../../.nvmrc))
 - MongoDB (or uses in-memory MongoDB for development)
 
 ## Quick Start
 
+From the repository root:
+
 ```bash
 npm install
+npm run build
+cd examples/kitchensink
 npm run dev
 ```
+
+The remaining commands run from `examples/kitchensink/`.
 
 Server starts at http://localhost:4010 with:
 - GraphQL endpoint: `/graphql`
@@ -45,13 +51,13 @@ Server starts at http://localhost:4010 with:
 
 ## Environment Variables
 
-### Required
+### Server configuration
 
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `ROOT_URL` | Public URL of the server | `http://localhost:4010` |
 | `PORT` | Server port | `4010` |
-| `UNCHAINED_TOKEN_SECRET` | Secret for session tokens (min 32 chars) | - |
+| `UNCHAINED_TOKEN_SECRET` | Session secret (at least 32 characters); replace the bundled development value for deployment | Development value in `.env.defaults` |
 | `EMAIL_FROM` | Default sender email | `noreply@unchained.local` |
 | `EMAIL_WEBSITE_NAME` | Website name for emails | `Unchained` |
 | `EMAIL_WEBSITE_URL` | Website URL for emails | `http://localhost:4010` |
@@ -69,22 +75,10 @@ Server starts at http://localhost:4010 with:
 
 | Variable | Description |
 |----------|-------------|
-| `OPENAI_BASE_URL` | OpenAI-compatible API base URL |
-| `OPENAI_MODEL` | Model name for chat |
-| `OPENAI_API_KEY` | OpenAI API key (for image generation) |
+| `OPENAI_API_KEY` | Enables chat and the `gpt-image-1` image generation tool |
+| `OPENAI_MODEL` | Chat model passed to the provider; defaults to `gpt-5.2` in `src/boot.ts` |
 
-To use a local LLM:
-```bash
-llama-server -hf ggml-org/gpt-oss-20b-GGUF --ctx-size 0 --jinja -ub 2048 -b 2048
-```
-
-> **Note:** Using llama.cpp with a local server is currently not possible because the Unchained MCP Zod schema has date patterns that llama.cpp cannot handle. See: https://github.com/ggml-org/llama.cpp/issues/12252
-
-Then set:
-```
-OPENAI_BASE_URL=http://127.0.0.1:8080/v1
-OPENAI_MODEL=gpt-oss
-```
+Set these values in `.env`. For an OpenAI-compatible local endpoint, use the [Express example](../kitchensink-express/README.md), which configures `createOpenAICompatible` from `OPENAI_BASE_URL` and `OPENAI_MODEL`.
 
 ### Admin UI
 
@@ -100,18 +94,24 @@ OPENAI_MODEL=gpt-oss
 
 On first start, the seed script creates:
 - Admin user: `admin@unchained.local`
-- Country: Switzerland (CH)
-- Currency: Swiss Franc (CHF)
+- Countries: Switzerland (CH) and United States (US), plus `UNCHAINED_COUNTRY` if different
+- Currencies: Swiss Franc (CHF) and US Dollar (USD), plus `UNCHAINED_CURRENCY` if different
 - Language: German (de)
 - Delivery provider: Send Message
 - Payment provider: Invoice
 
 ## Docker
 
+Build from the repository root so Docker can resolve every npm workspace from the root lockfile:
+
 ```bash
-docker build -t unchained-kitchensink .
-docker run -p 4010:4010 unchained-kitchensink
+docker build -f examples/kitchensink/Dockerfile -t unchained-kitchensink .
+docker run --rm -p 4010:3000 \
+  -e MONGO_URL=mongodb://host.docker.internal:27017/unchained \
+  unchained-kitchensink
 ```
+
+`host.docker.internal` is available in Docker Desktop; for other deployments use your MongoDB service address. The image listens on container port `3000`. Configure production secrets and provider credentials as described in the [Docker deployment guide](../../docs/docs/deployment/docker.md).
 
 ## License
 

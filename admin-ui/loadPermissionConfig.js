@@ -1,6 +1,6 @@
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
-// permissionConfig.js
+// Load the optional permission override or the bundled defaults.
 const defaultConfig = require('./default-permissions.config');
 
 function loadPermissionConfig() {

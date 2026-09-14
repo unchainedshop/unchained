@@ -22,11 +22,11 @@ flowchart LR
 
 | Provider | Type | Use Case |
 |----------|------|----------|
-| [Stripe](../plugins/payment/stripe.md) | CARD | Credit/debit cards |
+| [Stripe](../plugins/payment/stripe.md) | GENERIC | Credit/debit cards |
 | [PayPal](../plugins/payment/paypal-checkout.md) | GENERIC | PayPal checkout |
-| [Braintree](../plugins/payment/braintree.md) | CARD | Cards, PayPal |
-| [Datatrans](../plugins/payment/datatrans.md) | CARD | Swiss payment gateway |
-| [Saferpay](../plugins/payment/saferpay.md) | CARD | Swiss payment gateway |
+| [Braintree](../plugins/payment/braintree.md) | GENERIC | Cards, PayPal |
+| [Datatrans](../plugins/payment/datatrans.md) | GENERIC | Swiss payment gateway |
+| [Saferpay](../plugins/payment/saferpay.md) | GENERIC | Swiss payment gateway |
 | [Cryptopay](../plugins/payment/cryptopay.md) | GENERIC | Cryptocurrency |
 | [Invoice](../plugins/payment/invoice.md) | INVOICE | Manual invoicing |
 
@@ -40,13 +40,13 @@ npm install stripe
 
 ```typescript
 // boot.ts
-import '@unchainedshop/plugins/payment/stripe';
+import '@unchainedshop/plugins/payment/stripe/index.js';
 ```
 
 ```bash
 # .env
-STRIPE_SECRET_KEY=sk_test_xxx
-STRIPE_WEBHOOK_SECRET=whsec_xxx
+STRIPE_SECRET=sk_test_xxx
+STRIPE_ENDPOINT_SECRET=whsec_xxx
 ```
 
 ### 2. Create Payment Provider
@@ -71,109 +71,26 @@ mutation CreateStripeProvider {
 
 ### 3. Frontend Integration
 
-```tsx
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+1. Select the Stripe payment provider on the cart.
+2. Call `signPaymentProviderForCheckout(orderPaymentId: ...)`. The returned string is the PaymentIntent client secret; there is no `payment.clientSecret` GraphQL field.
+3. Initialize Stripe Elements with that client secret and collect payment details.
+4. Confirm the payment with Stripe. The built-in webhook handler processes successful payments and advances the Unchained order. If your integration calls `checkoutCart` directly, pass the intent ID as `paymentContext: { paymentIntentId }`.
+5. Query the order to display its current status. A browser redirect alone does not confirm the order.
 
-const stripePromise = loadStripe('pk_test_xxx');
-
-function CheckoutForm() {
-  const stripe = useStripe();
-  const elements = useElements();
-  const [signPayment] = useMutation(SIGN_PAYMENT);
-  const [checkout] = useMutation(CHECKOUT);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Get client secret from Unchained
-    const { data } = await signPayment({
-      variables: { orderPaymentId: cart.payment._id },
-    });
-
-    // Confirm payment with Stripe
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/checkout/complete`,
-      },
-      redirect: 'if_required',
-    });
-
-    if (error) {
-      setError(error.message);
-    } else if (paymentIntent.status === 'succeeded') {
-      // Complete checkout
-      await checkout({
-        variables: {
-          paymentContext: { paymentIntentId: paymentIntent.id },
-        },
-      });
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <PaymentElement />
-      <button type="submit" disabled={!stripe}>Pay</button>
-    </form>
-  );
-}
-
-function PaymentPage() {
-  const { data } = useQuery(GET_CART);
-  const clientSecret = data?.me?.cart?.payment?.clientSecret;
-
-  if (!clientSecret) return <div>Loading...</div>;
-
-  return (
-    <Elements stripe={stripePromise} options={{ clientSecret }}>
-      <CheckoutForm />
-    </Elements>
-  );
-}
-```
+See the [Stripe plugin guide](../plugins/payment/stripe.md) for the provider-specific flow and options.
 
 ### 4. Webhook Handler
 
+Use the built-in Stripe webhook handler through the framework plugin preset, which handles raw request bodies, signature verification, and the Unchained order transition. For the Fastify kitchensink this is configured with:
+
 ```typescript
-// api/webhooks/stripe.ts
-import Stripe from 'stripe';
-import { buffer } from 'micro';
+import initPluginMiddlewares from '@unchainedshop/plugins/presets/all-fastify.js';
+import { connect } from '@unchainedshop/api/fastify';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-export const config = { api: { bodyParser: false } };
-
-export default async function handler(req, res) {
-  const sig = req.headers['stripe-signature'];
-  const buf = await buffer(req);
-
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(
-      buf,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
-  } catch (err) {
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  switch (event.type) {
-    case 'payment_intent.succeeded':
-      // Payment successful - order will auto-confirm
-      console.log('Payment succeeded:', event.data.object.id);
-      break;
-    case 'payment_intent.payment_failed':
-      // Payment failed
-      console.log('Payment failed:', event.data.object.id);
-      break;
-  }
-
-  res.json({ received: true });
-}
+connect(fastify, platform, { initPluginMiddlewares });
 ```
+
+The default webhook path is `/payment/stripe` (override with `STRIPE_WEBHOOK_PATH`). Set `STRIPE_ENDPOINT_SECRET` to the endpoint signing secret. The all-plugin preset also initializes routes for other plugins; see the Stripe plugin guide for an individual integration.
 
 ## Payment Flow
 
@@ -256,97 +173,66 @@ Most payment adapters use environment variables:
 
 ```bash
 # Stripe
-STRIPE_SECRET_KEY=sk_xxx
-STRIPE_PUBLISHABLE_KEY=pk_xxx
-STRIPE_WEBHOOK_SECRET=whsec_xxx
+STRIPE_SECRET=sk_xxx
+# Configure the Stripe publishable key in your storefront
+STRIPE_ENDPOINT_SECRET=whsec_xxx
 
 # PayPal
 PAYPAL_CLIENT_ID=xxx
-PAYPAL_CLIENT_SECRET=xxx
-PAYPAL_ENVIRONMENT=sandbox  # or production
+PAYPAL_SECRET=xxx
+PAYPAL_ENVIRONMENT=sandbox  # or live
 
 # Datatrans
 DATATRANS_MERCHANT_ID=xxx
-DATATRANS_PASSWORD=xxx
+DATATRANS_SECRET=xxx
 DATATRANS_SIGN_KEY=xxx
 ```
 
 ## Custom Payment Adapter
 
-Create a custom adapter for payment gateways not covered by built-in plugins:
+Create a custom adapter for payment gateways not covered by built-in plugins. This example assumes `myGateway` is your gateway client and its session/payment methods return the illustrated values:
 
 ```typescript
-import { PaymentDirector, type IPaymentAdapter } from '@unchainedshop/core';
+import {
+  PaymentAdapter, PaymentDirector, PaymentError, OrderPricingSheet,
+  type IPaymentAdapter,
+} from '@unchainedshop/core';
 
 const MyPaymentAdapter: IPaymentAdapter = {
+  ...PaymentAdapter,
   key: 'com.mycompany.payment.custom',
   label: 'My Payment Gateway',
   version: '1.0.0',
-
-  typeSupported(type) {
-    return type === 'CARD';
-  },
-
-  actions(params) {
-    const { paymentContext, context } = params;
-    const { order, orderPayment } = paymentContext;
-
+  typeSupported: (type) => type === 'GENERIC',
+  actions(configuration, context) {
+    const baseActions = PaymentAdapter.actions(configuration, context);
     return {
-      configurationError() {
-        if (!process.env.MY_GATEWAY_API_KEY) {
-          return { code: 'MISSING_API_KEY' };
-        }
-        return null;
-      },
-
-      isActive() {
-        return true;
-      },
-
-      isPayLaterAllowed() {
-        return false; // Require payment before order confirmation
-      },
-
+      ...baseActions,
+      configurationError: () => process.env.MY_GATEWAY_API_KEY
+        ? null : PaymentError.INCOMPLETE_CONFIGURATION,
+      isActive: () => Boolean(process.env.MY_GATEWAY_API_KEY),
+      isPayLaterAllowed: () => false,
       async sign() {
-        // Create payment session with gateway
+        const { order } = context;
+        if (!order) throw new Error('Order is required');
+        const pricing = OrderPricingSheet({
+          calculation: order.calculation,
+          currencyCode: order.currencyCode,
+        });
+        const { amount, currencyCode } = pricing.total();
         const session = await myGateway.createSession({
-          amount: order.pricing().total().amount,
-          currency: order.currency,
+          amount,
+          currency: currencyCode,
           orderId: order._id,
         });
         return session.clientToken;
       },
-
-      async charge() {
-        // Check if payment is complete
-        const { transactionId } = orderPayment.context || {};
-        if (transactionId) {
-          const payment = await myGateway.getPayment(transactionId);
-          if (payment.status === 'completed') {
-            return { transactionId };
-          }
-        }
-        return false;
-      },
-
-      async cancel() {
-        const { transactionId } = orderPayment;
-        if (transactionId) {
-          await myGateway.refund(transactionId);
-        }
-        return true;
-      },
-
-      async confirm() {
-        return { transactionId: orderPayment.transactionId };
-      },
-
-      async register() {
-        return { token: '' };
-      },
-
-      async validate() {
-        return true;
+      async charge({ transactionId } = {}) {
+        if (!transactionId) return false;
+        const payment = await myGateway.getPayment(transactionId);
+        // Validate the gateway's order reference, amount, and currency here.
+        if (payment.status !== 'completed') return false;
+        return { transactionId };
       },
     };
   },
@@ -354,6 +240,8 @@ const MyPaymentAdapter: IPaymentAdapter = {
 
 PaymentDirector.registerAdapter(MyPaymentAdapter);
 ```
+
+Implement gateway-specific validation before returning a successful charge. The base `cancel`, `confirm`, `register`, and `validate` methods remain available to override. `charge()` receives the transaction context passed by checkout; adapter context is the second argument to `actions(configuration, context)`.
 
 ## Testing Payments
 
@@ -363,21 +251,16 @@ Most payment providers have test/sandbox modes:
 
 ```bash
 # Stripe test keys
-STRIPE_SECRET_KEY=sk_test_xxx
-STRIPE_PUBLISHABLE_KEY=pk_test_xxx
+STRIPE_SECRET=sk_test_xxx
+# Configure the Stripe test publishable key in your storefront
 
 # PayPal sandbox
 PAYPAL_ENVIRONMENT=sandbox
 ```
 
-### Test Card Numbers
+### Test Payment Details
 
-| Provider | Card Number | Description |
-|----------|-------------|-------------|
-| Stripe | 4242 4242 4242 4242 | Successful payment |
-| Stripe | 4000 0000 0000 0002 | Declined |
-| Stripe | 4000 0025 0000 3155 | Requires 3DS |
-| PayPal | N/A | Use sandbox accounts |
+Use the provider's current test-card documentation and sandbox accounts. The [Stripe plugin guide](../plugins/payment/stripe.md) describes the Unchained test configuration.
 
 ### Testing Webhooks Locally
 
@@ -385,10 +268,10 @@ Use Stripe CLI or ngrok for local webhook testing:
 
 ```bash
 # Stripe CLI
-stripe listen --forward-to localhost:3000/api/webhooks/stripe
+stripe listen --forward-to localhost:4010/payment/stripe
 
 # ngrok
-ngrok http 3000
+ngrok http 4010
 # Configure webhook URL in Stripe dashboard
 ```
 
@@ -428,66 +311,49 @@ try {
 
 ## Payment Fees
 
-Add payment processing fees to orders:
+Payment pricing adapters compose `PaymentPricingAdapter` and add fees with `resultSheet().addFee()`:
 
 ```typescript
-import { PaymentPricingDirector, PaymentPricingAdapter } from '@unchainedshop/core';
+import {
+  PaymentPricingAdapter, PaymentPricingDirector,
+  type IPaymentPricingAdapter,
+} from '@unchainedshop/core';
 
-class CardFeeAdapter extends PaymentPricingAdapter {
-  static key = 'shop.unchained.pricing.card-fee';
-  static orderIndex = 0;
+const ExamplePaymentFee: IPaymentPricingAdapter = {
+  ...PaymentPricingAdapter,
+  key: 'com.example.pricing.payment-fee',
+  label: 'Example payment fee',
+  version: '1.0.0',
+  orderIndex: 10,
+  isActivatedFor: ({ provider, currencyCode }) =>
+    provider.type === 'GENERIC' && currencyCode === 'CHF',
+  actions(params) {
+    const baseActions = PaymentPricingAdapter.actions(params);
+    return {
+      ...baseActions,
+      async calculate() {
+        baseActions.resultSheet().addFee({
+          amount: 30, // Illustrative fixed CHF 0.30 fee
+          isTaxable: false,
+          isNetPrice: true,
+          meta: { adapter: ExamplePaymentFee.key },
+        });
+        return baseActions.calculate();
+      },
+    };
+  },
+};
 
-  static isActivatedFor({ provider }) {
-    return provider.type === 'CARD';
-  }
-
-  async calculate() {
-    const { order } = this.context;
-    const total = order.pricing().total().amount;
-
-    // 2.9% + 30 cents
-    const fee = Math.round(total * 0.029 + 30);
-
-    this.result.addItem({
-      amount: fee,
-      isTaxable: false,
-      isNetPrice: true,
-      category: 'PAYMENT',
-    });
-
-    return super.calculate();
-  }
-}
-
-PaymentPricingDirector.registerAdapter(CardFeeAdapter);
+PaymentPricingDirector.registerAdapter(ExamplePaymentFee);
 ```
+
+For a percentage fee, derive the intended subtotal from order positions and their calculation sheets. Reading a previous final order total can include the payment fee itself and create repeated recalculation errors.
 
 ## Multi-Currency Support
 
-Handle multiple currencies:
+Orders store `currencyCode` and calculation rows. In `actions(configuration, context)`, read `context.order`, construct `OrderPricingSheet({ calculation: order.calculation, currencyCode: order.currencyCode })`, and use `total()` to obtain `{ amount, currencyCode }`. Convert the currency code or amount only as required by your gateway's API.
 
-```typescript
-async sign() {
-  const { order } = this.paymentContext;
-
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    line_items: [{
-      price_data: {
-        currency: order.currency.toLowerCase(),
-        product_data: { name: `Order ${order.orderNumber}` },
-        unit_amount: order.pricing().total().amount,
-      },
-      quantity: 1,
-    }],
-    mode: 'payment',
-    success_url: `${process.env.ROOT_URL}/checkout/success`,
-    cancel_url: `${process.env.ROOT_URL}/checkout/cancel`,
-  });
-
-  return session.id;
-}
-```
+The built-in Stripe adapter uses this approach and verifies that the completed PaymentIntent matches the order payment, amount, and currency.
 
 ## Related
 

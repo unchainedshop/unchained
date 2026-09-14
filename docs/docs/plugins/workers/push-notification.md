@@ -12,7 +12,7 @@ Send W3C compliant web push notifications to subscribed users.
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/worker/push-notification';
+import '@unchainedshop/plugins/worker/push-notification.js';
 ```
 
 ### Peer Dependency

@@ -18,8 +18,8 @@ Unchained payment plugin for Datatrans, a Swiss payment service provider support
 **Express:**
 ```typescript
 import express from 'express';
-import '@unchainedshop/plugins/payment/datatrans-v2';
-import { datatransHandler } from '@unchainedshop/plugins/payment/datatrans-v2/handler-express';
+import '@unchainedshop/plugins/payment/datatrans-v2/index.js';
+import { datatransHandler } from '@unchainedshop/plugins/payment/datatrans-v2/handler-express.js';
 
 const { DATATRANS_WEBHOOK_PATH = '/payment/datatrans/webhook' } = process.env;
 
@@ -29,8 +29,8 @@ app.use(DATATRANS_WEBHOOK_PATH, express.text({ type: 'application/json' }), data
 
 **Fastify:**
 ```typescript
-import '@unchainedshop/plugins/payment/datatrans-v2';
-import { datatransHandler } from '@unchainedshop/plugins/payment/datatrans-v2/handler-fastify';
+import '@unchainedshop/plugins/payment/datatrans-v2/index.js';
+import { datatransHandler } from '@unchainedshop/plugins/payment/datatrans-v2/handler-fastify.js';
 
 const { DATATRANS_WEBHOOK_PATH = '/payment/datatrans/webhook' } = process.env;
 

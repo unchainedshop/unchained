@@ -16,7 +16,7 @@ This adapter covers the statewide rate only (including mandatory statewide local
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/product-us-sales-tax';
+import '@unchainedshop/plugins/pricing/product-us-sales-tax.js';
 ```
 
 ## How It Works

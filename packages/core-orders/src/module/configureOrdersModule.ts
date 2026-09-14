@@ -17,8 +17,7 @@ import { emit, registerEvents } from '@unchainedshop/events';
 import renameCurrencyCode from '../migrations/20250502111800-currency-code.ts';
 import normalizeOrderContactPhone from '../migrations/20260625120000-normalize-contact-phone.ts';
 
-// NOTE: Renamed from ORDER_FULLFILLED to ORDER_FULFILLED in v5.0.0
-// This is a breaking change for event subscribers
+// Subscribe to ORDER_FULFILLED; the old ORDER_FULLFILLED spelling is not emitted.
 const ORDER_EVENTS: string[] = [
   'ORDER_CHECKOUT',
   'ORDER_CONFIRMED',

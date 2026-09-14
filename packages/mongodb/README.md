@@ -14,21 +14,17 @@ npm install @unchainedshop/mongodb
 ## Usage
 
 ```typescript
-import { initDb, startDb, stopDb, generateDbObjectId } from '@unchainedshop/mongodb';
+import { initDb, stopDb, generateDbObjectId } from '@unchainedshop/mongodb';
 
-// Initialize the database connection
-const db = await initDb({
-  connectionString: 'mongodb://localhost:27017/unchained',
-});
+// Connect using MONGO_URL, or start a local MongoDB through mongodb-memory-server.
+process.env.MONGO_URL = 'mongodb://localhost:27017/unchained';
+const db = await initDb();
 
-// Start the database
-await startDb(db);
-
-// Generate a new ObjectId
+// Generate a new string ID
 const id = generateDbObjectId();
 
 // Stop the database when shutting down
-await stopDb(db);
+await stopDb();
 ```
 
 ## API Overview
@@ -37,15 +33,16 @@ await stopDb(db);
 
 | Export | Description |
 |--------|-------------|
-| `initDb` | Initialize MongoDB connection with connection string |
-| `startDb` | Start the database connection |
+| `createDatabaseResource` | Connect with automatic cleanup via `await using` |
+| `initDb` | Connect using MONGO_URL or a managed local MongoDB instance |
+| `startDb` | Start a managed local MongoDB instance and return its URL |
 | `stopDb` | Close the database connection |
 
 ### Query Utilities
 
 | Export | Description |
 |--------|-------------|
-| `generateDbObjectId` | Generate a new MongoDB ObjectId |
+| `generateDbObjectId` | Generate a random 24-digit hexadecimal string ID |
 | `generateDbFilterById` | Create a filter object for querying by ID |
 | `buildDbIndexes` | Create indexes for a collection |
 | `findPreservingIds` | Find documents while preserving ID order |
@@ -82,7 +79,7 @@ Unchained uses the following collection naming patterns:
 | Plural lowercase | `products`, `orders`, `users` | Main entity collections |
 | Underscore-separated | `product_texts`, `product_media` | Related sub-collections |
 
-**Note:** Some legacy collections may use different patterns. When creating new collections, prefer the underscore-separated pattern for sub-collections.
+**Note:** Provider collections use hyphens (`payment-providers`, `delivery-providers`, `warehousing-providers`), and the assortment cache is `assortment_productId_cache`. Follow the existing collection names when querying or migrating data.
 
 ### Index Guidelines
 
@@ -106,20 +103,20 @@ await buildDbIndexes<Product>(Products, [
 Collections using soft delete should always include a `deleted` index:
 
 ```typescript
-{ index: { deleted: 1 } }
+const deletedIndex = { index: { deleted: 1 } };
 ```
 
 Queries should filter by `deleted: null` to exclude soft-deleted documents.
 
 #### Sparse Indexes
 
-Use sparse indexes when the indexed field may be null/undefined for most documents:
+Use sparse indexes when the indexed field is absent from most documents. Documents with an explicit `null` value are still indexed:
 
 ```typescript
-{
+const sparseIndex = {
   index: { optionalField: 1 },
-  options: { sparse: true }
-}
+  options: { sparse: true },
+};
 ```
 
 Sparse indexes are smaller and more efficient when the field is rarely present.
@@ -129,7 +126,7 @@ Sparse indexes are smaller and more efficient when the field is rarely present.
 For full-text search, create compound text indexes:
 
 ```typescript
-{
+const textIndex = {
   index: {
     _id: 'text',
     name: 'text',
@@ -143,10 +140,10 @@ For full-text search, create compound text indexes:
     },
     name: 'fulltext_search',
   },
-}
+};
 ```
 
-**Note:** Text indexes are supported natively on MongoDB 4.4+, AWS DocumentDB 5.0+, and FerretDB 2.x. If you target AWS DocumentDB ≤4.0 or FerretDB 1.x, use an external search service instead (Elasticsearch, Algolia, Meilisearch).
+The built-in search relies on MongoDB text indexes and `$text` queries. Verify these operations against your chosen MongoDB-compatible backend before deploying; index creation and query compatibility are separate requirements.
 
 ## License
 

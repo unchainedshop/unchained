@@ -12,7 +12,7 @@ A sample discount adapter demonstrating automatic system-triggered discounts. Ap
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/discount-half-price';
+import '@unchainedshop/plugins/pricing/discount-half-price.js';
 ```
 
 ## How It Works

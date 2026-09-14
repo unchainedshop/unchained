@@ -12,7 +12,7 @@ Applies destination-based EU VAT to delivery fees. Only activates for orders who
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/delivery-eu-tax';
+import '@unchainedshop/plugins/pricing/delivery-eu-tax.js';
 ```
 
 ## How It Works

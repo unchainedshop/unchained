@@ -42,11 +42,11 @@ The `enrollmentNumberHashFn` is used to generate human-readable codes that can b
 ```typescript
 import { schedule } from '@unchainedshop/core';
 
-const options = {
-  modules: {
+const platformOptions = {
+  options: {
     enrollments: {
       autoSchedulingSchedule: schedule.parse.text('every 7 days'),
-      enrollmentNumberHashFn: (enrollment, index) => enrollment.sequence + 300000 + index,
+      enrollmentNumberHashFn: (enrollment, index) => String(enrollment.sequence + 300000 + index),
     },
   },
 };

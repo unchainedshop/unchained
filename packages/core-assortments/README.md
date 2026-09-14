@@ -16,12 +16,15 @@ npm install @unchainedshop/core-assortments
 ```typescript
 import { configureAssortmentsModule } from '@unchainedshop/core-assortments';
 
-const assortmentsModule = await configureAssortmentsModule({ db });
+const assortmentsModule = await configureAssortmentsModule({ db, migrationRepository });
 
 // Create an assortment
-const assortmentId = await assortmentsModule.create({
+const assortment = await assortmentsModule.create({
   slugs: ['electronics'],
   isRoot: true,
+  isActive: true,
+  sequence: 10,
+  tags: [],
 });
 
 // Find assortments
@@ -31,8 +34,9 @@ const assortments = await assortmentsModule.findAssortments({
 
 // Add product to assortment
 await assortmentsModule.products.create({
-  assortmentId,
+  assortmentId: assortment._id,
   productId: 'product-123',
+  tags: [],
 });
 ```
 
@@ -61,48 +65,52 @@ await assortmentsModule.products.create({
 | `create` | Create a new assortment |
 | `update` | Update assortment data |
 | `delete` | Soft delete an assortment |
-| `setBase` | Set base assortment |
 | `invalidateCache` | Clear assortment cache |
 
 ### Submodules
 
 #### Products (`assortments.products`)
+
 | Method | Description |
 |--------|-------------|
-| `findProducts` | Find products in assortment |
+| `findAssortmentProducts` | Find assortment-product links |
 | `create` | Add product to assortment |
 | `delete` | Remove product from assortment |
-| `reorder` | Reorder products |
+| `updateManualOrder` | Reorder products |
 
 #### Links (`assortments.links`)
+
 | Method | Description |
 |--------|-------------|
 | `findLinks` | Find assortment links (parent-child) |
 | `create` | Create link between assortments |
 | `delete` | Remove link |
-| `reorder` | Reorder child assortments |
+| `updateManualOrder` | Reorder child assortments |
 
 #### Media (`assortments.media`)
+
 | Method | Description |
 |--------|-------------|
-| `findMedia` | Find assortment media |
+| `findAssortmentMedias` | Find assortment media |
 | `create` | Add media to assortment |
 | `delete` | Remove media |
-| `reorder` | Reorder media |
+| `updateManualOrder` | Reorder media |
 
 #### Texts (`assortments.texts`)
+
 | Method | Description |
 |--------|-------------|
 | `findTexts` | Find localized texts |
 | `updateTexts` | Update assortment texts |
 
 #### Filters (`assortments.filters`)
+
 | Method | Description |
 |--------|-------------|
 | `findFilters` | Find filters for assortment |
 | `create` | Add filter to assortment |
 | `delete` | Remove filter |
-| `reorder` | Reorder filters |
+| `updateManualOrder` | Reorder filters |
 
 ### Settings
 

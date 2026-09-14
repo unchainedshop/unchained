@@ -22,10 +22,10 @@ stateDiagram-v2
 
 | Status | Description |
 |--------|-------------|
-| `null` (OPEN) | Cart - actively being modified |
+| `null` in storage / `CART` in GraphQL (OPEN) | Cart - actively being modified |
 | `PENDING` | Checkout initiated, awaiting payment confirmation |
-| `CONFIRMED` | Payment confirmed, awaiting delivery |
-| `FULFILLED` | Delivery complete, order finished |
+| `CONFIRMED` | Confirmation allowed by payment/delivery rules; may still await payment or delivery |
+| `FULFILLED` | Delivery complete and payment paid |
 | `REJECTED` | Order cancelled/rejected |
 
 ## Distributed Locking
@@ -40,7 +40,7 @@ Every time the order processor persists an order status in the database (think "
 
 ## OPEN (Cart)
 
-An order starts its life with a status of `null`, indicating it's a cart.
+An order starts with `status: null` in storage, exposed as `CART` by GraphQL.
 
 ### Key Characteristics
 
@@ -80,13 +80,14 @@ Checkout is typically triggered server-to-server from payment plugin webhooks. I
 
 When checkout is initiated, the order is validated:
 
-1. **Payment Provider**: Order must have a payment provider set
-2. **Delivery Provider**: Order must have a delivery provider set
-3. **Cart Items**: At least one order position must be present
-4. **Position Validation**: Each position is validated via `validateOrderPosition`:
+1. **Contact and Billing Address**: Both are required
+2. **Payment Provider**: Order must have a payment provider set
+3. **Delivery Provider**: Order must have a delivery provider set
+4. **Cart Items**: At least one order position must be present
+5. **Position Validation**: Each position is validated via `validateOrderPosition`:
    - By default, checks if the product is still active
    - Can be customized via platform settings
-5. **Quotation Check**: If position is a quotation proposal, the Quotation plugin verifies it's still valid
+6. **Quotation Check**: If position is a quotation proposal, the Quotation plugin verifies it's still valid
 
 :::warning No Recalculation
 The order validation step **DOES NOT** recalculate the order. Prices and delivery dates may have changed since the last cart mutation. If you need such validation, throw an error in `validateOrderPosition` and let the client application fix the problem.
@@ -183,11 +184,12 @@ The system proceeds with delivery via the `DeliveryDirector`.
 1. **Delivery Initiation**: `DeliveryDirector` calls `send()` on the delivery adapter
    - If throws: Process interrupted, order stays `CONFIRMED`
    - If returns `false`: Delivery not complete yet
-   - If returns `{ trackingNumber }`: Delivery initiated
+   - If returns `true`: Delivery can be marked delivered
+   - If returns a queued work item: Completion is handled through the worker flow
 
 2. **Position Processing**: For each order position:
    - **TokenizedProduct**: `WarehousingDirector.tokenize()` creates digital tokens/NFTs
-   - **PlanProduct**: `EnrollmentDirector.transformOrderItemToEnrollment()` creates subscriptions
+   - **PlanProduct**: the enrollment service uses `EnrollmentDirector.transformOrderItemToEnrollmentPlan()` to initialize subscriptions
    - **Quotation**: `QuotationDirector` marks linked quotations as fulfilled
 
 3. **Final Status Check**:
@@ -200,14 +202,14 @@ If any position processing throws (e.g., in a `WarehousingAdapter`), the process
 **Best Practice**: Build these actions to be asynchronous and forgiving:
 
 ```typescript
-async send() {
+const send = async () => {
   // Queue work instead of blocking
   await context.modules.worker.addWork({
     type: 'EXTERNAL_ERP_SYNC',
     input: { orderId: order._id },
   });
   return false; // Not complete yet - will be updated by worker
-}
+};
 ```
 
 This approach also makes checkouts faster!

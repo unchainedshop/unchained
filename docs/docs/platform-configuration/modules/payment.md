@@ -38,10 +38,10 @@ export interface PaymentSettingsOptions {
 ### Custom Filtering
 
 ```typescript
-const options = {
-  modules: {
+const platformOptions = {
+  options: {
     payment: {
-      filterSupportedProviders: ({ order, providers }) => {
+      filterSupportedProviders: async ({ order, providers }) => {
         return providers
           .toSorted((left, right) => {
             return new Date(left.created).getTime() - new Date(right.created).getTime();
@@ -60,11 +60,11 @@ By default we return all providers based on the creation date and don't filter a
 ### Default Provider Selection for New Orders
 
 ```typescript
-const options = {
-  modules: {
+const platformOptions = {
+  options: {
     payment: {
-      determineDefaultProvider: ({ order, providers }) => {
-        return providers?.find(({ _id }) => _id === 'this-id-always-default');
+      determineDefaultProvider: async ({ order, providers }) => {
+        return providers?.find(({ _id }) => _id === 'this-id-always-default') || null;
       },
     },
   },

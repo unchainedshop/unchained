@@ -1,6 +1,6 @@
 import { mongodb, buildDbIndexes, type TimestampFields, type LogFields } from '@unchainedshop/mongodb';
 
-// NOTE: Renamed from FULLFILLED to FULFILLED in v5.0.0
+// Use FULFILLED; the old FULLFILLED spelling is not a supported status.
 // Migration for status: db.quotations.updateMany({ status: 'FULLFILLED' }, { $set: { status: 'FULFILLED' } })
 // Migration for field: db.quotations.updateMany({ fullfilled: { $exists: true } }, { $rename: { fullfilled: 'fulfilled' } })
 export const QuotationStatus = {

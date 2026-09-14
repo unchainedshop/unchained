@@ -16,7 +16,8 @@ export type OnSubmitType = (
 ) => Promise<{ success: boolean; data?: any; error?: any }>;
 
 /**
- * @param onSubmitSuccess Return `false` to skip redirect
+ * Calls onSubmitSuccess after a successful submission with the result data or form values.
+ * The callback return value is ignored; navigation is handled by the caller.
  */
 
 const useForm = ({

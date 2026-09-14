@@ -1,3 +1,9 @@
+# Historical Benchmarks
+
+These measurements compare the versions named below. They have not been rerun
+for the current release and do not include a reproducible hardware or workload
+configuration. Treat them as historical observations, not current performance guarantees.
+
 Vendure v3.1.1:
 
 * node_modules size: 262M

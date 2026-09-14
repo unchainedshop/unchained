@@ -59,5 +59,8 @@
     "@noble/hashes": "^2.0.0",
     "@types/node": "^26.2.0",
     "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=26.8.2"
   }
 }

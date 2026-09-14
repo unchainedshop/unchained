@@ -19,8 +19,8 @@ Unchained payment plugin for Stripe, supporting payment intents, saved payment m
 **Express:**
 ```typescript
 import express from 'express';
-import '@unchainedshop/plugins/payment/stripe';
-import { stripeHandler } from '@unchainedshop/plugins/payment/stripe/handler-express';
+import '@unchainedshop/plugins/payment/stripe/index.js';
+import { stripeHandler } from '@unchainedshop/plugins/payment/stripe/handler-express.js';
 
 const { STRIPE_WEBHOOK_PATH = '/payment/stripe' } = process.env;
 
@@ -30,8 +30,8 @@ app.use(STRIPE_WEBHOOK_PATH, express.raw({ type: 'application/json' }), stripeHa
 
 **Fastify:**
 ```typescript
-import '@unchainedshop/plugins/payment/stripe';
-import { stripeHandler } from '@unchainedshop/plugins/payment/stripe/handler-fastify';
+import '@unchainedshop/plugins/payment/stripe/index.js';
+import { stripeHandler } from '@unchainedshop/plugins/payment/stripe/handler-fastify.js';
 
 const { STRIPE_WEBHOOK_PATH = '/payment/stripe' } = process.env;
 

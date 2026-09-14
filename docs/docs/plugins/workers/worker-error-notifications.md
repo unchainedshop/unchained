@@ -16,7 +16,7 @@ This plugin is part of the `base` preset and loaded automatically. Using the bas
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/worker/error-notifications';
+import '@unchainedshop/plugins/worker/error-notifications.js';
 ```
 
 ## Purpose

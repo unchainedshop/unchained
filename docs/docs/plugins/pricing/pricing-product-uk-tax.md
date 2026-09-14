@@ -12,7 +12,7 @@ Applies UK VAT rates to product prices. Only activates for deliveries into the U
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/product-uk-tax';
+import '@unchainedshop/plugins/pricing/product-uk-tax.js';
 ```
 
 ## How It Works

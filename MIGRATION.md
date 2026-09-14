@@ -4,6 +4,30 @@
 
 ---
 
+## v4.8.x Node.js Baseline: 26.8.2
+
+**Breaking runtime requirement:** all repository packages now declare Node.js
+`>=26.8.2`. Node.js 22 and 24 are no longer supported by this release. Development,
+CI, and container images pin Node.js 26.8.2; npm remains `>=10.0.0`.
+
+Update deployment runtimes before installing or upgrading, then rebuild with the
+committed dependency lockfile:
+
+```bash
+nvm install
+nvm use
+npm ci
+npm run build:packages
+npm run lint:check
+npm test
+```
+
+The optional `@parse/node-apn` dependency currently declares support for Node.js
+20, 22, and 24 only. Its Apple Wallet update-notification integration is therefore
+not declared compatible with the Node.js 26 baseline. Verify that integration
+before relying on pass update notifications; the dependency's engine metadata is
+not overridden.
+
 ## v4.8.x MCP: SDK v2, stateless `/mcp`
 
 The MCP integration migrated from the monolithic MCP TypeScript SDK v1 to the split v2 SDK. The optional peer dependency was **renamed**: `@modelcontextprotocol/sdk` is no longer supported.
@@ -95,7 +119,7 @@ If you wire the cryptopay plugin directly, `configureCryptopayModule` is now `as
 + const { cryptopay } = await cryptopayPlugin.cryptopay.configure({ db });
 ```
 
-And `CryptopayTransactionsCollection(db)` is now `async` as well — it builds indexes on startup. Users loading the plugin via the standard `connectDefaultPluginsTo*` helpers don't need to change anything.
+And `CryptopayTransactionsCollection(db)` is now `async` as well — it builds indexes on startup. Users loading the plugin through the standard module presets passed to `startPlatform` don't need to change anything.
 
 ### Breaking: WebAuthn credential requests now carry `created`
 

@@ -7,10 +7,10 @@ import {
   OrderFilterSchema,
   createManagementSchemaFromValidators,
 } from '../../utils/sharedSchemas.ts';
+import { PaymentProviderTypeEnum, DeliveryProviderTypeEnum } from '../../utils/providerSchemas.ts';
 
-export const OrderStatusEnum = z.enum(['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED']);
-export const PaymentProviderTypeEnum = z.enum(['CARD', 'INVOICE', 'GENERIC']);
-export const DeliveryProviderTypeEnum = z.enum(['PICKUP', 'SHIPPING', 'LOCAL']);
+export { OrderStatusEnum } from '../../utils/sharedSchemas.ts';
+export { PaymentProviderTypeEnum, DeliveryProviderTypeEnum } from '../../utils/providerSchemas.ts';
 export const SortDirectionEnum = z.enum(['ASC', 'DESC']);
 
 export const SortOptionInput = z.strictObject({

@@ -16,12 +16,12 @@ npm install @unchainedshop/core-products
 ```typescript
 import { configureProductsModule, ProductType } from '@unchainedshop/core-products';
 
-const productsModule = await configureProductsModule({ db });
+const productsModule = await configureProductsModule({ db, migrationRepository });
 
 // Create a product
-const productId = await productsModule.create({
-  type: ProductType.SimpleProduct,
-  slugs: ['my-product'],
+const product = await productsModule.create({
+  type: ProductType.SIMPLE_PRODUCT,
+  tags: [],
 });
 
 // Find products
@@ -31,7 +31,7 @@ const products = await productsModule.findProducts({
 });
 
 // Publish a product
-await productsModule.publish(productId);
+await productsModule.publish(product);
 ```
 
 ## API Overview
@@ -60,56 +60,62 @@ await productsModule.publish(productId);
 | `delete` | Soft delete a product |
 | `publish` | Publish a draft product |
 | `unpublish` | Unpublish a product |
-| `addAssignment` | Add product proxy assignment |
-| `removeAssignment` | Remove product assignment |
+| `assignments.addProxyAssignment` | Add product proxy assignment |
+| `assignments.removeAssignment` | Remove product assignment |
 
 ### Submodules
 
 #### Media (`products.media`)
+
 | Method | Description |
 |--------|-------------|
-| `findProductMedia` | Find media for a product |
-| `createMedia` | Add media to product |
-| `updateMedia` | Update media metadata |
-| `deleteMedia` | Remove media from product |
-| `reorderMedia` | Reorder product media |
+| `findProductMedias` | Find media for a product |
+| `create` | Add media to product |
+| `update` | Update media metadata |
+| `delete` | Remove media from product |
+| `updateManualOrder` | Reorder product media |
 
 #### Prices (`products.prices`)
+
 | Method | Description |
 |--------|-------------|
-| `findProductPrices` | Get product prices |
-| `createPrice` | Add a price |
-| `updatePrice` | Update a price |
-| `deletePrice` | Remove a price |
+| `catalogPrices` | Get catalog prices for a product |
+| `price` | Resolve a catalog price for a pricing context |
+| `catalogPriceRange` | Get the catalog price range |
+
+Update stored catalog prices through `products.update(productId, { "commerce.pricing": prices })`.
 
 #### Reviews (`products.reviews`)
+
 | Method | Description |
 |--------|-------------|
 | `findProductReviews` | Find reviews for product |
-| `createReview` | Add a review |
-| `updateReview` | Update a review |
-| `deleteReview` | Remove a review |
+| `create` | Add a review |
+| `update` | Update a review |
+| `delete` | Remove a review |
 
 #### Texts (`products.texts`)
+
 | Method | Description |
 |--------|-------------|
-| `findProductTexts` | Find localized texts |
+| `findTexts` | Find localized texts |
 | `updateTexts` | Update product texts |
 
 #### Variations (`products.variations`)
+
 | Method | Description |
 |--------|-------------|
 | `findProductVariations` | Find product variations |
-| `createVariation` | Add a variation |
-| `updateVariation` | Update a variation |
-| `deleteVariation` | Remove a variation |
+| `create` | Add a variation |
+| `update` | Update a variation |
+| `delete` | Remove a variation |
 
 ### Constants
 
 | Export | Description |
 |--------|-------------|
-| `ProductType` | Product types (SimpleProduct, ConfigurableProduct, BundleProduct, PlanProduct, TokenizedProduct) |
-| `ProductStatus` | Product status values (ACTIVE, DRAFT) |
+| `ProductType` | Product types (SIMPLE_PRODUCT, CONFIGURABLE_PRODUCT, BUNDLE_PRODUCT, PLAN_PRODUCT, TOKENIZED_PRODUCT) |
+| `ProductStatus` | Product status values (ACTIVE, DRAFT, DELETED) |
 
 ### Types
 

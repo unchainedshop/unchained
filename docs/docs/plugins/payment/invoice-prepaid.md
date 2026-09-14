@@ -12,7 +12,7 @@ Prepaid invoice payment plugin that requires payment confirmation before order f
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/payment/invoice-prepaid';
+import '@unchainedshop/plugins/payment/invoice-prepaid.js';
 ```
 
 ## Setup

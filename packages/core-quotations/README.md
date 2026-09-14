@@ -16,26 +16,30 @@ npm install @unchainedshop/core-quotations
 ```typescript
 import { configureQuotationsModule, QuotationStatus } from '@unchainedshop/core-quotations';
 
-const quotationsModule = await configureQuotationsModule({ db });
+const quotationsModule = await configureQuotationsModule({ db, migrationRepository });
 
 // Create a quotation request
-const quotationId = await quotationsModule.create({
+const quotation = await quotationsModule.create({
   userId: 'user-123',
+  currencyCode: 'CHF',
   productId: 'custom-product-456',
   configuration: [{ key: 'quantity', value: '1000' }],
 });
 
-// Propose a quote
-await quotationsModule.propose(quotationId, {
-  price: { amount: 5000, currency: 'CHF' },
-  expiresAt: new Date('2024-12-31'),
+// Store a proposal and update its status
+await quotationsModule.updateProposal(quotation._id, {
+  price: { amount: 5000, currencyCode: 'CHF' },
+  expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
 });
+await quotationsModule.updateStatus(quotation._id, { status: QuotationStatus.PROPOSED });
 
 // Find quotations
 const quotations = await quotationsModule.findQuotations({
-  status: QuotationStatus.PROPOSED,
+  userId: 'user-123',
 });
 ```
+
+For adapter validation and quotation workflows, use `services.quotations` in [`@unchainedshop/core`](../core/README.md).
 
 ## API Overview
 
@@ -52,19 +56,16 @@ const quotations = await quotationsModule.findQuotations({
 | `findQuotation` | Find quotation by ID |
 | `findQuotations` | Find quotations with filtering and pagination |
 | `count` | Count quotations matching query |
-| `quotationExists` | Check if quotation exists |
 
 ### Mutations
 
 | Method | Description |
 |--------|-------------|
 | `create` | Create a quotation request |
-| `update` | Update quotation data |
-| `delete` | Delete a quotation |
-| `propose` | Propose a quote |
-| `verify` | Verify a quotation |
-| `reject` | Reject a quotation |
-| `fulfill` | Mark quotation as fulfilled |
+| `updateContext` | Update quotation context |
+| `updateProposal` | Update proposal price, expiry, and metadata |
+| `updateStatus` | Update quotation status |
+| `deleteRequestedUserQuotations` | Delete a user's requested quotations |
 
 ### Constants
 
@@ -83,19 +84,15 @@ const quotations = await quotationsModule.findQuotations({
 | Export | Description |
 |--------|-------------|
 | `Quotation` | Quotation document type |
-| `QuotationConfiguration` | Configuration item type |
 | `QuotationsModule` | Module interface type |
 
 ## Events
 
 | Event | Description |
 |-------|-------------|
-| `QUOTATION_CREATE` | Quotation requested |
+| `QUOTATION_REQUEST_CREATE` | Quotation requested |
 | `QUOTATION_UPDATE` | Quotation updated |
 | `QUOTATION_REMOVE` | Quotation deleted |
-| `QUOTATION_PROPOSE` | Quote proposed |
-| `QUOTATION_REJECT` | Quotation rejected |
-| `QUOTATION_FULLFILL` | Quotation fulfilled |
 
 ## License
 

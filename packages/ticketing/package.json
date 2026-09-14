@@ -66,5 +66,8 @@
     "express": "^5.1.0",
     "fastify": "^5.12.1",
     "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=26.8.2"
   }
 }

@@ -12,7 +12,7 @@ Two workers for managing NFT/token ownership: one for refreshing tokens and one 
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/worker/update-token-ownership';
+import '@unchainedshop/plugins/worker/update-token-ownership.js';
 ```
 
 ## Workers Included

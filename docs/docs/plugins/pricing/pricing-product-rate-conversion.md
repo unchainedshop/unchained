@@ -12,7 +12,7 @@ Converts product prices between currencies using configured exchange rates. Only
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/product-price-rateconversion';
+import '@unchainedshop/plugins/pricing/product-price-rateconversion.js';
 ```
 
 ## How It Works

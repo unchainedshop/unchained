@@ -26,7 +26,7 @@ const { PAYPAL_CLIENT_ID, PAYPAL_SECRET, PAYPAL_ENVIRONMENT = 'sandbox' } = proc
 
 /**
  *
- * Set up and return PayPal JavaScript SDK environment with PayPal access credentials.
+ * Set up and return the PayPal server SDK client with the configured credentials.
  * This sample uses SandboxEnvironment. In production, use ProductionEnvironment.
  *
  */

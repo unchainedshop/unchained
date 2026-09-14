@@ -1,6 +1,12 @@
 # Cryptopay
 
-curl -X POST http://localhost:4010/payment/cryptopay -d '{ "secret": "secret", "address": "0xF5F72AE7fa1fa990ebaF163208Ed7aD6a3f42DEA", "blockHeight": 7469853, "amount": "50000000000000000", "decimals": 18, "currency": "ETH"}' -H 'Content-Type: application/json'
+With `CRYPTOPAY_SECRET` configured, send wallet updates in the `wallet` object:
+
+```bash
+curl -X POST http://localhost:4010/payment/cryptopay \
+  -H 'Content-Type: application/json' \
+  -d '{"secret":"your-configured-secret","wallet":{"address":"0xF5F72AE7fa1fa990ebaF163208Ed7aD6a3f42DEA","blockHeight":7469853,"amount":"50000000000000000","decimals":18,"currencyCode":"ETH"}}'
+```
 
 
 ## HD Key Requirements

@@ -19,10 +19,10 @@ This section describes how Unchained Engine can support compliance efforts. **No
 |----------|---------------|-----------------|
 | **PCI DSS SAQ-A** | Compatible | No card data storage; uses tokenization. Eligibility depends on your full deployment. |
 | **ISO 27001** | Technical Controls | Implements access control, audit logging, and cryptographic standards. ISMS policies and processes are your responsibility. |
-| **FIPS 140-3** | Algorithm Compatible | Uses FIPS-approved algorithms (PBKDF2, SHA-256/512, AES-256-GCM). Requires FIPS-validated runtime for full compliance. |
+| **FIPS 140-3** | Deployment-dependent | Review the runtime, legacy bcrypt verification, and enabled plugins; see the limitations below. |
 | **SOC 2** | Audit Support | Provides tamper-evident audit logs for evidence collection. SOC 2 audits evaluate your organization's controls, not software. |
 | **FINMA 2023/1** | Technical Controls | Audit logging, access control, and cryptography support ICT risk management requirements. The circular is principle-based; organizational controls are your responsibility. |
-| **GDPR** | Technical Measures | Audit logging supports Article 30 requirements. Data protection policies are your responsibility. |
+| **Data protection** | Technical Measures | Access controls and audit logging are available; retention and data protection policies are deployment responsibilities. |
 
 ## Cryptographic Standards
 
@@ -33,33 +33,39 @@ Unchained Engine uses modern, standards-compliant cryptography throughout:
 - **Algorithm**: PBKDF2 with SHA-512
 - **Iterations**: 300,000 (exceeds OWASP recommendation of 210,000)
 - **Salt**: 16 bytes, cryptographically random
-- **Key Length**: 256 bytes
+- **Key Length**: 256 bits (32 bytes)
 - **Implementation**: Web Crypto API (`crypto.subtle`)
+- **Legacy verification**: Existing bcrypt hashes are still supported; newly set passwords use PBKDF2
 
 ```typescript
 // packages/core-users/src/module/pbkdf2.ts
 const PBKDF2_ITERATIONS = 300000;
-const PBKDF2_KEY_LENGTH = 256;
+const PBKDF2_KEY_LENGTH = 256; // Bits, as required by crypto.subtle.deriveBits()
 const PBKDF2_SALT_LENGTH = 16;
 // Uses SHA-512 via crypto.subtle.deriveBits()
 ```
 
 ### Token Security
 
-- **Token Generation**: `crypto.randomUUID()` (CSPRNG-based, 128 bits of entropy)
+- **Token Generation**: `crypto.randomUUID()` (UUIDv4, with 122 random bits)
 - **Token Storage**: SHA-256 hashed before database storage
-- **Token Expiration**: Time-limited (1 hour for verification tokens)
-- **Single Use**: Tokens are invalidated after use
+- **Email verification/password reset**: Valid for 1 hour by default and invalidated after use; configurable through `earliestValidTokenDate`
+- **API access tokens**: Reusable, with no built-in expiration; creating a new token replaces the previous one for that user
 
 **Why SHA-256 for Tokens (not PBKDF2)?**
 
-Per [OWASP guidance](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html), slow hashing algorithms (bcrypt, PBKDF2, Argon2) are designed for low-entropy user passwords. API access tokens generated with CSPRNG have high entropy (128+ bits), making brute-force computationally infeasible regardless of hash speed. Using SHA-256 for high-entropy tokens is both secure and performant for stateless API authentication where every request must be verified.
+Password hashes use PBKDF2 to slow guessing of user-chosen passwords. API access
+tokens are generated with a cryptographic random generator and stored as SHA-256
+hashes for lookup on each authenticated request. Node's
+[`crypto.randomUUID()`](https://nodejs.org/api/crypto.html#cryptorandomuuidoptions)
+generates UUIDv4 tokens.
 
 ```typescript
 // packages/core-users/src/module/configureUsersModule.ts
 // Preferred: Server generates high-entropy token
 const result = await modules.users.createAccessToken('admin');
-console.log(result.token); // e.g., "550e8400-e29b-41d4-a716-446655440000"
+if (!result) throw new Error('Admin user not found');
+const token = result.token; // Deliver once to the intended caller; avoid logging it
 ```
 
 ### Random Number Generation
@@ -68,12 +74,13 @@ console.log(result.token); // e.g., "550e8400-e29b-41d4-a716-446655440000"
 - **Nonces**: `crypto.randomUUID()` for WebAuthn/Web3 challenges
 - **No weak RNG**: `Math.random()` is never used for security-sensitive operations
 
-### Session Encryption (Optional)
+### Session Storage
 
-- **Algorithm**: AES-256-GCM (authenticated encryption)
-- **Key Size**: 32 bytes
-- **IV Size**: 16 bytes
-- **Implementation**: kruptein library
+The Express and Fastify adapters store session data in MongoDB. The built-in
+store does not initialize a session encryption provider. `UNCHAINED_TOKEN_SECRET`
+signs session cookies; it does not encrypt session records. Configure encryption
+at the database/storage layer or supply an application-specific session store
+when encryption at rest is required.
 
 ### Payment Signature Verification
 
@@ -86,51 +93,48 @@ Full support for passwordless authentication via the WebAuthn standard, enabling
 
 ## FIPS 140-3 Compatibility
 
-Unchained Engine uses FIPS 140-3 approved algorithms and can run on FIPS-validated runtimes. **Note**: The software itself is not FIPS-validated; validation requires certification by a NIST-accredited lab. For true FIPS compliance, deploy on a FIPS-validated runtime.
+Unchained Engine is not FIPS-validated. Its new password hashes and token hashes
+use Node.js cryptographic APIs, but legacy bcrypt verification and cryptocurrency
+plugins also use JavaScript cryptography outside the OpenSSL provider. Assess the
+enabled authentication and plugin paths for your deployment.
 
 ### FIPS-Approved Algorithms Used
 
-All cryptographic operations in Unchained use FIPS 140-3 approved algorithms:
+The core Node.js cryptographic operations include:
 
 | Operation | Algorithm | FIPS Status |
 |-----------|-----------|-------------|
 | Password Hashing | PBKDF2-SHA-512 | Approved |
 | Token Hashing | SHA-256 | Approved |
-| Session Encryption | AES-256-GCM | Approved |
 | Payment Signatures | HMAC-SHA-256/512 | Approved |
 | Random Generation | CSPRNG | Approved |
 
 ### Running in FIPS Mode
 
-#### Option 1: Chainguard FIPS Image (Recommended)
+#### Option 1: A FIPS Runtime Image
 
-Use the [Chainguard node-fips](https://images.chainguard.dev/directory/image/node-fips/overview) container image which includes a FIPS-validated OpenSSL module:
-
-```dockerfile
-FROM cgr.dev/chainguard/node-fips:latest
-
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-
-# FIPS mode is enabled by default in this image
-CMD ["node", "index.js"]
-```
+Follow the runtime provider's build and deployment instructions, such as the
+[Chainguard node-fips guide](https://images.chainguard.dev/directory/image/node-fips/overview).
+Use the image and registry path available to your organization and verify its
+entrypoint before setting the application command.
 
 #### Option 2: Node.js with OpenSSL FIPS Provider
 
-Build or use a Node.js binary compiled with OpenSSL 3.x FIPS provider:
+Use a Node.js binary with a correctly installed OpenSSL FIPS provider. Follow the
+[Node.js FIPS configuration guide](https://nodejs.org/api/crypto.html#fips-mode),
+including the provider installation file and module path:
 
 ```bash
-# Enable FIPS mode via environment variable
+# Point Node at the installed provider configuration, then enable FIPS mode
 export OPENSSL_CONF=/path/to/openssl-fips.cnf
+export OPENSSL_MODULES=/path/to/openssl-modules
 node --enable-fips your-app.js
 ```
 
 Example `openssl-fips.cnf`:
 ```ini
-openssl_conf = openssl_init
+nodejs_conf = openssl_init
+.include /path/to/fipsmodule.cnf
 
 [openssl_init]
 providers = provider_sect
@@ -139,9 +143,6 @@ alg_section = algorithm_sect
 [provider_sect]
 fips = fips_sect
 base = base_sect
-
-[fips_sect]
-activate = 1
 
 [base_sect]
 activate = 1
@@ -159,25 +160,13 @@ import crypto from 'crypto';
 console.log('FIPS mode:', crypto.getFips() === 1 ? 'enabled' : 'disabled');
 ```
 
-### FIPS-Approved Algorithms
-
-All cryptographic operations in Unchained use FIPS 140-3 approved algorithms:
-
-| Operation | Algorithm | FIPS Status |
-|-----------|-----------|-------------|
-| Password Hashing | PBKDF2-SHA-512 | Approved |
-| Token Hashing | SHA-256 | Approved |
-| Session Encryption | AES-256-GCM | Approved |
-| Payment Signatures | HMAC-SHA-256/512 | Approved |
-| Random Generation | CSPRNG | Approved |
-
 ### FIPS Considerations
 
-1. **Pure PBKDF2**: Unchained uses only PBKDF2-SHA512 for password hashing, ensuring full FIPS 140-3 compatibility for all password operations.
+1. **Legacy passwords**: Newly set passwords use PBKDF2-SHA512, but `verifyPassword` still accepts legacy bcrypt hashes. Enabling Node.js FIPS mode does not change that JavaScript verification path.
 
 2. **Third-Party Libraries**: Verify that any additional npm packages you add use Node.js crypto APIs or are otherwise FIPS-compliant.
 
-3. **Cryptopay Plugin**: Uses `@noble/curves` and `@noble/hashes` for cryptocurrency operations. These implement FIPS-approved primitives but are not FIPS-certified modules.
+3. **Cryptopay Plugin**: Uses `@noble/curves` and `@noble/hashes` for cryptocurrency operations outside Node.js's OpenSSL provider. FIPS mode does not validate these implementations.
 
 ## Access Control
 
@@ -253,23 +242,23 @@ type PaymentCredentials = {
 
 ```typescript
 // Secure defaults
-{
+const cookieOptions = {
   httpOnly: true,           // Prevent XSS access
   secure: true,             // HTTPS only (unless explicitly disabled)
   sameSite: 'none',         // Configurable
-  maxAge: 604800,           // 7 days
-}
+  maxAge: 604800000,        // 7 days in milliseconds
+};
 ```
 
 ### Environment Variables
 
 | Variable | Purpose | Default |
 |----------|---------|---------|
-| `UNCHAINED_TOKEN_SECRET` | Session encryption (min 32 chars) | Required |
+| `UNCHAINED_TOKEN_SECRET` | Session cookie signing secret (min 32 chars) | Required |
 | `UNCHAINED_COOKIE_NAME` | Cookie name | `unchained_token` |
 | `UNCHAINED_COOKIE_DOMAIN` | Cookie domain restriction | - |
 | `UNCHAINED_COOKIE_SAMESITE` | SameSite attribute | `none` |
-| `UNCHAINED_COOKIE_INSECURE` | Disable secure flag | `false` |
+| `UNCHAINED_COOKIE_INSECURE` | Any non-empty value disables the secure flag | Unset (secure cookies) |
 
 ## Error Handling
 
@@ -280,13 +269,14 @@ Errors are designed to prevent information leakage:
 - **Permission errors**: "Not authorized" (no action details)
 - **Password validation**: "Too insecure" (no requirements revealed)
 - **User enumeration prevention**: Password reset returns success regardless of user existence
-- **Log sanitization**: Error objects are never logged directly; only message and name are captured
+- **Error details**: GraphQL errors may include resolver-supplied data in `extensions`; custom resolvers and logging need to avoid exposing sensitive values
 
 ## Input Validation
 
 ### ReDoS Prevention
 
-All user-supplied strings used in regular expressions are escaped to prevent Regular Expression Denial of Service (ReDoS) attacks:
+Query builders use `escapeRegexString` when treating user input as literal text
+inside a regular expression:
 
 ```typescript
 import { escapeRegexString } from '@unchainedshop/mongodb';
@@ -295,14 +285,17 @@ import { escapeRegexString } from '@unchainedshop/mongodb';
 const regex = new RegExp(escapeRegexString(userInput), 'i');
 ```
 
-The `escapeRegexString` function escapes all special regex characters (`[-/\\^$*+?.()|[\]{}]`) and includes:
-- Type validation (throws TypeError for non-strings)
-- Length limits (max 255 characters)
-- Empty string rejection
+The `escapeRegexString` function escapes regex metacharacters and throws
+`TypeError` for non-strings. It accepts empty strings and does not limit length.
+The separate `insensitiveTrimmedRegexOperator` helper trims the input, escapes it,
+rejects empty results and escaped strings longer than 255 characters, and anchors
+the resulting case-insensitive expression for exact matching.
 
 ### Query String Validation
 
-All query builder functions that accept user input for text search apply proper escaping to prevent injection attacks.
+Use the shared query helpers for literal matching and validate inputs in custom
+query builders. Escaping regex metacharacters does not impose a query timeout or
+limit how many documents a search scans.
 
 ### GraphQL Query Protection (Denial-of-Service)
 
@@ -350,7 +343,7 @@ Unchained provides append-only, tamper-evident audit logging based on the **OCSF
 - **Append-only** - No update or delete operations
 - **Tamper-evident** - SHA-256 hash chain for integrity verification
 - **File-based** - No external dependencies (MongoDB-free)
-- **HTTP push** - Optional push to OpenTelemetry Collector, Fluentd, or Vector
+- **HTTP push** - Optional JSON batches to a collector accepting `{ events: [...] }`
 - **SIEM-ready** - Direct ingestion into security monitoring tools
 - **Event integration** - Automatic capture of authentication, orders, and payments
 - **E-commerce specific** - Checkout, payment, refund, and access denied events
@@ -369,19 +362,21 @@ import {
 // Create audit log instance (file-based)
 const auditLog = createAuditLog('./audit-logs');
 
-// Or with HTTP push to collector
+// Alternatively, replace the call above with HTTP push configuration:
+/*
 const auditLog = createAuditLog({
   directory: './audit-logs',
-  collectorUrl: 'http://otel-collector:4318/v1/logs',
+  collectorUrl: 'http://audit-collector:8080/events',
   batchSize: 10,
   flushIntervalMs: 5000,
 });
+*/
 
 // Log authentication event
 await auditLog.logAuthentication({
   activity: OCSF_AUTH_ACTIVITY.LOGON,
   userId: user._id,
-  userName: user.email,
+  userName: user.emails?.[0]?.address,
   success: true,
   remoteAddress: req.ip,
   sessionId: req.sessionID,
@@ -409,7 +404,7 @@ await auditLog.logAccountChange({
 await auditLog.logAccountChange({
   activity: OCSF_ACCOUNT_ACTIVITY.CREATE,
   userId: newUser._id,
-  userName: newUser.email,
+  userName: newUser.emails?.[0]?.address,
   success: true,
 });
 
@@ -468,7 +463,7 @@ import { createAuditLog, configureAuditIntegration } from '@unchainedshop/events
 const auditLog = createAuditLog('./audit-logs');
 
 // Enable automatic event capture
-const cleanup = configureAuditIntegration(auditLog);
+configureAuditIntegration(auditLog);
 
 // Events automatically captured:
 // - API_LOGIN_TOKEN_CREATED → Authentication (LOGON)
@@ -483,8 +478,7 @@ const cleanup = configureAuditIntegration(auditLog);
 // - ORDER_PAY → API Activity (PAYMENT)
 // - And more...
 
-// On shutdown
-cleanup();
+// After stopping event producers on shutdown
 await auditLog.close();
 ```
 
@@ -584,16 +578,9 @@ scrape_configs:
             user_id: user.uid
 ```
 
-**OpenTelemetry Collector (HTTP push):**
-```yaml
-receivers:
-  otlphttp:
-    endpoint: 0.0.0.0:4318
-
-exporters:
-  elasticsearch:
-    endpoints: ["https://es:9200"]
-```
+**HTTP push:** The sender posts `application/json` with an `events` array of OCSF
+records. Configure a receiver for that payload. It is not an OTLP log request;
+forwarding to an OpenTelemetry OTLP receiver requires a translation step.
 
 ### Configuration
 
@@ -613,15 +600,19 @@ const auditLog = createAuditLog({
 In addition to persistent audit logs, Unchained emits transient events for real-time processing:
 
 - `USER_CREATE`, `USER_UPDATE`, `USER_REMOVE`
-- `USER_UPDATE_PASSWORD`, `USER_UPDATE_ROLES`
+- `USER_UPDATE_PASSWORD`, `USER_ADD_ROLES`, `USER_UPDATE_ROLE`
 - `USER_ACCOUNT_ACTION` (reset-password, verify-email, enroll-account)
 
 ```typescript
 import { emit } from '@unchainedshop/events';
 
-// Transient events (2-day TTL in MongoDB)
+// Emit to the configured event adapters
 await emit('USER_UPDATE_PASSWORD', { user });
 ```
+
+When the events module is configured, it also persists event history in MongoDB.
+Its retention is controlled by `EVENTS_TTL_SECONDS` (default: 172800, or 2 days).
+This is separate from the file-based audit log.
 
 ## Rate Limiting
 
@@ -633,18 +624,19 @@ Rate limiting should be implemented at the **reverse proxy level** (nginx, Cloud
 
 ```nginx
 # Define rate limit zones
-limit_req_zone $binary_remote_addr zone=login:10m rate=5r/m;
 limit_req_zone $binary_remote_addr zone=api:10m rate=100r/s;
 
 server {
-    # Rate limit login/auth endpoints
+    # Rate limit all requests to the GraphQL endpoint
     location /graphql {
-        # Stricter limits for mutations (detected via POST)
         limit_req zone=api burst=50 nodelay;
         proxy_pass http://unchained:4000;
     }
 }
 ```
+
+Both queries and mutations can use POST. This example limits the whole endpoint;
+per-operation login limits require a GraphQL-aware gateway or application plugin.
 
 **Cloudflare:**
 
@@ -674,9 +666,9 @@ server {
 - [ ] Set `UNCHAINED_TOKEN_SECRET` to a strong, unique value (32+ chars)
 - [ ] Enable HTTPS/TLS termination
 - [ ] Configure MongoDB with authentication and TLS
-- [ ] Enable session encryption if storing sensitive data
+- [ ] Configure encryption at rest for MongoDB/storage if storing sensitive data
 - [ ] Configure rate limiting at reverse proxy (nginx, Cloudflare, ALB)
-- [ ] Enable audit logging via `modules.auditLog` (built-in, persisted indefinitely)
+- [ ] Initialize `createAuditLog` and `configureAuditIntegration` from `@unchainedshop/events`; configure file retention and collection
 - [ ] Configure monitoring and alerting
 - [ ] Set up log aggregation for audit logs
 - [ ] Regular security updates for dependencies
@@ -723,7 +715,7 @@ npm audit fix
 
 ### Trusted Dependencies
 
-The project explicitly trusts only necessary native modules:
+The root manifest includes package-manager-specific trust metadata:
 
 ```json
 {
@@ -731,10 +723,14 @@ The project explicitly trusts only necessary native modules:
 }
 ```
 
+Do not treat `trustedDependencies` as an npm lifecycle-script allowlist. Check the
+package manager's script policy; the manifest also contains `allowScripts` entries
+for Cypress and MongoDB Memory Server.
+
 ## Further Reading
 
 - [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 - [NIST FIPS 140-3](https://csrc.nist.gov/pubs/fips/140-3/final)
-- [PCI DSS SAQ-A](https://www.pcisecuritystandards.org/documents/SAQ_A_v3.pdf)
+- [PCI SSC Document Library (current standards and SAQs)](https://www.pcisecuritystandards.org/document_library/)
 - [ISO 27001](https://www.iso.org/standard/27001)
 - [Chainguard FIPS Images](https://images.chainguard.dev/directory/image/node-fips/overview)

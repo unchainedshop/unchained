@@ -7,190 +7,73 @@ description: Custom payment pricing adapters
 
 # Payment Pricing
 
-Payment pricing adapters calculate fees for different payment methods, such as credit card processing fees or invoice handling charges.
+Payment pricing adapters calculate payment fees and adjustments. Compose an object from `PaymentPricingAdapter` and register it with `PaymentPricingDirector`, both exported by `@unchainedshop/core`.
 
-For conceptual overview, see [Pricing System](../../concepts/pricing-system.md).
-
-## Creating an Adapter
-
-Extend `PaymentPricingAdapter` and register it with `PaymentPricingDirector`:
+## Invoice Fee
 
 ```typescript
 import {
   PaymentPricingAdapter,
   PaymentPricingDirector,
-} from '@unchainedshop/core-pricing';
+  type IPaymentPricingAdapter,
+} from '@unchainedshop/core';
+import { PaymentProviderType } from '@unchainedshop/core-payment';
 
-class MyPaymentPricing extends PaymentPricingAdapter {
-  static key = 'my-shop.pricing.payment';
-  static version = '1.0.0';
-  static label = 'Custom Payment Pricing';
-  static orderIndex = 0;
+const InvoiceFee: IPaymentPricingAdapter = {
+  ...PaymentPricingAdapter,
+  key: 'my-shop.pricing.invoice-fee',
+  version: '1.0.0',
+  label: 'Invoice handling fee',
+  orderIndex: 10,
 
-  static isActivatedFor({ provider }) {
-    return true; // Activate for all payment providers
-  }
+  isActivatedFor: ({ provider, currencyCode }) =>
+    provider.type === PaymentProviderType.INVOICE && currencyCode === 'CHF',
 
-  async calculate() {
-    this.result.addItem({
-      amount: 0, // No fee
-      isTaxable: false,
-      isNetPrice: true,
-      category: 'PAYMENT',
-      meta: { adapter: this.constructor.key },
-    });
+  actions(params) {
+    const pricingAdapter = PaymentPricingAdapter.actions(params);
+    return {
+      ...pricingAdapter,
+      async calculate() {
+        pricingAdapter.resultSheet().addFee({
+          amount: 500, // CHF 5.00
+          isTaxable: true,
+          isNetPrice: true,
+          meta: { adapter: InvoiceFee.key },
+        });
+        return pricingAdapter.calculate();
+      },
+    };
+  },
+};
 
-    return super.calculate();
-  }
-}
-
-PaymentPricingDirector.registerAdapter(MyPaymentPricing);
+PaymentPricingDirector.registerAdapter(InvoiceFee);
 ```
 
-## Examples
+`addFee` assigns the `PAYMENT` category automatically. Amounts are in the selected currency's smallest unit.
 
-### Credit Card Fee
+## Percentage Fees and Discounts
 
-```typescript
-class CardFeeAdapter extends PaymentPricingAdapter {
-  static key = 'my-shop.pricing.card-fee';
-  static orderIndex = 0;
+For percentage-based fees, obtain the intended base amount through the module and pricing service APIs. Order records are plain data and have no `order.pricing()` method. Define whether the fee applies to products only, includes delivery, or includes tax before choosing the total. Avoid triggering a full order recalculation from a payment pricing adapter, which can recurse into payment pricing.
 
-  static isActivatedFor({ provider }) {
-    return provider.type === 'CARD' || provider.type === 'GENERIC';
-  }
+Select specific gateways with `provider.adapterKey`. Card gateways typically use the `GENERIC` payment provider type; there is no `CARD` provider type.
 
-  async calculate() {
-    const { order } = this.context;
-    const orderTotal = order.pricing().total().amount;
-
-    // 2.9% + 30 cents (typical card processing fee)
-    const fee = Math.round(orderTotal * 0.029 + 30);
-
-    this.result.addItem({
-      amount: fee,
-      isTaxable: false,
-      isNetPrice: true,
-      category: 'PAYMENT',
-      meta: { rate: 0.029, fixed: 30, adapter: this.constructor.key },
-    });
-
-    return super.calculate();
-  }
-}
-```
-
-### Invoice Fee
-
-```typescript
-class InvoiceFeeAdapter extends PaymentPricingAdapter {
-  static key = 'my-shop.pricing.invoice-fee';
-  static orderIndex = 0;
-
-  static isActivatedFor({ provider }) {
-    return provider.type === 'INVOICE';
-  }
-
-  async calculate() {
-    // Flat fee for invoice handling
-    this.result.addItem({
-      amount: 500, // 5.00 invoice fee
-      isTaxable: true,
-      isNetPrice: true,
-      category: 'PAYMENT',
-      meta: { type: 'invoice', adapter: this.constructor.key },
-    });
-
-    return super.calculate();
-  }
-}
-```
-
-### Discount for Bank Transfer
-
-```typescript
-class BankTransferDiscountAdapter extends PaymentPricingAdapter {
-  static key = 'my-shop.pricing.bank-discount';
-  static orderIndex = 0;
-
-  static isActivatedFor({ provider }) {
-    return provider.adapterKey === 'my-shop.payment.bank-transfer';
-  }
-
-  async calculate() {
-    const { order } = this.context;
-    const orderTotal = order.pricing().total().amount;
-
-    // 2% discount for bank transfer (no card fees)
-    const discount = Math.round(orderTotal * 0.02);
-
-    this.result.addItem({
-      amount: -discount,
-      isTaxable: true,
-      isNetPrice: true,
-      category: 'DISCOUNT',
-      meta: { type: 'bank-transfer-discount', rate: 0.02 },
-    });
-
-    return super.calculate();
-  }
-}
-```
-
-### Tiered Processing Fees
-
-```typescript
-class TieredFeeAdapter extends PaymentPricingAdapter {
-  static key = 'my-shop.pricing.tiered-fee';
-  static orderIndex = 0;
-
-  static isActivatedFor({ provider }) {
-    return provider.type === 'CARD';
-  }
-
-  async calculate() {
-    const { order } = this.context;
-    const orderTotal = order.pricing().total().amount;
-
-    // Tiered rates based on order value
-    let rate: number;
-    if (orderTotal >= 50000) {
-      rate = 0.019; // 1.9% for orders >= 500
-    } else if (orderTotal >= 10000) {
-      rate = 0.025; // 2.5% for orders >= 100
-    } else {
-      rate = 0.029; // 2.9% for smaller orders
-    }
-
-    const fee = Math.round(orderTotal * rate + 30);
-
-    this.result.addItem({
-      amount: fee,
-      isTaxable: false,
-      isNetPrice: true,
-      category: 'PAYMENT',
-      meta: { rate, orderTotal, adapter: this.constructor.key },
-    });
-
-    return super.calculate();
-  }
-}
-```
+Use `params.calculationSheet` to inspect preceding payment rows and `pricingAdapter.resultSheet()` for this adapter's contribution. `resultSheet().addDiscount()` adds a discount row and requires a `discountId`, tax flags, and amount. Return `pricingAdapter.calculate()` to pass the accumulated contribution to the director.
 
 ## Context Properties
 
-Available in `this.context`:
-
-| Property | Description |
-|----------|-------------|
-| `provider` | The payment provider |
-| `order` | The current order |
-| `modules` | Access to all modules |
-| `currency` | Currency code |
+| Property in `params.context` | Description |
+|-----------------------------|-------------|
+| `provider` | Payment provider |
+| `order` | Current order, when available |
+| `orderPayment` | Payment record when pricing an order payment |
+| `providerContext` | Context supplied for provider simulation |
+| `countryCode`, `currencyCode` | Country and currency codes |
+| `user` | User, when available |
+| `modules`, `services` | Module and service APIs |
 
 ## Related
 
-- [Pricing System](../../concepts/pricing-system.md) - Conceptual overview
-- [Product Pricing](./product-pricing.md) - Product prices
-- [Delivery Pricing](./delivery-pricing.md) - Shipping fees
-- [Payment Plugins](../order-fulfilment/fulfilment-plugins/payment.md) - Payment adapters
+- [Pricing System](../../concepts/pricing-system.md)
+- [Product Pricing](./product-pricing.md)
+- [Delivery Pricing](./delivery-pricing.md)
+- [Payment Plugins](../order-fulfilment/fulfilment-plugins/payment.md)

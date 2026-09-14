@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 ```bash
-# Development server with debugging
+# Development server (run commands from admin-ui/)
 npm run dev
 
 # Production build (includes permission generation)
@@ -14,12 +14,12 @@ npm run build
 # Generate GraphQL types from schema
 npm run codegen
 
-# Linting and formatting
-npm run lint
+# Nonmutating lint check and automatic ESLint/Prettier fixes
+npm run lint:check
 npm run format
 
 # Testing
-npm run test:e2e          # Open Cypress e2e tests
+npm run test:e2e          # Run Cypress e2e tests
 npm run test:component    # Open Cypress component tests
 npm run test:e2e-record   # Run e2e tests in CI with recording
 
@@ -31,7 +31,7 @@ npm run compile-translation  # Compile translations
 ## Architecture Overview
 
 ### Core Technologies
-- **Next.js 15** with static export mode (`output: 'export'`)
+- **Next.js 16** with static export mode (`output: 'export'`)
 - **React 19** with TypeScript
 - **Apollo Client** for GraphQL data management
 - **Tailwind CSS 4** for styling with custom `@apply` classes in `globals.css`
@@ -39,15 +39,15 @@ npm run compile-translation  # Compile translations
 - **Formik** for form management
 
 ### GraphQL Integration
-- **Schema Endpoint**: `http://localhost:4010/graphql` (configurable via `NEXT_PUBLIC_GRAPHQL_ENDPOINT`)
-- **Code Generation**: Auto-generates TypeScript types from GraphQL schema via `codegen.ts`
+- **Runtime Endpoint**: `NEXT_PUBLIC_GRAPHQL_ENDPOINT` or same-origin `/graphql`; `.env.development` points to `http://localhost:4010/graphql`
+- **Code Generation**: `npm run codegen` generates TypeScript types via `codegen.ts`, whose schema URL is set to `http://localhost:4010/graphql` independently of the runtime environment variable
 - **Type Prefix**: All generated types prefixed with `I` (e.g., `IUser`, `IProduct`)
 - **Apollo Cache**: Custom cache policies in `src/modules/apollo/utils/typepolicies.ts`
 
 ### Permission System
 - **Build-time Generation**: `generate-permissions.js` creates `public/admin-ui-permissions.js`
-- **Dynamic Loading**: Permissions loaded via `loadPermissionConfig.js` (external dependency)
-- **Role-based Access**: `useAuth` hook provides `hasRole()` function throughout components
+- **Configuration Loading**: The bundled `loadPermissionConfig.js` loads `UI_PERMISSION_CONFIG` when supplied, falling back to `default-permissions.config.js`
+- **Role-based Access**: `useAuth` provides `hasRole()` for interface visibility; the engine API enforces authorization
 
 ### Internationalization Architecture
 - **Admin UI Locales**: English (`en`) and German (`de`) in `src/i18n/`
@@ -79,16 +79,14 @@ const { products } = useProducts({ limit, offset });
 ```typescript
 const form = useForm({
   submit: onSubmit,
-  initialValues: {...},
+  initialValues: { title: "" },
   successMessage: "Saved"
 });
 ```
 
-**Styling System**: Semantic CSS classes in `globals.css` using Tailwind `@apply`
-```css
-.btn-primary {
-  @apply btn-base bg-slate-800 text-white hover:bg-slate-950;
-}
+**Styling System**: Tailwind utility classes in components, shared styles in `src/styles/globals.css`, and reusable variants in `src/modules/common/components/Button.tsx`.
+```tsx
+<Button variant="primary" size="md">Save</Button>
 ```
 
 **Component Composition**: Page → Detail → Form pattern
@@ -98,10 +96,9 @@ const form = useForm({
 
 ### Chat/Copilot Integration
 - **AI SDK React**: `@ai-sdk/react` for streaming chat
-- **Current State**: Configured for external API at `localhost:4010/chat`
+- **Endpoint**: `NEXT_PUBLIC_CHAT_URL` or same-origin `/chat`; `.env.development` points to `http://localhost:4010/chat`
 - **Storage**: Local chat history in `localStorage`
-- **Components**: Modular chat system in `src/components/chat/`
-- **Auto-Introduction**: Automatically sends "Introduce yourself and your tools to the user" when chat is empty
+- **Components**: Modular chat system in `src/modules/copilot/`
 - **Welcome State**: Shows example prompts and capabilities when no messages exist
 
 ### Build Configuration
@@ -117,7 +114,7 @@ const form = useForm({
 ## Important Notes
 
 - **Static Export Limitation**: `output: 'export'` in `next.config.js` disables API routes
-- **Permission Dependency**: Build requires external `loadPermissionConfig.js` file
+- **Permission Configuration**: The permission loader and defaults are bundled; an external override is optional
 - **GraphQL Schema**: Development assumes Unchained Commerce backend on `localhost:4010`
 - **Locale Architecture**: Two separate locale systems for Admin UI vs content translation
 - **TypeScript Configuration**: Relaxed mode (`strict: false`) for compatibility
@@ -127,6 +124,11 @@ const form = useForm({
 
 ```bash
 NEXT_PUBLIC_LOGO=url_to_logo
+NEXT_PUBLIC_GRAPHQL_ENDPOINT=http://localhost:4010/graphql
+NEXT_PUBLIC_CHAT_URL=http://localhost:4010/chat
+NEXT_PUBLIC_TEMP_FILE_UPLOAD_URL=http://localhost:4010/temp-upload
+# Optional build-time permission override:
+# UI_PERMISSION_CONFIG=/absolute/path/to/permissions.cjs
 ```
 
 <!-- BEGIN:nextjs-agent-rules -->
