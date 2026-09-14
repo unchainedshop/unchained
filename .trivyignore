@@ -1,0 +1,16 @@
+# Trivy suppressions for the CI vuln gate (.forgejo/workflows/ci.yml).
+# Auto-loaded from the scan root by `trivy fs .`.
+#
+# `image-size` (<= 2.0.2) denial-of-service advisories, pulled in TRANSITIVELY by
+# the Docusaurus docs toolchain under docs/ (@docusaurus/* -> mdx-loader ->
+# image-size). No fix is reachable without a breaking @docusaurus/* bump, and the
+# docs site is a low-risk static build. Suppressed for now — revisit when
+# Docusaurus updates its image-size pin. Both the GHSA and CVE IDs are listed so
+# the ignore matches whichever identifier Trivy reports.
+#
+#   ICNS parser infinite-loop DoS
+GHSA-w3rx-r6r6-pgpr
+CVE-2025-71330
+#   JXL / HEIF / zero-size-box parser infinite-loop DoS
+GHSA-5p2g-fcmc-qvqq
+CVE-2025-71329
