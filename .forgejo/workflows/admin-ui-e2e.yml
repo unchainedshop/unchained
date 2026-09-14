@@ -72,9 +72,12 @@ jobs:
           npx --yes wait-on@8 http://127.0.0.1:3000 -t 120000
           npx cypress run --e2e
 
+      # Forgejo's artifact API does not support upload-artifact@v4 (GHES-style),
+      # so pin to v3 and never let an artifact hiccup fail the job.
       - name: Upload screenshots on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        uses: actions/upload-artifact@v3
         with:
           name: cypress-screenshots
           path: admin-ui/cypress/screenshots
