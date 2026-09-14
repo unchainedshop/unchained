@@ -13,30 +13,28 @@
   },
   "dependencies": {
     "@docusaurus/core": "^3.7.0",
-    "@docusaurus/plugin-client-redirects": "3.9.2",
-    "@docusaurus/preset-classic": "^3.9.2",
-    "@docusaurus/theme-mermaid": "^3.9.2",
-    "@easyops-cn/docusaurus-search-local": "^0.52.2",
-    "@graphql-markdown/diff": "^1.1.13",
-    "@graphql-markdown/docusaurus": "^1.30.3",
-    "@graphql-tools/graphql-file-loader": "^8.1.8",
-    "@graphql-tools/url-loader": "^9.0.5",
+    "@docusaurus/plugin-client-redirects": "^3.10.2",
+    "@docusaurus/preset-classic": "^3.10.2",
+    "@docusaurus/theme-mermaid": "^3.10.2",
+    "@easyops-cn/docusaurus-search-local": "^0.55.3",
+    "@graphql-markdown/diff": "^1.1.18",
+    "@graphql-markdown/docusaurus": "^1.36.0",
+    "@graphql-tools/graphql-file-loader": "^8.1.20",
+    "@graphql-tools/url-loader": "^9.1.9",
     "@mdx-js/react": "^3.1.1",
-    "docusaurus-graphql-plugin": "^0.9.0",
-    "graphql": "^16.12.0",
-    "graphql-config": "^5.1.5",
+    "graphql": "^17.0.2",
     "prism-react-renderer": "^2.4.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.7.0",
     "@docusaurus/types": "^3.7.0",
-    "@graphql-markdown/types": "^1.8.0",
-    "docusaurus-plugin-llms": "^0.2.0",
-    "docusaurus-plugin-typedoc": "^1.4.2",
-    "typedoc": "^0.28.15",
-    "typedoc-plugin-markdown": "^4.9.0"
+    "@graphql-markdown/types": "^1.14.0",
+    "docusaurus-plugin-llms": "^0.6.0",
+    "docusaurus-plugin-typedoc": "^1.4.3",
+    "typedoc": "^0.28.20",
+    "typedoc-plugin-markdown": "^4.13.0"
   },
   "browserslist": {
     "production": [
@@ -53,5 +51,10 @@
   "engines": {
     "node": ">=24.0.0",
     "npm": ">=10.0.0"
+  },
+  "allowScripts": {
+    "core-js@3.50.0": true,
+    "core-js-pure@3.50.0": true,
+    "fsevents@2.3.3": true
   }
 }

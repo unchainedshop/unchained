@@ -13,6 +13,9 @@ const config = {
   favicon: 'img/favicon-32x32.png',
   markdown: {
     mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    },
   },
   themes: [
     '@docusaurus/theme-mermaid',
@@ -38,7 +41,6 @@ const config = {
   projectName: 'unchained', // Usually your repo name.
 
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'throw',
 
   headTags: [
     {
@@ -104,7 +106,7 @@ const config = {
         title: 'Unchained Engine',
         description:
           'Headless, code-first e-commerce SDK for Node.js with GraphQL API, MCP server for AI agents, and Admin UI Copilot.',
-        docsDir: 'docs',
+        docsDir: [{ path: 'docs', routeBasePath: '/' }],
         excludeImports: true,
         removeDuplicateHeadings: true,
         rootContent: `## About Unchained Engine
