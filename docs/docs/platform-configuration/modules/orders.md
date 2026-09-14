@@ -31,7 +31,7 @@ export interface OrdersSettingsOptions {
 ```
 
 - `ensureUserHasCart`: If enabled, Unchained will try to pre-generate a new cart when a user does not have one on various occasions, it's still not guaranteed that a user always has a cart. (default: false)
-- `lockOrderDuringCheckout`: If enabled, Unchained tries to use a so-called "Distributed Locking" approach with MongoDB while the checkout process is running, highly encouraged for most cases (default: true)
+- `lockOrderDuringCheckout`: If enabled, Unchained tries to use a so-called "Distributed Locking" approach with MongoDB while the checkout process is running, highly encouraged for most cases (default: false)
 
 ### Order Number Creation
 
@@ -48,10 +48,10 @@ With `validateOrderPosition` you can validate cart manipulations and throw Error
 **The default validator checks if a product is active.**
 
 ```typescript
-const options = {
-  modules: {
+const platformOptions = {
+  options: {
     orders: {
-      orderNumberHashFn: (order, index) => order.sequence + 100000 + index,
+      orderNumberHashFn: (order, index) => String(String(order.sequence + 100000 + index)),
       validateOrderPosition: async ({ order, product, quantityDiff, configuration }, context) => {
         const justOneAtATime = product.tags?.includes('one-at-a-time');
         const positions = await context.modules.orders.positions.findOrderPositions({

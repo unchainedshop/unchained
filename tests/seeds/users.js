@@ -1,5 +1,5 @@
 // Access tokens: sha256 hash of the plain token
-// Each user has a unique token for proper permission testing
+// Admin, regular-user, and guest fixtures use separate permission-test tokens
 export const ADMIN_TOKEN = 'Bearer admin-secret';
 export const USER_TOKEN = 'Bearer user-secret';
 export const GUEST_TOKEN = 'Bearer guest-secret';

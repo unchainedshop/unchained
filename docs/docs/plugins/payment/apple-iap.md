@@ -18,9 +18,9 @@ Unchained payment plugin for Apple In-App Purchase (IAP), enabling iOS apps to p
 **Express:**
 ```typescript
 import express from 'express';
-import appleTransactionsModule from '@unchainedshop/plugins/payment/apple-iap';
-import '@unchainedshop/plugins/payment/apple-iap';
-import { appleIAPHandler } from '@unchainedshop/plugins/payment/apple-iap/handler-express';
+import appleTransactionsModule from '@unchainedshop/plugins/payment/apple-iap/index.js';
+import '@unchainedshop/plugins/payment/apple-iap/index.js';
+import { appleIAPHandler } from '@unchainedshop/plugins/payment/apple-iap/handler-express.js';
 
 const { APPLE_IAP_WEBHOOK_PATH = '/payment/apple-iap' } = process.env;
 
@@ -36,9 +36,9 @@ app.use(APPLE_IAP_WEBHOOK_PATH, express.json({ strict: false }), appleIAPHandler
 
 **Fastify:**
 ```typescript
-import appleTransactionsModule from '@unchainedshop/plugins/payment/apple-iap';
-import '@unchainedshop/plugins/payment/apple-iap';
-import { appleIAPHandler } from '@unchainedshop/plugins/payment/apple-iap/handler-fastify';
+import appleTransactionsModule from '@unchainedshop/plugins/payment/apple-iap/index.js';
+import '@unchainedshop/plugins/payment/apple-iap/index.js';
+import { appleIAPHandler } from '@unchainedshop/plugins/payment/apple-iap/handler-fastify.js';
 
 const { APPLE_IAP_WEBHOOK_PATH = '/payment/apple-iap' } = process.env;
 

@@ -600,7 +600,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     async createAccessToken(username: string): Promise<{ user: User; token: string } | null> {
-      // Generate high-entropy token using CSPRNG (128 bits of entropy)
+      // Generate high-entropy token using CSPRNG (UUIDv4 has 122 random bits)
       const plainToken = crypto.randomUUID();
       // SHA-256 is appropriate for high-entropy tokens (OWASP recommendation)
       const secret = await sha256(plainToken);

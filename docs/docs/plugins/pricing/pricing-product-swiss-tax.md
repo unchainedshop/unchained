@@ -12,7 +12,7 @@ Applies Swiss VAT rates to product prices. Only activates for deliveries to Swit
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/product-swiss-tax';
+import '@unchainedshop/plugins/pricing/product-swiss-tax.js';
 ```
 
 ## How It Works

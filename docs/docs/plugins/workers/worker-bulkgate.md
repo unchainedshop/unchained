@@ -12,7 +12,7 @@ Send transactional and promotional SMS messages through the BulkGate service.
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/worker/bulkgate';
+import '@unchainedshop/plugins/worker/bulkgate.js';
 ```
 
 ## Environment Variables

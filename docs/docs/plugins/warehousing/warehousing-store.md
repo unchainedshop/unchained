@@ -7,7 +7,7 @@ description: Physical inventory management adapter
 
 # Store Warehousing Adapter
 
-The Store adapter provides basic physical inventory management for simple use cases.
+The Store adapter reports a fixed stock quantity for physical products. It does not track purchases or decrement inventory.
 
 :::info Included in Base Preset
 This plugin is part of the `base` preset and loaded automatically. Using the base preset is strongly recommended, so explicit installation is usually not required.
@@ -16,7 +16,7 @@ This plugin is part of the `base` preset and loaded automatically. Using the bas
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/warehousing/store';
+import '@unchainedshop/plugins/warehousing/store.js';
 ```
 
 ## Configuration
@@ -38,8 +38,8 @@ Configure the `name` via the Admin UI after creation.
 
 ## Features
 
-- Physical inventory management
-- Unlimited stock (returns 99999)
+- Physical-product availability
+- Fixed stock of 99999 units
 - Zero production/commissioning time
 - Simple drop-in for development
 
@@ -65,7 +65,7 @@ Configure the `name` via the Admin UI after creation.
 Always returns `true`.
 
 ### `stock()`
-Returns `99999` - effectively unlimited stock.
+Returns `99999` for every product and reference date. This is a fixed placeholder quantity, not measured inventory.
 
 ### `productionTime()`
 Returns `0` - no production delay.
@@ -80,119 +80,48 @@ Returns `0` - no preparation delay.
 Use the Store adapter during development when you don't need real inventory tracking:
 
 ```typescript
-import '@unchainedshop/plugins/warehousing/store';
+import '@unchainedshop/plugins/warehousing/store.js';
 ```
 
 ### Simple Stores
 
 For small shops where inventory is managed manually outside the system.
 
-### Drop-shipping
+## Connecting Inventory
 
-Where stock is always available from suppliers:
-
-```typescript
-const DropShipAdapter = {
-  ...StoreAdapter,
-  key: 'my-shop.dropship',
-  label: 'Drop Ship',
-
-  actions(config, context) {
-    return {
-      ...StoreAdapter.actions(config, context),
-
-      async stock() {
-        // Always available from supplier
-        return 99999;
-      },
-
-      async commissioningTime() {
-        // Supplier needs 2-3 days to ship
-        return 3 * 24 * 60 * 60 * 1000;
-      },
-    };
-  },
-};
-```
-
-## Extending for Real Inventory
-
-For production use, extend with actual inventory tracking:
+Use a custom adapter with an application-provided inventory lookup. Start with the `WarehousingAdapter` defaults so all required actions are present:
 
 ```typescript
-import {
-  WarehousingDirector,
-  WarehousingAdapter,
-  type IWarehousingAdapter
-} from '@unchainedshop/core';
+import { WarehousingAdapter, WarehousingDirector, type IWarehousingAdapter } from '@unchainedshop/core';
+import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 
-const RealStoreAdapter: IWarehousingAdapter = {
-  ...WarehousingAdapter,
-
-  key: 'my-shop.real-store',
-  label: 'Real Store Inventory',
-  version: '1.0.0',
-  orderIndex: 0,
-
-  typeSupported: (type) => type === 'PHYSICAL',
-
-  actions(configuration, context) {
-    const { product, modules } = context;
-
-    return {
-      ...WarehousingAdapter.actions(configuration, context),
-
-      isActive() {
-        return true;
-      },
-
-      configurationError() {
-        return null;
-      },
-
-      async stock() {
-        // Get stock from product warehousing data
-        const sku = product?.warehousing?.sku;
-        if (!sku) return 0;
-
-        // Query your inventory system
-        const inventory = await db.collection('inventory').findOne({ sku });
-        return inventory?.quantity || 0;
-      },
-
-      async productionTime() {
-        const currentStock = await this.stock();
-        if (currentStock > 0) return 0;
-
-        // Out of stock - check backorder time
-        const sku = product?.warehousing?.sku;
-        const supplier = await getSupplierLeadTime(sku);
-        return supplier.leadTimeDays * 24 * 60 * 60 * 1000;
-      },
-
-      async commissioningTime() {
-        // Standard picking and packing time: 4 hours
-        return 4 * 60 * 60 * 1000;
-      },
-    };
-  },
-};
-
-WarehousingDirector.registerAdapter(RealStoreAdapter);
-```
-
-## Integration with Delivery
-
-Warehousing time affects delivery estimates:
-
-```typescript
-// In delivery adapter
-async estimatedDeliveryThroughput(warehousingTime) {
-  // warehousingTime = productionTime + commissioningTime
-  const shippingTime = 3 * 24 * 60 * 60 * 1000; // 3 days shipping
-  return warehousingTime + shippingTime;
+function registerInventory(stockForSku: (sku: string, referenceDate: Date) => Promise<number>) {
+  const adapter: IWarehousingAdapter = {
+    ...WarehousingAdapter,
+    key: 'my-shop.inventory',
+    label: 'Inventory Service',
+    version: '1.0.0',
+    typeSupported: (type) => type === WarehousingProviderType.PHYSICAL,
+    actions(config, context) {
+      return {
+        ...WarehousingAdapter.actions(config, context),
+        configurationError: () => null,
+        isActive: () => true,
+        stock: async (referenceDate) => {
+          const sku = context.product?.warehousing?.sku;
+          return sku ? stockForSku(sku, referenceDate) : 0;
+        },
+        commissioningTime: async () => 4 * 60 * 60 * 1000,
+      };
+    },
+  };
+  WarehousingDirector.registerAdapter(adapter);
 }
 ```
+
+Call `registerInventory` with your inventory-system lookup. The stock plugin's context contains the product and order context; it does not expose a `modules.warehousing.findWarehouse` API. Keep persistence and external inventory operations in your own module or service.
+
+Production and commissioning times are measured in milliseconds. Delivery adapters receive the combined warehousing time through their asynchronous `estimatedDeliveryThroughput(warehousingTime)` action.
 
 ## Query Stock Status
 

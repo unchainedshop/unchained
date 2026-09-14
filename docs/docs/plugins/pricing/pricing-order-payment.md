@@ -16,7 +16,7 @@ This plugin is part of the `base` preset and loaded automatically. Using the bas
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/order-payment';
+import '@unchainedshop/plugins/pricing/order-payment.js';
 ```
 
 ## How It Works

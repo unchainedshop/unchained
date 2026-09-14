@@ -180,8 +180,7 @@ class VirtualAuthenticator {
     sign.update(data);
     const derSignature = sign.sign(privateKey);
 
-    // Convert DER signature to raw r||s format for WebAuthn
-    // Then convert back to ASN.1 as that's what the library expects
+    // Return the ASN.1 DER signature encoded as base64url for WebAuthn
     return this.toBase64url(derSignature);
   }
 

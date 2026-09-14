@@ -15,7 +15,7 @@ Unchained Engine is a modular, API-first e-commerce platform built as a monorepo
 
 ### Prerequisites
 
-- Node.js >=22 (see [.nvmrc](.nvmrc))
+- Use the Node.js version in [.nvmrc](.nvmrc) for repository development (pinned to Node.js 26.8.2); Node.js >=26.8.2 and npm >=10 are required
 - MongoDB 4.4+ (or use MongoDB Memory Server for development)
 
 ### Create a New Project
@@ -30,7 +30,9 @@ Then navigate to http://localhost:4000/ to view the welcome screen. Login with:
 
 ### Run Local AI for Copilot
 
-A minimum of 24GB VRAM is needed for this.
+Memory requirements depend on the model quantization and context size. Check the
+[model's available GGUF files](https://huggingface.co/ggml-org/gpt-oss-20b-GGUF)
+and adjust the context size to fit your hardware.
 
 ```bash
 llama-server -hf ggml-org/gpt-oss-20b-GGUF --ctx-size 0 --jinja -ub 2048 -b 2048
@@ -92,8 +94,8 @@ Foundational utilities used across all layers:
 
 | Package | Description |
 |---------|-------------|
-| [@unchainedshop/mongodb](packages/mongodb/README.md) | MongoDB database abstraction with utilities and DocumentDB compatibility |
-| [@unchainedshop/events](packages/events/README.md) | Event emitter abstraction with pluggable adapters (Redis, Kafka, etc.) |
+| [@unchainedshop/mongodb](packages/mongodb/README.md) | MongoDB database abstraction, index management, and query utilities |
+| [@unchainedshop/events](packages/events/README.md) | Event emitter abstraction with pluggable adapters and audit logging |
 | [@unchainedshop/logger](packages/logger/README.md) | High-performance logging with JSON/human-readable formats |
 | [@unchainedshop/utils](packages/utils/README.md) | Common utilities, locale helpers, and Director/Adapter base classes |
 | [@unchainedshop/roles](packages/roles/README.md) | Role-based access control (RBAC) system |
@@ -172,10 +174,14 @@ The [@unchainedshop/plugins](packages/plugins/README.md) package includes:
 ### Commands
 
 ```bash
-npm install          # Install all dependencies
+nvm install          # Install the Node.js version from .nvmrc
+nvm use
+npm ci               # Install locked workspace dependencies
+npm run build:packages # Build package imports before starting examples or tests
 npm run dev          # Start development with hot-reload
-npm run build        # Build all packages
+npm run build        # Build packages and the Admin UI
 npm test             # Run all tests
+npm run lint:check   # Check lint without changing files
 npm run lint         # Lint and fix code
 ```
 
@@ -186,6 +192,11 @@ npm run test:run:unit         # Run unit tests only
 npm run test:run:integration  # Run integration tests
 node --test path/to/test.ts   # Run a single test file
 ```
+
+Integration tests start their own Fastify server and MongoDB Memory Server through
+`tests/setup.js`. See [CONTRIBUTING.md](CONTRIBUTING.md) for running an individual
+integration test. The documentation site has a separate installation and build:
+see [docs/README.md](docs/README.md).
 
 ### Project Structure
 
@@ -212,10 +223,12 @@ See [MIGRATION.md](MIGRATION.md) for upgrade instructions between major versions
 
 ## Claude Code Integration
 
-Unchained provides a Claude Code skill to help with upgrades:
+Unchained provides a repository skill to help with upgrades. Install it in your project:
 
 ```bash
-claude "skill install https://docs.unchained.shop/skills/upgrade-unchained/SKILL.md"
+mkdir -p .claude/skills/upgrade-unchained
+curl -fsSL https://docs.unchained.shop/skills/upgrade-unchained/SKILL.md \
+  -o .claude/skills/upgrade-unchained/SKILL.md
 ```
 
 This skill guides Claude through fetching the correct migration guide, changelog, and examples for your target version.
@@ -228,35 +241,28 @@ Unchained Engine is designed for deployment in security-sensitive environments i
 
 | Standard | Status | Notes |
 |----------|--------|-------|
-| **PCI DSS SAQ-A** | Eligible | Payment tokenization, no card data storage |
-| **ISO 27001** | Aligned | Comprehensive security controls |
-| **FIPS 140-3** | Supported | Deploy with FIPS-enabled Node.js |
-| **FINMA/NIS2** | Aligned | Banking and EU requirements |
+| **Payment security** | Tokenization | Payment providers handle card data; eligibility depends on the deployment |
+| **Access control** | Implemented | Role and ownership checks in the API |
+| **Audit logging** | Available | Optional file-based logs with integrity verification |
+| **FIPS deployments** | Runtime-dependent | Review the runtime, legacy password hashes, and enabled plugins |
 
 ### Cryptographic Standards
 
 - **Password Hashing**: PBKDF2-SHA512 with 300,000 iterations
 - **Token Security**: SHA-256 hashing, cryptographically random generation
-- **Session Encryption**: AES-256-GCM (optional)
+- **Sessions**: Signed cookies with server-side MongoDB storage
 - **Payment Signatures**: HMAC-SHA-256/512
 
 ### FIPS 140-3 Mode
 
-For US federal government and regulated environments, run Unchained with FIPS-validated cryptography:
-
-```dockerfile
-# Use Chainguard FIPS image
-FROM cgr.dev/chainguard/node-fips:latest
-WORKDIR /app
-COPY . .
-CMD ["node", "index.js"]
-```
-
-Or enable FIPS mode manually:
+With a Node.js runtime configured with an OpenSSL FIPS provider, enable FIPS mode:
 
 ```bash
 node --enable-fips your-app.js
 ```
+
+See [SECURITY.md](SECURITY.md#fips-140-3-compatibility) for runtime setup and
+limitations, including legacy bcrypt verification and cryptocurrency plugins.
 
 ### API Hardening (Denial-of-Service Protection)
 
@@ -306,4 +312,4 @@ See our [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
-EUPL-1.2
+[EUPL-1.2](LICENSE)

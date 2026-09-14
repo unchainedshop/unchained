@@ -26,8 +26,8 @@ You can provide a custom list of blacklisted variables, keys which are part of t
 Example custom configuration:
 
 ```typescript
-const options = {
-  modules: {
+const platformOptions = {
+  options: {
     worker: {
       blacklistedVariables: ['secret-key'],
     },
@@ -39,7 +39,7 @@ By default, those variables are filtered: [buildObfuscatedFieldsFilter](https://
 
 ## Events
 
-The worker module does not emit events directly. Work items are processed by registered worker plugins which may emit their own events.
+The worker module emits `WORK_ADDED`, `WORK_ALLOCATED`, `WORK_FINISHED`, `WORK_DELETED`, and `WORK_RESCHEDULED`. The first four carry the work record after configured private fields are removed; rescheduling carries `{ work, oldScheduled }`. `WorkerEventTypes` is exported by `@unchainedshop/core-worker`.
 
 ## More Information
 

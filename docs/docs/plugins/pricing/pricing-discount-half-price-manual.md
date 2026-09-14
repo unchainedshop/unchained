@@ -12,7 +12,7 @@ A sample discount adapter demonstrating a percentage-based coupon code. Applies 
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/discount-half-price-manual';
+import '@unchainedshop/plugins/pricing/discount-half-price-manual.js';
 ```
 
 ## How It Works

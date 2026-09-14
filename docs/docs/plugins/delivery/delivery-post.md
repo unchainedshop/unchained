@@ -16,7 +16,7 @@ This plugin is part of the `base` preset and loaded automatically. Using the bas
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/delivery/post';
+import '@unchainedshop/plugins/delivery/post.js';
 ```
 
 ## Configuration
@@ -27,7 +27,7 @@ Create a delivery provider using this adapter:
 mutation CreatePostDelivery {
   createDeliveryProvider(deliveryProvider: {
     type: SHIPPING
-    adapterKey: "shop.unchained.delivery.post"
+    adapterKey: "shop.unchained.post"
   }) {
     _id
   }
@@ -37,7 +37,7 @@ mutation CreatePostDelivery {
 ## Features
 
 - Standard shipping delivery type
-- Configurable estimated delivery time
+- Zero delivery-throughput estimate by default
 - Auto-release support
 - No external API dependencies
 
@@ -45,9 +45,9 @@ mutation CreatePostDelivery {
 
 | Property | Value |
 |----------|-------|
-| Key | `shop.unchained.delivery.post` |
+| Key | `shop.unchained.post` |
 | Type | `SHIPPING` |
-| Auto-release | Configurable |
+| Auto-release | `true` |
 | Source | [delivery/post.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/delivery/post.ts) |
 
 ## Behavior
@@ -59,70 +59,29 @@ Always returns `true` - no configuration required.
 Returns `true` by default, allowing orders to proceed automatically after payment.
 
 ### `send()`
-Returns success without external API calls. For production integrations with actual carriers, create a custom adapter.
+Inherits `DeliveryAdapter.send()`, which returns `false`. No shipment is booked and the delivery remains open until it is completed separately or a custom adapter returns a successful result.
 
 ### `estimatedDeliveryThroughput()`
-Returns a default delivery estimate. Override in configuration or extend the adapter for custom calculations.
+Inherits the base implementation and resolves to `0` milliseconds. The Post adapter does not read a delivery-time configuration field; override the method in a custom adapter for a different estimate.
 
-## Extending for Real Carriers
+## Extending for Carriers
 
-For production use, extend or replace this adapter with carrier-specific integrations:
+Start with `DeliveryAdapter` and spread its `actions(config, context)` defaults. A custom `send()` returns `true` for completed delivery, `false` to leave it open, or a worker record for queued work. Persist tracking details separately in the order-delivery context.
 
-```typescript
-import { DeliveryDirector } from '@unchainedshop/core';
+The supplied context contains `order`, `orderDelivery`, and `modules`. Load positions with `modules.orders.positions.findOrderPositions({ orderId: order._id })`; order documents do not embed `items`. The delivery address is in `orderDelivery.context.address`, with the order billing address as a fallback.
 
-const SwissPostAdapter = {
-  key: 'ch.post.delivery',
-  label: 'Swiss Post',
-  version: '1.0.0',
-
-  typeSupported: (type) => type === 'SHIPPING',
-
-  actions(config, context) {
-    return {
-      configurationError() { return null; },
-      isActive() { return true; },
-      isAutoReleaseAllowed() { return true; },
-
-      async send() {
-        const { order } = context;
-
-        // Call Swiss Post API
-        const response = await swissPostApi.createShipment({
-          recipient: order.delivery.address,
-          weight: calculateWeight(order.items),
-        });
-
-        return {
-          trackingNumber: response.trackingNumber,
-          trackingUrl: `https://www.post.ch/track?id=${response.trackingNumber}`,
-        };
-      },
-
-      estimatedDeliveryThroughput(warehousingTime) {
-        // Swiss Post typically delivers in 1-2 days
-        return warehousingTime + (2 * 24 * 60 * 60 * 1000);
-      },
-
-      async pickUpLocations() { return []; },
-      async pickUpLocationById() { return null; },
-    };
-  },
-};
-
-DeliveryDirector.registerAdapter(SwissPostAdapter);
-```
+`estimatedDeliveryThroughput(warehousingTime)` is asynchronous and returns milliseconds. See [Custom Delivery Plugins](../../extend/order-fulfilment/fulfilment-plugins/delivery.md) for the complete contract.
 
 ## Delivery Pricing
 
 Combine with delivery pricing adapters:
 
 ```typescript
-import '@unchainedshop/plugins/pricing/order-delivery';
-import '@unchainedshop/plugins/pricing/free-delivery';
+import '@unchainedshop/plugins/pricing/order-delivery.js';
+import '@unchainedshop/plugins/pricing/free-delivery.js';
 ```
 
-Set prices via configuration or custom pricing adapter.
+Delivery pricing is configured through pricing adapters; the Post adapter itself does not read a price field.
 
 ## Related
 

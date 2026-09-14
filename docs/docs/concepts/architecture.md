@@ -50,7 +50,7 @@ The platform layer (`@unchainedshop/platform` and `@unchainedshop/api`) handles:
 
 - Loading all default core modules
 - Defining the GraphQL schema and resolvers
-- Starting the API server (Express or Fastify)
+- Preparing the GraphQL handler; your application connects it to Express or Fastify and starts listening
 - Managing the work queue for background jobs
 - Orchestrating module configuration
 - Email templates and messaging
@@ -128,16 +128,16 @@ Foundation utilities used across all layers:
 
 ## API Design Principles
 
-1. **Stateless**: All data stored in MongoDB, no server-side sessions
+1. **Shared Persistence**: Business data and HTTP sessions are stored in MongoDB; multiple server instances can use the same backing database
 2. **Guest Users**: Anonymous users use `loginAsGuest` mutation for cart operations
 3. **Server-side Logic**: All business logic remains server-side for omni-channel support
 
 ### Implications
 
 **Carts as Open Orders**
-- Carts are stored server-side as orders with `status: null`
+- Carts are stored server-side as orders with `status: null` in storage (exposed as `CART` in GraphQL)
 - Users can add items on one device and checkout on another
-- After checkout, the cart becomes an immutable order
+- After checkout, the order follows payment, confirmation, and fulfillment transitions
 
 **User Conversion**
 - Anonymous users can register without losing order history

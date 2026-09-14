@@ -15,18 +15,19 @@ npm install @unchainedshop/platform
 
 ```typescript
 import { startPlatform } from '@unchainedshop/platform';
+import { connect } from '@unchainedshop/api/express';
 import express from 'express';
 
 const app = express();
 
-const { unchainedAPI, graphqlHandler } = await startPlatform({
-  express: app,
+const engine = await startPlatform({
   options: {
     // Platform options
   },
 });
 
-// Platform is ready
+// Mount GraphQL, sessions, uploads, and optional integrations
+connect(app, engine);
 app.listen(4010);
 ```
 
@@ -40,20 +41,11 @@ app.listen(4010);
 | `runMigrations` | Run database migrations |
 | `printRuntimeConfiguration` | Log registered templates, events, and adapters |
 
-### Context Helpers
-
-| Export | Description |
-|--------|-------------|
-| `setAccessToken` | Set access token for user session |
-| `getAccessToken` | Get current access token |
-| `invalidateAccessToken` | Invalidate/logout access token |
-
 ### Templates
 
 | Export | Description |
 |--------|-------------|
 | `MessageTypes` | Available message/notification types |
-| `setupTemplates` | Register message templates |
 
 ### Message Types
 
@@ -65,65 +57,41 @@ app.listen(4010);
 | `ORDER_REJECTION` | Order rejection notifications |
 | `QUOTATION_STATUS` | Quotation status updates |
 | `ENROLLMENT_STATUS` | Subscription status updates |
-| `FORWARD_DELIVERY` | Forward delivery notifications |
-
-## Quick Start
-
-```typescript
-import express from 'express';
-import { startPlatform, MessageTypes } from '@unchainedshop/platform';
-
-const app = express();
-
-const { unchainedAPI, graphqlHandler } = await startPlatform({
-  express: app,
-  options: {
-    modules: {
-      // Module-specific configuration
-    },
-    plugins: [
-      // Plugin imports
-    ],
-  },
-  workQueueConfig: {
-    // Worker queue configuration
-  },
-});
-
-// Access unchained API
-const products = await unchainedAPI.modules.products.findProducts({});
-
-// Start server
-app.use('/graphql', graphqlHandler);
-app.listen(4010);
-```
+| `ERROR_REPORT` | Worker error reports |
 
 ## Configuration
 
+Set `EMAIL_WEBSITE_NAME`, `EMAIL_WEBSITE_URL`, `EMAIL_FROM`, `ROOT_URL`, and `UNCHAINED_TOKEN_SECRET` before starting. The token secret must contain at least 32 characters. Set `MONGO_URL` to use an external MongoDB instance.
+
+Module options are keyed directly by module name under `options`. Custom module/service implementations and bulk import handlers are top-level properties. Import plugins before starting the platform.
+
 ```typescript
-const platform = await startPlatform({
-  express: app,
+import { schedule } from '@unchainedshop/core';
+import '@unchainedshop/plugins/worker/email.js';
+
+const engine = await startPlatform({
   options: {
-    modules: {
-      orders: {
-        // Order module options
-      },
-      products: {
-        // Product module options
-      },
+    orders: {
+      // Order module settings
     },
-    services: {
-      // Custom services
-    },
-    bulkImporter: {
-      handlers: {
-        // Custom import handlers
-      },
+    products: {
+      // Product module settings
     },
   },
-  workQueueConfig: {
-    batchSize: 10,
-    pollInterval: 1000,
+  modules: {
+    // Custom module factories
+  },
+  services: {
+    // Custom service functions
+  },
+  bulkImporter: {
+    handlers: {
+      // Custom import handlers
+    },
+  },
+  workQueueOptions: {
+    batchCount: 10,
+    schedule: schedule.parse.text('every 2 seconds'),
   },
   context: (defaultResolver) => async (props, req, res) => {
     const context = await defaultResolver(props, req, res);
@@ -133,7 +101,12 @@ const platform = await startPlatform({
     };
   },
 });
+
+connect(app, engine, { adminUI: true });
+const products = await engine.unchainedAPI.modules.products.findProducts({});
 ```
+
+`startPlatform` initializes the core and GraphQL handler; call the Express or Fastify `connect` adapter to mount HTTP routes. Queue managers and migrations start during setup unless the worker is disabled. Process signal and error handlers stop the queue, dispose the GraphQL handler, and close the database during shutdown.
 
 ## Returns
 

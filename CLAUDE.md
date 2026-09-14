@@ -6,23 +6,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Development
 ```bash
-npm install          # Install all dependencies (uses npm workspaces)
+npm ci               # Install locked dependencies (uses npm workspaces)
+npm run build:packages # Build package imports before running examples or tests
 npm run dev          # Start development with hot-reload (runs kitchensink example + admin-ui + watches packages)
-npm run build        # Clean all build artifacts and rebuild packages (excludes examples)
+npm run build        # Clean/rebuild TypeScript project references and build the Admin UI
 npm run dev:watch    # Watch mode for TypeScript compilation across all packages
 ```
 
 ### Testing
 ```bash
-npm run test                    # Run all tests (unit + integration)
+npm run test                    # Run unit, integration, and Docker healthcheck regression tests
 npm run test:run:unit       # Run unit tests only (uses node --test in packages/)
-npm run test:run:integration # Run integration tests (uses kitchensink example + tests/)
+npm run test:run:integration # Run tests/ with its own Fastify platform and MongoDB Memory Server
+npm run test:run:docker     # Run healthcheck regression tests without Docker
 node --no-warnings --env-file .env.tests --env-file-if-exists=.env --test-isolation=none --test-force-exit --test-global-setup=tests/helpers.js --test --test-concurrency=1 path/to/test.ts  # Run a single integration test file (run from monorepo root directory)
 node --test path/to/test.ts # Run a single unit test file
 ```
 
 ### Package-Level Commands
-Individual packages support these scripts:
+Most packages support these scripts; check the package's `package.json`:
 ```bash
 cd packages/[package-name]
 npm run build       # Build specific package
@@ -34,7 +36,7 @@ npm run test:watch  # Run tests in watch mode
 ### Code Quality
 ```bash
 npm run lint     # Lint and fix code (ESLint + Prettier)
-npm run pretest  # Run ESLint without fixing
+npm run lint:check # Run ESLint without fixing
 ```
 
 ## Architecture Overview
@@ -80,15 +82,14 @@ Example modules: core-orders, core-products, core-users, core-payment, core-deli
 
 ### Architectural Constraints
 **IMPORTANT**: Respect layer boundaries when working with packages:
-- **DO NOT import `@unchainedshop/mongodb` outside of core-* and infrastructure packages**
-- The API layer (`@unchainedshop/api`) should only use types from core packages, never direct MongoDB imports
-- Database queries and MongoDB-specific logic belong exclusively in core-* modules
-- Higher-level packages (api, platform) should use the module APIs exposed by core packages
+- Keep domain database queries in core-* modules and use their module APIs from higher layers.
+- Infrastructure concerns also use MongoDB directly: API session storage, platform migrations, and plugin-owned collections are existing examples.
+- Prefer type-only imports when a higher layer only needs database types.
 
 ### TypeScript Configuration
 - Uses TypeScript project references (tsconfig.json) for incremental builds
 - All packages build to `lib/` directory with declaration files
-- Run `tsc --build` from root to build all packages respecting dependencies
+- Run `tsc --build` from root to build the packages and examples listed in `tsconfig.json`, respecting dependencies
 - Individual packages have isolated TypeScript configurations
 
 ### API Structure
@@ -107,8 +108,7 @@ The API package supports multiple server frameworks:
 
 ### Environment Configuration
 - Use `.env` files for local configuration
-- Default values in `.env.defaults`
-- Integration tests use `.env.tests` with `.env` as fallback
-- Node.js 22+ required (see .nvmrc)
+- Example-specific defaults are in `examples/*/.env.defaults`; there is no root `.env.defaults`
+- Integration tests load `.env.tests`, then optional root `.env` overrides; existing shell variables take precedence
+- Use Node.js 26.8.2 from `.nvmrc` for development and tests; all package engines require `>=26.8.2`
 - MongoDB required (or use MongoDB Memory Server for testing)
- No newline at end of file

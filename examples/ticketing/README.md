@@ -16,15 +16,21 @@ Example demonstrating the Unchained Engine ticketing extension for event tickets
 
 ## Prerequisites
 
-- Node.js >= 22
+- Node.js 26.8.2 or newer (26.8.2 is pinned) for repository development (see [`.nvmrc`](../../.nvmrc))
 - MongoDB (or uses in-memory MongoDB for development)
 
 ## Quick Start
 
+From the repository root:
+
 ```bash
 npm install
+npm run build
+cd examples/ticketing
 npm run dev
 ```
+
+The remaining commands run from `examples/ticketing/`.
 
 Server starts at http://localhost:4010 with:
 - GraphQL endpoint: `/graphql`
@@ -42,13 +48,13 @@ Server starts at http://localhost:4010 with:
 
 ## Environment Variables
 
-### Required
+### Server configuration
 
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `ROOT_URL` | Public URL of the server | `http://localhost:4010` |
 | `PORT` | Server port | `4010` |
-| `UNCHAINED_TOKEN_SECRET` | Secret for session tokens (min 32 chars) | - |
+| `UNCHAINED_TOKEN_SECRET` | Session secret (at least 32 characters); replace the bundled development value for deployment | Development value in `.env.defaults` |
 | `UNCHAINED_SECRET` | Secret for magic key encryption | `secret` |
 | `EMAIL_FROM` | Default sender email | `noreply@unchained.local` |
 | `EMAIL_WEBSITE_NAME` | Website name for emails | `Unchained` |
@@ -63,17 +69,16 @@ Server starts at http://localhost:4010 with:
 | `UNCHAINED_CURRENCY` | Default currency ISO code | `CHF` |
 | `UNCHAINED_LANG` | Default language ISO code | `de` |
 
-### Apple Wallet (Optional)
+### Apple Wallet push notifications (Optional)
 
 | Variable | Description |
 |----------|-------------|
-| `PASS_CERTIFICATE_PATH` | Path to Apple pass certificate (PEM) |
+| `PASS_CERTIFICATE_PATH` | Certificate and key option passed to `https.request` for Apple push notifications |
 | `PASS_CERTIFICATE_SECRET` | PEM passphrase |
-| `PASS_TEAM_ID` | Apple Developer Team ID |
 
 ## Ticketing Setup
 
-The example includes placeholder implementations for ticket rendering:
+The example includes logging placeholders for ticket rendering. They must be replaced with a readable PDF stream and wallet pass objects before ticket downloads can work:
 
 ```typescript
 setupTicketing(platform.unchainedAPI, {
@@ -85,7 +90,7 @@ setupTicketing(platform.unchainedAPI, {
 
 ### Implementing PDF Tickets
 
-```typescript
+```tsx
 import ReactPDF from '@react-pdf/renderer';
 
 const renderOrderPDF = async ({ orderId }, { modules }) => {
@@ -116,14 +121,20 @@ Run integration tests:
 npm run test:run:integration
 ```
 
-Tests are located in the `tests/` directory.
+Tests are located in the `tests/` directory. The checked-in boot callbacks only log messages, so the successful-download cases require working renderers and suitable order/token fixtures.
 
 ## Docker
 
+Build from the repository root so Docker can resolve every npm workspace from the root lockfile:
+
 ```bash
-docker build -t unchained-ticketing .
-docker run -p 4010:4010 unchained-ticketing
+docker build -f examples/ticketing/Dockerfile -t unchained-ticketing .
+docker run --rm -p 4010:3000 \
+  -e MONGO_URL=mongodb://host.docker.internal:27017/unchained \
+  unchained-ticketing
 ```
+
+`host.docker.internal` is available in Docker Desktop; for other deployments use your MongoDB service address. The image listens on container port `3000`. Configure production secrets and provider credentials as described in the [Docker deployment guide](../../docs/docs/deployment/docker.md).
 
 ## License
 

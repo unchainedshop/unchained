@@ -74,7 +74,7 @@ const useField = (props: FieldHookProps): ComputedProps => {
       (acc: string, { isValid, intlMessageDescriptor, intlMessageValues }) => {
         if (acc) return acc;
 
-        // Do not run validators if field is not required
+        // Run custom validators for every field; validateRequired is added only when required.
 
         if (!isValid(value))
           return (

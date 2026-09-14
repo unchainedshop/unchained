@@ -16,7 +16,7 @@ This plugin is part of the `base` preset and loaded automatically. Using the bas
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/events/node-event-emitter';
+import '@unchainedshop/plugins/events/node-event-emitter.js';
 ```
 
 This plugin automatically calls `setEmitAdapter()` when imported, making it the active event system immediately.

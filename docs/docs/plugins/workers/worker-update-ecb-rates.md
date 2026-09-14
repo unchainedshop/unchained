@@ -12,7 +12,7 @@ Automatically fetches and updates EUR-based currency exchange rates from the Eur
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/worker/update-ecb-rates';
+import '@unchainedshop/plugins/worker/update-ecb-rates.js';
 ```
 
 ### Peer Dependency

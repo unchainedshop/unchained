@@ -14,9 +14,11 @@ npm install @unchainedshop/ticketing
 ## Usage
 
 ```typescript
+import express from 'express';
 import { startPlatform } from '@unchainedshop/platform';
-import setupTicketing, { ticketingModules, ticketingServices } from '@unchainedshop/ticketing';
+import setupTicketing, { ticketingModules, ticketingServices, type TicketingAPI } from '@unchainedshop/ticketing';
 import { connect } from '@unchainedshop/api/express';
+import mountTicketRoutes from '@unchainedshop/ticketing/lib/express.js';
 
 const app = express();
 
@@ -25,10 +27,11 @@ const engine = await startPlatform({
   services: ticketingServices,
 });
 
-connect(app, engine, { corsOrigins: [] });
+connect(app, engine);
+mountTicketRoutes(app);
 
 // Setup ticketing with your renderers
-setupTicketing(engine.unchainedAPI, {
+setupTicketing(engine.unchainedAPI as TicketingAPI, {
   renderOrderPDF,
   createAppleWalletPass,
   createGoogleWalletPass,
@@ -56,8 +59,8 @@ setupTicketing(engine.unchainedAPI, {
 
 | Import Path | Description |
 |-------------|-------------|
-| `@unchainedshop/ticketing/express` | Express route handlers |
-| `@unchainedshop/ticketing/fastify` | Fastify route handlers |
+| `@unchainedshop/ticketing/lib/express.js` | Express route handlers |
+| `@unchainedshop/ticketing/lib/fastify.js` | Fastify route handlers |
 
 ### Renderer Types
 
@@ -74,7 +77,7 @@ setupTicketing(engine.unchainedAPI, {
 | `TicketingAPI` | Ticketing API context type |
 | `TicketingModule` | Module interface type |
 | `TicketingServices` | Services interface type |
-| `RendererTypes` | Renderer type constants |
+| `RendererTypes` | Renderer type union; runtime constants are in the template registry |
 
 ## Apple Wallet Setup
 
@@ -91,7 +94,6 @@ openssl pkcs12 -in Certificates.p12 -legacy -clcerts -out cert_and_key.pem
 ```bash
 PASS_CERTIFICATE_PATH=./cert_and_key.pem
 PASS_CERTIFICATE_SECRET=YOUR_PEM_PASSPHRASE
-PASS_TEAM_ID=SSCB95CV6U
 ```
 
 ## Renderer Implementation
@@ -115,42 +117,24 @@ export default async ({ orderId, variant }, { modules }) => {
 };
 ```
 
-### Apple Wallet Renderer
+### Wallet Renderers
 
-```typescript
-import { Template, constants } from '@walletpass/pass-js';
+Supply renderers through `setupTicketing` or `setupMobileTickets`. Each receives `(token, unchainedAPI)` and returns an object with asynchronous `asURL()` and `asBuffer()` methods. Apple passes also provide `serialNumber` and `passTypeIdentifier`. Configure issuer/team identifiers and signing credentials in your renderer.
 
-export default async (token, unchainedAPI) => {
-  const template = new Template('eventTicket', /* ... */);
-  const pass = await template.createPass(/* ... */);
-  return pass;
-};
-```
-
-### Google Wallet Renderer
-
-```typescript
-import { google } from 'googleapis';
-import jwt from 'jsonwebtoken';
-
-export default async (token, unchainedAPI) => {
-  // Upsert class and object
-  const asURL = async () => createJwtNewObjects(issuerId, productId, token.tokenSerialNumber);
-  return { asURL };
-};
-```
+The core package does not provide `createAppleWalletPass` or `createGoogleWalletPass` implementations. See the [renderer contracts](src/template-registry.ts) and the [ticketing example](../../examples/ticketing/README.md).
 
 ## Magic Key Order Access
 
-Allow users to access orders and tickets without logging in via a one-time magic key:
+Allow users to access orders and tickets without logging in via a deterministic magic key:
 
 ```typescript
 // Generate magic key
 const magicKey = await modules.passes.buildMagicKey(orderId);
 
-// Use in URL: https://my-shop/:orderId?otp=:magicKey
-// Send via x-magic-key HTTP header for API access
+// Send via the x-magic-key HTTP header for API access
 ```
+
+The key is a SHA-256 digest of the order ID and `UNCHAINED_SECRET`. It is reusable and has no built-in expiration or consumption; rotating the secret changes all generated keys.
 
 Protected actions: `viewOrder`, `updateToken`, `viewToken`
 
@@ -158,10 +142,9 @@ Protected actions: `viewOrder`, `updateToken`, `viewToken`
 
 | Variable | Description |
 |----------|-------------|
-| `UNCHAINED_SECRET` | Required for magic key encryption |
+| `UNCHAINED_SECRET` | Required for magic key derivation |
 | `PASS_CERTIFICATE_PATH` | Path to Apple pass certificate |
 | `PASS_CERTIFICATE_SECRET` | PEM passphrase |
-| `PASS_TEAM_ID` | Apple Developer Team ID |
 
 ## License
 

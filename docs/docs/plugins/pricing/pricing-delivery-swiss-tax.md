@@ -12,7 +12,7 @@ Applies Swiss VAT rates to delivery fees. Only activates for orders with deliver
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/delivery-swiss-tax';
+import '@unchainedshop/plugins/pricing/delivery-swiss-tax.js';
 ```
 
 ## How It Works

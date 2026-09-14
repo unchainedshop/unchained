@@ -12,7 +12,7 @@ Applies destination-based EU VAT to product prices for all 27 member states. Onl
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/product-eu-tax';
+import '@unchainedshop/plugins/pricing/product-eu-tax.js';
 ```
 
 ## How It Works

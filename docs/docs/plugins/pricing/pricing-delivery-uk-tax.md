@@ -12,7 +12,7 @@ Applies UK VAT rates to delivery fees. Only activates for orders with delivery a
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/delivery-uk-tax';
+import '@unchainedshop/plugins/pricing/delivery-uk-tax.js';
 ```
 
 ## How It Works

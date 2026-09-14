@@ -46,7 +46,7 @@ export function generateProducts(targetCount: number): GeneratedProduct[] {
   const products: GeneratedProduct[] = [];
   let globalIndex = 0;
 
-  // Calculate how many products per template to reach target
+  // Allocate the target across all templates; templates without matching brands are skipped.
   const productsPerTemplate = Math.ceil(targetCount / productTemplates.length);
 
   for (const template of productTemplates) {
@@ -227,6 +227,6 @@ export function generateProducts(targetCount: number): GeneratedProduct[] {
     if (products.length >= targetCount) break;
   }
 
-  // Trim to exact count
+  // Cap at the requested target; skipped templates can leave fewer products.
   return products.slice(0, targetCount);
 }

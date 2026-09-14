@@ -12,7 +12,7 @@ Applies discounts to the total value of goods (items only), excluding delivery a
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/order-items-discount';
+import '@unchainedshop/plugins/pricing/order-items-discount.js';
 ```
 
 ## How It Works

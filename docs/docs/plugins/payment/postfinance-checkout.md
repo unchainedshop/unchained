@@ -17,8 +17,8 @@ The Unchained plugin implements the PostFinance Checkout payment service with su
 **Express:**
 ```typescript
 import express from 'express';
-import '@unchainedshop/plugins/payment/postfinance-checkout';
-import { postfinanceCheckoutHandler } from '@unchainedshop/plugins/payment/postfinance-checkout/handler-express';
+import '@unchainedshop/plugins/payment/postfinance-checkout/index.js';
+import { postfinanceCheckoutHandler } from '@unchainedshop/plugins/payment/postfinance-checkout/handler-express.js';
 
 const { PFCHECKOUT_WEBHOOK_PATH = '/payment/postfinance-checkout' } = process.env;
 
@@ -27,8 +27,8 @@ app.use(PFCHECKOUT_WEBHOOK_PATH, express.json(), postfinanceCheckoutHandler);
 
 **Fastify:**
 ```typescript
-import '@unchainedshop/plugins/payment/postfinance-checkout';
-import { postfinanceCheckoutHandler } from '@unchainedshop/plugins/payment/postfinance-checkout/handler-fastify';
+import '@unchainedshop/plugins/payment/postfinance-checkout/index.js';
+import { postfinanceCheckoutHandler } from '@unchainedshop/plugins/payment/postfinance-checkout/handler-fastify.js';
 
 const { PFCHECKOUT_WEBHOOK_PATH = '/payment/postfinance-checkout' } = process.env;
 

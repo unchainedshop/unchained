@@ -12,7 +12,7 @@ Automatically generates orders from active and paused enrollments based on their
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/worker/enrollment-order-generator';
+import '@unchainedshop/plugins/worker/enrollment-order-generator.js';
 ```
 
 ## Purpose
@@ -30,7 +30,7 @@ This worker processes enrollments (subscriptions) and:
 To enable automatic order generation, configure the scheduling in your platform setup:
 
 ```typescript
-import { configureGenerateOrderAutoscheduling } from '@unchainedshop/plugins/worker/enrollment-order-generator';
+import { configureGenerateOrderAutoscheduling } from '@unchainedshop/plugins/worker/enrollment-order-generator.js';
 import { enrollmentsSettings } from '@unchainedshop/core-enrollments';
 
 // Configure the schedule (e.g., daily at midnight)

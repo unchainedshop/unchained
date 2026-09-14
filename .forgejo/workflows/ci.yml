@@ -5,7 +5,7 @@ name: CI
 # to the git.ucc.dev package registry, gated by a Trivy scan. The admin-ui image
 # has its own workflow (admin-ui.yml). The @unchainedshop/* npm packages are
 # published separately and are NOT handled here (they weren't in Jenkins either).
-# See MIGRATION.md for repo/secret setup and the GitHub push-mirror (phase 2).
+# See .forgejo/MIGRATION.md for repo/secret setup and the GitHub push-mirror (phase 2).
 
 on:
   push:
@@ -43,7 +43,7 @@ jobs:
         run: docker run --rm unchained-ci:${{ github.sha }} sh -c "npm run test || :"
 
   # Source-dependency scan across the whole monorepo (incl. admin-ui).
-  # Hard-gates on fixable HIGH/CRITICAL (ADR-003).
+  # Hard-gates on fixable HIGH/CRITICAL vulnerabilities.
   trivy:
     name: Trivy vuln gate
     runs-on: docker

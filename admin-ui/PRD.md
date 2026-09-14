@@ -3,7 +3,9 @@
 
 **Version**: 2.0
 **Date**: July 2025
-**Status**: Active Development
+**Status**: Historical requirements snapshot (July 2025)
+
+This document records requirements and targets from July 2025, including planned features. It is not a description of the current implementation. See [README.md](README.md) and [CLAUDE.md](CLAUDE.md) for current setup and architecture.
 
 ---
 

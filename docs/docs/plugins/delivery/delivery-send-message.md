@@ -12,7 +12,7 @@ The Send Message adapter provides digital delivery functionality by sending orde
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/delivery/send-message';
+import '@unchainedshop/plugins/delivery/send-message.js';
 ```
 
 ## Configuration
@@ -54,15 +54,15 @@ Configure the provider after creation using the Admin UI or by updating the prov
 |----------|-------|
 | Key | `shop.unchained.delivery.send-message` |
 | Type | `SHIPPING` |
-| Auto-release | Default (configurable) |
+| Auto-release | `true` (inherited from DeliveryAdapter) |
 | Source | [delivery/send-message.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/delivery/send-message.ts) |
 
 ## Configuration Options
 
 | Key | Description | Default |
 |-----|-------------|---------|
-| `from` | Sender email address | Empty |
-| `to` | Recipient email (overrides order email) | Empty |
+| `from` | Sender used by the default DELIVERY template | `EMAIL_FROM`, then `noreply@unchained.local`, when empty |
+| `to` | Recipient used by the default DELIVERY template | `orders@unchained.local` when empty |
 | `cc` | CC email address | Empty |
 
 ## Behavior
@@ -71,7 +71,7 @@ Configure the provider after creation using the Admin UI or by updating the prov
 Always returns `true`.
 
 ### `send()`
-Creates a worker job with the `MESSAGE` type using the `DELIVERY` template:
+Returns a worker job with the `MESSAGE` type using the `DELIVERY` template. The director marks delivery as delivered when the work is queued, before the downstream message has finished:
 
 ```typescript
 await modules.worker.addWork({
@@ -104,159 +104,34 @@ Send order details to:
 
 ## Message Template
 
-Configure the `DELIVERY` template in your messaging setup:
+The platform registers a default `DELIVERY` resolver that forwards order details to the configured recipient. It does not fall back to the customer's email address. Override it after platform initialization when delivering customer-specific content:
 
 ```typescript
 import { MessagingDirector } from '@unchainedshop/core';
 
-const DeliveryTemplate = {
-  key: 'DELIVERY',
-  label: 'Delivery Notification',
-  version: '1.0.0',
+MessagingDirector.registerTemplate('DELIVERY', async ({ orderId, config }, { modules }) => {
+  const order = await modules.orders.findOrder({ orderId });
+  if (!order) throw new Error('Order not found');
+  const settings = Object.fromEntries(config.map(({ key, value }) => [key, value]));
+  const recipient = settings.to || order.contact?.emailAddress;
+  if (!recipient) throw new Error('Delivery recipient missing');
 
-  actions: (config, context) => ({
-    async send() {
-      const { orderId, config: deliveryConfig } = context.work.input;
-      const { modules } = context;
-
-      const order = await modules.orders.findOrder({ orderId });
-      const items = await modules.orders.positions.findOrderPositions({ orderId });
-
-      // Generate download links, license keys, etc.
-      const deliveryContent = await generateDeliveryContent(items);
-
-      return {
-        to: deliveryConfig.to || order.contact.emailAddress,
-        from: deliveryConfig.from,
-        cc: deliveryConfig.cc,
-        subject: `Your order ${order.orderNumber} - Download Ready`,
-        html: renderDeliveryEmail(order, deliveryContent),
-      };
+  return [{
+    type: 'EMAIL',
+    input: {
+      from: settings.from || process.env.EMAIL_FROM,
+      to: recipient,
+      cc: settings.cc,
+      subject: `Your order ${order.orderNumber}`,
+      text: 'Your order is ready.',
     },
-  }),
-};
-
-MessagingDirector.registerAdapter(DeliveryTemplate);
+  }];
+});
 ```
 
-## Custom Digital Delivery Adapter
+Templates are resolver functions registered with `registerTemplate`; they are not director adapters. Register the `MESSAGE` and `EMAIL` worker plugins to process these jobs.
 
-For more complex digital delivery scenarios:
-
-```typescript
-import { DeliveryDirector, type IDeliveryAdapter } from '@unchainedshop/core';
-
-const DigitalDeliveryAdapter: IDeliveryAdapter = {
-  key: 'my-shop.digital-delivery',
-  label: 'Digital Product Delivery',
-  version: '1.0.0',
-
-  typeSupported: (type) => type === 'SHIPPING',
-
-  actions(config, context) {
-    return {
-      configurationError() { return null; },
-      isActive() { return true; },
-      isAutoReleaseAllowed() { return true; },
-
-      async send() {
-        const { order, modules } = context;
-        const positions = await modules.orders.positions.findOrderPositions({
-          orderId: order._id,
-        });
-
-        const deliveryItems = [];
-
-        for (const position of positions) {
-          const product = await modules.products.findProduct({
-            productId: position.productId,
-          });
-
-          if (product.type === 'SIMPLE') {
-            // Generate license key
-            const licenseKey = await generateLicenseKey(product, order);
-            deliveryItems.push({
-              product: product.texts?.title,
-              licenseKey,
-            });
-          }
-
-          if (product.meta?.downloadUrl) {
-            // Generate signed download URL
-            const downloadUrl = await generateSignedUrl(
-              product.meta.downloadUrl,
-              { expiresIn: '7d' }
-            );
-            deliveryItems.push({
-              product: product.texts?.title,
-              downloadUrl,
-            });
-          }
-        }
-
-        // Queue delivery email
-        await modules.worker.addWork({
-          type: 'MESSAGE',
-          input: {
-            template: 'DIGITAL_DELIVERY',
-            orderId: order._id,
-            deliveryItems,
-          },
-        });
-
-        return {
-          status: 'DELIVERED',
-          deliveryItems,
-        };
-      },
-
-      estimatedDeliveryThroughput() {
-        // Instant delivery
-        return 0;
-      },
-
-      async pickUpLocations() { return []; },
-      async pickUpLocationById() { return null; },
-    };
-  },
-};
-
-DeliveryDirector.registerAdapter(DigitalDeliveryAdapter);
-```
-
-## Combining with Physical Delivery
-
-For products with both physical and digital components:
-
-```typescript
-async send() {
-  const { order, modules } = context;
-  const positions = await modules.orders.positions.findOrderPositions({
-    orderId: order._id,
-  });
-
-  const digitalItems = positions.filter(p => p.product?.meta?.isDigital);
-  const physicalItems = positions.filter(p => !p.product?.meta?.isDigital);
-
-  // Handle digital items immediately
-  if (digitalItems.length > 0) {
-    await modules.worker.addWork({
-      type: 'MESSAGE',
-      input: {
-        template: 'DIGITAL_DELIVERY',
-        orderId: order._id,
-        items: digitalItems,
-      },
-    });
-  }
-
-  // Physical items handled by warehouse
-  return {
-    digitalDelivered: digitalItems.length,
-    physicalPending: physicalItems.length,
-  };
-}
-```
+For license keys or download links, load positions through `modules.orders.positions.findOrderPositions` and localized product text through `modules.products.texts.findLocalizedText`. Position documents do not embed products, and product documents do not embed localized texts. Generate digital content in your own service and pass it to the template.
 
 ## Related
 

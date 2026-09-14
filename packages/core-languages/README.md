@@ -16,7 +16,7 @@ npm install @unchainedshop/core-languages
 ```typescript
 import { configureLanguagesModule } from '@unchainedshop/core-languages';
 
-const languagesModule = await configureLanguagesModule({ db });
+const languagesModule = await configureLanguagesModule({ db, migrationRepository });
 
 // Create a language
 const languageId = await languagesModule.create({
@@ -27,7 +27,8 @@ const languageId = await languagesModule.create({
 const languages = await languagesModule.findLanguages({ includeInactive: false });
 
 // Check if language is base language
-const isBase = languagesModule.isBase(language);
+const language = await languagesModule.findLanguage({ languageId });
+const isBase = language && languagesModule.isBase(language);
 ```
 
 ## API Overview

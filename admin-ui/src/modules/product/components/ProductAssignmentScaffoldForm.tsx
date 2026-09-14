@@ -75,7 +75,7 @@ const ProductAssignmentScaffoldForm = ({
           required
           name="type"
           options={Object.fromEntries(
-            // TODO: Fix this mapping when ProductTypes is fixed
+            // Use GraphQL enum values as option values and enum keys as labels.
             Object.entries(IProductType).map(([key, value]) => [value, key]),
           )}
         />

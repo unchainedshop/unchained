@@ -17,9 +17,9 @@ This plugin is part of the `base` preset and loaded automatically. Using the bas
 
 **Express:**
 ```typescript
-import gridfsModules from '@unchainedshop/plugins/files/gridfs';
-import '@unchainedshop/plugins/files/gridfs';
-import gridfsHandler from '@unchainedshop/plugins/files/gridfs/handler-express';
+import gridfsModules from '@unchainedshop/plugins/files/gridfs/index.js';
+import '@unchainedshop/plugins/files/gridfs/index.js';
+import gridfsHandler from '@unchainedshop/plugins/files/gridfs/handler-express.js';
 
 const { GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;
 
@@ -35,9 +35,9 @@ app.use(GRIDFS_PUT_SERVER_PATH, gridfsHandler);
 
 **Fastify:**
 ```typescript
-import gridfsModules from '@unchainedshop/plugins/files/gridfs';
-import '@unchainedshop/plugins/files/gridfs';
-import gridfsHandler from '@unchainedshop/plugins/files/gridfs/handler-fastify';
+import gridfsModules from '@unchainedshop/plugins/files/gridfs/index.js';
+import '@unchainedshop/plugins/files/gridfs/index.js';
+import gridfsHandler from '@unchainedshop/plugins/files/gridfs/handler-fastify.js';
 
 const { GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;
 

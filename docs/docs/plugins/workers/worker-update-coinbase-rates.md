@@ -12,7 +12,7 @@ Automatically fetches and updates currency exchange rates from Coinbase, support
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/worker/update-coinbase-rates';
+import '@unchainedshop/plugins/worker/update-coinbase-rates.js';
 ```
 
 ## Purpose

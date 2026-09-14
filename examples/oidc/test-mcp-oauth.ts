@@ -2,10 +2,10 @@
 /**
  * Test script for MCP OAuth authentication
  *
- * This script tests the proper MCP OAuth flow using Dynamic Client Registration (RFC 7591)
+ * This script tests a Keycloak service-account flow using Dynamic Client Registration (RFC 7591)
  * followed by Client Credentials grant to obtain an access token.
  *
- * MCP Authentication Flow:
+ * Service-account test flow:
  * 1. Discover OAuth endpoints from protected resource metadata
  * 2. Dynamically register a client with the authorization server
  * 3. Use the registered client credentials to obtain an access token

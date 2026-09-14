@@ -16,7 +16,7 @@ npm install @unchainedshop/core-countries
 ```typescript
 import { configureCountriesModule } from '@unchainedshop/core-countries';
 
-const countriesModule = await configureCountriesModule({ db });
+const countriesModule = await configureCountriesModule({ db, migrationRepository });
 
 // Create a country
 const countryId = await countriesModule.create({
@@ -28,7 +28,8 @@ const countryId = await countriesModule.create({
 const countries = await countriesModule.findCountries({ includeInactive: false });
 
 // Get localized country name
-const name = countriesModule.name(country, new Intl.Locale('en'));
+const country = await countriesModule.findCountry({ countryId });
+const name = country && countriesModule.name(country, new Intl.Locale('en'));
 ```
 
 ## API Overview

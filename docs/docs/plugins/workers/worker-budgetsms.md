@@ -12,7 +12,7 @@ Send SMS messages through the BudgetSMS service with support for test mode.
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/worker/budgetsms';
+import '@unchainedshop/plugins/worker/budgetsms.js';
 ```
 
 ## Environment Variables

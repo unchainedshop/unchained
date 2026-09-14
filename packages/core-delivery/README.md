@@ -16,19 +16,20 @@ npm install @unchainedshop/core-delivery
 ```typescript
 import { configureDeliveryModule, DeliveryProviderType } from '@unchainedshop/core-delivery';
 
-const deliveryModule = await configureDeliveryModule({ db });
+const deliveryModule = await configureDeliveryModule({ db, migrationRepository });
 
 // Create a delivery provider
-const providerId = await deliveryModule.create({
+const provider = await deliveryModule.create({
   type: DeliveryProviderType.SHIPPING,
-  adapterKey: 'shop.unchained.delivery.post',
+  configuration: [],
+  adapterKey: 'shop.unchained.post',
 });
 
-// Find providers for a context
-const providers = await deliveryModule.findSupported({
-  order: orderObject,
-});
+// Find configured providers
+const providers = await deliveryModule.findProviders({});
 ```
+
+Context-dependent provider selection is available through `services.orders.supportedDeliveryProviders` in [`@unchainedshop/core`](../core/README.md).
 
 ## API Overview
 
@@ -46,8 +47,6 @@ const providers = await deliveryModule.findSupported({
 | `findProviders` | Find providers with filtering |
 | `count` | Count providers |
 | `providerExists` | Check if provider exists |
-| `findSupported` | Find providers supported for context |
-| `findInterface` | Get provider interface definition |
 
 ### Mutations
 

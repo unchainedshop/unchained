@@ -12,7 +12,7 @@ The Stores adapter provides pickup location functionality for in-store or wareho
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/delivery/stores';
+import '@unchainedshop/plugins/delivery/stores.js';
 ```
 
 ## Configuration
@@ -52,27 +52,23 @@ Configure the stores after creation via the Admin UI or update the provider's co
 
 ### `stores`
 
-JSON array of pickup locations. Each location should have:
+Set the configuration entry `stores` to a JSON-encoded array of pickup locations. Store addresses and coordinates must use the nested `address` and `geoPoint` shapes:
 
 ```json
 [
   {
     "_id": "store-1",
     "name": "Main Store",
-    "address": "123 Main Street, Zurich",
-    "city": "Zurich",
-    "postalCode": "8001",
-    "countryCode": "CH",
-    "coordinates": {
-      "lat": 47.3769,
-      "lng": 8.5417
+    "address": {
+      "addressLine": "123 Main Street",
+      "city": "Zurich",
+      "postalCode": "8001",
+      "countryCode": "CH"
     },
-    "openingHours": "Mon-Fri 9-18, Sat 9-16"
-  },
-  {
-    "_id": "store-2",
-    "name": "Airport Shop",
-    "address": "Zurich Airport, Terminal 2"
+    "geoPoint": {
+      "latitude": 47.3769,
+      "longitude": 8.5417
+    }
   }
 ]
 ```
@@ -80,10 +76,10 @@ JSON array of pickup locations. Each location should have:
 ## Behavior
 
 ### `isActive()`
-Always returns `true` - no configuration required.
+Returns `true` even when no stores are configured. Set a valid `stores` array before offering pickup locations.
 
 ### `isAutoReleaseAllowed()`
-Returns `false` - pickup orders require manual confirmation.
+Returns `false`, requiring manual order confirmation. The inherited `send()` also returns `false`, so confirming the order does not mark the pickup as delivered.
 
 ### `pickUpLocations()`
 Returns all configured store locations.
@@ -139,99 +135,37 @@ mutation SetPickupLocation($deliveryProviderId: ID!, $locationId: ID!) {
 }
 ```
 
-## Extending for Dynamic Stores
+## Dynamic Locations
 
-For stores managed in a database or external system:
-
-```typescript
-import { DeliveryDirector, type IDeliveryAdapter } from '@unchainedshop/core';
-
-const DynamicStoresAdapter: IDeliveryAdapter = {
-  key: 'my-shop.dynamic-stores',
-  label: 'Dynamic Store Locations',
-  version: '1.0.0',
-
-  typeSupported: (type) => type === 'PICKUP',
-
-  actions(config, context) {
-    const { modules } = context;
-
-    return {
-      configurationError() { return null; },
-      isActive() { return true; },
-      isAutoReleaseAllowed() { return false; },
-
-      async pickUpLocations() {
-        // Fetch from database or external API
-        const stores = await modules.warehousing.findWarehouses({
-          type: 'STORE',
-          isActive: true,
-        });
-
-        return stores.map(store => ({
-          _id: store._id,
-          name: store.name,
-          address: store.address,
-          geoPoint: store.coordinates ? {
-            latitude: store.coordinates.lat,
-            longitude: store.coordinates.lng,
-          } : null,
-        }));
-      },
-
-      async pickUpLocationById(locationId) {
-        const store = await modules.warehousing.findWarehouse({ _id: locationId });
-        if (!store) return null;
-
-        return {
-          _id: store._id,
-          name: store.name,
-          address: store.address,
-        };
-      },
-
-      async send() {
-        // Notify store about pickup order
-        const { order } = context;
-        await notifyStore(order);
-        return { status: 'READY_FOR_PICKUP' };
-      },
-
-      estimatedDeliveryThroughput(warehousingTime) {
-        // Pickup ready same day
-        return warehousingTime;
-      },
-    };
-  },
-};
-
-DeliveryDirector.registerAdapter(DynamicStoresAdapter);
-```
-
-## Store Locator Integration
-
-Combine with geolocation for nearest store finder:
+For locations managed by another service, use your own lookup function. There is no `findWarehouses` or `findWarehouse` method on the warehousing module.
 
 ```typescript
-async pickUpLocations(searchParams) {
-  const stores = await getAllStores();
+import { DeliveryAdapter, DeliveryDirector, type IDeliveryAdapter } from '@unchainedshop/core';
+import { DeliveryProviderType, type DeliveryLocation } from '@unchainedshop/core-delivery';
 
-  if (searchParams?.coordinates) {
-    // Sort by distance
-    return stores
-      .map(store => ({
-        ...store,
-        distance: calculateDistance(
-          searchParams.coordinates,
-          store.coordinates
-        ),
-      }))
-      .sort((a, b) => a.distance - b.distance);
-  }
-
-  return stores;
+function registerDynamicStores(loadStores: () => Promise<DeliveryLocation[]>) {
+  const adapter: IDeliveryAdapter = {
+    ...DeliveryAdapter,
+    key: 'my-shop.dynamic-stores',
+    label: 'Dynamic Store Locations',
+    version: '1.0.0',
+    typeSupported: (type) => type === DeliveryProviderType.PICKUP,
+    actions(config, context) {
+      return {
+        ...DeliveryAdapter.actions(config, context),
+        configurationError: () => null,
+        isActive: () => true,
+        isAutoReleaseAllowed: () => false,
+        pickUpLocations: loadStores,
+        pickUpLocationById: async (id) => (await loadStores()).find((store) => store._id === id) || null,
+      };
+    },
+  };
+  DeliveryDirector.registerAdapter(adapter);
 }
 ```
+
+Call `registerDynamicStores` with your application's lookup function. `pickUpLocations()` has no search-parameter argument; implement nearest-store sorting in your storefront or in a custom service with its own inputs.
 
 ## Related
 

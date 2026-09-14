@@ -12,7 +12,7 @@ Adds prices for product options to the pricing calculation. Used when products h
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/product-catalog-price-options';
+import '@unchainedshop/plugins/pricing/product-catalog-price-options.js';
 ```
 
 ## How It Works

@@ -16,7 +16,7 @@ This plugin is part of the `base` preset and loaded automatically. Using the bas
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/worker/zombie-killer';
+import '@unchainedshop/plugins/worker/zombie-killer.js';
 ```
 
 ## Purpose

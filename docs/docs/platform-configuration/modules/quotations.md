@@ -26,10 +26,10 @@ The `quotationNumberHashFn` is used to generate human-readable codes that can be
 ### Example Custom Configuration
 
 ```typescript
-const options = {
-  modules: {
+const platformOptions = {
+  options: {
     quotations: {
-      quotationNumberHashFn: (quotation, index) => quotation.sequence + 300000 + index,
+      quotationNumberHashFn: (quotation, index) => String(quotation.sequence + 300000 + index),
     },
   },
 };

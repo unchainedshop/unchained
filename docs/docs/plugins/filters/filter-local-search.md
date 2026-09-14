@@ -12,7 +12,7 @@ The Local Search filter provides full-text search using MongoDB's built-in text 
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/filters/local-search';
+import '@unchainedshop/plugins/filters/local-search.js';
 ```
 
 ## Adapter Details

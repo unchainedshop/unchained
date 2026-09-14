@@ -16,7 +16,7 @@ This plugin is part of the `base` preset and loaded automatically. Using the bas
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/free-delivery';
+import '@unchainedshop/plugins/pricing/free-delivery.js';
 ```
 
 ## How It Works

@@ -2,153 +2,56 @@
 sidebar_position: 20
 title: AWS EventBridge
 sidebar_label: AWS EventBridge
-description: Enterprise event system using AWS EventBridge
+description: Publish Unchained events to AWS EventBridge
 ---
 
 # AWS EventBridge
 
-Enterprise event system using AWS EventBridge for cloud-native event routing.
+The adapter sends events to an EventBridge bus with the event name as `DetailType`, the configured source as `Source`, and the JSON payload envelope as `Detail`.
 
 ## Installation
-
-```typescript
-import '@unchainedshop/plugins/events/aws-eventbridge';
-```
-
-Requires the AWS SDK as a peer dependency:
 
 ```bash
 npm install @aws-sdk/client-eventbridge
 ```
 
-:::warning Explicit Configuration Required
-Unlike the Node.js event emitter (which is the default), this plugin requires explicit configuration. You must call `setEmitAdapter()` to activate EventBridge as your event system:
-
-```typescript
-import { setEmitAdapter } from '@unchainedshop/events';
-import { EventBridgeEventEmitter } from '@unchainedshop/plugins/events/aws-eventbridge';
-
-const adapter = await EventBridgeEventEmitter({
-  region: 'us-east-1',
-  source: 'com.mycompany.unchained',
-  busName: 'unchained-events',
-});
-setEmitAdapter(adapter);
-```
-:::
-
-## Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `EVENT_BRIDGE_REGION` | - | AWS region (required) |
-| `EVENT_BRIDGE_SOURCE` | - | Event source identifier (required) |
-| `EVENT_BRIDGE_BUS_NAME` | - | EventBridge custom bus name (required) |
-| `AWS_ACCESS_KEY_ID` | - | AWS access key |
-| `AWS_SECRET_ACCESS_KEY` | - | AWS secret key |
-
-## Features
-
-- **Cloud Native**: Fully managed AWS service
-- **Event Routing**: Advanced event routing and filtering
-- **Integrations**: Native integration with AWS services
-- **Scalability**: Automatic scaling and reliability
-- **Event Replay**: Built-in event replay capabilities
-- **Schema Registry**: Event schema management
-
-## Use Cases
-
-- **AWS Environments**: Applications deployed on AWS
-- **Enterprise Integration**: Complex event routing requirements
-- **External Integrations**: Integration with AWS services and external systems
-- **Event Sourcing**: When you need event replay and auditing
-- **Compliance**: When you need audit trails and compliance features
-
-## AWS Setup
-
-### 1. Create EventBridge Custom Bus
-
-```bash
-aws events create-event-bus --name "unchained-events"
-```
-
-### 2. Create IAM Policy
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "events:PutEvents",
-        "events:List*",
-        "events:Describe*"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-```
-
-### 3. Configure Environment
+Configure the environment before importing:
 
 ```bash
 EVENT_BRIDGE_REGION=us-east-1
 EVENT_BRIDGE_SOURCE=com.mycompany.unchained
 EVENT_BRIDGE_BUS_NAME=unchained-events
-AWS_ACCESS_KEY_ID=AKIA...
-AWS_SECRET_ACCESS_KEY=...
 ```
-
-## Usage
-
-### Publishing Events
 
 ```typescript
-import { emit } from '@unchainedshop/events';
-
-// Events are sent to EventBridge
-await emit('ORDER_CREATE', {
-  orderId: '12345',
-  userId: 'user123',
-  total: 99.99
-});
+import '@unchainedshop/plugins/events/aws-eventbridge.js';
 ```
 
-### Subscribing to Events
+The import constructs the adapter and calls `setEmitAdapter()` when all three settings are present. `EventBridgeEventEmitter` is an internal factory and is not exported. The AWS SDK resolves credentials from its configured credential providers.
 
-EventBridge does not support direct subscription from the application. Use EventBridge rules to route events to:
+## Environment Variables
 
-- Lambda functions
-- SQS queues
-- SNS topics
-- API Gateway endpoints
-- Other AWS services
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `EVENT_BRIDGE_REGION` | Unset | AWS region; required for registration |
+| `EVENT_BRIDGE_SOURCE` | Unset | Event source; required for registration |
+| `EVENT_BRIDGE_BUS_NAME` | Unset | Event bus name; required for registration |
+| `AWS_ACCESS_KEY_ID` | Unset | Optional environment-based AWS access key |
+| `AWS_SECRET_ACCESS_KEY` | Unset | Optional environment-based AWS secret key |
+| `AWS_SESSION_TOKEN` | Unset | Session token when using temporary credentials |
 
-## Performance
+The destination bus must exist and the credentials must permit `events:PutEvents`.
 
-- **Pros**: Fully managed, highly scalable, feature-rich
-- **Cons**: AWS dependency, higher cost, potential latency
+## Subscription and Delivery Limits
 
-## When to Use
+This adapter publishes events only. Its `subscribe()` method throws. The standard platform registers local subscriptions during startup, so replacing its emitter with this adapter requires a custom composite adapter that preserves local subscription delivery and forwards events to EventBridge.
 
-Use AWS EventBridge for:
+Configure EventBridge rules and targets separately for remote consumers. This plugin does not provision rules, archives, replay, or a schema registry.
 
-- AWS-based deployments
-- Complex event routing needs
-- Integration with AWS services
-- Enterprise compliance requirements
-- Event sourcing and replay needs
-
-## Adapter Details
-
-| Property | Value |
-|----------|-------|
-| Source | [events/aws-eventbridge.ts](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/events/aws-eventbridge.ts) |
+Publishing is asynchronous: `emit()` does not wait for EventBridge delivery. The adapter logs rejected SDK calls and does not inspect individual entry failures in successful responses.
 
 ## Related
 
-- [Node.js Events](./events-node.md) - In-memory events
-- [Redis Events](./events-redis.md) - Distributed events with Redis
-- [Plugins Overview](./) - All available plugins
+- [Node.js Events](./events-node.md)
+- [Redis Events](./events-redis.md)
+- [Adapter source](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/events/aws-eventbridge.ts)

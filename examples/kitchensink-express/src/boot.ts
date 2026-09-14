@@ -14,7 +14,7 @@ import '@unchainedshop/plugins/pricing/discount-100-off.js';
 const logger = createLogger('express');
 const app = express();
 
-// llama-server -hf ggml-org/gpt-oss-20b-GGUF --ctx-size 0 --jinja -ub 2048 -b 2048
+// Enable chat when both an OpenAI-compatible endpoint and model are configured.
 const provider = process.env.OPENAI_BASE_URL && process.env.OPENAI_MODEL && createOpenAICompatible({
   name: 'local',
   baseURL: process.env.OPENAI_BASE_URL,

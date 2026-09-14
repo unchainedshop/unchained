@@ -283,7 +283,7 @@ EMAIL_PREVIEW=false  # or just don't set it
 
 ```bash
 # Check Node.js version
-node --version  # Should be 22+
+node --version  # Should be 26.8.2 or newer
 
 # Test MongoDB connection
 mongosh "$MONGO_URL" --eval "db.adminCommand('ping')"

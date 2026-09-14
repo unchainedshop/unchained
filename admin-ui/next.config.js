@@ -11,10 +11,7 @@ module.exports = {
   basePath: '',
   trailingSlash: true,
   assetPrefix: '',
-  // admin-ui is a nested git repo whose deps are hoisted to the monorepo root
-  // node_modules. Pin the Turbopack workspace root to the monorepo root so it
-  // can resolve `next` (and other hoisted packages) instead of stopping at the
-  // nested .git boundary.
+  // Resolve Next.js and other hoisted workspace dependencies from the monorepo root.
   turbopack: {
     root: path.resolve(__dirname, '..'),
   },

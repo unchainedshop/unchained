@@ -2,155 +2,44 @@
 sidebar_position: 22
 title: MinIO/S3 File Storage
 sidebar_label: MinIO/S3
-description: S3-compatible file storage with MinIO or Amazon S3
+description: S3-compatible file storage using the MinIO client
 ---
 
 # MinIO/S3 File Storage
 
-S3-compatible object storage using the MinIO client, supporting both MinIO and Amazon S3.
-
-:::warning GridFS Conflict
-If you're using a preset that includes GridFS (like `base` or `all`), you must unregister the GridFS adapter before using MinIO:
-
-```typescript
-import { FileDirector } from '@unchainedshop/file-upload';
-import '@unchainedshop/plugins/files/minio';
-
-// Unregister GridFS adapter loaded by presets
-FileDirector.unregisterAdapter('shop.unchained.file-upload-plugin.gridfs');
-```
-:::
+The adapter stores objects using the MinIO client and creates signed PUT URLs for direct uploads.
 
 ## Installation
 
-```typescript
-import '@unchainedshop/plugins/files/minio';
+```bash
+npm install minio
 ```
 
-The plugin automatically registers when environment variables are configured.
+```typescript
+import { FileDirector } from '@unchainedshop/file-upload';
+import '@unchainedshop/plugins/files/minio/index.js';
+
+// Remove the GridFS adapter if it was loaded by a preset.
+FileDirector.unregisterAdapter('shop.unchained.file-upload-plugin.gridfs');
+```
+
+The adapter registers on import. Configure the environment beforehand so its client can initialize. File services select the first registered file adapter.
 
 ## Environment Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `MINIO_ENDPOINT` | - | MinIO/S3 endpoint URL (required) |
-| `MINIO_BUCKET_NAME` | - | Storage bucket name (required) |
-| `MINIO_ACCESS_KEY` | - | Access key for authentication |
-| `MINIO_SECRET_KEY` | - | Secret key for authentication |
-| `MINIO_REGION` | - | Storage region |
-| `MINIO_UPLOAD_PREFIX` | - | Prefix for uploaded file paths |
-| `MINIO_STS_ENDPOINT` | - | STS endpoint for temporary credentials |
-| `AMAZON_S3_SESSION_TOKEN` | - | AWS session token for temporary access |
+| `MINIO_ENDPOINT` | Unset | Endpoint URL, including scheme and optional port; required |
+| `MINIO_BUCKET_NAME` | Unset | Existing bucket name; required |
+| `MINIO_ACCESS_KEY` | Unset | Access key |
+| `MINIO_SECRET_KEY` | Unset | Secret key |
+| `MINIO_REGION` | Unset | Storage region |
+| `MINIO_UPLOAD_PREFIX` | Empty | Object-key prefix |
+| `MINIO_STS_ENDPOINT` | Unset | STS endpoint for the MinIO assume-role provider |
+| `AMAZON_S3_SESSION_TOKEN` | Unset | Session token for temporary credentials |
+| `MINIO_WEBHOOK_AUTH_TOKEN` | Unset | Required bearer token for upload notification handlers |
 
-## Features
-
-- **S3 Compatibility**: Works with Amazon S3, MinIO, and other S3-compatible services
-- **Signed URLs**: Pre-signed URLs for secure direct uploads
-- **Streaming**: Support for streaming uploads and downloads
-- **File Management**: Upload, download, and delete operations
-- **Multi-format Support**: Automatic MIME type detection
-- **Temporary Credentials**: Support for AWS STS temporary credentials
-
-## Use Cases
-
-- **Production Deployments**: Scalable file storage
-- **CDN Integration**: Easy integration with CloudFront or other CDNs
-- **Large Files**: No file size limits
-- **High Traffic**: Optimized for file serving at scale
-
-## Usage
-
-### Upload from Stream
-
-```typescript
-const fileData = await fileAdapter.uploadFileFromStream(
-  'product-images',
-  fileStream
-);
-```
-
-### Upload from URL
-
-```typescript
-const fileData = await fileAdapter.uploadFileFromURL(
-  'product-images',
-  {
-    fileLink: 'https://example.com/image.jpg',
-    fileName: 'product-image.jpg'
-  }
-);
-```
-
-### Create Signed Upload URL
-
-```typescript
-const signedUrl = await fileAdapter.createSignedURL(
-  'product-images',
-  'new-image.jpg'
-);
-```
-
-### Download File
-
-```typescript
-const downloadUrl = await fileAdapter.createDownloadURL(file);
-const stream = await fileAdapter.createDownloadStream({ fileId: file._id });
-```
-
-## Express Handler
-
-```typescript
-import { createMinioExpressHandler } from '@unchainedshop/plugins/files/minio/handler-express';
-
-app.use('/files', createMinioExpressHandler());
-```
-
-## Fastify Handler
-
-```typescript
-import { createMinioFastifyHandler } from '@unchainedshop/plugins/files/minio/handler-fastify';
-
-fastify.register(createMinioFastifyHandler);
-```
-
-## Local MinIO Setup
-
-### Docker
-
-```bash
-docker run -d \
-  --name minio \
-  -p 9000:9000 \
-  -p 9001:9001 \
-  -e MINIO_ROOT_USER=minioadmin \
-  -e MINIO_ROOT_PASSWORD=minioadmin \
-  minio/minio server /data --console-address ":9001"
-```
-
-### Docker Compose
-
-```yaml
-version: '3'
-services:
-  minio:
-    image: minio/minio
-    command: server /data --console-address ":9001"
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-    volumes:
-      - minio_data:/data
-
-volumes:
-  minio_data:
-```
-
-## Configuration Examples
-
-### Local MinIO
+Example for a local server with an existing `uploads` bucket:
 
 ```bash
 MINIO_ENDPOINT=http://localhost:9000
@@ -159,60 +48,75 @@ MINIO_ACCESS_KEY=minioadmin
 MINIO_SECRET_KEY=minioadmin
 ```
 
-### AWS S3
+## File Operations
 
-```bash
-MINIO_ENDPOINT=https://s3.amazonaws.com
-MINIO_BUCKET_NAME=your-bucket
-MINIO_ACCESS_KEY=AKIA...
-MINIO_SECRET_KEY=...
-MINIO_REGION=us-east-1
+The adapter methods handle object storage. Use the core file services when a file also needs metadata persisted and upload callbacks invoked.
+
+```typescript
+import { MinioAdapter } from '@unchainedshop/plugins/files/minio/index.js';
+
+// rawFile uses the same shape as a GraphQL multipart upload.
+const rawFile = Promise.resolve({
+  filename: 'product-image.jpg',
+  mimetype: 'image/jpeg',
+  createReadStream: () => fileStream,
+});
+const uploaded = await MinioAdapter.uploadFileFromStream('product-images', rawFile, unchainedAPI);
+
+const imported = await MinioAdapter.uploadFileFromURL('product-images', {
+  fileLink: 'https://example.com/image.jpg',
+  fileName: 'product-image.jpg',
+}, unchainedAPI);
+
+const signed = await MinioAdapter.createSignedURL('product-images', 'new-image.jpg', unchainedAPI);
+// Upload directly to signed.putURL before signed.expiryDate.
+
+// file is a stored file document containing _id and path.
+const downloadUrl = await MinioAdapter.createDownloadURL(file);
+const stream = await MinioAdapter.createDownloadStream(file, unchainedAPI);
 ```
 
-## Path Structure
+Downloads return the object's public URL. Private download URLs are not implemented: `createDownloadURL` throws for files with `meta.isPrivate`.
 
-Files are organized using the following structure:
+## Upload Notifications
 
+The Express and Fastify handlers accept `s3:ObjectCreated:Put` notifications. Requests must include `Authorization: Bearer <MINIO_WEBHOOK_AUTH_TOKEN>`. The handlers need the request's Unchained context and call `services.files.linkFile` to complete the upload.
+
+Mount the handler through `connect()` so the context is available:
+
+```typescript
+import express from 'express';
+import { connect } from '@unchainedshop/api/express';
+import minioHandler from '@unchainedshop/plugins/files/minio/handler-express.js';
+
+connect(app, engine, {
+  initPluginMiddlewares(app) {
+    app.post('/files/minio', express.json(), minioHandler);
+  },
+});
 ```
-bucket/
-  └── [MINIO_UPLOAD_PREFIX]/
-      └── [directoryName]/
-          └── [hashedFilename]
+
+```typescript
+import { connect } from '@unchainedshop/api/fastify';
+import minioHandler from '@unchainedshop/plugins/files/minio/handler-fastify.js';
+
+connect(fastify, engine, {
+  initPluginMiddlewares(app) {
+    app.post('/files/minio', minioHandler);
+  },
+});
 ```
 
-## Security
+Configure the object store to send notifications to the matching endpoint. These handlers are default exports, not router factories.
 
-- **Pre-signed URLs**: Secure uploads without exposing credentials
-- **Hashed Filenames**: Automatic filename hashing
-- **Expiration**: Configurable URL expiration times
-- **Bucket Policies**: Configure appropriate S3 bucket policies
+## Object Keys and Limits
 
-## Production Considerations
+Uploads use `[MINIO_UPLOAD_PREFIX]/[directoryName]/[hashedFilename]`, omitting empty segments. Configure bucket access and upload CORS on the object store.
 
-- **CDN Integration**: Use CloudFront or similar CDN
-- **Regional Deployment**: Choose appropriate regions
-- **CORS**: Set up CORS for frontend uploads
-- **Encryption**: Enable server-side encryption
-
-## GridFS vs MinIO/S3
-
-| Feature | GridFS | MinIO/S3 |
-|---------|--------|----------|
-| External Service | No | Yes |
-| Scalability | MongoDB limits | Virtually unlimited |
-| CDN Integration | Manual | Easy |
-| Development Setup | Simple | Requires MinIO/S3 |
-| Production Scaling | Limited | Excellent |
-
-## Adapter Details
-
-| Property | Value |
-|----------|-------|
-| Key | `shop.unchained.file-upload-plugin.minio` |
-| Source | [files/minio/](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/files/minio/) |
+The current removal implementation does not prepend `MINIO_UPLOAD_PREFIX`, and notification handling assumes an object key compatible with its file-ID extraction. Test prefixed paths and upload completion against your store before enabling a prefix.
 
 ## Related
 
-- [GridFS Storage](./file-gridfs.md) - MongoDB-based storage
-- [File Uploads Guide](../../guides/file-uploads.md) - File upload implementation
-- [Plugins Overview](./) - All available plugins
+- [GridFS Storage](./file-gridfs.md)
+- [File Uploads Guide](../../guides/file-uploads.md)
+- [Adapter source](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/files/minio/)

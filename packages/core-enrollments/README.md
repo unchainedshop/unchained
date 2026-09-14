@@ -16,23 +16,31 @@ npm install @unchainedshop/core-enrollments
 ```typescript
 import { configureEnrollmentsModule, EnrollmentStatus } from '@unchainedshop/core-enrollments';
 
-const enrollmentsModule = await configureEnrollmentsModule({ db });
+const enrollmentsModule = await configureEnrollmentsModule({ db, migrationRepository });
 
 // Create an enrollment
-const enrollmentId = await enrollmentsModule.create({
+const enrollment = await enrollmentsModule.create({
   userId: 'user-123',
   productId: 'plan-product-456',
   quantity: 1,
+  countryCode: 'CH',
+  currencyCode: 'CHF',
+  configuration: [],
+  billingAddress: {},
+  contact: {},
+  delivery: {},
 });
 
-// Activate enrollment
-await enrollmentsModule.activate(enrollmentId);
+// Read the newly created enrollment
+const savedEnrollment = await enrollmentsModule.findEnrollment({ enrollmentId: enrollment._id });
 
 // Find active enrollments
 const enrollments = await enrollmentsModule.findEnrollments({
-  status: EnrollmentStatus.ACTIVE,
+  status: [EnrollmentStatus.ACTIVE],
 });
 ```
+
+Activation and termination workflows are available through `services.enrollments` in [`@unchainedshop/core`](../core/README.md).
 
 ## API Overview
 
@@ -49,24 +57,23 @@ const enrollments = await enrollmentsModule.findEnrollments({
 | `findEnrollment` | Find enrollment by ID |
 | `findEnrollments` | Find enrollments with filtering and pagination |
 | `count` | Count enrollments matching query |
-| `enrollmentExists` | Check if enrollment exists |
 
 ### Mutations
 
 | Method | Description |
 |--------|-------------|
 | `create` | Create a new enrollment |
-| `update` | Update enrollment data |
+| `updatePlan` | Update the product, quantity, and configuration |
+| `updateContext` | Update enrollment metadata |
 | `delete` | Delete an enrollment |
-| `activate` | Activate an enrollment |
-| `terminate` | Terminate an enrollment |
+| `updateStatus` | Update enrollment status |
 
 ### Period Management
 
 | Method | Description |
 |--------|-------------|
-| `addPeriod` | Add a billing period |
-| `findPeriod` | Find a specific period |
+| `addEnrollmentPeriod` | Add a billing period |
+| `removeEnrollmentPeriodByOrderId` | Remove periods associated with an order |
 | `isExpired` | Check if enrollment is expired |
 
 ### Utilities
@@ -102,8 +109,7 @@ const enrollments = await enrollmentsModule.findEnrollments({
 | `ENROLLMENT_CREATE` | Enrollment created |
 | `ENROLLMENT_UPDATE` | Enrollment updated |
 | `ENROLLMENT_REMOVE` | Enrollment deleted |
-| `ENROLLMENT_ACTIVATE` | Enrollment activated |
-| `ENROLLMENT_TERMINATE` | Enrollment terminated |
+| `ENROLLMENT_ADD_PERIOD` | Billing period added |
 
 ## License
 

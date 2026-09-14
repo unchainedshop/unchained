@@ -14,27 +14,30 @@ npm install @unchainedshop/core-orders
 ## Usage
 
 ```typescript
-import { configureOrdersModule, OrderStatus } from '@unchainedshop/core-orders';
+import { configureOrdersModule } from '@unchainedshop/core-orders';
 
-const ordersModule = await configureOrdersModule({ db });
+const ordersModule = await configureOrdersModule({ db, migrationRepository });
 
 // Create an order
-const orderId = await ordersModule.create({
+const order = await ordersModule.create({
   userId: 'user-123',
-  currency: 'CHF',
+  currencyCode: 'CHF',
   countryCode: 'CH',
 });
 
 // Add position to order
-await ordersModule.positions.create({
-  orderId,
+await ordersModule.positions.addProductItem({
+  orderId: order._id,
+  originalProductId: 'product-456',
   productId: 'product-456',
   quantity: 2,
 });
 
-// Checkout order
-await ordersModule.checkout(orderId, { paymentContext: {} });
+// Read the resulting positions
+const positions = await ordersModule.positions.findOrderPositions({ orderId: order._id });
 ```
+
+Checkout, confirmation, payment charging, and delivery dispatch are orchestrated by the services and directors in [`@unchainedshop/core`](../core/README.md). This module provides persistence and status updates.
 
 ## API Overview
 
@@ -58,44 +61,44 @@ await ordersModule.checkout(orderId, { paymentContext: {} });
 | Method | Description |
 |--------|-------------|
 | `create` | Create a new order |
-| `update` | Update order data |
+| `updateCartFields` | Update cart fields |
 | `delete` | Delete an order |
-| `checkout` | Process order checkout |
-| `confirm` | Confirm an order |
-| `reject` | Reject an order |
+| `updateStatus` | Update order status and emit lifecycle events |
 | `setPaymentProvider` | Set payment provider |
 | `setDeliveryProvider` | Set delivery provider |
 
 ### Submodules
 
 #### Positions (`orders.positions`)
+
 | Method | Description |
 |--------|-------------|
-| `findPositions` | Find order positions |
-| `create` | Add position to order |
-| `update` | Update position |
+| `findOrderPositions` | Find order positions |
+| `addProductItem` | Add a product position to an order |
+| `updateProductItem` | Update a product position |
 | `delete` | Remove position |
 
 #### Payments (`orders.payments`)
+
 | Method | Description |
 |--------|-------------|
-| `findPayment` | Find order payment |
+| `findOrderPayment` | Find order payment |
 | `create` | Create payment for order |
-| `markPaid` | Mark payment as paid |
-| `charge` | Charge the payment |
+| `markAsPaid` | Mark payment as paid |
 
 #### Deliveries (`orders.deliveries`)
+
 | Method | Description |
 |--------|-------------|
 | `findDelivery` | Find order delivery |
 | `create` | Create delivery for order |
-| `markDelivered` | Mark as delivered |
-| `send` | Trigger delivery |
+| `markAsDelivered` | Mark as delivered |
 
 #### Discounts (`orders.discounts`)
+
 | Method | Description |
 |--------|-------------|
-| `findDiscounts` | Find order discounts |
+| `findOrderDiscounts` | Find order discounts |
 | `create` | Add discount to order |
 | `delete` | Remove discount |
 
@@ -103,7 +106,7 @@ await ordersModule.checkout(orderId, { paymentContext: {} });
 
 | Export | Description |
 |--------|-------------|
-| `OrderStatus` | Order status values (OPEN, PENDING, CONFIRMED, FULFILLED, REJECTED) |
+| `OrderStatus` | Order status values (PENDING, CONFIRMED, FULFILLED, REJECTED); carts use `null` |
 
 ### Settings
 

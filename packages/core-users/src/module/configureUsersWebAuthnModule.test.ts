@@ -301,7 +301,7 @@ describe('WebAuthn Module', () => {
         'https://example.com',
         'testuser-multiple',
       );
-      // Small delay to avoid duplicate _id (which uses Date.getTime())
+      // Space out consecutive challenge requests.
       await new Promise((resolve) => setTimeout(resolve, 2));
       const options2 = await webAuthnModule.createCredentialCreationOptions(
         'https://example.com',
@@ -322,7 +322,7 @@ describe('WebAuthn Module', () => {
           `testuser-unique-${i}`,
         );
         challenges.add(options!.challenge);
-        // Small delay to avoid duplicate _id (which uses Date.getTime())
+        // Space out consecutive challenge requests.
         await new Promise((resolve) => setTimeout(resolve, 2));
       }
 

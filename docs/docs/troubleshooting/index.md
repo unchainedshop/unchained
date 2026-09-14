@@ -272,10 +272,10 @@ mutation UpdateProductPricing {
 1. Ensure a file storage plugin is imported in your entry file:
 ```typescript
 // GridFS (MongoDB built-in)
-import '@unchainedshop/plugins/files/gridfs';
+import '@unchainedshop/plugins/files/gridfs/index.js';
 
 // Or MinIO/S3
-import '@unchainedshop/plugins/files/minio';
+import '@unchainedshop/plugins/files/minio/index.js';
 ```
 
 2. For MinIO/S3, verify credentials:
@@ -393,7 +393,7 @@ When reporting issues, include:
 
 ````markdown
 ## Environment
-- Node.js: 22.0.0
+- Node.js: 26.8.2
 - Unchained: 3.0.0
 - OS: macOS 14.0
 

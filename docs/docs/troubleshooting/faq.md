@@ -34,7 +34,7 @@ Any framework that can make HTTP requests:
 
 Yes. Unchained is designed to scale horizontally and has been used in production by businesses processing significant order volumes. Key features for scale:
 - Stateless architecture
-- Distributed event system (Redis)
+- Distributed event delivery using a configured emitter
 - Background job processing
 - External file storage (S3)
 
@@ -42,7 +42,7 @@ Yes. Unchained is designed to scale horizontally and has been used in production
 
 ### What are the system requirements?
 
-- Node.js 22+
+- Node.js 26.8.2 or newer
 - MongoDB 6+
 - 1GB+ RAM (2GB+ recommended for production)
 
@@ -75,7 +75,7 @@ Use type extensions and custom resolvers:
 
 ```typescript
 const customTypeDefs = `
-  extend type Product {
+  extend interface Product {
     customField: String
   }
 `;
@@ -87,10 +87,8 @@ const customResolvers = {
 };
 
 await startPlatform({
-  modules: {
-    customTypeDefs,
-    customResolvers,
-  },
+  typeDefs: [customTypeDefs],
+  resolvers: [customResolvers],
 });
 ```
 
@@ -101,15 +99,17 @@ See [Extending GraphQL](../extend/graphql) for details.
 Create a payment adapter and register it:
 
 ```typescript
-import { PaymentDirector } from '@unchainedshop/core';
+import { PaymentAdapter, PaymentDirector } from '@unchainedshop/core';
 
 const MyPaymentAdapter = {
+  ...PaymentAdapter,
   key: 'my-payment',
   label: 'My Payment',
   version: '1.0.0',
-  typeSupported: (type) => type === 'CARD',
-  actions: (params) => ({
-    // ... implement methods
+  typeSupported: (type) => type === 'GENERIC',
+  actions: (configuration, context) => ({
+    ...PaymentAdapter.actions(configuration, context),
+    // Override the payment operations for your gateway.
   }),
 };
 
@@ -133,7 +133,10 @@ app.post('/webhooks/stripe', async (req, res) => {
 
 // Use with Unchained
 import { startPlatform } from '@unchainedshop/platform';
-await startPlatform({ expressApp: app });
+import { connect } from '@unchainedshop/api/express';
+const platform = await startPlatform({});
+connect(app, platform);
+app.listen(4010);
 ```
 
 ### How do I run background jobs?
@@ -274,24 +277,9 @@ See [Pricing System](../concepts/pricing-system).
 
 ### How do I implement custom pricing logic?
 
-Create a pricing adapter:
+Compose the `ProductPricingAdapter` object from `@unchainedshop/core`, override `actions(params)`, and write rows to `baseActions.resultSheet()`. Return `baseActions.calculate()` so the director can append your rows. Use `addDiscount()` with a discount ID for discount rows.
 
-```typescript
-class MyPricingAdapter extends ProductPricingAdapter {
-  static key = 'my-pricing';
-  static orderIndex = 10;
-
-  async calculate() {
-    this.result.addItem({
-      amount: 100,
-      category: 'DISCOUNT',
-    });
-    return super.calculate();
-  }
-}
-
-ProductPricingDirector.registerAdapter(MyPricingAdapter);
-```
+See the [complete pricing example](../concepts/director-adapter-pattern.md#pricing-directors).
 
 ### How do I handle multiple currencies?
 
@@ -346,10 +334,10 @@ See [Multi-Language Setup](../guides/multi-language-setup).
 
 ### What's the recommended production setup?
 
-- Node.js 22+ on container platform
+- Node.js matching the repository `.nvmrc` on a container platform
 - MongoDB Atlas for database
 - S3/MinIO for file storage
-- Redis for distributed events
+- A configured distributed event emitter when running multiple instances
 - CDN for static assets
 
 See platform-specific documentation for deployment guides.
@@ -362,21 +350,20 @@ Migrations run automatically on startup when the Unchained platform boots. The m
 
 ### How is authentication handled?
 
-- JWT tokens for API authentication
-- Session cookies optional
+- Signed session cookies with MongoDB-backed sessions
+- Generated bearer access tokens for API integrations
 - WebAuthn for passwordless auth
 - OIDC for external identity providers
 
 ### How do I implement role-based access?
 
-Use the built-in roles system:
+Use the built-in roles system after platform initialization (the `Role` constructor registers the role):
 
 ```typescript
 import { Roles, Role } from '@unchainedshop/roles';
 
 const customRole = new Role('support');
-customRole.allow('viewOrders', () => true);
-Roles.registerRole(customRole);
+customRole.allow('viewOrders', async () => true);
 
 // Assign to user
 await modules.users.updateRoles(userId, ['support']);

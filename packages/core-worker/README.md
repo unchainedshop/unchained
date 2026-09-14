@@ -16,27 +16,25 @@ npm install @unchainedshop/core-worker
 ```typescript
 import { configureWorkerModule, WorkStatus } from '@unchainedshop/core-worker';
 
-const workerModule = await configureWorkerModule({ db });
+const workerModule = await configureWorkerModule({ db, migrationRepository });
 
 // Add a work item to the queue
-const workId = await workerModule.addWork({
-  type: 'SEND_EMAIL',
+const work = await workerModule.addWork({
+  type: 'EMAIL',
   input: {
     to: 'user@example.com',
-    template: 'order-confirmation',
+    subject: 'Order confirmation',
+    text: 'Thank you for your order.',
   },
 });
 
 // Find pending work
-const pendingWork = await workerModule.findWork({
-  status: WorkStatus.NEW,
+const pendingWork = await workerModule.findWorkQueue({
+  status: [WorkStatus.NEW],
 });
 
-// Process work (typically done by worker plugins)
-await workerModule.processWork(workId, {
-  success: true,
-  result: { messageId: 'abc123' },
-});
+// Read the queued work item
+const queuedWork = await workerModule.findWork({ workId: work._id });
 ```
 
 ## API Overview
@@ -61,7 +59,7 @@ await workerModule.processWork(workId, {
 |--------|-------------|
 | `addWork` | Add work item to queue |
 | `allocateWork` | Allocate work to a worker |
-| `processWork` | Mark work as processed |
+| `finishWork` | Record a work result |
 | `rescheduleWork` | Reschedule failed work |
 | `deleteWork` | Delete a work item |
 
@@ -84,16 +82,17 @@ Work types are linked to worker plugins. Common built-in types:
 
 | Type | Description |
 |------|-------------|
-| `SEND_EMAIL` | Send email notifications |
+| `EMAIL` | Send email notifications |
 | `HEARTBEAT` | Keep-alive jobs |
-| `EXTERNAL` | External service calls |
+| `HTTP_REQUEST` | Make HTTP requests |
 
 ## Worker Plugins
 
 Workers process jobs by type. The plugin is responsible for:
-- Handling retries on failure
 - Processing the work input
 - Returning success/failure results
+
+The queue managers in `@unchainedshop/core` handle allocation and retry scheduling. Plugins return a `WorkResult` with a `success` flag.
 
 ## Events
 
@@ -102,7 +101,10 @@ Workers process jobs by type. The plugin is responsible for:
 | `WORK_ADDED` | Work item added to queue |
 | `WORK_ALLOCATED` | Work allocated to worker |
 | `WORK_FINISHED` | Work processing completed |
-| `WORK_FAILED` | Work processing failed |
+| `WORK_RESCHEDULED` | Work scheduled for another attempt |
+| `WORK_DELETED` | Work item deleted |
+
+`WORK_FINISHED` is emitted for both successful and failed work; inspect its `success` flag.
 
 ## License
 

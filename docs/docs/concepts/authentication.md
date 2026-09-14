@@ -206,7 +206,7 @@ mutation GetCredentialCreationOptions {
 }
 ```
 
-2. Create credential with browser WebAuthn API using the returned options:
+2. Convert the JSON challenge and user ID to binary values before calling the browser API. The following call assumes `creationOptions` is already a `PublicKeyCredentialCreationOptions` object:
 
 ```javascript
 const credential = await navigator.credentials.create({
@@ -214,7 +214,7 @@ const credential = await navigator.credentials.create({
 });
 ```
 
-3. Store the credential:
+3. Serialize credential binary fields as base64url strings and store the credential:
 
 ```graphql
 mutation AddWebAuthnCredentials($credentials: JSON!) {
@@ -237,7 +237,7 @@ mutation GetCredentialRequestOptions {
 }
 ```
 
-2. Authenticate with browser WebAuthn API:
+2. Convert the JSON challenge and allowed credential IDs to binary values. The following call assumes `requestOptions` is already a `PublicKeyCredentialRequestOptions` object:
 
 ```javascript
 const credential = await navigator.credentials.get({
@@ -245,7 +245,7 @@ const credential = await navigator.credentials.get({
 });
 ```
 
-3. Verify and login:
+3. Serialize the assertion binary fields as base64url strings, include the returned request ID, and verify the login:
 
 ```graphql
 mutation LoginWithWebAuthn($credentials: JSON!) {
@@ -280,57 +280,44 @@ OIDC integration is configured through the GraphQL context. See the [OIDC Exampl
 
 ### Login Flow
 
-OIDC authentication is implemented via custom GraphQL resolvers. The flow typically involves:
+The OIDC example uses HTTP routes and a custom context resolver:
 
-1. **Get authorization URL**: Custom query that returns the provider's OAuth URL
-2. **User redirected to provider**: User authenticates with the identity provider
-3. **Exchange code for token**: Custom mutation that validates the authorization code and creates a session
+1. `/login` redirects the browser to the configured provider.
+2. The provider redirects to `/login/keycloak/callback` or `/login/zitadel/callback`.
+3. The callback exchanges the code and stores provider tokens in the server-side session.
+4. The context resolver maps the provider identity and roles to an Unchained user.
 
-See the [OIDC Example](https://github.com/unchainedshop/unchained/tree/master/examples/oidc) for a complete implementation showing how to add custom OIDC queries and mutations.
+The example selects Zitadel or Keycloak from its environment variables; additional providers require an equivalent integration.
 
 ## API Token Authentication
 
 For server-to-server or automated access.
 
-### Using Tokens
+### Creating and Rotating an Access Token
 
-Unchained users have a `tokens` field that stores authentication tokens. You can query a user's tokens:
+Create a token from trusted server code for an existing username:
 
-```graphql
-query MyTokens {
-  me {
-    tokens {
-      _id
-    }
-  }
-}
+```typescript
+const result = await modules.users.createAccessToken('integration-user');
+if (!result) throw new Error('User not found');
+const accessToken = result.token;
 ```
 
-### Invalidating Tokens
-
-To invalidate a token:
-
-```graphql
-mutation InvalidateToken {
-  invalidateToken(tokenId: "token-id") {
-    _id
-  }
-}
-```
+Store the returned token securely. The user's `services.token` field contains its SHA-256 hash, and issuing another access token replaces the previous one. The GraphQL `User.tokens` field and `invalidateToken` mutation concern tokenized products; they do not manage API authentication credentials.
 
 ### Including Token in Requests
 
-Include the token in the Authorization header:
-
 ```http
-Authorization: Bearer <token>
+Authorization: Bearer <access-token>
 ```
+
+The standard API adapters resolve this bearer token through the user module. Browser login uses the separate cookie-backed session described below.
 
 ## Session Management
 
 ### Token Format
 
-Unchained uses JWT tokens for authentication. Configure the token secret via environment variable:
+The standard Express and Fastify adapters use signed session-ID cookies and MongoDB-backed sessions. Login mutations return a session ID and expiry; they do not issue JWTs. `UNCHAINED_TOKEN_SECRET` signs session cookies:
 
 ```bash
 UNCHAINED_TOKEN_SECRET=your-32-character-minimum-secret-here
@@ -384,38 +371,33 @@ Unchained uses RBAC for authorization:
 | Role | Description |
 |------|-------------|
 | `admin` | Full access to all operations |
-| `user` | Authenticated user with standard permissions |
+| `__loggedIn__` | Automatically included for authenticated users |
+| `__all__` | Automatically included for every request |
 
 ### Checking Permissions
 
 ```typescript
-import { checkAction } from '@unchainedshop/roles';
+import { Roles } from '@unchainedshop/roles';
 
-// In a resolver
-if (!checkAction(context, 'manageOrders')) {
+if (!(await Roles.userHasPermission(context, 'manageOrders', []))) {
   throw new Error('Permission denied');
 }
 ```
 
 ### Custom Roles
 
+`Role` registers itself during construction. Define it after platform initialization has configured the built-in roles, or use `rolesOptions.additionalRoles` at startup.
+
 ```typescript
-import { Roles, Role } from '@unchainedshop/roles';
+import { Role } from '@unchainedshop/roles';
 
-// Define custom role
 const supportRole = new Role('support');
+supportRole.allow('viewOrders', async () => true);
 
-supportRole.allow('viewOrders', () => true);
-supportRole.allow('updateOrderStatus', (context, { order }) => {
-  // Only pending orders
-  return order.status === 'PENDING';
-});
-
-Roles.registerRole(supportRole);
-
-// Assign role to user
 await modules.users.updateRoles(userId, ['support']);
 ```
+
+Permission callbacks receive `(root, parameters, context)`. Use an existing action name from the API or register your custom action before checking it.
 
 ## Security Best Practices
 
@@ -430,7 +412,7 @@ Unchained uses industry-standard cryptography for authentication:
 | Password Hashing | PBKDF2-SHA512 | 300,000 iterations, 16-byte salt |
 | Token Storage | SHA-256 | Tokens hashed before database storage |
 | Token Generation | CSPRNG | `crypto.randomUUID()` |
-| Session Encryption | AES-256-GCM | Optional, via kruptein |
+| Session Cookies | HMAC signatures | Integrity protection for session IDs; session data is stored in MongoDB without application-level encryption by the default adapters |
 
 ### 1. Token Secret
 

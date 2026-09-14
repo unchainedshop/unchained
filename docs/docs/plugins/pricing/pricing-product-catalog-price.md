@@ -16,7 +16,7 @@ This plugin is part of the `base` preset and loaded automatically. Using the bas
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/pricing/product-catalog-price';
+import '@unchainedshop/plugins/pricing/product-catalog-price.js';
 ```
 
 ## How It Works

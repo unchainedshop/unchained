@@ -19,7 +19,7 @@ For detailed security documentation including compliance matrices, FIPS 140-3 co
 |----------|---------------|-----------------|
 | **PCI DSS SAQ-A** | Compatible | No card data storage; uses tokenization |
 | **ISO 27001** | Technical Controls | Access control, audit logging, cryptographic standards |
-| **FIPS 140-3** | Algorithm Compatible | Uses FIPS-approved algorithms (PBKDF2, SHA-256/512, AES-256-GCM) |
+| **FIPS 140-3** | Algorithm Compatible | Uses FIPS-approved algorithms (PBKDF2 and SHA-256/512) |
 | **SOC 2** | Audit Support | Tamper-evident audit logs for evidence collection |
 | **GDPR** | Technical Measures | Audit logging supports Article 30 requirements |
 
@@ -32,7 +32,7 @@ Unchained uses PBKDF2 with industry-leading parameters:
 - **Algorithm**: PBKDF2 with SHA-512
 - **Iterations**: 300,000 (exceeds OWASP recommendation of 210,000)
 - **Salt**: 16 bytes, cryptographically random
-- **Key Length**: 256 bytes
+- **Key Length**: 256 bits (32 bytes)
 - **Implementation**: Web Crypto API (`crypto.subtle`)
 
 ### Token Security
@@ -42,11 +42,9 @@ Unchained uses PBKDF2 with industry-leading parameters:
 - **Expiration**: Time-limited (1 hour for verification tokens)
 - **Single Use**: Tokens invalidated after use
 
-### Session Encryption
+### Session Storage
 
-- **Algorithm**: AES-256-GCM (authenticated encryption)
-- **Key Size**: 32 bytes
-- **Implementation**: kruptein library
+Session data is stored in MongoDB. The configured session store does not initialize an encryption provider. `UNCHAINED_TOKEN_SECRET` signs the session cookie; it does not encrypt stored session data.
 
 ## Payment Security (PCI DSS)
 
@@ -148,19 +146,19 @@ if (await timingSafeStringEqual(providedToken, expectedToken)) {
 
 ```typescript
 // Secure defaults
-{
+const cookieOptions = {
   httpOnly: true,           // Prevent XSS access
   secure: true,             // HTTPS only
   sameSite: 'none',         // Configurable
-  maxAge: 604800,           // 7 days
-}
+  maxAge: 604800000,        // 7 days in milliseconds
+};
 ```
 
 ### Environment Variables
 
 | Variable | Purpose | Default |
 |----------|---------|---------|
-| `UNCHAINED_TOKEN_SECRET` | Session encryption (min 32 chars) | Required |
+| `UNCHAINED_TOKEN_SECRET` | Session cookie signing secret (min 32 chars) | Required |
 | `UNCHAINED_COOKIE_NAME` | Cookie name | `unchained_token` |
 | `UNCHAINED_COOKIE_DOMAIN` | Cookie domain restriction | - |
 | `UNCHAINED_COOKIE_SAMESITE` | SameSite attribute | `none` |

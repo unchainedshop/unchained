@@ -82,10 +82,10 @@ This creates a deterministic but mixed ordering across all child assortments.
 To order products sequentially by assortment instead, use `zipTreeBySimplyFlattening`:
 
 ```typescript
-import zipTreeBySimplyFlattening from "@unchainedshop/core-assortments/tree-zipper/zipTreeBySimplyFlattening";
+import zipTreeBySimplyFlattening from "@unchainedshop/core-assortments/lib/utils/tree-zipper/zipTreeBySimplyFlattening.js";
 
-const options = {
-  modules: {
+const platformOptions = {
+  options: {
     assortments: {
       zipTree: zipTreeBySimplyFlattening,
     },

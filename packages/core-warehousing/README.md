@@ -16,17 +16,20 @@ npm install @unchainedshop/core-warehousing
 ```typescript
 import { configureWarehousingModule, WarehousingProviderType } from '@unchainedshop/core-warehousing';
 
-const warehousingModule = await configureWarehousingModule({ db });
+const warehousingModule = await configureWarehousingModule({ db, migrationRepository });
 
 // Create a warehousing provider
-const providerId = await warehousingModule.create({
+const provider = await warehousingModule.create({
   type: WarehousingProviderType.PHYSICAL,
-  adapterKey: 'shop.unchained.warehousing.inventory',
+  configuration: [],
+  adapterKey: 'shop.unchained.warehousing.store',
 });
 
 // Find providers
 const providers = await warehousingModule.findProviders({});
 ```
+
+Context-dependent provider selection is available through `services.orders.supportedWarehousingProviders` in [`@unchainedshop/core`](../core/README.md).
 
 ## API Overview
 
@@ -44,8 +47,6 @@ const providers = await warehousingModule.findProviders({});
 | `findProviders` | Find providers with filtering |
 | `count` | Count providers |
 | `providerExists` | Check if provider exists |
-| `findSupported` | Find providers for product context |
-| `findInterface` | Get provider interface definition |
 
 ### Mutations
 
@@ -61,11 +62,11 @@ For tokenized products (NFTs):
 
 | Method | Description |
 |--------|-------------|
-| `findTokenSurrogate` | Find token surrogate |
-| `createTokenSurrogate` | Create token surrogate |
-| `updateTokenSurrogate` | Update token surrogate |
-| `deleteTokenSurrogate` | Delete token surrogate |
-| `invalidateTokenSurrogates` | Invalidate surrogates for product |
+| `findToken` | Find a token surrogate by ID |
+| `findTokens` | Find token surrogates with a selector |
+| `createTokens` | Insert token surrogates |
+| `updateTokenOwnership` | Update token ownership |
+| `invalidateToken` | Invalidate a token surrogate |
 
 ### Constants
 

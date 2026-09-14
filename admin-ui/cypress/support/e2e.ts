@@ -1,6 +1,6 @@
 // ***********************************************************
-// This example support/e2e.ts is processed and
-// loaded automatically before your test files.
+// This support file is currently disabled by e2e.supportFile: false
+// in cypress.config.ts. Enable it there to load it before e2e tests.
 //
 // This is a great place to put global configuration and
 // behavior that modifies Cypress.

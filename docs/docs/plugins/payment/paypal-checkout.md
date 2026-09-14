@@ -20,7 +20,7 @@ Unchained payment plugin for PayPal Checkout using the PayPal Checkout Server SD
 ## Installation
 
 ```typescript
-import '@unchainedshop/plugins/payment/paypal-checkout';
+import '@unchainedshop/plugins/payment/paypal-checkout.js';
 ```
 
 Requires the `@paypal/checkout-server-sdk` npm package as a peer dependency:

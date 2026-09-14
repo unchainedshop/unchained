@@ -1,4 +1,4 @@
-// Configuration defaults and types
+// Shared configuration values and types. CLI option defaults are currently defined in cli.ts.
 
 export const DEFAULT_CONFIG = {
   endpoint: 'http://localhost:4010/bulk-import',

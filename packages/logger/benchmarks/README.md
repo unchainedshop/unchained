@@ -1,8 +1,8 @@
 # Logger Performance Benchmarks
 
-Run with: `npm run benchmark`
+Run from the repository root with: `npm run benchmark --workspace @unchainedshop/logger`
 
-## Latest Results (October 7, 2025)
+## Recorded Results (October 7, 2025)
 
 ```
 Test Name                        |      Ops/sec |     Avg Time |   Total Time
@@ -17,7 +17,9 @@ Debug log (disabled)             |      299.36M |      0.00 µs |      0.33 ms
 Pattern matching (createLogger)  |        1.21M |      0.82 µs |      4.12 ms
 ```
 
-## Key Insights
+These figures are a historical snapshot, not measurements of the current checkout. Run the benchmark locally before comparing performance.
+
+## Snapshot Insights
 
 - JSON format logging is **550.6% slower** than default format
 - Debug logging when disabled is **35.9x faster** (skips log processing entirely)

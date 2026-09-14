@@ -19,7 +19,7 @@ and add a **Trivy** vulnerability gate.
 | Runs on | `jenkins.ucc.dev` | `git.ucc.dev` runner (`runs-on: docker`) |
 | docs image | `registry.ucc.dev/unchained/docs` | `git.ucc.dev/unchained/unchained/docs` |
 | adminui image | `registry.ucc.dev/unchained/adminui` | `git.ucc.dev/unchained/unchained/adminui` |
-| Lint / tests | ci image: `npm run lint` (gate) + `npm run test \|\| :` (non-blocking) | same, faithfully ported |
+| Lint / tests | CI image: nonmutating `npm run lint:check` and blocking `npm test` | Same gates; docs publishing requires both plus Trivy |
 | Vuln scan | none | Trivy `fs` gate (fixable HIGH/CRITICAL) |
 
 Tagging is preserved: docs → `<branch>-latest`, `next`@develop, `latest`@master,
@@ -28,8 +28,8 @@ Tagging is preserved: docs → `<branch>-latest`, `next`@develop, `latest`@maste
 @tag. The adminui **major tags are consumed in prod** (`adminui:1`,`:v2`,`:v3`) —
 they must keep publishing.
 
-> **The `@unchainedshop/*` npm packages are out of scope** — they aren't built by
-> Jenkins and aren't built here.
+> **The `@unchainedshop/*` npm packages are out of scope** — npm publishing is not handled by
+> Jenkins or these workflows. CI compiles the packages and runs their tests.
 
 ---
 
@@ -64,16 +64,16 @@ label `docker`) picks the jobs up automatically.
 
 | Kind | Name | Value |
 |---|---|---|
-| Secret | `REGISTRY_TOKEN` | a **`write:package`** PAT for the `unchained` org (the automatic Actions token cannot push packages). |
+| Secret | `PKG_PUSH_TOKEN` | a **`write:package`** PAT for the `unchained` org (the automatic Actions token cannot push packages). |
 | Secret | `TESTS_DOTENV` | the dotenv used by the integration tests (was the Jenkins `unchained-dotenv` credential; written to `./env` before the CI image build). |
 
 (Optional) set variable `REGISTRY_USER` to override the login user.
 
 ### 5. Verify
 
-- Open a PR → **`test`** (lint gates; tests non-blocking) and **`trivy`** run.
+- Open a PR → **`test`** (nonmutating lint, unit, integration, and Docker healthcheck regression tests all gate) and **`trivy`** run.
 - Push `develop`/`master`/a version branch → **`docs`** publishes; a change under
-  `admin-ui/**` also triggers **admin-ui**. Confirm images under the repo's
+  `admin-ui/**` or its shared workspace/build inputs also triggers **admin-ui**. Confirm images under the repo's
   **Packages** tab: `git.ucc.dev/unchained/unchained/{docs,adminui}` with the
   expected tags (incl. adminui `vMAJOR`).
 
@@ -123,8 +123,9 @@ comment-triggered runs there; it is untouched.
 
 - `@unchainedshop/*` npm package publishing (not a Jenkins pipeline).
 - `.deepsource.toml` (SaaS static analysis) is unchanged.
-- Tests remain **non-blocking** (`|| :`), exactly as Jenkins ran them; lint is the
-  hard gate. Tighten by dropping `|| :` once the suite is reliably green.
-- BuildKit: Jenkins forced `DOCKER_BUILDKIT=0`; the new pipeline uses buildx for the
-  docs/adminui images. If one fails under buildx, fall back to a plain `docker build`/
-  `docker push` step (the runner has host docker.sock).
+- Lint, tests, and image builds are blocking. Test failures stop the pipeline and
+  prevent dependent image publishing. Lint uses `lint:check` and does not rewrite files.
+- Docker builds use the repository root as their context. Runtime images and `.nvmrc`
+  pin Node.js 26.8.2; package engines require Node.js 26.8.2 or newer.
+- Image publishing uses plain `docker build` and `docker push` through the host
+  `docker.sock`; the workflows avoid buildx because pushes to the Forgejo registry failed.

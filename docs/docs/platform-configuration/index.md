@@ -20,7 +20,7 @@ The main entry point for an Unchained Engine project is `startPlatform` imported
 To make things a bit more simple, Unchained offers different [presets](./plugin-presets.md) for loading functionalities out-of-the box:
 - `base` (Simple Catalog Price based Pricing strategies, Manual Delivery & Invoice Payment, GridFS Asset Storage)
 - `crypto` (Currency-Rate Updating Workers for ECB & Coinbase, Currency-Converting Pricing Plugin, Event ERC721 Token Lazy-Minting on Ethereum, Payment through Unchained Cryptopay)
-- `countries/ch` (Switzerland Tax Calculation and Migros PickMup Integration)
+- `countries/ch` (Switzerland tax calculation)
 - `all` (All of the above + all other available plugins including plugins for various payment gateways)
 
 We recommend loading at least `base`.
@@ -34,7 +34,7 @@ import { connect, unchainedLogger } from "@unchainedshop/api/fastify";
 import defaultModules from "@unchainedshop/plugins/presets/all.js";
 import connectDefaultPluginsToFastify from "@unchainedshop/plugins/presets/all-fastify.js";
 
-// Set up the Fastify web server in insecure mode and set the unchained default logger as request logger
+// Set up Fastify with the Unchained request logger
 const fastify = Fastify({
   loggerInstance: unchainedLogger("fastify"),
   disableRequestLogging: true,
@@ -48,7 +48,7 @@ try {
   });
 
   // Use the connect from @unchainedshop/api to connect Unchained to Fastify, setting up the basic endpoints like /graphql
-  connect(fastify, platform, {
+  await connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== "production",
     initPluginMiddlewares: connectDefaultPluginsToFastify
   });
@@ -56,7 +56,7 @@ try {
   // Tell Fastify to start listening on a port, thus accepting connections
   await fastify.listen({
     host: "::",
-    port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
+    port: process.env.PORT ? parseInt(process.env.PORT, 10) : 4010,
   });
 } catch (err) {
   fastify.log.error(err);
@@ -74,6 +74,7 @@ To configure various aspects of the platform, `startPlatform` accepts a configur
   - `options`: Module-specific configuration options (see [Module Options](#module-options) below)
   - `rolesOptions`: `IRoleOptionConfig`: Enables you to customize the existing roles and actions, adjusting fine-grained permissions.
   - `bulkImporter`: Enables you to define custom bulk import handlers for a clear separation of data import and e-commerce engine. For more information about the bulk import API, refer to the [Bulk Import Guide](../guides/bulk-import).
+  - `bulkExporter`: Configure custom bulk export handlers through the `handlers` option.
   - `workQueueOptions`: `SetupWorkqueueOptions` Configuration regarding the work queue, for example disabling it entirely in multi-pod setups
   - `adminUiConfig`: Customize the Unchained Admin UI, for example configuring a Single-Sign-On Link for external Auth support via oAuth.
 
@@ -126,7 +127,7 @@ await startPlatform({
     // Files module
     files: {
       transformUrl: (url, params) => url,
-      privateFileSharingMaxAge: 3600,
+      privateFileSharingMaxAge: 60 * 60 * 1000, // One hour in milliseconds
     },
     // Worker module
     worker: {

@@ -22,9 +22,9 @@ Because the plugin is using the currency rate system of Unchained with support f
 **Express:**
 ```typescript
 import express from 'express';
-import cryptopayModules from '@unchainedshop/plugins/payment/cryptopay';
-import '@unchainedshop/plugins/payment/cryptopay';
-import cryptopayHandler from '@unchainedshop/plugins/payment/cryptopay/handler-express';
+import cryptopayModules from '@unchainedshop/plugins/payment/cryptopay/index.js';
+import '@unchainedshop/plugins/payment/cryptopay/index.js';
+import cryptopayHandler from '@unchainedshop/plugins/payment/cryptopay/handler-express.js';
 
 const { CRYPTOPAY_WEBHOOK_PATH = '/payment/cryptopay' } = process.env;
 
@@ -40,9 +40,9 @@ app.use(CRYPTOPAY_WEBHOOK_PATH, express.json(), cryptopayHandler);
 
 **Fastify:**
 ```typescript
-import cryptopayModules from '@unchainedshop/plugins/payment/cryptopay';
-import '@unchainedshop/plugins/payment/cryptopay';
-import cryptopayHandler from '@unchainedshop/plugins/payment/cryptopay/handler-fastify';
+import cryptopayModules from '@unchainedshop/plugins/payment/cryptopay/index.js';
+import '@unchainedshop/plugins/payment/cryptopay/index.js';
+import cryptopayHandler from '@unchainedshop/plugins/payment/cryptopay/handler-fastify.js';
 
 const { CRYPTOPAY_WEBHOOK_PATH = '/payment/cryptopay' } = process.env;
 

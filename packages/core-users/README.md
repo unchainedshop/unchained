@@ -16,7 +16,7 @@ npm install @unchainedshop/core-users
 ```typescript
 import { configureUsersModule } from '@unchainedshop/core-users';
 
-const usersModule = await configureUsersModule({ db });
+const usersModule = await configureUsersModule({ db, migrationRepository });
 
 // Find users
 const users = await usersModule.findUsers({
@@ -32,7 +32,7 @@ const userId = await usersModule.createUser({
 
 // Update profile
 await usersModule.updateProfile(userId, {
-  displayName: 'John Doe',
+  profile: { displayName: 'John Doe' },
 });
 ```
 
@@ -64,11 +64,11 @@ await usersModule.updateProfile(userId, {
 | `updateRoles` | Update user roles |
 | `updateTags` | Update user tags |
 | `updateAvatar` | Set user avatar |
-| `updateBillingAddress` | Update billing address |
-| `updatePassword` | Change user password |
-| `updateUsername` | Change username |
-| `delete` | Soft delete a user |
-| `replaceUserId` | Migrate data between users |
+| `updateLastBillingAddress` | Update billing address |
+| `setPassword` | Change user password |
+| `setUsername` | Change username |
+| `markDeleted` | Soft delete and anonymize a user |
+| `deletePermanently` | Permanently delete a user document |
 
 ### Authentication
 
@@ -80,15 +80,17 @@ await usersModule.updateProfile(userId, {
 | `removeEmail` | Remove email address |
 | `verifyEmail` | Mark email as verified |
 | `updateHeartbeat` | Update last activity timestamp |
-| `updateLastLogin` | Record login event |
 
 ### WebAuthn Submodule
 
 | Method | Description |
 |--------|-------------|
-| `webAuthn.findCredentials` | Find WebAuthn credentials for user |
-| `webAuthn.createCredential` | Register new WebAuthn credential |
-| `webAuthn.removeCredential` | Remove WebAuthn credential |
+| `webAuthn.createCredentialCreationOptions` | Create registration options |
+| `webAuthn.createCredentialRequestOptions` | Create authentication options |
+| `webAuthn.verifyCredentialCreation` | Verify registration response |
+| `webAuthn.verifyCredentialRequest` | Verify authentication response |
+| `addWebAuthnCredential` | Store a verified user credential |
+| `removeWebAuthnCredential` | Remove a user credential |
 
 ### Settings
 
@@ -117,7 +119,6 @@ await usersModule.updateProfile(userId, {
 | `USER_REMOVE` | User deleted |
 | `USER_UPDATE_PROFILE` | Profile updated |
 | `USER_UPDATE_PASSWORD` | Password changed |
-| `USER_UPDATE_ROLES` | Roles changed |
 | `USER_ACCOUNT_ACTION` | Account action triggered |
 
 ## Security
@@ -126,18 +127,18 @@ This module implements security best practices for user authentication and data 
 
 ### Password Security
 
-- **Algorithm**: PBKDF2 with SHA-512
-- **Iterations**: 300,000 (exceeds OWASP recommendation)
+- **Algorithm**: New hashes use PBKDF2 with SHA-512; verification also accepts legacy bcrypt hashes
+- **Iterations**: 300,000
 - **Salt**: 16 bytes, cryptographically random per password
-- **Key Length**: 256 bytes
-- **FIPS 140-3**: Compatible when running on FIPS-enabled Node.js
+- **Key Length**: 256 bits (32 bytes)
+- See [SECURITY.md](../../SECURITY.md) for deployment-specific cryptography considerations
 
 ### Token Security
 
 - **Generation**: `crypto.randomUUID()` (CSPRNG-based)
 - **Storage**: SHA-256 hashed before database storage
-- **Expiration**: Time-limited (configurable, default 1 hour)
-- **Single-use**: Tokens invalidated after verification
+- **Expiration**: Reset and verification tokens default to one hour; customize `userSettings.earliestValidTokenDate` by account action
+- **Single-use**: Password-reset and email-verification tokens are consumed when used; access tokens are reusable
 
 ### WebAuthn/FIDO2
 
