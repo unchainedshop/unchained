@@ -22,7 +22,7 @@ import { PayrexxPlugin } from '@unchainedshop/plugins/payment/payrexx';
 pluginRegistry.register(PayrexxPlugin);
 ```
 
-Register before `startPlatform()`. Registration mounts the webhook route `POST /payment/payrexx` (path configurable via `PAYREXX_WEBHOOK_PATH`) on the Unchained HTTP server. Registration throws if `PAYREXX_SECRET` is not set.
+Register before `startPlatform()`. At startup, the plugin enables the webhook route `POST /payment/payrexx` (path configurable via `PAYREXX_WEBHOOK_PATH`); the Express/Fastify connector mounts it on the Unchained HTTP server. If `PAYREXX_SECRET` is missing, initialization logs a warning and skips this plugin's adapter and route.
 
 In your Payrexx dashboard, configure the webhook URL `https://your-domain.com/payment/payrexx` and enable transaction notifications.
 
@@ -30,7 +30,7 @@ In your Payrexx dashboard, configure the webhook URL `https://your-domain.com/pa
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `PAYREXX_SECRET` | - | Payrexx API secret key (required, registration throws without it) |
+| `PAYREXX_SECRET` | - | Payrexx API secret key (required; the adapter and route are skipped without it) |
 | `PAYREXX_WEBHOOK_PATH` | `/payment/payrexx` | Webhook endpoint path |
 | `EMAIL_WEBSITE_URL` | - | Base URL for redirects (e.g. `https://shop.example.com`) |
 | `EMAIL_WEBSITE_NAME` | `Unchained` | Shop name shown in the payment purpose |

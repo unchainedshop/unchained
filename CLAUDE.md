@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 npm install          # Install all dependencies (uses npm workspaces)
 npm run dev          # Start development with hot-reload (runs kitchensink example + admin-ui + watches packages)
-npm run build        # Clean all build artifacts and rebuild packages (excludes examples)
+npm run build        # Clean/rebuild TypeScript projects (including examples) and build the Admin UI
 npm run dev:watch    # Watch mode for TypeScript compilation across all packages
 ```
 
@@ -16,25 +16,25 @@ npm run dev:watch    # Watch mode for TypeScript compilation across all packages
 ```bash
 npm run test                    # Run all tests (unit + integration)
 npm run test:run:unit       # Run unit tests only (uses node --test in packages/)
-npm run test:run:integration # Run integration tests (uses kitchensink example + tests/)
+npm run test:run:integration # Run integration tests (platform started by tests/setup.js)
 node --no-warnings --env-file .env.tests --env-file-if-exists=.env --test-isolation=none --test-force-exit --test-global-setup=tests/helpers.js --test --test-concurrency=1 path/to/test.ts  # Run a single integration test file (run from monorepo root directory)
 node --test path/to/test.ts # Run a single unit test file
 ```
 
 ### Package-Level Commands
-Individual packages support these scripts:
+Package scripts vary; check the package's `package.json`. Typical commands are:
 ```bash
 cd packages/[package-name]
 npm run build       # Build specific package
 npm run clean       # Clean build artifacts
-npm run test        # Run package tests
-npm run test:watch  # Run tests in watch mode
+node --test src/path/to/test.test.ts        # Run a unit test directly
+node --test --watch src/path/to/test.test.ts # Watch a unit test
 ```
 
 ### Code Quality
 ```bash
 npm run lint     # Lint and fix code (ESLint + Prettier)
-npm run pretest  # Run ESLint without fixing
+npx eslint .     # Run ESLint without fixing
 ```
 
 ## Import Conventions
@@ -63,7 +63,7 @@ import { startPlatform } from '@unchainedshop/platform';
 ```
 
 ### Rationale
-- Native Node.js 24+ ESM TypeScript execution
+- Native Node.js 26+ ESM TypeScript execution
 - TypeScript config: `"allowImportingTsExtensions": true`, `"module": "NodeNext"`
 - No compilation required for development/testing: `node --watch src/file.ts`, `node --test path/to/test.ts`
 
@@ -137,10 +137,10 @@ The plugin system uses a Director/Adapter pattern:
 - **Directors** manage collections of adapters (e.g., PaymentDirector, DeliveryDirector)
 - **Adapters** implement specific behaviors (e.g., Stripe payment adapter, GridFS file storage)
 - **Explicit registration**: Plugins must be explicitly registered before platform startup
-- **Side-effect free**: Plugin files export pure adapter objects without auto-registration
+- **Side-effect free**: Plugin files export plugin objects without auto-registration
 
 #### Plugin Registration Pattern
-Plugins are registered explicitly before starting the platform. The presets have no default export, and `startPlatform` needs no `modules` argument for built-ins (core modules are defaulted internally):
+Plugins are registered explicitly before starting the platform. Use the named preset registration functions. `startPlatform` needs no `modules` argument for built-ins (core modules are defaulted internally):
 
 ```typescript
 import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
@@ -216,7 +216,6 @@ The API package supports multiple server frameworks:
 ### Environment Configuration
 - Use `.env` files for local configuration
 - Default values in `.env.defaults`
-- Integration tests use `.env.tests` with `.env` as fallback
-- Node.js 24+ required (26 in .nvmrc)
+- Integration tests load `.env.tests`, then optional `.env` overrides; already-set environment variables take precedence
+- Node.js 26+ required (see .nvmrc)
 - MongoDB required (or use MongoDB Memory Server for testing)
- No newline at end of file

@@ -4,7 +4,7 @@ This example demonstrates how to integrate [Unchained Commerce](https://unchaine
 
 ## Prerequisites
 
-- Node.js >=22
+- Node.js >=26
 - An OIDC provider (Zitadel Cloud or Keycloak instance)
 
 ## Getting Started
@@ -39,7 +39,7 @@ This example demonstrates how to integrate [Unchained Commerce](https://unchaine
    - Select "PKCE" (Proof Key for Code Exchange) for enhanced security
 
 3. **Configure Application Settings**
-   - Set your redirect URIs (e.g., `http://localhost:4000/auth/callback`)
+   - Set the redirect URI to `http://localhost:4010/login/zitadel/callback` (or your `ROOT_URL` plus `UNCHAINED_ZITADEL_CALLBACK_PATH`)
    - Note down your Client ID
 
 4. **Environment Configuration**
@@ -48,7 +48,7 @@ This example demonstrates how to integrate [Unchained Commerce](https://unchaine
 
    ```env
    UNCHAINED_ZITADEL_CLIENT_ID=your_client_id_here
-   UNCHAINED_ZITADEL_DISCOVERY_URL=https://your-instance.zitadel.cloud/.well-known/openid-configuration
+   UNCHAINED_ZITADEL_DISCOVERY_URL=https://your-instance.zitadel.cloud
    ```
 
 ### Resources
@@ -66,7 +66,7 @@ This example demonstrates how to integrate [Unchained Commerce](https://unchaine
 
    ```bash
    # Using Docker
-   docker run -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:latest start-dev
+   docker run -p 127.0.0.1:8080:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:latest start-dev
    ```
 
 2. **Access Admin Console**
@@ -80,7 +80,8 @@ This example demonstrates how to integrate [Unchained Commerce](https://unchaine
 4. **Create a Client**
    - Navigate to "Clients" and create a new client
    - Set Client ID to "myclient" (or your preferred name)
-   - Configure appropriate redirect URIs
+   - Set the redirect URI to `http://localhost:4010/login/keycloak/callback` (or your `ROOT_URL` plus `UNCHAINED_KEYCLOAK_CALLBACK_PATH`)
+   - If client authentication is enabled, copy the client secret into `UNCHAINED_KEYCLOAK_CLIENT_SECRET`
 
 5. **Environment Configuration**
 

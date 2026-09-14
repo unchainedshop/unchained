@@ -19,7 +19,7 @@ import { registerWorker } from '@unchainedshop/core';
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 registerWorker<{ wait?: number; fails?: boolean }, { wait?: number }>({
-  type: 'HEARTBEAT',
+  type: 'DEMO_HEARTBEAT',
   process: async (input) => {
     if (input?.wait) await wait(input.wait);
     if (input?.fails) throw new Error('heartbeat failed'); // a thrown error => { success: false }
@@ -45,7 +45,7 @@ registerWorker<{ wait?: number; fails?: boolean }, { wait?: number }>({
 import { WorkerDirector, schedule } from '@unchainedshop/core';
 
 WorkerDirector.configureAutoscheduling({
-  type: 'HEARTBEAT',
+  type: 'DEMO_HEARTBEAT',
   schedule: schedule.parse.cron('0 * * * *'), // every hour
   input: async () => ({ wait: 1000 }),
 });
@@ -57,7 +57,7 @@ Enqueue work via the worker module on the Unchained context:
 
 ```typescript
 await unchainedAPI.modules.worker.addWork({
-  type: 'HEARTBEAT',
+  type: 'DEMO_HEARTBEAT',
   retries: 0,
   input: { wait: 1000 },
 });

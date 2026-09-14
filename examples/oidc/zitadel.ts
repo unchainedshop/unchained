@@ -199,7 +199,7 @@ export default async function setupZitadel(app: FastifyInstance) {
 
         return reply.redirect('/');
       } catch (e) {
-        // SECURITY: Log full error server-side but return generic message to client
+        // Log the error message and name; return a generic message to the client
         logger.error('Zitadel callback error:', {
           message: (e as Error).message,
           name: (e as Error).name,

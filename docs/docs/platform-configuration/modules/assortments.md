@@ -13,18 +13,18 @@ The assortments module manages product categorization, hierarchical structures, 
 
 ```typescript
 export interface AssortmentsSettingsOptions {
-  getCachedProductIds: (
+  getCachedProductIds?: (
     assortmentId: string,
   ) => Promise<undefined | string[]>;
 
-  setCachedProductIds: (
+  setCachedProductIds?: (
     assortmentId: string,
     productIds: string[],
   ) => Promise<number>;
 
-  slugify: (title: string) => string;
+  slugify?: (title: string) => string;
 
-  zipTree: (data: Tree<string>) => string[];
+  zipTree?: (data: Tree<string>) => string[];
 }
 ```
 

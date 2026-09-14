@@ -13,81 +13,23 @@ npm install @unchainedshop/core-warehousing
 
 ## Usage
 
+The platform initializes this module as `platform.unchainedAPI.modules.warehousing`. Register a warehousing plugin before platform startup; the base preset includes the Store adapter.
+
 ```typescript
-import { configureWarehousingModule, WarehousingProviderType } from '@unchainedshop/core-warehousing';
+import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 
-const warehousingModule = await configureWarehousingModule({ db });
-
-// Create a warehousing provider
-const providerId = await warehousingModule.create({
+const { warehousing } = platform.unchainedAPI.modules;
+const provider = await warehousing.create({
   type: WarehousingProviderType.PHYSICAL,
-  adapterKey: 'shop.unchained.warehousing.inventory',
+  adapterKey: 'shop.unchained.warehousing.store',
+  configuration: [],
 });
-
-// Find providers
-const providers = await warehousingModule.findProviders({});
+const tokens = await warehousing.findTokensForUser({ userId: 'user-123' });
 ```
 
-## API Overview
+Provider records and tokens live in this module. Registered warehousing adapters implement stock and availability; `unchainedAPI.services.products` exposes inventory and dispatch simulations, and `unchainedAPI.services.warehousing` provides token helpers.
 
-### Module Configuration
-
-| Export | Description |
-|--------|-------------|
-| `configureWarehousingModule` | Configure and return the warehousing module |
-
-### Queries
-
-| Method | Description |
-|--------|-------------|
-| `findProvider` | Find provider by ID |
-| `findProviders` | Find providers with filtering |
-| `count` | Count providers |
-| `providerExists` | Check if provider exists |
-| `findSupported` | Find providers for product context |
-| `findInterface` | Get provider interface definition |
-
-### Mutations
-
-| Method | Description |
-|--------|-------------|
-| `create` | Create a new warehousing provider |
-| `update` | Update provider configuration |
-| `delete` | Soft delete a provider |
-
-### Token Surrogates
-
-For tokenized products (NFTs):
-
-| Method | Description |
-|--------|-------------|
-| `findTokenSurrogate` | Find token surrogate |
-| `createTokenSurrogate` | Create token surrogate |
-| `updateTokenSurrogate` | Update token surrogate |
-| `deleteTokenSurrogate` | Delete token surrogate |
-| `invalidateTokenSurrogates` | Invalidate surrogates for product |
-
-### Constants
-
-| Export | Description |
-|--------|-------------|
-| `WarehousingProviderType` | Provider types (PHYSICAL, VIRTUAL) |
-
-### Types
-
-| Export | Description |
-|--------|-------------|
-| `WarehousingProvider` | Provider document type |
-| `TokenSurrogate` | Token surrogate document type |
-| `WarehousingModule` | Module interface type |
-
-## Events
-
-| Event | Description |
-|-------|-------------|
-| `WAREHOUSING_PROVIDER_CREATE` | Provider created |
-| `WAREHOUSING_PROVIDER_UPDATE` | Provider updated |
-| `WAREHOUSING_PROVIDER_REMOVE` | Provider deleted |
+See the [module guide](https://docs.unchained.shop/platform-configuration/modules/warehousing), [public exports](src/warehousing-index.ts), and [module implementation](src/module/configureWarehousingModule.ts).
 
 ## License
 

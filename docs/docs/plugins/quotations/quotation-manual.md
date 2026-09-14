@@ -131,7 +131,7 @@ registerQuotation({
 
     return {
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-      price: Math.round(basePrice * quantity * (1 - discount)),
+      price: Math.round(basePrice * (1 - discount)), // discounted unit price
     };
   },
 });

@@ -7,7 +7,7 @@ description: Pre-configured plugin bundles for quick setup
 
 # Plugin Presets
 
-Presets register commonly used plugin bundles with the plugin registry. Call the registration function **before** `startPlatform` — registered plugins self-register their HTTP routes and database modules, so no framework-specific connector is needed.
+Presets register commonly used plugin bundles with the plugin registry. Call the registration function **before** `startPlatform`, which initializes their database modules and lifecycle hooks. The standard Express/Fastify connector mounts the plugins' HTTP routes, so each plugin needs no separate connector.
 
 ```ts
 import { startPlatform } from '@unchainedshop/platform';
@@ -73,6 +73,8 @@ Registers the base, crypto, and Swiss tax presets plus:
 - **Delivery**: Send Message, Pick-Mup (store pickup)
 - **Filters**: Strict Equal, Local Search
 - **Workers**: Twilio SMS, BulkGate SMS, BudgetSMS, Push Notification, Enrollment Order Generator
+
+Plugins that fail their `onRegister` configuration checks log a warning and skip their adapters and routes. This lets the all preset start with only the gateways you have configured. See [plugin lifecycle behavior](../concepts/director-adapter-pattern.md#how-to-register-a-plugin).
 
 ### Country Presets
 

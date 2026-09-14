@@ -13,76 +13,23 @@ npm install @unchainedshop/core-delivery
 
 ## Usage
 
+The platform initializes this module as `platform.unchainedAPI.modules.delivery`. Register a delivery plugin before platform startup; the base preset includes Post delivery.
+
 ```typescript
-import { configureDeliveryModule, DeliveryProviderType } from '@unchainedshop/core-delivery';
+import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 
-const deliveryModule = await configureDeliveryModule({ db });
-
-// Create a delivery provider
-const providerId = await deliveryModule.create({
+const { delivery } = platform.unchainedAPI.modules;
+const provider = await delivery.create({
   type: DeliveryProviderType.SHIPPING,
   adapterKey: 'shop.unchained.delivery.post',
+  configuration: [],
 });
-
-// Find providers for a context
-const providers = await deliveryModule.findSupported({
-  order: orderObject,
-});
+const providers = await delivery.findProviders({});
 ```
 
-## API Overview
+`create` returns the provider document. Provider selection and order fulfillment are coordinated through `unchainedAPI.services.orders` and delivery adapters; the core module manages provider records and settings.
 
-### Module Configuration
-
-| Export | Description |
-|--------|-------------|
-| `configureDeliveryModule` | Configure and return the delivery module |
-
-### Queries
-
-| Method | Description |
-|--------|-------------|
-| `findProvider` | Find provider by ID |
-| `findProviders` | Find providers with filtering |
-| `count` | Count providers |
-| `providerExists` | Check if provider exists |
-| `findSupported` | Find providers supported for context |
-| `findInterface` | Get provider interface definition |
-
-### Mutations
-
-| Method | Description |
-|--------|-------------|
-| `create` | Create a new delivery provider |
-| `update` | Update provider configuration |
-| `delete` | Soft delete a provider |
-
-### Constants
-
-| Export | Description |
-|--------|-------------|
-| `DeliveryProviderType` | Provider types (SHIPPING, PICKUP) |
-
-### Settings
-
-| Export | Description |
-|--------|-------------|
-| `deliverySettings` | Access delivery module settings |
-
-### Types
-
-| Export | Description |
-|--------|-------------|
-| `DeliveryProvider` | Provider document type |
-| `DeliveryModule` | Module interface type |
-
-## Events
-
-| Event | Description |
-|-------|-------------|
-| `DELIVERY_PROVIDER_CREATE` | Provider created |
-| `DELIVERY_PROVIDER_UPDATE` | Provider updated |
-| `DELIVERY_PROVIDER_REMOVE` | Provider deleted |
+See the [module guide](https://docs.unchained.shop/platform-configuration/modules/delivery), [public exports](src/delivery-index.ts), and [module implementation](src/module/configureDeliveryModule.ts).
 
 ## License
 

@@ -356,8 +356,8 @@ mutation EmptyCart {
 ### Product List
 
 ```tsx
-import { useQuery } from '@apollo/client';
-import { PRODUCTS_QUERY } from './queries';
+import { useQuery } from '@apollo/client/react';
+import { PRODUCTS_QUERY } from './queries.ts';
 
 function ProductList() {
   const { data, loading, error } = useQuery(PRODUCTS_QUERY, {
@@ -399,8 +399,8 @@ function ProductCard({ product }) {
 ### Add to Cart Button
 
 ```tsx
-import { useMutation } from '@apollo/client';
-import { ADD_TO_CART, GET_CART } from './queries';
+import { useMutation } from '@apollo/client/react';
+import { ADD_TO_CART, GET_CART } from './queries.ts';
 
 function AddToCartButton({ productId }) {
   const [addToCart, { loading }] = useMutation(ADD_TO_CART, {
@@ -428,8 +428,8 @@ function AddToCartButton({ productId }) {
 ### Cart Component
 
 ```tsx
-import { useQuery, useMutation } from '@apollo/client';
-import { GET_CART, UPDATE_QUANTITY, REMOVE_ITEM } from './queries';
+import { useQuery, useMutation } from '@apollo/client/react';
+import { GET_CART, UPDATE_QUANTITY, REMOVE_ITEM } from './queries.ts';
 
 function Cart() {
   const { data, loading } = useQuery(GET_CART);
@@ -507,13 +507,15 @@ See [Checkout Implementation](./checkout-implementation) for how guest login fit
 ### Format Price
 
 ```typescript
-export function formatPrice(amount: number, currency: string): string {
+export function formatPrice(amount: number, currency: string, decimals = 2): string {
   return new Intl.NumberFormat('de-CH', {
     style: 'currency',
     currency,
-  }).format(amount / 100); // Convert from cents
+  }).format(amount / 10 ** decimals);
 }
 ```
+
+Pass the currency's `decimals` value when formatting amounts; currencies such as JPY and cryptocurrency tokens do not necessarily use two decimal places.
 
 ### Slugify
 

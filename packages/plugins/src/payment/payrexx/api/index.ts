@@ -72,15 +72,3 @@ const createPayrexxAPI = (instance: string, secret: string) => {
 };
 
 export default createPayrexxAPI;
-
-// where you want to consume the payrexx module:
-// const payrexx = payrexx.init(instance, api_secret);
-// const response = await payrexx.createGateway({
-//   amount: 100,
-//   // add more fields here
-// });
-
-// if (response.status === 200) {
-//   const gateway = response.data.data[0];
-//   // here you will get the gateway
-// }

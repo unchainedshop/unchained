@@ -13,89 +13,21 @@ npm install @unchainedshop/core-quotations
 
 ## Usage
 
+The platform initializes this module as `platform.unchainedAPI.modules.quotations`.
+
 ```typescript
-import { configureQuotationsModule, QuotationStatus } from '@unchainedshop/core-quotations';
+import { QuotationStatus } from '@unchainedshop/core-quotations';
 
-const quotationsModule = await configureQuotationsModule({ db });
-
-// Create a quotation request
-const quotationId = await quotationsModule.create({
-  userId: 'user-123',
-  productId: 'custom-product-456',
-  configuration: [{ key: 'quantity', value: '1000' }],
-});
-
-// Propose a quote
-await quotationsModule.propose(quotationId, {
-  price: { amount: 5000, currency: 'CHF' },
-  expiresAt: new Date('2024-12-31'),
-});
-
-// Find quotations
-const quotations = await quotationsModule.findQuotations({
-  status: QuotationStatus.PROPOSED,
-});
+const { quotations } = platform.unchainedAPI.modules;
+const userQuotations = await quotations.findQuotations({ userId: 'user-123' });
+const proposals = userQuotations.filter(
+  (quotation) => quotations.normalizedStatus(quotation) === QuotationStatus.PROPOSED,
+);
 ```
 
-## API Overview
+Use the GraphQL quotation mutations or `unchainedAPI.services.quotations` to request, propose, and verify quotations through the configured adapter. A proposal's `price` is an integer amount in the quotation currency's minor units, and its expiration field is `expires`.
 
-### Module Configuration
-
-| Export | Description |
-|--------|-------------|
-| `configureQuotationsModule` | Configure and return the quotations module |
-
-### Queries
-
-| Method | Description |
-|--------|-------------|
-| `findQuotation` | Find quotation by ID |
-| `findQuotations` | Find quotations with filtering and pagination |
-| `count` | Count quotations matching query |
-| `quotationExists` | Check if quotation exists |
-
-### Mutations
-
-| Method | Description |
-|--------|-------------|
-| `create` | Create a quotation request |
-| `update` | Update quotation data |
-| `delete` | Delete a quotation |
-| `propose` | Propose a quote |
-| `verify` | Verify a quotation |
-| `reject` | Reject a quotation |
-| `fulfill` | Mark quotation as fulfilled |
-
-### Constants
-
-| Export | Description |
-|--------|-------------|
-| `QuotationStatus` | Status values (REQUESTED, PROCESSING, PROPOSED, FULFILLED, REJECTED) |
-
-### Settings
-
-| Export | Description |
-|--------|-------------|
-| `quotationsSettings` | Access quotation module settings |
-
-### Types
-
-| Export | Description |
-|--------|-------------|
-| `Quotation` | Quotation document type |
-| `QuotationConfiguration` | Configuration item type |
-| `QuotationsModule` | Module interface type |
-
-## Events
-
-| Event | Description |
-|-------|-------------|
-| `QUOTATION_CREATE` | Quotation requested |
-| `QUOTATION_UPDATE` | Quotation updated |
-| `QUOTATION_REMOVE` | Quotation deleted |
-| `QUOTATION_PROPOSE` | Quote proposed |
-| `QUOTATION_REJECT` | Quotation rejected |
-| `QUOTATION_FULLFILL` | Quotation fulfilled |
+See the [module guide](https://docs.unchained.shop/platform-configuration/modules/quotations), [quotation extension guide](https://docs.unchained.shop/extend/quotation), [public exports](src/quotations-index.ts), and [module implementation](src/module/configureQuotationsModule.ts).
 
 ## License
 

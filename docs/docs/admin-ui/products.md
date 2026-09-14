@@ -87,11 +87,11 @@ It is important to note that before adding a localized text, you need to ensure 
 
 ![diagram](../assets/product-sequence-setting.png)
 
-5. **Status**: The default behavior of products in the shop is to be active and displayed to customers. However, if you need to temporarily hide a product from customers while keeping it in the shop, you can change its status to draft. To do so, you simply toggle the button displaying the current status of the product and select "draft" as the new status. All operations on a product, such as updating or deleting, can be performed regardless of its status, but only active products are returned by default.
+5. **Status**: New products start in draft status. Publish a product to make it active and visible to storefront customers. To hide it again while keeping its data, change its status back to draft. The Admin UI disables editing deleted products; storefront queries return active products by default.
 
 ![diagram](../assets/publish-draft-product.png)
 
-6. **Delete**: You can remove a product by clicking on the delete button available on a product detail page. A product is deletable only when it is in draft status. If a product is active then it cannot be deleted. In this case, you can change the product status to draft if you don't want to display it to customers but still want to keep it in your shop.as **DRAFT** state, so if you want to delete a product that is active change its status to do so.
+6. **Delete**: The Admin UI offers deletion for draft products. Unpublish an active product first. Removal is blocked while the product is referenced by a bundle, a configurable product assignment, an open enrollment, or an open quotation.
 
 **Note: When deleting a product, it is important to ensure that the deletion does not cause any integrity issues or affect the shop's operations, such as active orders. It is essential to be cautious as this operation is not reversible.**
 
@@ -109,10 +109,10 @@ Based on the product type there are additional configuration options available f
 
 Since its a shop every product has a price and you can add one or multiple prices to a given product using the commerce tab available on the product detail page. 
 on the product commerce form you will be required to provide the following information
-- **Max Quantity**:- refers to the maximum number of product that should be in an order for the price to be used for a product. if left empty or 0 then it will be used as the default price for a product unless there is another price entry with max quantity set. On that case that price will be used the number of products in a order satisfy it.
-- **Price**:- Actual price  of the product. Note decimal pricing is not supported to you should enter price for a product by multiplying it with 100. for example if a product price is $35 then entry on the price field should be 3500 and if the price is $3.5 it should be entered as 350.
+- **Min Quantity**: The minimum order quantity at which this unit price applies. Leave it empty or set it to 0 for the base price. The price with the highest matching minimum quantity is used; see [Leveled Pricing](../concepts/pricing-system.md#leveled-quantity-tier-catalog-pricing).
+- **Price**: Enter the amount in the currency's normal display units, such as `35` for $35 or `3.50` for $3.50. The Admin UI converts it to integer minor units using the currency's decimal precision before sending it to the API.
 - **Vat suspect**:- determines if tax should be added on the product price when calculating total price of a product. the applied tax can be different based on the ProductPricing plugin in configured on the engine.
-- **Net price**:- Determines wether the price is final or tax, discount, delivery and other additional costs should be added to it when calculating total price
+- **Net price**: Select this if the entered amount excludes tax; leave it unselected for a gross amount that already includes tax. Discounts and delivery charges are calculated separately.
 - **Country**:- if you have different price for a product based on the customers order location you can select the country where a given price is applicable using this field.
 In order to add a select a country for a price you need to add the country in question using the  [new country form](./country/#add-country) first.
 - **Currency**:- Currency of the price. you can have multiple currency prices configured for a product and based on the order currency the corresponding price will be applied.
@@ -120,8 +120,8 @@ In order to add a select a currency for a price you need to add the currency usi
 
 
 **Requirements of pricing**
-- There must be one price entry with max quantity set to 0 that can be used as the default price.
-- It is not possible to add multiple product price with the same max quantity, country and currency and it will create a conflict.
+- Include a base price with minimum quantity 0 (or empty).
+- Each combination of minimum quantity, country, and currency must be unique.
 
 ![diagram](../assets/product-price-setting.png)
 
@@ -163,9 +163,9 @@ Bundle products are a collection of products that are sold together as a single 
 
 On the Bundle configuration page, you can specify the products that make up the bundle by selecting them from a list of available products. You can also set a custom name and description for the bundle.
 
-Additionally, you can set a custom price for the bundle, which will override the prices of the individual products. You can also choose whether the bundle price is fixed or calculated based on the sum of the prices of the individual products.
+Set a catalog price on the bundle to override the prices of its individual products. If the bundle has no matching catalog price, the built-in catalog pricing plugin sums the component catalog prices, accounting for each component's quantity.
 
-If a product that is part of a bundle is removed or becomes inactive, the bundle will be automatically updated to reflect the change.
+Changing a component's status does not remove it from the bundle. Remove its bundle entry explicitly before deleting the component product.
 
 On the "Bundles" tab of a Bundle product, you can add or remove one or multiple products to be included in the bundle along with the quantity assigned to each product using the provided form.
 

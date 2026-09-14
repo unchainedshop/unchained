@@ -36,9 +36,7 @@ To register using [Web authn](https://webauthn.guide/) go to the sign up page an
 
 
 # Authentication
-To access the admin UI, users need to authenticate themselves by providing their credentials. There are two options for authentication: email and password, OpenID Connect and [Web authn](https://webauthn.guide/).
+To access the admin UI, users need to authenticate themselves by providing their credentials. Supported options are email and password, OpenID Connect when configured, and [WebAuthn](https://webauthn.guide/).
 
 ## Login with Web authn
 Alternatively, users can choose to authenticate themselves using [Web authn](https://webauthn.guide/), provided that it has been enabled. This authentication method uses public key cryptography to authenticate users, and it is considered more secure than traditional authentication methods. Users will be required to follow the prompts and provide the necessary information to complete the authentication process.
-
-In summary, users can authenticate themselves on admin UI using either email and password or with [Web authn](https://webauthn.guide/) (if enabled).

@@ -22,7 +22,7 @@ import { CryptopayPlugin } from '@unchainedshop/plugins/payment/cryptopay';
 pluginRegistry.register(CryptopayPlugin);
 ```
 
-Register before `startPlatform()`. Registration mounts the webhook route `POST /payment/cryptopay` (path configurable via `CRYPTOPAY_WEBHOOK_PATH`) and adds the `cryptopay` database module. Registration throws if `CRYPTOPAY_SECRET` is missing or neither xpub is set.
+Register before `startPlatform()`. At startup, the plugin adds the `cryptopay` database module and enables `POST /payment/cryptopay` (path configurable via `CRYPTOPAY_WEBHOOK_PATH`). The Express/Fastify connector mounts the route. If `CRYPTOPAY_SECRET` is missing or neither xpub is set, initialization logs a warning and skips this plugin's adapter and route; its database module has already been initialized.
 
 ## Environment Variables
 

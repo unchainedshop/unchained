@@ -5,7 +5,7 @@ const logger = createLogger('unchained:api:auth');
 
 const {
   UNCHAINED_TOKEN_SECRET,
-  UNCHAINED_TOKEN_EXPIRY_SECONDS = '3600', // 1 hour default (was 7 days - OWASP recommends shorter)
+  UNCHAINED_TOKEN_EXPIRY_SECONDS = '3600', // 1 hour default
   UNCHAINED_TOKEN_ISSUER = 'unchained-engine',
 } = process.env;
 
@@ -16,7 +16,7 @@ const MIN_SECRET_LENGTH = 32;
 const jwksCache = new Map<string, jose.JWTVerifyGetKey>();
 
 export interface AccessTokenPayload {
-  iss: string; // issuer - OWASP requires this
+  iss: string; // Issuer matched during local token verification
   sub: string; // userId
   ver: number; // tokenVersion
   imp?: string; // impersonatorId (for admin impersonation)
@@ -37,7 +37,7 @@ export interface AuthConfig {
 
 /**
  * Validate the token secret meets minimum security requirements
- * OWASP: JWT secrets must be at least 256 bits (32 bytes) for HS256
+ * Enforce the configured minimum secret length before signing or verification.
  */
 function validateSecretStrength(secret: string): void {
   if (secret.length < MIN_SECRET_LENGTH) {
@@ -62,7 +62,7 @@ export async function signAccessToken(
     throw new Error('UNCHAINED_TOKEN_SECRET environment variable is required');
   }
 
-  // Validate secret strength on first use
+  // Validate the configured secret before signing.
   validateSecretStrength(UNCHAINED_TOKEN_SECRET);
 
   const expirySeconds = parseInt(UNCHAINED_TOKEN_EXPIRY_SECONDS, 10);

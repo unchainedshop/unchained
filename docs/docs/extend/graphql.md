@@ -89,7 +89,7 @@ await startPlatform({
 That was all, everything is setup and the schema will be updated to include the custom types defined above for product entity.
 Assuming we have a `SimpleProduct` with `productId` `test-product-id`, we can use `Mutation.updateProduct` to assign values for the new fields:
 
-```graphql
+```graphql schema=page
 mutation UpdateProductMeta {
   updateProduct(
     productId: "test-product-id"
@@ -137,47 +137,24 @@ DESC at the end means it should sort descending whereas ASC or neither direction
 
 
 
-### List of entity types that hold meta property
+### Custom fields on orders and deliveries
 
-```js
-Assortment
-AssortmentProduct
-AssortmentLink
-AssortmentFilter
-Media
-Product
-ProductReview
-ProductReviewVote
-ConfigurableProduct
-SimpleProduct
-BundleProduct
-PlanProduct
-Enrollment
-Quotation
-EnrollmentPayment
-EnrollmentDelivery
-User
-```
+Products store custom data in `meta`. Orders, order payments, and order deliveries store their custom data in `context`. Extend the appropriate concrete GraphQL type and read from the corresponding stored property:
 
-Note: While every entity that listed above exposes a meta property there is an exception for Order related entities. Order related entities store `meta` property and other useful information about the order under `context` property. So in order to get the `meta` value of an order you read it from the `context`. This entity types are listed below:
+```javascript
+const typeDefs = [/* GraphQL */ `
+  extend type OrderDeliveryShipping {
+    isBatteryPart: Boolean!
+  }
+`];
 
-```
-  Order
-  OrderDelivery
-  OrderDeliveryPickUp
-  OrderDeliveryShipping
-  OrderPaymentInvoice
-  OrderPaymentGeneric
-  OrderPayment
-```
-
-```js
 const resolverDefs = {
-  OrderDelivery: {
+  OrderDeliveryShipping: {
     isBatteryPart(obj) {
-      return obj.context?.["isBatteryPart"] || false;
+      return Boolean(obj.context?.isBatteryPart);
     },
-
+  },
+};
 ```
 
 For detail reference about graphql schema and how to extend the refer to the official [graphql documentation](https://graphql.org/learn/schema/)
@@ -256,9 +233,15 @@ builder.queryType({
       resolve: async (parent, args, context) => {
         // Use Unchained context to fetch data
         const products = await context.modules.products.findProducts({});
-        return products.map(p => ({
-          id: p._id,
-          name: p.texts?.title || 'Untitled',
+        return Promise.all(products.map(async (product) => {
+          const texts = await context.modules.products.texts.findLocalizedText({
+            productId: product._id,
+            locale: context.locale,
+          });
+          return {
+            id: product._id,
+            name: texts?.title || 'Untitled',
+          };
         }));
       },
     }),

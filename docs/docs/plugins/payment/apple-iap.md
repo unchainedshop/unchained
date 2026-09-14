@@ -22,13 +22,13 @@ import { AppleIAPPlugin } from '@unchainedshop/plugins/payment/apple-iap';
 pluginRegistry.register(AppleIAPPlugin);
 ```
 
-Register before `startPlatform()`. Registration mounts the route `POST /payment/apple-iap` for [App Store server notifications](https://developer.apple.com/documentation/appstoreservernotifications) (path configurable via `APPLE_IAP_WEBHOOK_PATH`) and adds the `appleTransactions` database module. Registration throws if `APPLE_IAP_SHARED_SECRET` is not set.
+Register before `startPlatform()`. At startup, the plugin adds the `appleTransactions` database module and enables `POST /payment/apple-iap` for [App Store server notifications](https://developer.apple.com/documentation/appstoreservernotifications) (path configurable via `APPLE_IAP_WEBHOOK_PATH`). The Express/Fastify connector mounts the route. If `APPLE_IAP_SHARED_SECRET` is missing, initialization logs a warning and skips this plugin's adapter and route; its database module has already been initialized.
 
 ## Environment Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `APPLE_IAP_SHARED_SECRET` | - | App Store shared secret for receipt validation (required, registration throws without it) |
+| `APPLE_IAP_SHARED_SECRET` | - | App Store shared secret for receipt validation (required; the adapter and route are skipped without it) |
 | `APPLE_IAP_ENVIRONMENT` | `sandbox` | Receipt verification environment: `sandbox` or `production` |
 | `APPLE_IAP_WEBHOOK_PATH` | `/payment/apple-iap` | Server notification endpoint path |
 

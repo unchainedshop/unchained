@@ -35,9 +35,7 @@ export async function processEnrollmentService(this: Modules, enrollment: Enroll
   const status = await findNextStatus(enrollment, this);
 
   if (status === EnrollmentStatus.ACTIVE) {
-    // const nextEnrollment = await reactivateEnrollment(enrollment);
     // TODO: Reactivate!
-    // status = await findNextStatus(nextEnrollment, unchainedAPI);
   }
 
   if (status) {

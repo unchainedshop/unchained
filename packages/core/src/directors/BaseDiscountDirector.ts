@@ -36,15 +36,16 @@ export const BaseDiscountDirector = <DiscountConfigurationType>(
           if (!context.order) return null;
 
           const discounts = await Promise.all(
-            this.getAdapters()
-              .filter((Adapter) => Adapter.isManualAdditionAllowed(options?.code))
-              .map(async (Adapter) => {
-                const adapter = await Adapter.actions({ context });
-                return {
-                  Adapter,
-                  isValid: await adapter.isValidForCodeTriggering(options),
-                };
-              }),
+            this.getAdapters().map(async (Adapter) => {
+              if (!(await Adapter.isManualAdditionAllowed(options?.code))) {
+                return { Adapter, isValid: false };
+              }
+              const adapter = await Adapter.actions({ context });
+              return {
+                Adapter,
+                isValid: await adapter.isValidForCodeTriggering(options),
+              };
+            }),
           );
 
           return discounts.find(({ isValid }) => isValid === true)?.Adapter || null;

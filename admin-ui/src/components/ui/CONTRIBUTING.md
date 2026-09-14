@@ -16,14 +16,6 @@
 1. Create the component in `src/components/ui/`.
 2. Add it to the barrel export in `index.ts`.
 3. Add a demo section in `src/pages/styleguide.tsx`.
-4. Update this README's component list.
+4. Update [README.md](README.md)'s component list.
 
-## Deferred work
-
-| Item | Phase | Notes |
-|------|-------|-------|
-| Modal -> Headless UI Dialog | C | Behavioral rewrite |
-| Table -> TanStack Table | C | New dep + virtualization |
-| Combobox consolidation | D | 4 consumers need careful API |
-| Semantic tokens | B | After primitives are settled |
-| `@unchainedshop/client/ui` export | E | After tokens land |
+Semantic tokens are implemented in `src/styles/globals.css`. Published UI and form exports are available from `@unchainedshop/admin-ui/ui` and `@unchainedshop/admin-ui/form`; see the [Admin UI README](../../../../README.md).

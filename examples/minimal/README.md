@@ -1,6 +1,6 @@
 # Minimal Example
 
-Minimal Headless E-Commerce Backend in < 20 lines of ESM code.
+Minimal headless e-commerce backend using ESM JavaScript. Requires Node.js 26+.
 
 Batteries included:
 - Fastify
@@ -10,6 +10,7 @@ Batteries included:
 
 ```
 npx degit unchainedshop/unchained/examples/minimal my-minimal-app
+cd my-minimal-app
 npm install
-node --env-file .env.defaults boot.js
+npm start
 ```

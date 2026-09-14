@@ -25,7 +25,7 @@ Call factories **before `startPlatform()`**, in your boot code.
 
 ## Two things every factory does for you
 
-- **Keys are auto-namespaced.** You pass an `adapterId` (a short, stable string), and the factory derives the plugin/adapter key as `shop.unchained.<domain>.<adapterId>`. Re-using the same `adapterId` is dedupe-safe (the registry ignores a duplicate key and warns). Pick a stable id; don't generate a random one per boot.
+- **Keys are auto-namespaced.** Most factories take an `adapterId` (a short, stable string) and derive a plugin/adapter key using the namespace shown below. The worker factory uses `type`; filter factories can generate an id if omitted. Reusing the same factory and id is dedupe-safe (the registry ignores a duplicate key and warns). Pick a stable id when you want repeat calls to refer to the same plugin.
 - **The version is fixed at `1.0.0`.** If you need to control the `key`, `version`, attach HTTP `routes`, a `module`, or `onRegister`/`onShutdown` lifecycle hooks, build an `IPlugin` by hand instead — see [below](#when-not-to-use-a-factory).
 
 :::note Parameter naming varies per factory
@@ -204,16 +204,28 @@ registerProductPricing({
 | `orderIndex` *(product only)* | `number` | | |
 | `isManualAdditionAllowed` / `isManualRemovalAllowed` *(product only)* | `fn` | | manual coupon entry |
 
+The callback arguments differ between the two factories:
+
+| Callback | Product discount | Order discount |
+|---|---|---|
+| `isValidForSystemTriggering` | `()` | `(context)` |
+| `isValidForCodeTriggering` | `({ code })` | `(code, context)` |
+| `discountForPricingAdapterKey` | `({ pricingAdapterKey, calculationSheet })` | `({ pricingAdapterKey, calculationSheet }, context)` |
+| `reserve` | `({ code })` | `(code, context)` |
+| `release` | `()` | `(context)` |
+
 ```ts
 import { registerOrderDiscount } from '@unchainedshop/core';
 
 registerOrderDiscount({
-  adapterId: 'promo10',
-  isValidForCodeTriggering: async (code) => code === 'PROMO10',
+  adapterId: 'automatic-promo10',
+  isValidForSystemTriggering: async () => true,
   discountForPricingAdapterKey: ({ pricingAdapterKey }) =>
     pricingAdapterKey === 'shop.unchained.pricing.order-discount' ? { rate: 0.1 } : null,
 });
 ```
+
+`registerOrderDiscount` inherits `isManualAdditionAllowed` and `isManualRemovalAllowed` as `false`. For a customer-entered coupon, use the [full adapter example](./pricing/order-discounts.md#coupon-codes) to expose the correct manual permissions.
 
 > See also: [Order discounts](./pricing/order-discounts.md)
 
@@ -318,7 +330,7 @@ Recurring/subscription plans. `configurationForOrder` is required.
 | `isActivatedFor` | `(productPlan?) => boolean` | gate by plan; default `true` |
 | `transformOrderItem` | `(orderPosition, api) => Promise<EnrollmentPlan>` | |
 | `nextPeriod` | `(context) => Promise<EnrollmentPeriod \| null>` | next billing window |
-| `isOverdue` / `isValidForActivation` | `(context) => Promise<boolean>` | |
+| `isOverdue` / `isValidForActivation` | `(context) => Promise<boolean>` | default `false`; supply `isValidForActivation` to grant access |
 
 > See also: [Enrollment](./enrollment.md)
 

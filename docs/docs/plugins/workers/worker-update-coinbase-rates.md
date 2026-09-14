@@ -57,9 +57,7 @@ Only currencies that exist in your Unchained system (active or inactive) are upd
 
 ## Rate Expiration
 
-Rates are set to expire after 5 minutes, ensuring that:
-- Stale cryptocurrency rates are not used
-- The system falls back gracefully if the worker stops
+Rates expire after 5 minutes. Expired rates are excluded from conversion lookups; if updates stop and no valid rate remains, the rate-conversion pricing adapter cannot supply a converted price.
 
 ## Result
 

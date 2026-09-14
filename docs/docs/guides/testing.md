@@ -115,7 +115,11 @@ Integration tests load `.env.tests` with `.env` as an optional fallback (see the
 
 ```bash
 NODE_ENV=test
+EMAIL_WEBSITE_NAME=Unchained
+EMAIL_WEBSITE_URL=http://localhost:4010
+EMAIL_FROM=noreply@unchained.local
 UNCHAINED_TOKEN_SECRET=random-token-that-is-not-secret-at-all  # must be at least 32 characters
+# tests/setup.js assigns ROOT_URL from the dynamically allocated server port
 # No MONGO_URL: mongodb-memory-server is started automatically
 ```
 
@@ -128,7 +132,7 @@ import assert from 'node:assert/strict';
 import { describe, it, before } from 'node:test';
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
 
-describe('Order Checkout Flow', () => {
+describe('Add a Product to the Cart', () => {
   let graphqlFetch;
 
   before(async () => {
@@ -136,7 +140,7 @@ describe('Order Checkout Flow', () => {
     graphqlFetch = createLoggedInGraphqlFetch(); // admin client
   });
 
-  it('should create and checkout an order', async () => {
+  it('creates a product and adds it to the cart', async () => {
     // Create a product (title/slug live on the texts argument, not the product input)
     const { data: { createProduct } } = await graphqlFetch({
       query: `
@@ -149,6 +153,16 @@ describe('Order Checkout Flow', () => {
           }
         }
       `,
+    });
+
+    // Cart validation requires an active product
+    await graphqlFetch({
+      query: `
+        mutation PublishProduct($productId: ID!) {
+          publishProduct(productId: $productId) { _id }
+        }
+      `,
+      variables: { productId: createProduct._id },
     });
 
     // Add to cart

@@ -22,14 +22,14 @@ import { GridFSPlugin } from '@unchainedshop/plugins/files/gridfs';
 pluginRegistry.register(GridFSPlugin);
 ```
 
-Register before `startPlatform()`. Registration mounts the file route `ALL /gridfs/:directoryName/:fileName` (base path configurable via `GRIDFS_PUT_SERVER_PATH`) — handling `PUT` (signed uploads), `GET` (downloads), and `OPTIONS` (CORS preflight) — and adds the `gridfsFileUploads` database module.
+Register before `startPlatform()`, which initializes the `gridfsFileUploads` database module. The Express/Fastify connector mounts `ALL /gridfs/:directoryName/:fileName` (base path configurable via `GRIDFS_PUT_SERVER_PATH`), handling `PUT` (signed uploads), `GET` (downloads), and `OPTIONS` (CORS preflight).
 
 ## Environment Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `GRIDFS_PUT_SERVER_PATH` | `/gridfs` | Base URL path for the file upload/download endpoint |
-| `UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET` | - | Random secret used to HMAC-sign upload and download URLs. Without it, PUT uploads and signed downloads fail (registration logs a warning). |
+| `UNCHAINED_GRIDFS_PUT_UPLOAD_SECRET` | - | Random secret used to HMAC-sign upload and download URLs. Without it, PUT uploads and signed downloads fail (initialization logs a warning). |
 
 ## Usage
 

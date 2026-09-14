@@ -22,7 +22,7 @@ import { DatatransPlugin } from '@unchainedshop/plugins/payment/datatrans-v2';
 pluginRegistry.register(DatatransPlugin);
 ```
 
-Register before `startPlatform()`. Registration mounts the webhook route `POST /payment/datatrans/webhook` (path configurable via `DATATRANS_WEBHOOK_PATH`) on the Unchained HTTP server. Registration throws if neither `DATATRANS_SIGN_KEY` nor `DATATRANS_SIGN2_KEY` is set.
+Register before `startPlatform()`. At startup, the plugin enables the webhook route `POST /payment/datatrans/webhook` (path configurable via `DATATRANS_WEBHOOK_PATH`); the Express/Fastify connector mounts it on the Unchained HTTP server. If neither `DATATRANS_SIGN_KEY` nor `DATATRANS_SIGN2_KEY` is set, initialization logs a warning and skips this plugin's adapter and route.
 
 ## Environment Variables
 

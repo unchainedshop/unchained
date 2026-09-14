@@ -13,60 +13,19 @@ npm install @unchainedshop/core-currencies
 
 ## Usage
 
+The platform initializes this module as `platform.unchainedAPI.modules.currencies`.
+
 ```typescript
-import { configureCurrenciesModule } from '@unchainedshop/core-currencies';
+const { currencies } = platform.unchainedAPI.modules;
 
-const currenciesModule = await configureCurrenciesModule({ db });
-
-// Create a currency
-const currencyId = await currenciesModule.create({
-  isoCode: 'CHF',
-});
-
-// Find currencies
-const currencies = await currenciesModule.findCurrencies({ includeInactive: false });
+const currencyId = await currencies.create({ isoCode: 'CHF', isActive: true });
+const currency = await currencies.findCurrency({ currencyId });
+const activeCurrencies = await currencies.findCurrencies({ includeInactive: false });
 ```
 
-## API Overview
+`create` returns a currency ID. Monetary amounts use integer minor units; use the currency's decimal precision when converting amounts for display.
 
-### Module Configuration
-
-| Export | Description |
-|--------|-------------|
-| `configureCurrenciesModule` | Configure and return the currencies module |
-
-### Queries
-
-| Method | Description |
-|--------|-------------|
-| `findCurrency` | Find currency by ID or ISO code |
-| `findCurrencies` | Find currencies with filtering, sorting, and pagination |
-| `count` | Count currencies matching query |
-| `currencyExists` | Check if a currency exists |
-
-### Mutations
-
-| Method | Description |
-|--------|-------------|
-| `create` | Create a new currency |
-| `update` | Update an existing currency |
-| `delete` | Soft delete a currency |
-
-### Types
-
-| Export | Description |
-|--------|-------------|
-| `Currency` | Currency document type |
-| `CurrencyQuery` | Query parameters type |
-| `CurrenciesModule` | Module interface type |
-
-## Events
-
-| Event | Description |
-|-------|-------------|
-| `CURRENCY_CREATE` | Emitted when a currency is created |
-| `CURRENCY_UPDATE` | Emitted when a currency is updated |
-| `CURRENCY_REMOVE` | Emitted when a currency is removed |
+See the [module guide](https://docs.unchained.shop/platform-configuration/modules/currencies), [public exports](src/currencies-index.ts), and [module implementation](src/module/configureCurrenciesModule.ts) for the API and events.
 
 ## License
 

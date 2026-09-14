@@ -5,10 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 ```bash
-# Development server with debugging
+# Development server
 npm run dev
 
-# Production build (includes permission generation)
+# Production static export and SDK build
 npm run build
 
 # Generate GraphQL types from schema
@@ -19,7 +19,7 @@ npm run lint
 npm run format
 
 # Testing
-npm run test:e2e          # Open Cypress e2e tests
+npm run test:e2e          # Run Cypress e2e tests
 npm run test:component    # Open Cypress component tests
 npm run test:e2e-record   # Run e2e tests in CI with recording
 
@@ -31,7 +31,7 @@ npm run compile-translation  # Compile translations
 ## Architecture Overview
 
 ### Core Technologies
-- **Next.js 15** with static export mode (`output: 'export'`)
+- **Next.js 16** with static export mode (`output: 'export'`)
 - **React 19** with TypeScript
 - **Apollo Client** for GraphQL data management
 - **Tailwind CSS 4** for styling with custom `@apply` classes in `globals.css`
@@ -39,14 +39,15 @@ npm run compile-translation  # Compile translations
 - **React Hook Form** for form management
 
 ### GraphQL Integration
-- **Schema Endpoint**: `http://localhost:4010/graphql` (configurable via `NEXT_PUBLIC_GRAPHQL_ENDPOINT`)
+- **Runtime Endpoint**: Same-origin `/graphql`, overridden by `NEXT_PUBLIC_GRAPHQL_ENDPOINT`; `.env.development` points at `http://localhost:4010/graphql`
+- **Codegen Endpoint**: `http://localhost:4010/graphql`, configured separately in `codegen.ts`
 - **Code Generation**: Auto-generates TypeScript types from GraphQL schema via `codegen.ts`
 - **Type Prefix**: All generated types prefixed with `I` (e.g., `IUser`, `IProduct`)
 - **Apollo Cache**: Custom cache policies in `src/modules/apollo/utils/typepolicies.ts`
 
 ### Permission System
-- **Build-time Generation**: `generate-permissions.js` creates `public/admin-ui-permissions.js`
-- **Dynamic Loading**: Permissions loaded via `loadPermissionConfig.js` (external dependency)
+- **Route Permissions**: Route-to-action mappings are defined and evaluated in `src/modules/Auth/permissionConfig.ts`
+- **Runtime Actions**: Permissions come from the current user's GraphQL `allowedActions`; the backend enforces authorization
 - **Role-based Access**: `useAuth` hook provides `hasRole()` function throughout components
 
 ### Internationalization Architecture
@@ -98,16 +99,15 @@ const form = useForm({
 
 ### Chat/Copilot Integration
 - **AI SDK React**: `@ai-sdk/react` for streaming chat
-- **Current State**: Configured for external API at `localhost:4010/chat`
+- **Endpoint**: Same-origin `/chat`, overridden by `NEXT_PUBLIC_CHAT_URL`; `.env.development` points at `http://localhost:4010/chat`
 - **Storage**: Local chat history in `localStorage`
-- **Components**: Modular chat system in `src/components/chat/`
-- **Auto-Introduction**: Automatically sends "Introduce yourself and your tools to the user" when chat is empty
+- **Components**: Modular chat system in `src/modules/copilot/`
 - **Welcome State**: Shows example prompts and capabilities when no messages exist
 
 ### Build Configuration
 - **Static Export**: No server-side features (API routes disabled)
 - **Image Optimization**: Disabled for static export
-- **Permission Generation**: Pre-build step generates permission configuration
+- **SDK Build**: `tsup` and `tsc -p tsconfig.sdk.json` build the exported component and plugin APIs after the static export
 
 ### Testing Strategy
 - **Cypress**: E2E and component testing
@@ -117,11 +117,10 @@ const form = useForm({
 ## Important Notes
 
 - **Static Export Limitation**: `output: 'export'` in `next.config.js` disables API routes
-- **Permission Dependency**: Build requires external `loadPermissionConfig.js` file
 - **GraphQL Schema**: Development assumes Unchained Commerce backend on `localhost:4010`
 - **Locale Architecture**: Two separate locale systems for Admin UI vs content translation
 - **TypeScript Configuration**: Relaxed mode (`strict: false`) for compatibility
-- **Build Process**: Always runs permission generation before Next.js build
+- **Build Process**: Runs the Next.js static export, then builds the SDK
 
 ## Environment Variables
 

@@ -3,7 +3,7 @@
 
 # @unchainedshop/api
 
-GraphQL API layer for the Unchained Engine. Provides a complete GraphQL API using Yoga with support for Express and Fastify servers, plus MCP (Model Context Protocol) server for AI integrations.
+GraphQL API using Yoga, HTTP adapters for Express and Fastify, and an MCP server for AI integrations.
 
 ## Installation
 
@@ -11,7 +11,9 @@ GraphQL API layer for the Unchained Engine. Provides a complete GraphQL API usin
 npm install @unchainedshop/api
 ```
 
-## Usage
+Install your chosen HTTP framework separately. Most applications obtain the core and GraphQL handler through `startPlatform()` from `@unchainedshop/platform`; the examples below assume an initialized `unchainedCore`.
+
+## Express
 
 ```typescript
 import express from 'express';
@@ -19,109 +21,54 @@ import { startAPIServer } from '@unchainedshop/api';
 import { connect } from '@unchainedshop/api/express';
 
 const app = express();
-
-// Start API server (returns GraphQL Yoga server instance)
-const graphqlHandler = await startAPIServer({
-  unchainedAPI: unchainedCore,
-  adminUiConfig: {
-    // Admin UI configuration
-  },
+const graphqlHandler = await startAPIServer({ unchainedAPI: unchainedCore });
+await connect(app, { graphqlHandler, unchainedAPI: unchainedCore }, {
+  adminUI: true,
 });
-
-// Connect Express app with Unchained API
-connect(app, { graphqlHandler, db, unchainedAPI: unchainedCore }, {
-  adminUI: true, // Enable admin UI
-});
-
 app.listen(4010);
 ```
 
-### With Fastify
+## Fastify
 
 ```typescript
 import Fastify from 'fastify';
 import { connect } from '@unchainedshop/api/fastify';
 
 const fastify = Fastify();
-await connect(fastify, { graphqlHandler, db, unchainedAPI: unchainedCore });
+await connect(fastify, { graphqlHandler, unchainedAPI: unchainedCore });
 await fastify.listen({ port: 4010 });
 ```
 
-## API Overview
+`connect()` mounts the GraphQL endpoint, `/mcp`, and routes supplied by registered plugins. Admin UI hosting requires the optional `@unchainedshop/admin-ui` package; Fastify also needs `@fastify/static`. Configure a prefix with `{ adminUI: { prefix: '/admin' } }` in the third argument to `connect()`.
 
-### Server Setup
+## API overview
 
-| Export | Description |
-|--------|-------------|
-| `startAPIServer` | Create GraphQL server with full schema |
-| `createContextResolver` | Create request context resolver |
-| `getCurrentContextResolver` | Get current context resolver |
-| `setCurrentContextResolver` | Set custom context resolver |
+| Export | Purpose |
+|--------|---------|
+| `startAPIServer` | Create a GraphQL Yoga server with the built-in schema |
+| `createContextResolver` | Create a request context resolver |
+| `getCurrentContextResolver` | Read the configured resolver |
+| `setCurrentContextResolver` | Replace the configured resolver |
+| `Context` | GraphQL context type |
+| `UnchainedLocaleContext` | Country, currency, and locale context type |
+| `UnchainedLoaders` | Request-scoped data loader types |
+| `acl` | Access control utilities |
+| `roles` | Role configuration and permission actions (`roles.actions`) |
 
-### Server Adapters
+The HTTP subpaths export `connect`, `adminUIRouter`, `connectChat`, and Admin UI configuration types. The main package exports domain-specific errors such as `ProductNotFoundError`, `OrderNotFoundError`, `UserNotFoundError`, `NoPermissionError`, and `InvalidIdError`.
 
-| Import Path | Export | Description |
-|-------------|--------|-------------|
-| `@unchainedshop/api/express` | `connect` | Connect Express app with Unchained API |
-| `@unchainedshop/api/express` | `adminUIRouter` | Admin UI Express router |
-| `@unchainedshop/api/fastify` | `connect` | Connect Fastify app with Unchained API |
-
-### Context
-
-| Export | Description |
-|--------|-------------|
-| `UnchainedContext` | GraphQL context type |
-| `LocaleContext` | Locale-aware context type |
-
-### Loaders
-
-Data loaders for efficient batched queries:
-
-| Loader | Description |
-|--------|-------------|
-| `productLoader` | Batch product loading |
-| `assortmentLoader` | Batch assortment loading |
-| `userLoader` | Batch user loading |
-
-### Access Control
-
-| Export | Description |
-|--------|-------------|
-| `acl` | Access control list utilities |
-| `roles` | Role definitions and actions |
-| `actions` | Available permission actions |
-
-### Error Handling
-
-| Export | Description |
-|--------|-------------|
-| `UnauthorizedError` | Authentication error |
-| `PermissionDeniedError` | Authorization error |
-| `InvalidIdError` | Invalid ID format error |
-| `NotFoundError` | Resource not found error |
-
-### Events
-
-| Event | Description |
-|-------|-------------|
-| `API_REQUEST` | Emitted on API requests |
-
-## Configuration
+## Extending the server
 
 ```typescript
-const server = await startAPIServer({
-  unchainedAPI: core,
-  roles: customRoles,
+const graphqlHandler = await startAPIServer({
+  unchainedAPI: unchainedCore,
   adminUiConfig: {
-    basePath: '/admin',
+    defaultProductTags: ['featured'],
   },
-  context: (defaultResolver) => async (props, req, res) => {
-    const context = await defaultResolver(props, req, res);
-    return {
-      ...context,
-      // Add custom context
-    };
-  },
+  context: (defaultResolver) => async (props, req, res) => ({
+    ...(await defaultResolver(props, req, res)),
+    // Additional request context
+  }),
   typeDefs: [
     // Additional GraphQL type definitions
   ],
@@ -131,17 +78,11 @@ const server = await startAPIServer({
 });
 ```
 
-## GraphQL Schema
+The built-in schema provides queries and mutations for catalog management, orders, checkout, authentication, and other commerce operations. See [schema composition](src/schema/index.ts), [server options](src/createGraphQLServer.ts), and [context options](src/context.ts).
 
-The API exposes a complete GraphQL schema with:
+## MCP and chat
 
-- **Queries**: Products, orders, users, assortments, filters, etc.
-- **Mutations**: CRUD operations, checkout, authentication
-- **Subscriptions**: Real-time updates (where supported)
-
-## MCP Server
-
-Model Context Protocol server for AI agent integrations. `connect()` (Express or Fastify) automatically mounts a stateless MCP endpoint at `/mcp` (configurable via `MCP_API_PATH`). The endpoint requires an authenticated user with the `admin` role and serves 9 management tools plus the shop localization resources.
+`connect()` mounts a stateless MCP endpoint at `/mcp`, configurable through `MCP_API_PATH`. It requires an authenticated user with the `admin` role. See the [MCP reference](src/mcp/README.md) for its tools and resources.
 
 MCP support is an optional peer dependency:
 
@@ -149,211 +90,44 @@ MCP support is an optional peer dependency:
 npm install @modelcontextprotocol/server
 ```
 
-Without it, the engine boots normally and `/mcp` responds with `503`. The chat handlers (`connect(..., { chat })`) additionally require the optional peers `ai` and `@ai-sdk/mcp` — and `@modelcontextprotocol/server` too, since chat derives its tool set through the engine's own `/mcp` endpoint.
+Without it, the engine boots and `/mcp` responds with `503`. Chat handlers configured through `connect(..., { chat })` additionally need `ai` and `@ai-sdk/mcp`, as well as `@modelcontextprotocol/server`: chat obtains tools through the engine's own MCP endpoint.
 
-## Security
+## Authentication and cookies
 
-The API layer implements comprehensive security controls.
+The API supports locally signed JWTs, configured OIDC providers, and API keys. Configure OIDC with `authConfig` in the third argument to `connect()`.
 
-### Access Control
-
-- **128+ permission actions** covering all API operations
-- **Role-Based Access Control (RBAC)** with built-in and custom roles
-- **ACL enforcement** on all GraphQL mutations
-- **Ownership validation** ensuring users can only access their resources
-
-### Session Security
-
-| Variable | Purpose | Default |
-|----------|---------|---------|
-| `UNCHAINED_TOKEN_SECRET` | Session encryption (min 32 chars) | Required |
-| `UNCHAINED_COOKIE_NAME` | Cookie name | `unchained_token` |
+| Environment variable | Purpose | Default |
+|----------------------|---------|---------|
+| `UNCHAINED_TOKEN_SECRET` | Local JWT signing secret, at least 32 characters | Required for local tokens |
+| `UNCHAINED_COOKIE_NAME` | Token cookie name | `unchained_token` |
+| `UNCHAINED_COOKIE_PATH` | Cookie path | `/` |
+| `UNCHAINED_COOKIE_DOMAIN` | Cookie domain | Unset |
 | `UNCHAINED_COOKIE_SAMESITE` | SameSite attribute | `lax` |
-| `UNCHAINED_COOKIE_INSECURE` | Disable secure flag (development only) | `false` |
+| `UNCHAINED_COOKIE_INSECURE` | Any nonempty value disables the Secure attribute | Unset |
 
-Cookies are `httpOnly` and `secure` by default.
+Cookies are `httpOnly` and `secure` by default. Account/token handling and ACL enforcement are implemented by the authentication middleware and resolvers; access to domain modules directly does not run those GraphQL permission checks.
 
-### Error Handling
+## CORS and reverse proxies
 
-Errors are designed to prevent information leakage:
-- Generic authentication error messages
-- No distinction between "invalid" vs "expired" tokens
-- Permission errors don't reveal action details
+Configure CORS through framework middleware or your reverse proxy. GraphQL Yoga also accepts its own `cors` server option through `startAPIServer()`/`startPlatform()`; it applies to GraphQL, not every mounted route.
 
-### CORS Configuration
-
-CORS behavior depends on `NODE_ENV`:
-
-| Environment | Default Behavior |
-|-------------|------------------|
-| `development` | Permissive CORS (reflects any origin) + trust proxy headers |
-| `production` | No CORS headers (reverse proxy should handle it) |
-
-#### Environment Variable
-
-| Variable | Purpose | Default |
-|----------|---------|---------|
-| `UNCHAINED_CORS_ORIGINS` | Allowed CORS origins | Auto (see above) |
-
-#### Programmatic Configuration
+For the authentication context to use proxy-provided client addresses, explicitly pass `trustProxy: true` to `connect()`:
 
 ```typescript
-// Auto behavior (recommended) - permissive in dev, none in prod
-connect(app, { graphqlHandler, db, unchainedAPI });
-
-// Explicit whitelist (production)
-connect(app, { graphqlHandler, db, unchainedAPI }, {
-  corsOrigins: "https://shop.example.com,https://admin.example.com",
-});
-
-// Force permissive (not recommended in production)
-connect(app, { graphqlHandler, db, unchainedAPI }, {
-  corsOrigins: true,
-});
-
-// Disable CORS entirely
-connect(app, { graphqlHandler, db, unchainedAPI }, {
-  corsOrigins: false,
+await connect(app, { graphqlHandler, unchainedAPI: unchainedCore }, {
+  trustProxy: true,
 });
 ```
 
-### Deployment Scenarios
+The context resolver then prefers `X-Real-IP`, followed by the last address in `X-Forwarded-For`. Enable this only when a trusted reverse proxy overwrites those headers and direct access to the server is prevented. Framework-level proxy configuration is separate from this connector option.
 
-#### Scenario 1: Direct TLS (No Reverse Proxy)
+The development-only `allowRemoteToLocalhostSecureCookies` connector option adds permissive CORS headers, overrides the forwarded protocol, and enables proxy address handling. It defaults to `false` and throws in production.
 
-For simple deployments where the Node.js server handles TLS directly:
+## Events
 
-```typescript
-import express from 'express';
-import https from 'https';
-import fs from 'fs';
-import { connect } from '@unchainedshop/api/express';
+API authentication emits `API_LOGIN_TOKEN_CREATED`, `API_LOGIN_FAILED`, and `API_LOGOUT`. The API event registry also includes `ACL_DENIED` and `ACL_GRANTED_SENSITIVE` for access-control auditing; see [event definitions](src/events.ts).
 
-const app = express();
-
-// Configure CORS for your frontend origins
-connect(app, { graphqlHandler, db, unchainedAPI }, {
-  corsOrigins: "https://shop.example.com,https://admin.example.com",
-});
-
-// Create HTTPS server with your certificates
-https.createServer({
-  key: fs.readFileSync('/path/to/privkey.pem'),
-  cert: fs.readFileSync('/path/to/fullchain.pem'),
-}, app).listen(443);
-```
-
-Environment:
-```bash
-NODE_ENV=production
-UNCHAINED_CORS_ORIGINS=https://shop.example.com,https://admin.example.com
-UNCHAINED_TOKEN_SECRET=your-32-char-secret-here
-```
-
-#### Scenario 2: Behind Reverse Proxy (Recommended)
-
-For production deployments behind nginx, Caddy, or a cloud load balancer:
-
-```typescript
-import express from 'express';
-import { connect } from '@unchainedshop/api/express';
-
-const app = express();
-
-// Trust the reverse proxy for client IP headers
-app.set('trust proxy', 1);
-
-// Let the proxy handle CORS, or configure here
-connect(app, { graphqlHandler, db, unchainedAPI }, {
-  corsOrigins: "https://shop.example.com,https://admin.example.com",
-});
-
-app.listen(4010); // Internal port, not exposed
-```
-
-**Nginx configuration:**
-```nginx
-server {
-  listen 443 ssl http2;
-  server_name api.example.com;
-
-  ssl_certificate /etc/letsencrypt/live/api.example.com/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/api.example.com/privkey.pem;
-
-  location / {
-    # Pass client IP to the app
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header Host $host;
-
-    proxy_pass http://localhost:4010;
-  }
-}
-```
-
-**Caddy configuration:**
-```caddyfile
-api.example.com {
-  reverse_proxy localhost:4010
-}
-```
-
-#### Scenario 3: Proxy Handles CORS
-
-For complex multi-origin setups, let the reverse proxy manage CORS:
-
-```typescript
-// Don't set corsOrigins - let proxy handle it
-app.set('trust proxy', 1);
-connect(app, { graphqlHandler, db, unchainedAPI });
-```
-
-**Nginx with CORS:**
-```nginx
-location / {
-  proxy_set_header X-Real-IP $remote_addr;
-  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-  proxy_set_header X-Forwarded-Proto $scheme;
-
-  # CORS whitelist
-  set $cors "";
-  if ($http_origin ~* "^https://(shop|admin)\.example\.com$") {
-    set $cors $http_origin;
-  }
-  add_header 'Access-Control-Allow-Origin' $cors always;
-  add_header 'Access-Control-Allow-Credentials' 'true' always;
-  add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
-  add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
-
-  if ($request_method = 'OPTIONS') { return 204; }
-
-  proxy_pass http://localhost:4010;
-}
-```
-
-### Trust Proxy
-
-In development mode (`NODE_ENV=development`), trust proxy is automatically enabled.
-
-In production, configure it on your Express/Fastify app before calling `connect()`:
-
-```typescript
-// Express
-app.set('trust proxy', 1);  // Trust first hop
-app.set('trust proxy', 'loopback');  // Trust loopback addresses
-app.set('trust proxy', '10.0.0.0/8');  // Trust specific CIDR
-
-// Fastify
-const fastify = Fastify({ trustProxy: true });
-```
-
-**SECURITY**: Only enable trust proxy if your reverse proxy:
-1. Strips incoming `X-Real-IP` and `X-Forwarded-For` headers from clients
-2. Sets `X-Real-IP` to the actual client IP
-3. Is the only way to reach your API server
-
-See [SECURITY.md](../../SECURITY.md) for complete security documentation including FIPS 140-3 mode.
+See [SECURITY.md](../../SECURITY.md) for repository security information.
 
 ## License
 

@@ -244,7 +244,7 @@ mutation LoginWithWebAuthn($credentials: JSON!) {
 Register trusted providers when connecting the server adapter. Bearer JWTs issued by those providers are then verified against the provider's JWKS (issuer and optional audience validation) and mapped to a user:
 
 ```typescript
-import { connect } from '@unchainedshop/api/lib/fastify/index.js';
+import { connect } from '@unchainedshop/api/fastify';
 
 connect(fastify, platform, {
   authConfig: {

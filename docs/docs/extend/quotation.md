@@ -11,7 +11,7 @@ Accept and process quotation (request-for-quote) requests for shop items, manual
 
 ## Creating an adapter
 
-Use the [`registerQuotation`](./plugin-factories.md#quotations) factory. Only `adapterId` is required — every callback has a sensible default. The example below requires manual verification and proposal, and expires a request after an hour if no quote is given.
+Use the [`registerQuotation`](./plugin-factories.md#quotations) factory. Only `adapterId` is required — every callback has a sensible default. The example below requires manual verification and proposal. When the proposal is submitted, `quote` sets its expiry to one hour later.
 
 ```typescript
 import { registerQuotation } from '@unchainedshop/core';

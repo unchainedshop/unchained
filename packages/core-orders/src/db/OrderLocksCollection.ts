@@ -12,8 +12,7 @@ const LOCK_RETRIES = 10;
 const LOCK_RETRY_DELAY_MS = 200;
 
 export const OrderLocksCollection = async (db: mongodb.Db) => {
-  // Same collection name the previously used lock library wrote to, so existing
-  // deployments need no migration (stale rows are TTL-cleaned within seconds).
+  // Keep the established collection name so existing deployments retain their locks.
   const OrderLocks = db.collection<OrderLock>('locco-locks');
 
   // The unique index is what makes acquireLock mutually exclusive, so it is

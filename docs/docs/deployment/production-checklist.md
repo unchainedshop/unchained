@@ -113,7 +113,7 @@ STRIPE_ENDPOINT_SECRET=whsec_...
 ## Quick Verification Commands
 
 ```bash
-# Check Node.js version (needs 22+)
+# Check Node.js version (needs 26+)
 node --version
 
 # Test MongoDB connection

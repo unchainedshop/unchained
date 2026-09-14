@@ -13,97 +13,20 @@ npm install @unchainedshop/core-files
 
 ## Usage
 
-```typescript
-import { configureFilesModule } from '@unchainedshop/core-files';
-
-const filesModule = await configureFilesModule({
-  db,
-  options: {
-    transformUrl: (url, params) => url, // Optional URL transformation
-  },
-});
-
-// Create a file record
-const fileId = await filesModule.create({
-  name: 'product-image.jpg',
-  type: 'image/jpeg',
-  path: 'products/123',
-  url: '/uploads/product-image.jpg',
-});
-
-// Find file and normalize URL
-const file = await filesModule.findFile({ fileId });
-const normalizedUrl = filesModule.normalizeUrl(file.url, {});
-```
-
-## API Overview
-
-### Module Configuration
-
-| Export | Description |
-|--------|-------------|
-| `configureFilesModule` | Configure and return the files module |
-
-### Queries
-
-| Method | Description |
-|--------|-------------|
-| `findFile` | Find file by ID or URL |
-| `findFiles` | Find files with custom selector |
-
-### Mutations
-
-| Method | Description |
-|--------|-------------|
-| `create` | Create a new file record |
-| `update` | Update an existing file |
-| `delete` | Delete a file record |
-| `deleteMany` | Delete multiple file records |
-| `unexpire` | Remove expiration from a file |
-
-### Helper Methods
-
-| Method | Description |
-|--------|-------------|
-| `normalizeUrl` | Normalize and transform file URL |
-
-### Utilities
-
-| Export | Description |
-|--------|-------------|
-| `getFileAdapter` | Get configured file storage adapter |
-| `getFileFromFileData` | Convert file data to File object |
-| `filesSettings` | Access file module settings |
-
-### Types
-
-| Export | Description |
-|--------|-------------|
-| `File` | File document type |
-| `FilesModule` | Module interface type |
-| `FilesSettingsOptions` | Configuration options type |
-
-## Configuration
+The platform initializes this module as `platform.unchainedAPI.modules.files`.
 
 ```typescript
-const filesModule = await configureFilesModule({
-  db,
-  options: {
-    transformUrl: (url, params) => {
-      // Transform URLs for CDN, thumbnails, etc.
-      return `https://cdn.example.com${url}`;
-    },
-  },
-});
+const { files } = platform.unchainedAPI.modules;
+
+const file = await files.findFile({ fileId: 'file-123' });
+if (file?.url) {
+  const url = files.normalizeUrl(file.url, { version: 'small' });
+}
 ```
 
-## Events
+This module manages file metadata and URL transformation. File adapters and `unchainedAPI.services.files` handle uploads, downloads, and storage operations. Configure `options.files.transformUrl` and `options.files.privateFileSharingMaxAge` when starting the platform.
 
-| Event | Description |
-|-------|-------------|
-| `FILE_CREATE` | Emitted when a file is created |
-| `FILE_UPDATE` | Emitted when a file is updated |
-| `FILE_REMOVE` | Emitted when a file is removed |
+See the [file upload guide](https://docs.unchained.shop/guides/file-uploads), [module settings](https://docs.unchained.shop/platform-configuration/modules/files), [public exports](src/files-index.ts), and [module implementation](src/module/configureFilesModule.ts).
 
 ## License
 

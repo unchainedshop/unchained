@@ -20,6 +20,8 @@ The Copilot exposes two HTTP endpoints:
 
 The Chat API uses the [Vercel AI SDK](https://ai-sdk.dev/) to stream responses. It connects to the MCP server internally to execute tools on behalf of the user.
 
+Both endpoints require an authenticated user with the `admin` role. They accept the session cookie or a bearer token and return HTTP 401 for unauthenticated requests and HTTP 403 for users without that role.
+
 ## Setup
 
 To enable the Copilot, pass a `chat` configuration when connecting your server framework. Install the optional peer packages `ai` and `@ai-sdk/mcp` plus a model provider from the [AI SDK providers list](https://ai-sdk.dev/providers/ai-sdk-providers).
@@ -147,7 +149,11 @@ Streams AI responses with automatic tool execution.
 ```json
 {
   "messages": [
-    { "role": "user", "content": "List the top 5 products by revenue" }
+    {
+      "id": "message-1",
+      "role": "user",
+      "parts": [{ "type": "text", "text": "List the top 5 products by revenue" }]
+    }
   ]
 }
 ```

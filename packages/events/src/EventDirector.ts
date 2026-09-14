@@ -19,10 +19,9 @@ const RegisteredCallbacksSet = new Set();
 let Adapter: EmitAdapter; // Public (customizable)
 let HistoryAdapter: EmitAdapter; // (Per default: Core-events adapter to write into DB)
 
-// TODO: Consider refactoring EventDirector to use the BaseDirector pattern
-// from @unchainedshop/utils for consistency with other directors.
-// Current implementation uses registerEvents/setEmitAdapter instead of
-// the standard registerAdapter pattern used by PaymentDirector, DeliveryDirector, etc.
+// Event backends use setEmitAdapter/setEmitHistoryAdapter. Core domain directors
+// resolve their adapters from pluginRegistry; this infrastructure package keeps
+// its emitter configuration independent of the core plugin registry.
 export const EventDirector = {
   registerEvents: (events: string[]): void => {
     if (events.length) {
@@ -68,7 +67,7 @@ export const EventDirector = {
     eventName: string,
     callback: (payload: RawPayloadType<T>) => void,
   ): void => {
-    const currentSubscription = `${eventName}${callback?.toString()}`; // used to avaoid registering the same event handler callback
+    const currentSubscription = `${eventName}${callback?.toString()}`; // Deduplicate subscriptions by event name and callback source.
 
     if (!RegisteredEventsSet.has(eventName))
       throw new Error(`Event with ${eventName} is not registered`);

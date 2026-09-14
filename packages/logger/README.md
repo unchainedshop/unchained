@@ -9,7 +9,7 @@ A high-performance, feature-rich logging package for Unchained Engine with suppo
 - 🔍 **Debug Patterns**: Flexible DEBUG environment variable with wildcards and exclusions
 - 📊 **Log Levels**: Five log levels (trace, debug, info, warn, error) with environment-based filtering
 - 💪 **TypeScript**: Full TypeScript support with type definitions
-- 🔧 **Zero Dependencies**: Core functionality with minimal external dependencies
+- 🔧 **Zero Runtime Dependencies**: Uses Node.js built-ins
 
 ## Installation
 

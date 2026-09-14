@@ -1,35 +1,25 @@
 /**
  * Timing-Safe String Comparison using Web Crypto API
  *
- * Standard string comparison (===) is vulnerable to timing attacks because:
- * - It returns early on first character mismatch
- * - Attackers can measure response times to guess secrets character by character
- *
- * This implementation uses HMAC with a random key to ensure constant-time comparison:
- * - HMAC(key, a) vs verify(key, HMAC(key, a), b) always takes the same time
- * - The random key prevents precomputation attacks
- * - Works in all JavaScript runtimes (Node.js, browsers, Deno, Cloudflare Workers)
- *
- * @see https://www.arun.blog/timing-safe-auth-web-crypto/
- * @see https://codahale.com/a-lesson-in-timing-attacks/
+ * Ordinary string equality provides no constant-time guarantee. For equal-length
+ * inputs, this helper delegates HMAC verification to the runtime's Web Crypto
+ * implementation. It rejects unequal lengths before doing cryptographic work.
  */
 
 /**
- * Compare two ArrayBuffers in constant time using HMAC verification.
+ * Compare two ArrayBuffers using Web Crypto HMAC verification.
  *
  * @param bufferA - First buffer to compare
  * @param bufferB - Second buffer to compare
  * @returns true if buffers are equal, false otherwise
  */
 export async function timingSafeEqual(bufferA: ArrayBuffer, bufferB: ArrayBuffer): Promise<boolean> {
-  // Length check is safe - the length is public information
-  // and doesn't reveal anything about the content
+  // Unequal lengths return immediately; this helper does not hide input length.
   if (bufferA.byteLength !== bufferB.byteLength) {
     return false;
   }
 
   // Generate a random key for this comparison
-  // This prevents precomputation attacks
   const algorithm = { name: 'HMAC', hash: 'SHA-256' };
 
   // @ts-expect-error - generateKey with HMAC returns CryptoKey, not CryptoKeyPair
@@ -39,12 +29,12 @@ export async function timingSafeEqual(bufferA: ArrayBuffer, bufferB: ArrayBuffer
   const signature = await crypto.subtle.sign(algorithm, key, bufferA);
 
   // Verify the signature against the second buffer
-  // This comparison is constant-time in all Web Crypto implementations
+  // Delegate signature comparison to the runtime's cryptographic implementation.
   return crypto.subtle.verify(algorithm, key, signature, bufferB);
 }
 
 /**
- * Compare two strings in constant time.
+ * Compare UTF-8 encoded strings using HMAC verification; unequal byte lengths return early.
  *
  * Use this for comparing:
  * - API tokens

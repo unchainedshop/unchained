@@ -75,7 +75,7 @@ export const FilterAdapter: Omit<IFilterAdapter, 'key' | 'label' | 'version'> = 
 
   actions: () => {
     return {
-      // This function is called to check if a filter actually matches a certain productId
+      // Transform the aggregated product ID list before it is returned.
       aggregateProductIds: ({ productIds }) => {
         return productIds;
       },
@@ -92,8 +92,7 @@ export const FilterAdapter: Omit<IFilterAdapter, 'key' | 'label' | 'version'> = 
         return lastStage;
       },
 
-      // return a selector that is applied to Products.find to find relevant products
-      // if no key is provided, it expects either null for all products or a list of products that are relevant
+      // Transform the MongoDB selector used to find relevant products.
       transformProductSelector: async (lastSelector) => {
         return lastSelector;
       },

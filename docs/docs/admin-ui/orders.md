@@ -15,7 +15,7 @@ Orders are a crucial part of any E-commerce site, and Unchained Admin UI offers 
 - Manually mark an order as paid (Automation is supported by Unchained)
 - Manually mark an order as delivered (Automation is supported by Unchained)
 - Manually reject an order (Automation is supported by Unchained)
-- Delete pending orders
+- Delete open carts
 - View all the details stored for a specific order, including the customer's information, order items, payment information, shipping information, and order history.
 
 By using the order management functionalities provided in Admin UI, you can efficiently manage your orders and ensure that your customers receive their products on time.
@@ -32,7 +32,7 @@ The order detail page in the admin UI provides a comprehensive view of all the i
 
 If the order has an **OPEN** status, you can delete it using the "Delete" button. For orders with a **PENDING** status, you can either mark them as confirmed using the "Confirm" button or reject them using the "Reject" button.
 
-Once an order has been confirmed or rejected, these actions cannot be undone. Additionally, if the order has a PAID status, you can change its payment status to **PAID** using the "Mark as Paid" button. Similarly, if the order has a **DELIVERED** status, you can change its delivery status to **DELIVERED** using the "Mark as Delivered" button.
+Payment and delivery have their own statuses. An **OPEN** payment can be marked **PAID** using "Mark as Paid", and an **OPEN** delivery can be marked **DELIVERED** using "Mark as Delivered", when the current user has the required permissions.
 
 It's important to note that these actions are available only based on the current status of the order, and attempting to perform an action that's not applicable to the order's status will not be possible. Furthermore, once an action has been performed on an order, it cannot be reversed.
 

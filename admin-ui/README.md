@@ -3,7 +3,7 @@
 # Unchained Admin UI
 
 [![npm version](https://img.shields.io/npm/v/@unchainedshop/admin-ui.svg)](https://www.npmjs.com/package/@unchainedshop/admin-ui)
-[![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 
 **The open-source admin dashboard for [Unchained Commerce](https://unchained.shop) — manage your headless e-commerce with AI superpowers**
@@ -28,10 +28,10 @@
 | 📦 **Product Management** | Simple, Bundle, Configurable, Subscription Plans & NFT-tokenized products |
 | 🛒 **Order & Fulfillment** | Complete order lifecycle with configurable workflows |
 | 💼 **B2B Quotations** | Professional quotation management with approval workflows |
-| 📊 **Inventory Control** | Multi-warehouse tracking with low-stock alerts |
+| 📊 **Inventory Control** | Warehousing provider configuration and product inventory views |
 | 💳 **Payment & Shipping** | Integrate any payment gateway or delivery provider |
 | 🌍 **Multi-language & Currency** | Full i18n support with country-specific locales |
-| 🔐 **Role-Based Access** | Granular permissions with build-time security |
+| 🔐 **Role-Based Access** | Runtime action permissions enforced by the backend |
 | 🎨 **Customizable Branding** | White-label ready with custom logos |
 | 📱 **Responsive Design** | Works on desktop, tablet, and mobile |
 
@@ -43,11 +43,11 @@
 
 | | | | | |
 |:---:|:---:|:---:|:---:|:---:|
-| **Next.js 15** | **React 19** | **Apollo GraphQL** | **Tailwind CSS 4** | **TypeScript** |
+| **Next.js 16** | **React 19** | **Apollo GraphQL** | **Tailwind CSS 4** | **TypeScript** |
 
 </div>
 
-Plus: Formik • React Intl • Headless UI • Recharts • Cypress • AI SDK
+Plus: React Hook Form • React Intl • Headless UI • Recharts • Cypress • AI SDK
 
 ---
 
@@ -55,7 +55,7 @@ Plus: Formik • React Intl • Headless UI • Recharts • Cypress • AI SDK
 
 ### Prerequisites
 
-- Node.js 24+
+- Node.js 26+
 - [Unchained Engine](https://github.com/unchainedshop/unchained) running on `localhost:4010`
 
 ### Installation
@@ -63,13 +63,13 @@ Plus: Formik • React Intl • Headless UI • Recharts • Cypress • AI SDK
 ```bash
 # Clone the repository
 git clone git@github.com:unchainedshop/unchained.git
-cd admin-ui
+cd unchained
 
 # Install dependencies
 npm install
 
 # Start development server
-npm run dev
+npm run dev --workspace @unchainedshop/admin-ui
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
@@ -82,13 +82,15 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `NEXT_PUBLIC_GRAPHQL_ENDPOINT` | `http://localhost:4010/graphql` | Unchained Engine GraphQL endpoint |
+| `NEXT_PUBLIC_GRAPHQL_ENDPOINT` | Same-origin `/graphql` | Unchained Engine GraphQL endpoint; `.env.development` uses `http://localhost:4010/graphql` |
+| `NEXT_PUBLIC_CHAT_URL` | Same-origin `/chat` | Copilot endpoint; `.env.development` uses `http://localhost:4010/chat` |
 | `NEXT_PUBLIC_LOGO` | — | URL to your custom logo |
 
-Create a `.env.local` file for local development:
+Create an `admin-ui/.env.local` file for local development:
 
 ```bash
 NEXT_PUBLIC_GRAPHQL_ENDPOINT=https://your-engine.example.com/graphql
+NEXT_PUBLIC_CHAT_URL=https://your-engine.example.com/chat
 NEXT_PUBLIC_LOGO=https://your-cdn.com/logo.svg
 ```
 
@@ -99,6 +101,7 @@ NEXT_PUBLIC_LOGO=https://your-cdn.com/logo.svg
 ### Static Export (Recommended)
 
 ```bash
+cd admin-ui
 npm run build
 # Output in ./out/ - deploy to any CDN (Vercel, Netlify, S3, etc.)
 ```
@@ -107,14 +110,19 @@ npm run build
 ### Express / Fastify Integration
 
 ```typescript
-// Express
-import { expressRouter } from '@unchainedshop/admin-ui/express';
-app.use('/admin', expressRouter);
+import Fastify from 'fastify';
+import { startPlatform } from '@unchainedshop/platform';
+import { connect } from '@unchainedshop/api/fastify';
+import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
 
-// Fastify
-import { fastifyRouter } from '@unchainedshop/admin-ui/fastify';
-fastify.register(fastifyRouter, { prefix: '/admin' });
+registerBasePlugins();
+const platform = await startPlatform({});
+const fastify = Fastify();
+await connect(fastify, platform, { adminUI: { prefix: '/admin' } });
+await fastify.listen({ port: 4010 });
 ```
+
+For Express, import `connect` from `@unchainedshop/api/express` and pass your Express app and the same platform/options. The backend adapter serves the installed `@unchainedshop/admin-ui` package.
 
 ### 🎨 Custom Theming
 
@@ -181,7 +189,7 @@ npm install @unchainedshop/admin-ui
 **Available imports:**
 
 ```typescript
-// UI primitives — Button, Badge, Combobox, Card, Tab, etc.
+// UI primitives — Button, Badge, Card, Tab, etc.
 import { Button, Badge, Loading, Tab, Accordion } from '@unchainedshop/admin-ui/ui';
 
 // Form components — TextField, SelectField, Combobox, CheckboxField, etc.
@@ -224,7 +232,7 @@ export default function CustomPage() {
 }
 ```
 
-**Peer dependencies:** React 19+, Next.js 15+ (for components that use `next/link` and `next/router`).
+**Host dependencies:** The SDK shares React and Next.js with the host. Match the Admin UI's versions (React 19 and Next.js 16); the [plugin build helper](src/sdk/README.md) configures shared dependencies for engine-loaded plugins.
 
 **Build the SDK:** `npm run build:sdk` generates the `dist/` directory with ESM bundles and TypeScript declarations.
 

@@ -13,117 +13,23 @@ npm install @unchainedshop/core-payment
 
 ## Usage
 
-```typescript
-import { configurePaymentModule, PaymentProviderType } from '@unchainedshop/core-payment';
-
-const paymentModule = await configurePaymentModule({ db });
-
-// Create a payment provider
-const providerId = await paymentModule.create({
-  type: PaymentProviderType.CARD,
-  adapterKey: 'shop.unchained.payment.stripe',
-});
-
-// Find providers for a context
-const providers = await paymentModule.findSupported({
-  order: orderObject,
-});
-```
-
-## API Overview
-
-### Module Configuration
-
-| Export | Description |
-|--------|-------------|
-| `configurePaymentModule` | Configure and return the payment module |
-
-### Queries
-
-| Method | Description |
-|--------|-------------|
-| `findProvider` | Find provider by ID |
-| `findProviders` | Find providers with filtering |
-| `count` | Count providers |
-| `providerExists` | Check if provider exists |
-| `findSupported` | Find providers supported for context |
-| `findInterface` | Get provider interface definition |
-
-### Mutations
-
-| Method | Description |
-|--------|-------------|
-| `create` | Create a new payment provider |
-| `update` | Update provider configuration |
-| `delete` | Soft delete a provider |
-
-### Credentials
-
-| Method | Description |
-|--------|-------------|
-| `findCredentials` | Find stored credentials for user |
-| `createCredentials` | Store payment credentials |
-| `deleteCredentials` | Remove stored credentials |
-| `markPreferred` | Mark credentials as preferred |
-
-### Constants
-
-| Export | Description |
-|--------|-------------|
-| `PaymentProviderType` | Provider types (CARD, INVOICE, GENERIC) |
-
-### Settings
-
-| Export | Description |
-|--------|-------------|
-| `paymentSettings` | Access payment module settings |
-
-### Types
-
-| Export | Description |
-|--------|-------------|
-| `PaymentProvider` | Provider document type |
-| `PaymentCredentials` | Credentials document type |
-| `PaymentModule` | Module interface type |
-
-## Events
-
-| Event | Description |
-|-------|-------------|
-| `PAYMENT_PROVIDER_CREATE` | Provider created |
-| `PAYMENT_PROVIDER_UPDATE` | Provider updated |
-| `PAYMENT_PROVIDER_REMOVE` | Provider deleted |
-
-## Security (PCI DSS)
-
-This module is designed for **PCI DSS SAQ-A eligibility**:
-
-### Tokenization
-
-- **No card data storage**: Credit card numbers (PAN) and CVV are never stored
-- **Provider tokens only**: Only payment provider-issued tokens are stored
-- **Secure credentials**: Payment credentials contain references, not card data
+The platform initializes this module as `platform.unchainedAPI.modules.payment`. Register a payment plugin before platform startup; the base preset includes Invoice payment.
 
 ```typescript
-// PaymentCredentials structure - tokens only, no card data
-type PaymentCredentials = {
-  paymentProviderId: string;
-  userId: string;
-  token?: string;        // Provider-issued token (NOT card number)
-  isPreferred?: boolean;
-  meta: any;             // Provider-specific metadata
-};
+import { PaymentProviderType } from '@unchainedshop/core-payment';
+
+const { payment } = platform.unchainedAPI.modules;
+const provider = await payment.paymentProviders.create({
+  type: PaymentProviderType.INVOICE,
+  adapterKey: 'shop.unchained.invoice',
+  configuration: [],
+});
+const providers = await payment.paymentProviders.findProviders({});
 ```
 
-### Payment Flow
+Provider records are managed by `paymentProviders`; stored credentials by `paymentCredentials`. Order services and payment adapters coordinate provider selection and charging. Payment integrations should store provider tokens and references rather than card data.
 
-All payment integrations use tokenization patterns:
-1. Card data collected by payment provider (Stripe, Datatrans, etc.)
-2. Provider returns secure token
-3. Unchained stores only the token reference
-4. Subsequent charges use the token
-
-See [SECURITY.md](../../SECURITY.md) for complete PCI DSS compliance documentation.
+See the [module guide](https://docs.unchained.shop/platform-configuration/modules/payment), [payment integration guide](https://docs.unchained.shop/guides/payment-integration), [public exports](src/payment-index.ts), and [module implementation](src/module/configurePaymentModule.ts).
 
 ## License
 

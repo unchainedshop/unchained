@@ -1,7 +1,6 @@
 const PUTMedia = async (file, url) => {
   const response = await fetch(url, {
     method: 'PUT',
-    // headers: { 'Content-Type': 'application/json' },
     body: file,
   });
 

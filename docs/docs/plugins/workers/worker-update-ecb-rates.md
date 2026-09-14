@@ -31,7 +31,7 @@ The ECB publishes daily reference exchange rates for major currencies against EU
 
 ## Auto-Scheduling
 
-On registration, this worker schedules itself to run daily at 15:00 (4 PM CET), after the ECB publishes new rates.
+During plugin initialization, this worker schedules itself to run daily at 15:00 in the server's local timezone (cron `0 15 * * *`), provided `xml-js` is installed. Set the server's `TZ` and schedule to match when you want to fetch rates.
 
 ## Manual Trigger
 
@@ -59,10 +59,11 @@ Only currencies that exist in your Unchained system (active or inactive) are upd
 
 ```json
 {
-  "ratesUpdated": 25,
-  "info": "EUR not enabled"  // Only if EUR is not configured
+  "ratesUpdated": 25
 }
 ```
+
+If EUR is not configured, the result is `{ "ratesUpdated": 0, "info": "EUR not enabled" }`.
 
 ## Adapter Details
 

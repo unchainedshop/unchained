@@ -13,72 +13,25 @@ npm install @unchainedshop/core-countries
 
 ## Usage
 
+The platform initializes this module as `platform.unchainedAPI.modules.countries`.
+
 ```typescript
-import { configureCountriesModule } from '@unchainedshop/core-countries';
+const { countries } = platform.unchainedAPI.modules;
 
-const countriesModule = await configureCountriesModule({ db });
-
-// Create a country
-const countryId = await countriesModule.create({
+const countryId = await countries.create({
   isoCode: 'CH',
   defaultCurrencyCode: 'CHF',
+  isActive: true,
 });
-
-// Find countries
-const countries = await countriesModule.findCountries({ includeInactive: false });
-
-// Get localized country name
-const name = countriesModule.name(country, new Intl.Locale('en'));
+const country = await countries.findCountry({ countryId });
+if (country) {
+  const name = countries.name(country, new Intl.Locale('en'));
+}
 ```
 
-## API Overview
+`create` returns a country ID. Configure currencies separately before assigning them to countries.
 
-### Module Configuration
-
-| Export | Description |
-|--------|-------------|
-| `configureCountriesModule` | Configure and return the countries module |
-
-### Queries
-
-| Method | Description |
-|--------|-------------|
-| `findCountry` | Find country by ID or ISO code |
-| `findCountries` | Find countries with filtering, sorting, and pagination |
-| `count` | Count countries matching query |
-| `countryExists` | Check if a country exists |
-
-### Mutations
-
-| Method | Description |
-|--------|-------------|
-| `create` | Create a new country |
-| `update` | Update an existing country |
-| `delete` | Soft delete a country |
-
-### Helper Methods
-
-| Method | Description |
-|--------|-------------|
-| `name` | Get localized country name using Intl.DisplayNames |
-| `flagEmoji` | Get flag emoji for a country |
-| `isBase` | Check if country is the base/system country |
-
-### Types
-
-| Export | Description |
-|--------|-------------|
-| `Country` | Country document type |
-| `CountryQuery` | Query parameters type |
-| `CountriesModule` | Module interface type |
-
-## Events
-
-| Event | Description |
-|-------|-------------|
-| `COUNTRY_CREATE` | Emitted when a country is created |
-| `COUNTRY_UPDATE` | Emitted when a country is updated |
-| `COUNTRY_REMOVE` | Emitted when a country is removed |
+See the [module guide](https://docs.unchained.shop/platform-configuration/modules/countries), [public exports](src/countries-index.ts), and [module implementation](src/module/configureCountriesModule.ts) for queries, helpers, and events.
 
 ## License
 

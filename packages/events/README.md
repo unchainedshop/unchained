@@ -14,7 +14,15 @@ npm install @unchainedshop/events
 ## Usage
 
 ```typescript
-import { emit, subscribe, registerEvents } from '@unchainedshop/events';
+import { EventEmitter } from 'node:events';
+import { emit, subscribe, registerEvents, setEmitAdapter } from '@unchainedshop/events';
+
+// Configure a backend before subscribing (platform presets do this for you)
+const emitter = new EventEmitter();
+setEmitAdapter({
+  publish: (eventName, data) => { emitter.emit(eventName, data); },
+  subscribe: (eventName, callback) => { emitter.on(eventName, callback); },
+});
 
 // Register custom events
 registerEvents(['ORDER_CREATED', 'ORDER_PAID']);
@@ -53,7 +61,7 @@ await emit('ORDER_CREATED', { orderId: '123', total: 99.99 });
 | Export | Description |
 |--------|-------------|
 | `EmitAdapter` | Interface for custom emit adapters |
-| `RawPayloadType` | Type for event payload data |
+| `RawPayloadType<T>` | Event wrapper containing a `payload` of type `T` |
 
 ### Built-in Events
 

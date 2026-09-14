@@ -125,7 +125,6 @@ export const configureFiltersModule = async ({
 
     parse: (filter: Filter, values: any[], allKeys: string[]) => {
       const parse = createFilterValueParser(filter.type);
-      // const keys = parse(values, Object.keys(productIds));
       return parse(values, allKeys);
     },
 

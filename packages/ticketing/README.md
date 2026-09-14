@@ -15,9 +15,13 @@ npm install @unchainedshop/ticketing
 
 ```typescript
 import { startPlatform } from '@unchainedshop/platform';
-import setupTicketing, { ticketingModules, ticketingServices } from '@unchainedshop/ticketing';
+import express from 'express';
+import setupTicketing, { ticketingModules, ticketingServices, type TicketingAPI } from '@unchainedshop/ticketing';
+import connectTicketing from '@unchainedshop/ticketing/lib/express.js';
 import { connect } from '@unchainedshop/api/express';
+import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
 
+registerBasePlugins();
 const app = express();
 
 const engine = await startPlatform({
@@ -25,15 +29,20 @@ const engine = await startPlatform({
   services: ticketingServices,
 });
 
-connect(app, engine, { corsOrigins: [] });
+await connect(app, engine);
+connectTicketing(app);
 
 // Setup ticketing with your renderers
-setupTicketing(engine.unchainedAPI, {
+setupTicketing(engine.unchainedAPI as TicketingAPI, {
   renderOrderPDF,
   createAppleWalletPass,
   createGoogleWalletPass,
 });
+
+app.listen(4010);
 ```
+
+Define the three renderer callbacks before running this example, and configure `UNCHAINED_SECRET` plus the platform's required environment variables. Renderers and their third-party dependencies belong to your application; see the [ticketing example](../../examples/ticketing/boot.ts).
 
 ## API Overview
 
@@ -41,7 +50,7 @@ setupTicketing(engine.unchainedAPI, {
 
 | Export | Description |
 |--------|-------------|
-| `setupTicketing` | Initialize ticketing with all renderers |
+| default export (`setupTicketing`) | Initialize ticketing with all renderers |
 | `setupPDFTickets` | Setup only PDF rendering |
 | `setupMobileTickets` | Setup only wallet passes |
 
@@ -56,16 +65,16 @@ setupTicketing(engine.unchainedAPI, {
 
 | Import Path | Description |
 |-------------|-------------|
-| `@unchainedshop/ticketing/express` | Express route handlers |
-| `@unchainedshop/ticketing/fastify` | Fastify route handlers |
+| `@unchainedshop/ticketing/lib/express.js` | Express route connector (default export) |
+| `@unchainedshop/ticketing/lib/fastify.js` | Fastify route connector (default export) |
 
 ### Renderer Types
 
 | Type | Description |
 |------|-------------|
-| `ORDER_PDF` | PDF ticket/receipt rendering |
-| `APPLE_WALLET` | Apple Wallet pass generation |
-| `GOOGLE_WALLET` | Google Wallet pass generation |
+| `order` | PDF ticket/receipt rendering |
+| `apple-wallet` | Apple Wallet pass generation |
+| `google-wallet` | Google Wallet pass generation |
 
 ### Types
 
@@ -74,7 +83,7 @@ setupTicketing(engine.unchainedAPI, {
 | `TicketingAPI` | Ticketing API context type |
 | `TicketingModule` | Module interface type |
 | `TicketingServices` | Services interface type |
-| `RendererTypes` | Renderer type constants |
+| `RendererTypes` | Union of renderer type values |
 
 ## Apple Wallet Setup
 
@@ -142,7 +151,7 @@ export default async (token, unchainedAPI) => {
 
 ## Magic Key Order Access
 
-Allow users to access orders and tickets without logging in via a one-time magic key:
+Allow users to access orders and tickets without logging in via an order-specific magic key:
 
 ```typescript
 // Generate magic key
@@ -154,14 +163,16 @@ const magicKey = await modules.passes.buildMagicKey(orderId);
 
 Protected actions: `viewOrder`, `updateToken`, `viewToken`
 
+The key is a deterministic SHA-256 digest of the order ID and `UNCHAINED_SECRET`. It is reusable and has no built-in expiration; changing the secret changes every order's key.
+
 ## Environment Variables
 
 | Variable | Description |
 |----------|-------------|
-| `UNCHAINED_SECRET` | Required for magic key encryption |
-| `PASS_CERTIFICATE_PATH` | Path to Apple pass certificate |
-| `PASS_CERTIFICATE_SECRET` | PEM passphrase |
-| `PASS_TEAM_ID` | Apple Developer Team ID |
+| `UNCHAINED_SECRET` | Required for magic key derivation |
+| `PASS_CERTIFICATE_PATH` | Path to Apple pass certificate used by the example renderer |
+| `PASS_CERTIFICATE_SECRET` | PEM passphrase used by the example renderer |
+| `PASS_TEAM_ID` | Apple Developer Team ID used by the example renderer |
 
 ## License
 

@@ -1,6 +1,6 @@
 // Base preset: Essential plugins for Unchained Engine
 
-// Import PluginRegistry for new plugin architecture
+// Import plugin registry
 import { pluginRegistry } from '@unchainedshop/core';
 import { setEmitAdapter } from '@unchainedshop/events';
 
@@ -34,7 +34,7 @@ import { ManualOfferingPlugin } from '../quotations/manual/index.ts';
 // Import plugins - Enrollments
 import { LicensedEnrollmentsPlugin } from '../enrollments/licensed/index.ts';
 
-// Import adapters - Events (not yet migrated to plugin architecture)
+// Event backends use setEmitAdapter independently of the core plugin registry.
 import { NodeEventEmitter } from '../events/node-event-emitter.ts';
 
 // Import plugins - Workers
@@ -88,7 +88,7 @@ export function registerBasePlugins() {
   // Enrollments
   pluginRegistry.register(LicensedEnrollmentsPlugin);
 
-  // Events (not yet migrated to plugin architecture)
+  // Events
   setEmitAdapter(NodeEventEmitter());
 
   // Workers

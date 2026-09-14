@@ -20,6 +20,8 @@ import { Roles, Role } from '@unchainedshop/roles';
 
 // Create a new role
 const editorRole = new Role('editor');
+Roles.addRole(editorRole);
+Roles.registerAction('updateProduct');
 
 // Allow actions for the role
 editorRole.allow('updateProduct', async (product, params, context) => {
@@ -42,6 +44,7 @@ const allowed = await Roles.userHasPermission(
 | Method | Description |
 |--------|-------------|
 | `Roles.registerAction` | Register a new action name |
+| `Roles.addRole` | Register a role instance |
 | `Roles.registerHelper` | Register a new helper name |
 | `Roles.getUserRoles` | Get user roles including special roles |
 | `Roles.allow` | Check if any role allows an action |
@@ -51,11 +54,13 @@ const allowed = await Roles.userHasPermission(
 
 | Method | Description |
 |--------|-------------|
-| `new Role(name)` | Create and register a new role |
+| `new Role(name)` | Create a role; register it with `roles.addRole()` |
 | `role.allow(action, fn)` | Add allow rule for an action |
 | `role.helper(name, fn)` | Add helper function to role |
 
 ### Built-in Roles
+
+`createRoles()` returns an empty role registry. Call `initDefaultRoles(registry)` to add the following roles, or use the API layer's `roles.configureRoles()` to configure the platform's permission rules.
 
 | Role | Description |
 |------|-------------|
@@ -70,7 +75,7 @@ const allowed = await Roles.userHasPermission(
 | `__all__` | Automatically assigned to everyone |
 | `__loggedIn__` | Automatically assigned to authenticated users |
 | `__notLoggedIn__` | Automatically assigned to anonymous users |
-| `__notAdmin__` | Automatically assigned to non-admin users |
+| `__notAdmin__` | Automatically assigned to authenticated non-admin users |
 
 ### Utility Functions
 
@@ -93,13 +98,13 @@ const allowed = await Roles.userHasPermission(
 ## Configuration
 
 ```typescript
-import type { IRoleOptionConfig } from '@unchainedshop/roles';
+import { Role, type IRoleOptionConfig } from '@unchainedshop/roles';
 
 const config: IRoleOptionConfig = {
   additionalRoles: {
     customRole: (roles, actions) => {
-      const role = new Role('customRole');
-      role.allow(actions.READ, () => true);
+      const role = roles.addRole(new Role('customRole'));
+      role.allow(actions.CUSTOM_ACTION, async () => true);
     },
   },
   additionalActions: ['CUSTOM_ACTION'],

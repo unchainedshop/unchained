@@ -22,7 +22,7 @@ import { PostfinanceCheckoutPlugin } from '@unchainedshop/plugins/payment/postfi
 pluginRegistry.register(PostfinanceCheckoutPlugin);
 ```
 
-Register before `startPlatform()`. Registration mounts the webhook route `POST /payment/postfinance-checkout` (path configurable via `PFCHECKOUT_WEBHOOK_PATH`) on the Unchained HTTP server. Registration throws unless `PFCHECKOUT_SPACE_ID`, `PFCHECKOUT_USER_ID`, `PFCHECKOUT_SECRET`, `PFCHECKOUT_SUCCESS_URL`, and `PFCHECKOUT_FAILED_URL` are all set.
+Register before `startPlatform()`. At startup, the plugin enables the webhook route `POST /payment/postfinance-checkout` (path configurable via `PFCHECKOUT_WEBHOOK_PATH`); the Express/Fastify connector mounts it on the Unchained HTTP server. Initialization logs a warning and skips this plugin's adapter and route unless `PFCHECKOUT_SPACE_ID`, `PFCHECKOUT_USER_ID`, `PFCHECKOUT_SECRET`, `PFCHECKOUT_SUCCESS_URL`, and `PFCHECKOUT_FAILED_URL` are all set.
 
 Configure [webhook listeners](https://checkout.postfinance.ch/space/select?target=/webhook/listener/list) in the PostFinance Checkout web interface for successful and failed transaction completion ("Verbuchung der Transaktion" → "Erfolgreich" / "Fehlgeschlagen").
 

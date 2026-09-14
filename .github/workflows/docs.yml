@@ -1,0 +1,49 @@
+name: Documentation checks
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'packages/api/src/schema/**'
+      - 'packages/api/src/roles/index.ts'
+      - 'packages/plugins/src/worker/**'
+      - '.github/workflows/docs.yml'
+      - '.nvmrc'
+  push:
+    branches: [master]
+    paths:
+      - 'docs/**'
+      - 'packages/api/src/schema/**'
+      - 'packages/api/src/roles/index.ts'
+      - 'packages/plugins/src/worker/**'
+      - '.github/workflows/docs.yml'
+      - '.nvmrc'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Test documentation validator
+        run: node --test scripts/validate-graphql.test.mjs
+      - name: Validate GraphQL examples against source
+        run: npm run validate:graphql
+      - name: Build documentation and check internal links
+        run: npm run build

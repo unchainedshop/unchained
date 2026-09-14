@@ -9,7 +9,7 @@ Unchained Engine is a modular e-commerce platform built as an npm-workspaces mon
 Package layers (higher may depend on lower, never the reverse):
 
 ```
-platform → api → core → core-* (domain modules) → infrastructure (mongodb, events, logger, utils, roles, file-upload)
+platform → api → core → core-* (domain modules) → infrastructure (mongodb, events, logger, utils, roles)
 ```
 
 - `@unchainedshop/platform` — main entry point, bundles everything
@@ -23,17 +23,17 @@ platform → api → core → core-* (domain modules) → infrastructure (mongod
 ```bash
 npm install                  # install all workspaces
 npm run dev                  # kitchensink example + admin-ui + watch packages
-npm run build                # clean and rebuild all packages
+npm run build                # clean/rebuild TypeScript projects and build the Admin UI
 npm run lint                 # ESLint + Prettier (fixes)
 npm run test                 # all tests (unit + integration)
 npm run test:run:unit        # unit tests only
-npm run test:run:integration # integration tests (kitchensink + tests/)
+npm run test:run:integration # integration tests (platform started by tests/setup.js)
 node --test path/to/test.ts  # single unit test file
 # Single integration test (from repo root):
 node --no-warnings --env-file .env.tests --env-file-if-exists=.env --test-isolation=none --test-force-exit --test-global-setup=tests/helpers.js --test --test-concurrency=1 path/to/test.ts
 ```
 
-Requirements: Node.js 24+ (see .nvmrc), MongoDB (or MongoDB Memory Server for tests).
+Requirements: Node.js 26+ (see .nvmrc), MongoDB (or MongoDB Memory Server for tests).
 
 ## Import conventions (strict)
 
@@ -49,7 +49,7 @@ Requirements: Node.js 24+ (see .nvmrc), MongoDB (or MongoDB Memory Server for te
 
 ## Plugin system
 
-Directors manage adapters (Director/Adapter pattern). Plugins are side-effect free and must be registered explicitly before platform start. Presets have no default export, and `startPlatform` needs no `modules` argument for built-ins:
+Directors manage adapters (Director/Adapter pattern). Plugins are side-effect free and must be registered explicitly before platform start. Use the named preset registration functions. `startPlatform` needs no `modules` argument for built-ins:
 
 ```typescript
 import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';

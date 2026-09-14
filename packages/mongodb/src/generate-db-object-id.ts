@@ -1,8 +1,5 @@
 /**
- * @name Random.hexString
- * @summary Return a random string of `n` hexadecimal digits.
- * @locus Anywhere
- * @param {Number} n Length of the string
+ * Encode each byte as two hexadecimal digits.
  */
 function toHex(buffer) {
   return Array.prototype.map.call(buffer, (x) => x.toString(16).padStart(2, '0')).join('');

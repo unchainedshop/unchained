@@ -3,146 +3,103 @@
 
 # @unchainedshop/platform
 
-Umbrella package for the Unchained Engine. Provides complete platform setup including database initialization, API server, migrations, templates, and runtime configuration.
+Umbrella package for the Unchained Engine. Initializes the database, core modules and services, plugins, GraphQL server, message templates, and work queue.
 
 ## Installation
 
 ```bash
-npm install @unchainedshop/platform
+npm install @unchainedshop/platform express
 ```
 
-## Usage
+## Quick start
+
+Register plugins, initialize the platform, and connect it to your HTTP server:
 
 ```typescript
+import express from 'express';
 import { startPlatform } from '@unchainedshop/platform';
-import express from 'express';
+import { connect } from '@unchainedshop/api/express';
+import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
+
+registerBasePlugins();
 
 const app = express();
+const platform = await startPlatform({});
+await connect(app, platform);
 
-const { unchainedAPI, graphqlHandler } = await startPlatform({
-  express: app,
-  options: {
-    // Platform options
-  },
-});
-
-// Platform is ready
+const products = await platform.unchainedAPI.modules.products.findProducts({});
 app.listen(4010);
 ```
 
-## API Overview
+For Fastify, use `connect` from `@unchainedshop/api/fastify` with a Fastify instance. `connect()` mounts GraphQL, MCP, and registered plugin routes. Pass `{ adminUI: true }` as its third argument to serve an installed `@unchainedshop/admin-ui` package.
 
-### Platform Setup
-
-| Export | Description |
-|--------|-------------|
-| `startPlatform` | Initialize complete Unchained platform |
-| `runMigrations` | Run database migrations |
-| `printRuntimeConfiguration` | Log registered templates, events, and adapters |
-
-### Context Helpers
-
-| Export | Description |
-|--------|-------------|
-| `setAccessToken` | Set access token for user session |
-| `getAccessToken` | Get current access token |
-| `invalidateAccessToken` | Invalidate/logout access token |
-
-### Templates
-
-| Export | Description |
-|--------|-------------|
-| `MessageTypes` | Available message/notification types |
-| `setupTemplates` | Register message templates |
-
-### Message Types
-
-| Type | Description |
-|------|-------------|
-| `ACCOUNT_ACTION` | Account verification, password reset |
-| `DELIVERY` | Delivery notifications |
-| `ORDER_CONFIRMATION` | Order confirmation emails |
-| `ORDER_REJECTION` | Order rejection notifications |
-| `QUOTATION_STATUS` | Quotation status updates |
-| `ENROLLMENT_STATUS` | Subscription status updates |
-| `FORWARD_DELIVERY` | Forward delivery notifications |
-
-## Quick Start
-
-```typescript
-import express from 'express';
-import { startPlatform, MessageTypes } from '@unchainedshop/platform';
-
-const app = express();
-
-const { unchainedAPI, graphqlHandler } = await startPlatform({
-  express: app,
-  options: {
-    modules: {
-      // Module-specific configuration
-    },
-    plugins: [
-      // Plugin imports
-    ],
-  },
-  workQueueConfig: {
-    // Worker queue configuration
-  },
-});
-
-// Access unchained API
-const products = await unchainedAPI.modules.products.findProducts({});
-
-// Start server
-app.use('/graphql', graphqlHandler);
-app.listen(4010);
-```
+Before startup, set `ROOT_URL`, `EMAIL_WEBSITE_NAME`, `EMAIL_WEBSITE_URL`, `EMAIL_FROM`, and `UNCHAINED_TOKEN_SECRET` (at least 32 characters). Set `MONGO_URL` for an external MongoDB; otherwise the database package starts a local instance.
 
 ## Configuration
 
 ```typescript
 const platform = await startPlatform({
-  express: app,
   options: {
-    modules: {
-      orders: {
-        // Order module options
-      },
-      products: {
-        // Product module options
-      },
+    orders: {
+      // Order module settings
     },
-    services: {
-      // Custom services
-    },
-    bulkImporter: {
-      handlers: {
-        // Custom import handlers
-      },
+    products: {
+      // Product module settings
     },
   },
-  workQueueConfig: {
-    batchSize: 10,
-    pollInterval: 1000,
+  modules: {
+    // Custom modules with a configure({ db, migrationRepository, options }) function
   },
-  context: (defaultResolver) => async (props, req, res) => {
-    const context = await defaultResolver(props, req, res);
-    return {
-      ...context,
-      // Custom context properties
-    };
+  services: {
+    // Custom services
   },
+  bulkImporter: {
+    handlers: {
+      // Custom import handlers
+    },
+  },
+  workQueueOptions: {
+    skipInvalidationOnStartup: true,
+  },
+  context: (defaultResolver) => async (props, req, res) => ({
+    ...(await defaultResolver(props, req, res)),
+    // Additional request context
+  }),
 });
 ```
 
-## Returns
+`PlatformOptions` combines core configuration with GraphQL server options, `rolesOptions`, `workQueueOptions`, and `auditLog`. Built-in modules are included automatically. Module settings are direct properties of `options`; module/service overrides and import/export handlers are top-level options.
 
-The `startPlatform` function returns:
+The work queue runs migrations and starts queue managers during startup unless workers are disabled. See [work queue options](src/setup/setupWorkqueue.ts) and [platform initialization](src/startPlatform.ts) for the current options.
+
+## Exports
+
+| Export | Description |
+|--------|-------------|
+| `startPlatform` | Initialize the platform |
+| `PlatformOptions` | Platform configuration type |
+| `runMigrations` | Run registered database migrations |
+| `printRuntimeConfiguration` | Log registered templates, events, and adapters |
+| `MessageTypes` | Built-in message type constants |
+
+The package also exports the [built-in template resolvers](src/templates/index.ts). Platform startup registers them automatically; custom templates use `MessagingDirector.registerTemplate()` from `@unchainedshop/core`.
+
+| Message type | Purpose |
+|--------------|---------|
+| `ACCOUNT_ACTION` | Email verification and password reset |
+| `DELIVERY` | Forward delivery notifications |
+| `ORDER_CONFIRMATION` | Order confirmations |
+| `ORDER_REJECTION` | Order rejections |
+| `QUOTATION_STATUS` | Quotation status updates |
+| `ENROLLMENT_STATUS` | Enrollment status updates |
+| `ERROR_REPORT` | Error reports |
+
+## Return value
 
 | Property | Description |
 |----------|-------------|
-| `unchainedAPI` | Complete Unchained core API instance |
-| `graphqlHandler` | GraphQL Yoga server instance for Express/Fastify |
+| `unchainedAPI` | Core modules, services, bulk importer/exporter, and options |
+| `graphqlHandler` | GraphQL Yoga server instance |
 | `db` | MongoDB database instance |
 
 ## License

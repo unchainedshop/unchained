@@ -55,7 +55,7 @@ registerPaymentProvider({
     ? null
     : PaymentError.INCOMPLETE_CONFIGURATION,
 
-  // Client-side SDK initialization
+  // Create the intent and bind it to this order payment
   sign: async (configuration, context) => {
     if (!context.order) return null;
     const pricing = OrderPricingSheet({
@@ -65,17 +65,27 @@ registerPaymentProvider({
     const intent = await stripe.paymentIntents.create({
       amount: pricing.total().amount,
       currency: context.order.currencyCode.toLowerCase(),
-      metadata: { orderId: context.order._id },
+      metadata: { orderPaymentId: context.orderPayment?._id ?? '' },
     });
     return intent.client_secret;
   },
 
-  // Confirm the charge (here, validated via webhook)
+  // Verify the completed intent against this order payment
   charge: async (configuration, context) => {
-    const intentId = context.orderPayment?.context?.paymentIntentId;
-    if (!intentId) return false;
+    const intentId = context.transactionContext?.paymentIntentId;
+    if (!intentId || !context.order || !context.orderPayment) return false;
     const intent = await stripe.paymentIntents.retrieve(intentId);
-    return intent.status === 'succeeded' ? { transactionId: intent.id } : false;
+    const pricing = OrderPricingSheet({
+      calculation: context.order.calculation,
+      currencyCode: context.order.currencyCode,
+    });
+    const matchesOrder =
+      intent.metadata.orderPaymentId === context.orderPayment._id &&
+      intent.amount === pricing.total().amount &&
+      intent.currency === context.order.currencyCode.toLowerCase();
+    return intent.status === 'succeeded' && matchesOrder
+      ? { transactionId: intent.id }
+      : false;
   },
 
   cancel: async (configuration, context) => {

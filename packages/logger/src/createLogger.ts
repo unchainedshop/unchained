@@ -4,7 +4,7 @@ import { LogLevel } from './logger.types.ts';
 
 /**
  * Performance optimization: Cache compiled regex patterns to avoid recreating them
- * on every DEBUG pattern match. This provides ~190% improvement in pattern matching.
+ * on every DEBUG pattern match.
  */
 const regexCache = new Map<string, RegExp>();
 
@@ -16,12 +16,12 @@ const debugPatternCache = new Map<string, boolean>();
 
 /**
  * Escapes all regex special characters except asterisk (*) which is used for wildcards.
- * This prevents ReDoS attacks from malicious DEBUG patterns.
+ * Wildcards are converted to `.*`; other regex syntax is treated literally.
  */
 const escapeRegexForDebug = (pattern: string): string => {
   // Escape all regex special characters except * (which we convert to .*)
   // Special chars: . + ? ^ $ { } ( ) | [ ] \
-  // We also escape - but allow it as literal
+  // Hyphens are already literal outside character classes.
   return pattern
     .replace(/[.+?^${}()|[\]\\]/g, '\\$&') // Escape special chars
     .replace(/\*/g, '.*'); // Convert * to .*
@@ -32,7 +32,7 @@ const escapeRegexForDebug = (pattern: string): string => {
  * Supports wildcards (*), exclusions (-pattern), and comma-separated lists.
  * Results are cached for performance.
  *
- * Security: Patterns are escaped to prevent ReDoS attacks.
+ * Regex metacharacters other than wildcard asterisks are escaped.
  */
 const debugStringContainsModule = (debugString: string, moduleName: string): boolean => {
   if (!debugString) return false;
@@ -55,7 +55,7 @@ const debugStringContainsModule = (debugString: string, moduleName: string): boo
       const isExclusion = trimmedName.startsWith('-');
       const patternToMatch = isExclusion ? trimmedName.slice(1) : trimmedName;
 
-      // Escape the pattern to prevent ReDoS, then convert * to .*
+      // Escape literal regex syntax, then convert * to .*
       const safePattern = escapeRegexForDebug(patternToMatch);
       regExp = new RegExp(`^${safePattern}$`);
       regexCache.set(trimmedName, regExp);

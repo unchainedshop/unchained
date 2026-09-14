@@ -43,7 +43,7 @@ export interface PaymentContext {
   userId?: string;
   order?: Order;
   orderPayment?: OrderPayment;
-  transactionContext?: any; // User for singing and charging a payment
+  transactionContext?: any; // Used for signing and charging a payment
   token?: any; // Used for validation
   meta?: any;
 }
@@ -86,12 +86,8 @@ export const PaymentAdapter: Omit<IPaymentAdapter, 'key' | 'label' | 'version'> 
       },
 
       charge: async () => {
-        // if you return true, the status will be changed to PAID
-
-        // if you return false, the order payment status stays the
-        // same but the order status might change
-
-        // if you throw an error, you cancel the checkout process
+        // Return charge result data to mark the payment PAID, or false to keep it open.
+        // Throw to abort payment processing.
         return false;
       },
 

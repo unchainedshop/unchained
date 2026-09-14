@@ -22,8 +22,8 @@ npm install @unchainedshop/plugins
 | Stripe | `payment/stripe` | Stripe payment integration |
 | Datatrans V2 | `payment/datatrans-v2` | Datatrans payment gateway |
 | Saferpay | `payment/saferpay` | Saferpay payment gateway |
-| Braintree | `payment/braintree` | Braintree payments |
 | Payrexx | `payment/payrexx` | Payrexx payment gateway |
+| Postfinance Checkout | `payment/postfinance-checkout` | Postfinance Checkout payment gateway |
 | Apple IAP | `payment/apple-iap` | Apple In-App Purchase |
 | Cryptopay | `payment/cryptopay` | Cryptocurrency payments |
 
@@ -41,16 +41,15 @@ npm install @unchainedshop/plugins
 |--------|-------------|-------------|
 | Product Catalog Price | `pricing/product-catalog-price` | Base catalog pricing |
 | Product Price Rate Conversion | `pricing/product-price-rateconversion` | Currency conversion |
-| Product Round | `pricing/product-round` | Price rounding |
 | Product Discount | `pricing/product-discount` | Product-level discounts |
 | Order Items | `pricing/order-items` | Order item pricing |
 | Order Delivery | `pricing/order-delivery` | Delivery pricing |
 | Order Payment | `pricing/order-payment` | Payment fee pricing |
 | Order Discount | `pricing/order-discount` | Order-level discounts |
-| Order Round | `pricing/order-round` | Order total rounding |
 | Free Delivery | `pricing/free-delivery` | Free delivery conditions |
 | Free Payment | `pricing/free-payment` | Free payment processing |
-| Swiss Tax (CH) | `pricing/tax/ch` | Swiss VAT calculation |
+| Product Swiss Tax | `pricing/product-swiss-tax` | Swiss VAT on products |
+| Delivery Swiss Tax | `pricing/delivery-swiss-tax` | Swiss VAT on delivery |
 
 ### Filter Adapters
 
@@ -111,50 +110,49 @@ Import and register plugins during platform initialization:
 
 ```typescript
 import { startPlatform } from '@unchainedshop/platform';
+import { pluginRegistry } from '@unchainedshop/core';
+import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
+import { StripePlugin } from '@unchainedshop/plugins/payment/stripe';
 
-// Import specific plugins
-import '@unchainedshop/plugins/payment/stripe';
-import '@unchainedshop/plugins/delivery/post';
-import '@unchainedshop/plugins/pricing/product-catalog-price';
+registerBasePlugins();
+pluginRegistry.register(StripePlugin);
 
 const platform = await startPlatform({
   // ...
 });
 ```
 
+Plugins must be registered explicitly before `startPlatform()`. Importing them alone does not register adapters or routes. Use named `XPlugin` exports (or the default plugin export), or the `registerBasePlugins()`, `registerAllPlugins()`, and `registerCryptoPlugins()` preset functions. Import package subpaths without a file extension.
+
+Event adapters use `setEmitAdapter()` from `@unchainedshop/events`; see their [Node Event Emitter example](src/events/node-event-emitter.ts). The base and all presets configure the default event emitter; the crypto preset supplements a base setup. Install the optional peer dependencies needed by the plugins you enable; see [package.json](package.json).
+
 ## Security
 
 ### Payment Plugin Security
 
-All payment plugins implement secure tokenization patterns for PCI DSS SAQ-A eligibility:
+Payment integrations provide provider-specific tokenization or hosted-payment flows:
 
 | Plugin | Security Method |
 |--------|-----------------|
 | Stripe | PaymentIntent/SetupIntent tokenization |
 | Datatrans | Secure Fields with HMAC-SHA-256 signatures |
 | Saferpay | Redirect with SHA-256 transaction signatures |
-| Braintree | Client SDK tokenization |
 | Cryptopay | BIP-32 HD wallet address derivation |
 
 **Signature Algorithms:**
 - HMAC-SHA-256: Datatrans, Payrexx, GridFS file uploads
-- HMAC-SHA-512: PostFinance Checkout
+- HMAC-SHA-512: Postfinance Checkout API request authentication
 - SHA-256: Saferpay
 
-### FIPS 140-3 Compatibility
+### Cryptographic runtime compatibility
 
-All cryptographic operations use FIPS-approved algorithms. When deployed on FIPS-enabled Node.js (e.g., Chainguard node-fips), plugins operate in FIPS-compliant mode.
+Cryptographic dependencies vary by plugin. Cryptocurrency adapters use blockchain-specific algorithms and optional JavaScript cryptography libraries; enabling FIPS mode in Node.js does not validate every plugin or dependency.
 
 See [SECURITY.md](../../SECURITY.md) for complete security documentation.
 
-## Notes
+## Postfinance Checkout
 
-### Postfinance Checkout Plugin
-
-Due to a TypeScript issue with the upstream "postfinancecheckout" package, the Postfinance plugin has been disabled from transpilation. To use it:
-1. Import the source TypeScript files directly from `src`
-2. Enable `node_modules` TypeScript compilation, or
-3. Copy `src/payment/postfinance-checkout` to your project
+Postfinance Checkout is included in the normal build and exports `PostfinanceCheckoutPlugin` from `@unchainedshop/plugins/payment/postfinance-checkout`. It uses the bundled fetch-based API client. Set `PFCHECKOUT_SPACE_ID`, `PFCHECKOUT_USER_ID`, `PFCHECKOUT_SECRET`, `PFCHECKOUT_SUCCESS_URL`, and `PFCHECKOUT_FAILED_URL` before startup; its initialization hook skips the plugin's adapters and routes if these values are missing.
 
 ## License
 

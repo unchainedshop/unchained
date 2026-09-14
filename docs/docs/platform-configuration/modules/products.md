@@ -13,7 +13,7 @@ The products module manages the product catalog including simple products, bundl
 
 ```typescript
 export interface ProductsSettingsOptions {
-  slugify: (title: string) => string;
+  slugify?: (title: string) => string;
 }
 ```
 

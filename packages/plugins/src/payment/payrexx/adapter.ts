@@ -85,26 +85,8 @@ export const Payrexx: IPaymentAdapter = {
         return JSON.stringify(gateway);
       },
 
-      // async validate(credentials) {
-      //   if (!credentials.meta) return false;
-      //   const { objectKey, currency } = credentials.meta;
-      //   const result = await api().validate({
-      //     refno: Buffer.from(`valid-${new Date().getTime()}`, 'hex').toString('base64'),
-      //     currency,
-      //     [objectKey]: JSON.parse(credentials.token),
-      //   });
-      //   return Boolean((result as ValidateResponseSuccess)?.transactionId);
-      // },
-
-      async register(/* transactionResponse */) {
-        // const { transactionId } = transactionResponse;
+      async register() {
         throw new Error('Not implemented');
-        // const result = (await api().status({
-        //   transactionId,
-        // })) as StatusResponseSuccess;
-        // if (result.transactionId) {
-        //   return await parseRegistrationData(result);
-        // }
         return null;
       },
 

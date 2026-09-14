@@ -26,9 +26,9 @@ In the payment provider page of your e-commerce shop's admin UI, you can view an
 
 To view and filter payment providers by type, follow these steps:
 - Navigate to the payment provider page in the admin UI.
-- Look for the "Type" column in the list of payment providers. This column displays the type of each payment provider, such as "Credit Card", "PayPal", "Bank Transfer", etc.
+- Look for the "Type" column in the list of payment providers. Provider types are `INVOICE` and `GENERIC`; the adapter determines the payment service or method.
 - Click on the "Type" column header to sort the payment providers by type.
-- Use the search bar or filter options available on the page to filter the payment providers by type. For example, you could filter the list to only display payment providers of the "Credit Card" type.
+- Use the filter options to show providers of the `INVOICE` or `GENERIC` type.
 
 By viewing and filtering payment providers by type, you can easily find and manage the payment providers that are relevant to your e-commerce shop's needs. This can help you offer a wider range of payment options to your customers, improving their shopping experience and increasing the chances of successful transactions.
 

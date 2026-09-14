@@ -7,7 +7,7 @@ description: Enterprise event system using AWS EventBridge
 
 # AWS EventBridge
 
-Publish-only event transport that forwards every emitted event to an AWS EventBridge bus (`Source`, `DetailType` = event name, `Detail` = JSON payload). Subscribing from the application is not supported — use EventBridge rules to route events to Lambda, SQS, SNS, or other targets.
+Publish-only event transport that forwards every emitted event to an AWS EventBridge bus (`Source` = configured source, `DetailType` = event name, `Detail` = JSON payload). Subscribing from the application is not supported — use EventBridge rules to route events to Lambda, SQS, SNS, or other targets.
 
 Requires the `@aws-sdk/client-eventbridge` peer dependency:
 
@@ -17,19 +17,28 @@ npm install @aws-sdk/client-eventbridge
 
 ## Registration
 
-The EventBridge transport does not auto-register. The factory is async and takes the AWS configuration as arguments (credentials are resolved by the AWS SDK's default provider chain):
+The EventBridge factory is async and takes the AWS configuration as arguments (credentials are resolved by the AWS SDK's default provider chain). Compose it with the local emitter so Unchained's audit logging and other subscribers continue to receive events. Configure this after `registerBasePlugins()`/`registerAllPlugins()` and before `startPlatform()`:
 
 ```typescript
 import { setEmitAdapter } from '@unchainedshop/events';
 import { EventBridgeEventEmitter } from '@unchainedshop/plugins/events/aws-eventbridge';
+import { NodeEventEmitter } from '@unchainedshop/plugins/events/node-event-emitter';
 
-setEmitAdapter(
-  await EventBridgeEventEmitter({
-    region: 'us-east-1',
-    source: 'com.mycompany.unchained',
-    busName: 'unchained-events',
-  }),
-);
+const local = NodeEventEmitter();
+const eventBridge = await EventBridgeEventEmitter({
+  region: 'us-east-1',
+  source: 'com.mycompany.unchained',
+  busName: 'unchained-events',
+});
+
+setEmitAdapter({
+  publish(eventName, data) {
+    local.publish(eventName, data);
+    eventBridge.publish(eventName, data);
+  },
+  subscribe: local.subscribe,
+  shutdown: () => eventBridge.shutdown?.(),
+});
 ```
 
 ## Adapter Details

@@ -12,7 +12,7 @@ export default [
       impersonator: User
 
       """
-      Get list of users, by default sorted by creation date (ascending) unless a queryString is set
+      List users, sorted by creation date (ascending) by default. With queryString, sort by text relevance instead.
       """
       users(
         limit: Int = 20
@@ -42,8 +42,7 @@ export default [
       user(userId: ID): User
 
       """
-      Return total number of published products filtered either by tags or explicit slugs
-      If a slug is provided
+      Count products matching tags, slugs, and queryString. Drafts are excluded unless includeDrafts is true.
       """
       productsCount(
         tags: [LowerCaseString!]
@@ -53,9 +52,9 @@ export default [
       ): Int! @cacheControl(maxAge: 180)
 
       """
-      Simple list of published products filtered either by tags or explicit slugs
-      If a slug is provided, limit and offset don't have any effect on the result
-      By default sorted by sequence (ascending) and published (ascending) unless a queryString is set
+      List products matching tags, slugs, and queryString. Drafts are excluded unless includeDrafts is true.
+      Pagination also applies when slugs are provided.
+      Default sort is sequence (ascending), then published (descending), including text searches.
       """
       products(
         queryString: String
@@ -73,7 +72,7 @@ export default [
       product(productId: ID, slug: String): Product
 
       """
-      List products specified prices
+      List the product's configured catalog prices
       """
       productCatalogPrices(productId: ID!): [ProductCatalogPrice!]!
         @cacheControl(scope: PRIVATE, maxAge: 0)
@@ -104,7 +103,7 @@ export default [
         @cacheControl(maxAge: 180)
 
       """
-      Get all languages, by default sorted by creation date (ascending)
+      List languages, active only by default, sorted by creation date (ascending)
       """
       languages(
         limit: Int = 50
@@ -120,7 +119,7 @@ export default [
       language(languageId: ID!): Language
 
       """
-      Get all countries, by default sorted by creation date (ascending)
+      List countries, active only by default, sorted by creation date (ascending)
       """
       countries(
         limit: Int = 50
@@ -148,7 +147,7 @@ export default [
         @cacheControl(maxAge: 180)
 
       """
-      Get all currencies, by default sorted by creation date (ascending)
+      List currencies, active only by default, sorted by creation date (ascending)
       """
       currencies(
         limit: Int = 50
@@ -187,7 +186,7 @@ export default [
         @cacheControl(scope: PRIVATE, maxAge: 0)
 
       """
-      Returns total number of delivery providers, optionally filtered by type
+      Returns total number of warehousing providers, optionally filtered by type
       """
       warehousingProvidersCount(type: WarehousingProviderType): Int!
         @cacheControl(scope: PRIVATE, maxAge: 0)
@@ -260,7 +259,7 @@ export default [
       ): Int!
 
       """
-      Get all orders, by default sorted by creation date (descending)
+      List orders, excluding carts by default, sorted by creation date (descending). With queryString, sort by text relevance instead.
       """
       orders(
         limit: Int = 10
@@ -285,7 +284,7 @@ export default [
       shopInfo: Shop!
 
       """
-      Get all root assortments, by default sorted by sequence (ascending)
+      List assortments, active roots only by default, sorted by sequence (ascending)
       """
       assortments(
         queryString: String
@@ -299,7 +298,7 @@ export default [
       ): [Assortment!]!
 
       """
-      Returns total number of assortments that match a given criteria or all if no criteria is given
+      Count assortments matching the filters; active roots only by default
       """
       assortmentsCount(
         tags: [LowerCaseString!]
@@ -310,7 +309,7 @@ export default [
       ): Int! @cacheControl(maxAge: 180)
 
       """
-      Get a specific assortment by ID
+      Get a specific assortment by ID or slug
       """
       assortment(assortmentId: ID, slug: String): Assortment
 
@@ -339,7 +338,7 @@ export default [
         @cacheControl(maxAge: 180)
 
       """
-      Get all filters, by default sorted by creation date (ascending)
+      List filters, active only by default, sorted by creation date (ascending)
       """
       filters(
         limit: Int = 10
@@ -411,7 +410,7 @@ export default [
       ): [Enrollment!]!
 
       """
-      Get a specific quotation by ID
+      Get a specific enrollment by ID
       """
       enrollment(enrollmentId: ID!): Enrollment
 
@@ -466,7 +465,7 @@ export default [
       ): [Work!]!
 
       """
-      Return total number of workers filtered the provided arguments
+      Count work items matching the provided filters
       """
       workQueueCount(
         status: [WorkStatus!]
@@ -480,12 +479,12 @@ export default [
       """
       work(workId: ID!): Work
       """
-      Get List of currently registered worker plugins
+      Get work types present in the queue that have an active worker plugin
       """
       activeWorkTypes: [WorkType!]!
 
       """
-      Get a specific work unit by ID
+      Get a specific event by ID
       """
       event(eventId: ID!): Event
 

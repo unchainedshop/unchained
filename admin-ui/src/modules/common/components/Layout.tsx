@@ -101,7 +101,6 @@ const LayoutContent = ({
   children,
   pageHeader = '',
   componentName,
-  /* navigationType = 'default', */
 }) => {
   const { isSystemReady } = useApp();
   const { formatMessage } = useIntl();

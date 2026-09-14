@@ -15,8 +15,8 @@ Variables marked as **Required** are validated at boot by `startPlatform` — th
 |----------|---------|-------------|
 | `NODE_ENV` | - | Node environment (development, test, production). Affects caching, logging, and other behaviors |
 | `PORT` | - | Base port number used by the application. MongoDB memory server uses PORT+1 |
-| `MONGO_URL` | - | MongoDB connection URL. If not set, uses mongodb-memory-server in development/test |
-| `UNCHAINED_API_VERSION` | `packageJson.version` | API version returned in GraphQL context, defaults to package.json version |
+| `MONGO_URL` | - | MongoDB connection URL. If absent, starts mongodb-memory-server in any environment: temporary storage in tests, persistent storage in `./.db` otherwise. Set an explicit URL in production |
+| `UNCHAINED_API_VERSION` | `npm_package_version` or `n/a` | API version returned in GraphQL context. npm supplies `npm_package_version` when launched through a package script |
 | `UNCHAINED_LANG` | `de` | Default language code |
 | `UNCHAINED_COUNTRY` | `CH` | Default country code |
 | `UNCHAINED_CURRENCY` | `CHF` | Default currency code |
@@ -70,6 +70,18 @@ Variables marked as **Required** are validated at boot by `startPlatform` — th
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `EXTERNAL_LINKS` | - | JSON string containing external links configuration for shop info |
+| `UNCHAINED_ADMIN_UI_CUSTOM_PROPERTIES` | - | Path to a JSON file defining custom entity properties; overrides `adminUiConfig.customProperties` when the file can be read and parsed |
+| `UNCHAINED_ADMIN_UI_SINGLE_SIGN_ON_URL` | - | Sign-in URL; overrides `adminUiConfig.singleSignOnURL` |
+| `UNCHAINED_ADMIN_UI_DEFAULT_PRODUCT_TAGS` | - | Comma-separated product tags to include with existing tags |
+| `UNCHAINED_ADMIN_UI_DEFAULT_ASSORTMENT_TAGS` | - | Comma-separated assortment tags to include with existing tags |
+| `UNCHAINED_ADMIN_UI_DEFAULT_USER_TAGS` | - | Comma-separated user tags to include with existing tags |
+
+## File Uploads and Filter Caching
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `UNCHAINED_PUT_URL_EXPIRY` | `86400000` (24 hours) | Validity of generated upload URLs in milliseconds |
+| `UNCHAINED_FILTER_CACHE_TTL_MS` | `60000` (1 minute) | Lifetime of entries in the filter cache's in-process read cache, in milliseconds |
 
 ## Worker Configuration
 
@@ -86,6 +98,18 @@ Variables marked as **Required** are validated at boot by `startPlatform` — th
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `EVENTS_TTL_SECONDS` | `172800` (2 days) | Retention period in seconds for records in the `events` collection (TTL index) |
+
+## Audit Logging
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OTEL_SERVICE_NAME` | `unchained-engine` | Service name in exported audit events |
+| `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` | - | Full OTLP logs endpoint; used when `auditLog.collectorUrl` is absent |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | - | Base OTLP endpoint; `/v1/logs` is appended when no explicit or logs-specific endpoint is configured |
+| `OTEL_EXPORTER_OTLP_HEADERS` | - | Comma-separated `key=value` headers for the collector |
+| `OTEL_EXPORTER_OTLP_LOGS_HEADERS` | - | Logs-specific headers overriding general OTLP headers; explicit `auditLog.collectorHeaders` take precedence |
+
+See [Audit Logging](../extend/events.md#audit-logging-ocsf) for platform options and export behavior.
 
 ## Notes
 

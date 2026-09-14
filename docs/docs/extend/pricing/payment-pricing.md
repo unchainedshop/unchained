@@ -27,7 +27,7 @@ registerPaymentPricing({
 });
 ```
 
-`calculate(sheet, context)` receives the running `sheet` and the payment pricing `context` (`provider`, `order`, `currencyCode`).
+`calculate(sheet, context)` receives a fresh result sheet for this adapter (it contains only the rows you add) and the payment pricing `context` (`provider`, `order`, `currencyCode`).
 
 ## Examples
 

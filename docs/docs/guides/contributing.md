@@ -11,7 +11,7 @@ This guide covers how to set up a development environment and contribute to Unch
 
 ## Prerequisites
 
-- **Node.js 24+** (26 recommended, see `.nvmrc`)
+- **Node.js 26+** (see `.nvmrc`)
 - **MongoDB** (or MongoDB Memory Server for testing)
 - **npm** (uses npm workspaces)
 
@@ -101,7 +101,7 @@ import { startPlatform } from '@unchainedshop/platform';
 
 - Module system: `NodeNext` (native ESM)
 - `allowImportingTsExtensions: true`
-- No compilation needed for development: `node --watch src/file.ts`
+- Node executes application TypeScript directly: `node --watch src/file.ts`. Workspace packages expose compiled `lib/` entry points, so `npm run dev` builds them in `predev` and keeps them updated with the TypeScript watcher.
 
 ### Types
 

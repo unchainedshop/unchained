@@ -13,62 +13,22 @@ npm install @unchainedshop/core-bookmarks
 
 ## Usage
 
+The platform initializes this module as `platform.unchainedAPI.modules.bookmarks`.
+
 ```typescript
-import { configureBookmarksModule } from '@unchainedshop/core-bookmarks';
+const { bookmarks } = platform.unchainedAPI.modules;
 
-const bookmarksModule = await configureBookmarksModule({ db });
-
-// Create a bookmark
-const bookmarkId = await bookmarksModule.create({
+const bookmarkId = await bookmarks.create({
   userId: 'user-123',
   productId: 'product-456',
 });
-
-// Find bookmarks by user
-const bookmarks = await bookmarksModule.findBookmarksByUserId('user-123');
+const bookmark = await bookmarks.findBookmarkById(bookmarkId);
+const wishlist = await bookmarks.findBookmarksByUserId('user-123');
 ```
 
-## API Overview
+`create` returns the bookmark ID. `replaceUserId` supports transferring bookmarks during guest-to-user conversion.
 
-### Module Configuration
-
-| Export | Description |
-|--------|-------------|
-| `configureBookmarksModule` | Configure and return the bookmarks module |
-
-### Queries
-
-| Method | Description |
-|--------|-------------|
-| `findBookmarkById` | Find a bookmark by its ID |
-| `findBookmarksByUserId` | Find all bookmarks for a user |
-| `findBookmarks` | Find bookmarks with custom query |
-
-### Mutations
-
-| Method | Description |
-|--------|-------------|
-| `create` | Create a new bookmark |
-| `update` | Update an existing bookmark |
-| `delete` | Delete a bookmark |
-| `deleteByUserId` | Delete all bookmarks for a user |
-| `deleteByProductId` | Delete all bookmarks for a product |
-| `replaceUserId` | Transfer bookmarks between users |
-
-### Types
-
-| Export | Description |
-|--------|-------------|
-| `Bookmark` | Bookmark document type |
-| `BookmarksModule` | Module interface type |
-
-## Events
-
-| Event | Description |
-|-------|-------------|
-| `BOOKMARK_CREATE` | Emitted when a bookmark is created |
-| `BOOKMARK_UPDATE` | Emitted when a bookmark is updated |
-| `BOOKMARK_REMOVE` | Emitted when a bookmark is removed |
+See the [module guide](https://docs.unchained.shop/platform-configuration/modules/bookmarks), [public exports](src/bookmarks-index.ts), and [module implementation](src/module/configureBookmarksModule.ts) for the API and events.
 
 ## License
 

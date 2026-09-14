@@ -24,7 +24,7 @@ import { MinioPlugin } from '@unchainedshop/plugins/files/minio';
 pluginRegistry.register(MinioPlugin);
 ```
 
-Registration mounts the webhook route `POST /minio/webhook` (path configurable via `MINIO_WEBHOOK_PATH`) and warns if `MINIO_WEBHOOK_AUTH_TOKEN` is not set (webhooks are disabled without it).
+At startup, initialization warns if `MINIO_WEBHOOK_AUTH_TOKEN` is not set (webhooks are disabled without it). The Express/Fastify connector mounts `POST /minio/webhook` (path configurable via `MINIO_WEBHOOK_PATH`).
 
 The `minio` npm package is an optional peer dependency:
 

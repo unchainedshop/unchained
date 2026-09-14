@@ -78,7 +78,6 @@ const ProductAssignmentScaffoldForm = ({
           required
           name="type"
           options={Object.fromEntries(
-            // TODO: Fix this mapping when ProductTypes is fixed
             Object.entries(IProductType).map(([key, value]) => [value, key]),
           )}
         />

@@ -24,7 +24,7 @@ registerProductPricing({
   isActivatedFor: (context) => true, // activate for all products
   calculate: async (sheet, context) => {
     sheet.addItem({
-      amount: 1000, // 10.00 in cents
+      amount: 1000 * context.quantity, // 10.00 per unit in a currency with two decimals
       isTaxable: true,
       isNetPrice: true,
       meta: { adapter: 'custom-base' },

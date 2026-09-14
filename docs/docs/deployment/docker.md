@@ -12,7 +12,7 @@ An Unchained project is a small Node.js app that consumes the `@unchainedshop/*`
 The Dockerfile below is adapted from the one used by the official starter, [unchainedshop/unchained-app](https://github.com/unchainedshop/unchained-app):
 
 ```dockerfile
-FROM node:24-alpine
+FROM node:26-alpine
 
 RUN mkdir -p /webapp
 WORKDIR /webapp

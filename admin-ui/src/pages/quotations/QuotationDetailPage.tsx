@@ -33,7 +33,6 @@ const QuotationDetailPage = ({ quotationId }) => {
           )}
         />
       </div>
-      {/* TODO change mock props data */}
       {loading ? <Loading /> : <QuotationDetail quotation={quotation} />}
     </div>
   );

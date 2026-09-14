@@ -5,7 +5,7 @@ A CLI tool for populating demo data into an Unchained Engine e-commerce platform
 ## Features
 
 - Generates 1000+ electronics store products with extensive multi-language descriptions
-- Creates 40+ hierarchical category assortments (expandable)
+- Creates hierarchical electronics assortments
 - Defines 10 faceted filters for product navigation
 - Supports 3 languages: English, German, French
 - Uses 2 currencies: CHF and USD
@@ -24,14 +24,12 @@ npm run build
 ### Basic Usage
 
 ```bash
-# With authentication token (the plainSecret passed to setAccessToken)
+# With the token returned by modules.users.createAccessToken('admin')
 node dist/index.js populateDemoData --token YOUR_AUTH_TOKEN
 
 # Using environment variable
 UNCHAINED_TOKEN=YOUR_AUTH_TOKEN node dist/index.js populateDemoData
 
-# Example: If your server calls setAccessToken('admin', 'secret'), use:
-node dist/index.js populateDemoData --token secret
 ```
 
 ### Options
@@ -90,9 +88,9 @@ Each product includes:
 - Weight specifications
 - Category and brand tags
 
-### Assortments (~43)
+### Assortments
 
-Hierarchical category structure:
+Category groups include the following; see [the generator](src/generators/assortments.ts) for the complete hierarchy:
 ```
 Electronics Store (root)
   |-- Computers & Laptops
@@ -111,6 +109,9 @@ Electronics Store (root)
   |-- Gaming (Consoles, Accessories, Monitors)
   |-- Home Office (Printers, Routers, Storage)
   |-- Cameras (Digital, Action, Accessories)
+  |-- Smart Home
+  |-- Networking
+  |-- Components
 ```
 
 ### Filters (10)
@@ -150,4 +151,4 @@ The target Unchained Engine must:
 
 ## License
 
-Private - part of Unchained Engine
+EUPL-1.2 (see the [repository license](../../license))

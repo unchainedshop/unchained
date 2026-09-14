@@ -454,7 +454,7 @@ query OrderStatus {
 
 ```tsx
 import { useState } from 'react';
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client/react';
 
 function Checkout() {
   const [step, setStep] = useState('cart');

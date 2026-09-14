@@ -13,69 +13,19 @@ npm install @unchainedshop/core-languages
 
 ## Usage
 
+The platform initializes this module as `platform.unchainedAPI.modules.languages`.
+
 ```typescript
-import { configureLanguagesModule } from '@unchainedshop/core-languages';
+const { languages } = platform.unchainedAPI.modules;
 
-const languagesModule = await configureLanguagesModule({ db });
-
-// Create a language
-const languageId = await languagesModule.create({
-  isoCode: 'en',
-});
-
-// Find languages
-const languages = await languagesModule.findLanguages({ includeInactive: false });
-
-// Check if language is base language
-const isBase = languagesModule.isBase(language);
+const languageId = await languages.create({ isoCode: 'en', isActive: true });
+const language = await languages.findLanguage({ languageId });
+const activeLanguages = await languages.findLanguages({ includeInactive: false });
 ```
 
-## API Overview
+`create` returns a language ID. Product and assortment translations are managed by their respective modules.
 
-### Module Configuration
-
-| Export | Description |
-|--------|-------------|
-| `configureLanguagesModule` | Configure and return the languages module |
-
-### Queries
-
-| Method | Description |
-|--------|-------------|
-| `findLanguage` | Find language by ID or ISO code |
-| `findLanguages` | Find languages with filtering, sorting, and pagination |
-| `count` | Count languages matching query |
-| `languageExists` | Check if a language exists |
-
-### Mutations
-
-| Method | Description |
-|--------|-------------|
-| `create` | Create a new language |
-| `update` | Update an existing language |
-| `delete` | Soft delete a language |
-
-### Helper Methods
-
-| Method | Description |
-|--------|-------------|
-| `isBase` | Check if language is the base/system language |
-
-### Types
-
-| Export | Description |
-|--------|-------------|
-| `Language` | Language document type |
-| `LanguageQuery` | Query parameters type |
-| `LanguagesModule` | Module interface type |
-
-## Events
-
-| Event | Description |
-|-------|-------------|
-| `LANGUAGE_CREATE` | Emitted when a language is created |
-| `LANGUAGE_UPDATE` | Emitted when a language is updated |
-| `LANGUAGE_REMOVE` | Emitted when a language is removed |
+See the [module guide](https://docs.unchained.shop/platform-configuration/modules/languages), [public exports](src/languages-index.ts), and [module implementation](src/module/configureLanguagesModule.ts).
 
 ## License
 

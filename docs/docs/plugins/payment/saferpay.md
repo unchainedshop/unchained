@@ -22,16 +22,16 @@ import { SaferpayPlugin } from '@unchainedshop/plugins/payment/saferpay';
 pluginRegistry.register(SaferpayPlugin);
 ```
 
-Register before `startPlatform()`. Registration mounts the webhook route `GET /payment/saferpay/webhook` (path configurable via `SAFERPAY_WEBHOOK_PATH`) and adds the `saferpayTransactions` database module. Registration throws unless `SAFERPAY_CUSTOMER_ID`, `SAFERPAY_TERMINAL_ID`, `SAFERPAY_API_USER`, and `SAFERPAY_API_PASSWORD` are all set.
+Register before `startPlatform()`. At startup, the plugin adds the `saferpayTransactions` database module and enables `GET /payment/saferpay/webhook` (path configurable via `SAFERPAY_WEBHOOK_PATH`). The Express/Fastify connector mounts the route. Initialization logs a warning and skips this plugin's adapter and route unless `SAFERPAY_CUSTOMER_ID`, `SAFERPAY_TERMINAL_ID`, `SAFERPAY_API_USER`, and `SAFERPAY_API_PASSWORD` are all set (including the credential fallbacks below); its database module has already been initialized.
 
 ## Environment Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `SAFERPAY_CUSTOMER_ID` | - | Saferpay customer ID (required at registration and by the API client) |
-| `SAFERPAY_TERMINAL_ID` | - | Saferpay terminal ID (required at registration; the adapter itself reads the `terminalId` provider configuration) |
-| `SAFERPAY_API_USER` | - | API username (required at registration and by the API client) |
-| `SAFERPAY_API_PASSWORD` | - | API password (required at registration, by the API client, and for webhook signatures) |
+| `SAFERPAY_CUSTOMER_ID` | - | Saferpay customer ID (required at initialization and by the API client) |
+| `SAFERPAY_TERMINAL_ID` | - | Saferpay terminal ID (required at initialization; the adapter itself reads the `terminalId` provider configuration) |
+| `SAFERPAY_API_USER` | - | API username (required at initialization and by the API client) |
+| `SAFERPAY_API_PASSWORD` | - | API password (required at initialization, by the API client, and for webhook signatures) |
 | `SAFERPAY_BASE_URL` | `https://test.saferpay.com/api` | API base URL. Production: `https://www.saferpay.com/api` |
 | `SAFERPAY_WEBHOOK_PATH` | `/payment/saferpay/webhook` | Webhook endpoint path |
 | `SAFERPAY_RETURN_PATH` | `/saferpay/return` | User return URL path after payment |

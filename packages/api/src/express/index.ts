@@ -160,7 +160,7 @@ const resolveUserRemoteAddress = (req: e.Request, trustProxy = false) => {
 
   if (trustProxy) {
     // Only trust proxy headers when explicitly enabled
-    // Per RFC 7239: use the LAST IP in X-Forwarded-For as it's the one added by our trusted proxy
+    // Use the last X-Forwarded-For entry, assuming our trusted proxy appends it.
     // Earlier IPs in the chain can be spoofed by malicious clients
     const forwardedFor = req.headers['x-forwarded-for'] as string | undefined;
     const forwardedIps = forwardedFor?.split(',').map((ip) => ip.trim());

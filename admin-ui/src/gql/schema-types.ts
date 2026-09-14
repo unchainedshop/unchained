@@ -2887,21 +2887,21 @@ export type IPushSubscription = {
 };
 
 export type IQuery = {
-  /** Get List of currently registered worker plugins */
+  /** Get work types present in the queue that have an active worker plugin */
   activeWorkTypes: Array<IWorkType>;
-  /** Get a specific assortment by ID */
+  /** Get a specific assortment by ID or slug */
   assortment?: Maybe<IAssortment>;
-  /** Get all root assortments, by default sorted by sequence (ascending) */
+  /** List assortments, active roots only by default, sorted by sequence (ascending) */
   assortments: Array<IAssortment>;
-  /** Returns total number of assortments that match a given criteria or all if no criteria is given */
+  /** Count assortments matching the filters; active roots only by default */
   assortmentsCount: Scalars['Int']['output'];
-  /** Get all countries, by default sorted by creation date (ascending) */
+  /** List countries, active only by default, sorted by creation date (ascending) */
   countries: Array<ICountry>;
   /** Returns total number of countries */
   countriesCount: Scalars['Int']['output'];
   /** Get a specific country by ID */
   country?: Maybe<ICountry>;
-  /** Get all currencies, by default sorted by creation date (ascending) */
+  /** List currencies, active only by default, sorted by creation date (ascending) */
   currencies: Array<ICurrency>;
   /** Returns total number of currencies */
   currenciesCount: Scalars['Int']['output'];
@@ -2915,13 +2915,13 @@ export type IQuery = {
   deliveryProviders: Array<IDeliveryProvider>;
   /** Returns total number of delivery providers, optionally filtered by type */
   deliveryProvidersCount: Scalars['Int']['output'];
-  /** Get a specific quotation by ID */
+  /** Get a specific enrollment by ID */
   enrollment?: Maybe<IEnrollment>;
   /** Get all enrollments, by default sorted by creation date (ascending) */
   enrollments: Array<IEnrollment>;
   /** Returns total number of enrollments */
   enrollmentsCount: Scalars['Int']['output'];
-  /** Get a specific work unit by ID */
+  /** Get a specific event by ID */
   event?: Maybe<IEvent>;
   /** Returns aggregated report of all the events that occurred in the system */
   eventStatistics: Array<IEventStatistics>;
@@ -2931,7 +2931,7 @@ export type IQuery = {
   eventsCount: Scalars['Int']['output'];
   /** Get a specific filter by ID */
   filter?: Maybe<IFilter>;
-  /** Get all filters, by default sorted by creation date (ascending) */
+  /** List filters, active only by default, sorted by creation date (ascending) */
   filters: Array<IFilter>;
   /** Returns total number of filters */
   filtersCount: Scalars['Int']['output'];
@@ -2941,7 +2941,7 @@ export type IQuery = {
   impersonator?: Maybe<IUser>;
   /** Get a specific language */
   language?: Maybe<ILanguage>;
-  /** Get all languages, by default sorted by creation date (ascending) */
+  /** List languages, active only by default, sorted by creation date (ascending) */
   languages: Array<Maybe<ILanguage>>;
   /** Returns total number languages */
   languagesCount: Scalars['Int']['output'];
@@ -2951,7 +2951,7 @@ export type IQuery = {
   order?: Maybe<IOrder>;
   /** Returns aggregated report of all the orders that occurred in the system */
   orderStatistics: IOrderStatistics;
-  /** Get all orders, by default sorted by creation date (descending) */
+  /** List orders, excluding carts by default, sorted by creation date (descending). With queryString, sort by text relevance instead. */
   orders: Array<IOrder>;
   /** Returns total number of orders */
   ordersCount: Scalars['Int']['output'];
@@ -2965,7 +2965,7 @@ export type IQuery = {
   paymentProvidersCount: Scalars['Int']['output'];
   /** Get a specific product by id or slug */
   product?: Maybe<IProduct>;
-  /** List products specified prices */
+  /** List the product's configured catalog prices */
   productCatalogPrices: Array<IProductCatalogPrice>;
   /** Get a specific product review by ID */
   productReview: IProductReview;
@@ -2974,15 +2974,12 @@ export type IQuery = {
   /** Returns total number of product reviews */
   productReviewsCount: Scalars['Int']['output'];
   /**
-   * Simple list of published products filtered either by tags or explicit slugs
-   * If a slug is provided, limit and offset don't have any effect on the result
-   * By default sorted by sequence (ascending) and published (ascending) unless a queryString is set
+   * List products matching tags, slugs, and queryString. Drafts are excluded unless includeDrafts is true.
+   * Pagination also applies when slugs are provided.
+   * Default sort is sequence (ascending), then published (descending), including text searches.
    */
   products: Array<IProduct>;
-  /**
-   * Return total number of published products filtered either by tags or explicit slugs
-   * If a slug is provided
-   */
+  /** Count products matching tags, slugs, and queryString. Drafts are excluded unless includeDrafts is true. */
   productsCount: Scalars['Int']['output'];
   /** Get a specific quotation by ID */
   quotation?: Maybe<IQuotation>;
@@ -3018,7 +3015,7 @@ export type IQuery = {
   translatedProductVariationTexts: Array<IProductVariationTexts>;
   /** Specific user data if userId provided, else returns currently logged in */
   user?: Maybe<IUser>;
-  /** Get list of users, by default sorted by creation date (ascending) unless a queryString is set */
+  /** List users, sorted by creation date (ascending) by default. With queryString, sort by text relevance instead. */
   users: Array<IUser>;
   /** Get total number of users in the system that match query */
   usersCount: Scalars['Int']['output'];
@@ -3032,13 +3029,13 @@ export type IQuery = {
   warehousingProvider?: Maybe<IWarehousingProvider>;
   /** Get all warehousing providers, optionally filtered by type */
   warehousingProviders: Array<IWarehousingProvider>;
-  /** Returns total number of delivery providers, optionally filtered by type */
+  /** Returns total number of warehousing providers, optionally filtered by type */
   warehousingProvidersCount: Scalars['Int']['output'];
   /** Get a specific work unit by ID */
   work?: Maybe<IWork>;
   /** Get all work from the queue, by default sorted by start date (desc), priority (desc), originalWorkId (asc) and created (asc) */
   workQueue: Array<IWork>;
-  /** Return total number of workers filtered the provided arguments */
+  /** Count work items matching the provided filters */
   workQueueCount: Scalars['Int']['output'];
   /** Returns aggregated report of all the worker jobs that occurred in the system */
   workStatistics: Array<IWorkStatistics>;

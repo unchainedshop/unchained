@@ -22,7 +22,7 @@ import { StripePlugin } from '@unchainedshop/plugins/payment/stripe';
 pluginRegistry.register(StripePlugin);
 ```
 
-Register before `startPlatform()`. Registration mounts the webhook route `POST /payment/stripe/webhook` (path configurable via `STRIPE_WEBHOOK_PATH`) on the Unchained HTTP server — no manual Express/Fastify wiring. Registration throws if `STRIPE_SECRET` is not set and warns if `STRIPE_ENDPOINT_SECRET` is missing.
+Register before `startPlatform()`. At startup, the plugin enables the webhook route `POST /payment/stripe/webhook` (path configurable via `STRIPE_WEBHOOK_PATH`); the Express/Fastify connector mounts it on the Unchained HTTP server. If `STRIPE_SECRET` is missing, initialization logs a warning and skips this plugin's adapter and route. A missing `STRIPE_ENDPOINT_SECRET` produces a warning; webhook verification requires it.
 
 The `stripe` npm package is an optional peer dependency:
 
@@ -34,7 +34,7 @@ npm install stripe
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `STRIPE_SECRET` | - | Stripe secret key (required, registration throws without it) |
+| `STRIPE_SECRET` | - | Stripe secret key (required; the adapter and route are skipped without it) |
 | `STRIPE_ENDPOINT_SECRET` | - | Webhook signing secret for signature verification (required for webhooks) |
 | `STRIPE_WEBHOOK_PATH` | `/payment/stripe/webhook` | Webhook endpoint path |
 | `STRIPE_WEBHOOK_ENVIRONMENT` | - | Environment tag stored in intent metadata; webhooks for other environments are skipped (multi-environment setups) |

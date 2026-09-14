@@ -18,7 +18,7 @@ Unchained Engine is a modular, API-first e-commerce platform built as a monorepo
 
 ### Prerequisites
 
-- Node.js >=22 (see [.nvmrc](.nvmrc))
+- Node.js >=26 (see [.nvmrc](.nvmrc) for the development version)
 - MongoDB 4.4+ (or use MongoDB Memory Server for development)
 
 ### Create a New Project
@@ -31,7 +31,7 @@ Then navigate to http://localhost:4010/ to open the Admin UI and set up your adm
 
 ### Run Local AI for Copilot
 
-A minimum of 24GB VRAM is needed for this.
+Hardware requirements depend on the model, quantization, and context size. For an OpenAI-compatible local server, see the [Copilot configuration guide](docs/docs/platform-configuration/enable-copilot.md).
 
 ```bash
 llama-server -hf ggml-org/gpt-oss-20b-GGUF --ctx-size 0 --jinja -ub 2048 -b 2048
@@ -94,11 +94,11 @@ Foundational utilities used across all layers:
 | Package | Description |
 |---------|-------------|
 | [@unchainedshop/mongodb](packages/mongodb/README.md) | MongoDB database abstraction with utilities and DocumentDB compatibility |
-| [@unchainedshop/events](packages/events/README.md) | Event emitter abstraction with pluggable adapters (Redis, Kafka, etc.) |
+| [@unchainedshop/events](packages/events/README.md) | Event emitter abstraction with Node.js, Redis, and EventBridge adapters |
 | [@unchainedshop/logger](packages/logger/README.md) | High-performance logging with JSON/human-readable formats |
-| [@unchainedshop/utils](packages/utils/README.md) | Common utilities, locale helpers, and Director/Adapter base classes |
+| [@unchainedshop/utils](packages/utils/README.md) | Common utilities, locale helpers, and cryptographic helpers |
 | [@unchainedshop/roles](packages/roles/README.md) | Role-based access control (RBAC) system |
-| [@unchainedshop/file-upload](packages/file-upload/README.md) | File upload abstraction with pluggable storage backends |
+| [@unchainedshop/shared](packages/shared/README.md) | Shared TypeScript configuration for workspace packages |
 
 ### Extensions
 
@@ -117,7 +117,7 @@ Foundational utilities used across all layers:
 
 | Example | Description |
 |---------|-------------|
-| [Kitchensink (Fastify)](examples/kitchensink/README.md) | Full-featured example with Fastify, all plugins, ticketing, and AI integration |
+| [Kitchensink (Fastify)](examples/kitchensink/README.md) | Full-featured example with Fastify, all plugins, Admin UI extensions, and AI integration |
 | [Kitchensink (Express)](examples/kitchensink-express/README.md) | Full-featured example with Express, MCP server, and AI integration |
 | [Ticketing](examples/ticketing/README.md) | Event ticketing with PDF and wallet passes |
 | [Minimal](examples/minimal/README.md) | Minimal setup example |
@@ -131,7 +131,7 @@ Unchained uses a Director/Adapter pattern for extensibility. Directors manage co
 
 | Director | Purpose | Example Adapters |
 |----------|---------|------------------|
-| `PaymentDirector` | Payment processing | Stripe, PayPal, Invoice |
+| `PaymentDirector` | Payment processing | Stripe, Datatrans, Invoice |
 | `DeliveryDirector` | Shipping/delivery | Post, Pickup, Digital |
 | `WarehousingDirector` | Inventory management | Store, ETH Minter |
 | `WorkerDirector` | Background jobs | Email, SMS, HTTP Request |
@@ -213,13 +213,7 @@ See [MIGRATION.md](MIGRATION.md) for upgrade instructions between major versions
 
 ## Claude Code Integration
 
-Unchained provides a Claude Code skill to help with upgrades:
-
-```bash
-claude "skill install https://docs.unchained.shop/skills/upgrade-unchained/SKILL.md"
-```
-
-This skill guides Claude through fetching the correct migration guide, changelog, and examples for your target version.
+The [upgrade skill](docs/static/skills/upgrade-unchained/SKILL.md) guides agents through the migration guide, changelog, and examples for your target version.
 
 ## Security & Compliance
 
@@ -229,35 +223,20 @@ Unchained Engine is designed for deployment in security-sensitive environments i
 
 | Standard | Status | Notes |
 |----------|--------|-------|
-| **PCI DSS SAQ-A** | Eligible | Payment tokenization, no card data storage |
-| **ISO 27001** | Aligned | Comprehensive security controls |
-| **FIPS 140-3** | Supported | Deploy with FIPS-enabled Node.js |
-| **FINMA/NIS2** | Aligned | Banking and EU requirements |
+| **PCI DSS** | Deployment-dependent | Payment integrations use provider tokens; assess the complete payment flow |
+| **ISO 27001 / FINMA / NIS2** | Technical controls | Access control and audit events can support organizational controls |
+| **FIPS 140-3** | Deployment-dependent | Validate the runtime and each enabled authentication/payment integration |
 
 ### Cryptographic Standards
 
 - **Password Hashing**: PBKDF2-SHA512 with 300,000 iterations
 - **Token Security**: SHA-256 hashing, cryptographically random generation
-- **Session Encryption**: AES-256-GCM (optional)
+- **Login Tokens**: HS256-signed JWTs with a one-hour default lifetime
 - **Payment Signatures**: HMAC-SHA-256/512
 
 ### FIPS 140-3 Mode
 
-For US federal government and regulated environments, run Unchained with FIPS-validated cryptography:
-
-```dockerfile
-# Use Chainguard FIPS image
-FROM cgr.dev/chainguard/node-fips:latest
-WORKDIR /app
-COPY . .
-CMD ["node", "index.js"]
-```
-
-Or enable FIPS mode manually:
-
-```bash
-node --enable-fips your-app.js
-```
+For deployments requiring FIPS, verify the runtime and all enabled integrations. See [FIPS configuration](SECURITY.md#fips-140-3-compatibility) for the runtime requirements and verification steps.
 
 ### API Hardening (Denial-of-Service Protection)
 
@@ -295,7 +274,6 @@ See [SECURITY.md](SECURITY.md) for complete security documentation, compliance d
 
 - [Security Documentation](SECURITY.md)
 - [Changelog](CHANGELOG.md)
-- [Benchmarks](BENCHMARKS.md)
 
 ## Contributing
 

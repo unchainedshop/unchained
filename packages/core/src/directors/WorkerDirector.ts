@@ -103,7 +103,7 @@ export const WorkerDirector: IWorkerDirector = {
       const output = await adapter.doWork(input ?? {}, unchainedAPI, workId);
       return output;
     } catch (error) {
-      // DO not use this as flow control. The adapter should catch expected errors and return status: FAILED
+      // Adapters should catch expected errors and return { success: false, error }.
       logger.debug('DO not use this as flow control.');
       logger.error(`WorkerDirector -> Error doing work ${type}: ${error.message}`);
 

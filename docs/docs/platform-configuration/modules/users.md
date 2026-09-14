@@ -17,7 +17,7 @@ export interface UserSettingsOptions {
   autoMessagingAfterUserCreation?: boolean;
   guestUserMaxAgeInDays?: number;
   earliestValidTokenDate?: (
-    type: UserAccountAction.VERIFY_EMAIL | UserAccountAction.RESET_PASSWORD,
+    type: typeof UserAccountAction.VERIFY_EMAIL | typeof UserAccountAction.RESET_PASSWORD,
   ) => Date;
   validateEmail?: (email: string) => Promise<boolean>;
   validateUsername?: (username: string) => Promise<boolean>;

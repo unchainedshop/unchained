@@ -8,8 +8,7 @@ export default [
       DELETED
     }
 
-    # This is just a placeholder. Extend WorkType with the active plugins on
-    # startup. See /examples/kitchensink/boot.js:92
+    # Schema initialization extends WorkType with registered worker adapter types.
     enum WorkType {
       UNKNOWN
     }

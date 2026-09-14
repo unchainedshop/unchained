@@ -8,17 +8,17 @@ Full-featured example of the Unchained Engine using Express as the HTTP server. 
 - **GraphQL API** with GraphQL Yoga
 - **All official plugins** via `@unchainedshop/plugins/presets/all`
 - **AI Chat integration** (OpenAI compatible, including local LLMs)
-- **Image generation** with OpenAI DALL-E
+- **Image generation** with OpenAI `gpt-image-1`
 - **Discount plugins** (half-price manual, 100-off)
 - **Database seeding** with admin user, country, currency, language, and providers
-- **Development access token** for testing (`admin` / `secret`)
+- **Development access token** generated for `admin` and printed at startup
 
 The Admin UI is served at `/`, with the local Bookmark Manager extension registered.
 
 ## Prerequisites
 
-- Node.js >= 24
-- MongoDB (or uses in-memory MongoDB for development)
+- Node.js >=26
+- MongoDB (or starts a local MongoDB instance with data stored in `.db`)
 
 ## Quick Start
 
@@ -130,7 +130,7 @@ This launches the MCP inspector to debug and test MCP tools.
 
 ```bash
 docker build -t unchained-kitchensink-express .
-docker run -p 4010:4010 unchained-kitchensink-express
+docker run -p 4010:3000 --env-file .env unchained-kitchensink-express
 ```
 
 ## License

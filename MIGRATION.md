@@ -122,6 +122,10 @@ Stripe SDK peer range widened from `>=19 <21` to `>=19 <23`. The plugin now uses
 
 ## v4 → v5 (Breaking Changes)
 
+### Node.js 26 required
+
+Upgrade to Node.js 26 or newer before running v5. Use `nvm install && nvm use` in this repository to select the version in `.nvmrc`. Package engine requirements, examples, Docker images, and CI use Node.js 26.
+
 ### Index Conflicts on v4.8-era Databases (Ops Note)
 
 Some indexes changed shape without changing name (e.g. `orders.orderNumber_1` and `products.warehousing.sku_1` are now `sparse`). On databases created by v4.8, boot logs `MongoServerError: An existing index has the same name as the requested index` for these — the engine continues and the old index stays in place. To adopt the new index shape, drop the conflicting index once (`db.orders.dropIndex('orderNumber_1')`, `db.products.dropIndex('warehousing.sku_1')`) and restart; `buildDbIndexes` recreates them.
@@ -142,10 +146,10 @@ import { Post } from '@unchainedshop/plugins/delivery/post.ts';
 import { GridFS } from '@unchainedshop/plugins/files/gridfs/index.js';
 
 // ✅ USE - New plugin exports
-import { InvoicePlugin } from '@unchainedshop/plugins/payment/invoice.ts';
-import { StripePlugin } from '@unchainedshop/plugins/payment/stripe/index.js';
-import { PostPlugin } from '@unchainedshop/plugins/delivery/post.ts';
-import { GridFSPlugin } from '@unchainedshop/plugins/files/gridfs/index.js';
+import { InvoicePlugin } from '@unchainedshop/plugins/payment/invoice';
+import { StripePlugin } from '@unchainedshop/plugins/payment/stripe';
+import { PostPlugin } from '@unchainedshop/plugins/delivery/post';
+import { GridFSPlugin } from '@unchainedshop/plugins/files/gridfs';
 ```
 
 #### Director.registerAdapter() Removed
@@ -188,7 +192,7 @@ Note: import plugin subpaths WITHOUT a file extension. The package `exports` map
 
 #### Plugin Preset Default Exports Removed
 
-Default exports from preset modules have been removed. Use named registration functions:
+Default exports from the base and all presets have been removed. The crypto preset retains an empty legacy default export, which does not register plugins. Use named registration functions for every preset:
 
 ```typescript
 // ❌ REMOVED

@@ -7,7 +7,7 @@ description: Base product pricing from catalog prices
 
 # Product Catalog Price
 
-Adds the gross price from the product catalog to the pricing calculation. This is typically the first adapter in the product pricing chain.
+Adds the price from the product catalog to the pricing calculation, preserving its `isNetPrice` and `isTaxable` flags. This is typically the first adapter in the product pricing chain.
 
 :::info Included in Base Preset
 Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.

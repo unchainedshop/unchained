@@ -14,7 +14,7 @@ When starting a fresh Unchained Engine instance, you need to seed it with initia
 Create a seed function that receives the `UnchainedCore` API and provisions essential data:
 
 ```typescript
-import { UnchainedCore } from '@unchainedshop/core';
+import type { UnchainedCore } from '@unchainedshop/core';
 
 export default async function seed(unchainedAPI: UnchainedCore) {
   const { modules } = unchainedAPI;
@@ -123,7 +123,7 @@ await modules.delivery.create({
 ## Complete Seed Example
 
 ```typescript
-import { UnchainedCore } from '@unchainedshop/core';
+import type { UnchainedCore } from '@unchainedshop/core';
 import crypto from 'node:crypto';
 
 export default async function seed(unchainedAPI: UnchainedCore) {

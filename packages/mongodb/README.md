@@ -14,21 +14,16 @@ npm install @unchainedshop/mongodb
 ## Usage
 
 ```typescript
-import { initDb, startDb, stopDb, generateDbObjectId } from '@unchainedshop/mongodb';
+import { initDb, stopDb, generateDbObjectId } from '@unchainedshop/mongodb';
 
-// Initialize the database connection
-const db = await initDb({
-  connectionString: 'mongodb://localhost:27017/unchained',
-});
+// Connect to MONGO_URL, or start a local MongoDB instance when it is unset
+const db = await initDb();
 
-// Start the database
-await startDb(db);
-
-// Generate a new ObjectId
+// Generate a random hexadecimal string ID (24 characters by default)
 const id = generateDbObjectId();
 
 // Stop the database when shutting down
-await stopDb(db);
+await stopDb();
 ```
 
 ## API Overview
@@ -37,15 +32,16 @@ await stopDb(db);
 
 | Export | Description |
 |--------|-------------|
-| `initDb` | Initialize MongoDB connection with connection string |
-| `startDb` | Start the database connection |
+| `initDb` | Connect using `MONGO_URL`, or start and connect to local MongoDB |
+| `startDb` | Start a local MongoDB server and return its connection URL |
 | `stopDb` | Close the database connection |
+| `createDatabaseResource` | Create an async-disposable database resource |
 
 ### Query Utilities
 
 | Export | Description |
 |--------|-------------|
-| `generateDbObjectId` | Generate a new MongoDB ObjectId |
+| `generateDbObjectId` | Generate a random hexadecimal string ID |
 | `generateDbFilterById` | Create a filter object for querying by ID |
 | `buildDbIndexes` | Create indexes for a collection |
 | `findPreservingIds` | Find documents while preserving ID order |
@@ -73,7 +69,13 @@ await stopDb(db);
 
 ## Environment Variables
 
-_No environment variables are required by this package._
+| Variable | Purpose |
+|----------|---------|
+| `MONGO_URL` | External MongoDB connection URL; when unset, start local MongoDB |
+| `PORT` | Local MongoDB defaults to this port plus one (`4011` if unset) |
+| `NODE_ENV` | `test` selects ephemeral storage for local MongoDB |
+
+`initDb()`, `startDb()`, and `createDatabaseResource()` accept `{ forceInMemory, port }`. Local non-test data is stored in `.db` under the current working directory; `stopDb()` preserves those persistent files.
 
 ## Best Practices
 
@@ -117,7 +119,7 @@ Queries should filter by `deleted: null` to exclude soft-deleted documents.
 
 #### Sparse Indexes
 
-Use sparse indexes when the indexed field may be null/undefined for most documents:
+Use sparse indexes when the indexed field is absent from most documents:
 
 ```typescript
 {
@@ -150,7 +152,7 @@ For full-text search, create compound text indexes:
 }
 ```
 
-**Note:** Text indexes are now created unconditionally on every collection. Supported runtimes: MongoDB 4.4+, AWS DocumentDB 5.0+ (text search added Feb 2024), AWS DocumentDB 8.0 (Text Index V2), FerretDB 2.x. AWS DocumentDB ≤4.0 and FerretDB 1.x are not supported.
+`buildDbIndexes()` attempts the indexes supplied by each collection, including any text indexes. It does not detect database vendors or versions. Check your database's support for the index definitions used by your modules.
 
 ## License
 

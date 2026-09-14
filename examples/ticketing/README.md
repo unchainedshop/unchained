@@ -16,8 +16,8 @@ Example demonstrating the Unchained Engine ticketing extension for event tickets
 
 ## Prerequisites
 
-- Node.js >= 22
-- MongoDB (or uses in-memory MongoDB for development)
+- Node.js >=26
+- MongoDB (or starts a local MongoDB instance with data stored in `.db`)
 
 ## Quick Start
 
@@ -49,7 +49,7 @@ Server starts at http://localhost:4010 with:
 | `ROOT_URL` | Public URL of the server | `http://localhost:4010` |
 | `PORT` | Server port | `4010` |
 | `UNCHAINED_TOKEN_SECRET` | Secret for session tokens (min 32 chars) | - |
-| `UNCHAINED_SECRET` | Secret for magic key encryption | `secret` |
+| `UNCHAINED_SECRET` | Secret used to derive reusable order access keys | `secret` |
 | `EMAIL_FROM` | Default sender email | `noreply@unchained.local` |
 | `EMAIL_WEBSITE_NAME` | Website name for emails | `Unchained` |
 | `EMAIL_WEBSITE_URL` | Website URL for emails | `http://localhost:4010` |
@@ -62,14 +62,6 @@ Server starts at http://localhost:4010 with:
 | `UNCHAINED_COUNTRY` | Default country ISO code | `CH` |
 | `UNCHAINED_CURRENCY` | Default currency ISO code | `CHF` |
 | `UNCHAINED_LANG` | Default language ISO code | `de` |
-
-### Apple Wallet (Optional)
-
-| Variable | Description |
-|----------|-------------|
-| `PASS_CERTIFICATE_PATH` | Path to Apple pass certificate (PEM) |
-| `PASS_CERTIFICATE_SECRET` | PEM passphrase |
-| `PASS_TEAM_ID` | Apple Developer Team ID |
 
 ## Ticketing Setup
 
@@ -85,7 +77,7 @@ setupTicketing(platform.unchainedAPI, {
 
 ### Implementing PDF Tickets
 
-```typescript
+```tsx
 import ReactPDF from '@react-pdf/renderer';
 
 const renderOrderPDF = async ({ orderId }, { modules }) => {
@@ -122,7 +114,7 @@ Tests are located in the `tests/` directory.
 
 ```bash
 docker build -t unchained-ticketing .
-docker run -p 4010:4010 unchained-ticketing
+docker run -p 4010:3000 --env-file .env unchained-ticketing
 ```
 
 ## License

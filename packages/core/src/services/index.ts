@@ -24,6 +24,7 @@ import { searchProductsService } from './searchProducts.ts';
 import { calculateDiscountTotalService } from './calculateDiscountTotal.ts';
 import { registerPaymentCredentialsService } from './registerPaymentCredentials.ts';
 import { processOrderService } from './processOrder.ts';
+import { processEnrollmentService } from './processEnrollment.ts';
 import { checkoutOrderService } from './checkoutOrder.ts';
 import { confirmOrderService } from './confirmOrder.ts';
 import { rejectOrderService } from './rejectOrder.ts';
@@ -180,7 +181,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
       generateOrderFromEnrollment: generateOrderFromEnrollmentService as Bound<
         typeof generateOrderFromEnrollmentService
       >,
-      processEnrollment: processOrderService as Bound<typeof processOrderService>,
+      processEnrollment: processEnrollmentService as Bound<typeof processEnrollmentService>,
       initializeEnrollment: initializeEnrollmentService as Bound<typeof initializeEnrollmentService>,
       activateEnrollment: activateEnrollmentService as Bound<typeof activateEnrollmentService>,
       terminateEnrollment: terminateEnrollmentService as Bound<typeof terminateEnrollmentService>,

@@ -19,7 +19,7 @@ runtime.
   native dynamic `import()`.
 
 The module graph (which specifiers are shared vs. bundled) is defined in
-[`plugin-runtime.mjs`](./plugin-runtime.mjs) — see `SHARED_DEP_SHIMS` and
+[`plugin-runtime.cjs`](./plugin-runtime.cjs), re-exported by `plugin-runtime.mjs` — see `SHARED_DEP_SHIMS` and
 `SDK_ENTRY_KEYS`.
 
 ## Writing a plugin
@@ -44,7 +44,7 @@ my-plugin/
   "scripts": { "build": "tsup", "build:watch": "tsup --watch" },
   "devDependencies": {
     "@types/react": "^19.0.0",
-    "@unchainedshop/admin-ui": "^5.0.0",
+    "@unchainedshop/admin-ui": "^5.0.0-alpha.5",
     "esbuild": "^0.25.0",
     "react": "^19.0.0",
     "tsup": "^8.0.0"
@@ -132,7 +132,7 @@ Slot types: `entities` (list/detail/create pages under `/ext/<path>`),
 `pages` (single custom page under `/ext/<path>`), `dashboard:widgets`, and
 `<entity>:tabs` for `product`, `assortment`, `filter`, `user`, `order`.
 
-- `requiredRole` — role name checked against the logged-in user; the item is
+- `requiredRole` — action name (such as `viewProducts`) checked against the logged-in user's `allowedActions`; the item is
   hidden without it.
 - `sortOrder` — position in the sidebar. Built-in items use 0–130 in steps of
   10 (Orders 30, Products 40, Users 70, System settings 110, ...). Items

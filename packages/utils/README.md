@@ -3,7 +3,7 @@
 
 # @unchainedshop/utils
 
-Common utility functions and base classes for the Unchained Engine.
+Common utility functions and adapter/director building blocks for the Unchained Engine.
 
 ## Installation
 
@@ -70,11 +70,11 @@ Available under the `calculation` namespace:
 | `objectInvert` | Invert object keys and values |
 | `buildObfuscatedFieldsFilter` | Build filter for obfuscating sensitive fields |
 
-### Director/Adapter Base Classes
+### Director/Adapter Building Blocks
 
 | Export | Description |
 |--------|-------------|
-| `BaseAdapter` | Base class for all adapters with logging support |
+| `BaseAdapter` | Base object for adapter implementations with logging support |
 | `BaseDirector` | Factory for creating adapter directors |
 | `IBaseAdapter` | Interface for adapter implementations |
 | `IBaseDirector` | Interface for director implementations |

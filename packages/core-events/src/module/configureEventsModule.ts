@@ -112,7 +112,7 @@ export const configureEventsModule = async ({ db }: ModuleInput<Record<string, n
           conditions.push({ created: { $lte: toDate } });
         }
         if (conditions.length) {
-          match.$or = conditions;
+          match.$and = conditions;
         }
       }
 

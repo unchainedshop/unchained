@@ -35,10 +35,9 @@ export interface PluginHttpRoute {
    *     return new Response('Missing signature', { status: 400 });
    *   }
    *
-   *   const data = await request.json();
-   *   await context.services.orders.processWebhook(data);
-   *
-   *   return Response.json({ success: true });
+   *   const { orderId } = await request.json();
+   *   const exists = await context.modules.orders.orderExists({ orderId });
+   *   return Response.json({ exists });
    * }
    * ```
    */
@@ -78,7 +77,7 @@ export interface IPlugin {
   /**
    * Adapters to register
    * Each adapter declares its type via `adapterType: Symbol.for('unchained:adapter:xxx')`
-   * The PluginRegistry will auto-register adapters to their respective Directors based on this symbol
+   * Directors query this registry for adapters matching their domain's symbol.
    */
   adapters?: IBaseAdapter[];
 
@@ -99,8 +98,9 @@ export interface IPlugin {
    * Lifecycle hook: Called during platform initialization
    * Use this to register event handlers, schedule workers, etc.
    *
-   * @returns false to skip adapter registration for this plugin, void/true to proceed normally
-   * @throws Error to skip adapter registration with the error message as the reason
+   * @returns false to exclude this plugin's adapters and routes, void/true to keep them enabled
+   * @throws Error to exclude adapters and routes, logging its message as the reason
+   * Module factories have already run and their modules remain available.
    */
   onRegister?: (unchainedAPI: UnchainedCore) => void | boolean | Promise<void | boolean>;
 
@@ -115,7 +115,7 @@ export interface IPlugin {
  * PluginRegistry
  *
  * Central registry for all plugins.
- * Manages plugin registration, module factories, adapter registration, and route mounting.
+ * Stores plugins and exposes module factories, adapters, and routes to the platform and HTTP connectors.
  */
 class PluginRegistry {
   private plugins = new Map<string, IPlugin>();
@@ -150,14 +150,14 @@ class PluginRegistry {
 
   /**
    * Initialize all plugins
-   * Called during platform startup BEFORE adapters are registered
+   * Called during platform startup after core and plugin modules are initialized.
    *
    * @param unchainedAPI Unchained core API
    */
   async initialize(unchainedAPI: UnchainedCore): Promise<void> {
     logger.info(`Initializing ${this.plugins.size} plugins`);
 
-    // Track plugins that should skip adapter registration
+    // Track plugins whose adapters and routes should be excluded.
     const skippedPlugins = new Set<string>();
 
     // Call onRegister hooks
@@ -165,7 +165,7 @@ class PluginRegistry {
       if (plugin.onRegister) {
         try {
           const result = await plugin.onRegister(unchainedAPI);
-          // If onRegister returns false, skip adapter registration for this plugin
+          // A false return excludes this plugin's adapters and routes.
           if (result === false) {
             skippedPlugins.add(plugin.key);
             logger.warn(`Plugin ${plugin.key} skipped adapter registration`, {
@@ -177,7 +177,7 @@ class PluginRegistry {
             });
           }
         } catch (error) {
-          // Thrown errors skip plugin registration with the error message as the reason
+          // Hook failures exclude adapters and routes; the plugin and its modules remain registered.
           skippedPlugins.add(plugin.key);
           const reason = error instanceof Error ? error.message : String(error);
           logger.warn(`Plugin ${plugin.key} skipped adapter registration - ${reason}`, {
@@ -201,7 +201,7 @@ class PluginRegistry {
 
   /**
    * Get all HTTP routes for mounting
-   * Routes from skipped plugins (those whose onRegister returned false) are excluded
+   * Routes from plugins whose onRegister returned false or threw are excluded.
    * @returns Array of route definitions
    */
   getRoutes(): PluginHttpRoute[] {
@@ -286,7 +286,7 @@ class PluginRegistry {
 
     for (const plugin of this.plugins.values()) {
       if (!plugin.adapters) continue;
-      // Plugins whose onRegister failed are skipped entirely, like their routes
+      // Exclude adapters from skipped plugins, as getRoutes does for their routes.
       if (this.skippedPlugins.has(plugin.key)) continue;
 
       for (const adapter of plugin.adapters) {

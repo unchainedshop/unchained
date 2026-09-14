@@ -1,12 +1,13 @@
 # AGENTS.md
 
-Kitchensink example: the most complete Unchained Engine setup (all plugin presets, MCP server, Admin UI, seeding). Used as the app under test for the monorepo's integration tests.
+Kitchensink example: a full Unchained Engine setup (all plugin preset, MCP server, Admin UI, seeding). The monorepo's integration tests start their own platform through `tests/setup.js`.
 
 ## Run
 
 ```bash
 npm install
-npm run dev        # watch mode, boots src/boot.ts on http://localhost:4010 (needs MongoDB)
+npm --prefix plugins/bookmark-manager install
+npm run dev        # builds plugin, then watches backend and plugin on http://localhost:4010
 npm run build      # tsc build to lib/
 npm start          # run built lib/boot.js
 ```

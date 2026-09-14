@@ -7,7 +7,7 @@ description: Event history and audit trail
 
 # Events Module
 
-The events module persists all emitted events to the database for auditing, analytics, and event sourcing patterns.
+The events module installs a database history adapter when no custom history adapter is configured. It records emitted events for inspection and analytics. Records expire after `EVENTS_TTL_SECONDS` (default: two days); use the audit logging pipeline for longer retention.
 
 ## Configuration Options
 

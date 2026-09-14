@@ -47,7 +47,7 @@ const uncachedResolveDefaultContext = async (
 };
 
 export const resolveDefaultContext = memoizeWithTTL(uncachedResolveDefaultContext, {
-  // Cached values expire after a minute
+  // Cache for one minute in production; use a 1 ms TTL otherwise.
   ttl: process.env.NODE_ENV === 'production' ? 1000 * 60 : 1,
   cacheKey: (args) => {
     const [{ acceptLang, acceptCountry }] = args;

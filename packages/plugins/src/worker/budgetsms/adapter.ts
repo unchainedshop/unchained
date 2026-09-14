@@ -207,27 +207,6 @@ export const BudgetSMSWorker: IWorkerAdapter<
 // IMPORTANT: The userid MUST be numeric only. You can find it in the BudgetSMS control panel after login.
 // Example: BUDGETSMS_USERID=12345 (NOT "user12345" or any non-numeric value)
 
-// Usage examples:
-//
-// Send real SMS (requires credits):
-// await WorkerDirector.doWork({
-//   type: 'BUDGETSMS',
-//   from: 'YourCompany',
-//   to: '+41791234567',
-//   text: 'Your message here',
-//   price: true, // Get price info
-//   credit: true, // Get remaining credit
-// });
-//
-// Test SMS (no credit deducted):
-// await WorkerDirector.doWork({
-//   type: 'BUDGETSMS',
-//   test: true,
-//   from: 'YourCompany',
-//   to: '+41791234567',
-//   text: 'Test message',
-// });
-//
 // IMPORTANT: If you get error 1001, it could mean either:
 // 1. Authentication failed (wrong credentials)
 // 2. Insufficient credit (0 balance)

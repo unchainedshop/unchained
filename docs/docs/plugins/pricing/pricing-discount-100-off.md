@@ -7,7 +7,7 @@ description: Example fixed-amount coupon code discount
 
 # Discount 100 Off
 
-A sample discount adapter demonstrating a fixed-amount coupon code (100 CHF off). Use this as a template for implementing your own coupon systems.
+A sample discount adapter demonstrating a fixed-amount coupon code (10000 minor units of the order currency, such as 100 CHF). Use this as a template for implementing your own coupon systems.
 
 ## Registration
 
@@ -24,13 +24,13 @@ pluginRegistry.register(HundredOffPlugin);
 
 1. User enters coupon code `100OFF`
 2. Adapter validates the code
-3. Returns a fixed discount of 100.00 (10000 cents) to be applied by [Order Discount](./pricing-order-discount.md)
+3. Returns a fixed discount of 10000 minor units to be applied by [Order Discount](./pricing-order-discount.md)
 
 ## Coupon Code
 
 | Code | Effect |
 |------|--------|
-| `100OFF` | 100.00 off total order (case-insensitive) |
+| `100OFF` | 10000 minor units off the total order (case-insensitive; 100.00 for currencies with two decimals) |
 
 ## Usage
 
@@ -65,7 +65,7 @@ The adapter targets `shop.unchained.pricing.order-discount`:
 ```typescript
 discountForPricingAdapterKey: ({ pricingAdapterKey }) => {
   if (pricingAdapterKey === 'shop.unchained.pricing.order-discount') {
-    return { fixedRate: 10000 }; // 100.00 in cents
+    return { fixedRate: 10000 }; // 100.00 for currencies with two decimals
   }
   return null;
 },

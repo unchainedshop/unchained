@@ -7,21 +7,21 @@ sidebar_label: Carts
 
 # Carts
 
-As you have learned already, in Unchained Engine, a cart is an order in initial `OPEN` state.
+In Unchained Engine, a cart is an order exposed as `OPEN` through GraphQL. Its stored `status` is `null` until checkout.
 
 When using the cart mutation API's, Unchained uses the `findOrInitCart` service to find or create a cart.
 It does that following this logic:
 
 First Unchained determines the shop country based on the locale provided or fallback to default country.
-Then it tries to find an `OPEN` order for that country. If an existing order has been found, that one
+Then it tries to find an `OPEN` order for that user and country. If an existing order has been found, that one
 will be used as the cart.
 
 If no order has been found, Unchained creates a new order for that user, providing:
 
 - Country
 - Currency
-- Billing address of the last order if possible
-- Contact information of the last order if possible
+- The user's last billing address, falling back to the profile address
+- The user's last contact information, falling back to the profile phone and primary email for registered users
 
 Because billing address and contact information could be undefined, before you can checkout, you have to
 make sure that order context is set and that the cart has add at least one order position.
@@ -127,7 +127,7 @@ providers usually want to know an address to ship a parcel to.
 
 ## Discounts
 
-TBD
+Use `addCartDiscount` to apply a coupon and `removeCartDiscount` to remove it. Eligible automatic discounts are added during cart recalculation. See [Order Discounts](../pricing/order-discounts.md) for registration and GraphQL examples.
 
 ## Order Positions
 
@@ -167,4 +167,3 @@ With every cart mutation, Unchained Engine recomputes the cart in those steps:
 3. Updates scheduling (dispatch and delivery estimates) for the order positions
 4. Rebuilds the order calculation (totals)
 5. Re-initializes cart providers in case the current delivery or payment provider became unsupported by the new totals
-

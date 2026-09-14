@@ -13,7 +13,7 @@ import { TextField, SelectField } from '@/components/ui/form';
 ## What's in the kit
 
 ### Core primitives
-Button, Badge, Toggle, Tab, Loading, NoData, BlockingContent
+Button, Badge, Toggle, Tab, Loading, NoData, Accordion
 
 ### Navigation & layout
 BreadCrumbs, PageHeader, ListHeader, DetailHeader, Pagination
@@ -28,7 +28,7 @@ ErrorBoundary, ErrorFallback, InfoTextBanner, HelpText
 TextField, TextAreaField, SelectField, CheckboxField, ChoicesField,
 DatePickerField, EmailField, PasswordField, JSONAreaField,
 MarkdownTextAreaField, TagInputField, FieldWrapper, FormErrors,
-SubmitButton, FieldWithHelp
+SubmitButton, FieldWithHelp, Combobox
 
 ### Tags
 TagInput, TagList, TagListForm (in `@/components/ui/Tag/`)

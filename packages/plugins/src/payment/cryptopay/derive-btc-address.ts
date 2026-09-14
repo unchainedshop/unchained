@@ -1,16 +1,6 @@
 import { HDKey } from '@scure/bip32';
 import { NETWORK, p2wpkh, TEST_NETWORK } from '@scure/btc-signer';
 
-// const resolvePath = (prefix) => {
-//   if (prefix === 'x') return `m/44'/0'`;
-//   if (prefix === 'y') return `m/49'/0'`;
-//   if (prefix === 'z') return `m/84'/0'`;
-//   if (prefix === 't') return `m/44'/1'`;
-//   if (prefix === 'u') return `m/49'/1'`;
-//   if (prefix === 'v') return `m/84'/1'`;
-//   return `m`;
-// };
-
 const resolveNetwork = (prefix) => {
   if (['x', 'y', 'z'].includes(prefix)) return NETWORK;
   return TEST_NETWORK;
@@ -40,7 +30,7 @@ export default (xpub, index) => {
   if (!child.publicKey) throw new Error('Cannot derive public key from extended public key');
 
   const network = resolveNetwork(prefix);
-  const pubKey = p2wpkh(child.publicKey /* hex.decode( as string)*/, network);
+  const pubKey = p2wpkh(child.publicKey, network);
 
   return pubKey.address;
 };

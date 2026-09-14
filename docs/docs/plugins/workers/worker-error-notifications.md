@@ -93,11 +93,11 @@ MessagingDirector.registerTemplate('ERROR_REPORT', async ({ workItems }) => {
 
 ```json
 {
-  "forked": "message-work-id"  // ID of the created MESSAGE work
+  "forked": "message-work-id"
 }
 ```
 
-If no failed work items are found, the result will be empty and no message is sent.
+`forked` is the ID of the created `MESSAGE` work item. If no failed work items are found, the result will be empty and no message is sent.
 
 ## Adapter Details
 

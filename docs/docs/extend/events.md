@@ -278,7 +278,7 @@ Audit events are designed to be consumed by an external monitoring agent: by def
 ### Features
 
 - **OCSF v1.4.0 compliant** - Industry-standard event schema
-- **Structured log emission** - Every event as one JSON log line on stdout (default)
+- **Structured log emission** - Enabled by default; set `UNCHAINED_LOG_FORMAT=json` for JSON lines
 - **OTLP push** - Optional OTLP/HTTP push to any OpenTelemetry-compatible collector
 - **SIEM-ready** - OCSF format for direct ingestion into security monitoring tools
 
@@ -290,26 +290,28 @@ Audit logging is automatically enabled when using `startPlatform()` — every ca
 import { startPlatform } from '@unchainedshop/platform';
 
 // Default: audit events are emitted as structured log lines
-const platform = await startPlatform({
-  modules: defaultModules,
-});
+const platform = await startPlatform({});
+```
 
-// Opt into OTLP push:
+Alternatively, opt into OTLP push:
+
+```typescript
 const platform = await startPlatform({
-  modules: defaultModules,
   auditLog: {
     collectorUrl: 'http://otel-collector:4318/v1/logs', // push to an OTLP collector
   },
 });
+```
 
-// To disable audit logging:
+To disable audit logging:
+
+```typescript
 const platform = await startPlatform({
-  modules: defaultModules,
   auditLog: false,
 });
 ```
 
-When enabled, the following events are automatically captured (97 event types in total, see `AUDITED_EVENTS`):
+When enabled, the following events are automatically captured (see the exported `AUDITED_EVENTS` list for full coverage):
 
 - `API_LOGIN_TOKEN_CREATED` → Authentication (LOGON)
 - `API_LOGIN_FAILED` → Authentication (LOGON, failure)
@@ -363,7 +365,6 @@ The engine can push audit events directly to any OTLP/HTTP-compatible logs endpo
 
 ```typescript
 const platform = await startPlatform({
-  modules: defaultModules,
   auditLog: {
     collectorUrl: 'http://otel-collector:4318/v1/logs',
     collectorHeaders: {
@@ -391,34 +392,36 @@ For custom audit events, use the singleton instance:
 ```typescript
 import {
   getAuditLogInstance,
+  getAuditContext,
   OCSF_AUTH_ACTIVITY,
   OCSF_ACCOUNT_ACTIVITY,
   OCSF_API_ACTIVITY,
 } from '@unchainedshop/events';
 
 const auditLog = getAuditLogInstance();
+const requestContext = getAuditContext();
 
 // Log authentication event
-await auditLog.logAuthentication({
+await auditLog?.logAuthentication({
   activity: OCSF_AUTH_ACTIVITY.LOGON,
   userId: user._id,
-  userName: user.email,
+  userName: user.username,
   success: true,
-  remoteAddress: req.ip,
-  sessionId: req.sessionID,
+  remoteAddress: requestContext?.remoteAddress,
+  sessionId: requestContext?.sessionId,
   isMfa: true,
 });
 
 // Log failed login attempt
-await auditLog.logAuthentication({
+await auditLog?.logAuthentication({
   activity: OCSF_AUTH_ACTIVITY.LOGON,
   success: false,
-  remoteAddress: req.ip,
+  remoteAddress: requestContext?.remoteAddress,
   message: 'Invalid password',
 });
 
 // Log account change (role assignment)
-await auditLog.logAccountChange({
+await auditLog?.logAccountChange({
   activity: OCSF_ACCOUNT_ACTIVITY.ATTACH_POLICY,
   userId: targetUser._id,
   actorUserId: adminUser._id,
@@ -427,7 +430,7 @@ await auditLog.logAccountChange({
 });
 
 // Log API activity (payment)
-await auditLog.logApiActivity({
+await auditLog?.logApiActivity({
   activity: OCSF_API_ACTIVITY.PAYMENT,
   userId: user._id,
   operation: 'processPayment',
@@ -436,7 +439,7 @@ await auditLog.logApiActivity({
 });
 
 // Log access denied
-await auditLog.logApiActivity({
+await auditLog?.logApiActivity({
   activity: OCSF_API_ACTIVITY.ACCESS_DENIED,
   userId: user._id,
   success: false,
@@ -480,7 +483,7 @@ Audit events use the OCSF v1.4.0 format and reach SIEM systems through:
 
 ### Shutdown
 
-When using `startPlatform()`, audit log shutdown is handled automatically. The platform flushes pending HTTP collector events and waits for the write lock to complete before exiting.
+When using `startPlatform()`, audit log shutdown is handled automatically. The platform clears the flush timer and attempts to flush pending HTTP collector events before exiting.
 
 ## Related
 

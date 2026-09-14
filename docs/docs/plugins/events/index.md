@@ -19,4 +19,4 @@ Event transports implement the `EmitAdapter` interface from `@unchainedshop/even
 
 - **Node Event Emitter**: Single-instance deployments. No external dependencies.
 - **Redis**: Multi-instance deployments that need distributed event handling.
-- **AWS EventBridge**: Routing events into AWS services; subscribing from the application is not supported.
+- **AWS EventBridge**: Routing events into AWS services. Combine it with a local emitter as shown in the [registration example](./events-eventbridge.md#registration) to retain audit logging and application subscriptions.

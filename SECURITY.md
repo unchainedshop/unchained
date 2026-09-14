@@ -19,65 +19,65 @@ This section describes how Unchained Engine can support compliance efforts. **No
 |----------|---------------|-----------------|
 | **PCI DSS SAQ-A** | Compatible | No card data storage; uses tokenization. Eligibility depends on your full deployment. |
 | **ISO 27001** | Technical Controls | Implements access control, audit logging, and cryptographic standards. ISMS policies and processes are your responsibility. |
-| **FIPS 140-3** | Algorithm Compatible | Uses FIPS-approved algorithms (PBKDF2, SHA-256/512, AES-256-GCM). Requires FIPS-validated runtime for full compliance. |
+| **FIPS 140-3** | Deployment-dependent | Password hashing and local token signing use Node.js cryptography. Validate the runtime and every enabled integration for your deployment. |
 | **SOC 2** | Audit Support | Emits an OCSF audit event stream for evidence collection in your SIEM. SOC 2 audits evaluate your organization's controls, not software. |
 | **FINMA 2023/1** | Technical Controls | Audit logging, access control, and cryptography support ICT risk management requirements. The circular is principle-based; organizational controls are your responsibility. |
-| **GDPR** | Technical Measures | Audit logging supports Article 30 requirements. Data protection policies are your responsibility. |
+| **GDPR** | Technical Measures | Access control and audit events support data-protection processes; retention and processing records are your responsibility. |
 
 ## Cryptographic Standards
 
-Unchained Engine uses modern, standards-compliant cryptography throughout:
+The following sections describe the cryptography used by the built-in authentication and payment integrations.
 
 ### Password Hashing
 
 - **Algorithm**: PBKDF2 with SHA-512
-- **Iterations**: 300,000 (exceeds OWASP recommendation of 210,000)
+- **Iterations**: 300,000
 - **Salt**: 16 bytes, cryptographically random
-- **Key Length**: 256 bytes
+- **Key Length**: 256 bits (32 bytes)
 - **Implementation**: Web Crypto API (`crypto.subtle`)
 
 ```typescript
 // packages/core-users/src/module/pbkdf2.ts
 const PBKDF2_ITERATIONS = 300000;
-const PBKDF2_KEY_LENGTH = 256;
+const PBKDF2_KEY_LENGTH = 256; // Bits, as required by deriveBits()
 const PBKDF2_SALT_LENGTH = 16;
 // Uses SHA-512 via crypto.subtle.deriveBits()
 ```
 
 ### Token Security
 
-- **Token Generation**: `crypto.randomUUID()` (CSPRNG-based, 128 bits of entropy)
-- **Token Storage**: SHA-256 hashed before database storage
-- **Token Expiration**: Time-limited (1 hour for verification tokens)
-- **Single Use**: Tokens are invalidated after use
+- **API Keys**: `createAccessToken()` generates a UUIDv4 using `crypto.randomUUID()` and stores its SHA-256 hash. UUIDv4 contains [122 random bits](https://www.rfc-editor.org/rfc/rfc9562.html#section-5.4). These keys are reusable and have no automatic expiry; generating a replacement overwrites the user's existing key.
+- **Email Verification and Password Reset Tokens**: UUIDv4 tokens stored as SHA-256 hashes, time-limited and consumed when used successfully.
+- **Login Tokens**: HS256-signed JWTs with a one-hour default lifetime, controlled by `UNCHAINED_TOKEN_EXPIRY_SECONDS`.
 
 **Why SHA-256 for Tokens (not PBKDF2)?**
 
-Per [OWASP guidance](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html), slow hashing algorithms (bcrypt, PBKDF2, Argon2) are designed for low-entropy user passwords. API access tokens generated with CSPRNG have high entropy (128+ bits), making brute-force computationally infeasible regardless of hash speed. Using SHA-256 for high-entropy tokens is both secure and performant for stateless API authentication where every request must be verified.
+Password hashing uses PBKDF2 to slow guesses against user-chosen passwords. Random API keys use SHA-256 for database lookup; their resistance to guessing depends on the randomly generated token. `setAccessToken()` accepts caller-supplied values, so use a cryptographically random value or prefer `createAccessToken()`.
 
 ```typescript
 // packages/core-users/src/module/configureUsersModule.ts
 // Preferred: Server generates high-entropy token
 const result = await modules.users.createAccessToken('admin');
-console.log(result.token); // e.g., "550e8400-e29b-41d4-a716-446655440000"
+if (result) console.log(result.token); // Returned only when the user exists
 ```
 
 ### Random Number Generation
 
 - **Hash IDs**: Generated using `crypto.getRandomValues()` (CSPRNG)
 - **Nonces**: `crypto.randomUUID()` for WebAuthn/Web3 challenges
-- **No weak RNG**: `Math.random()` is never used for security-sensitive operations
 
-### Session Encryption (Optional)
+### Login Token Signing
 
-- **Algorithm**: AES-256-GCM (authenticated encryption)
-- **Key Size**: 32 bytes
-- **IV Size**: 16 bytes
-- **Implementation**: kruptein library
+- **Algorithm**: HS256 (HMAC-SHA-256), implemented with `jose`
+- **Secret**: `UNCHAINED_TOKEN_SECRET`, validated to contain at least 32 characters
+- **Transport**: HttpOnly cookie or Bearer token
+- **Revocation**: Token-version checks and tracked login sessions support invalidation
+
+JWT payloads are signed, not encrypted. Do not add confidential data to their claims.
 
 ### Payment Signature Verification
 
-- **HMAC-SHA-256**: Datatrans, Payrexx, Saferpay, GridFS uploads
+- **HMAC-SHA-256**: Datatrans, Payrexx, GridFS uploads
 - **HMAC-SHA-512**: PostFinance Checkout
 
 ### WebAuthn/FIDO2
@@ -86,98 +86,36 @@ Full support for passwordless authentication via the WebAuthn standard, enabling
 
 ## FIPS 140-3 Compatibility
 
-Unchained Engine uses FIPS 140-3 approved algorithms and can run on FIPS-validated runtimes. **Note**: The software itself is not FIPS-validated; validation requires certification by a NIST-accredited lab. For true FIPS compliance, deploy on a FIPS-validated runtime.
-
-### FIPS-Approved Algorithms Used
-
-All cryptographic operations in Unchained use FIPS 140-3 approved algorithms:
-
-| Operation | Algorithm | FIPS Status |
-|-----------|-----------|-------------|
-| Password Hashing | PBKDF2-SHA-512 | Approved |
-| Token Hashing | SHA-256 | Approved |
-| Session Encryption | AES-256-GCM | Approved |
-| Payment Signatures | HMAC-SHA-256/512 | Approved |
-| Random Generation | CSPRNG | Approved |
+Unchained Engine itself is not FIPS-validated. Password hashing and local token signing use Node.js cryptography, but runtime choice alone does not establish compliance for every plugin or authentication method. Assess the enabled integrations with your validated runtime.
 
 ### Running in FIPS Mode
 
-#### Option 1: Chainguard FIPS Image (Recommended)
-
-Use the [Chainguard node-fips](https://images.chainguard.dev/directory/image/node-fips/overview) container image which includes a FIPS-validated OpenSSL module:
-
-```dockerfile
-FROM cgr.dev/chainguard/node-fips:latest
-
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-
-# FIPS mode is enabled by default in this image
-CMD ["node", "index.js"]
-```
-
-#### Option 2: Node.js with OpenSSL FIPS Provider
-
-Build or use a Node.js binary compiled with OpenSSL 3.x FIPS provider:
+Use a runtime with a correctly installed OpenSSL FIPS provider and its generated module configuration. Follow the [Node.js FIPS configuration instructions](https://nodejs.org/api/crypto.html#fips-mode), including the provider installation and `nodejs_conf` settings required by your Node.js version:
 
 ```bash
-# Enable FIPS mode via environment variable
-export OPENSSL_CONF=/path/to/openssl-fips.cnf
+# Point to the complete provider configuration for this runtime
+export OPENSSL_CONF=/path/to/nodejs-fips.cnf
 node --enable-fips your-app.js
-```
-
-Example `openssl-fips.cnf`:
-```ini
-openssl_conf = openssl_init
-
-[openssl_init]
-providers = provider_sect
-alg_section = algorithm_sect
-
-[provider_sect]
-fips = fips_sect
-base = base_sect
-
-[fips_sect]
-activate = 1
-
-[base_sect]
-activate = 1
-
-[algorithm_sect]
-default_properties = fips=yes
 ```
 
 ### Verifying FIPS Mode
 
 ```javascript
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 // Check if FIPS mode is enabled
 console.log('FIPS mode:', crypto.getFips() === 1 ? 'enabled' : 'disabled');
 ```
 
-### FIPS-Approved Algorithms
-
-All cryptographic operations in Unchained use FIPS 140-3 approved algorithms:
-
-| Operation | Algorithm | FIPS Status |
-|-----------|-----------|-------------|
-| Password Hashing | PBKDF2-SHA-512 | Approved |
-| Token Hashing | SHA-256 | Approved |
-| Session Encryption | AES-256-GCM | Approved |
-| Payment Signatures | HMAC-SHA-256/512 | Approved |
-| Random Generation | CSPRNG | Approved |
+On OpenSSL 3, `getFips()` reports the active property-query state; it does not establish that a validated provider is loaded. Validate the provider and runtime separately, as described in the [Node.js documentation](https://nodejs.org/api/crypto.html#fips-mode).
 
 ### FIPS Considerations
 
-1. **Pure PBKDF2**: Unchained uses only PBKDF2-SHA512 for password hashing, ensuring full FIPS 140-3 compatibility for all password operations.
+1. **Password Hashing**: PBKDF2-SHA512 runs through Node.js Web Crypto; validate it with the runtime used in your deployment.
 
 2. **Third-Party Libraries**: Verify that any additional npm packages you add use Node.js crypto APIs or are otherwise FIPS-compliant.
 
-3. **Cryptopay Plugin**: Uses `@noble/curves` and `@noble/hashes` for cryptocurrency operations. These implement FIPS-approved primitives but are not FIPS-certified modules.
+3. **Cryptocurrency and Web3 Integrations**: JavaScript implementations in `@noble/curves` and `@noble/hashes` do not run through Node.js's OpenSSL provider. Review these integrations separately before enabling them in a FIPS deployment.
 
 ## Access Control
 
@@ -185,16 +123,16 @@ All cryptographic operations in Unchained use FIPS 140-3 approved algorithms:
 
 Unchained implements comprehensive RBAC with:
 
-- **128+ defined actions** covering all API operations
-- **Built-in roles**: admin, logged-in user, guest
-- **Ownership validation**: Users can only access their own resources
+- **Named actions** defined in [the API role registry](packages/api/src/roles/index.ts)
+- **Built-in roles**: `admin`, `loggedIn`, and `all` (including anonymous access)
+- **Ownership validation**: Role rules check ownership for user-scoped resources; administrators can access additional resources
 - **Field-level permissions**: GraphQL type resolvers enforce access
 
 ```typescript
 // Example permission check
 role.allow(actions.updateOrder, async (obj, params, context) => {
-  const order = await modules.orders.findOrder({ orderId: params.orderId });
-  return order.userId === context.userId;
+  const order = await context.modules.orders.findOrder({ orderId: params.orderId });
+  return Boolean(context.userId && order?.userId === context.userId);
 });
 ```
 
@@ -214,25 +152,21 @@ export default {
 
 ## Payment Security (PCI DSS)
 
-Unchained is designed for **PCI DSS SAQ-A eligibility**:
+Built-in card integrations delegate card entry and processing to payment providers. PCI DSS scope and SAQ eligibility depend on the complete storefront, hosting environment, and enabled integrations.
 
 ### No Card Data Storage
 
-- Credit card numbers (PAN) are **never stored**
-- CVV/CVC codes are **never stored**
-- Only payment provider tokens are stored
+Built-in card integrations store provider tokens and metadata rather than card numbers or CVV/CVC codes. Do not add card data to custom fields, payment contexts, or logs.
 
 ### Tokenization
 
-All payment integrations use tokenization:
+Examples of payment integrations that keep card entry with the provider:
 
 | Provider | Tokenization Method |
 |----------|-------------------|
 | Stripe | PaymentIntent / SetupIntent |
 | Datatrans | Secure Fields |
 | Saferpay | Redirect with token |
-| Braintree | Client SDK tokenization |
-| PayPal | Order ID reference |
 
 ### Payment Credentials
 
@@ -265,28 +199,24 @@ type PaymentCredentials = {
 
 | Variable | Purpose | Default |
 |----------|---------|---------|
-| `UNCHAINED_TOKEN_SECRET` | Session encryption (min 32 chars) | Required |
+| `UNCHAINED_TOKEN_SECRET` | JWT signing (min 32 chars) | Required for local login tokens |
+| `UNCHAINED_TOKEN_EXPIRY_SECONDS` | JWT lifetime in seconds | `3600` |
 | `UNCHAINED_COOKIE_NAME` | Cookie name | `unchained_token` |
 | `UNCHAINED_COOKIE_DOMAIN` | Cookie domain restriction | - |
 | `UNCHAINED_COOKIE_SAMESITE` | SameSite attribute | `lax` |
-| `UNCHAINED_COOKIE_INSECURE` | Disable secure flag (development only) | `false` |
+| `UNCHAINED_COOKIE_INSECURE` | Any nonempty value disables the secure flag (development only) | Unset |
 
 ## Error Handling
 
-Errors are designed to prevent information leakage:
+Authentication failures use `InvalidCredentials`, and invalid reset/verification tokens use "Token invalid or expired". ACL failures use `NoPermissionError` with a message identifying the user, denied action, and resolver; those identifiers can also appear in error extensions. See [the error definitions](packages/api/src/errors.ts) and [ACL implementation](packages/api/src/acl.ts).
 
-- **Authentication errors**: Generic "Invalid credentials" message
-- **Token errors**: "Token invalid or expired" (doesn't distinguish)
-- **Permission errors**: "Not authorized" (no action details)
-- **Password validation**: "Too insecure" (no requirements revealed)
-- **User enumeration prevention**: Password reset returns success regardless of user existence
-- **Log sanitization**: Error objects are never logged directly; only message and name are captured
+Error payloads and logs can include metadata or stack traces. Review custom errors, plugin logging, and log access controls before exposing them outside your deployment.
 
 ## Input Validation
 
 ### ReDoS Prevention
 
-All user-supplied strings used in regular expressions are escaped to prevent Regular Expression Denial of Service (ReDoS) attacks:
+Use `escapeRegexString` when constructing a regular expression that should match user input literally:
 
 ```typescript
 import { escapeRegexString } from '@unchainedshop/mongodb';
@@ -295,14 +225,11 @@ import { escapeRegexString } from '@unchainedshop/mongodb';
 const regex = new RegExp(escapeRegexString(userInput), 'i');
 ```
 
-The `escapeRegexString` function escapes all special regex characters (`[-/\\^$*+?.()|[\]{}]`) and includes:
-- Type validation (throws TypeError for non-strings)
-- Length limits (max 255 characters)
-- Empty string rejection
+`escapeRegexString` escapes regex metacharacters and throws `TypeError` for non-string input. It does not reject empty or long strings. The separate `insensitiveTrimmedRegexOperator` helper trims input, rejects an empty result, and caps the escaped string at 255 characters before building an anchored case-insensitive expression. See [the implementation](packages/mongodb/src/insensitive-trimmed-regex-operator.ts).
 
 ### Query String Validation
 
-All query builder functions that accept user input for text search apply proper escaping to prevent injection attacks.
+Custom query builders must validate inputs and avoid treating user-supplied text as operators or executable expressions.
 
 ### GraphQL Query Protection (Denial-of-Service)
 
@@ -341,16 +268,15 @@ This matters because:
 
 ## Audit Logging
 
-Unchained provides audit event emission based on the **OCSF (Open Cybersecurity Schema Framework)**. OCSF is an industry-standard schema developed by 120+ organizations (AWS, Splunk, IBM) and is now a Linux Foundation project. It is natively supported by AWS Security Lake, Google Chronicle, Datadog, Elastic, and other SIEM systems.
+Unchained emits audit events using the **OCSF (Open Cybersecurity Schema Framework)** schema. Events can be collected from application logs or forwarded over OTLP/HTTP to a compatible collector.
 
 The engine does not persist audit events itself — retention, queries, and integrity guarantees are the consuming log pipeline's or SIEM's concern.
 
 ### Features
 
 - **OCSF-based schema** - Schema-conformant OCSF v1.4.0 events with e-commerce activity names
-- **Structured log emission** - Every event as one JSON log line on stdout (default), scrapeable by any log agent
+- **Structured log emission** - Enabled by default; set `UNCHAINED_LOG_FORMAT=json` to write JSON lines
 - **OTLP push** - Optional OTLP/HTTP push to OpenTelemetry Collector, Vector, Fluent Bit, or vendor intakes
-- **SIEM-ready** - Direct ingestion into security monitoring tools
 - **Event integration** - Automatic capture of authentication, orders, and payments
 - **E-commerce specific** - Checkout, payment, refund, and access denied events
 
@@ -362,7 +288,6 @@ Audit logging is enabled by default in `startPlatform()`; OTLP push is opt-in:
 import { startPlatform } from '@unchainedshop/platform';
 
 const platform = await startPlatform({
-  modules: defaultModules,
   auditLog: {
     collectorUrl: 'http://otel-collector:4318/v1/logs', // optional OTLP push
   },
@@ -374,35 +299,37 @@ For custom audit events, use the singleton instance:
 ```typescript
 import {
   getAuditLogInstance,
+  getAuditContext,
   OCSF_AUTH_ACTIVITY,
   OCSF_ACCOUNT_ACTIVITY,
   OCSF_API_ACTIVITY,
 } from '@unchainedshop/events';
 
 const auditLog = getAuditLogInstance();
+const requestContext = getAuditContext();
 
 // Log authentication event
-await auditLog.logAuthentication({
+await auditLog?.logAuthentication({
   activity: OCSF_AUTH_ACTIVITY.LOGON,
   userId: user._id,
-  userName: user.email,
+  userName: user.username,
   success: true,
-  remoteAddress: req.ip,
-  sessionId: req.sessionID,
+  remoteAddress: requestContext?.remoteAddress,
+  sessionId: requestContext?.sessionId,
   isMfa: true,
 });
 
 // Log failed login attempt
-await auditLog.logAuthentication({
+await auditLog?.logAuthentication({
   activity: OCSF_AUTH_ACTIVITY.LOGON,
   userId: user._id,
   success: false,
-  remoteAddress: req.ip,
+  remoteAddress: requestContext?.remoteAddress,
   message: 'Invalid password',
 });
 
 // Log account change event
-await auditLog.logAccountChange({
+await auditLog?.logAccountChange({
   activity: OCSF_ACCOUNT_ACTIVITY.ATTACH_POLICY, // Role change
   userId: targetUser._id,
   actorUserId: adminUser._id, // Who made the change
@@ -410,36 +337,36 @@ await auditLog.logAccountChange({
 });
 
 // Log user creation
-await auditLog.logAccountChange({
+await auditLog?.logAccountChange({
   activity: OCSF_ACCOUNT_ACTIVITY.CREATE,
   userId: newUser._id,
-  userName: newUser.email,
+  userName: newUser.username,
   success: true,
 });
 
 // Log API activity (payments, orders, etc.)
-await auditLog.logApiActivity({
-  activity: OCSF_API_ACTIVITY.UPDATE,
+await auditLog?.logApiActivity({
+  activity: OCSF_API_ACTIVITY.PAYMENT,
   userId: user._id,
   operation: 'processPayment',
   success: true,
-  remoteAddress: req.ip,
+  remoteAddress: requestContext?.remoteAddress,
   message: 'Payment completed',
 });
 
 // Log access denied
-await auditLog.logApiActivity({
-  activity: OCSF_API_ACTIVITY.READ,
+await auditLog?.logApiActivity({
+  activity: OCSF_API_ACTIVITY.ACCESS_DENIED,
   userId: user._id,
   success: false,
-  remoteAddress: req.ip,
+  remoteAddress: requestContext?.remoteAddress,
   message: 'Access denied',
 });
 ```
 
 ### Automatic Event Integration
 
-`startPlatform()` wires the integration layer automatically — no manual setup is needed. Events automatically captured (97 event types, see `AUDITED_EVENTS`):
+`startPlatform()` wires the integration layer automatically. The configured event transport must support subscriptions (the base preset supplies the Node.js emitter). See [`AUDITED_EVENTS`](packages/events/src/audit/audit-integration.ts) for the complete list, including:
 
 - `API_LOGIN_TOKEN_CREATED` → Authentication (LOGON)
 - `API_LOGIN_FAILED` → Authentication (LOGON, failure)
@@ -524,7 +451,7 @@ With `UNCHAINED_LOG_FORMAT=json`, every audit event is emitted as one JSON line 
 
 ### SIEM Integration
 
-Two vendor-neutral paths reach any SIEM:
+Two transport options are available; configure the consuming collector or SIEM to map the OCSF payload as needed:
 
 **1. Scrape stdout** — run the engine with `UNCHAINED_LOG_FORMAT=json` and let a log agent tail the container output. Example OpenTelemetry Collector configuration:
 
@@ -595,35 +522,35 @@ OTEL_SERVICE_NAME=my-shop                                # service.name resource
 In addition to audit events, Unchained emits transient events for real-time processing:
 
 - `USER_CREATE`, `USER_UPDATE`, `USER_REMOVE`
-- `USER_UPDATE_PASSWORD`, `USER_UPDATE_ROLES`
+- `USER_UPDATE_PASSWORD`, `USER_ADD_ROLES`
 - `USER_ACCOUNT_ACTION` (reset-password, verify-email, enroll-account)
 
 ```typescript
 import { emit } from '@unchainedshop/events';
 
-// Transient events (2-day TTL in MongoDB)
+// The default event history stores events in MongoDB with a configurable TTL
 await emit('USER_UPDATE_PASSWORD', { user });
 ```
 
+The event-history TTL defaults to two days and is controlled by `EVENTS_TTL_SECONDS`. Audit logs are separate and use the retention configured in the consuming log pipeline.
+
 ## Rate Limiting
 
-Rate limiting should be implemented at the **reverse proxy level** (nginx, Cloudflare, AWS ALB, etc.) rather than in the application layer.
+Apply coarse request limits at the reverse proxy and operation-aware limits in the application or GraphQL gateway. Queries and mutations can both use HTTP POST, so the HTTP method alone cannot identify login or other sensitive operations.
 
 ### Recommended Configuration
 
 **nginx example:**
 
 ```nginx
-# Define rate limit zones
-limit_req_zone $binary_remote_addr zone=login:10m rate=5r/m;
+# Define a coarse API request limit
 limit_req_zone $binary_remote_addr zone=api:10m rate=100r/s;
 
 server {
-    # Rate limit login/auth endpoints
+    # Apply this limit to all GraphQL requests
     location /graphql {
-        # Stricter limits for mutations (detected via POST)
         limit_req zone=api burst=50 nodelay;
-        proxy_pass http://unchained:4000;
+        proxy_pass http://unchained:4010;
     }
 }
 ```
@@ -656,9 +583,8 @@ server {
 - [ ] Set `UNCHAINED_TOKEN_SECRET` to a strong, unique value (32+ chars)
 - [ ] Enable HTTPS/TLS termination
 - [ ] Configure MongoDB with authentication and TLS
-- [ ] Enable session encryption if storing sensitive data
 - [ ] Configure rate limiting at reverse proxy (nginx, Cloudflare, ALB)
-- [ ] Enable audit logging via `modules.auditLog` (built-in, persisted indefinitely)
+- [ ] Configure `startPlatform({ auditLog: { ... } })` and retention in the consuming log pipeline or SIEM
 - [ ] Configure monitoring and alerting
 - [ ] Set up log aggregation for audit logs
 - [ ] Regular security updates for dependencies
@@ -705,7 +631,7 @@ npm audit fix
 
 ### Trusted Dependencies
 
-The project explicitly trusts only necessary native modules:
+The root manifest declares `@mongodb-js/zstd` in `trustedDependencies` and lists approved install scripts separately in `allowScripts`. These are package-manager-specific settings; check the manifest and package manager used by your deployment:
 
 ```json
 {
@@ -717,6 +643,6 @@ The project explicitly trusts only necessary native modules:
 
 - [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 - [NIST FIPS 140-3](https://csrc.nist.gov/pubs/fips/140-3/final)
-- [PCI DSS SAQ-A](https://www.pcisecuritystandards.org/documents/SAQ_A_v3.pdf)
+- [PCI Security Standards Council Document Library](https://www.pcisecuritystandards.org/document_library/)
 - [ISO 27001](https://www.iso.org/standard/27001)
 - [Chainguard FIPS Images](https://images.chainguard.dev/directory/image/node-fips/overview)

@@ -186,9 +186,8 @@ export async function globalTeardown() {
   await shutdownTestPlatform();
 }
 
-// Node.js test runner global setup:
-// - Default export runs as setup
-// - Return value is the teardown function
+// Convenience wrapper for direct callers; --test-global-setup uses the named
+// globalSetup/globalTeardown exports above.
 export default async function setup() {
   await globalSetup();
   return globalTeardown;

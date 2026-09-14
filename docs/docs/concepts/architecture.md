@@ -121,7 +121,10 @@ Foundation utilities used across all layers:
 | `@unchainedshop/logger` | High-performance logging |
 | `@unchainedshop/utils` | Common utilities and base classes |
 | `@unchainedshop/roles` | Role-based access control (RBAC) |
-| `@unchainedshop/file-upload` | File storage adapters |
+
+The private `@unchainedshop/shared` workspace contains the monorepo's TypeScript configuration.
+
+File handling is coordinated by `FileDirector` and file services in `@unchainedshop/core`, with metadata in `@unchainedshop/core-files` and storage adapters in `@unchainedshop/plugins`.
 
 ## API Design Principles
 
@@ -134,12 +137,12 @@ Foundation utilities used across all layers:
 **Carts as Open Orders**
 - Carts are stored server-side as orders with `status: null`
 - Users can add items on one device and checkout on another
-- After checkout, the cart becomes an immutable order
+- After checkout, cart-editing operations are restricted while payment and fulfillment continue
 
 **User Conversion**
-- Anonymous users can register without losing order history
-- Carts merge when a user logs in during purchase
-- Bookmarks and preferences are preserved
+- Logging into an existing account from a guest session migrates guest data through the user migration service
+- Carts merge on login when `mergeUserCartsOnLogin` is enabled
+- `createUser` creates a fresh account; registration does not automatically migrate the current guest's cart or order history
 
 ## Package Dependency Graph
 
@@ -150,7 +153,7 @@ flowchart TD
     api --> core["@unchainedshop/core"]
     api --> coremods["core-* modules<br/><i>core-products, core-orders, core-users, …</i>"]
     core --> coremods
-    coremods --> infra["infrastructure<br/><i>mongodb, events, logger, utils, roles, file-upload</i>"]
+    coremods --> infra["infrastructure<br/><i>mongodb, events, logger, utils, roles</i>"]
 ```
 
 Note that `@unchainedshop/api` depends on `@unchainedshop/core` **and** directly on every `core-*` package — the GraphQL resolvers use the module APIs and types of the individual domain modules, not just the `core` orchestration layer.

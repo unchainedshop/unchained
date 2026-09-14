@@ -13,71 +13,21 @@ npm install @unchainedshop/core-events
 
 ## Usage
 
+The platform initializes this module as `platform.unchainedAPI.modules.events` and installs the database history adapter if none is already configured.
+
 ```typescript
-import { configureEventsModule } from '@unchainedshop/core-events';
+const { events } = platform.unchainedAPI.modules;
 
-const eventsModule = await configureEventsModule({ db });
-
-// Find events by type
-const orderEvents = await eventsModule.findEvents({
-  types: ['ORDER_CREATE', 'ORDER_PAID'],
+const orderEvents = await events.findEvents({
+  types: ['ORDER_CREATE', 'ORDER_PAY'],
   limit: 100,
 });
-
-// Get event statistics
-const report = await eventsModule.getReport({
-  types: ['ORDER_CREATE'],
-  dateRange: { start: '2024-01-01', end: '2024-12-31' },
-});
+const report = await events.getReport({ types: ['ORDER_CREATE'] });
 ```
 
-## API Overview
+Records contain the event type, payload, and creation timestamp. The TTL index removes records after `EVENTS_TTL_SECONDS` (default: 172800 seconds, or two days). Configure long-term audit retention through your logging pipeline.
 
-### Module Configuration
-
-| Export | Description |
-|--------|-------------|
-| `configureEventsModule` | Configure and return the events module |
-
-### Queries
-
-| Method | Description |
-|--------|-------------|
-| `findEvent` | Find a single event by ID or filter |
-| `findEvents` | Find events with filtering, sorting, and pagination |
-| `count` | Count events matching query |
-| `getReport` | Get aggregated event statistics by type and date |
-
-### Mutations
-
-| Method | Description |
-|--------|-------------|
-| `create` | Create a new event record |
-
-### Helper Methods
-
-| Method | Description |
-|--------|-------------|
-| `type` | Get event type, returns 'UNKNOWN' for unregistered types |
-
-### Types
-
-| Export | Description |
-|--------|-------------|
-| `Event` | Event document type |
-| `EventQuery` | Query parameters type |
-| `EventReport` | Report output type |
-| `EventsModule` | Module interface type |
-
-## Event History
-
-This module automatically integrates with `@unchainedshop/events` to persist all emitted events to the database. Events are stored with:
-
-- Event type
-- Payload data
-- Timestamp
-
-This enables event sourcing patterns, audit trails, and analytics.
+See the [module guide](https://docs.unchained.shop/platform-configuration/modules/events), [public exports](src/events-index.ts), and [module implementation](src/module/configureEventsModule.ts).
 
 ## License
 

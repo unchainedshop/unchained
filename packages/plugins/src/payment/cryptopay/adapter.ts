@@ -95,15 +95,8 @@ export const Cryptopay: IPaymentAdapter = {
       },
 
       isActive() {
-        // Only support orders that have prices in BTC or ETH for the moment
         if (adapterActions.configurationError() !== null) return false;
         if (!context.order) return true;
-        // if (
-        //   !Object.values(CryptopayCurrencies).includes(
-        //     context.order.currencyCode as CryptopayCurrencies,
-        //   )
-        // )
-        //   return false;
         return true;
       },
 
@@ -214,8 +207,7 @@ export const Cryptopay: IPaymentAdapter = {
             walletForOrderPayment.decimals,
           );
 
-          // Add a Promille
-          // const minAmount = parseFloat(convertedAmount.toString()) * min * 0.999;
+          // Allow a 0.1% tolerance when comparing the converted payment amount.
           const maxAmount = parseFloat(convertedAmount.toString()) * rate.max * 1.001;
 
           if (maxAmount && maxAmount >= totalAmount) {

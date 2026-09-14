@@ -19,9 +19,12 @@ These workers are registered by `registerBasePlugins()` (from `@unchainedshop/pl
 | [`shop.unchained.worker-plugin.email`](./worker-email.md) | `EMAIL` | Email notifications via Nodemailer | When sending transactional emails (order confirmations, etc.) |
 | [`shop.unchained.worker-plugin.http-request`](./worker-http-request.md) | `HTTP_REQUEST` | Outbound HTTP webhooks | When integrating with external services via webhooks |
 | [`shop.unchained.worker-plugin.bulk-import`](./worker-bulk-import.md) | `BULK_IMPORT` | Bulk data import from JSON streams | When importing products, prices, or media in bulk |
+| [`shop.unchained.worker-plugin.bulk-export`](./worker-bulk-export.md) | `BULK_EXPORT` | Export shop entities as CSV files | When exporting catalog or user data |
 | [`shop.unchained.worker-plugin.external`](./worker-external.md) | `EXTERNAL` | Placeholder for external workers | When delegating work to external systems (e.g. ERP) |
-| [`shop.unchained.worker-plugin.heartbeat`](./worker-heartbeat.md) | `HEARTBEAT` | System health check | Always — monitors worker system health |
+| [`shop.unchained.worker-plugin.heartbeat`](./worker-heartbeat.md) | `HEARTBEAT` | Test worker | When checking queue processing or simulating delays and failures |
 | [`shop.unchained.worker-plugin.zombie-killer`](./worker-zombie-killer.md) | `ZOMBIE_KILLER` | Cleanup orphaned database records | Always — prevents stale data buildup |
+| [`shop.unchained.worker-plugin.gc-guests`](./worker-gc-guests.md) | `GC_GUESTS` | Delete inactive guest accounts and their open carts | When expiring abandoned guest sessions |
+| [`shop.unchained.worker-plugin.invalidate-carts`](./worker-invalidate-carts.md) | `INVALIDATE_CARTS` | Recalculate recently updated open carts | When refreshing cart pricing after tax or catalog changes |
 | [`shop.unchained.worker.error-notifications`](./worker-error-notifications.md) | `ERROR_NOTIFICATIONS` | Daily error reports | When you want daily summaries of worker failures |
 
 ## SMS Workers

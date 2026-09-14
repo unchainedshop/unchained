@@ -55,10 +55,12 @@ interface IPlugin {
   adapters?: IBaseAdapter[];                  // self-route to their director
   module?: PluginModuleFactory;               // DB-backed module
   routes?: PluginHttpRoute[];                 // WHATWG Fetch handlers (e.g. webhooks)
-  onRegister?: (api) => void | boolean | Promise<…>; // return false / throw to skip
+  onRegister?: (api) => void | boolean | Promise<void | boolean>;
   onShutdown?: (api) => void | Promise<void>;
 }
 ```
+
+`pluginRegistry.register()` records the plugin. During `startPlatform()`, its module is initialized before `onRegister` runs. Returning `false` or throwing from `onRegister` logs a warning and excludes the plugin's adapters and routes; it does not abort startup or undo its module. The Express/Fastify connector mounts the remaining routes. `onShutdown` runs for all registered plugins, including skipped ones.
 :::
 
 ## Available Directors
@@ -84,7 +86,7 @@ You don't register *with* these — they're the internal dispatch targets. Liste
 
 ## Adapter contracts
 
-An adapter is a plain object: identity fields (`key`, `label`, `version`) plus the behavior the director expects. Payment/delivery/warehousing expose their behavior through an `actions(config, context)` factory; pricing/discount adapters expose a `calculate`; file adapters expose storage methods directly. The matching [`registerX` factory](../extend/plugin-factories.md) lets you supply just the behavior without writing the wrapper.
+An adapter is a plain object: identity fields (`key`, `label`, `version`) plus the behavior the director expects. Payment/delivery/warehousing expose their behavior through an `actions(config, context)` factory; pricing adapters expose `actions().calculate`, while discount adapters expose validation and discount-configuration actions. File adapters expose storage methods directly. The matching [`registerX` factory](../extend/plugin-factories.md) lets you supply just the behavior without writing the wrapper.
 
 | Domain | Adapter interface | Key behavior to implement | Deep dive |
 |---|---|---|---|
@@ -117,7 +119,7 @@ configurationError() {
 }
 ```
 
-For plugins, you can also fail fast in `onRegister` (return `false` or throw to skip registration).
+For plugins, return `false` or throw in `onRegister` to skip their adapters and routes during startup.
 
 ### 3. Offload long work to the Worker queue
 For slow external calls, enqueue work instead of blocking the adapter:

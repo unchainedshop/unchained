@@ -22,20 +22,20 @@
   },
   "engineStrict": true,
   "engines": {
-    "node": ">=24.0.0",
+    "node": ">=26.0.0",
     "npm": ">=10.0.0"
   },
   "scripts": {
     "lint": "prettier -w .",
     "clean": "tsc -b --clean",
     "build": "tsc -b",
-    "start": "npx -y node@22 --no-warnings --env-file=.env.defaults --env-file-if-exists=.env --import ./load_env.js lib/boot.js",
+    "start": "node --no-warnings --env-file=.env.defaults --env-file-if-exists=.env --import ./load_env.js lib/boot.js",
     "predev": "npm run build:plugin",
     "dev": "run-p dev:server dev:plugin",
     "dev:server": "node --no-warnings --env-file=.env.defaults --env-file-if-exists=.env --import ./load_env.js --watch src/boot.ts",
     "dev:plugin": "npm --prefix plugins/bookmark-manager run build:watch",
     "build:plugin": "npm --prefix plugins/bookmark-manager run build",
-    "integration-test": "npx -y node@22 --no-warnings --env-file=.env.defaults --env-file ../../.env.tests --env-file-if-exists=../../.env --import ./load_env.js --watch --experimental-strip-types src/boot.ts"
+    "integration-test": "node --no-warnings --env-file=.env.defaults --env-file ../../.env.tests --env-file-if-exists=../../.env --import ./load_env.js --watch src/boot.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.47",

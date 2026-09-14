@@ -13,100 +13,16 @@ npm install @unchainedshop/core-filters
 
 ## Usage
 
+The platform initializes this module as `platform.unchainedAPI.modules.filters`.
+
 ```typescript
-import { configureFiltersModule, FilterType } from '@unchainedshop/core-filters';
-
-const filtersModule = await configureFiltersModule({ db });
-
-// Create a filter
-const filterId = await filtersModule.create({
-  key: 'color',
-  type: FilterType.MULTI_CHOICE,
-});
-
-// Search with filters
-const result = await filtersModule.search.searchProducts({
-  filterQuery: { color: ['red', 'blue'] },
-  assortmentId: 'category-123',
-});
+const { filters } = platform.unchainedAPI.modules;
+const availableFilters = await filters.findFilters({});
 ```
 
-## API Overview
+Filter adapters determine product membership and search behavior. Configure cache callbacks through `options.filters` at platform startup; custom cache implementations must replace complete generations and prevent older rebuilds from overwriting newer data.
 
-### Module Configuration
-
-| Export | Description |
-|--------|-------------|
-| `configureFiltersModule` | Configure and return the filters module |
-
-### Queries
-
-| Method | Description |
-|--------|-------------|
-| `findFilter` | Find filter by ID or key |
-| `findFilters` | Find filters with filtering and pagination |
-| `count` | Count filters matching query |
-| `filterExists` | Check if filter exists |
-
-### Mutations
-
-| Method | Description |
-|--------|-------------|
-| `create` | Create a new filter |
-| `update` | Update filter data |
-| `delete` | Soft delete a filter |
-
-### Filter Options
-
-| Method | Description |
-|--------|-------------|
-| `createFilterOption` | Add option to filter |
-| `updateFilterOption` | Update filter option |
-| `removeFilterOption` | Remove filter option |
-
-### Texts
-
-| Method | Description |
-|--------|-------------|
-| `findFilterTexts` | Find localized filter texts |
-| `updateTexts` | Update filter texts |
-
-### Search Submodule
-
-| Method | Description |
-|--------|-------------|
-| `search.searchProducts` | Search products with filters |
-| `search.searchAssortments` | Search assortments |
-
-### Constants
-
-| Export | Description |
-|--------|-------------|
-| `FilterType` | Filter types (SWITCH, SINGLE_CHOICE, MULTI_CHOICE, RANGE) |
-
-### Settings
-
-| Export | Description |
-|--------|-------------|
-| `filtersSettings` | Access filter module settings |
-
-### Types
-
-| Export | Description |
-|--------|-------------|
-| `Filter` | Filter document type |
-| `FilterOption` | Filter option type |
-| `FilterQuery` | Query parameters type |
-| `FiltersModule` | Module interface type |
-| `SearchQuery` | Search query type |
-
-## Events
-
-| Event | Description |
-|-------|-------------|
-| `FILTER_CREATE` | Filter created |
-| `FILTER_UPDATE` | Filter updated |
-| `FILTER_REMOVE` | Filter deleted |
+See the [search and filtering guide](https://docs.unchained.shop/guides/search-and-filtering), [cache contract](https://docs.unchained.shop/platform-configuration/modules/filters), [public exports](src/filters-index.ts), and [module implementation](src/module/configureFiltersModule.ts).
 
 ## License
 

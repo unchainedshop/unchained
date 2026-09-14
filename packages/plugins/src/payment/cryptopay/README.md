@@ -1,23 +1,13 @@
 # Cryptopay
 
-curl -X POST http://localhost:4010/payment/cryptopay -d '{ "secret": "secret", "address": "0xF5F72AE7fa1fa990ebaF163208Ed7aD6a3f42DEA", "blockHeight": 7469853, "amount": "50000000000000000", "decimals": 18, "currency": "ETH"}' -H 'Content-Type: application/json'
+Register `CryptopayPlugin` from `@unchainedshop/plugins/payment/cryptopay` through `pluginRegistry` before platform startup. The plugin exposes a payment webhook at `/payment/cryptopay`; its request `secret` must match `CRYPTOPAY_SECRET`.
 
+For configuration and webhook payloads, see the [Cryptopay integration guide](../../../../../docs/docs/plugins/payment/cryptopay.md).
 
-## HD Key Requirements
+## HD key requirements
 
-Using HD keys allows us to generate "child-keys" for every payment. This helps us link payments to checkouts and improves privacy of the vendor as we don't expose the grand total of revenue the vendor makes on the blockchain directly.
+The adapter derives a separate receiving address for each payment from an extended public key. Both Bitcoin and Ethereum derivation append `/0/<index>` to the supplied key's node.
 
-**Bitcoin:**
-For the extended HD key we only support native segwit (zpub) format, so if you have a ypub for example, use this tool here to make it the correct format:
+For Bitcoin, `CRYPTOPAY_BTC_XPUB` must use native SegWit extended public key encoding: `zpub` for mainnet or `vpub` for testnet. Other prefixes are rejected.
 
-https://3rditeration.github.io/btc-extended-key-converter/
-
-**Ethereum:**
-For the extended HD key we need an extended public key using the discussed derivation path here:
-https://github.com/ethereum/EIPs/issues/84
-https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-
-Thus, we are deriving child keys the Metamask way:
-m/44'/60'/0'/0/0
-m/44'/60'/0'/0/1
-m/44'/60'/0'/0/...
+For Ethereum, `CRYPTOPAY_ETH_XPUB` is an account-level extended public key. Supplying the key for `m/44'/60'/0'` produces addresses at `m/44'/60'/0'/0/0`, `m/44'/60'/0'/0/1`, and so on.

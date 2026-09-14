@@ -13,96 +13,27 @@ npm install @unchainedshop/core-worker
 
 ## Usage
 
+The platform initializes this module as `platform.unchainedAPI.modules.worker`. Register worker plugins before platform startup; the base preset includes the `EMAIL` worker.
+
 ```typescript
-import { configureWorkerModule, WorkStatus } from '@unchainedshop/core-worker';
+import { WorkStatus } from '@unchainedshop/core-worker';
 
-const workerModule = await configureWorkerModule({ db });
-
-// Add a work item to the queue
-const workId = await workerModule.addWork({
-  type: 'SEND_EMAIL',
+const { worker } = platform.unchainedAPI.modules;
+const work = await worker.addWork({
+  type: 'EMAIL',
   input: {
-    to: 'user@example.com',
-    template: 'order-confirmation',
+    from: 'shop@example.com',
+    to: 'customer@example.com',
+    subject: 'Order update',
+    text: 'Your order is ready.',
   },
 });
-
-// Find pending work
-const pendingWork = await workerModule.findWork({
-  status: WorkStatus.NEW,
-});
-
-// Process work (typically done by worker plugins)
-await workerModule.processWork(workId, {
-  success: true,
-  result: { messageId: 'abc123' },
-});
+const pending = await worker.findWorkQueue({ status: [WorkStatus.NEW] });
 ```
 
-## API Overview
+`addWork` returns the work document. The platform's work loop allocates, executes, and finishes internal jobs through `WorkerDirector`. External workers claim jobs with `allocateWork` and report results with `finishWork`; allocation alone does not execute them. Higher numeric priorities are processed first.
 
-### Module Configuration
-
-| Export | Description |
-|--------|-------------|
-| `configureWorkerModule` | Configure and return the worker module |
-
-### Queries
-
-| Method | Description |
-|--------|-------------|
-| `findWork` | Find work item by ID |
-| `findWorkQueue` | Find work items with filtering |
-| `count` | Count work items matching query |
-
-### Mutations
-
-| Method | Description |
-|--------|-------------|
-| `addWork` | Add work item to queue |
-| `allocateWork` | Allocate work to a worker |
-| `processWork` | Mark work as processed |
-| `rescheduleWork` | Reschedule failed work |
-| `deleteWork` | Delete a work item |
-
-### Constants
-
-| Export | Description |
-|--------|-------------|
-| `WorkStatus` | Status values (NEW, ALLOCATED, SUCCESS, FAILED, DELETED) |
-
-### Types
-
-| Export | Description |
-|--------|-------------|
-| `Work` | Work item document type |
-| `WorkerModule` | Module interface type |
-
-## Work Types
-
-Work types are linked to worker plugins. Common built-in types:
-
-| Type | Description |
-|------|-------------|
-| `SEND_EMAIL` | Send email notifications |
-| `HEARTBEAT` | Keep-alive jobs |
-| `EXTERNAL` | External service calls |
-
-## Worker Plugins
-
-Workers process jobs by type. The plugin is responsible for:
-- Handling retries on failure
-- Processing the work input
-- Returning success/failure results
-
-## Events
-
-| Event | Description |
-|-------|-------------|
-| `WORK_ADDED` | Work item added to queue |
-| `WORK_ALLOCATED` | Work allocated to worker |
-| `WORK_FINISHED` | Work processing completed |
-| `WORK_FAILED` | Work processing failed |
+See the [module settings](https://docs.unchained.shop/platform-configuration/modules/worker), [worker extension guide](https://docs.unchained.shop/extend/worker), [public exports](src/worker-index.ts), and [module implementation](src/module/configureWorkerModule.ts).
 
 ## License
 

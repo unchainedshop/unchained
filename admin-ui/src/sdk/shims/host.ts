@@ -1,5 +1,5 @@
 /**
- * Bridge between native ESM plugin modules and the webpack-bundled host app.
+ * Bridge between native ESM plugin modules and the bundled Next.js host app.
  *
  * The admin-ui app exposes its own module instances on
  * window.__UNCHAINED_PLUGIN_DEPS__ (see modules/plugins/PluginContext.tsx)

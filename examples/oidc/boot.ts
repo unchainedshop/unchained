@@ -34,22 +34,8 @@ try {
     context,
     options: {
       users: {
-        /**
-         * SECURITY: Email validation is bypassed here because this example ONLY
-         * uses OIDC authentication where the provider has already verified emails.
-         *
-         * If your application supports multiple registration methods (e.g., direct
-         * registration), you should implement proper conditional validation:
-         *
-         * validateEmail: async (options, context) => {
-         *   // Check if user was created via OIDC with verified email
-         *   if (options.userId.includes(':')) { // OIDC users have format "clientId:sub"
-         *     return true; // OIDC provider already verified
-         *   }
-         *   // For non-OIDC users, require email verification
-         *   return false;
-         * }
-         */
+        // This example bypasses email format validation for imported accounts.
+        // A user ID prefix does not establish that the provider verified an email.
         validateEmail: async () => true,
       },
     },

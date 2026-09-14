@@ -12,7 +12,7 @@ The enrollments module manages subscriptions and recurring orders.
 ## Configuration Options
 
 ```typescript
-import { ScheduleData } from '@unchainedshop/core';
+import type { ScheduleData } from '@unchainedshop/core';
 
 export interface EnrollmentsSettingsOptions {
   autoSchedulingSchedule?: ScheduleData;

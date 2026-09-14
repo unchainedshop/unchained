@@ -19,9 +19,9 @@ Use the [`registerOrderDiscount`](../plugin-factories.md#discounts) factory. The
 import { registerOrderDiscount } from '@unchainedshop/core';
 
 registerOrderDiscount({
-  adapterId: 'save10',
-  // apply when the buyer enters a matching code:
-  isValidForCodeTriggering: async (code) => code === 'SAVE10',
+  adapterId: 'automatic-save10',
+  // Apply to every eligible cart without requiring a code:
+  isValidForSystemTriggering: async () => true,
   discountForPricingAdapterKey: ({ pricingAdapterKey }) =>
     pricingAdapterKey === 'shop.unchained.pricing.order-discount' ? { rate: 0.1 } : null,
 });
@@ -38,16 +38,40 @@ registerOrderDiscount({
 
 ### Coupon codes
 
+Manual coupons need `isManualAdditionAllowed` and `isManualRemovalAllowed`. The order-discount factory inherits `false` for these flags, so define a full adapter when customers should enter and remove codes:
+
 ```typescript
+import {
+  OrderDiscountAdapter,
+  pluginRegistry,
+  type IDiscountAdapter,
+  type OrderDiscountConfiguration,
+} from '@unchainedshop/core';
+
 const codes = { SAVE10: { rate: 0.1 }, SAVE20: { rate: 0.2 }, DISCOUNT50: { fixedRate: 5000 } };
 
-registerOrderDiscount({
-  adapterId: 'coupon',
-  isValidForCodeTriggering: async (code) => code in codes,
-  discountForPricingAdapterKey: ({ pricingAdapterKey }, context) =>
-    pricingAdapterKey === 'shop.unchained.pricing.order-discount' ? codes[context.code] ?? null : null,
-  reserve: async (code) => db.collection('coupons').updateOne({ code }, { $inc: { usageCount: 1 } }),
-  release: async (context) => db.collection('coupons').updateOne({ code: context.code }, { $inc: { usageCount: -1 } }),
+const Coupons: IDiscountAdapter<OrderDiscountConfiguration> = {
+  ...OrderDiscountAdapter,
+  key: 'com.example.discount.coupons',
+  label: 'Coupon codes',
+  version: '1.0.0',
+  isManualAdditionAllowed: async () => true,
+  isManualRemovalAllowed: async () => true,
+  actions: async ({ context }) => ({
+    ...(await OrderDiscountAdapter.actions({ context })),
+    isValidForCodeTriggering: async ({ code }) => Object.hasOwn(codes, code),
+    discountForPricingAdapterKey: ({ pricingAdapterKey }) =>
+      pricingAdapterKey === 'shop.unchained.pricing.order-discount'
+        ? codes[context.code ?? ''] ?? null
+        : null,
+  }),
+};
+
+pluginRegistry.register({
+  key: Coupons.key,
+  label: Coupons.label,
+  version: Coupons.version,
+  adapters: [Coupons],
 });
 ```
 
@@ -72,7 +96,7 @@ Returned from `discountForPricingAdapterKey`:
 | Property | Description |
 |---|---|
 | `rate` | Percentage discount (`0.1` = 10%) |
-| `fixedRate` | Fixed amount in cents (`5000` = 50.00) |
+| `fixedRate` | Fixed amount in the order currency's minor units (`5000` = 50.00 for a currency with two decimals) |
 
 > For fine-grained control of manual code entry/removal (`isManualAdditionAllowed` / `isManualRemovalAllowed`), build the adapter directly by spreading `OrderDiscountAdapter` and registering it via `pluginRegistry.register()`. See [Plugin System](../../concepts/director-adapter-pattern.md#adapter-contracts).
 
