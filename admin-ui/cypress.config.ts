@@ -15,7 +15,11 @@ export default defineConfig({
     supportFile: 'cypress/support/e2e.ts',
     retries: {
       openMode: 1,
-      runMode: 1,
+      // Two retries in CI: the container runner is markedly slower than a
+      // dev machine, so occasionally a menu/popover open or list re-render
+      // races the 5s command timeout. Deterministic failures still fail all
+      // three attempts.
+      runMode: 2,
     },
   },
 
