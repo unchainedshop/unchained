@@ -14,6 +14,7 @@
     "build": "node ./generate-permissions.js && NODE_ENV=production next build",
     "start": "next start",
     "lint": "eslint .",
+    "lint:check": "eslint .",
     "format": "eslint --fix .",
     "extract-translation": "formatjs extract 'src/(pages|modules|components)/**/*.{ts,tsx,jsx}' --out-file src/lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "compile-translation": "formatjs compile  ./src/lang/en.json  --out-file ./src/i18n/en.json --format custom-formatter.js && node extract-missing-translation-keys.js",
@@ -30,7 +31,7 @@
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "engines": {
-    "node": ">=22.0.0",
+    "node": ">=26.8.2",
     "npm": ">=10.0.0"
   },
   "contributors": [

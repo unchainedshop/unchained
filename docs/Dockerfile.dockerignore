@@ -1,0 +1,11 @@
+**
+!LICENSE
+!docs/
+!docs/**
+!docker/
+!docker/static.conf.template
+docs/node_modules
+docs/build
+docs/.docusaurus
+docs/.cache
+docs/.env*

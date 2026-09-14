@@ -1,6 +1,7 @@
 import { z } from 'zod/v4-mini';
 import type { StandardSchemaWithJSON } from '@modelcontextprotocol/server';
 import { SortDirection } from '@unchainedshop/utils';
+import { OrderStatus } from '@unchainedshop/core-orders';
 
 const sortDirectionKeys = Object.keys(SortDirection) as [string, ...string[]];
 
@@ -51,6 +52,8 @@ export const DateRangeSchema = {
   to: z.optional(z.iso.datetime()).check(z.describe('End date in ISO format')),
 };
 
+export const OrderStatusEnum = z.enum(OrderStatus);
+
 export const OrderFilterSchema = {
   paymentProviderIds: z
     .optional(z.array(z.string()))
@@ -58,9 +61,7 @@ export const OrderFilterSchema = {
   deliveryProviderIds: z
     .optional(z.array(z.string()))
     .check(z.describe('Filter by delivery provider IDs')),
-  status: z
-    .optional(z.array(z.enum(['PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED'])))
-    .check(z.describe('Filter by order statuses')),
+  status: z.optional(z.array(OrderStatusEnum)).check(z.describe('Filter by order statuses')),
 };
 
 export const EntityIdSchema = {

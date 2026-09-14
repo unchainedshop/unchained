@@ -147,8 +147,7 @@ describe('schedule.schedule().next()', () => {
   it('should return next occurrence for specific hour cron', () => {
     const scheduleData = schedule.parse.cron('0 15 * * *');
     // Use a reference date where local hour is 10
-    const referenceDate = new Date();
-    referenceDate.setHours(10, 0, 0, 0);
+    const referenceDate = new Date(2024, 0, 15, 10, 0, 0);
     const nextDate = schedule.schedule(scheduleData).next(1, referenceDate) as Date;
 
     // Should be 15:00 local time on the same day
@@ -160,8 +159,7 @@ describe('schedule.schedule().next()', () => {
   it('should return next day if time has passed', () => {
     const scheduleData = schedule.parse.cron('0 15 * * *');
     // Use a reference date where local hour is 16 (after 15:00)
-    const referenceDate = new Date();
-    referenceDate.setHours(16, 0, 0, 0);
+    const referenceDate = new Date(2024, 0, 15, 16, 0, 0);
     const nextDate = schedule.schedule(scheduleData).next(1, referenceDate) as Date;
 
     // Should be 15:00 local time on the next day
@@ -231,6 +229,21 @@ describe('BaseWorker.autorescheduleTypes pattern', () => {
   // Replicates the exact call pattern from BaseWorker.ts lines 73-75:
   //   fixedSchedule.schedules[0].s = [0];
   //   const nextDate = schedule.schedule(fixedSchedule).next(1, referenceDate) as Date;
+
+  it('should schedule the next day for every reference second in the scheduled minute', () => {
+    const sched = schedule.parse.cron('0 3 * * *');
+    sched.schedules[0].s = [0];
+    const expected = new Date(2024, 0, 16, 3, 0, 0);
+
+    for (let second = 0; second < 60; second++) {
+      const ref = new Date(2024, 0, 15, 3, 0, second);
+      const referenceTime = ref.getTime();
+      const next = schedule.schedule(sched).next(1, ref) as Date;
+
+      assert.strictEqual(next.getTime(), expected.getTime(), `reference second ${second}`);
+      assert.strictEqual(ref.getTime(), referenceTime, 'should preserve the reference date');
+    }
+  });
 
   it('should find next for "0 3 * * *" (error-notifications) when reference is after 03:00', () => {
     const sched = schedule.parse.cron('0 3 * * *');
@@ -732,7 +745,7 @@ describe('multiple occurrences', () => {
     }
   });
 
-  it('should produce 365 daily occurrences correctly', () => {
+  it('should produce 366 daily occurrences correctly in a leap year', () => {
     const sched = schedule.parse.cron('0 3 * * *'); // daily at 03:00
     const ref = new Date(2024, 0, 1, 0, 0, 0); // Jan 1, 2024 (leap year)
     const dates = schedule.schedule(sched).next(366, ref) as Date[];
@@ -866,11 +879,15 @@ describe('raw ScheduleData', () => {
 });
 
 // ============================================================================
-// Performance: the optimized algorithm should be fast for all schedule types
+// Hardware-dependent benchmarks are opt-in; correctness is covered above.
+// Run on an idle machine from the repository root:
+// UNCHAINED_SCHEDULE_BENCHMARK=1 node --test --test-name-pattern='schedule performance benchmarks' packages/core/src/utils/schedule.test.ts
 // ============================================================================
 
-describe('performance', () => {
-  it('should find daily schedule next occurrence in under 5ms', () => {
+const runBenchmarks = process.env.UNCHAINED_SCHEDULE_BENCHMARK === '1';
+
+describe('schedule performance benchmarks', { skip: !runBenchmarks }, () => {
+  it('should calculate 1000 daily next occurrences in under 50ms', () => {
     const sched = schedule.parse.cron('0 3 * * *');
     // Worst case: just after 03:00, need to jump ~24 hours
     const ref = new Date(2024, 0, 15, 3, 0, 1);
@@ -885,7 +902,7 @@ describe('performance', () => {
     assert.ok(elapsed < 50, `1000 daily next() calls took ${elapsed.toFixed(1)}ms, expected < 50ms`);
   });
 
-  it('should find yearly schedule next occurrence quickly', () => {
+  it('should calculate 1000 yearly next occurrences in under 50ms', () => {
     // Once per year: Jan 1 at midnight
     const sched = schedule.parse.cron('0 0 1 1 *');
     const ref = new Date(2024, 0, 1, 0, 0, 0); // exactly on match

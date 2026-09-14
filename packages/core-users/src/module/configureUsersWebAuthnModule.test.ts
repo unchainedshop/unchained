@@ -83,7 +83,7 @@ describe('WebAuthn Module', () => {
     let db: Db;
 
     before(async () => {
-      db = await initDb({ forceInMemory: true });
+      db = await initDb({ forceInMemory: true, port: 0 });
     });
 
     after(async () => {

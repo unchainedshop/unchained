@@ -21,7 +21,7 @@ pipeline {
         stage('Building') {
           steps{
             script {
-              adminui = docker.build("registry.ucc.dev/unchained/adminui:$GIT_BRANCH-$GIT_COMMIT","-f ./Dockerfile .")
+              adminui = docker.build("registry.ucc.dev/unchained/adminui:$GIT_BRANCH-$GIT_COMMIT","-f ./admin-ui/Dockerfile .")
             }
           }
         }
@@ -46,7 +46,7 @@ pipeline {
       when { anyOf { branch 'master'; branch 'v?.x' } }
       steps {
         script {
-          def packageJson = readJSON file: './package.json'
+          def packageJson = readJSON file: './admin-ui/package.json'
           def packageVersion = packageJson.version
           def versionChunks = packageVersion.split(/\./)
           def majorVersion = versionChunks[0]
@@ -63,7 +63,7 @@ pipeline {
       when { branch 'v?.*.x' }
       steps {
         script {
-          def packageJson = readJSON file: './package.json'
+          def packageJson = readJSON file: './admin-ui/package.json'
           def packageVersion = packageJson.version
           def versionChunks = packageVersion.split(/\./)
           def majorVersion = versionChunks[0]
@@ -79,7 +79,7 @@ pipeline {
       when { buildingTag() }
       steps {
         script {
-          def packageJson = readJSON file: './package.json'
+          def packageJson = readJSON file: './admin-ui/package.json'
           def packageVersion = packageJson.version
 
           adminui.push("v$packageVersion")

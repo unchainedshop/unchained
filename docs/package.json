@@ -3,7 +3,7 @@
   "description": "Docs for Unchained Engine",
   "private": true,
   "version": "4.0.0",
-  "license": "ISC",
+  "license": "EUPL-1.2",
   "scripts": {
     "dev": "docusaurus start",
     "build": "docusaurus build",
@@ -62,7 +62,7 @@
     ]
   },
   "engines": {
-    "node": ">=22.0.0",
+    "node": ">=26.8.2",
     "npm": ">=10.0.0"
   }
 }

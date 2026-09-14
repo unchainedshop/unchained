@@ -22,7 +22,7 @@
   },
   "engineStrict": true,
   "engines": {
-    "node": ">=22.0.0",
+    "node": ">=26.8.2",
     "npm": ">=10.0.0"
   },
   "workspaces": [
@@ -65,7 +65,9 @@
   "scripts": {
     "typedoc": "typedoc --entryPointStrategy packages ./packages/* --out ./typedocs && rm -Rf ./docs/static/types && mv ./typedocs ./docs/static/types",
     "lint": "eslint --fix .",
-    "test": "npm run test:run:unit && npm run test:run:integration",
+    "lint:check": "eslint .",
+    "test": "npm run test:run:unit && npm run test:run:integration && npm run test:run:docker",
+    "test:run:docker": "node --test docker/*.test.mjs",
     "test:run:unit": "cd packages && node --test",
     "test:run:integration": "node --no-warnings --env-file .env.tests --env-file-if-exists=.env --test-isolation=none --test-force-exit --test-global-setup=tests/helpers.js --test --test-concurrency=1 tests/*.test.*",
     "dev": "run-p dev:*",

@@ -86,6 +86,8 @@ export default [
       ...tseslint.configs.recommended.rules,
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
+      // Apollo's module augmentation uses ambient namespaces; runtime namespaces remain disallowed.
+      '@typescript-eslint/no-namespace': ['error', { allowDeclarations: true }],
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-wrapper-object-types': 'off',
       '@typescript-eslint/no-this-alias': 'off',

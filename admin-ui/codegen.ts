@@ -4,7 +4,10 @@ const config: CodegenConfig = {
   overwrite: true,
   schema: 'http://localhost:4010/graphql',
   // UnchainedContextWrapper builds its fragment via runtime interpolation — not pluckable
-  documents: ['./src/modules/**/*.{ts,tsx}', '!./src/modules/UnchainedContext/UnchainedContextWrapper.tsx'],
+  documents: [
+    './src/modules/**/*.{ts,tsx}',
+    '!./src/modules/UnchainedContext/UnchainedContextWrapper.tsx',
+  ],
   generates: {
     './src/gql/types.ts': {
       plugins: ['typescript', 'typescript-operations'],

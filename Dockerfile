@@ -1,38 +1,26 @@
-FROM mongo:8.2.12
+# Build from the repository root. This image contains MongoDB for integration tests.
+FROM node:26.8.2-bookworm-slim AS node
+FROM mongo:8.2.12 AS ci
 
-# Install app dependencies
-RUN mkdir -p /source
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN apt-get update && apt-get install -y --no-install-recommends libatomic1 ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+    && ln -s ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+
 WORKDIR /source
+ENV MONGOMS_VERSION=8.2.12 \
+    MONGOMS_SYSTEM_BINARY=/usr/bin/mongod \
+    MONGOMS_DISABLE_POSTINSTALL=1 \
+    CYPRESS_INSTALL_BINARY=0 \
+    NEXT_TELEMETRY_DISABLED=1 \
+    NODE_NO_WARNINGS=1 \
+    NODE_ENV=test
 
-ENV HOME=/root
-ENV NVM_DIR=$HOME/.nvm
-
-RUN apt update -y && apt install -y curl unzip libatomic1 && \
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && \
-    chmod +x $NVM_DIR/nvm.sh && \
-    . $NVM_DIR/nvm.sh && \
-    nvm install 26.8.2 && \
-    nvm alias default 26.8.2 && \
-    nvm use 26.8.2
-
-ENV PATH=/root/.nvm/versions/node/v26.8.2/bin:$NVM_DIR:$PATH
-
-ADD packages /source/
-ADD package* /source/
-ADD examples/kitchensink/package* /source/examples/kitchensink/
-ADD examples/kitchensink-express/package* /source/examples/kitchensink-express/
-ADD examples/minimal/package* /source/examples/minimal/
-ADD examples/oidc/package* /source/examples/oidc/
-ADD examples/ticketing/package* /source/examples/ticketing/
-
-ENV MONGOMS_VERSION=8.2.12
-ENV MONGOMS_SYSTEM_BINARY=/usr/bin/mongod
-ENV NODE_NO_WARNINGS=1
-ENV NODE_ENV=test
-RUN npm ci
-
-ADD . /source/
-
+# Keep every workspace at the path recorded in the root lockfile.
+COPY . .
+RUN npm ci --include=dev --no-audit --no-fund
 RUN npm run build
 
 CMD ["npm"]
