@@ -40,7 +40,14 @@ describe('Filter', () => {
 
       if (hasOperationName(req, FilterOperations.GetFiltersList)) {
         aliasQuery(req, FilterOperations.GetFiltersList);
-        req.reply(FilterListResponse);
+        // Infinite scroll: only the first page carries rows. Any fetchMore
+        // (offset > 0) must return an empty page, otherwise the same rows are
+        // appended and the list count doubles (flaky `tr` assertions).
+        if (req.body.variables?.offset > 0) {
+          req.reply({ data: { filters: [] } });
+        } else {
+          req.reply(FilterListResponse);
+        }
       }
       if (hasOperationName(req, FilterOperations.GetSingleFilter)) {
         aliasQuery(req, FilterOperations.GetSingleFilter);
