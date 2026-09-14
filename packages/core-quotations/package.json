@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-quotations",
   "description": "Quotation and RFQ management module for the Unchained Engine",
-  "version": "5.0.0-alpha.4",
+  "version": "5.0.0-alpha.5",
   "main": "lib/quotations-index.js",
   "types": "lib/quotations-index.d.ts",
   "type": "module",
@@ -35,9 +35,9 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^5.0.0-alpha.1",
-    "@unchainedshop/mongodb": "^5.0.0-alpha.1",
-    "@unchainedshop/utils": "^5.0.0-alpha.1"
+    "@unchainedshop/events": "^5.0.0-alpha.5",
+    "@unchainedshop/mongodb": "^5.0.0-alpha.5",
+    "@unchainedshop/utils": "^5.0.0-alpha.5"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",

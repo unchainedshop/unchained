@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-users",
   "description": "User management module for the Unchained Engine with authentication support",
-  "version": "5.0.0-alpha.4",
+  "version": "5.0.0-alpha.5",
   "main": "lib/users-index.js",
   "types": "lib/users-index.d.ts",
   "type": "module",
@@ -36,10 +36,10 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@passwordless-id/webauthn": "^2.3.1",
-    "@unchainedshop/events": "^5.0.0-alpha.1",
-    "@unchainedshop/logger": "^5.0.0-alpha.1",
-    "@unchainedshop/mongodb": "^5.0.0-alpha.1",
-    "@unchainedshop/utils": "^5.0.0-alpha.1",
+    "@unchainedshop/events": "^5.0.0-alpha.5",
+    "@unchainedshop/logger": "^5.0.0-alpha.5",
+    "@unchainedshop/mongodb": "^5.0.0-alpha.5",
+    "@unchainedshop/utils": "^5.0.0-alpha.5",
     "bcryptjs": "^3.0.2"
   },
   "peerDependencies": {

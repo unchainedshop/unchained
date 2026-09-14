@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/engine",
   "description": "Unchained Engine",
-  "version": "5.0.0-alpha.4",
+  "version": "5.0.0-alpha.5",
   "license": "EUPL-1.2",
   "private": "true",
   "homepage": "https://unchained.shop",
@@ -100,5 +100,11 @@
   ],
   "dependencies": {
     "react-hook-form": "^7.81.0"
+  },
+  "allowScripts": {
+    "cypress@15.21.1": true,
+    "esbuild@0.27.7": true,
+    "fsevents@2.3.3": true,
+    "mongodb-memory-server@11.2.0": true
   }
 }
