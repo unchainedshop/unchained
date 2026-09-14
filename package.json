@@ -101,8 +101,13 @@
   "dependencies": {
     "react-hook-form": "^7.81.0"
   },
+  "overrides": {
+    "react": "19.3",
+    "react-dom": "19.3",
+    "react-is": "19.3"
+  },
   "allowScripts": {
-    "cypress@15.21.1": true,
+    "cypress@16.0.0": true,
     "esbuild@0.27.7": true,
     "fsevents@2.3.3": true,
     "mongodb-memory-server@11.2.0": true
