@@ -1,65 +1,53 @@
 import type { Context } from '@unchainedshop/api';
 import { roles } from '@unchainedshop/api';
-import { GATE_COOKIE_NAME } from './gate-cookie.ts';
+import { ProductStatus, ProductType, type Product } from '@unchainedshop/core-products';
 
-export const ticketingActions = ['validatePassCode', 'gateControl', 'cancelTicket'];
+export const ticketingActions = ['scanTicket', 'gateControl', 'cancelTicket'];
 
-export function configureTicketingRoles(_role: any, actions: Record<string, string>) {
+export function isActiveTicketEvent(product?: Product | null): product is Product {
+  return product?.type === ProductType.TOKENIZED_PRODUCT && product.status === ProductStatus.ACTIVE;
+}
+
+export function configureTicketingRoles(role: any, actions: Record<string, string>) {
   const { allRoles } = roles;
+  const isAuthenticated = (context: Context) =>
+    Boolean(context.userId && context.user && !context.user.guest);
+  const canScan = async (_root: any, _params: any, context: Context) =>
+    isAuthenticated(context) &&
+    Boolean(await context.roles?.userHasPermission(context, actions.scanTicket, []));
 
-  const hasValidPassCode = async (_root: any, _params: any, context: Context) => {
-    const passCode = context.getCookie?.(GATE_COOKIE_NAME);
-    if (!passCode) return false;
-    const ticketingServices = (context.services as any)?.ticketing;
-    if (!ticketingServices?.isPassCodeValid) return false;
-    return ticketingServices.isPassCodeValid(passCode);
-  };
+  // Assign this role to gate operators. Administrators receive all registered actions.
+  // User.allowedActions evaluates role rules with a null context to enumerate capabilities.
+  role.allow(
+    actions.scanTicket,
+    (_root, _params, context: Context | null) => context === null || isAuthenticated(context),
+  );
 
-  const hasValidPassCodeForProduct = async (root: any, _params: any, context: Context) => {
-    if (!root?._id) return false;
-    const passCode = context.getCookie?.(GATE_COOKIE_NAME);
-    if (!passCode) return false;
-    const ticketingServices = (context.services as any)?.ticketing;
-    if (!ticketingServices?.isPassCodeValid) return false;
-    return ticketingServices.isPassCodeValid(passCode, root._id);
-  };
-
-  const hasValidPassCodeForToken = async (_root: any, params: any, context: Context) => {
-    const passCode = context.getCookie?.(GATE_COOKIE_NAME);
-    if (!passCode) return false;
-    const ticketingServices = (context.services as any)?.ticketing;
-    if (!ticketingServices?.isPassCodeValid) return false;
-    const tokenId = params?.tokenId;
-    if (!tokenId) return false;
-    const token = await context.modules.warehousing.findToken({ tokenId });
-    if (!token) return false;
-    return ticketingServices.isPassCodeValid(passCode, token.productId);
-  };
-
-  const isAuthorizedAttendee = async (user: any, _params: any, context: Context) => {
-    const passCode = context.getCookie?.(GATE_COOKIE_NAME);
-    if (!passCode || !user?._id) return false;
-    const ticketingServices = (context.services as any)?.ticketing;
-    if (!ticketingServices?.productIdsForPassCode) return false;
-    const productIds = await ticketingServices.productIdsForPassCode(passCode);
-    if (!productIds.length) return false;
+  allRoles.ALL.allow(
+    actions.gateControl,
+    async (root, params, context: Context) =>
+      isAuthenticated(context) &&
+      ((await canScan(root, params, context)) ||
+        Boolean(
+          await context.roles?.userHasPermission(context, actions.manageProducts, [root, params]),
+        )),
+  );
+  allRoles.ALL.allow(
+    actions.viewTokens,
+    async (product: Product, params, context: Context) =>
+      isActiveTicketEvent(product) && (await canScan(product, params, context)),
+  );
+  allRoles.ALL.allow(actions.viewUserPrivateInfos, async (user, params, context: Context) => {
+    if (!user?._id || !(await canScan(user, params, context))) return false;
+    const events = await context.modules.products.findProducts({
+      type: ProductType.TOKENIZED_PRODUCT,
+      includeDrafts: false,
+    });
+    if (!events.length) return false;
     const tokens = await context.modules.warehousing.findTokens({
       userId: user._id,
-      productId: { $in: productIds },
+      productId: { $in: events.map(({ _id }) => _id) },
     });
     return tokens.length > 0;
-  };
-
-  // ALL role: gate control permissions
-  allRoles.ALL.allow(actions.validatePassCode, () => true);
-  allRoles.ALL.allow(actions.gateControl, hasValidPassCode);
-  allRoles.ALL.allow(actions.viewTokens, hasValidPassCodeForProduct);
-  allRoles.ALL.allow(actions.updateToken, hasValidPassCodeForToken);
-  allRoles.ALL.allow(actions.viewUserPrivateInfos, isAuthorizedAttendee);
-
-  // Staff may administer events without a scanner cookie. Customer sessions
-  // still need an event-scoped pass code, just like anonymous gate operators.
-  allRoles.ALL.allow(actions.gateControl, (root, params, context) =>
-    context.roles.userHasPermission(context, actions.manageProducts, [root, params]),
-  );
+  });
 }

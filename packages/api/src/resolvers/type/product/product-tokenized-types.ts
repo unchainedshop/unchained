@@ -53,22 +53,14 @@ export const TokenizedProduct = {
   },
 
   async tokens(product: Product, params: never, requestContext: Context) {
-    try {
-      await checkAction(requestContext, actions.viewTokens, [product, params]);
-    } catch {
-      return [];
-    }
+    await checkAction(requestContext, actions.viewTokens, [product, params]);
     const tokens = await requestContext.modules.warehousing.findTokens({
       productId: product._id,
     });
     return tokens;
   },
   async tokensCount(product: Product, params: never, requestContext: Context) {
-    try {
-      await checkAction(requestContext, actions.viewTokens, [product, params]);
-    } catch {
-      return 0;
-    }
+    await checkAction(requestContext, actions.viewTokens, [product, params]);
     return requestContext.modules.warehousing.tokensCount({
       productId: product._id,
     });

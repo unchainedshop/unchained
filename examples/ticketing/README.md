@@ -68,11 +68,17 @@ Server starts at http://localhost:4010 with:
 
 ### Gate access and reimbursements
 
-Gate operators authenticate with an event scanner pass code. The cookie authorizes active events
-with that code and their attendees, including when the operator also has a customer session.
-Product managers can list draft events. Individual ticket cancellation uses the `cancelTicket`
-action (granted to administrators by default); permission to redeem a token does not grant
-permission to cancel it or issue credit.
+Gate operators sign in with a regular user account. Assign the `ticketing` role configured in
+`boot.ts`, or grant the `scanTicket` action to a custom role. **Ticketing → Gate Control** then
+appears in the Admin UI, with access to active events and their attendees. Administrators have
+access automatically. Guests and ordinary customers cannot use gate control. Event pass codes
+and gate cookies are no longer supported.
+
+Product managers see **Ticketing → Events** and can include draft events. Individual ticket
+cancellation uses the separate `cancelTicket` action (granted to administrators by default).
+The ticketing-only `scanTicket` mutation redeems eligible tickets without granting token export,
+cancellation, or reimbursement permissions. Ticketing pages and GraphQL fields are registered by
+the extension; shops that do not load it do not expose ticketing navigation or schema fields.
 
 To redeem reimbursement codes, register `ReimbursementCodePlugin` from
 `@unchainedshop/plugins/pricing/discount-reimbursement-code` with `pluginRegistry` before starting

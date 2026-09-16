@@ -12,6 +12,7 @@ export const ticketingEntities = [
     label: 'Events',
     icon: 'ticket',
     sortOrder: 90,
+    requiredRole: 'manageProducts',
     components: {
       list: 'TicketingPage',
       detail: 'TicketEventDetailPage',
@@ -26,16 +27,7 @@ export const ticketingPages = [
     icon: 'shield-check',
     sortOrder: 92,
     component: 'GateControlPage',
-    publicAccess: true,
-  },
-];
-
-export const ticketingLinks = [
-  {
-    href: '/ext/gate-control',
-    label: 'Gate Control',
-    icon: 'shield-check',
-    showOnLoginPage: true,
+    requiredRole: 'scanTicket',
   },
 ];
 
@@ -54,7 +46,7 @@ export function ticketingAdminPlugin(additionalSlots?: PluginSlots) {
     slots: {
       entities: [...ticketingEntities, ...(additionalSlots?.entities || [])],
       pages: [...ticketingPages, ...(additionalSlots?.pages || [])],
-      links: [...ticketingLinks, ...(additionalSlots?.links || [])],
+      links: additionalSlots?.links || [],
       ...Object.fromEntries(
         Object.entries(additionalSlots || {}).filter(
           ([key]) => !['entities', 'pages', 'links'].includes(key),

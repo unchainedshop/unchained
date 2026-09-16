@@ -3,7 +3,7 @@ export default [
     extend type Query {
       """
       List ticket events (tokenized products). Product managers may include drafts;
-      gate operators only see active events authorized by their scanner pass code.
+      authenticated gate operators only see active events.
       """
       ticketEvents(
         queryString: String
@@ -22,15 +22,14 @@ export default [
         includeDrafts: Boolean = true
         onlyInvalidateable: Boolean = false
       ): Int!
-
-      """
-      Validates a scanner pass code for gate access. Pass code is read from the unchained_gate_passcode cookie (set via authenticateGate mutation).
-      Optionally restricted to a specific product.
-      """
-      isPassCodeValid(productId: ID): Boolean!
     }
 
     extend type Mutation {
+      """
+      Redeem an eligible ticket for an active event. Requires the scanTicket action.
+      """
+      scanTicket(tokenId: ID!): Token!
+
       """
       Cancel a ticket (token). Sets the cancelled flag on the token metadata.
       Requires the cancelTicket action. Optionally generates a discount code for reimbursement.
@@ -43,27 +42,9 @@ export default [
       Returns the number of token records cancelled (a token may contain multiple ticket units).
       """
       cancelEvent(productId: ID!, generateDiscount: Boolean): Int!
-
-      """
-      Set or remove the scanner pass code for gate control on a tokenized product.
-      Pass null to remove the pass code.
-      """
-      setEventScannerPassCode(productId: ID!, passCode: String): Product!
-
-      """
-      Authenticate gate control by validating a pass code and setting an HttpOnly cookie.
-      Returns true if the pass code is valid.
-      """
-      authenticateGate(passCode: String!): Boolean!
-
-      """
-      Deauthenticate gate control by clearing the gate pass code cookie.
-      """
-      deauthenticateGate: Boolean!
     }
 
     extend type TokenizedProduct {
-      scannerPassCode: String @cacheControl(scope: PRIVATE, maxAge: 0)
       isCanceled: Boolean
     }
 
