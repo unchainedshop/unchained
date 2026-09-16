@@ -74,11 +74,13 @@ appears in the Admin UI, with access to active events and their attendees. Admin
 access automatically. Guests and ordinary customers cannot use gate control. Event pass codes
 and gate cookies are no longer supported.
 
-Product managers see **Ticketing → Events** and can include draft events. Individual ticket
-cancellation uses the separate `cancelTicket` action (granted to administrators by default).
-The ticketing-only `scanTicket` mutation redeems eligible tickets without granting token export,
-cancellation, or reimbursement permissions. Ticketing pages and GraphQL fields are registered by
-the extension; shops that do not load it do not expose ticketing navigation or schema fields.
+Users with `manageProducts` see **Ticketing → Events**, including draft events and their
+attendees. Cancelling a ticket or a whole event, with or without reimbursement credit, requires
+the separate `cancelTicket` action (granted to administrators by default); the Admin UI hides
+those buttons otherwise. The ticketing-only `scanTicket` mutation redeems eligible tickets without
+granting token export, cancellation, or reimbursement permissions. Ticketing pages and GraphQL
+fields are registered by the extension; shops that do not load it do not expose ticketing
+navigation or schema fields.
 
 To redeem reimbursement codes, register `ReimbursementCodePlugin` from
 `@unchainedshop/plugins/pricing/discount-reimbursement-code` with `pluginRegistry` before starting
@@ -87,8 +89,9 @@ generated with `openssl rand -hex 32`. Without this secret the default handler r
 and redemption; other ticketing features remain available. Credit generation is validated before
 tickets are cancelled.
 
-The default `v1` code format signs the exact integer minor-unit amount, currency, and a random
-128-bit identifier. Legacy codes from the earlier default format must be reissued. Custom
+The default `v1` code format signs the exact integer minor-unit amount, the order currency code
+as stored by the currencies module (including multi-letter crypto symbols), and a random 128-bit
+identifier. Legacy codes from the earlier default format must be reissued. Custom
 `TicketingOptions.discountCode` handlers remain supported; they receive the currency as an optional
 second argument and should enforce currency restrictions themselves.
 
@@ -98,8 +101,9 @@ the applied amount before payment and releases the reservation after the order s
 or on payment failure. After a process crash, retry the original checkout or remove its cart
 discount to release a stranded reservation; do not clear reservations for payments still in flight.
 
-Admin plugin pages require a non-guest authenticated user by default. The gate page explicitly
-sets `publicAccess: true`; this option does not bypass a page's `requiredRole`.
+Admin plugin pages require a non-guest authenticated user by default. Plugins may opt a page out
+with `publicAccess: true`; the option never bypasses a page's `requiredRole`, and the ticketing
+gate page does not use it.
 
 The example includes placeholder implementations for ticket rendering:
 

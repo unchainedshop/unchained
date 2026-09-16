@@ -76,9 +76,14 @@ test('GraphQL lets scanner staff list attendees and redeem without exposing toke
     roles: permissions,
     getHeader: () => undefined,
     modules: {
-      products: { findProducts: async () => [event], findProduct: async () => event },
+      products: {
+        findProducts: async () => [event],
+        findProduct: async () => event,
+        findProductIds: async () => [event._id],
+      },
       warehousing: {
         findTokens: async () => [token],
+        findTokensForUser: async () => [token],
         findToken: async () => token,
         buildAccessKeyFromToken: async () => 'secret',
         invalidateToken: async () => {

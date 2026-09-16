@@ -12,7 +12,6 @@ test('reimbursement pricing applies only the unspent minor-unit balance', async 
           verifyDiscountCode: async () => 10000,
           discountCodeUsageBalance: async () => used,
         },
-        orders: { positions: { findOrderPositions: async () => [{ quantity: 1 }] } },
       },
     };
     const actions = await ReimbursementCode.actions({ context: context as any });
@@ -31,5 +30,22 @@ test('reimbursement pricing applies only the unspent minor-unit balance', async 
         /DISCOUNT_USAGE_LIMIT_EXCEEDED/,
       );
     }
+  }
+});
+
+test('unknown codes and shops without the ticketing module never validate', async () => {
+  for (const modules of [{}, { passes: { verifyDiscountCode: async () => null } }]) {
+    const actions = await ReimbursementCode.actions({
+      context: { code: 'voucher', order: { _id: 'cart', currencyCode: 'CHF' }, modules } as any,
+    });
+    assert.equal(await actions.isValidForCodeTriggering({ code: 'voucher' }), false);
+    assert.equal(
+      actions.discountForPricingAdapterKey({
+        pricingAdapterKey: 'shop.unchained.pricing.order-discount',
+        calculationSheet: {} as any,
+      }),
+      null,
+    );
+    await assert.rejects(actions.prepareForCheckout!(), /INVALID_REIMBURSEMENT_CODE/);
   }
 });

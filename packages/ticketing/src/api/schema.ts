@@ -38,7 +38,7 @@ export default [
 
       """
       Cancel all tickets for an event (tokenized product). Invalidates all non-cancelled tokens.
-      Optionally generates discount codes for affected users.
+      Requires the cancelTicket action. Optionally generates discount codes for affected users.
       Returns the number of token records cancelled (a token may contain multiple ticket units).
       """
       cancelEvent(productId: ID!, generateDiscount: Boolean): Int!

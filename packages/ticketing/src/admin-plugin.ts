@@ -44,14 +44,9 @@ export function ticketingAdminPlugin(additionalSlots?: PluginSlots) {
     bundlePath: ticketingBundlePath,
     navigation: ticketingNavigation,
     slots: {
+      ...additionalSlots,
       entities: [...ticketingEntities, ...(additionalSlots?.entities || [])],
       pages: [...ticketingPages, ...(additionalSlots?.pages || [])],
-      links: additionalSlots?.links || [],
-      ...Object.fromEntries(
-        Object.entries(additionalSlots || {}).filter(
-          ([key]) => !['entities', 'pages', 'links'].includes(key),
-        ),
-      ),
     },
   });
 }
