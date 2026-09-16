@@ -24,15 +24,6 @@ async function cancelTicketsForProduct(
     'meta.cancelled': null,
   });
 
-  for (const token of tokensToCancel) {
-    await this.warehousing.invalidateToken(token._id);
-    await passes.cancelTicket(token._id);
-  }
-
-  await this.products.update(productId, {
-    'meta.cancelled': true,
-  });
-
   const affectedUserIds = [...new Set(tokensToCancel.map((t) => t.userId).filter(Boolean))] as string[];
 
   const discountByUser = new Map<string, { discountCode: string; amount: number }>();
@@ -50,7 +41,7 @@ async function cancelTicketsForProduct(
       const userTokenCounts = tokensToCancel.reduce(
         (acc, token) => {
           if (token.userId) {
-            acc[token.userId] = (acc[token.userId] || 0) + 1;
+            acc[token.userId] = (acc[token.userId] || 0) + token.quantity;
           }
           return acc;
         },
@@ -59,11 +50,22 @@ async function cancelTicketsForProduct(
 
       for (const [userId, quantity] of Object.entries(userTokenCounts)) {
         const totalAmount = price.amount * quantity;
-        const discountCode = await passes.generateDiscountCode(totalAmount);
+        const discountCode = await passes.generateDiscountCode(totalAmount, price.currencyCode);
         discountByUser.set(userId, { discountCode, amount: totalAmount });
       }
     }
   }
+
+  // Prepare credit first: missing signing configuration must not leave tickets
+  // cancelled without the requested compensation.
+  for (const token of tokensToCancel) {
+    await this.warehousing.invalidateToken(token._id);
+    await passes.cancelTicket(token._id);
+  }
+
+  await this.products.update(productId, {
+    'meta.cancelled': true,
+  });
 
   await Promise.allSettled(
     affectedUserIds.map(async (userId) => {
@@ -91,14 +93,13 @@ async function cancelTicketWithDiscount(
 ): Promise<{ token: any }> {
   const { passes } = this as unknown as TicketingModules;
   const token = await this.warehousing.findToken({ tokenId });
-  await this.warehousing.invalidateToken(tokenId);
-  const cancelledToken = await passes.cancelTicket(tokenId);
+  if (!token || token.meta?.cancelled) return { token };
 
   let discountCode: string | undefined;
   let discountAmount: number | undefined;
 
-  if (options?.generateDiscount && cancelledToken && options.countryCode) {
-    const product = await this.products.findProduct({ productId: cancelledToken.productId });
+  if (options?.generateDiscount && options.countryCode) {
+    const product = await this.products.findProduct({ productId: token.productId });
     const price =
       product &&
       (await this.products.prices.price(product, {
@@ -107,12 +108,15 @@ async function cancelTicketWithDiscount(
       }));
 
     if (price?.amount) {
-      discountAmount = price.amount;
-      discountCode = await passes.generateDiscountCode(discountAmount);
+      discountAmount = price.amount * token.quantity;
+      discountCode = await passes.generateDiscountCode(discountAmount, price.currencyCode);
     }
   }
 
-  if (token?.userId) {
+  await this.warehousing.invalidateToken(tokenId);
+  const cancelledToken = await passes.cancelTicket(tokenId);
+
+  if (token.userId) {
     await this.worker.addWork({
       type: 'MESSAGE',
       input: {
@@ -133,7 +137,7 @@ async function isPassCodeValid(this: Modules, passCode: string, productId?: stri
 
   const products = await this.products.findProducts({
     type: ProductType.TOKENIZED_PRODUCT,
-    includeDrafts: true,
+    includeDrafts: false,
   });
 
   const matchingProducts = productId ? products.filter((p) => p._id === productId) : products;
@@ -152,7 +156,7 @@ async function productIdsForPassCode(this: Modules, passCode: string): Promise<s
 
   const products = await this.products.findProducts({
     type: ProductType.TOKENIZED_PRODUCT,
-    includeDrafts: true,
+    includeDrafts: false,
   });
 
   return products

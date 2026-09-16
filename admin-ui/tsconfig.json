@@ -26,6 +26,7 @@
     "noImplicitAny": false,
     "isolatedModules": true,
     "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "plugins": [
       {
         "name": "next"
