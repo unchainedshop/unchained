@@ -46,7 +46,11 @@ export const configureOrderPositionsModule = ({
       return OrderPositions.findOne(buildFindOrderPositionByIdSelector(itemId), options);
     },
 
-    findOrderPositions: async ({ orderId }: { orderId: string }): Promise<OrderPosition[]> => {
+    findOrderPositions: async (
+      query: { orderId: string } | { orderIds: string[] },
+    ): Promise<OrderPosition[]> => {
+      if ('orderIds' in query && !query.orderIds.length) return [];
+      const orderId = 'orderIds' in query ? { $in: query.orderIds } : query.orderId;
       const positions = OrderPositions.find(
         { orderId, quantity: { $gt: 0 } },
         { sort: { created: 1, _id: 1 } },

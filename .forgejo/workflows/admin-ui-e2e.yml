@@ -26,7 +26,7 @@ jobs:
   e2e:
     name: Cypress e2e
     runs-on: docker
-    container: node:25-bookworm
+    container: node:26.8.2-bookworm
     steps:
       - uses: actions/checkout@v4
 

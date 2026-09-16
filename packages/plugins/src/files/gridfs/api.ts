@@ -24,11 +24,13 @@ export const gridfsRouteHandler = async (
     const directoryName = decodeURIComponent(params.directoryName);
     const fileName = decodeURIComponent(params.fileName);
 
-    // CORS headers
+    // Signed upload URLs also support headers injected by tracing clients.
     const corsHeaders = {
       'Access-Control-Allow-Methods': 'GET, PUT, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Headers':
+        request.headers.get('Access-Control-Request-Headers') || 'Content-Type',
       'Access-Control-Allow-Origin': '*',
+      Vary: 'Access-Control-Request-Headers',
     };
 
     // Handle OPTIONS (CORS preflight)

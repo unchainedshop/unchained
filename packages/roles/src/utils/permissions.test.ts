@@ -3,6 +3,20 @@ import assert from 'node:assert';
 import { permissions } from './permissions.ts';
 
 describe('permissions', () => {
+  it('stops checking an action once any role grants it', async () => {
+    let calls = 0;
+    const allow = async () => {
+      calls += 1;
+      return true;
+    };
+    const result = await permissions(['first', 'second'], {
+      first: { name: 'first', allowRules: { read: [allow, allow] } },
+      second: { name: 'second', allowRules: { read: [allow] } },
+    });
+    assert.deepStrictEqual(result, ['read']);
+    assert.strictEqual(calls, 1);
+  });
+
   it('should return empty array for empty userRoles', async () => {
     const allRoles = {
       admin: { name: 'admin', allowRules: { createUser: [async () => true] } },

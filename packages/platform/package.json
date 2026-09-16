@@ -5,6 +5,9 @@
   "main": "lib/platform-index.js",
   "types": "lib/platform-index.d.ts",
   "type": "module",
+  "bin": {
+    "unchained": "./bin/unchained.js"
+  },
   "scripts": {
     "clean": "tsc -b --clean",
     "build": "tsc -b",

@@ -95,39 +95,53 @@ test.describe('timingSafeStringEqual', () => {
 test.describe('Timing attack resistance', () => {
   test('should have consistent timing regardless of where strings differ', async () => {
     // This is a heuristic test - we can't perfectly verify constant-time behavior
-    // in JavaScript, but we can check that the function completes consistently
+    // in JavaScript. What it can catch is an implementation that short-circuits on the
+    // first differing byte, which makes an early difference far cheaper than a late one.
 
     const baseString = 'a'.repeat(1000);
     const earlyDiff = 'b' + 'a'.repeat(999); // Differs at position 0
     const lateDiff = 'a'.repeat(999) + 'b'; // Differs at last position
 
-    // Warmup iterations to stabilize JIT compilation
-    for (let i = 0; i < 50; i++) {
-      await timingSafeStringEqual(baseString, earlyDiff);
-      await timingSafeStringEqual(baseString, lateDiff);
-    }
-
-    // Run multiple comparisons and verify they complete (timing is not easily measurable in JS)
     const iterations = 100;
+    const measure = async (candidate: string) => {
+      const start = performance.now();
+      for (let i = 0; i < iterations; i++) {
+        await timingSafeStringEqual(baseString, candidate);
+      }
+      return performance.now() - start;
+    };
 
-    const earlyStart = performance.now();
-    for (let i = 0; i < iterations; i++) {
-      await timingSafeStringEqual(baseString, earlyDiff);
+    // Warm up first: whichever candidate is measured first otherwise pays for JIT warmup
+    // alone, which dwarfs the effect under test (~2x on a cold round vs ~1.05x once warm).
+    await measure(earlyDiff);
+    await measure(lateDiff);
+
+    // Alternate which candidate leads each round so machine-wide drift cannot favour one
+    // of them, and compare medians so a single GC pause cannot decide the outcome.
+    const earlyTimes: number[] = [];
+    const lateTimes: number[] = [];
+    for (let round = 0; round < 9; round++) {
+      if (round % 2 === 0) {
+        earlyTimes.push(await measure(earlyDiff));
+        lateTimes.push(await measure(lateDiff));
+      } else {
+        lateTimes.push(await measure(lateDiff));
+        earlyTimes.push(await measure(earlyDiff));
+      }
     }
-    const earlyTime = performance.now() - earlyStart;
 
-    const lateStart = performance.now();
-    for (let i = 0; i < iterations; i++) {
-      await timingSafeStringEqual(baseString, lateDiff);
-    }
-    const lateTime = performance.now() - lateStart;
+    const median = (values: number[]) => {
+      const sorted = [...values].sort((a, b) => a - b);
+      return sorted[Math.floor(sorted.length / 2)];
+    };
+    const earlyTime = median(earlyTimes);
+    const lateTime = median(lateTimes);
 
-    // The times should be roughly similar (within 10x - accounting for JIT, GC, system load, etc.)
+    // The times should be roughly similar (within 3x - accounting for JIT, GC, etc.)
     // This is not a perfect test but helps catch obvious timing leaks
-    // Note: JavaScript timing is inherently noisy, so we use a generous threshold
     const ratio = Math.max(earlyTime, lateTime) / Math.min(earlyTime, lateTime);
     assert.ok(
-      ratio < 10,
+      ratio < 3,
       `Timing ratio ${ratio.toFixed(2)} is suspiciously high, may indicate timing leak`,
     );
   });
