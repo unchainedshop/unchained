@@ -16,6 +16,7 @@ import { setupUploadHandlers } from './setup/setupUploadHandlers.ts';
 import { setupTemplates, MessageTypes } from './setup/setupTemplates.ts';
 import { type SetupWorkqueueOptions, stopWorkqueue, setupWorkqueue } from './setup/setupWorkqueue.ts';
 import { createMigrationRepository } from './migrations/migrationRepository.ts';
+import { runMigrations } from './migrations/runMigrations.ts';
 import type { IRoleOptionConfig } from '@unchainedshop/roles';
 
 const { UNCHAINED_API_VERSION, npm_package_version } = process.env;
@@ -145,10 +146,38 @@ export const startPlatform = async ({
     configureAuditIntegration(auditLog);
   }
 
+  // Single source of truth for resource-teardown order, shared by the failed-startup
+  // path below and the graceful-shutdown handler installed after boot.
+  const resourceShutdownSequence = (): { label: string; shutdown: () => unknown }[] => [
+    { label: 'Shutting down plugins', shutdown: () => pluginRegistry.shutdown(unchainedAPI) },
+    { label: 'Shutting down event emitter', shutdown: () => getEmitAdapter()?.shutdown?.() },
+    { label: 'Stopping GraphQL server', shutdown: () => graphqlHandler.dispose() },
+    { label: 'Closing audit log', shutdown: () => auditLog?.close() },
+    { label: 'Stopping DB Connection', shutdown: () => stopDb() },
+  ];
+
+  // Preserve initialization order while migrating before workers and completed
+  // startup, including instances with workers disabled.
+  try {
+    await runMigrations({ migrationRepository, unchainedAPI });
+  } catch (error) {
+    // Shutdown hooks are installed after startup. Release initialized resources
+    // here, continuing cleanup if one hook fails, and preserve the migration error.
+    for (const { shutdown } of resourceShutdownSequence()) {
+      try {
+        await shutdown();
+      } catch (cleanupError) {
+        defaultLogger.error('Error during failed startup cleanup', {
+          error: cleanupError instanceof Error ? cleanupError.message : String(cleanupError),
+        });
+      }
+    }
+    throw error;
+  }
+
   // Setup Work Queue
   await setupWorkqueue({
     unchainedAPI,
-    migrationRepository,
     ...workQueueOptions,
   });
 
@@ -181,22 +210,10 @@ export const startPlatform = async ({
       defaultLogger.debug('Stopping Workqueue', { signal });
       stopWorkqueue();
 
-      defaultLogger.debug('Shutting down plugins', { signal });
-      await pluginRegistry.shutdown(unchainedAPI);
-
-      defaultLogger.debug('Shutting down event emitter', { signal });
-      await getEmitAdapter()?.shutdown?.();
-
-      defaultLogger.debug('Stopping GraphQL server', { signal });
-      await graphqlHandler.dispose();
-
-      if (auditLog) {
-        defaultLogger.debug('Closing audit log', { signal });
-        await auditLog.close();
+      for (const { label, shutdown } of resourceShutdownSequence()) {
+        defaultLogger.debug(label, { signal });
+        await shutdown();
       }
-
-      defaultLogger.debug('Stopping DB Connection', { signal });
-      await stopDb();
 
       defaultLogger.debug(`Unchained Engine exiting gracefully`, { signal, version });
       clearTimeout(forceExitTimeout);
