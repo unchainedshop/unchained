@@ -29,10 +29,20 @@ export interface DiscountAdapterActions<DiscountConfiguration> {
     calculationSheet: IPricingSheet<PricingCalculation>;
   }) => DiscountConfiguration | null;
 
+  /**
+   * Reserve/free credit for as long as the discount sits in a cart: reserve() runs when the code
+   * is added (its return is persisted as the discount's reservation), release() when it is removed
+   * or the cart is recalculated.
+   */
   reserve: (params: { code?: string }) => Promise<any>;
   release: () => Promise<void>;
-  /** Reserve scarce credit before payment; release after the order status is persisted. */
-  prepareForCheckout?: () => Promise<{ release: () => Promise<void> }>;
+  /**
+   * Reserve scarce credit for the checkout/payment window only, releasing after the order status is
+   * persisted. Unlike reserve()/release() — which bracket cart membership — this spans just the
+   * payment attempt, so an adapter can stop concurrent checkouts from double-spending the same
+   * credit (e.g. a shared reimbursement voucher). Optional; omit it when no such guard is needed.
+   */
+  reserveForCheckout?: () => Promise<{ release: () => Promise<void> }>;
 }
 
 export const BaseDiscountAdapter: Omit<IDiscountAdapter<unknown>, 'key' | 'label' | 'version'> = {
