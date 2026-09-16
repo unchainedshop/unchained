@@ -33,6 +33,9 @@ const toACPAddress = (address: any) =>
       }
     : undefined;
 
+const hasAddress = (address: unknown) =>
+  !!address && typeof address === 'object' && Object.values(address).some(Boolean);
+
 const pickupLocation = (location: DeliveryLocation) => ({
   name: location.name,
   address: {
@@ -134,6 +137,9 @@ export const serializeCheckoutSession = async (order: Order, context: ACPContext
               selectedDelivery.context?.orderPickUpLocationId),
       )
     : undefined;
+  const fulfillmentAddress = hasAddress(selectedDelivery?.context?.address)
+    ? selectedDelivery?.context?.address
+    : order.billingAddress;
   const discount = priceTotal(OrderPricingRowCategory.Discounts);
   const fulfillment = priceTotal(OrderPricingRowCategory.Delivery);
   const fee = priceTotal(OrderPricingRowCategory.Payment);
@@ -151,11 +157,11 @@ export const serializeCheckoutSession = async (order: Order, context: ACPContext
         }
       : undefined,
     fulfillment_details:
-      order.billingAddress || order.contact
+      fulfillmentAddress || order.contact
         ? {
             ...(order.contact?.emailAddress ? { email: order.contact.emailAddress } : {}),
             ...(order.contact?.telNumber ? { phone_number: order.contact.telNumber } : {}),
-            ...(order.billingAddress ? { address: toACPAddress(order.billingAddress) } : {}),
+            ...(fulfillmentAddress ? { address: toACPAddress(fulfillmentAddress) } : {}),
           }
         : undefined,
     line_items: positions.map((position) => ({

@@ -202,6 +202,92 @@ test.describe('Plugins: ACP checkout', () => {
     assert.strictEqual(afterCancel.status, 405);
   });
 
+  test('uses billing as a shipping fallback without replacing an existing shipping address', async () => {
+    const shippingAddress = {
+      name: 'Shipping Recipient',
+      line_one: 'Shippingstrasse 1',
+      postal_code: '8000',
+      city: 'Zürich',
+      country: 'CH',
+    };
+    const billingAddress = {
+      name: 'Billing Recipient',
+      line_one: 'Billingstrasse 2',
+      postal_code: '3000',
+      city: 'Bern',
+      country: 'CH',
+    };
+    const updatedBillingAddress = {
+      ...billingAddress,
+      line_one: 'Billingstrasse 3',
+    };
+
+    const created = await createSession();
+    let response = await acpFetch(`/acp/checkout_sessions/${created.id}`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: {
+        fulfillment_details: { address: shippingAddress },
+        payment_data: { billing_address: billingAddress },
+      },
+    });
+    assert.strictEqual(response.status, 200, JSON.stringify(await response.clone().json()));
+    assert.strictEqual(
+      (await response.json()).fulfillment_details.address.line_one,
+      shippingAddress.line_one,
+    );
+
+    let order = await db.collection('orders').findOne({ _id: created.id });
+    let delivery = await db.collection('order_deliveries').findOne({ _id: order.deliveryId });
+    assert.strictEqual(order.billingAddress.addressLine, billingAddress.line_one);
+    assert.strictEqual(delivery.context.address.addressLine, shippingAddress.line_one);
+
+    response = await acpFetch(`/acp/checkout_sessions/${created.id}`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: { payment_data: { billing_address: updatedBillingAddress } },
+    });
+    assert.strictEqual(response.status, 200, JSON.stringify(await response.clone().json()));
+
+    order = await db.collection('orders').findOne({ _id: created.id });
+    delivery = await db.collection('order_deliveries').findOne({ _id: order.deliveryId });
+    assert.strictEqual(order.billingAddress.addressLine, updatedBillingAddress.line_one);
+    assert.strictEqual(delivery.context.address.addressLine, shippingAddress.line_one);
+
+    const shippingOnlySession = await createSession();
+    const shippingOnlyOrder = await db.collection('orders').findOne({ _id: shippingOnlySession.id });
+    await db
+      .collection('order_deliveries')
+      .updateOne({ _id: shippingOnlyOrder.deliveryId }, { $set: { 'context.address': {} } });
+    response = await acpFetch(`/acp/checkout_sessions/${shippingOnlySession.id}`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: { fulfillment_details: { address: shippingAddress } },
+    });
+    assert.strictEqual(response.status, 200, JSON.stringify(await response.clone().json()));
+
+    order = await db.collection('orders').findOne({ _id: shippingOnlySession.id });
+    delivery = await db.collection('order_deliveries').findOne({ _id: order.deliveryId });
+    assert.strictEqual(order.billingAddress.addressLine, shippingAddress.line_one);
+    assert.strictEqual(delivery.context.address, null);
+
+    response = await acpFetch(`/acp/checkout_sessions/${shippingOnlySession.id}`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: { payment_data: { billing_address: billingAddress } },
+    });
+    assert.strictEqual(response.status, 200, JSON.stringify(await response.clone().json()));
+    assert.strictEqual(
+      (await response.json()).fulfillment_details.address.line_one,
+      shippingAddress.line_one,
+    );
+
+    order = await db.collection('orders').findOne({ _id: shippingOnlySession.id });
+    delivery = await db.collection('order_deliveries').findOne({ _id: order.deliveryId });
+    assert.strictEqual(order.billingAddress.addressLine, billingAddress.line_one);
+    assert.strictEqual(delivery.context.address.addressLine, shippingAddress.line_one);
+  });
+
   test('replays the response for a repeated Idempotency-Key + body', async () => {
     const key = idem();
     const first = await acpFetch('/acp/checkout_sessions', {

@@ -21,11 +21,14 @@ const invalidRequest = (code: string, message: string, param?: string) =>
 const serviceUnavailable = (code: string, message: string) =>
   new ACPError(503, 'service_unavailable', code, message);
 
+const hasAddress = (address: unknown) =>
+  !!address && typeof address === 'object' && Object.values(address).some(Boolean);
+
 const mapAddress = (address: any) => {
   if (!address) return undefined;
   const name = typeof address.name === 'string' ? address.name.trim() : '';
   const nameParts = name.split(/\s+/).filter(Boolean);
-  return {
+  const mappedAddress = {
     firstName: nameParts.shift() || '',
     lastName: nameParts.join(' '),
     addressLine: address.line_one,
@@ -35,6 +38,7 @@ const mapAddress = (address: any) => {
     regionCode: address.state,
     countryCode: address.country?.toUpperCase(),
   };
+  return hasAddress(mappedAddress) ? mappedAddress : undefined;
 };
 
 const mapContact = (body: Record<string, any>, order?: Order) => {
@@ -128,15 +132,52 @@ const updateOrder = async (context: ACPContext, initialOrder: Order, body: Recor
   }
 
   const contact = mapContact(body, order);
-  const address = mapAddress(body.fulfillment_details?.address || body.payment_data?.billing_address);
-  if (contact || address) {
+  const fulfillmentAddress = mapAddress(body.fulfillment_details?.address);
+  const billingAddress = mapAddress(body.payment_data?.billing_address);
+  const orderBillingAddress = billingAddress || fulfillmentAddress;
+  const previousBillingAddress = order.billingAddress;
+  if (contact || orderBillingAddress) {
     order =
       (await context.modules.orders.updateCartFields(order._id, {
         ...(contact ? { contact } : {}),
-        ...(address ? { billingAddress: address } : {}),
+        ...(orderBillingAddress ? { billingAddress: orderBillingAddress } : {}),
       })) || order;
     needsCalculation = true;
   }
+
+  const syncDeliveryAddress = async (targetOrder: Order) => {
+    if ((!fulfillmentAddress && !billingAddress) || !targetOrder.deliveryId) return false;
+    const delivery = await context.modules.orders.deliveries.findDelivery({
+      orderDeliveryId: targetOrder.deliveryId,
+    });
+    if (fulfillmentAddress && billingAddress) {
+      await context.modules.orders.deliveries.updateContext(targetOrder.deliveryId, {
+        address: fulfillmentAddress,
+      });
+      return true;
+    }
+    if (!fulfillmentAddress && billingAddress && !hasAddress(delivery?.context?.address)) {
+      if (hasAddress(previousBillingAddress)) {
+        await context.modules.orders.deliveries.updateContext(targetOrder.deliveryId, {
+          address: previousBillingAddress,
+        });
+        return true;
+      }
+    }
+    if (!hasAddress(delivery?.context?.address) && delivery?.context?.address != null) {
+      await context.modules.orders.deliveries.updateContext(targetOrder.deliveryId, {
+        address: null,
+      });
+      return true;
+    }
+    if (fulfillmentAddress && delivery?.context?.address != null) {
+      await context.modules.orders.deliveries.updateContext(targetOrder.deliveryId, {
+        address: null,
+      });
+      return true;
+    }
+    return false;
+  };
 
   const selectedOptions = body.selected_fulfillment_options;
   if (selectedOptions !== undefined && (!Array.isArray(selectedOptions) || selectedOptions.length > 1)) {
@@ -148,8 +189,7 @@ const updateOrder = async (context: ACPContext, initialOrder: Order, body: Recor
   }
   const selected = selectedOptions?.[0];
 
-  if (!selected && address && order.deliveryId) {
-    await context.modules.orders.deliveries.updateContext(order.deliveryId, { address });
+  if (!selected && (await syncDeliveryAddress(order))) {
     needsCalculation = true;
   }
   if (needsCalculation) {
@@ -179,11 +219,11 @@ const updateOrder = async (context: ACPContext, initialOrder: Order, body: Recor
         deliveryProviderId: option.providerId,
         expectedType:
           option.type === 'pickup' ? DeliveryProviderType.PICKUP : DeliveryProviderType.SHIPPING,
-        deliveryContext: {
-          ...option.deliveryContext,
-          ...(address && option.type === 'shipping' ? { address } : {}),
-        },
+        deliveryContext: option.deliveryContext,
       });
+      if (option.type === 'shipping' && (await syncDeliveryAddress(order))) {
+        order = await context.services.orders.updateCalculation(order._id);
+      }
     } catch (error) {
       const serviceError = error as Error;
       if (serviceError.name.includes('DeliveryProvider')) {
