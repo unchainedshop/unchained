@@ -78,8 +78,8 @@ const LogInForm = () => {
   const { singleSignOnURL } = useUnchainedContext();
   const { manifests } = usePlugins();
 
-  const pluginLinks = manifests.flatMap(
-    (m) => (m.slots.links || []).filter((l) => l.showOnLoginPage),
+  const pluginLinks = manifests.flatMap((m) =>
+    (m.slots.links || []).filter((l) => l.showOnLoginPage),
   );
 
   const [step, setStep] = useState(1);

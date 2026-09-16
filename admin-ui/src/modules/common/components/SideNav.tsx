@@ -157,11 +157,19 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
                   },
                 );
                 return subItem.external ? (
-                  <a key={subItem.name} href={subItem.href} className={className}>
+                  <a
+                    key={subItem.name}
+                    href={subItem.href}
+                    className={className}
+                  >
                     {subItem.name}
                   </a>
                 ) : (
-                  <Link key={subItem.name} href={subItem.href} className={className}>
+                  <Link
+                    key={subItem.name}
+                    href={subItem.href}
+                    className={className}
+                  >
                     {subItem.name}
                   </Link>
                 );

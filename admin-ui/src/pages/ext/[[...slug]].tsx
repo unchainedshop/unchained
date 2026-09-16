@@ -17,7 +17,11 @@ const PluginEntityPage = () => {
   const slugParts = Array.isArray(slug) ? slug : slug ? [slug] : [];
 
   if (slugParts.length === 0) {
-    return <div className="text-center py-16 text-text-muted">No plugin path specified.</div>;
+    return (
+      <div className="text-center py-16 text-text-muted">
+        No plugin path specified.
+      </div>
+    );
   }
 
   const pathStr = slugParts[0];
@@ -25,7 +29,9 @@ const PluginEntityPage = () => {
   const isNew = entityId === 'new';
 
   for (const manifest of manifests) {
-    const entity = manifest.slots.entities?.find((e) => e.path.replace(/^\//, '') === pathStr);
+    const entity = manifest.slots.entities?.find(
+      (e) => e.path.replace(/^\//, '') === pathStr,
+    );
     if (entity) {
       const redirect = getPluginPageRedirect(currentUser, entity);
       if (redirect) {
@@ -52,7 +58,10 @@ const PluginEntityPage = () => {
         );
 
       return (
-        <PluginErrorBoundary pluginName={manifest.name} componentName={componentName}>
+        <PluginErrorBoundary
+          pluginName={manifest.name}
+          componentName={componentName}
+        >
           <PluginRuntimeProvider
             value={{
               pluginName: manifest.name,
@@ -67,7 +76,9 @@ const PluginEntityPage = () => {
       );
     }
 
-    const page = manifest.slots.pages?.find((p) => p.path.replace(/^\//, '') === pathStr);
+    const page = manifest.slots.pages?.find(
+      (p) => p.path.replace(/^\//, '') === pathStr,
+    );
     if (page) {
       const redirect = getPluginPageRedirect(currentUser, page);
       if (redirect) {
@@ -77,7 +88,10 @@ const PluginEntityPage = () => {
       const Component = getComponent(manifest.name, page.component);
       if (Component)
         return (
-          <PluginErrorBoundary pluginName={manifest.name} componentName={page.component}>
+          <PluginErrorBoundary
+            pluginName={manifest.name}
+            componentName={page.component}
+          >
             <PluginRuntimeProvider
               value={{
                 pluginName: manifest.name,
@@ -94,7 +108,9 @@ const PluginEntityPage = () => {
   }
 
   return (
-    <div className="text-center py-16 text-text-muted">Plugin page &quot;{pathStr}&quot; not found.</div>
+    <div className="text-center py-16 text-text-muted">
+      Plugin page &quot;{pathStr}&quot; not found.
+    </div>
   );
 };
 

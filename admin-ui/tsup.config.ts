@@ -103,13 +103,10 @@ const shimEntries = Object.fromEntries(
 const cjsToEsmPlugin = {
   name: 'cjs-to-esm-externals',
   setup(build: any) {
-    build.onResolve(
-      { filter: /^use-sync-external-store/ },
-      (args: any) => ({
-        path: args.path,
-        namespace: 'use-sync-external-store-esm',
-      }),
-    );
+    build.onResolve({ filter: /^use-sync-external-store/ }, (args: any) => ({
+      path: args.path,
+      namespace: 'use-sync-external-store-esm',
+    }));
 
     build.onLoad(
       { filter: /.*/, namespace: 'use-sync-external-store-esm' },
