@@ -26,7 +26,7 @@ pluginRegistry.register(OrderDeliveryPlugin);
 
 1. Checks if order has a delivery method set
 2. Creates a DeliveryPricingSheet from the delivery calculation
-3. Extracts gross price and tax sum
+3. Extracts net price and tax sum
 4. Adds delivery amount and tax to the order pricing sheet
 
 ## Prerequisites

@@ -27,6 +27,7 @@ export interface IOrderPricingSheet extends IPricingSheet<OrderPricingCalculatio
   addDiscount: (params: { amount: number; taxAmount: number; discountId: string; meta?: any }) => void;
   addItems: (params: { amount: number; taxAmount: number; meta?: any }) => void;
   addPayment: (params: { amount: number; taxAmount: number; meta?: any }) => void;
+  discountSum: (discountId?: string) => number;
 }
 
 export const OrderPricingSheet = (
@@ -41,6 +42,7 @@ export const OrderPricingSheet = (
         amount: taxAmount,
         baseCategory: category,
         discountId,
+        isNetPrice: false,
         meta,
       });
     }
@@ -53,6 +55,7 @@ export const OrderPricingSheet = (
       basePricingSheet.calculation.push({
         category: OrderPricingRowCategory.Items,
         amount,
+        isNetPrice: true,
         meta,
       });
 
@@ -64,6 +67,7 @@ export const OrderPricingSheet = (
         category: OrderPricingRowCategory.Discounts,
         amount,
         discountId,
+        isNetPrice: true,
         meta,
       });
 
@@ -74,6 +78,7 @@ export const OrderPricingSheet = (
       basePricingSheet.calculation.push({
         category: OrderPricingRowCategory.Delivery,
         amount,
+        isNetPrice: true,
         meta,
       });
 
@@ -84,6 +89,7 @@ export const OrderPricingSheet = (
       basePricingSheet.calculation.push({
         category: OrderPricingRowCategory.Payment,
         amount,
+        isNetPrice: true,
         meta,
       });
 
@@ -97,26 +103,11 @@ export const OrderPricingSheet = (
       });
     },
 
-    gross() {
-      // tax is included 2 times, this is only true for Order Pricing!
-      return basePricingSheet.sum() - this.taxSum();
-    },
-
-    net() {
-      return basePricingSheet.sum() - this.taxSum() - this.taxSum();
-    },
-
-    total({ category, useNetPrice, discountId } = { useNetPrice: false }) {
-      const taxAmount = this.taxSum({ baseCategory: category, discountId });
-      const amount = this.sum({ category, discountId }) - taxAmount;
-
-      // Sum does not contain taxes when filtering by category, it's net in that case and gross if there is no category
-      const netAmount = !category ? amount - taxAmount : amount;
-
-      return {
-        amount: Math.round(useNetPrice ? netAmount : netAmount + taxAmount),
-        currencyCode: this.currencyCode,
-      };
+    discountSum(discountId) {
+      return basePricingSheet.sum({
+        category: OrderPricingRowCategory.Discounts,
+        discountId,
+      });
     },
 
     discountPrices(explicitDiscountId) {
@@ -130,17 +121,22 @@ export const OrderPricingSheet = (
 
       return [...new Set(discountIds)]
         .map((discountId) => {
-          const amount = basePricingSheet.sum({
-            category: OrderPricingRowCategory.Discounts,
-            discountId,
-          });
+          const amount =
+            pricingSheet.sum({
+              category: OrderPricingRowCategory.Discounts,
+              discountId,
+            }) +
+            pricingSheet.taxSum({
+              baseCategory: OrderPricingRowCategory.Discounts,
+              discountId,
+            });
           if (!amount) {
             return null;
           }
           return {
             discountId,
             amount: Math.round(amount),
-            currencyCode: basePricingSheet.currencyCode,
+            currencyCode: pricingSheet.currencyCode,
           };
         })
         .filter(Boolean) as { discountId: string; amount: number; currencyCode: string }[];

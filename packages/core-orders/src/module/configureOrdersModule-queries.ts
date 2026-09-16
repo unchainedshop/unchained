@@ -289,19 +289,26 @@ export const configureOrdersModuleQueries = ({ Orders }: { Orders: mongodb.Colle
               created: 1,
               currencyCode: 1,
               itemAmount: {
-                $let: {
-                  vars: {
-                    item: {
-                      $first: {
-                        $filter: {
-                          input: '$calculation',
-                          as: 'c',
-                          cond: { $eq: ['$$c.category', 'ITEMS'] },
-                        },
+                $reduce: {
+                  input: {
+                    $filter: {
+                      input: { $ifNull: ['$calculation', []] },
+                      as: 'c',
+                      cond: {
+                        $or: [
+                          { $eq: ['$$c.category', 'ITEMS'] },
+                          {
+                            $and: [
+                              { $eq: ['$$c.category', 'TAXES'] },
+                              { $eq: ['$$c.baseCategory', 'ITEMS'] },
+                            ],
+                          },
+                        ],
                       },
                     },
                   },
-                  in: '$$item.amount',
+                  initialValue: 0,
+                  in: { $add: ['$$value', { $ifNull: ['$$this.amount', 0] }] },
                 },
               },
             },

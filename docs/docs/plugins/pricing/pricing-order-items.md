@@ -26,7 +26,7 @@ pluginRegistry.register(OrderItemsPlugin);
 
 1. Iterates through all order positions
 2. For each position, creates a ProductPricingSheet from the calculation
-3. Sums the gross price and tax amounts
+3. Sums the net price and tax amounts separately
 4. Adds the totals to the order pricing sheet
 
 ## Adapter Details
