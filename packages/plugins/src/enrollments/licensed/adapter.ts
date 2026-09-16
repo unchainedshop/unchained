@@ -22,10 +22,15 @@ export const LicensedEnrollments: IEnrollmentAdapter = {
   },
 
   actions: (params) => {
-    const { enrollment } = params;
-    const baseActions = EnrollmentAdapter.actions(params);
+    const { enrollment, product } = params;
+    const plan = product?.plan;
+    const addBillingIntervals = (date: Date, count: number) =>
+      addToDate(date, {
+        [plan!.billingInterval!.toLowerCase()]: (plan!.billingIntervalCount || 1) * count,
+      });
+
     return {
-      ...baseActions,
+      ...EnrollmentAdapter.actions(params),
 
       isValidForActivation: async () => {
         const periods = enrollment?.periods || [];
@@ -57,63 +62,36 @@ export const LicensedEnrollments: IEnrollmentAdapter = {
         return null;
       },
 
-      minimumCommitmentEnd: async ({ referenceDate }: { referenceDate: Date }) => {
-        const { product } = params;
-        const plan = product?.plan;
+      minimumCommitmentEnd: async ({ referenceDate }) => {
         if (!plan?.minimumCommitmentPeriods || !plan?.billingInterval) return null;
-
-        const firstPeriodStart = enrollment?.periods?.reduce<Date | null>((acc, p) => {
-          if (p.isTrial) return acc;
-          const start = new Date(p.start);
-          return !acc || start.getTime() < acc.getTime() ? start : acc;
-        }, null);
-
-        const startDate = firstPeriodStart || referenceDate;
-        const interval = plan.billingInterval.toLowerCase();
-        const totalIntervals = (plan.billingIntervalCount || 1) * plan.minimumCommitmentPeriods;
-        return addToDate(startDate, { [interval]: totalIntervals });
+        return addBillingIntervals(referenceDate, plan.minimumCommitmentPeriods);
       },
 
-      terminationDate: async ({ referenceDate }: { referenceDate: Date }) => {
-        if (!enrollment?.periods?.length) return referenceDate;
-        const { product } = params;
-        const plan = product?.plan;
-        if (!plan?.billingInterval) return referenceDate;
+      // Notice period: termination takes effect one billing interval after the current period ends,
+      // but never before the minimum commitment ends.
+      terminationDate: async ({ referenceDate }) => {
+        if (!enrollment?.periods?.length || !plan?.billingInterval) return referenceDate;
 
-        const refTime = referenceDate.getTime();
-        const currentPeriod = enrollment.periods.find((p) => {
-          return new Date(p.start).getTime() <= refTime && new Date(p.end).getTime() >= refTime;
-        });
-
-        let terminateAt: Date;
-        if (currentPeriod) {
-          const interval = plan.billingInterval.toLowerCase();
-          terminateAt = addToDate(new Date(currentPeriod.end), {
-            [interval]: plan.billingIntervalCount || 1,
-          });
-        } else {
-          const interval = plan.billingInterval.toLowerCase();
-          terminateAt = addToDate(referenceDate, { [interval]: plan.billingIntervalCount || 1 });
-        }
-
-        if (enrollment.minimumCommitmentEnd) {
-          const commitmentEnd = new Date(enrollment.minimumCommitmentEnd);
-          if (commitmentEnd.getTime() > terminateAt.getTime()) {
-            return commitmentEnd;
-          }
-        }
-
-        return terminateAt;
+        const currentPeriod = enrollment.periods.find(rangeMatcher(referenceDate));
+        const terminateAt = addBillingIntervals(
+          currentPeriod ? new Date(currentPeriod.end) : referenceDate,
+          1,
+        );
+        const commitmentEnd =
+          enrollment.minimumCommitmentEnd && new Date(enrollment.minimumCommitmentEnd);
+        return commitmentEnd && commitmentEnd.getTime() > terminateAt.getTime()
+          ? commitmentEnd
+          : terminateAt;
       },
 
-      transformPlanToNewPlan: async ({ plan, referenceDate }) => {
+      transformPlanToNewPlan: async ({ plan: newPlan, referenceDate }) => {
         const latestEnd = enrollment?.periods?.reduce<Date | null>((acc, p) => {
           const end = new Date(p.end);
           return !acc || end.getTime() > acc.getTime() ? end : acc;
         }, null);
 
         return {
-          plan,
+          plan: newPlan,
           effectiveDate: latestEnd || referenceDate,
         };
       },

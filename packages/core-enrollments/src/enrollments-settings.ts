@@ -20,6 +20,7 @@ const everyHourSchedule: ScheduleData = {
 export interface EnrollmentSettings {
   autoSchedulingSchedule: ScheduleData;
   enrollmentNumberHashFn: (enrollment: Enrollment, index: number) => string;
+  trialEndingNoticeDays: number;
   configureSettings: (options?: EnrollmentsSettingsOptions) => void;
 }
 
@@ -28,8 +29,10 @@ export type EnrollmentsSettingsOptions = Omit<Partial<EnrollmentSettings>, 'conf
 export const enrollmentsSettings: EnrollmentSettings = {
   autoSchedulingSchedule: everyHourSchedule,
   enrollmentNumberHashFn: generateRandomHash,
-  configureSettings({ autoSchedulingSchedule, enrollmentNumberHashFn } = {}) {
+  trialEndingNoticeDays: 3,
+  configureSettings({ autoSchedulingSchedule, enrollmentNumberHashFn, trialEndingNoticeDays } = {}) {
     this.autoSchedulingSchedule = autoSchedulingSchedule || everyHourSchedule;
     this.enrollmentNumberHashFn = enrollmentNumberHashFn || generateRandomHash;
+    this.trialEndingNoticeDays = trialEndingNoticeDays ?? 3;
   },
 };

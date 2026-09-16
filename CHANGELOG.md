@@ -141,6 +141,7 @@ alpha.6 skipped to re-align engine version with admin-ui.
 - **CHANGED**: `changePassword` is no longer self-permitted by the default ACL — review custom roles if you relied on this.
 
 ### Roles
+- **NEW**: `manageEnrollments` role action (admin only by default). `activateEnrollment` and the new `suspendEnrollment` mutations now require it instead of `updateEnrollment`, as does undoing a scheduled termination (`updateEnrollment(cancelAtPeriodEnd: false)`) or clearing `expires`.
 - **CHANGED**: The global `Roles` singleton is replaced by a `createRoles()` factory that returns an isolated instance per `configureRoles()` call (a default `Roles` instance is still exported). The action map and the `allRoles` lookup in `@unchainedshop/api` remain module-level, so several engines in one process still share their actions and custom roles. The `Role` constructor no longer auto-registers into a global registry and no longer throws on duplicate names; register explicitly via `addRole()` / `configureRoles()`. Default `admin` / `__loggedIn__` / `__all__` roles are no longer created at module import. `UnchainedServerOptions.roles` and `Context.roles` are now typed `RolesInterface` (was `any`).
 
 ### Admin UI
@@ -171,6 +172,11 @@ alpha.6 skipped to re-align engine version with admin-ui.
 - **CHANGED**: Dependency cleanup — declared previously-phantom dependencies, and dropped `safe-stable-stringify` (logger now ships its own cycle/BigInt-safe `safeStringify`) and `@kontsedal/locco` (checkout now uses a MongoDB-backed order lock on the same `locco-locks` collection, no migration).
 
 ## New Features & Improvements
+
+### Enrollments
+- **NEW**: Subscription lifecycle controls — `suspendEnrollment(resumeAt)` with automatic resume, scheduled termination with an adapter-defined notice period (`requestedTerminationDate`), `terminateEnrollment(reason, comment)`, `updateEnrollment(expires, cancelAtPeriodEnd)`, plan changes on active enrollments, and `minimumCommitmentPeriods` on plan products (stored as `contractStartDate` / `minimumCommitmentEnd`). New events `ENROLLMENT_SUSPEND`, `ENROLLMENT_RESUME`, `ENROLLMENT_PLAN_CHANGE` and `ENROLLMENT_TRIAL_ENDING`; new module option `trialEndingNoticeDays`; `products(types:)` filter.
+- **CHANGED**: `EnrollmentStatus` gained `SUSPENDED` — clients with exhaustive status handling must add it. `EnrollmentAdapter.actions` now receives `modules` and gained the hooks `terminationDate`, `expiryDate`, `minimumCommitmentEnd`, `initialPeriods` and `transformPlanToNewPlan` (also available on `registerEnrollment`).
+- **FIXED**: `Enrollment.country` was resolved through the currency loader.
 
 ### Authentication & Security
 - **NEW**: `Mutation.logoutAllSessions` invalidates all of a user's JWTs by bumping the token version.

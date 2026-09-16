@@ -10,7 +10,7 @@ import {
 
 export default async function terminateEnrollment(
   root: never,
-  params: { enrollmentId: string; reason?: string; comment?: string },
+  params: { enrollmentId: string; reason?: EnrollmentTerminationReason; comment?: string },
   context: Context,
 ) {
   const { modules, services, userId } = context;
@@ -20,24 +20,19 @@ export default async function terminateEnrollment(
 
   if (!enrollmentId) throw new InvalidIdError({ enrollmentId });
 
-  const enrollment = await modules.enrollments.findEnrollment({ enrollmentId });
-  if (!enrollment) {
-    throw new EnrollmentNotFoundError({
-      enrollmentId,
-    });
-  }
+  const enrollment = await modules.enrollments.findEnrollment({
+    enrollmentId,
+  });
+  if (!enrollment) throw new EnrollmentNotFoundError({ enrollmentId });
 
   if (enrollment.status === EnrollmentStatus.TERMINATED) {
     throw new EnrollmentWrongStatusError({ status: enrollment.status });
   }
 
   try {
-    return await services.enrollments.terminateEnrollment(enrollment, {
-      reason: reason as EnrollmentTerminationReason,
-      comment,
-    });
+    return await services.enrollments.terminateEnrollment(enrollment, { reason, comment });
   } catch (e) {
-    if (e.message === 'Enrollment termination is not allowed at this time') {
+    if (e.name === 'EnrollmentTerminationNotAllowedError') {
       throw new EnrollmentTerminationNotAllowedError({ enrollmentId });
     }
     throw e;

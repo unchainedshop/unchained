@@ -106,6 +106,7 @@ export const all = (role, actions) => {
   role.allow(actions.viewEnrollment, () => false);
   role.allow(actions.viewEnrollments, () => false);
   role.allow(actions.updateEnrollment, () => false);
+  role.allow(actions.manageEnrollments, () => false);
   role.allow(actions.createEnrollment, () => false);
   role.allow(actions.registerPaymentCredentials, () => false);
   role.allow(actions.managePaymentCredentials, () => false);

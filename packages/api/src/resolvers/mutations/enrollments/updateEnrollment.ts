@@ -14,6 +14,8 @@ import {
   ProductWrongStatusError,
   ProductWrongTypeError,
 } from '../../../errors.ts';
+import { checkAction } from '../../../acl.ts';
+import { actions } from '../../../roles/index.ts';
 import type { Address, Contact } from '@unchainedshop/mongodb';
 
 interface UpdateEnrollmentParams {
@@ -64,6 +66,11 @@ export default async function updateEnrollment(
     throw new EnrollmentWrongStatusError({ status: enrollment.status });
   }
 
+  // Owners may schedule their own termination, but undoing one (or a set expiry) is an admin decision.
+  if (expires === null || cancelAtPeriodEnd === false) {
+    await checkAction(context, actions.manageEnrollments, [root, params]);
+  }
+
   if (meta) {
     enrollment = (await modules.enrollments.updateContext(enrollmentId, meta)) as Enrollment;
   }
@@ -88,41 +95,30 @@ export default async function updateEnrollment(
   }
 
   if (expires !== undefined) {
-    if (expires === null) {
-      enrollment = (await modules.enrollments.updateExpiry(enrollmentId, null)) as Enrollment;
-    } else {
-      const terminationDate = await services.enrollments.resolveEnrollmentTerminationDate(enrollment, {
+    const expiryDate =
+      expires &&
+      (await services.enrollments.resolveEnrollmentTerminationDate(enrollment, {
         requestedDate: expires,
-      });
-      if (!terminationDate) {
-        throw new EnrollmentTerminationNotAllowedError({ enrollmentId });
-      }
-      enrollment = (await modules.enrollments.updateExpiry(enrollmentId, terminationDate)) as Enrollment;
+      }));
+    if (expires && !expiryDate) {
+      throw new EnrollmentTerminationNotAllowedError({ enrollmentId });
     }
+    enrollment = (await modules.enrollments.updateExpiry(enrollmentId, expiryDate)) as Enrollment;
   }
 
-  if (cancelAtPeriodEnd !== undefined) {
-    if (cancelAtPeriodEnd) {
-      const now = Date.now();
-      const currentPeriod = enrollment.periods?.find((p) => {
-        return new Date(p.start).getTime() <= now && new Date(p.end).getTime() >= now;
-      });
-      const requestedDate = currentPeriod ? new Date(currentPeriod.end) : new Date();
-      const terminationDate = await services.enrollments.resolveEnrollmentTerminationDate(enrollment, {
-        requestedDate,
-      });
-      if (!terminationDate) {
+  if (cancelAtPeriodEnd === false) {
+    enrollment = (await modules.enrollments.updateRequestedTerminationDate(
+      enrollmentId,
+      null,
+    )) as Enrollment;
+  } else if (cancelAtPeriodEnd) {
+    try {
+      enrollment = await services.enrollments.terminateEnrollment(enrollment, { atPeriodEnd: true });
+    } catch (e) {
+      if (e.name === 'EnrollmentTerminationNotAllowedError') {
         throw new EnrollmentTerminationNotAllowedError({ enrollmentId });
       }
-      enrollment = (await modules.enrollments.updateRequestedTerminationDate(
-        enrollmentId,
-        terminationDate,
-      )) as Enrollment;
-    } else {
-      enrollment = (await modules.enrollments.updateRequestedTerminationDate(
-        enrollmentId,
-        null,
-      )) as Enrollment;
+      throw e;
     }
   }
 
@@ -133,9 +129,6 @@ export default async function updateEnrollment(
       throw new ProductWrongStatusError({ status: planProduct.status });
     if (planProduct.type !== ProductType.PLAN_PRODUCT)
       throw new ProductWrongTypeError({ type: planProduct.type });
-
-    // Reject a plan whose configuration has no registered enrollment plugin up-front, so the
-    // change fails cleanly instead of throwing mid-way (and leaving the plan half-applied).
     if (!EnrollmentDirector.findSupportedAdapter(planProduct.plan)) {
       throw new EnrollmentPlanChangeNotSupportedError({ enrollmentId });
     }
@@ -145,8 +138,7 @@ export default async function updateEnrollment(
         enrollment = await services.enrollments.updateEnrollmentPlan(enrollment, { plan });
       } catch (e) {
         if (
-          e.message === 'Plan change is not supported for this enrollment' ||
-          e.message?.startsWith('No suitable enrollment plugin')
+          ['EnrollmentPlanChangeNotSupportedError', 'EnrollmentPlanNotSupportedError'].includes(e.name)
         ) {
           throw new EnrollmentPlanChangeNotSupportedError({ enrollmentId });
         }

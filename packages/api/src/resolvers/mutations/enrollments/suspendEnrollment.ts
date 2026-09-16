@@ -1,6 +1,11 @@
 import { log } from '@unchainedshop/logger';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
-import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.ts';
+import {
+  EnrollmentNotFoundError,
+  EnrollmentResumeDateInvalidError,
+  EnrollmentWrongStatusError,
+  InvalidIdError,
+} from '../../../errors.ts';
 import type { Context } from '../../../context.ts';
 
 export default async function suspendEnrollment(
@@ -11,6 +16,9 @@ export default async function suspendEnrollment(
   log('mutation suspendEnrollment', { userId });
 
   if (!enrollmentId) throw new InvalidIdError({ enrollmentId });
+  if (resumeAt && resumeAt.getTime() <= Date.now()) {
+    throw new EnrollmentResumeDateInvalidError({ enrollmentId, resumeAt });
+  }
 
   const enrollment = await modules.enrollments.findEnrollment({
     enrollmentId,

@@ -89,13 +89,13 @@ The `cancellationReason` and `cancellationComment` fields are stored on the enro
 
 ### Cancel at Period End
 
-Set `cancelAtPeriodEnd: true` on the `updateEnrollment` mutation to request cancellation at the end of the current billing period. The adapter's termination policy still applies, so a notice period or minimum commitment can move `requestedTerminationDate` later. Set `cancelAtPeriodEnd: false` to undo this and continue the subscription.
+Set `cancelAtPeriodEnd: true` on the `updateEnrollment` mutation to request cancellation at the end of the current billing period. The adapter's termination policy still applies, so a notice period or minimum commitment can move `requestedTerminationDate` later. An already scheduled termination is never postponed by a later request. Setting `cancelAtPeriodEnd: false` undoes the scheduled termination; like clearing `expires`, this requires the `manageEnrollments` permission.
 
 ### Suspend with Scheduled Resume
 
-The `suspendEnrollment` mutation accepts an optional `resumeAt` date. When set, the enrollment will automatically resume to `ACTIVE` status when processed after that date. This enables time-limited pauses (e.g., "pause my subscription for 2 months").
+The `suspendEnrollment` mutation accepts an optional `resumeAt` date (which must lie in the future). When set, the enrollment will automatically resume to `ACTIVE` status when processed after that date. This enables time-limited pauses (e.g., "pause my subscription for 2 months").
 
-Manually resuming via `activateEnrollment` clears the `resumeAt` date.
+Suspending and resuming (`activateEnrollment`) require the `manageEnrollments` permission. Manually resuming clears the `resumeAt` date.
 
 ### Contract Terms / Minimum Commitments
 
@@ -107,7 +107,7 @@ Both `contractStartDate` and `minimumCommitmentEnd` are exposed in the GraphQL A
 
 ### Trial Ending Notification
 
-The enrollment order generator worker emits one `ENROLLMENT_TRIAL_ENDING` event when an active trial period is within 3 days of ending. This enables sending reminder emails or triggering conversion flows before the trial expires.
+The enrollment order generator worker emits one `ENROLLMENT_TRIAL_ENDING` event when an active trial period is within `trialEndingNoticeDays` (module option, default 3) of ending. This enables sending reminder emails or triggering conversion flows before the trial expires.
 
 ### Plan Changes
 

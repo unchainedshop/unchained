@@ -13,8 +13,7 @@ import {
 } from '@unchainedshop/core';
 import { emit } from '@unchainedshop/events';
 
-const TRIAL_ENDING_DAYS = 3;
-const TRIAL_ENDING_WINDOW_MS = TRIAL_ENDING_DAYS * 24 * 60 * 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 const findDueUnbilledPeriod = (enrollment: Enrollment, referenceDate: Date): EnrollmentPeriod | null => {
   return (
@@ -38,7 +37,7 @@ const emitTrialEndingIfNeeded = async (
     if (!period.isTrial || period.trialEndingNotifiedAt) return false;
     if (new Date(period.start).getTime() > referenceDate.getTime()) return false;
     const remaining = new Date(period.end).getTime() - referenceDate.getTime();
-    return remaining > 0 && remaining <= TRIAL_ENDING_WINDOW_MS;
+    return remaining > 0 && remaining <= enrollmentsSettings.trialEndingNoticeDays * DAY_MS;
   });
   if (!trialPeriod) return;
 
@@ -126,11 +125,16 @@ export const GenerateOrderWorker: IWorkerAdapter<never, any> = {
                 );
                 if (order) {
                   if (unbilledPeriod) {
-                    await modules.enrollments.linkEnrollmentPeriodOrder(
+                    const linked = await modules.enrollments.linkEnrollmentPeriodOrder(
                       processedEnrollment._id,
                       period,
                       order._id,
                     );
+                    if (!linked) {
+                      throw new Error(
+                        `Order ${order._id} could not be linked to its enrollment period, the period was modified concurrently`,
+                      );
+                    }
                   } else {
                     await modules.enrollments.addEnrollmentPeriod(processedEnrollment._id, {
                       ...period,
