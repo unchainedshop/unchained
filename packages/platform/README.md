@@ -72,6 +72,19 @@ const platform = await startPlatform({
 
 The work queue runs migrations and starts queue managers during startup unless workers are disabled. See [work queue options](src/setup/setupWorkqueue.ts) and [platform initialization](src/startPlatform.ts) for the current options.
 
+## Download documentation for coding assistants
+
+```bash
+npx --package @unchainedshop/platform unchained download-llm-docs
+```
+
+Requires Git. Downloads docs into `.unchained-docs/` for the installed platform
+version's tag, falling back to `master` when the tag is unavailable. Updates a
+managed file index in existing `CLAUDE.md` and `AGENTS.md` files (legacy `agents.md`
+is also supported), or creates `CLAUDE.md` if none exists. Re-running replaces the
+downloaded docs and index while preserving surrounding instructions. Add
+`.unchained-docs/` to your project's `.gitignore`.
+
 ## Exports
 
 | Export | Description |

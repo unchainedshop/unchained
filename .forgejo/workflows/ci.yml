@@ -5,11 +5,8 @@ name: CI
 # registry. The @unchainedshop/* npm packages are published separately and are
 # NOT handled here. See .forgejo/MIGRATION.md.
 #
-# Shared conventions across the unchained app repos (kept consistent on purpose):
-#   - checkout:  actions/checkout@v4 in every job
-#   - trivy:     digest-pinned docker://ghcr.io/aquasecurity/trivy step
-#   - build:     docker/* actions + buildx (login/metadata/build-push)
-#   - auth:      vars.REGISTRY_USER || github.actor + secrets.PKG_PUSH_TOKEN
+# Trivy runs as a checksum-verified host binary; publishing uses plain Docker
+# because buildx pushes fail against the Forgejo registry on the current runner.
 
 on:
   push:
@@ -31,11 +28,11 @@ jobs:
   test:
     name: Lint + tests
     runs-on: docker
-    container: node:25-bookworm
+    container: node:26.8.2-bookworm
     env:
       NODE_ENV: test
       NODE_NO_WARNINGS: '1'
-      MONGOMS_VERSION: 8.2.3
+      MONGOMS_VERSION: 8.2.12
     steps:
       - uses: actions/checkout@v4
       - name: Cache npm
@@ -53,18 +50,36 @@ jobs:
       - name: Test
         run: npm run test
 
-  # Source-dependency scan across the monorepo. Hard-gates on fixable HIGH/CRITICAL
-  # (ADR-003). Runs the pinned Trivy image as a docker:// step so the job stays on
-  # the Node-capable default runner.
+  # Keep JS actions on the Node-capable runner; the Trivy image has no Node.
   trivy:
     name: Trivy vuln gate
     runs-on: docker
+    env:
+      TRIVY_CACHE_DIR: /tmp/trivy-cache
+      TRIVY_VERSION: '0.74.0'
+      TRIVY_SHA256: '2ae6fe3ee734b7fdf11335663e18c75ea12dccc76062f09f164a3b0f8be4371a'
     steps:
       - uses: actions/checkout@v4
-      - name: trivy fs (fixable HIGH/CRITICAL gate)
-        uses: docker://ghcr.io/aquasecurity/trivy:0.72.0@sha256:cffe3f5161a47a6823fbd23d985795b3ed72a4c806da4c4df16266c02accdd6f
+      - id: trivydate
+        run: echo "d=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
         with:
-          args: fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 --ignore-unfixed --no-progress --disable-telemetry .
+          path: /tmp/trivy-cache
+          key: trivy-db-${{ runner.os }}-${{ steps.trivydate.outputs.d }}
+          restore-keys: trivy-db-${{ runner.os }}-
+      - name: Install Trivy (pinned + checksum-verified)
+        run: |
+          set -eu
+          dl="${RUNNER_TEMP:-/tmp}"
+          curl -sfL -o "$dl/trivy.tar.gz" \
+            "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+          echo "${TRIVY_SHA256}  $dl/trivy.tar.gz" | sha256sum -c -
+          tar -xzf "$dl/trivy.tar.gz" -C "$dl" trivy
+          "$dl/trivy" --version
+      - name: trivy fs (fixable HIGH/CRITICAL gate)
+        run: |
+          "${RUNNER_TEMP:-/tmp}/trivy" fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 --ignore-unfixed \
+            --no-progress --disable-telemetry .
 
   docs:
     name: Build docs
@@ -73,7 +88,6 @@ jobs:
     if: github.event_name != 'pull_request'
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
@@ -91,15 +105,22 @@ jobs:
             type=raw,value=next,enable=${{ github.ref_name == 'develop' }}
             type=raw,value=latest,enable=${{ github.ref_name == 'master' }}
             type=raw,value=stable,enable=${{ github.ref_type == 'tag' }}
-      - uses: docker/build-push-action@v6
-        with:
-          context: ./docs
-          file: ./docs/Dockerfile
-          push: true
-          provenance: false
-          build-args: |
-            GIT_COMMIT=${{ github.sha }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REGISTRY_REPO }}/docs:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.REGISTRY_REPO }}/docs:buildcache,mode=max,ignore-error=true
+      - name: Build and push docs image
+        shell: bash
+        env:
+          IMAGE_TAGS: ${{ steps.meta.outputs.tags }}
+          IMAGE_LABELS: ${{ steps.meta.outputs.labels }}
+        run: |
+          set -euo pipefail
+          args=()
+          while IFS= read -r tag; do
+            [ -z "$tag" ] || args+=(--tag "$tag")
+          done <<< "$IMAGE_TAGS"
+          while IFS= read -r label; do
+            [ -z "$label" ] || args+=(--label "$label")
+          done <<< "$IMAGE_LABELS"
+          docker build --platform linux/amd64 --build-arg "GIT_COMMIT=$GITHUB_SHA" \
+            "${args[@]}" -f ./docs/Dockerfile ./docs
+          while IFS= read -r tag; do
+            [ -z "$tag" ] || docker push "$tag"
+          done <<< "$IMAGE_TAGS"

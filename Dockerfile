@@ -1,4 +1,4 @@
-FROM mongo:8.2.3
+FROM mongo:8.2.12
 
 # Install app dependencies
 RUN mkdir -p /source
@@ -26,7 +26,7 @@ ADD examples/minimal/package* /source/examples/minimal/
 ADD examples/oidc/package* /source/examples/oidc/
 ADD examples/ticketing/package* /source/examples/ticketing/
 
-ENV MONGOMS_VERSION=8.2.3
+ENV MONGOMS_VERSION=8.2.12
 ENV MONGOMS_SYSTEM_BINARY=/usr/bin/mongod
 ENV NODE_NO_WARNINGS=1
 ENV NODE_ENV=test

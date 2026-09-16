@@ -84,6 +84,7 @@
 - **CHANGED**: Admin impersonation now travels inside the JWT (`imp` claim) instead of session state.
 
 ### Developer Experience
+- **NEW**: Restored the `unchained download-llm-docs` CLI from v4.8.x. Downloads versioned docs and maintains an index in `CLAUDE.md` / `AGENTS.md` (including legacy lowercase `agents.md`).
 - **NEW**: `registerX(...)` plugin authoring factories (re-exported from `@unchainedshop/core`) — author a custom adapter of any director type in one typed call (`registerPaymentProvider`, `registerDeliveryProvider`, `registerProductPricing`, `registerOrderDiscount`, `registerWorker`, `registerFileAdapter`, `registerQuotation`, `registerEnrollment`, …). They build and register the `IPlugin` for you; `pluginRegistry.register()` remains the low-level primitive. See the [Plugin Factories](https://docs.unchained.shop/extend/plugin-factories) docs.
 - **NEW**: `@unchainedshop/client` package — installable React/Apollo GraphQL hooks with per-module subpath imports (e.g. `@unchainedshop/client/product`), generated from the admin-ui hooks, for building custom storefronts and admin tools. Peer dependencies: `@apollo/client` ^4, `graphql` ^16, `react` >=18.
 - **NEW**: Pluggable logger context — `setLogContextProvider()` merges request-scoped fields (e.g. OpenTelemetry `trace_id` / `span_id`) into every JSON log line (prototype-pollution-safe; provider errors are swallowed so telemetry never breaks logging).
@@ -101,9 +102,12 @@
 - Added a comprehensive GraphQL API reference and an RBAC permissions reference (126 actions documented), plus server-setup, testing, seed-data, and contributing guides.
 
 ### Performance & Dependencies
+- **CHANGED**: Order items, discounts, payment, delivery, and enrollment GraphQL fields now use batch loaders. Item and discount ordering retains the stable `created` / `_id` sort. Permission enumeration skips further rules for actions already granted.
 - **CHANGED**: `@unchainedshop/utils` now uses `awesome-phonenumber` instead of `libphonenumber-js` for phone-number normalization and country-code/subscriber splitting — the same Google-metadata validation at ~0.74 MB installed versus ~12 MB (a ~94% cut in the single largest production dependency of a minimal install). The public helpers `normalizePhoneNumber` and `phoneNumberToParts` are unchanged and remain synchronous.
 
 ### Reliability
+- **FIXED**: Ported ticket cancellation's product metadata update and GridFS upload preflight support for tracing headers from v4.8.x.
+- **FIXED**: Bulk-import tests await worker completion; memoization tests explicitly control in-flight completion; timing-equality tests compare alternating measurement rounds. Forgejo jobs use Node 26.8.2, MongoDB 8.2.12, and checksum-verified Trivy 0.74.0, with plain Docker docs publishing and blocking engine tests.
 - **FIXED**: Deterministic-selection queries now carry a stable `_id` secondary sort key (its direction mirroring the primary key), so results no longer fall back to MongoDB's undefined tie-break order when the primary key ties. This covers current-cart selection, localized-text resolution (backing every product/assortment/filter/media/variation text loader), default delivery/payment/warehousing provider selection, product currency-rate and SKU lookups, stored payment-credential selection, and assortment/product-media display ordering — removing a class of order-dependent nondeterminism (e.g. the default-provider inheritance and Datatrans checkout flakes).
 
 ## Migration Guide

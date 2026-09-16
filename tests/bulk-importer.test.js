@@ -17,6 +17,31 @@ test.describe('Bulk Importer', () => {
     await disconnect();
   });
 
+  // Imports fetch remote media. Await the worker result before asserting database state.
+  const waitForImport = async (workId) => {
+    const work = await intervalUntilTimeout(
+      async () => {
+        const { data: { work } = {} } = await graphqlFetch({
+          query: /* GraphQL */ `
+            query Work($workId: ID!) {
+              work(workId: $workId) {
+                _id
+                status
+                error
+              }
+            }
+          `,
+          variables: { workId },
+        });
+        return ['SUCCESS', 'FAILED'].includes(work?.status) ? work : false;
+      },
+      30000,
+      300,
+    );
+    assert.ok(work, 'bulk import did not finish in time');
+    assert.strictEqual(work.status, 'SUCCESS', `bulk import failed: ${JSON.stringify(work.error)}`);
+  };
+
   test.describe('Import Products', () => {
     test('adds 1 Product CREATE event and 1 UPDATE event, followed by DELETE & CREATE again', async () => {
       const { data: { addWork } = {} } = await graphqlFetch({
@@ -243,6 +268,7 @@ test.describe('Bulk Importer', () => {
         },
       });
       assert.ok(addWork);
+      await waitForImport(addWork._id);
 
       const Products = db.collection('products');
 
@@ -335,6 +361,7 @@ test.describe('Bulk Importer', () => {
       });
 
       assert.ok(addWork);
+      await waitForImport(addWork._id);
 
       const Filters = db.collection('filters');
 
@@ -483,6 +510,7 @@ test.describe('Bulk Importer', () => {
       });
 
       assert.ok(addWork);
+      await waitForImport(addWork._id);
 
       const Assortments = db.collection('assortments');
       const AssortmentMedia = db.collection('assortment_media');
