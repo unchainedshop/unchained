@@ -60,7 +60,7 @@ const EventTokenListItem = ({ token, onCancelTicket, onInvalidateTicket }) => {
             />
           ) : (
             <>
-              {!token.invalidatedDate && (
+              {onCancelTicket && !token.invalidatedDate && (
                 <button
                   type="button"
                   onClick={() => onCancelTicket(token._id)}
@@ -72,7 +72,7 @@ const EventTokenListItem = ({ token, onCancelTicket, onInvalidateTicket }) => {
                   })}
                 </button>
               )}
-              {token.isInvalidateable && !token.invalidatedDate && (
+              {onInvalidateTicket && token.isInvalidateable && !token.invalidatedDate && (
                 <button
                   type="button"
                   onClick={() => onInvalidateTicket(token._id)}

@@ -19,6 +19,13 @@ test('default reimbursement codes require a secret and preserve exact amounts', 
       assert.equal(await handlers.verify(`${code}=`, 'CHF'), null);
       assert.equal(await handlers.verify(`x${code}`, 'CHF'), null);
     }
+    // Currency codes follow the currencies module, which also stores crypto symbols.
+    const crypto = await handlers.generate(1999, 'USDC');
+    assert.equal(await handlers.verify(crypto, 'USDC'), 1999);
+    assert.equal(await handlers.verify(crypto, 'CHF'), null);
+    for (const currency of ['', 'chf', 'C', 'CH F']) {
+      await assert.rejects(handlers.generate(1999, currency));
+    }
     const codes = await Promise.all(Array.from({ length: 1000 }, () => handlers.generate(1999, 'CHF')));
     assert.equal(new Set(codes).size, codes.length);
     for (const amount of [0, -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1]) {

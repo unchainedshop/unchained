@@ -27,6 +27,8 @@ async function cancelTicketsForProduct(
 
   const discountByUser = new Map<string, { discountCode: string; amount: number }>();
 
+  // Issue credit before touching any ticket: a missing signing secret must not leave
+  // tickets cancelled without the requested compensation.
   if (options?.generateDiscount && tokensToCancel.length > 0 && options.countryCode) {
     const product = await this.products.findProduct({ productId });
     const price =
@@ -55,8 +57,6 @@ async function cancelTicketsForProduct(
     }
   }
 
-  // Prepare credit first: missing signing configuration must not leave tickets
-  // cancelled without the requested compensation.
   for (const token of tokensToCancel) {
     await this.warehousing.invalidateToken(token._id);
     await passes.cancelTicket(token._id);

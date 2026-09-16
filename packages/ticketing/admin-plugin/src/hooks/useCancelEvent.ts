@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
-import { TicketEventDetailQuery } from './useEventProduct.ts';
+import { TicketEventDetailQuery } from './useEventProduct';
 
 const CancelEventMutation = gql`
   mutation CancelEvent($productId: ID!, $generateDiscount: Boolean) {

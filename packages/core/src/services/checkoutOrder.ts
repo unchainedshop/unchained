@@ -61,10 +61,7 @@ export async function checkoutOrderService(
 
     return processedOrder;
   } finally {
-    try {
-      await discounts?.release();
-    } finally {
-      await lock.release();
-    }
+    await discounts?.release();
+    await lock.release();
   }
 }
