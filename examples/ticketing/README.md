@@ -83,7 +83,7 @@ fields are registered by the extension; shops that do not load it do not expose 
 navigation or schema fields.
 
 To redeem reimbursement codes, register `ReimbursementCodePlugin` from
-`@unchainedshop/plugins/pricing/discount-reimbursement-code` with `pluginRegistry` before starting
+`@unchainedshop/ticketing/pricing/discount-reimbursement-code` with `pluginRegistry` before starting
 the platform. Set `DISCOUNT_CODE_SECRET` to a persistent, private 32-byte hex value, for example
 generated with `openssl rand -hex 32`. Without this secret the default handler rejects issuance
 and redemption; other ticketing features remain available. Credit generation is validated before

@@ -1,5 +1,6 @@
 import type { TicketingModule } from './module.ts';
 import type { Bound, UnchainedCore } from '@unchainedshop/core';
+import { TicketingMessageTypes } from './templates/index.ts';
 
 type Modules = UnchainedCore['modules'];
 type TicketingModules = Modules & TicketingModule;
@@ -72,7 +73,7 @@ async function cancelTicketsForProduct(
       await this.worker.addWork({
         type: 'MESSAGE',
         input: {
-          template: 'EVENT_CANCELLED',
+          template: TicketingMessageTypes.EVENT_CANCELLED,
           productId,
           userId,
           discountCode: discount?.discountCode,
@@ -119,7 +120,7 @@ async function cancelTicketWithDiscount(
     await this.worker.addWork({
       type: 'MESSAGE',
       input: {
-        template: 'TICKET_CANCELLED',
+        template: TicketingMessageTypes.TICKET_CANCELLED,
         tokenId,
         userId: token.userId,
         discountCode,
