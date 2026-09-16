@@ -11,6 +11,7 @@ import type { Enrollment } from '@unchainedshop/core-enrollments';
 import { createLogger } from '@unchainedshop/logger';
 import type { Modules } from '../modules.ts';
 import { pluginRegistry } from '../plugins/PluginRegistry.ts';
+import { createServiceError } from '../errors.ts';
 
 const logger = createLogger('unchained:core');
 
@@ -71,7 +72,10 @@ export const EnrollmentDirector: IEnrollmentDirector = {
   transformOrderItemToEnrollment: async ({ orderPosition, product }, doc, unchainedAPI) => {
     const Adapter = EnrollmentDirector.findSupportedAdapter(product.plan);
     if (!Adapter) {
-      throw new Error('No suitable enrollment plugin available for this item');
+      throw createServiceError(
+        'EnrollmentPlanNotSupportedError',
+        'No suitable enrollment plugin available for this item',
+      );
     }
 
     const enrollmentPlan = await Adapter.transformOrderItemToEnrollmentPlan(orderPosition, unchainedAPI);
@@ -89,7 +93,10 @@ export const EnrollmentDirector: IEnrollmentDirector = {
     const Adapter = EnrollmentDirector.findSupportedAdapter(enrollmentContext.product.plan);
 
     if (!Adapter) {
-      throw new Error('No suitable enrollment plugin available for this plan configuration');
+      throw createServiceError(
+        'EnrollmentPlanNotSupportedError',
+        'No suitable enrollment plugin available for this plan configuration',
+      );
     }
     const adapter = Adapter.actions(context);
 

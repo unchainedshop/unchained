@@ -181,7 +181,7 @@ query CheckAccess {
 
 ### Suspend Enrollment
 
-Suspending an enrollment prevents new orders from being generated. The enrollment remains in `SUSPENDED` status until it is explicitly resumed or until the `resumeAt` date passes.
+Suspending an enrollment prevents new orders from being generated. The enrollment remains in `SUSPENDED` status until it is explicitly resumed or until the `resumeAt` date passes. Suspending and resuming require the `manageEnrollments` permission.
 
 ```graphql
 mutation SuspendSubscription {

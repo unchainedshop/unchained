@@ -4,7 +4,7 @@ import { setTimeout } from 'node:timers/promises';
 import { GenerateOrderWorker } from '@unchainedshop/plugins/worker/enrollment-order-generator';
 import { setupDatabase, disconnect } from './helpers.js';
 import { getTestPlatform } from './setup.js';
-import { ActiveEnrollment } from './seeds/enrollments.js';
+import { ActiveEnrollment, SuspendedWithResumeAtEnrollment } from './seeds/enrollments.js';
 import { SimpleDeliveryProvider } from './seeds/deliveries.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 
@@ -95,5 +95,16 @@ test.describe('Enrollment order generator', () => {
 
     assert.ok(storedEnrollment.periods[0].trialEndingNotifiedAt);
     assert.strictEqual(eventCount, 1);
+  });
+
+  test('resumes a suspended enrollment once its resumeAt date has passed', async () => {
+    await GenerateOrderWorker.doWork({}, unchainedAPI);
+
+    const storedEnrollment = await db.collection('enrollments').findOne({
+      _id: SuspendedWithResumeAtEnrollment._id,
+    });
+
+    assert.strictEqual(storedEnrollment.status, 'ACTIVE');
+    assert.strictEqual(storedEnrollment.resumeAt, null);
   });
 });

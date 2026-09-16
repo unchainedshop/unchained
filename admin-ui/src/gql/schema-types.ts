@@ -3580,6 +3580,7 @@ export enum IRoleAction {
   ManageCountries = 'manageCountries',
   ManageCurrencies = 'manageCurrencies',
   ManageDeliveryProviders = 'manageDeliveryProviders',
+  ManageEnrollments = 'manageEnrollments',
   ManageFilters = 'manageFilters',
   ManageLanguages = 'manageLanguages',
   ManagePaymentCredentials = 'managePaymentCredentials',

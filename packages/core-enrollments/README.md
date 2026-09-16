@@ -25,7 +25,9 @@ const activeEnrollments = await enrollments.findEnrollments({
 });
 ```
 
-Status filters accept arrays. Enrollment lifecycle operations and recurring order generation are coordinated by `unchainedAPI.services.enrollments` and the registered enrollment and worker plugins. The module stores enrollments and their periods (`addEnrollmentPeriod`).
+Status filters accept arrays. Enrollment lifecycle operations and recurring order generation are coordinated by `unchainedAPI.services.enrollments` and the registered enrollment and worker plugins. The module stores enrollments and their periods (`addEnrollmentPeriod`) together with the lifecycle fields the services maintain: `expires`, `requestedTerminationDate`, `resumeAt`, `contractStartDate`, `minimumCommitmentEnd` and the cancellation reason.
+
+`EnrollmentStatus` covers `INITIAL`, `ACTIVE`, `PAUSED`, `SUSPENDED` and `TERMINATED`; `EnrollmentTerminationReason` lists the cancellation reasons. Emitted events: `ENROLLMENT_CREATE`, `ENROLLMENT_UPDATE`, `ENROLLMENT_REMOVE`, `ENROLLMENT_ADD_PERIOD`, `ENROLLMENT_SUSPEND`, `ENROLLMENT_RESUME`, `ENROLLMENT_PLAN_CHANGE` and `ENROLLMENT_TRIAL_ENDING`.
 
 See the [module guide](https://docs.unchained.shop/platform-configuration/modules/enrollments), [public exports](src/enrollments-index.ts), and [module implementation](src/module/configureEnrollmentsModule.ts).
 

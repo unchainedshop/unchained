@@ -3,6 +3,7 @@ import { emit } from '@unchainedshop/events';
 import { EnrollmentDirector } from '../core-index.ts';
 import { processEnrollmentService } from './processEnrollment.ts';
 import { addMessageService } from './addMessage.ts';
+import { createServiceError } from '../errors.ts';
 import type { Modules } from '../modules.ts';
 
 export async function updateEnrollmentPlanService(
@@ -13,7 +14,7 @@ export async function updateEnrollmentPlanService(
   const currentProduct = await this.products.findProduct({
     productId: enrollment.productId,
   });
-  if (!currentProduct) throw new Error('Current product not found');
+  if (!currentProduct) throw createServiceError('ProductNotFoundError', 'Current product not found');
 
   const currentDirector = await EnrollmentDirector.actions(
     { enrollment, product: currentProduct },
@@ -26,7 +27,10 @@ export async function updateEnrollmentPlanService(
   });
 
   if (!result) {
-    throw new Error('Plan change is not supported for this enrollment');
+    throw createServiceError(
+      'EnrollmentPlanChangeNotSupportedError',
+      'Plan change is not supported for this enrollment',
+    );
   }
 
   const { plan: newPlan, effectiveDate } = result;
@@ -34,7 +38,7 @@ export async function updateEnrollmentPlanService(
   const newProduct = await this.products.findProduct({
     productId: newPlan.productId,
   });
-  if (!newProduct) throw new Error('New product not found');
+  if (!newProduct) throw createServiceError('ProductNotFoundError', 'New product not found');
 
   const retainedPeriods = enrollment.periods.filter(
     (period) => Boolean(period.orderId) || new Date(period.start).getTime() < effectiveDate.getTime(),

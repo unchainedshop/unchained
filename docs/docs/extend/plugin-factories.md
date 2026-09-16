@@ -329,8 +329,13 @@ Recurring/subscription plans. `configurationForOrder` is required.
 | `configurationForOrder` | `(params, context) => Promise<{ orderPositionTemplates, orderContext? } \| null>` | builds the recurring order |
 | `isActivatedFor` | `(productPlan?) => boolean` | gate by plan; default `true` |
 | `transformOrderItem` | `(orderPosition, api) => Promise<EnrollmentPlan>` | |
-| `nextPeriod` | `(context) => Promise<EnrollmentPeriod \| null>` | next billing window |
+| `nextPeriod` | `(context, { referenceDate? }) => Promise<EnrollmentPeriod \| null>` | next billing window |
 | `isOverdue` / `isValidForActivation` | `(context) => Promise<boolean>` | default `false`; supply `isValidForActivation` to grant access |
+| `terminationDate` | `(context, { referenceDate }) => Promise<Date \| null>` | when a termination takes effect; default immediately |
+| `expiryDate` | `(context) => Promise<Date \| null>` | fixed expiry set at initialization |
+| `minimumCommitmentEnd` | `(context, { referenceDate }) => Promise<Date \| null>` | end of the minimum contract term |
+| `initialPeriods` | `(context, { referenceDate }) => Promise<EnrollmentPeriod[]>` | periods created at initialization; default one `nextPeriod` |
+| `transformPlanToNewPlan` | `(context, { plan, referenceDate }) => Promise<{ plan, effectiveDate } \| null>` | accept or reject plan changes; default reject |
 
 > See also: [Enrollment](./enrollment.md)
 

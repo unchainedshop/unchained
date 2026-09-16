@@ -326,7 +326,7 @@ test.describe('Enrollments', () => {
   });
 
   test.describe('Mutation.terminateEnrollment for admin user should', () => {
-    test('terminate ACTIVE enrollment with 30-day notice period schedules termination', async () => {
+    test('schedule termination of an ACTIVE enrollment at the end of the notice period', async () => {
       const {
         data: { terminateEnrollment },
       } = await graphqlFetchAsAdminUser({
@@ -345,6 +345,28 @@ test.describe('Enrollments', () => {
       });
       assert.strictEqual(terminateEnrollment.status, 'ACTIVE');
       assert.ok(terminateEnrollment.requestedTerminationDate);
+    });
+
+    test('keep an earlier scheduled termination date when terminating again', async () => {
+      const {
+        data: { terminateEnrollment },
+      } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation terminateEnrollment($enrollmentId: ID!) {
+            terminateEnrollment(enrollmentId: $enrollmentId) {
+              _id
+              requestedTerminationDate
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: ScheduledTerminationEnrollment._id,
+        },
+      });
+      assert.strictEqual(
+        new Date(terminateEnrollment.requestedTerminationDate).getTime(),
+        ScheduledTerminationEnrollment.requestedTerminationDate.getTime(),
+      );
     });
 
     test('return EnrollmentWrongStatusError when passed terminated enrollment ID', async () => {
@@ -1557,7 +1579,7 @@ test.describe('Enrollments', () => {
           }
         `,
         variables: {
-          enrollmentId: PausedEnrollment._id,
+          enrollmentId: SuspendedEnrollment._id,
           plan: {
             productId: PlanProduct._id,
             quantity: 1,
@@ -1839,6 +1861,33 @@ test.describe('Enrollments', () => {
         new Date(updateEnrollment.requestedTerminationDate).getTime() >=
           new Date(updateEnrollment.minimumCommitmentEnd).getTime(),
       );
+    });
+
+    test('an owner cannot undo a scheduled termination or clear the expiry', async () => {
+      for (const variables of [
+        { enrollmentId: UserCommitmentEnrollment._id, cancelAtPeriodEnd: false },
+        { enrollmentId: UserCommitmentEnrollment._id, expires: null },
+      ]) {
+        const { errors } = await graphqlFetchAsNormalUser({
+          query: /* GraphQL */ `
+            mutation updateEnrollment(
+              $enrollmentId: ID
+              $cancelAtPeriodEnd: Boolean
+              $expires: DateTime
+            ) {
+              updateEnrollment(
+                enrollmentId: $enrollmentId
+                cancelAtPeriodEnd: $cancelAtPeriodEnd
+                expires: $expires
+              ) {
+                _id
+              }
+            }
+          `,
+          variables,
+        });
+        assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+      }
     });
 
     test('terminating commitment enrollment schedules termination at commitment end', async () => {

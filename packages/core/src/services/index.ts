@@ -30,7 +30,6 @@ import { confirmOrderService } from './confirmOrder.ts';
 import { rejectOrderService } from './rejectOrder.ts';
 import { discountedEntitiesService } from './discountedEntities.ts';
 import { createManualOrderDiscountService } from './createManualOrderDiscount.ts';
-import { processEnrollmentService } from './processEnrollment.ts';
 import { initializeEnrollmentService } from './initializeEnrollment.ts';
 import { suspendEnrollmentService } from './suspendEnrollment.ts';
 import { updateEnrollmentPlanService } from './updateEnrollmentPlan.ts';

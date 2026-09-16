@@ -222,6 +222,10 @@ export const EnrollmentPlanNotSupportedError = createError(
   'EnrollmentPlanNotSupportedError',
   'No enrollment plugin supports this plan configuration',
 );
+export const EnrollmentResumeDateInvalidError = createError(
+  'EnrollmentResumeDateInvalidError',
+  'The resume date must be in the future',
+);
 export const EnrollmentWrongStatusError = createError(
   'EnrollmentWrongStatusError',
   'The current status of the enrollment does not allow this operation',

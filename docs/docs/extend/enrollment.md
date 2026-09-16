@@ -55,109 +55,20 @@ registerEnrollment({
     };
   },
 
-  actions: (params) => {
-    const { enrollment, product } = params;
-    const baseActions = EnrollmentAdapter.actions(params);
-
-    return {
-      ...baseActions,
-
-      isValidForActivation: async () => {
-        // Check if the subscription should grant access
-        const periods = enrollment?.periods || [];
-        const now = Date.now();
-
-        return periods.some(period => {
-          const start = new Date(period.start).getTime();
-          const end = new Date(period.end).getTime();
-          return start <= now && end >= now;
-        });
-      },
-
-      isOverdue: async () => {
-        // Check if payment is overdue
-        return false;
-      },
-
-      nextPeriod: async ({ referenceDate } = {}) => {
-        // Calculate the next billing period
-        // Returns null if no more periods should be created
-        const plan = product?.plan;
-        if (!plan) return null;
-
-        const lastPeriod = enrollment?.periods?.[enrollment.periods.length - 1];
-        const startDate = lastPeriod
-          ? new Date(lastPeriod.end)
-          : (referenceDate || new Date());
-
-        return {
-          start: startDate,
-          end: addDays(startDate, 30), // 30-day period
-          isTrial: false,
-        };
-      },
-
-      configurationForOrder: async ({ period }) => {
-        // Generate order configuration for a billing period
-        // Return null to skip order generation
-
-        if (!enrollment) throw new Error('Enrollment missing');
-
-        const beginningOfPeriod = period.start.getTime() <= Date.now();
-        if (!beginningOfPeriod) return null;
-
-        return {
-          period,
-          orderContext: {
-            // Additional context passed to the order
-          },
-          orderPositionTemplates: [{
-            quantity: enrollment.quantity || 1,
-            productId: enrollment.productId,
-            originalProductId: enrollment.productId,
-            configuration: enrollment.configuration,
-          }],
-        };
-      },
-
-      terminationDate: async ({ referenceDate }) => {
-        // Return the date when termination should take effect
-        // Return a future date to schedule termination (notice period)
-        // Return referenceDate for immediate termination
-        // Return null to reject termination entirely
-        return referenceDate;
-      },
-
-      expiryDate: async () => {
-        // Return a fixed expiry date for the enrollment, or null for no expiry
-        return null;
-      },
-
-      minimumCommitmentEnd: async ({ referenceDate }) => {
-        // Return the end date of the minimum contract term, or null for no commitment
-        // The licensed adapter computes this from product.plan.minimumCommitmentPeriods
-        return null;
-      },
-
-      initialPeriods: async function ({ referenceDate }) {
-        // Return the initial periods to create when the enrollment is set up
-        // Defaults to delegating to nextPeriod()
-        const period = await this.nextPeriod({ referenceDate });
-        return period ? [period] : [];
-      },
-
-      transformPlanToNewPlan: async ({ plan, referenceDate }) => {
-        // Handle plan change requests on active enrollments
-        // Return null to reject the plan change
-        // Return { plan, effectiveDate } to accept it
-        return {
-          plan,
-          effectiveDate: referenceDate,
-        };
-      },
-    };
+  // Notice period: terminate at the end of the current period instead of immediately
+  terminationDate: async (context, { referenceDate }) => {
+    const current = context.enrollment.periods.find(
+      (p) => new Date(p.start) <= referenceDate && new Date(p.end) >= referenceDate,
+    );
+    return current ? new Date(current.end) : referenceDate;
   },
-};
+
+  // Allow plan changes, effective immediately
+  transformPlanToNewPlan: async (context, { plan, referenceDate }) => ({
+    plan,
+    effectiveDate: referenceDate,
+  }),
+});
 ```
 
 ## Callback reference
@@ -170,30 +81,13 @@ registerEnrollment({
 | `nextPeriod(context, { referenceDate? })` | the next billing window; `null` ends the subscription |
 | `isValidForActivation(context)` | should the subscription currently grant access? |
 | `isOverdue(context)` | is payment overdue? (drives dunning/suspension) |
+| `terminationDate(context, { referenceDate })` | when a termination request takes effect: `referenceDate` for immediately, a later date to schedule it (notice period), `null` to reject it |
+| `expiryDate(context)` | a fixed expiry date stored on the enrollment at initialization, or `null` |
+| `minimumCommitmentEnd(context, { referenceDate })` | end of the minimum contract term counted from `referenceDate` (the first paid period start), or `null`; stored as `minimumCommitmentEnd` |
+| `initialPeriods(context, { referenceDate })` | periods created at initialization; defaults to a single `nextPeriod` |
+| `transformPlanToNewPlan(context, { plan, referenceDate })` | accept a plan change with `{ plan, effectiveDate }` or reject it with `null`; unbilled periods starting at or after `effectiveDate` are replaced by periods of the new plan |
 
 Plans expose a `usageCalculationType` of `LICENSED` (period-based access) or `METERED` (usage-based billing).
-
-- **transformOrderItemToEnrollmentPlan(orderPosition, unchainedAPI)**: Transforms an order item into enrollment data when a subscription is first created from a purchase.
-
-### Action Methods
-
-- **isValidForActivation()**: Returns `true` if the subscription should currently grant access. Typically checks if the current date falls within an active period.
-
-- **isOverdue()**: Returns `true` if payment is overdue. Used to trigger dunning workflows or pause the enrollment.
-
-- **nextPeriod(\{ referenceDate? \})**: Calculates the next billing period. Accepts an optional `referenceDate` (defaults to now). Returns `null` to indicate no more periods should be created (subscription ended).
-
-- **configurationForOrder(\{ period \})**: Generates the order configuration for a billing period. Return `null` to skip order generation for this period.
-
-- **terminationDate(\{ referenceDate \})**: Returns the date when termination should take effect. Return `referenceDate` for immediate termination, a future date to schedule termination with a notice period, or `null` to reject the termination request entirely.
-
-- **expiryDate()**: Returns a fixed expiry date for the enrollment, or `null` for no automatic expiry. When set, the enrollment will be terminated automatically when processed after this date.
-
-- **minimumCommitmentEnd(\{ referenceDate \})**: Returns the date when the minimum contract term ends, or `null` for no commitment. When set, the `terminationDate` should enforce that termination cannot happen before this date. Called during enrollment initialization; the result is stored as `minimumCommitmentEnd` on the enrollment.
-
-- **initialPeriods(\{ referenceDate \})**: Returns an array of periods to create when the enrollment is first initialized. By default delegates to `nextPeriod()`. Override to create multiple initial periods (e.g., a trial period followed by a billing period).
-
-- **transformPlanToNewPlan(\{ plan, referenceDate \})**: Handles plan change requests on active enrollments. Return `null` to reject the change, or `{ plan, effectiveDate }` to accept it. Future periods without linked orders are removed and new periods are generated starting from `effectiveDate`.
 
 ## Usage Calculation Types
 
@@ -204,11 +98,15 @@ Product plans can have different `usageCalculationType` values:
 | `LICENSED` | Period-based access (e.g., monthly subscription) |
 | `METERED` | Usage-based billing (e.g., API calls, storage) |
 
+## Building an adapter directly
+
+For full control over every `IEnrollmentAdapter` method, spread `EnrollmentAdapter` and register the adapter as a plugin via `pluginRegistry.register()`.
+
 ## Example: Metered Subscription
 
 ```typescript
 import {
-  EnrollmentDirector,
+  pluginRegistry,
   EnrollmentAdapter,
   type IEnrollmentAdapter
 } from '@unchainedshop/core';
@@ -269,14 +167,19 @@ const MeteredEnrollmentAdapter: IEnrollmentAdapter = {
   },
 };
 
-EnrollmentDirector.registerAdapter(MeteredEnrollmentAdapter);
+pluginRegistry.register({
+  key: MeteredEnrollmentAdapter.key,
+  label: MeteredEnrollmentAdapter.label,
+  version: MeteredEnrollmentAdapter.version,
+  adapters: [MeteredEnrollmentAdapter],
+});
 ```
 
 ## Example: Trial with Grace Period
 
 ```typescript
 import {
-  EnrollmentDirector,
+  pluginRegistry,
   EnrollmentAdapter,
   type IEnrollmentAdapter
 } from '@unchainedshop/core';
@@ -339,15 +242,12 @@ const TrialEnrollmentAdapter: IEnrollmentAdapter = {
   },
 };
 
-EnrollmentDirector.registerAdapter(TrialEnrollmentAdapter);
-```
-
-## Registering an Enrollment Adapter
-
-```typescript
-import { EnrollmentDirector } from '@unchainedshop/core';
-
-EnrollmentDirector.registerAdapter(CustomEnrollmentAdapter);
+pluginRegistry.register({
+  key: TrialEnrollmentAdapter.key,
+  label: TrialEnrollmentAdapter.label,
+  version: TrialEnrollmentAdapter.version,
+  adapters: [TrialEnrollmentAdapter],
+});
 ```
 
 ## Related

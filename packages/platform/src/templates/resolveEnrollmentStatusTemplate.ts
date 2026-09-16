@@ -41,15 +41,12 @@ export const resolveEnrollmentStatusTemplate: TemplateResolver = async (
   const productTitle = productTexts?.title || enrollment.productId;
 
   const subjectAction = reasonSubjects[reason] || 'Subscription Update';
-  const subject = `${EMAIL_WEBSITE_NAME}: ${subjectAction} — ${enrollment.enrollmentNumber}`;
+  const subject = `${EMAIL_WEBSITE_NAME}: ${subjectAction} — ${enrollment.enrollmentNumber || enrollment._id}`;
   const url = `${EMAIL_WEBSITE_URL}/enrollment?_id=${enrollment._id}`;
 
   const statusMessage = statusDescriptions[enrollment.status] || '';
 
-  const currentPeriod = enrollment.periods?.find((p) => {
-    const now = Date.now();
-    return new Date(p.start).getTime() <= now && new Date(p.end).getTime() >= now;
-  });
+  const currentPeriod = modules.enrollments.currentPeriod(enrollment, {});
 
   const sections: string[] = [];
 

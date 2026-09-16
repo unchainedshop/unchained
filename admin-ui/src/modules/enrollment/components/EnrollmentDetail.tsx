@@ -272,7 +272,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
       content: 'updated',
       visible: true,
       Component: enrollment?.status === IEnrollmentStatus.Active &&
-        hasRole(IRoleAction.UpdateEnrollment) && (
+        hasRole(IRoleAction.ManageEnrollments) && (
           <Button
             text={formatMessage({
               id: 'suspend',
@@ -288,7 +288,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
       content: 'updated',
       visible: true,
       Component: enrollment?.status === IEnrollmentStatus.Suspended &&
-        hasRole(IRoleAction.UpdateEnrollment) && (
+        hasRole(IRoleAction.ManageEnrollments) && (
           <Button
             text={formatMessage({
               id: 'resume',
@@ -304,7 +304,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
       content: 'updated',
       visible: true,
       Component: enrollment?.status === IEnrollmentStatus.Paused &&
-        hasRole(IRoleAction.UpdateEnrollment) && (
+        hasRole(IRoleAction.ManageEnrollments) && (
           <Button
             text={formatMessage({
               id: 'activate',
