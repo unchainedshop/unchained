@@ -17,7 +17,7 @@ const ticketingResolvers = {
   Mutation: {
     scanTicket: checkResolver('scanTicket')(scanTicket),
     cancelTicket: checkResolver('cancelTicket')(cancelTicket),
-    cancelEvent: checkResolver('manageProducts')(cancelEvent),
+    cancelEvent: checkResolver('cancelTicket')(cancelEvent),
   },
   TokenizedProduct: {
     isCanceled(product: any) {

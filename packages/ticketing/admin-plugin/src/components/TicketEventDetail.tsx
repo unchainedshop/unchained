@@ -8,6 +8,7 @@ import EventTokenList from './EventTokenList';
 import useCancelTicket from '../hooks/useCancelTicket';
 import useCancelEvent from '../hooks/useCancelEvent';
 import useInvalidateTicket from '../hooks/useInvalidateTicket';
+import useViewerActions from '../hooks/useViewerActions';
 import { useFormatDateTime, generateUniqueId, defaultNextImageLoader } from '../utils/misc';
 
 const TicketEventDetail = ({ product }) => {
@@ -17,6 +18,9 @@ const TicketEventDetail = ({ product }) => {
   const { cancelTicket } = useCancelTicket();
   const { cancelEvent } = useCancelEvent();
   const { invalidateTicket } = useInvalidateTicket();
+  const { hasAction } = useViewerActions();
+  const canCancel = hasAction('cancelTicket');
+  const canRedeem = hasAction('scanTicket');
 
   const slot = product?.contractConfiguration?.ercMetadataProperties?.slot;
   const supply = product?.contractConfiguration?.supply || 0;
@@ -236,7 +240,7 @@ const TicketEventDetail = ({ product }) => {
               </div>
             </div>
 
-            {product.status === 'ACTIVE' && !product.isCanceled && (
+            {product.status === 'ACTIVE' && !product.isCanceled && canCancel && (
               <div className="mt-6">
                 <button
                   type="button"
@@ -266,8 +270,8 @@ const TicketEventDetail = ({ product }) => {
         </h3>
         <EventTokenList
           tokens={product?.tokens}
-          onCancelTicket={onCancelTicket}
-          onInvalidateTicket={onInvalidateTicket}
+          onCancelTicket={canCancel ? onCancelTicket : undefined}
+          onInvalidateTicket={canRedeem ? onInvalidateTicket : undefined}
         />
       </div>
     </div>

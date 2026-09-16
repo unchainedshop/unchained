@@ -2,14 +2,14 @@ import { createLogger } from '@unchainedshop/logger';
 import { buildDbIndexes, type ModuleInput } from '@unchainedshop/mongodb';
 import { MediaObjectsCollection } from '@unchainedshop/core-files';
 import { TokenSurrogateCollection } from '@unchainedshop/core-warehousing';
-import type { UnchainedCore } from '@unchainedshop/core';
+import { OrderPricingRowCategory, OrderPricingSheet, type UnchainedCore } from '@unchainedshop/core';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import type { File } from '@unchainedshop/core-files';
 
 import { RendererTypes, getRenderer } from './template-registry.ts';
 import { buildPassBinary, pushToApplePushNotificationService } from './mobile-tickets/apple-wallet.ts';
 import { type DiscountCodeHandlers, createDefaultDiscountCodeHandlers } from './discount-codes.ts';
-import { OrdersCollection, OrderStatus } from '@unchainedshop/core-orders';
+import { OrderDiscountsCollection, OrdersCollection, OrderStatus } from '@unchainedshop/core-orders';
 
 export const APPLE_WALLET_PASSES_FILE_DIRECTORY = 'apple-wallet-passes';
 
@@ -24,6 +24,7 @@ const configurePasses = async ({ db, options }: ModuleInput<TicketingOptions>) =
   const MediaObjects = await MediaObjectsCollection(db);
   const TokenSurrogates = await TokenSurrogateCollection(db);
   const Orders = await OrdersCollection(db);
+  const OrderDiscounts = await OrderDiscountsCollection(db);
 
   await buildDbIndexes(MediaObjects as any, [
     { index: { path: 1, 'meta.passTypeIdentifier': 1, 'meta.serialNumber': 1 } },
@@ -232,66 +233,37 @@ const configurePasses = async ({ db, options }: ModuleInput<TicketingOptions>) =
     discountCode: string,
     excludeOrderId?: string,
   ): Promise<number> => {
-    const orders = await Orders.aggregate([
-      {
-        $match: {
-          ...(excludeOrderId ? { _id: { $ne: excludeOrderId } } : {}),
-          status: {
-            $in: [null, OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.FULFILLED],
-          },
-        },
-      },
-      {
-        $lookup: {
-          from: 'order_discounts',
-          localField: 'calculation.discountId',
-          foreignField: '_id',
-          as: 'discounts',
-        },
-      },
-      {
-        $unwind: '$discounts',
-      },
-      {
-        $match: {
-          'discounts.code': discountCode,
-          $or: [{ status: { $ne: null } }, { 'discounts.reservation.checkoutAmount': { $gt: 0 } }],
-        },
-      },
-      {
-        $project: {
-          calculations: {
-            $cond: [
-              { $eq: ['$status', null] },
-              [{ amount: { $multiply: ['$discounts.reservation.checkoutAmount', -1] } }],
-              {
-                $filter: {
-                  input: '$calculation',
-                  as: 'calc',
-                  cond: {
-                    $and: [
-                      { $eq: ['$$calc.category', 'DISCOUNTS'] },
-                      { $eq: ['$$calc.discountId', '$discounts._id'] },
-                    ],
-                  },
-                },
-              },
-            ],
-          },
-        },
-      },
-    ]).toArray();
-
-    return Math.round(
-      Math.abs(
-        orders.reduce((prev, { calculations }) => {
-          return (
-            prev +
-            (calculations as any[]).reduce((p: number, { amount }: { amount: number }) => p + amount, 0)
-          );
-        }, 0),
-      ),
+    const discounts = await OrderDiscounts.find({ code: discountCode }).toArray();
+    const orderIds = [...new Set(discounts.map(({ orderId }) => orderId))].filter(
+      (orderId): orderId is string => Boolean(orderId) && orderId !== excludeOrderId,
     );
+    if (!orderIds.length) return 0;
+    const orders = await Orders.find(
+      {
+        _id: { $in: orderIds },
+        status: { $in: [null, OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.FULFILLED] },
+      },
+      { projection: { status: 1, currencyCode: 1, calculation: 1 } },
+    ).toArray();
+    const usage = orders.flatMap((order) =>
+      discounts
+        .filter(({ orderId }) => orderId === order._id)
+        .map((discount) =>
+          // Carts count the credit reserved at checkout, placed orders the discount rows they applied.
+          order.status === null
+            ? discount.reservation?.checkoutAmount || 0
+            : Math.abs(
+                OrderPricingSheet({
+                  calculation: order.calculation,
+                  currencyCode: order.currencyCode,
+                }).sum({
+                  category: OrderPricingRowCategory.Discounts,
+                  discountId: discount._id,
+                }),
+              ),
+        ),
+    );
+    return Math.round(usage.reduce((total, amount) => total + amount, 0));
   };
 
   return {

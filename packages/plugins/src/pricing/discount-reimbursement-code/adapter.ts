@@ -1,7 +1,9 @@
 import {
-  OrderDiscountAdapter,
-  type OrderDiscountConfiguration,
   type IDiscountAdapter,
+  type OrderDiscountConfiguration,
+  OrderDiscountAdapter,
+  OrderPricingRowCategory,
+  OrderPricingSheet,
 } from '@unchainedshop/core';
 
 export interface PassesModule {
@@ -9,6 +11,14 @@ export interface PassesModule {
   /** Amount already spent, in integer minor currency units. */
   discountCodeUsageBalance: (code: string, excludeOrderId?: string) => Promise<number>;
 }
+
+const RESERVATION_LOCK_TTL = 60000;
+
+const resolveVoucher = ({ code, modules }: { code?: string; modules: unknown }) => {
+  const passes = (modules as { passes?: Partial<PassesModule> }).passes;
+  if (!code || !passes?.verifyDiscountCode || !passes.discountCodeUsageBalance) return null;
+  return { code, passes: passes as PassesModule };
+};
 
 export const ReimbursementCode: IDiscountAdapter<OrderDiscountConfiguration> = {
   ...OrderDiscountAdapter,
@@ -20,65 +30,70 @@ export const ReimbursementCode: IDiscountAdapter<OrderDiscountConfiguration> = {
   isManualRemovalAllowed: async () => true,
 
   actions: async ({ context }) => {
-    const passes = (context.modules as unknown as { passes?: Partial<PassesModule> }).passes;
-    const amount =
-      context.code && passes?.verifyDiscountCode && passes?.discountCodeUsageBalance
-        ? await passes.verifyDiscountCode(context.code, context.order.currencyCode)
-        : null;
+    const { order, orderDiscount, modules } = context;
+    const voucher = resolveVoucher(context);
+    const amount = voucher
+      ? await voucher.passes.verifyDiscountCode(voucher.code, order.currencyCode)
+      : null;
     const used =
-      amount !== null && passes?.discountCodeUsageBalance
-        ? await passes.discountCodeUsageBalance(context.code!, context.order._id)
+      voucher && amount !== null
+        ? await voucher.passes.discountCodeUsageBalance(voucher.code, order._id)
         : 0;
     const remaining = amount === null ? 0 : Math.max(0, amount - used);
 
     return {
       ...(await OrderDiscountAdapter.actions({ context })),
-      reserve: async () => ({ remainingDiscount: remaining }),
+
       prepareForCheckout: async () => {
-        const { order, orderDiscount, modules, code } = context;
-        if (!orderDiscount || !code || amount === null || !passes?.discountCodeUsageBalance) {
+        if (!voucher || !orderDiscount || amount === null) {
           throw new Error('INVALID_REIMBURSEMENT_CODE');
         }
         const checkoutAmount = Math.abs(
-          (order.calculation || []).reduce(
-            (total, row) =>
-              row.category === 'DISCOUNTS' && row.discountId === orderDiscount._id
-                ? total + row.amount
-                : total,
-            0,
-          ),
+          OrderPricingSheet({ calculation: order.calculation, currencyCode: order.currencyCode }).sum({
+            category: OrderPricingRowCategory.Discounts,
+            discountId: orderDiscount._id,
+          }),
         );
-        const release = async () => {
-          await modules.orders.discounts.update(orderDiscount._id, {
-            reservation: { ...orderDiscount.reservation, checkoutAmount: 0 },
+        const setCheckoutAmount = (value: number) =>
+          modules.orders.discounts.update(orderDiscount._id, {
+            reservation: { ...orderDiscount.reservation, checkoutAmount: value },
           });
-        };
-        // Serialize the read-and-reserve step across carts and processes. Persist
-        // the reservation before releasing the lock, so slow payment providers
-        // cannot outlive a lock lease and allow the credit to be spent twice.
-        const lock = await modules.orders.acquireLock(code, 'reimbursement', 60000);
+        // Serialize the read-and-reserve step across carts and processes. The reservation is
+        // persisted before the lock is released, so a slow payment provider cannot outlive the
+        // lock lease and let the credit be spent twice.
+        const lock = await modules.orders.acquireLock(
+          voucher.code,
+          'reimbursement',
+          RESERVATION_LOCK_TTL,
+        );
         try {
-          const spent = await passes.discountCodeUsageBalance(code, order._id);
-          if (checkoutAmount > Math.max(0, amount - spent))
+          const spent = await voucher.passes.discountCodeUsageBalance(voucher.code, order._id);
+          if (checkoutAmount > Math.max(0, amount - spent)) {
             throw new Error('DISCOUNT_USAGE_LIMIT_EXCEEDED');
-          const reserved = await modules.orders.discounts.update(orderDiscount._id, {
-            reservation: { ...orderDiscount.reservation, checkoutAmount },
-          });
-          if (!reserved) throw new Error('INVALID_REIMBURSEMENT_CODE');
+          }
+          if (!(await setCheckoutAmount(checkoutAmount))) {
+            throw new Error('INVALID_REIMBURSEMENT_CODE');
+          }
         } finally {
           await lock.release();
         }
-        return { release };
+        return {
+          release: async () => {
+            await setCheckoutAmount(0);
+          },
+        };
       },
+
       isValidForSystemTriggering: async () => false,
+
       isValidForCodeTriggering: async () => {
         if (amount === null) return false;
-        if (!remaining) {
-          if (context.orderDiscount?.reservation) return false;
-          throw new Error('DISCOUNT_USAGE_LIMIT_EXCEEDED');
-        }
-        return true;
+        if (remaining) return true;
+        // Exhausted vouchers are dropped from carts that hold them and rejected when newly added.
+        if (orderDiscount?.reservation) return false;
+        throw new Error('DISCOUNT_USAGE_LIMIT_EXCEEDED');
       },
+
       discountForPricingAdapterKey({ pricingAdapterKey }) {
         if (pricingAdapterKey !== 'shop.unchained.pricing.order-discount' || !remaining) return null;
         return { fixedRate: remaining };
@@ -86,5 +101,3 @@ export const ReimbursementCode: IDiscountAdapter<OrderDiscountConfiguration> = {
     };
   },
 };
-
-export default ReimbursementCode;

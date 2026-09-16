@@ -14,11 +14,15 @@ test('scanner lists and counts filter drafts, search and validity before paginat
     products.filter(
       (p) => (includeDrafts || p.active) && (!queryString || p.title.includes(queryString)),
     );
+  const tokenSelectors: any[] = [];
   const context = {
     userId: 'scanner',
-    roles: { userHasPermission: async () => false },
+    user: { _id: 'scanner' },
+    roles: { userHasPermission: async (_context: any, action: string) => action === 'scanTicket' },
     services: {
-      warehousing: { isTokenInvalidateable: async ({ token }: any) => token.productId !== 'expired' },
+      warehousing: {
+        isTokenInvalidateable: async ({ token }: any) => token.productId !== 'expired',
+      },
     },
     modules: {
       products: {
@@ -29,7 +33,12 @@ test('scanner lists and counts filter drafts, search and validity before paginat
           ),
         count: async (query: any) => select(query).length,
       },
-      warehousing: { findTokens: async ({ productId }: any) => [{ productId }] },
+      warehousing: {
+        findTokens: async (selector: any) => {
+          tokenSelectors.push(selector);
+          return [{ productId: selector.productId }];
+        },
+      },
     },
   } as any;
   for (const [offset, expected] of [
@@ -46,6 +55,12 @@ test('scanner lists and counts filter drafts, search and validity before paginat
       result.map((p: any) => p._id),
       expected,
     );
+  }
+  // Redeemed and cancelled tickets are excluded before any adapter is consulted.
+  assert.ok(tokenSelectors.length);
+  for (const selector of tokenSelectors) {
+    assert.equal(selector.invalidatedDate, null);
+    assert.equal(selector['meta.cancelled'], null);
   }
   assert.equal(await ticketEventsCount(undefined as never, { onlyInvalidateable: true }, context), 2);
   assert.equal(await ticketEventsCount(undefined as never, {}, context), 3);
