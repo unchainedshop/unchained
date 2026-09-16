@@ -8,6 +8,7 @@ import ticketingModules, { type TicketingModule, type TicketingOptions } from '.
 import setupMagicKey from './magic-key.ts';
 import ticketingServices, { type TicketingServices } from './services.ts';
 import type { DiscountCodeHandlers } from './discount-codes.ts';
+import { registerTicketingTemplates, TicketingMessageTypes } from './templates/index.ts';
 import {
   ticketingTypeDefs,
   ticketingResolvers,
@@ -35,6 +36,8 @@ export {
   ticketingResolvers,
   ticketingActions,
   configureTicketingRoles,
+  registerTicketingTemplates,
+  TicketingMessageTypes,
 };
 
 export function setupPDFTickets({ renderOrderPDF }: { renderOrderPDF: any }) {
@@ -71,6 +74,8 @@ export default function setupTicketing(
     createAppleWalletPass,
     createGoogleWalletPass,
   });
+
+  registerTicketingTemplates();
 
   if (!process.env.UNCHAINED_SECRET)
     throw new Error(

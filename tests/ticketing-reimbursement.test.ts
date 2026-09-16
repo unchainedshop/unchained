@@ -4,7 +4,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongoClient } from 'mongodb';
 import { configureOrdersModule, OrderStatus } from '@unchainedshop/core-orders';
 import { ticketingModules } from '@unchainedshop/ticketing';
-import { ReimbursementCode } from '@unchainedshop/plugins/pricing/discount-reimbursement-code';
+import { ReimbursementCode } from '@unchainedshop/ticketing/pricing/discount-reimbursement-code';
 
 // The shared test platform does not load the ticketing module, so the reimbursement
 // adapter runs against its own database here.

@@ -18,6 +18,10 @@
       "import": "./lib/*.js",
       "types": "./lib/*.d.ts"
     },
+    "./pricing/*": {
+      "import": "./lib/pricing/*/index.js",
+      "types": "./lib/pricing/*/index.d.ts"
+    },
     "./admin-plugin": {
       "import": "./lib/admin-plugin.js",
       "types": "./lib/admin-plugin.d.ts"
