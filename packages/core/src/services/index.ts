@@ -47,7 +47,6 @@ import { updateFilterService } from './updateFilter.ts';
 import { createFilterOptionService } from './createFilterOption.ts';
 import { removeFilterOptionService } from './removeFilterOption.ts';
 import { removeCartDiscountService } from './removeCartDiscount.ts';
-import { addMultipleCartProductsService } from './addMultipleCartProducts.ts';
 import { ercMetadataService } from './ercMetadata.ts';
 import { simulateProductPricingService } from './simulateProductPricing.ts';
 import { simulateProductDispatchingService } from './simulateProductDispatching.ts';
@@ -68,6 +67,16 @@ import { bulkRemoveFiltersService } from './bulkRemoveFilters.ts';
 import { bulkDeleteUsersService } from './bulkDeleteUsers.ts';
 import { bulkSetFilterActiveService } from './bulkSetFilterActive.ts';
 import { bulkAssignProductsToAssortmentService } from './bulkAssignProductsToAssortment.ts';
+import { provisionGuestService } from './provisionGuest.ts';
+import {
+  addCartProductService,
+  addMultipleCartProductsService,
+  replaceCartProductsService,
+  updateCartProductService,
+} from './cartProducts.ts';
+import { selectCartDeliveryProviderService } from './selectCartDeliveryProvider.ts';
+import { selectCartPaymentProviderService } from './selectCartPaymentProvider.ts';
+import { resolveMediaFilesService } from './resolveMediaFiles.ts';
 
 // Auto-Inject Unchained API as last parameter
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
@@ -105,6 +114,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
       removeFiles: removeFilesService as Bound<typeof removeFilesService>,
       createDownloadStream: createDownloadStreamService as Bound<typeof createDownloadStreamService>,
       createFileDownloadURL: createFileDownloadURLService as Bound<typeof createFileDownloadURLService>,
+      resolveMediaFiles: resolveMediaFilesService as Bound<typeof resolveMediaFilesService>,
     },
     orders: {
       registerPaymentCredentials: registerPaymentCredentialsService as Bound<
@@ -140,8 +150,17 @@ export default function initServices(modules: Modules, customServices: CustomSer
         typeof resolveOrderItemDispatchesService
       >,
       removeCartDiscount: removeCartDiscountService as Bound<typeof removeCartDiscountService>,
+      addCartProduct: addCartProductService as Bound<typeof addCartProductService>,
       addMultipleCartProducts: addMultipleCartProductsService as Bound<
         typeof addMultipleCartProductsService
+      >,
+      replaceCartProducts: replaceCartProductsService as Bound<typeof replaceCartProductsService>,
+      updateCartProduct: updateCartProductService as Bound<typeof updateCartProductService>,
+      selectDeliveryProvider: selectCartDeliveryProviderService as Bound<
+        typeof selectCartDeliveryProviderService
+      >,
+      selectPaymentProvider: selectCartPaymentProviderService as Bound<
+        typeof selectCartPaymentProviderService
       >,
     },
     products: {
@@ -172,6 +191,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
         typeof updateUserAvatarAfterUploadService
       >,
       deleteUser: deleteUserService as Bound<typeof deleteUserService>,
+      provisionGuest: provisionGuestService as Bound<typeof provisionGuestService>,
       bulkDeleteUsers: bulkDeleteUsersService as Bound<typeof bulkDeleteUsersService>,
     },
     enrollments: {

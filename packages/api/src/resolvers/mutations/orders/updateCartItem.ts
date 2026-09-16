@@ -1,14 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import {
-  OrderQuantityTooLowError,
-  OrderItemNotFoundError,
-  OrderWrongStatusError,
-  ProductNotFoundError,
-  InvalidIdError,
-  OrderNotFoundError,
-} from '../../../errors.ts';
-import { ordersSettings } from '@unchainedshop/core-orders';
+import { InvalidIdError } from '../../../errors.ts';
+import { rethrowCartProductServiceError } from './mapOrderServiceError.ts';
 
 export default async function updateCartItem(
   root: never,
@@ -19,47 +12,21 @@ export default async function updateCartItem(
   },
   context: Context,
 ) {
-  const { modules, services, userId } = context;
-  const { itemId, configuration, quantity = 1 } = params;
+  const { services, userId, locale, countryCode } = context;
+  const { itemId, configuration, quantity } = params;
 
   log(`mutation updateCartItem ${itemId} ${quantity} ${JSON.stringify(configuration)}`, { userId });
 
   if (!itemId) throw new InvalidIdError({ itemId });
 
-  const item = await modules.orders.positions.findOrderPosition({ itemId });
-  if (!item) throw new OrderItemNotFoundError({ itemId });
-
-  const order = await modules.orders.findOrder({ orderId: item.orderId });
-
-  if (!order) throw new OrderNotFoundError({ orderId: item.orderId });
-
-  if (!modules.orders.isCart(order)) {
-    throw new OrderWrongStatusError({ status: order.status });
-  }
-
-  const product = await modules.products.findProduct({
-    productId: item.productId,
-  });
-  if (!product) throw new ProductNotFoundError({ productId: item.productId });
-
-  if (quantity !== null && quantity < 1) throw new OrderQuantityTooLowError({ quantity });
-
-  await ordersSettings.validateOrderPosition(
-    {
-      order,
-      product,
+  try {
+    return await services.orders.updateCartProduct({
+      itemId,
+      quantity,
       configuration,
-      quantityDiff: quantity - item.quantity,
-    },
-    context,
-  );
-
-  await modules.orders.positions.updateProductItem({
-    orderPositionId: item._id,
-    quantity: quantity || null,
-    configuration: configuration || null,
-  });
-
-  await services.orders.updateCalculation(order._id);
-  return modules.orders.positions.findOrderPosition({ itemId: item._id });
+      context: { localeContext: locale, userId, countryCode },
+    });
+  } catch (error) {
+    rethrowCartProductServiceError(error);
+  }
 }

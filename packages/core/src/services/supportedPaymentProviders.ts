@@ -9,8 +9,12 @@ export async function supportedPaymentProvidersService(this: Modules, params: Pa
   const providers = (
     await Promise.all(
       allProviders.map(async (provider: PaymentProvider) => {
-        const adapter = await PaymentDirector.actions(provider, params, { modules: this });
-        return adapter.isActive() ? [provider] : [];
+        try {
+          const adapter = await PaymentDirector.actions(provider, params, { modules: this });
+          return adapter.isActive() ? [provider] : [];
+        } catch {
+          return [];
+        }
       }),
     )
   ).flat();

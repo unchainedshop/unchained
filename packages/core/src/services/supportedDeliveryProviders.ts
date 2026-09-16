@@ -8,8 +8,12 @@ export async function supportedDeliveryProvidersService(this: Modules, params: D
   const providers = (
     await Promise.all(
       allProviders.map(async (provider: DeliveryProvider) => {
-        const adapter = await DeliveryDirector.actions(provider, params, { modules: this });
-        return adapter.isActive() ? [provider] : [];
+        try {
+          const adapter = await DeliveryDirector.actions(provider, params, { modules: this });
+          return adapter.isActive() ? [provider] : [];
+        } catch {
+          return [];
+        }
       }),
     )
   ).flat();
