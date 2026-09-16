@@ -8,6 +8,8 @@ import {
   type IWorker,
   type UnchainedCore,
 } from '@unchainedshop/core';
+import { runMigrations } from '../migrations/runMigrations.ts';
+import type { MigrationRepository } from '@unchainedshop/mongodb';
 import { createLogger } from '@unchainedshop/logger';
 const logger = createLogger('unchained:worker');
 
@@ -37,11 +39,23 @@ export const queueWorkers: any[] = [];
 
 export async function setupWorkqueue({
   unchainedAPI,
+  migrationRepository,
   ...workQueueOptions
 }: {
   unchainedAPI: UnchainedCore;
+  migrationRepository: MigrationRepository<UnchainedCore>;
 } & SetupWorkqueueOptions) {
   if (workQueueOptions.disableWorker || UNCHAINED_DISABLE_WORKER) return;
+
+  // Only worker-enabled instances migrate. A failure stops the migration sequence,
+  // but must not prevent queue managers or the platform from starting.
+  try {
+    await runMigrations({ migrationRepository, unchainedAPI });
+  } catch (error) {
+    logger.error('Migration failed; continuing startup', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
 
   // Start queue managers
   (workQueueOptions?.enabledQueueManagers || defaultQueueManagers).forEach((f) => {
