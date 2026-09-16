@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { OrderDiscountDirector } from '../directors/OrderDiscountDirector.ts';
-import { prepareOrderDiscountsForCheckout } from './prepareOrderDiscountsForCheckout.ts';
+import { reserveOrderDiscountsForCheckout } from './reserveOrderDiscountsForCheckout.ts';
 
 test('checkout reserves credit through adapters, releases on failure and never throws on release', async () => {
   const released: string[] = [];
@@ -9,7 +9,7 @@ test('checkout reserves credit through adapters, releases on failure and never t
     plain: { actions: async () => ({}) },
     credit: {
       actions: async ({ context }: any) => ({
-        prepareForCheckout: async () => ({
+        reserveForCheckout: async () => ({
           release: async () => {
             released.push(context.orderDiscount._id);
           },
@@ -18,14 +18,14 @@ test('checkout reserves credit through adapters, releases on failure and never t
     },
     exhausted: {
       actions: async () => ({
-        prepareForCheckout: async () => {
+        reserveForCheckout: async () => {
           throw new Error('DISCOUNT_USAGE_LIMIT_EXCEEDED');
         },
       }),
     },
     broken: {
       actions: async () => ({
-        prepareForCheckout: async () => ({
+        reserveForCheckout: async () => ({
           release: async () => {
             throw new Error('database unavailable');
           },
@@ -40,7 +40,7 @@ test('checkout reserves credit through adapters, releases on failure and never t
       ({ orders: { discounts: { findOrderDiscounts: async () => discounts } } }) as any;
     const order = { _id: 'order' } as any;
 
-    const prepared = await prepareOrderDiscountsForCheckout.call(
+    const prepared = await reserveOrderDiscountsForCheckout.call(
       modules([
         { _id: 'a', discountKey: 'plain' },
         { _id: 'b', discountKey: 'credit' },
@@ -54,7 +54,7 @@ test('checkout reserves credit through adapters, releases on failure and never t
 
     released.length = 0;
     await assert.rejects(
-      prepareOrderDiscountsForCheckout.call(
+      reserveOrderDiscountsForCheckout.call(
         modules([
           { _id: 'b', discountKey: 'credit' },
           { _id: 'e', discountKey: 'exhausted' },

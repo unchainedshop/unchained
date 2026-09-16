@@ -46,6 +46,6 @@ test('unknown codes and shops without the ticketing module never validate', asyn
       }),
       null,
     );
-    await assert.rejects(actions.prepareForCheckout!(), /INVALID_REIMBURSEMENT_CODE/);
+    await assert.rejects(actions.reserveForCheckout!(), /INVALID_REIMBURSEMENT_CODE/);
   }
 });

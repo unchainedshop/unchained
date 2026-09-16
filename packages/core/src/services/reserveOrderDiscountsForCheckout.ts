@@ -6,11 +6,12 @@ import type { Modules } from '../modules.ts';
 const logger = createLogger('unchained:core:checkoutOrder');
 
 /**
- * Lets discount adapters reserve scarce credit before payment starts. The returned release
- * never throws: reservations only guard the window until the order status is persisted, and
- * a failed release must not turn a completed checkout into an error.
+ * Runs every order discount's reserveForCheckout() hook before payment starts, collecting their
+ * releases into one. The returned release never throws: reservations only guard the window until
+ * the order status is persisted, and a failed release must not turn a completed checkout into an
+ * error.
  */
-export async function prepareOrderDiscountsForCheckout(this: Modules, order: Order) {
+export async function reserveOrderDiscountsForCheckout(this: Modules, order: Order) {
   const reservations: { release: () => Promise<void> }[] = [];
   const release = async () => {
     const results = await Promise.allSettled(reservations.map((reservation) => reservation.release()));
@@ -30,7 +31,7 @@ export async function prepareOrderDiscountsForCheckout(this: Modules, order: Ord
       const adapter = await Adapter.actions({
         context: { order, orderDiscount, code: orderDiscount.code, modules: this },
       });
-      if (adapter.prepareForCheckout) reservations.push(await adapter.prepareForCheckout());
+      if (adapter.reserveForCheckout) reservations.push(await adapter.reserveForCheckout());
     }
     return { release };
   } catch (error) {

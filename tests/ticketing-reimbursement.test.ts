@@ -47,7 +47,7 @@ test('concurrent checkouts reserve voucher credit, and settled orders retain exa
           modules,
         },
       });
-      return actions.prepareForCheckout!();
+      return actions.reserveForCheckout!();
     };
 
     assert.equal(await passes.discountCodeUsageBalance('voucher'), 0);
