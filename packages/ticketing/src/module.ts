@@ -228,12 +228,16 @@ const configurePasses = async ({ db, options }: ModuleInput<TicketingOptions>) =
     }
     return TokenSurrogates.countDocuments(selector);
   };
-  const discountCodeUsageBalance = async (discountCode: string): Promise<number> => {
+  const discountCodeUsageBalance = async (
+    discountCode: string,
+    excludeOrderId?: string,
+  ): Promise<number> => {
     const orders = await Orders.aggregate([
       {
         $match: {
+          ...(excludeOrderId ? { _id: { $ne: excludeOrderId } } : {}),
           status: {
-            $in: [OrderStatus.CONFIRMED, OrderStatus.FULFILLED],
+            $in: [null, OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.FULFILLED],
           },
         },
       },
@@ -249,21 +253,30 @@ const configurePasses = async ({ db, options }: ModuleInput<TicketingOptions>) =
         $unwind: '$discounts',
       },
       {
-        $match: { 'discounts.code': discountCode },
+        $match: {
+          'discounts.code': discountCode,
+          $or: [{ status: { $ne: null } }, { 'discounts.reservation.checkoutAmount': { $gt: 0 } }],
+        },
       },
       {
         $project: {
           calculations: {
-            $filter: {
-              input: '$calculation',
-              as: 'calc',
-              cond: {
-                $and: [
-                  { $eq: ['$$calc.category', 'DISCOUNTS'] },
-                  { $eq: ['$$calc.discountId', '$discounts._id'] },
-                ],
+            $cond: [
+              { $eq: ['$status', null] },
+              [{ amount: { $multiply: ['$discounts.reservation.checkoutAmount', -1] } }],
+              {
+                $filter: {
+                  input: '$calculation',
+                  as: 'calc',
+                  cond: {
+                    $and: [
+                      { $eq: ['$$calc.category', 'DISCOUNTS'] },
+                      { $eq: ['$$calc.discountId', '$discounts._id'] },
+                    ],
+                  },
+                },
               },
-            },
+            ],
           },
         },
       },
@@ -274,10 +287,7 @@ const configurePasses = async ({ db, options }: ModuleInput<TicketingOptions>) =
         orders.reduce((prev, { calculations }) => {
           return (
             prev +
-            (calculations as any[]).reduce(
-              (p: number, { amount }: { amount: number }) => p + amount / 100,
-              0,
-            )
+            (calculations as any[]).reduce((p: number, { amount }: { amount: number }) => p + amount, 0)
           );
         }, 0),
       ),

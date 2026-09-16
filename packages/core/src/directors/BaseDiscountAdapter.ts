@@ -31,6 +31,8 @@ export interface DiscountAdapterActions<DiscountConfiguration> {
 
   reserve: (params: { code?: string }) => Promise<any>;
   release: () => Promise<void>;
+  /** Reserve scarce credit before payment; release after the order status is persisted. */
+  prepareForCheckout?: () => Promise<{ release: () => Promise<void> }>;
 }
 
 export const BaseDiscountAdapter: Omit<IDiscountAdapter<unknown>, 'key' | 'label' | 'version'> = {

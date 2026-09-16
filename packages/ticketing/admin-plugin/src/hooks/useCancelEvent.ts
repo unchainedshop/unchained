@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
+import { TicketEventDetailQuery } from './useEventProduct.ts';
 
 const CancelEventMutation = gql`
   mutation CancelEvent($productId: ID!, $generateDiscount: Boolean) {
@@ -19,7 +20,15 @@ const useCancelEvent = () => {
   }) => {
     const result = await cancelEventMutation({
       variables: { productId, generateDiscount },
-      refetchQueries: ['Product', 'TicketEvents', 'Tokens'],
+      refetchQueries: [
+        { query: TicketEventDetailQuery, variables: { productId } },
+        'Product',
+        'TicketEvents',
+        'Tokens',
+        'GateEvents',
+        'GateEventDetail',
+      ],
+      awaitRefetchQueries: true,
     });
     return result;
   };

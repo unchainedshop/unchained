@@ -19,7 +19,7 @@ const ticketingResolvers = {
     isPassCodeValid: checkResolver('validatePassCode')(isPassCodeValid),
   },
   Mutation: {
-    cancelTicket: checkResolver('updateToken')(cancelTicket),
+    cancelTicket: checkResolver('cancelTicket')(cancelTicket),
     cancelEvent: checkResolver('manageProducts')(cancelEvent),
     setEventScannerPassCode: checkResolver('manageProducts')(setEventScannerPassCode),
     authenticateGate: checkResolver('validatePassCode')(authenticateGate),

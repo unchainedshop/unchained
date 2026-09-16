@@ -26,6 +26,7 @@ export const ticketingPages = [
     icon: 'shield-check',
     sortOrder: 92,
     component: 'GateControlPage',
+    publicAccess: true,
   },
 ];
 
