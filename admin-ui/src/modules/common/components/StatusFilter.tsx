@@ -1,13 +1,10 @@
-import { useState } from 'react';
 import { useIntl } from 'react-intl';
 
-const StatusFilter = ({ selectedStatuses, onStatusChange, statuses }) => {
+const StatusFilter = ({ selectedStatuses = [], onStatusChange, statuses }) => {
   const { formatMessage } = useIntl();
-  const [selectedStatus, setSelectedStatus] = useState(selectedStatuses || []);
+  const selected = Array.isArray(selectedStatuses) ? selectedStatuses : [];
 
-  // Function to get translated status text
   const getStatusTranslation = (status) => {
-    // Convert status to lowercase for translation key
     const translationKey = status.toLowerCase();
     return formatMessage({
       id: translationKey,
@@ -17,13 +14,9 @@ const StatusFilter = ({ selectedStatuses, onStatusChange, statuses }) => {
 
   const statusChangeHandler = (event) => {
     const { value, checked } = event.target;
-    let newSelectedStatus;
-    if (checked) {
-      newSelectedStatus = [...selectedStatus, value];
-    } else {
-      newSelectedStatus = selectedStatus.filter((status) => status !== value);
-    }
-    setSelectedStatus(newSelectedStatus);
+    const newSelectedStatus = checked
+      ? [...selected, value]
+      : selected.filter((s) => s !== value);
     onStatusChange(newSelectedStatus);
   };
 
@@ -38,7 +31,7 @@ const StatusFilter = ({ selectedStatuses, onStatusChange, statuses }) => {
         id={status}
         name={status}
         value={status}
-        checked={selectedStatus.includes(status)}
+        checked={selected.includes(status)}
         onChange={statusChangeHandler}
       />
       <div className="ml-2">

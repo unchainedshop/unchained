@@ -17,8 +17,13 @@ import type { ScheduleData } from '@unchainedshop/core';
 export interface EnrollmentsSettingsOptions {
   autoSchedulingSchedule?: ScheduleData;
   enrollmentNumberHashFn?: (enrollment: Enrollment, index: number) => string;
+  trialEndingNoticeDays?: number;
 }
 ```
+
+### Trial Ending Notice
+
+`trialEndingNoticeDays` (default `3`) sets how many days before a trial period ends the order generator emits `ENROLLMENT_TRIAL_ENDING`.
 
 ### Invoice Generator Schedule
 
@@ -62,6 +67,10 @@ await startPlatform({
 | `ENROLLMENT_UPDATE` | `{ enrollment, field }` | Emitted when an enrollment is updated |
 | `ENROLLMENT_REMOVE` | `{ enrollmentId }` | Emitted when an enrollment is removed |
 | `ENROLLMENT_ADD_PERIOD` | `{ enrollment }` | Emitted when a period is added to an enrollment |
+| `ENROLLMENT_SUSPEND` | `{ enrollment }` | Emitted when an enrollment is suspended |
+| `ENROLLMENT_RESUME` | `{ enrollment }` | Emitted when a suspended enrollment is resumed |
+| `ENROLLMENT_PLAN_CHANGE` | `{ enrollment }` | Emitted when an enrollment's plan is changed |
+| `ENROLLMENT_TRIAL_ENDING` | `{ enrollment, trialEnd }` | Emitted once when a trial period ends within `trialEndingNoticeDays` |
 
 ## More Information
 

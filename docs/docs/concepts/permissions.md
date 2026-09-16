@@ -87,6 +87,7 @@ Roles `__all__`, `__loggedIn__`, `__notLoggedIn__`, and `__notAdmin__` are **spe
 | `updateProductReview` | Edit product reviews |
 | `createEnrollment` | Create enrollments |
 | `updateEnrollment` | Modify enrollments |
+| `manageEnrollments` | Activate, suspend and resume enrollments, undo scheduled terminations |
 | `updateToken` | Modify tokens |
 
 ### Order Lifecycle
