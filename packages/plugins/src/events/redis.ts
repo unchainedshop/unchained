@@ -14,15 +14,14 @@ import type { EmitAdapter } from '@unchainedshop/events';
 
 const { REDIS_PORT = '6379', REDIS_HOST, REDIS_DB = '0' } = process.env;
 
-const subscribedEvents = new Set();
-
-export const RedisEventEmitter = (): EmitAdapter => {
-  const redisPublisher = createClient({
+export const RedisEventEmitter = (createRedisClient = createClient): EmitAdapter => {
+  const subscribers = new Map<string, Set<Parameters<EmitAdapter['subscribe']>[1]>>();
+  const redisPublisher = createRedisClient({
     url: `redis://${REDIS_HOST}:${REDIS_PORT}`,
     database: parseInt(REDIS_DB, 10),
   });
 
-  const redisSubscriber = createClient({
+  const redisSubscriber = createRedisClient({
     url: `redis://${REDIS_HOST}:${REDIS_PORT}`,
     database: parseInt(REDIS_DB, 10),
   });
@@ -30,12 +29,17 @@ export const RedisEventEmitter = (): EmitAdapter => {
   return {
     publish: (eventName, payload) => redisPublisher.publish(eventName, JSON.stringify(payload)),
     subscribe: (eventName, callback) => {
-      if (!subscribedEvents.has(eventName)) {
+      let callbacks = subscribers.get(eventName);
+      if (!callbacks) {
+        callbacks = new Set();
+        subscribers.set(eventName, callbacks);
+        const eventCallbacks = callbacks;
         redisSubscriber.subscribe(eventName, (payload) => {
-          callback(JSON.parse(payload));
+          const parsedPayload = JSON.parse(payload);
+          eventCallbacks.forEach((eventCallback) => eventCallback(parsedPayload));
         });
-        subscribedEvents.add(eventName);
       }
+      callbacks.add(callback);
     },
     shutdown: async () => {
       await Promise.allSettled([redisPublisher.close(), redisSubscriber.close()]);
