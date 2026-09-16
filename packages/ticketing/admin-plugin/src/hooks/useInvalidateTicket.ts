@@ -1,25 +1,23 @@
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
-import { TokenFragment } from '../fragments/TokenFragment';
 
-const InvalidateTokenMutation = gql`
-  mutation InvalidateToken($tokenId: ID!) {
-    invalidateToken(tokenId: $tokenId) {
-      ...TokenFragment
+const ScanTicketMutation = gql`
+  mutation ScanTicket($tokenId: ID!) {
+    scanTicket(tokenId: $tokenId) {
+      _id
+      invalidatedDate
+      isInvalidateable
     }
   }
-  ${TokenFragment}
 `;
 
 const useInvalidateTicket = () => {
-  const [invalidateTokenMutation] = useMutation(InvalidateTokenMutation);
+  const [scanTicketMutation] = useMutation(ScanTicketMutation);
 
   const invalidateTicket = async ({ tokenId }) => {
-    const result = await invalidateTokenMutation({
+    return scanTicketMutation({
       variables: { tokenId },
-      refetchQueries: ['Tokens', 'Token'],
     });
-    return result;
   };
   return { invalidateTicket };
 };

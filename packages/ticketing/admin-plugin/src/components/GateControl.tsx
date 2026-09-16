@@ -3,13 +3,11 @@ import { useIntl } from 'react-intl';
 import { Loading, NoData } from '@unchainedshop/admin-ui/ui';
 import useGateEvents from '../hooks/useGateEvents';
 import useGateEventDetail from '../hooks/useGateEventDetail';
-import useIsPassCodeValid from '../hooks/useIsPassCodeValid';
 import GateEventList from './GateEventList';
 import GateAttendeeList from './GateAttendeeList';
 
-const GateControl = ({ onLogout }) => {
+const GateControl = () => {
   const { formatMessage } = useIntl();
-  const { clearPassCode } = useIsPassCodeValid();
   const { events, loading: eventsLoading } = useGateEvents({
     onlyInvalidateable: true,
   });
@@ -53,21 +51,6 @@ const GateControl = ({ onLogout }) => {
                 })}
           </h2>
         </div>
-        {onLogout && (
-          <button
-            type="button"
-            onClick={async () => {
-              await clearPassCode();
-              onLogout();
-            }}
-            className="inline-flex items-center rounded-md border border-border-default px-3 py-1.5 text-xs font-medium text-text-secondary hover:bg-surface-raised"
-          >
-            {formatMessage({
-              id: 'gate_deactivate',
-              defaultMessage: 'Deactivate Scanner',
-            })}
-          </button>
-        )}
       </div>
 
       {selectedEventId ? (

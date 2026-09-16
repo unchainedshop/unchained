@@ -16,7 +16,16 @@ npm install @unchainedshop/ticketing
 ```typescript
 import { startPlatform } from '@unchainedshop/platform';
 import express from 'express';
-import setupTicketing, { ticketingModules, ticketingServices, type TicketingAPI } from '@unchainedshop/ticketing';
+import setupTicketing, {
+  ticketingModules,
+  ticketingServices,
+  ticketingTypeDefs,
+  ticketingResolvers,
+  ticketingActions,
+  configureTicketingRoles,
+  type TicketingAPI,
+} from '@unchainedshop/ticketing';
+import { ticketingAdminPlugin } from '@unchainedshop/ticketing/admin-plugin';
 import connectTicketing from '@unchainedshop/ticketing/lib/express.js';
 import { connect } from '@unchainedshop/api/express';
 import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
@@ -27,9 +36,17 @@ const app = express();
 const engine = await startPlatform({
   modules: ticketingModules,
   services: ticketingServices,
+  typeDefs: ticketingTypeDefs,
+  resolvers: [ticketingResolvers],
+  rolesOptions: {
+    additionalActions: ticketingActions,
+    additionalRoles: { ticketing: configureTicketingRoles },
+  },
 });
 
-await connect(app, engine);
+await connect(app, engine, {
+  adminUI: { plugins: [ticketingAdminPlugin()] },
+});
 connectTicketing(app);
 
 // Setup ticketing with your renderers
@@ -43,6 +60,22 @@ app.listen(4010);
 ```
 
 Define the three renderer callbacks before running this example, and configure `UNCHAINED_SECRET` plus the platform's required environment variables. Renderers and their third-party dependencies belong to your application; see the [ticketing example](../../examples/ticketing/boot.ts).
+
+### Admin UI and gate permissions
+
+The plugin groups event management and gate control under **Ticketing**. Product managers see
+**Events**; signed-in users with the `scanTicket` action see **Gate Control**. Assign the `ticketing`
+role registered above to gate operators, or grant `scanTicket` in a custom role. Administrators
+have access automatically. Gate operators can read active events and their attendees, and redeem
+eligible tickets through the `scanTicket` mutation. This grants no token export, cancellation, or
+reimbursement rights. Individual cancellations require `cancelTicket`; event cancellation requires
+`manageProducts`.
+
+Gate access uses the regular account session. Pass codes, gate cookies, and separate gate login
+mutations are not supported. All ticket queries, mutations, and cancellation fields are defined by
+this extension, and the Admin UI plugin only appears when registered. See the
+[example configuration](../../examples/ticketing/README.md#gate-access-and-reimbursements) for
+reimbursement signing and checkout setup.
 
 ## API Overview
 
