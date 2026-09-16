@@ -22,7 +22,13 @@ export const SimpleOrder = {
       category: 'ITEMS',
       amount: 30000,
     },
-    { category: 'TAXES', amount: 2144.8467966573808 },
+    { category: 'ITEMS', amount: -2144.8467966573808, isNetPrice: true },
+    {
+      category: 'TAXES',
+      amount: 2144.8467966573808,
+      baseCategory: 'ITEMS',
+      isNetPrice: false,
+    },
     {
       category: 'PAYMENT',
       amount: 0,
@@ -117,6 +123,7 @@ export const SimplePosition = {
       isTaxable: false,
       isNetPrice: false,
       rate: 0.077,
+      baseCategory: 'ITEM',
       meta: {
         adapter: 'shop.unchained.pricing.product-swiss-tax',
       },
@@ -217,8 +224,15 @@ export const DiscountedOrder = {
       amount: 100000,
     },
     {
+      category: 'ITEMS',
+      amount: -7149.489322191272,
+      isNetPrice: true,
+    },
+    {
       category: 'TAXES',
       amount: 7149.489322191272,
+      baseCategory: 'ITEMS',
+      isNetPrice: false,
     },
     {
       category: 'PAYMENT',
@@ -234,8 +248,17 @@ export const DiscountedOrder = {
       discountId: 'discounted-order-discount',
     },
     {
+      category: 'DISCOUNTS',
+      amount: 714.9489322191266,
+      discountId: 'discounted-order-discount',
+      isNetPrice: true,
+    },
+    {
       category: 'TAXES',
       amount: -714.9489322191266,
+      baseCategory: 'DISCOUNTS',
+      discountId: 'discounted-order-discount',
+      isNetPrice: false,
     },
   ],
 };
@@ -306,6 +329,7 @@ export const DiscountedPosition = {
       category: 'TAX',
       amount: 8579.387186629523,
       rate: 0.077,
+      baseCategory: 'ITEM',
       meta: {
         adapter: 'shop.unchained.pricing.product-swiss-tax',
       },
@@ -323,6 +347,7 @@ export const DiscountedPosition = {
       category: 'TAX',
       amount: -4289.6935933147615,
       rate: 0.077,
+      baseCategory: 'DISCOUNT',
       meta: {
         adapter: 'shop.unchained.pricing.product-swiss-tax',
       },
