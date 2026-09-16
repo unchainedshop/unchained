@@ -38,6 +38,8 @@ export interface PluginEntityConfig {
 }
 
 export interface PluginPageConfig {
+  /** Opt in to rendering without an authenticated, non-guest user. */
+  publicAccess?: boolean;
   path: string;
   label: string;
   icon?: string;

@@ -4,6 +4,10 @@ import { PluginRuntimeProvider } from '../../modules/plugins/PluginRuntimeContex
 import PluginErrorBoundary from '../../modules/plugins/PluginErrorBoundary';
 import useAuth from '../../modules/Auth/useAuth';
 import useCurrentUser from '../../modules/accounts/hooks/useCurrentUser';
+import {
+  getPluginPageRedirect,
+  isUserAuthenticated,
+} from '../../modules/Auth/permissionConfig.ts';
 import Loading from '@/components/ui/Loading';
 
 const PluginEntityPage = () => {
@@ -11,10 +15,10 @@ const PluginEntityPage = () => {
   const { slug } = router.query;
   const { manifests, getComponent, loading } = usePlugins();
   const { hasRole } = useAuth();
-  const { currentUser } = useCurrentUser();
-  const isAuthenticated = !!currentUser?._id;
+  const { currentUser, loading: userLoading } = useCurrentUser();
+  const isAuthenticated = isUserAuthenticated(currentUser);
 
-  if (loading) return <Loading />;
+  if (loading || userLoading) return <Loading />;
 
   const slugParts = Array.isArray(slug) ? slug : slug ? [slug] : [];
 
@@ -85,15 +89,10 @@ const PluginEntityPage = () => {
       (p) => p.path.replace(/^\//, '') === pathStr,
     );
     if (page) {
-      if (page.requiredRole) {
-        if (!isAuthenticated) {
-          router.replace('/log-in');
-          return <Loading />;
-        }
-        if (!hasRole(page.requiredRole)) {
-          router.replace('/403');
-          return <Loading />;
-        }
+      const redirect = getPluginPageRedirect(currentUser, page);
+      if (redirect) {
+        router.replace(redirect);
+        return <Loading />;
       }
       const Component = getComponent(manifest.name, page.component);
       if (Component)

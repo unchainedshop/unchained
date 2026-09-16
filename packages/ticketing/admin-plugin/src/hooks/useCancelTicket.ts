@@ -25,7 +25,16 @@ const useCancelTicket = () => {
   }) => {
     const result = await cancelTicketMutation({
       variables: { tokenId, generateDiscount },
-      refetchQueries: ['Product', 'TicketEvents', 'Tokens', 'Token'],
+      refetchQueries: [
+        'TicketEventDetail',
+        'Product',
+        'TicketEvents',
+        'Tokens',
+        'Token',
+        'GateEvents',
+        'GateEventDetail',
+      ],
+      awaitRefetchQueries: true,
     });
     return result;
   };

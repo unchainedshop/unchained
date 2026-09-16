@@ -24,7 +24,7 @@ const useSetScannerPassCode = () => {
   }) => {
     return setPassCodeMutation({
       variables: { productId, passCode },
-      refetchQueries: ['Product'],
+      refetchQueries: ['TicketEventDetail', 'Product'],
     });
   };
 

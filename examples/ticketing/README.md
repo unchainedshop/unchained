@@ -45,15 +45,15 @@ Server starts at http://localhost:4010 with:
 
 ### Required
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `ROOT_URL` | Public URL of the server | `http://localhost:4010` |
-| `PORT` | Server port | `4010` |
-| `UNCHAINED_TOKEN_SECRET` | Secret for session tokens (min 32 chars) | - |
-| `UNCHAINED_SECRET` | Secret used to derive reusable order access keys | `secret` |
-| `EMAIL_FROM` | Default sender email | `noreply@unchained.local` |
-| `EMAIL_WEBSITE_NAME` | Website name for emails | `Unchained` |
-| `EMAIL_WEBSITE_URL` | Website URL for emails | `http://localhost:4010` |
+| Variable                 | Description                                      | Default                   |
+| ------------------------ | ------------------------------------------------ | ------------------------- |
+| `ROOT_URL`               | Public URL of the server                         | `http://localhost:4010`   |
+| `PORT`                   | Server port                                      | `4010`                    |
+| `UNCHAINED_TOKEN_SECRET` | Secret for session tokens (min 32 chars)         | -                         |
+| `UNCHAINED_SECRET`       | Secret used to derive reusable order access keys | `secret`                  |
+| `EMAIL_FROM`             | Default sender email                             | `noreply@unchained.local` |
+| `EMAIL_WEBSITE_NAME`     | Website name for emails                          | `Unchained`               |
+| `EMAIL_WEBSITE_URL`      | Website URL for emails                           | `http://localhost:4010`   |
 
 ### Seeding
 
@@ -65,6 +65,35 @@ Server starts at http://localhost:4010 with:
 | `UNCHAINED_LANG`          | Default language ISO code              | `de`       |
 
 ## Ticketing Setup
+
+### Gate access and reimbursements
+
+Gate operators authenticate with an event scanner pass code. The cookie authorizes active events
+with that code and their attendees, including when the operator also has a customer session.
+Product managers can list draft events. Individual ticket cancellation uses the `cancelTicket`
+action (granted to administrators by default); permission to redeem a token does not grant
+permission to cancel it or issue credit.
+
+To redeem reimbursement codes, register `ReimbursementCodePlugin` from
+`@unchainedshop/plugins/pricing/discount-reimbursement-code` with `pluginRegistry` before starting
+the platform. Set `DISCOUNT_CODE_SECRET` to a persistent, private 32-byte hex value, for example
+generated with `openssl rand -hex 32`. Without this secret the default handler rejects issuance
+and redemption; other ticketing features remain available. Credit generation is validated before
+tickets are cancelled.
+
+The default `v1` code format signs the exact integer minor-unit amount, currency, and a random
+128-bit identifier. Legacy codes from the earlier default format must be reissued. Custom
+`TicketingOptions.discountCode` handlers remain supported; they receive the currency as an optional
+second argument and should enforce currency restrictions themselves.
+
+Reimbursement amounts use the configured catalog unit price multiplied by the cancelled token
+quantity. Voucher balances use integer minor units and include pending orders. Checkout reserves
+the applied amount before payment and releases the reservation after the order status is saved,
+or on payment failure. After a process crash, retry the original checkout or remove its cart
+discount to release a stranded reservation; do not clear reservations for payments still in flight.
+
+Admin plugin pages require a non-guest authenticated user by default. The gate page explicitly
+sets `publicAccess: true`; this option does not bypass a page's `requiredRole`.
 
 The example includes placeholder implementations for ticket rendering:
 

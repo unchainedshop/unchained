@@ -2,7 +2,8 @@ export default [
   /* GraphQL */ `
     extend type Query {
       """
-      List all ticket events (tokenized products), by default includes drafts
+      List ticket events (tokenized products). Product managers may include drafts;
+      gate operators only see active events authorized by their scanner pass code.
       """
       ticketEvents(
         queryString: String
@@ -32,14 +33,14 @@ export default [
     extend type Mutation {
       """
       Cancel a ticket (token). Sets the cancelled flag on the token metadata.
-      Optionally generates a discount code for reimbursement.
+      Requires the cancelTicket action. Optionally generates a discount code for reimbursement.
       """
       cancelTicket(tokenId: ID!, generateDiscount: Boolean): Token!
 
       """
       Cancel all tickets for an event (tokenized product). Invalidates all non-cancelled tokens.
       Optionally generates discount codes for affected users.
-      Returns the number of tickets cancelled.
+      Returns the number of token records cancelled (a token may contain multiple ticket units).
       """
       cancelEvent(productId: ID!, generateDiscount: Boolean): Int!
 

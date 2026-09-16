@@ -5,79 +5,83 @@ import {
 } from '@unchainedshop/core';
 
 export interface PassesModule {
-  verifyDiscountCode: (code: string) => Promise<number | null>;
-  discountCodeUsageBalance: (code: string) => Promise<number>;
+  verifyDiscountCode: (code: string, currencyCode?: string) => Promise<number | null>;
+  /** Amount already spent, in integer minor currency units. */
+  discountCodeUsageBalance: (code: string, excludeOrderId?: string) => Promise<number>;
 }
-
-const getPassesModule = (modules: Record<string, unknown>): PassesModule | null => {
-  const passes = modules.passes as PassesModule | undefined;
-  if (!passes?.verifyDiscountCode || !passes?.discountCodeUsageBalance) return null;
-  return passes;
-};
 
 export const ReimbursementCode: IDiscountAdapter<OrderDiscountConfiguration> = {
   ...OrderDiscountAdapter,
-
   key: 'shop.unchained.discount.reimbursement-code',
   label: 'Reimbursement Code',
   version: '1.0.0',
   orderIndex: 2,
-
   isManualAdditionAllowed: async () => true,
   isManualRemovalAllowed: async () => true,
 
   actions: async ({ context }) => {
-    const passes = getPassesModule(context.modules as unknown as Record<string, unknown>);
-
-    const discountAmount = passes ? await passes.verifyDiscountCode(context.code!) : null;
-
-    const remainingDiscount = async (): Promise<number> => {
-      if (!passes || discountAmount === null) return 0;
-      const used = await passes.discountCodeUsageBalance(context.code!);
-      const value = (discountAmount || 0) / 100;
-      return Math.max(0, Math.round((value - used) / value));
-    };
-
-    const orderPositions = await context.modules.orders.positions.findOrderPositions({
-      orderId: context?.order?._id as string,
-    });
-
-    const totalTickets = (orderPositions || []).reduce((sum, { quantity }) => sum + quantity, 0);
+    const passes = (context.modules as unknown as { passes?: Partial<PassesModule> }).passes;
+    const amount =
+      context.code && passes?.verifyDiscountCode && passes?.discountCodeUsageBalance
+        ? await passes.verifyDiscountCode(context.code, context.order.currencyCode)
+        : null;
+    const used =
+      amount !== null && passes?.discountCodeUsageBalance
+        ? await passes.discountCodeUsageBalance(context.code!, context.order._id)
+        : 0;
+    const remaining = amount === null ? 0 : Math.max(0, amount - used);
 
     return {
       ...(await OrderDiscountAdapter.actions({ context })),
-
-      reserve: async () => {
-        const remaining = await remainingDiscount();
-        return { remainingDiscount: remaining };
+      reserve: async () => ({ remainingDiscount: remaining }),
+      prepareForCheckout: async () => {
+        const { order, orderDiscount, modules, code } = context;
+        if (!orderDiscount || !code || amount === null || !passes?.discountCodeUsageBalance) {
+          throw new Error('INVALID_REIMBURSEMENT_CODE');
+        }
+        const checkoutAmount = Math.abs(
+          (order.calculation || []).reduce(
+            (total, row) =>
+              row.category === 'DISCOUNTS' && row.discountId === orderDiscount._id
+                ? total + row.amount
+                : total,
+            0,
+          ),
+        );
+        const release = async () => {
+          await modules.orders.discounts.update(orderDiscount._id, {
+            reservation: { ...orderDiscount.reservation, checkoutAmount: 0 },
+          });
+        };
+        // Serialize the read-and-reserve step across carts and processes. Persist
+        // the reservation before releasing the lock, so slow payment providers
+        // cannot outlive a lock lease and allow the credit to be spent twice.
+        const lock = await modules.orders.acquireLock(code, 'reimbursement', 60000);
+        try {
+          const spent = await passes.discountCodeUsageBalance(code, order._id);
+          if (checkoutAmount > Math.max(0, amount - spent))
+            throw new Error('DISCOUNT_USAGE_LIMIT_EXCEEDED');
+          const reserved = await modules.orders.discounts.update(orderDiscount._id, {
+            reservation: { ...orderDiscount.reservation, checkoutAmount },
+          });
+          if (!reserved) throw new Error('INVALID_REIMBURSEMENT_CODE');
+        } finally {
+          await lock.release();
+        }
+        return { release };
       },
-
       isValidForSystemTriggering: async () => false,
-
       isValidForCodeTriggering: async () => {
-        if (discountAmount === null) return false;
-
-        const remaining = await remainingDiscount();
-        const reservation = context.orderDiscount?.reservation;
-
+        if (amount === null) return false;
         if (!remaining) {
-          if (reservation) return false;
+          if (context.orderDiscount?.reservation) return false;
           throw new Error('DISCOUNT_USAGE_LIMIT_EXCEEDED');
         }
-
-        if (reservation) {
-          const reservedItems = Math.max(0, Math.min(reservation.remainingDiscount, totalTickets));
-          const currentItems = Math.max(0, Math.min(remaining, totalTickets));
-          if (currentItems < reservedItems) return false;
-        }
-
         return true;
       },
-
       discountForPricingAdapterKey({ pricingAdapterKey }) {
-        if (pricingAdapterKey !== 'shop.unchained.pricing.order-discount') return null;
-        if (discountAmount === null) return null;
-        return { fixedRate: discountAmount };
+        if (pricingAdapterKey !== 'shop.unchained.pricing.order-discount' || !remaining) return null;
+        return { fixedRate: remaining };
       },
     };
   },

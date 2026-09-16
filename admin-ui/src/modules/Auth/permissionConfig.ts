@@ -119,3 +119,14 @@ export const isUserAuthenticated = (user: {
 }) => {
   return !!user?._id && !user?.isGuest;
 };
+
+export const getPluginPageRedirect = (
+  user,
+  page: { publicAccess?: boolean; requiredRole?: string },
+) => {
+  if ((!page.publicAccess || page.requiredRole) && !isUserAuthenticated(user)) {
+    return '/log-in';
+  }
+  if (page.requiredRole && !checkRole(user, page.requiredRole)) return '/403';
+  return null;
+};

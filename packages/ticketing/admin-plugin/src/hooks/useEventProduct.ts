@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 import { parseUniqueId } from '../utils/misc';
 
-const TicketEventDetailQuery = gql`
+export const TicketEventDetailQuery = gql`
   query TicketEventDetail($productId: ID!) {
     product(productId: $productId) {
       _id

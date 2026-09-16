@@ -49,6 +49,7 @@ export interface AdminUIPluginEntityConfig {
 }
 
 export interface AdminUIPluginPageConfig {
+  publicAccess?: boolean;
   path: string;
   label: string;
   icon?: string;
