@@ -47,8 +47,15 @@ export async function setupWorkqueue({
 } & SetupWorkqueueOptions) {
   if (workQueueOptions.disableWorker || UNCHAINED_DISABLE_WORKER) return;
 
-  // Run migrations
-  await runMigrations({ migrationRepository, unchainedAPI });
+  // Only worker-enabled instances migrate. A failure stops the migration sequence,
+  // but must not prevent queue managers or the platform from starting.
+  try {
+    await runMigrations({ migrationRepository, unchainedAPI });
+  } catch (error) {
+    logger.error('Migration failed; continuing startup', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
 
   // Start queue managers
   (workQueueOptions?.enabledQueueManagers || defaultQueueManagers).forEach((f) => {
