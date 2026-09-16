@@ -89,9 +89,6 @@
     "./modules/quotation": {
       "import": "./dist/modules/quotation.js"
     },
-    "./modules/token": {
-      "import": "./dist/modules/token.js"
-    },
     "./modules/warehousing-providers": {
       "import": "./dist/modules/warehousing-providers.js"
     },
@@ -174,7 +171,7 @@
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-cypress": "^7.0.1",
-    "eslint-plugin-formatjs": "^6.0.1",
+    "eslint-plugin-formatjs": "^8.0.0",
     "eslint-plugin-prettier": "^5.5.4",
     "react-hook-form": "^7.81.0",
     "globals": "^17.0.0",

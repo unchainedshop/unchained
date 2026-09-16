@@ -27,51 +27,97 @@ npm run dev
 ```
 
 Server starts at http://localhost:4010 with:
+
 - GraphQL endpoint: `/graphql`
 - Default login: `admin@unchained.local` / `password`
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server with watch mode |
-| `npm run build` | Build TypeScript to `lib/` |
-| `npm start` | Start production server |
-| `npm run test:run:integration` | Run integration tests |
-| `npm run lint` | Format code with Prettier |
+| Command                        | Description                              |
+| ------------------------------ | ---------------------------------------- |
+| `npm run dev`                  | Start development server with watch mode |
+| `npm run build`                | Build TypeScript to `lib/`               |
+| `npm start`                    | Start production server                  |
+| `npm run test:run:integration` | Run integration tests                    |
+| `npm run lint`                 | Format code with Prettier                |
 
 ## Environment Variables
 
 ### Required
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `ROOT_URL` | Public URL of the server | `http://localhost:4010` |
-| `PORT` | Server port | `4010` |
-| `UNCHAINED_TOKEN_SECRET` | Secret for session tokens (min 32 chars) | - |
-| `UNCHAINED_SECRET` | Secret used to derive reusable order access keys | `secret` |
-| `EMAIL_FROM` | Default sender email | `noreply@unchained.local` |
-| `EMAIL_WEBSITE_NAME` | Website name for emails | `Unchained` |
-| `EMAIL_WEBSITE_URL` | Website URL for emails | `http://localhost:4010` |
+| Variable                 | Description                                      | Default                   |
+| ------------------------ | ------------------------------------------------ | ------------------------- |
+| `ROOT_URL`               | Public URL of the server                         | `http://localhost:4010`   |
+| `PORT`                   | Server port                                      | `4010`                    |
+| `UNCHAINED_TOKEN_SECRET` | Secret for session tokens (min 32 chars)         | -                         |
+| `UNCHAINED_SECRET`       | Secret used to derive reusable order access keys | `secret`                  |
+| `EMAIL_FROM`             | Default sender email                             | `noreply@unchained.local` |
+| `EMAIL_WEBSITE_NAME`     | Website name for emails                          | `Unchained`               |
+| `EMAIL_WEBSITE_URL`      | Website URL for emails                           | `http://localhost:4010`   |
 
 ### Seeding
 
-| Variable | Description | Default |
-|----------|-------------|---------|
+| Variable                  | Description                            | Default    |
+| ------------------------- | -------------------------------------- | ---------- |
 | `UNCHAINED_SEED_PASSWORD` | Admin password (`generate` for random) | `password` |
-| `UNCHAINED_COUNTRY` | Default country ISO code | `CH` |
-| `UNCHAINED_CURRENCY` | Default currency ISO code | `CHF` |
-| `UNCHAINED_LANG` | Default language ISO code | `de` |
+| `UNCHAINED_COUNTRY`       | Default country ISO code               | `CH`       |
+| `UNCHAINED_CURRENCY`      | Default currency ISO code              | `CHF`      |
+| `UNCHAINED_LANG`          | Default language ISO code              | `de`       |
 
 ## Ticketing Setup
+
+### Gate access and reimbursements
+
+Gate operators sign in with a regular user account. Assign the `ticketing` role configured in
+`boot.ts`, or grant the `scanTicket` action to a custom role. **Ticketing → Gate Control** then
+appears in the Admin UI, with access to active events and their attendees. Administrators have
+access automatically. Guests and ordinary customers cannot use gate control. Event pass codes
+and gate cookies are no longer supported.
+
+Users with `manageProducts` see **Ticketing → Events**, including draft events and their
+attendees. Cancelling a ticket or a whole event, with or without reimbursement credit, requires
+the separate `cancelTicket` action (granted to administrators by default); the Admin UI hides
+those buttons otherwise. The ticketing-only `scanTicket` mutation redeems eligible tickets without
+granting token export, cancellation, or reimbursement permissions. Ticketing pages and GraphQL
+fields are registered by the extension; shops that do not load it do not expose ticketing
+navigation or schema fields.
+
+To redeem reimbursement codes, register `ReimbursementCodePlugin` from
+`@unchainedshop/ticketing/pricing/discount-reimbursement-code` with `pluginRegistry` before starting
+the platform. Set `DISCOUNT_CODE_SECRET` to a persistent, private 32-byte hex value, for example
+generated with `openssl rand -hex 32`. Without this secret the default handler rejects issuance
+and redemption; other ticketing features remain available. Credit generation is validated before
+tickets are cancelled.
+
+The default `v1` code format signs the exact integer minor-unit amount, the order currency code
+as stored by the currencies module (including multi-letter crypto symbols), and a random 128-bit
+identifier. Legacy codes from the earlier default format must be reissued. Custom
+`TicketingOptions.discountCode` handlers remain supported; they receive the currency as an optional
+second argument and should enforce currency restrictions themselves.
+
+Reimbursement amounts use the configured catalog unit price multiplied by the cancelled token
+quantity. Voucher balances use integer minor units and include pending orders. Checkout reserves
+the applied amount before payment and releases the reservation after the order status is saved,
+or on payment failure. After a process crash, retry the original checkout or remove its cart
+discount to release a stranded reservation; do not clear reservations for payments still in flight.
+
+Admin plugin pages require a non-guest authenticated user by default. Plugins may opt a page out
+with `publicAccess: true`; the option never bypasses a page's `requiredRole`, and the ticketing
+gate page does not use it.
 
 The example includes placeholder implementations for ticket rendering:
 
 ```typescript
 setupTicketing(platform.unchainedAPI, {
-  renderOrderPDF: () => { /* Implement PDF generation */ },
-  createAppleWalletPass: () => { /* Implement Apple Wallet pass */ },
-  createGoogleWalletPass: () => { /* Implement Google Wallet pass */ },
+  renderOrderPDF: () => {
+    /* Implement PDF generation */
+  },
+  createAppleWalletPass: () => {
+    /* Implement Apple Wallet pass */
+  },
+  createGoogleWalletPass: () => {
+    /* Implement Google Wallet pass */
+  },
 });
 ```
 
@@ -93,6 +139,7 @@ See the [@unchainedshop/ticketing](../../packages/ticketing/README.md) documenta
 ## Database Seeding
 
 On first start, the seed script creates:
+
 - Admin user: `admin@unchained.local`
 - Country: Switzerland (CH)
 - Currency: Swiss Franc (CHF)

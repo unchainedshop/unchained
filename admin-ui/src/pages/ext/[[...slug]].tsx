@@ -2,16 +2,17 @@ import { useRouter } from 'next/router';
 import { usePlugins } from '../../modules/plugins/PluginContext';
 import { PluginRuntimeProvider } from '../../modules/plugins/PluginRuntimeContext';
 import PluginErrorBoundary from '../../modules/plugins/PluginErrorBoundary';
-import useAuth from '../../modules/Auth/useAuth';
+import useCurrentUser from '../../modules/accounts/hooks/useCurrentUser';
+import { getPluginPageRedirect } from '../../modules/Auth/permissionConfig';
 import Loading from '@/components/ui/Loading';
 
 const PluginEntityPage = () => {
   const router = useRouter();
   const { slug } = router.query;
   const { manifests, getComponent, loading } = usePlugins();
-  const { hasRole } = useAuth();
+  const { currentUser, loading: userLoading } = useCurrentUser();
 
-  if (loading) return <Loading />;
+  if (loading || userLoading) return <Loading />;
 
   const slugParts = Array.isArray(slug) ? slug : slug ? [slug] : [];
 
@@ -32,8 +33,9 @@ const PluginEntityPage = () => {
       (e) => e.path.replace(/^\//, '') === pathStr,
     );
     if (entity) {
-      if (entity.requiredRole && !hasRole(entity.requiredRole)) {
-        router.replace('/403');
+      const redirect = getPluginPageRedirect(currentUser, entity);
+      if (redirect) {
+        router.replace(redirect);
         return <Loading />;
       }
 
@@ -78,8 +80,9 @@ const PluginEntityPage = () => {
       (p) => p.path.replace(/^\//, '') === pathStr,
     );
     if (page) {
-      if (page.requiredRole && !hasRole(page.requiredRole)) {
-        router.replace('/403');
+      const redirect = getPluginPageRedirect(currentUser, page);
+      if (redirect) {
+        router.replace(redirect);
         return <Loading />;
       }
       const Component = getComponent(manifest.name, page.component);

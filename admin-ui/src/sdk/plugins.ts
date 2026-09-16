@@ -38,6 +38,8 @@ export interface PluginEntityConfig {
 }
 
 export interface PluginPageConfig {
+  /** Opt in to rendering without an authenticated, non-guest user. */
+  publicAccess?: boolean;
   path: string;
   label: string;
   icon?: string;
@@ -57,9 +59,18 @@ export interface PluginWidgetConfig {
   width?: 'full' | 'half' | 'third';
 }
 
+export interface PluginLinkConfig {
+  href: string;
+  label: string;
+  icon?: string;
+  sortOrder?: number;
+  showOnLoginPage?: boolean;
+}
+
 export interface PluginSlots {
   entities?: PluginEntityConfig[];
   pages?: PluginPageConfig[];
+  links?: PluginLinkConfig[];
   'dashboard:widgets'?: PluginWidgetConfig[];
   'product:tabs'?: PluginTabConfig[];
   'assortment:tabs'?: PluginTabConfig[];
@@ -71,6 +82,7 @@ export interface PluginSlots {
     | PluginPageConfig[]
     | PluginWidgetConfig[]
     | PluginTabConfig[]
+    | PluginLinkConfig[]
     | undefined;
 }
 

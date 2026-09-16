@@ -81,11 +81,9 @@ export const checkAccess = (
   pathname: string,
 ) => {
   if (UNRESTRICTED_PAGES.includes(pathname)) return true;
+  if (pathname.startsWith('/ext/') || pathname === '/ext') return true;
   if (!user?._id) return false;
   if (user?.isGuest) return false;
-  if (pathname.startsWith('/ext/') || pathname === '/ext') {
-    return !!user?._id;
-  }
   if (!ROUTE_ROLES[pathname]) {
     if (process.env.NODE_ENV === 'development') {
       console.warn(
@@ -120,4 +118,15 @@ export const isUserAuthenticated = (user: {
   isGuest?: boolean;
 }) => {
   return !!user?._id && !user?.isGuest;
+};
+
+export const getPluginPageRedirect = (
+  user,
+  page: { publicAccess?: boolean; requiredRole?: string },
+) => {
+  if ((!page.publicAccess || page.requiredRole) && !isUserAuthenticated(user)) {
+    return '/log-in';
+  }
+  if (page.requiredRole && !checkRole(user, page.requiredRole)) return '/403';
+  return null;
 };

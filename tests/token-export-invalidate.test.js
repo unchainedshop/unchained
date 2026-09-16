@@ -261,9 +261,8 @@ test.describe('Token Export and Invalidation', () => {
 
   test.describe('Mutation.invalidateToken for admin user', () => {
     test('should return error when trying to invalidate an already invalidated token', async () => {
-      // When a token is already invalidated (has invalidatedDate set), the invalidateToken
-      // mutation returns null because the MongoDB update filter doesn't match.
-      // This causes a GraphQL error because the mutation return type is non-nullable.
+      // An already invalidated token is no longer invalidateable, so the mutation rejects it
+      // before touching the token.
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation InvalidateToken($tokenId: ID!) {
@@ -278,9 +277,7 @@ test.describe('Token Export and Invalidation', () => {
       });
 
       assert.ok(errors);
-      // The mutation returns null for an already-invalidated token, causing an INTERNAL_SERVER_ERROR
-      // because the return type is non-nullable
-      assert.strictEqual(errors[0]?.extensions?.code, 'INTERNAL_SERVER_ERROR');
+      assert.strictEqual(errors[0]?.extensions?.code, 'TokenWrongStatusError');
     });
 
     test('should return error when token not found', async () => {
