@@ -44,7 +44,7 @@ export const ReimbursementCode: IDiscountAdapter<OrderDiscountConfiguration> = {
     return {
       ...(await OrderDiscountAdapter.actions({ context })),
 
-      prepareForCheckout: async () => {
+      reserveForCheckout: async () => {
         if (!voucher || !orderDiscount || amount === null) {
           throw new Error('INVALID_REIMBURSEMENT_CODE');
         }
