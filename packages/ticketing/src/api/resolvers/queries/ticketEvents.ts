@@ -2,8 +2,6 @@ import { log } from '@unchainedshop/logger';
 import type { SortOption } from '@unchainedshop/utils';
 import type { Context } from '@unchainedshop/api';
 import type { Product } from '@unchainedshop/core-products';
-import { TicketingModuleNotFoundError } from '../../errors.ts';
-import { GATE_COOKIE_NAME } from '../../gate-cookie.ts';
 
 export interface TicketEventQuery {
   queryString?: string;
@@ -16,13 +14,7 @@ export async function buildTicketEventQuery(
   context: Context,
 ) {
   const canManage = await context.roles?.userHasPermission(context, 'manageProducts', [undefined, {}]);
-  const query = { type: 'TOKENIZED_PRODUCT', queryString, includeDrafts: canManage && includeDrafts };
-  if (canManage) return query;
-  const passCode = context.getCookie?.(GATE_COOKIE_NAME);
-  if (!passCode) return { ...query, productIds: [] };
-  const ticketing = (context.services as any).ticketing;
-  if (!ticketing?.productIdsForPassCode) throw new TicketingModuleNotFoundError({});
-  return { ...query, productIds: (await ticketing.productIdsForPassCode(passCode)) as string[] };
+  return { type: 'TOKENIZED_PRODUCT', queryString, includeDrafts: Boolean(canManage && includeDrafts) };
 }
 
 export async function filterInvalidateableEvents(products: Product[], context: Context) {

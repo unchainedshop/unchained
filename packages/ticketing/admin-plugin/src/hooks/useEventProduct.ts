@@ -33,7 +33,6 @@ export const TicketEventDetailQuery = gql`
         }
         tokensCount
         isCanceled
-        scannerPassCode
         tokens {
           _id
           tokenSerialNumber

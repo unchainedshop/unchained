@@ -1,4 +1,3 @@
-import { ProductType } from '@unchainedshop/core-products';
 import type { TicketingModule } from './module.ts';
 import type { Bound, UnchainedCore } from '@unchainedshop/core';
 
@@ -132,48 +131,10 @@ async function cancelTicketWithDiscount(
   return { token: cancelledToken };
 }
 
-async function isPassCodeValid(this: Modules, passCode: string, productId?: string): Promise<boolean> {
-  if (!passCode) return false;
-
-  const products = await this.products.findProducts({
-    type: ProductType.TOKENIZED_PRODUCT,
-    includeDrafts: false,
-  });
-
-  const matchingProducts = productId ? products.filter((p) => p._id === productId) : products;
-
-  return matchingProducts
-    .filter(Boolean)
-    .some(
-      (p) =>
-        (p.meta as Record<string, any>)?.scannerPassCode?.toLowerCase().trim() ===
-        passCode.toLowerCase().trim(),
-    );
-}
-
-async function productIdsForPassCode(this: Modules, passCode: string): Promise<string[]> {
-  if (!passCode) return [];
-
-  const products = await this.products.findProducts({
-    type: ProductType.TOKENIZED_PRODUCT,
-    includeDrafts: false,
-  });
-
-  return products
-    .filter(
-      (p) =>
-        (p.meta as Record<string, any>)?.scannerPassCode?.toLowerCase().trim() ===
-        passCode.toLowerCase().trim(),
-    )
-    .map((p) => p._id);
-}
-
 export default {
   ticketing: {
     cancelTicketsForProduct,
     cancelTicketWithDiscount,
-    isPassCodeValid,
-    productIdsForPassCode,
   },
 };
 
@@ -181,7 +142,5 @@ export interface TicketingServices {
   ticketing: {
     cancelTicketsForProduct: Bound<typeof cancelTicketsForProduct>;
     cancelTicketWithDiscount: Bound<typeof cancelTicketWithDiscount>;
-    isPassCodeValid: Bound<typeof isPassCodeValid>;
-    productIdsForPassCode: Bound<typeof productIdsForPassCode>;
   };
 }

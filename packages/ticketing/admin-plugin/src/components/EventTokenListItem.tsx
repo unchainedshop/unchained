@@ -10,12 +10,9 @@ const EventTokenListItem = ({ token, onCancelTicket, onInvalidateTicket }) => {
   return (
     <Table.Row key={token._id}>
       <Table.Cell>
-        <Link
-          href={`/ext/tokens/${token._id}`}
-          className="font-medium text-text-primary hover:underline"
-        >
+        <span className="font-medium text-text-primary">
           {token.tokenSerialNumber || token._id?.slice(-8)}
-        </Link>
+        </span>
       </Table.Cell>
       <Table.Cell>
         {token.user && (
