@@ -49,6 +49,7 @@ import globalSearch from './search/globalSearch.ts';
 import searchAssortments from './filters/searchAssortments.ts';
 import searchProducts from './filters/searchProducts.ts';
 import shopInfo from './shopInfo.ts';
+import shopSettingsSchema from './shopSettingsSchema.ts';
 import translatedAssortmentMediaTexts from './assortments/translatedAssortmentMediaTexts.ts';
 import translatedAssortmentTexts from './assortments/translatedAssortmentTexts.ts';
 import translatedFilterTexts from './filters/translatedFilterTexts.ts';
@@ -124,6 +125,7 @@ export default {
   filters: acl(actions.viewFilters)(filters),
   filter: acl(actions.viewFilter)(filter),
   shopInfo: acl(actions.viewShopInfo)(shopInfo),
+  shopSettingsSchema: acl(actions.manageShopSettings)(shopSettingsSchema),
   translatedAssortmentTexts: acl(actions.viewTranslations)(translatedAssortmentTexts),
   translatedFilterTexts: acl(actions.viewTranslations)(translatedFilterTexts),
   productReview: acl(actions.manageProductReviews)(productReview),

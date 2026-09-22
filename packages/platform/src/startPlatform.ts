@@ -130,6 +130,9 @@ export const startPlatform = async ({
   // Setup Messaging Templates
   setupTemplates(unchainedAPI);
 
+  // Seed registered settings namespaces (write-if-absent)
+  await unchainedAPI.modules.settings.seed();
+
   // Setup File Upload Handlers
   setupUploadHandlers(unchainedAPI);
 

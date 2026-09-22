@@ -284,6 +284,13 @@ export default [
       shopInfo: Shop!
 
       """
+      JSON Schema for the given settings namespace, so admin forms can be
+      generated rather than hand-built. Returns null when the namespace is
+      not registered.
+      """
+      shopSettingsSchema(namespace: String!): JSON
+
+      """
       List assortments, active roots only by default, sorted by sequence (ascending)
       """
       assortments(

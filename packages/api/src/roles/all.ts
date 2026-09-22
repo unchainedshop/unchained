@@ -122,6 +122,7 @@ export const all = (role, actions) => {
   role.allow(actions.bulkSetAssortmentActive, () => false);
   role.allow(actions.bulkRemoveFilters, () => false);
   role.allow(actions.bulkSetFilterActive, () => false);
+  role.allow(actions.manageShopSettings, () => false);
   role.allow(actions.viewOrder, () => false);
   role.allow(actions.viewQuotation, () => false);
   role.allow(actions.viewEnrollment, () => false);

@@ -940,6 +940,13 @@ export default [
       Remove user W3C push subscription object
       """
       removePushSubscription(p256dh: String!): User!
+
+      """
+      Update runtime settings for a given namespace. Validates against the
+      registered zod schema and emits SHOP_SETTINGS_UPDATED on success.
+      Requires the manageShopSettings permission.
+      """
+      updateShopSettings(namespace: String!, value: JSON!): JSON!
     }
   `,
 ];
