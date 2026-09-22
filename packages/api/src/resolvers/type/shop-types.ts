@@ -11,6 +11,11 @@ export interface ShopHelperTypes {
   country: HelperType<Country>;
   language: HelperType<Language>;
   userRoles: HelperType<string[]>;
+  settings: (
+    root: never,
+    params: { namespace: string },
+    context: Context,
+  ) => Promise<Record<string, unknown> | null>;
 }
 
 export const Shop: ShopHelperTypes = {
@@ -28,5 +33,12 @@ export const Shop: ShopHelperTypes = {
   userRoles: async (_root, _params, context, info) => {
     await checkAction(context, actions.manageUsers, [], info);
     return getPublicRoles(context.roles!);
+  },
+
+  settings: async (_root, { namespace }, context) => {
+    if (!context.modules.settings.isPublic(namespace)) {
+      await checkAction(context, (actions as any).manageShopSettings);
+    }
+    return context.modules.settings.get(namespace);
   },
 };
