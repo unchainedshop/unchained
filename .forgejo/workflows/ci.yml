@@ -27,7 +27,7 @@ env:
 jobs:
   test:
     name: Lint + tests
-    runs-on: docker
+    runs-on: rootless
     container: node:26.8.2-bookworm
     env:
       NODE_ENV: test
@@ -53,7 +53,7 @@ jobs:
   # Keep JS actions on the Node-capable runner; the Trivy image has no Node.
   trivy:
     name: Trivy vuln gate
-    runs-on: docker
+    runs-on: rootless
     env:
       TRIVY_CACHE_DIR: /tmp/trivy-cache
       TRIVY_VERSION: '0.74.0'
@@ -83,7 +83,7 @@ jobs:
 
   docs:
     name: Build docs
-    runs-on: docker
+    runs-on: rootless
     needs: [test, trivy]
     if: github.event_name != 'pull_request'
     steps:
