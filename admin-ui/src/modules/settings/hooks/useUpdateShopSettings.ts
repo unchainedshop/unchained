@@ -1,3 +1,4 @@
+import { IUpdateShopSettingsMutation, IUpdateShopSettingsMutationVariables } from '../../../gql/types';
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
 
@@ -8,7 +9,7 @@ const UpdateShopSettingsMutation = gql`
 `;
 
 const useUpdateShopSettings = () => {
-  const [updateShopSettingsMutation, { loading, error }] = useMutation(
+  const [updateShopSettingsMutation, { loading, error }] = useMutation<IUpdateShopSettingsMutation, IUpdateShopSettingsMutationVariables>(
     UpdateShopSettingsMutation,
   );
 
