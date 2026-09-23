@@ -15,6 +15,11 @@ const SettingsList = ({ namespaces }: { namespaces: string[] }) => {
             defaultMessage: 'Namespace',
           })}
         </Table.Cell>
+        <Table.Cell>
+          <span className="sr-only">
+            {formatMessage({ id: 'actions', defaultMessage: 'Actions' })}
+          </span>
+        </Table.Cell>
       </Table.Row>
       {namespaces.map((namespace) => (
         <SettingsListItem key={namespace} namespace={namespace} />
