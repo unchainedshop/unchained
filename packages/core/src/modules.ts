@@ -54,10 +54,7 @@ import {
   type UsersModule,
 } from '@unchainedshop/core-users';
 import { configureWarehousingModule, type WarehousingModule } from '@unchainedshop/core-warehousing';
-import {
-  configureSettingsModule,
-  type SettingsModule,
-} from '@unchainedshop/core-settings';
+import { configureSettingsModule, type SettingsModule } from '@unchainedshop/core-settings';
 import {
   configureWorkerModule,
   type WorkerModule,
