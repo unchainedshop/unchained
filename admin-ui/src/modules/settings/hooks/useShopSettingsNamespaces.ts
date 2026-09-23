@@ -1,4 +1,4 @@
-import { IShopSettingsNamespacesQuery, IShopSettingsNamespacesQueryVariables } from '@/gql/operation-types';
+import { IShopSettingsNamespacesQuery, IShopSettingsNamespacesQueryVariables } from '../../../gql/types';
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 
@@ -7,7 +7,6 @@ const ShopSettingsNamespacesQuery = gql`
     shopSettingsNamespaces
   }
 `;
-
 
 const useShopSettingsNamespaces = () => {
   const { data, loading, error } = useQuery<IShopSettingsNamespacesQuery, IShopSettingsNamespacesQueryVariables>(

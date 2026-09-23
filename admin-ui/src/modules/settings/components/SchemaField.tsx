@@ -94,6 +94,7 @@ const SchemaField = ({ name, schema, disabled }: SchemaFieldProps) => {
       );
     }
 
+    case 'array':
     default:
       return (
         <JSONAreaField name={name} id={name} label={label} disabled={disabled} />
