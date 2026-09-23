@@ -284,6 +284,11 @@ export default [
       shopInfo: Shop!
 
       """
+      List all registered settings namespace keys.
+      """
+      shopSettingsNamespaces: [String!]!
+
+      """
       JSON Schema for the given settings namespace, so admin forms can be
       generated rather than hand-built. Returns null when the namespace is
       not registered.

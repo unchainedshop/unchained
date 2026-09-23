@@ -44,7 +44,7 @@ export const configureSettingsModule = async ({ db }: ModuleInput<Record<string,
         { namespace },
         {
           $set: { value: validated, updated: new Date() },
-          $setOnInsert: { created: new Date() },
+          $setOnInsert: { _id: generateDbObjectId(), created: new Date() },
         },
         { upsert: true },
       );
