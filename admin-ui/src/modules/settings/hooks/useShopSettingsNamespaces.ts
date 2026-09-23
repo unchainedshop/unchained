@@ -1,3 +1,4 @@
+import { IShopSettingsNamespacesQuery, IShopSettingsNamespacesQueryVariables } from '@/gql/operation-types';
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 
@@ -7,13 +8,15 @@ const ShopSettingsNamespacesQuery = gql`
   }
 `;
 
+
 const useShopSettingsNamespaces = () => {
-  const { data, loading, error } = useQuery(ShopSettingsNamespacesQuery, {
-    fetchPolicy: 'cache-and-network',
-  });
+  const { data, loading, error } = useQuery<IShopSettingsNamespacesQuery, IShopSettingsNamespacesQueryVariables>(
+    ShopSettingsNamespacesQuery,
+    { fetchPolicy: 'cache-and-network' },
+  );
 
   return {
-    namespaces: (data?.shopSettingsNamespaces as string[]) || [],
+    namespaces: data?.shopSettingsNamespaces || [],
     loading,
     error,
   };

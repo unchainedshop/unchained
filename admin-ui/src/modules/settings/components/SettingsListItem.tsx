@@ -1,4 +1,6 @@
 import { useRouter } from 'next/router';
+import { ChevronRightIcon } from '@heroicons/react/24/outline';
+
 import Table from '../../common/components/Table';
 
 const SettingsListItem = ({ namespace }: { namespace: string }) => {
@@ -15,6 +17,9 @@ const SettingsListItem = ({ namespace }: { namespace: string }) => {
     >
       <Table.Cell>
         <span className="font-medium text-text-primary">{namespace}</span>
+      </Table.Cell>
+      <Table.Cell className="text-right">
+        <ChevronRightIcon className="inline-block h-4 w-4 text-text-muted" />
       </Table.Cell>
     </Table.Row>
   );

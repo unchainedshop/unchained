@@ -1,4 +1,5 @@
 import { useIntl } from 'react-intl';
+import { IRoleAction } from '../../gql/types';
 
 import BreadCrumbs from '@/components/ui/BreadCrumbs';
 import PageHeader from '@/components/ui/PageHeader';
@@ -16,7 +17,7 @@ const SettingsDetailPage = ({ namespace }: { namespace: string }) => {
   const { schema, values, loading } = useShopSettings({ namespace });
   const { updateShopSettings } = useUpdateShopSettings();
 
-  const canManage = hasRole('manageShopSettings');
+  const canManage = hasRole(IRoleAction.ManageShopSettings);
 
   const onSubmit = async (formValues: Record<string, unknown>) => {
     await updateShopSettings({ namespace, value: formValues });
