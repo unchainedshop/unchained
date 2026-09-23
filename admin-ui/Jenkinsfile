@@ -1,6 +1,6 @@
 pipeline {
   agent {
-    label "docker-agent"
+    label "rootless"
   }
   environment {
     REGISTRY_AUTH = credentials('eec0f0c2-9b9d-4b26-8da5-58222499d901')
