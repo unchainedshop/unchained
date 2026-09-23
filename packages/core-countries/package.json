@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-countries",
   "description": "Country management module for the Unchained Engine",
-  "version": "5.0.0-alpha.5",
+  "version": "5.0.0-alpha.7",
   "main": "lib/countries-index.js",
   "types": "lib/countries-index.d.ts",
   "type": "module",
@@ -35,9 +35,9 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^5.0.0-alpha.5",
-    "@unchainedshop/mongodb": "^5.0.0-alpha.5",
-    "@unchainedshop/utils": "^5.0.0-alpha.5"
+    "@unchainedshop/events": "^5.0.0-alpha.7",
+    "@unchainedshop/mongodb": "^5.0.0-alpha.7",
+    "@unchainedshop/utils": "^5.0.0-alpha.7"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",

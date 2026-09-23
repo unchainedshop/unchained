@@ -1,5 +1,25 @@
 # Unchained Engine v5.0 (Breaking Changes)
 
+## v5.0.0-alpha.7 (2026-09-23)
+
+alpha.6 skipped to re-align engine version with admin-ui.
+
+### Breaking
+
+- **Net order pricing (#611):** Order category balances (ITEMS, DELIVERY, PAYMENT, DISCOUNTS) now exclude tax; separate TAXES rows contribute to the gross total — matching the product, delivery, and payment pricing sheets. `OrderPricingSheet` drops its special-case gross/net/total overrides and inherits correct `BasePricingSheet` arithmetic. A startup migration (`20260907120000`) converts persisted orders by adding offset rows (preserving original rows and audit metadata). See `MIGRATION.md`.
+- **Startup migrations are worker-only and non-fatal (#784):** Migration execution moved out of `setupWorkqueue` into `startPlatform` and runs before workers start. A failed migration now rejects startup and releases initialized resources (plugins, event emitter, GraphQL, audit log, database) via a shared `resourceShutdownSequence()`.
+
+### Improvements
+
+- **Order relation DataLoaders (#785):** Added batch loaders for order deliveries, order payments, order positions, order discounts, and enrollment-by-order lookups — ported from v4.8.x.
+- **`unchained` CLI restored (#785):** The `unchained download-llm-docs` CLI binary is back in `@unchainedshop/platform`, ported from v4.8.x.
+- **Docker hardening:** Dockerfiles for docs and kitchensink now run as non-root, pin Node 26.8, use exec-form CMD, and shell-free healthchecks.
+- Upgraded `nodemailer`.
+- Documentation refresh: pruned obsolete docs, validated GraphQL examples in CI, aligned runtime requirements on Node 26.
+- Fixed async discount permissions, enrollment service binding, and event report date ranges.
+- Admin UI: repaired 8 drifted e2e specs (all 37 now green), added Admin UI e2e CI workflow (Cypress).
+- CI: replaced root Jenkinsfile with Forgejo Actions, running on the rootless CI tier.
+
 ## Major Breaking Changes
 
 ### Plugin System Modernization
