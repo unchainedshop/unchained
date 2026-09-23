@@ -29,6 +29,16 @@ export async function getShopSettingsText(context: Context): Promise<string> {
   );
 }
 
+export async function buildSettingsChatResourceContext(context: Context | undefined): Promise<string> {
+  if (!context?.user?.roles?.includes('admin')) return '';
+  try {
+    return `shop-settings:\n${await getShopSettingsText(context)}`;
+  } catch (error) {
+    logger.error(`Failed to read resource shop-settings: ${(error as Error).message}`);
+    return '';
+  }
+}
+
 export const registerSettingsResources = (server: McpServer, context: Context) => {
   server.registerResource(
     'shop-settings',
