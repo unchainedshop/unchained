@@ -60,6 +60,7 @@ const actions: Record<string, string> = [
   'createCart',
   'createEnrollment',
   'updateEnrollment',
+  'manageEnrollments',
   'updateCart',
   'addCartQuotation',
   'checkoutCart',

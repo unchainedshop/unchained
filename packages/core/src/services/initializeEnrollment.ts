@@ -12,19 +12,38 @@ export async function initializeEnrollmentService(
   const product = await this.products.findProduct({
     productId: enrollment.productId,
   });
+  const actionsFor = (current: Enrollment) =>
+    EnrollmentDirector.actions({ enrollment: current, product: product! }, { modules: this });
 
-  const director = await EnrollmentDirector.actions(
-    { enrollment, product: product! },
-    { modules: this },
-  );
-  const period = await director.nextPeriod();
-
+  let director = await actionsFor(enrollment);
   let updatedEnrollment = enrollment;
-  if (period && (params.orderIdForFirstPeriod || period.isTrial)) {
-    updatedEnrollment = (await this.enrollments.addEnrollmentPeriod(enrollment._id, {
-      ...period,
-      orderId: params.orderIdForFirstPeriod,
-    })) as Enrollment;
+
+  const [firstPeriod, ...remainingPeriods] = await director.initialPeriods({
+    referenceDate: new Date(),
+  });
+
+  if (firstPeriod && (params.orderIdForFirstPeriod || firstPeriod.isTrial)) {
+    updatedEnrollment = (await this.enrollments.addEnrollmentPeriods(enrollment._id, [
+      { ...firstPeriod, orderId: params.orderIdForFirstPeriod },
+      ...remainingPeriods,
+    ])) as Enrollment;
+    director = await actionsFor(updatedEnrollment);
+  }
+
+  const expiryDate = await director.expiryDate();
+  if (expiryDate) {
+    updatedEnrollment = (await this.enrollments.updateExpiry(enrollment._id, expiryDate)) as Enrollment;
+  }
+
+  const contractStartDate =
+    updatedEnrollment.periods.find((period) => !period.isTrial)?.start || new Date();
+  const commitmentEnd = await director.minimumCommitmentEnd({ referenceDate: contractStartDate });
+  if (commitmentEnd) {
+    await this.enrollments.updateContractStartDate(enrollment._id, contractStartDate);
+    updatedEnrollment = (await this.enrollments.updateMinimumCommitmentEnd(
+      enrollment._id,
+      commitmentEnd,
+    )) as Enrollment;
   }
 
   const processedEnrollment = await processEnrollmentService.bind(this)(updatedEnrollment);
