@@ -1,6 +1,5 @@
 import { ProductType } from '@unchainedshop/core-products';
 import type { Context } from '../../context.ts';
-import normalizeMediaUrl from './normalizeMediaUrl.ts';
 import { createLogger } from '@unchainedshop/logger';
 import normalizeProxyAssignments from './normalizeProxyAssignments.ts';
 
@@ -42,7 +41,7 @@ export async function getNormalizedProductDetails(productId: string, context: Co
         const productMedias = await modules.products.media.findProductMedias({
           productId: item.productId,
         });
-        const media = await normalizeMediaUrl(productMedias, context);
+        const media = await context.services.files.resolveMediaFiles(productMedias);
         const texts = await loaders.productTextLoader.load({
           productId: item.productId,
           locale,
@@ -71,7 +70,7 @@ export async function getNormalizedProductDetails(productId: string, context: Co
   }
 
   const productMedias = await modules.products.media.findProductMedias({ productId });
-  const media = await normalizeMediaUrl(productMedias, context);
+  const media = await context.services.files.resolveMediaFiles(productMedias);
   return {
     ...product,
     texts,

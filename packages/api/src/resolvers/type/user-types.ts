@@ -10,7 +10,6 @@ import type { Email, User as UserType, UserProfile } from '@unchainedshop/core-u
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { permissions } from '@unchainedshop/roles';
 import type { ProductReview } from '@unchainedshop/core-products';
-import type { Contact } from '@unchainedshop/mongodb';
 import type { Country } from '@unchainedshop/core-countries';
 import { checkAction, checkTypeResolver } from '../../acl.ts';
 import { actions } from '../../roles/index.ts';
@@ -63,7 +62,7 @@ export interface UserHelperTypes {
   isInitialPassword: HelperType<any, boolean>;
   language: HelperType<{ locale: Intl.Locale }, Language>;
   lastBillingAddress: HelperType<any, UserType['lastBillingAddress']>;
-  lastContact: HelperType<any, Contact>;
+  lastContact: HelperType<any, NonNullable<UserType['lastContact']>>;
   lastLogin: HelperType<any, UserType['lastLogin']>;
   allowedActions: HelperType<any, string[]>;
   viewerAllowedActions: HelperType<any, string[]>;
