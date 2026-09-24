@@ -946,7 +946,7 @@ export default [
       registered zod schema and emits SHOP_SETTINGS_UPDATED on success.
       Requires the manageShopSettings permission.
       """
-      updateShopSettings(namespace: String!, value: JSON!): JSON!
+      updateShopSettings(namespace: SettingsNamespace!, value: JSON!): JSON!
     }
   `,
 ];

@@ -286,14 +286,14 @@ export default [
       """
       List all registered settings namespace keys.
       """
-      shopSettingsNamespaces: [String!]!
+      shopSettingsNamespaces: [SettingsNamespace!]!
 
       """
       JSON Schema for the given settings namespace, so admin forms can be
       generated rather than hand-built. Returns null when the namespace is
       not registered.
       """
-      shopSettingsSchema(namespace: String!): JSON
+      shopSettingsSchema(namespace: SettingsNamespace!): JSON
 
       """
       List assortments, active roots only by default, sorted by sequence (ascending)

@@ -5,21 +5,8 @@ import {
   disconnect,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
-import { registerSettingsNamespace } from '@unchainedshop/core-settings';
-import { z } from 'zod';
 import assert from 'node:assert';
 import test from 'node:test';
-
-const testSchema = z.object({
-  siteName: z.string().default('My Shop'),
-  maintenanceMode: z.boolean().default(false),
-  maxItemsPerOrder: z.number().int().min(1).max(1000).default(99),
-});
-
-const publicSchema = z.object({
-  welcomeMessage: z.string().default('Welcome!'),
-  showBanner: z.boolean().default(true),
-});
 
 let graphqlFetch;
 let graphqlNormalUserFetch;
@@ -27,19 +14,6 @@ let graphqlAnonymousFetch;
 
 test.describe('Shop Settings', () => {
   test.before(async () => {
-    registerSettingsNamespace({
-      key: 'test-general',
-      schema: testSchema,
-      public: false,
-      defaults: { siteName: 'My Shop', maintenanceMode: false, maxItemsPerOrder: 99 },
-    });
-    registerSettingsNamespace({
-      key: 'test-public',
-      schema: publicSchema,
-      public: true,
-      defaults: { welcomeMessage: 'Welcome!', showBanner: true },
-    });
-
     await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlNormalUserFetch = createLoggedInGraphqlFetch(USER_TOKEN);
@@ -61,8 +35,8 @@ test.describe('Shop Settings', () => {
       });
       assert.ifError(errors?.[0]);
       assert.ok(Array.isArray(data.shopSettingsNamespaces));
-      assert.ok(data.shopSettingsNamespaces.includes('test-general'));
-      assert.ok(data.shopSettingsNamespaces.includes('test-public'));
+      assert.ok(data.shopSettingsNamespaces.includes('TEST_GENERAL'));
+      assert.ok(data.shopSettingsNamespaces.includes('TEST_PUBLIC'));
     });
 
     test('anonymous user gets auth error', async () => {
@@ -82,11 +56,11 @@ test.describe('Shop Settings', () => {
     test('admin gets JSON schema for registered namespace', async () => {
       const { data, errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          query ShopSettingsSchema($namespace: String!) {
+          query ShopSettingsSchema($namespace: SettingsNamespace!) {
             shopSettingsSchema(namespace: $namespace)
           }
         `,
-        variables: { namespace: 'test-general' },
+        variables: { namespace: 'TEST_GENERAL' },
       });
       assert.ifError(errors?.[0]);
       assert.ok(data.shopSettingsSchema);
@@ -99,11 +73,11 @@ test.describe('Shop Settings', () => {
     test('returns null for unknown namespace', async () => {
       const { data, errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          query ShopSettingsSchema($namespace: String!) {
+          query ShopSettingsSchema($namespace: SettingsNamespace!) {
             shopSettingsSchema(namespace: $namespace)
           }
         `,
-        variables: { namespace: 'nonexistent-ns' },
+        variables: { namespace: 'UNKNOWN' },
       });
       assert.ifError(errors?.[0]);
       assert.strictEqual(data.shopSettingsSchema, null);
@@ -112,11 +86,11 @@ test.describe('Shop Settings', () => {
     test('anonymous user gets auth error', async () => {
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          query ShopSettingsSchema($namespace: String!) {
+          query ShopSettingsSchema($namespace: SettingsNamespace!) {
             shopSettingsSchema(namespace: $namespace)
           }
         `,
-        variables: { namespace: 'test-general' },
+        variables: { namespace: 'TEST_GENERAL' },
       });
       assert.ok(errors?.length > 0);
       assert.strictEqual(errors[0].extensions.code, 'NoPermissionError');
@@ -127,12 +101,12 @@ test.describe('Shop Settings', () => {
     test('admin can update settings for registered namespace', async () => {
       const { data, errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateShopSettings($namespace: String!, $value: JSON!) {
+          mutation UpdateShopSettings($namespace: SettingsNamespace!, $value: JSON!) {
             updateShopSettings(namespace: $namespace, value: $value)
           }
         `,
         variables: {
-          namespace: 'test-general',
+          namespace: 'TEST_GENERAL',
           value: { siteName: 'Updated Shop', maintenanceMode: true, maxItemsPerOrder: 50 },
         },
       });
@@ -147,12 +121,12 @@ test.describe('Shop Settings', () => {
     test('applies schema defaults for omitted fields', async () => {
       const { data, errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateShopSettings($namespace: String!, $value: JSON!) {
+          mutation UpdateShopSettings($namespace: SettingsNamespace!, $value: JSON!) {
             updateShopSettings(namespace: $namespace, value: $value)
           }
         `,
         variables: {
-          namespace: 'test-general',
+          namespace: 'TEST_GENERAL',
           value: { siteName: 'Partial Update' },
         },
       });
@@ -165,12 +139,12 @@ test.describe('Shop Settings', () => {
     test('rejects update for unregistered namespace', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateShopSettings($namespace: String!, $value: JSON!) {
+          mutation UpdateShopSettings($namespace: SettingsNamespace!, $value: JSON!) {
             updateShopSettings(namespace: $namespace, value: $value)
           }
         `,
         variables: {
-          namespace: 'nonexistent-ns',
+          namespace: 'UNKNOWN',
           value: { foo: 'bar' },
         },
       });
@@ -181,12 +155,12 @@ test.describe('Shop Settings', () => {
     test('rejects invalid value against schema', async () => {
       const { errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateShopSettings($namespace: String!, $value: JSON!) {
+          mutation UpdateShopSettings($namespace: SettingsNamespace!, $value: JSON!) {
             updateShopSettings(namespace: $namespace, value: $value)
           }
         `,
         variables: {
-          namespace: 'test-general',
+          namespace: 'TEST_GENERAL',
           value: { siteName: 123, maintenanceMode: 'not-a-bool' },
         },
       });
@@ -197,12 +171,12 @@ test.describe('Shop Settings', () => {
     test('anonymous user gets auth error', async () => {
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          mutation UpdateShopSettings($namespace: String!, $value: JSON!) {
+          mutation UpdateShopSettings($namespace: SettingsNamespace!, $value: JSON!) {
             updateShopSettings(namespace: $namespace, value: $value)
           }
         `,
         variables: {
-          namespace: 'test-general',
+          namespace: 'TEST_GENERAL',
           value: { siteName: 'Hacked' },
         },
       });
@@ -213,12 +187,12 @@ test.describe('Shop Settings', () => {
     test('non-admin user gets auth error', async () => {
       const { errors } = await graphqlNormalUserFetch({
         query: /* GraphQL */ `
-          mutation UpdateShopSettings($namespace: String!, $value: JSON!) {
+          mutation UpdateShopSettings($namespace: SettingsNamespace!, $value: JSON!) {
             updateShopSettings(namespace: $namespace, value: $value)
           }
         `,
         variables: {
-          namespace: 'test-general',
+          namespace: 'TEST_GENERAL',
           value: { siteName: 'Unauthorized' },
         },
       });
@@ -231,23 +205,23 @@ test.describe('Shop Settings', () => {
     test.before(async () => {
       await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateShopSettings($namespace: String!, $value: JSON!) {
+          mutation UpdateShopSettings($namespace: SettingsNamespace!, $value: JSON!) {
             updateShopSettings(namespace: $namespace, value: $value)
           }
         `,
         variables: {
-          namespace: 'test-public',
+          namespace: 'TEST_PUBLIC',
           value: { welcomeMessage: 'Hello World', showBanner: false },
         },
       });
       await graphqlFetch({
         query: /* GraphQL */ `
-          mutation UpdateShopSettings($namespace: String!, $value: JSON!) {
+          mutation UpdateShopSettings($namespace: SettingsNamespace!, $value: JSON!) {
             updateShopSettings(namespace: $namespace, value: $value)
           }
         `,
         variables: {
-          namespace: 'test-general',
+          namespace: 'TEST_GENERAL',
           value: { siteName: 'Test Shop', maintenanceMode: false, maxItemsPerOrder: 42 },
         },
       });
@@ -256,13 +230,13 @@ test.describe('Shop Settings', () => {
     test('admin can read public namespace settings via shopInfo', async () => {
       const { data, errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          query ShopSettings($namespace: String!) {
+          query ShopSettings($namespace: SettingsNamespace!) {
             shopInfo {
               settings(namespace: $namespace)
             }
           }
         `,
-        variables: { namespace: 'test-public' },
+        variables: { namespace: 'TEST_PUBLIC' },
       });
       assert.ifError(errors?.[0]);
       assert.deepStrictEqual(data.shopInfo.settings, {
@@ -274,13 +248,13 @@ test.describe('Shop Settings', () => {
     test('admin can read private namespace settings via shopInfo', async () => {
       const { data, errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          query ShopSettings($namespace: String!) {
+          query ShopSettings($namespace: SettingsNamespace!) {
             shopInfo {
               settings(namespace: $namespace)
             }
           }
         `,
-        variables: { namespace: 'test-general' },
+        variables: { namespace: 'TEST_GENERAL' },
       });
       assert.ifError(errors?.[0]);
       assert.deepStrictEqual(data.shopInfo.settings, {
@@ -293,13 +267,13 @@ test.describe('Shop Settings', () => {
     test('anonymous user can read public namespace settings', async () => {
       const { data, errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          query ShopSettings($namespace: String!) {
+          query ShopSettings($namespace: SettingsNamespace!) {
             shopInfo {
               settings(namespace: $namespace)
             }
           }
         `,
-        variables: { namespace: 'test-public' },
+        variables: { namespace: 'TEST_PUBLIC' },
       });
       assert.ifError(errors?.[0]);
       assert.deepStrictEqual(data.shopInfo.settings, {
@@ -311,13 +285,13 @@ test.describe('Shop Settings', () => {
     test('anonymous user gets auth error for private namespace settings', async () => {
       const { errors } = await graphqlAnonymousFetch({
         query: /* GraphQL */ `
-          query ShopSettings($namespace: String!) {
+          query ShopSettings($namespace: SettingsNamespace!) {
             shopInfo {
               settings(namespace: $namespace)
             }
           }
         `,
-        variables: { namespace: 'test-general' },
+        variables: { namespace: 'TEST_GENERAL' },
       });
       assert.ok(errors?.length > 0);
     });
@@ -325,13 +299,13 @@ test.describe('Shop Settings', () => {
     test('returns null for unregistered namespace', async () => {
       const { data, errors } = await graphqlFetch({
         query: /* GraphQL */ `
-          query ShopSettings($namespace: String!) {
+          query ShopSettings($namespace: SettingsNamespace!) {
             shopInfo {
               settings(namespace: $namespace)
             }
           }
         `,
-        variables: { namespace: 'nonexistent-ns' },
+        variables: { namespace: 'UNKNOWN' },
       });
       assert.ifError(errors?.[0]);
       assert.strictEqual(data.shopInfo.settings, null);
