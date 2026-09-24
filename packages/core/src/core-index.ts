@@ -39,6 +39,8 @@ export * from './utils/getFileAdapter.ts';
 // Re-export from core-files for convenience
 export { filesSettings } from '@unchainedshop/core-files';
 
+export { registerSettingsNamespace, getAllSettingsNamespaces } from '@unchainedshop/core-settings';
+
 export { default as schedule, type ScheduleData } from './utils/schedule.ts';
 
 export interface UnchainedCoreOptions {

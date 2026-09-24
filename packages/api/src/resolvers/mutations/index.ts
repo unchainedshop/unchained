@@ -162,6 +162,7 @@ import bulkRemoveFilters from './bulk/bulkRemoveFilters.ts';
 import bulkSetFilterActive from './bulk/bulkSetFilterActive.ts';
 import bulkRemoveUsers from './bulk/bulkRemoveUsers.ts';
 import bulkSetUserRoles from './bulk/bulkSetUserRoles.ts';
+import updateShopSettings from './settings/updateShopSettings.ts';
 
 export default {
   logout: acl(actions.logout)(logout),
@@ -337,4 +338,5 @@ export default {
   bulkSetFilterActive: acl(actions.bulkSetFilterActive)(bulkSetFilterActive),
   bulkRemoveUsers: acl(actions.bulkRemoveUsers)(bulkRemoveUsers),
   bulkSetUserRoles: acl(actions.bulkSetUserRoles)(bulkSetUserRoles),
+  updateShopSettings: acl(actions.manageShopSettings)(updateShopSettings),
 };

@@ -349,3 +349,13 @@ export const DuplicateFilterKeyError = createError(
   'DuplicateFilterKeyError',
   'Key already registered for another filter',
 );
+
+export const SettingsNamespaceNotFoundError = createError(
+  'SettingsNamespaceNotFoundError',
+  'Settings namespace not registered',
+);
+
+export const SettingsValidationError = createError(
+  'SettingsValidationError',
+  'Settings value failed schema validation',
+);

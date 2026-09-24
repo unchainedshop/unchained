@@ -1,5 +1,10 @@
 export default [
   /* GraphQL */ `
+    # Schema initialization extends SettingsNamespace with registered settings namespace keys.
+    enum SettingsNamespace {
+      UNKNOWN
+    }
+
     enum ExternalLinkTarget {
       """
       Open on new tab
@@ -38,6 +43,13 @@ export default [
       userRoles: [String!]!
       adminUiConfig: AdminUiConfig!
       vapidPublicKey: String
+
+      """
+      Runtime settings for the given namespace. Public namespaces are readable
+      by anyone; private namespaces require the manageShopSettings permission.
+      Returns null when the namespace is not registered.
+      """
+      settings(namespace: SettingsNamespace!): JSON @cacheControl(maxAge: 0, scope: PRIVATE)
     }
   `,
 ];

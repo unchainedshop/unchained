@@ -42,6 +42,7 @@
     "packages/core-delivery",
     "packages/core-payment",
     "packages/core-quotations",
+    "packages/core-settings",
     "packages/core-products",
     "packages/core-assortments",
     "packages/core-filters",
