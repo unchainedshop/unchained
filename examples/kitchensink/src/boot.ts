@@ -1,5 +1,6 @@
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { z } from 'zod';
 import Fastify from 'fastify';
 import { createOpenAI } from '@ai-sdk/openai';
 import { startPlatform } from '@unchainedshop/platform';
@@ -12,6 +13,7 @@ import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-h
 import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
 import {
   registerProductDiscoverabilityFilter,
+  registerSettingsNamespace,
   pluginRegistry,
   type UnchainedCore,
 } from '@unchainedshop/core';
@@ -88,14 +90,14 @@ const userManagerRole = (role, actions) => {
   };
   const targetHasTag =
     (tag: string) =>
-    async (
-      user: UserRoleTarget | null | undefined,
-      params: UserRoleParams | null | undefined,
-      context: UserRoleContext | null | undefined,
-    ) => {
-      const targetUser = await findTargetUser(user, params, context);
-      return targetUser?.tags?.includes(tag) ?? false;
-    };
+      async (
+        user: UserRoleTarget | null | undefined,
+        params: UserRoleParams | null | undefined,
+        context: UserRoleContext | null | undefined,
+      ) => {
+        const targetUser = await findTargetUser(user, params, context);
+        return targetUser?.tags?.includes(tag) ?? false;
+      };
   const canEditTarget = async (
     user: UserRoleTarget | null | undefined,
     params: UserRoleParams | null | undefined,
@@ -146,6 +148,38 @@ try {
   pluginRegistry.register(HalfPriceManualPlugin);
   pluginRegistry.register(HundredOffPlugin);
   registerProductDiscoverabilityFilter({ hiddenTagValue: 'device' });
+
+  registerSettingsNamespace({
+    key: 'shop',
+    schema: z.object({
+      siteName: z.string().default('Unchained Shop'),
+      supportEmail: z.string().email().default('support@localhost'),
+      maxProductsPerPage: z.number().int().min(1).max(100).default(20),
+      minimumOrderValue: z.number().min(0).default(0),
+      enableGuestCheckout: z.boolean().default(false),
+      maintenanceMode: z.boolean().default(false),
+      notifications: z.object({
+        orderConfirmation: z.boolean().default(true),
+        stockAlerts: z.boolean().default(false),
+      }).default({
+        orderConfirmation: true,
+        stockAlerts: false,
+      }),
+    }),
+    public: true,
+    defaults: {
+      siteName: 'Unchained Shop',
+      supportEmail: 'support@localhost',
+      maxProductsPerPage: 20,
+      minimumOrderValue: 0,
+      enableGuestCheckout: false,
+      maintenanceMode: false,
+      notifications: {
+        orderConfirmation: true,
+        stockAlerts: false,
+      },
+    },
+  });
 
   const platform = await startPlatform({
     rolesOptions: {
@@ -202,11 +236,11 @@ try {
     },
     chat: provider
       ? {
-          model: provider.chat(process.env.OPENAI_MODEL || 'gpt-5.2'),
-          imageGenerationTool: imageProvider
-            ? { model: imageProvider.imageModel('gpt-image-1') }
-            : undefined,
-        }
+        model: provider.chat(process.env.OPENAI_MODEL || 'gpt-5.2'),
+        imageGenerationTool: imageProvider
+          ? { model: imageProvider.imageModel('gpt-image-1') }
+          : undefined,
+      }
       : undefined,
   });
 

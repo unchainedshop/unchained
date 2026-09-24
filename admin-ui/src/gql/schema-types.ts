@@ -2,18 +2,18 @@ export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
-  Date: { input: unknown; output: unknown };
-  DateTimeISO: { input: unknown; output: unknown };
-  JSON: { input: unknown; output: unknown };
-  Locale: { input: unknown; output: unknown };
-  LowerCaseString: { input: unknown; output: unknown };
-  PhoneNumber: { input: unknown; output: unknown };
-  Timestamp: { input: unknown; output: unknown };
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  Date: { input: unknown; output: unknown; }
+  DateTimeISO: { input: unknown; output: unknown; }
+  JSON: { input: unknown; output: unknown; }
+  Locale: { input: unknown; output: unknown; }
+  LowerCaseString: { input: unknown; output: unknown; }
+  PhoneNumber: { input: unknown; output: unknown; }
+  Timestamp: { input: unknown; output: unknown; }
 };
 
 export type IAddress = {
@@ -81,15 +81,18 @@ export type IAssortment = {
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
+
 /** Assortment */
 export type IAssortmentChildrenArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+
 /** Assortment */
 export type IAssortmentChildrenCountArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
 };
+
 
 /** Assortment */
 export type IAssortmentMediaArgs = {
@@ -97,6 +100,7 @@ export type IAssortmentMediaArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
+
 
 /** Assortment */
 export type IAssortmentSearchProductsArgs = {
@@ -106,6 +110,7 @@ export type IAssortmentSearchProductsArgs = {
   orderBy?: InputMaybe<ISearchOrderBy>;
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 /** Assortment */
 export type IAssortmentTextsArgs = {
@@ -135,6 +140,7 @@ export type IAssortmentMedia = {
   tags?: Maybe<Array<Scalars['LowerCaseString']['output']>>;
   texts?: Maybe<IAssortmentMediaTexts>;
 };
+
 
 export type IAssortmentMediaTextsArgs = {
   forceLocale?: InputMaybe<Scalars['Locale']['input']>;
@@ -169,6 +175,7 @@ export type IAssortmentPathLink = {
   link?: Maybe<IAssortmentLink>;
 };
 
+
 /**
  * A connection that represents an uplink from assortment to assortment,
  * assortmentId and assortmentTexts are there for convenience
@@ -190,6 +197,7 @@ export type IAssortmentSearchResult = {
   assortments: Array<IAssortment>;
   assortmentsCount: Scalars['Int']['output'];
 };
+
 
 export type IAssortmentSearchResultAssortmentsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -252,16 +260,19 @@ export type IBundleProduct = IProduct & {
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
+
 /** A Bundle product consists of multiple products */
 export type IBundleProductCatalogPriceArgs = {
   currencyCode?: InputMaybe<Scalars['String']['input']>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
 };
 
+
 /** A Bundle product consists of multiple products */
 export type IBundleProductLeveledCatalogPricesArgs = {
   currencyCode?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 /** A Bundle product consists of multiple products */
 export type IBundleProductMediaArgs = {
@@ -269,6 +280,7 @@ export type IBundleProductMediaArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
+
 
 /** A Bundle product consists of multiple products */
 export type IBundleProductReviewsArgs = {
@@ -278,10 +290,12 @@ export type IBundleProductReviewsArgs = {
   sort?: InputMaybe<Array<ISortOptionInput>>;
 };
 
+
 /** A Bundle product consists of multiple products */
 export type IBundleProductReviewsCountArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 /** A Bundle product consists of multiple products */
 export type IBundleProductSiblingsArgs = {
@@ -291,6 +305,7 @@ export type IBundleProductSiblingsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
+
 /** A Bundle product consists of multiple products */
 export type IBundleProductSimulatedPriceArgs = {
   configuration?: InputMaybe<Array<IProductConfigurationParameterInput>>;
@@ -299,6 +314,7 @@ export type IBundleProductSimulatedPriceArgs = {
   useNetPrice?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+
 /** A Bundle product consists of multiple products */
 export type IBundleProductTextsArgs = {
   forceLocale?: InputMaybe<Scalars['Locale']['input']>;
@@ -306,7 +322,7 @@ export type IBundleProductTextsArgs = {
 
 export enum ICacheControlScope {
   Private = 'PRIVATE',
-  Public = 'PUBLIC',
+  Public = 'PUBLIC'
 }
 
 export type IColor = {
@@ -317,8 +333,7 @@ export type IColor = {
   red?: Maybe<Scalars['Int']['output']>;
 };
 
-export type IConfigurableOrBundleProduct =
-  IBundleProduct | IConfigurableProduct;
+export type IConfigurableOrBundleProduct = IBundleProduct | IConfigurableProduct;
 
 /** Configurable Product (Proxy) */
 export type IConfigurableProduct = IProduct & {
@@ -346,10 +361,12 @@ export type IConfigurableProduct = IProduct & {
   variations?: Maybe<Array<IProductVariation>>;
 };
 
+
 /** Configurable Product (Proxy) */
 export type IConfigurableProductAssignmentsArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
 };
+
 
 /** Configurable Product (Proxy) */
 export type IConfigurableProductCatalogPriceRangeArgs = {
@@ -359,6 +376,7 @@ export type IConfigurableProductCatalogPriceRangeArgs = {
   vectors?: InputMaybe<Array<IProductAssignmentVectorInput>>;
 };
 
+
 /** Configurable Product (Proxy) */
 export type IConfigurableProductMediaArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -366,11 +384,13 @@ export type IConfigurableProductMediaArgs = {
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
 
+
 /** Configurable Product (Proxy) */
 export type IConfigurableProductProductsArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
   vectors?: InputMaybe<Array<IProductAssignmentVectorInput>>;
 };
+
 
 /** Configurable Product (Proxy) */
 export type IConfigurableProductReviewsArgs = {
@@ -380,10 +400,12 @@ export type IConfigurableProductReviewsArgs = {
   sort?: InputMaybe<Array<ISortOptionInput>>;
 };
 
+
 /** Configurable Product (Proxy) */
 export type IConfigurableProductReviewsCountArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 /** Configurable Product (Proxy) */
 export type IConfigurableProductSiblingsArgs = {
@@ -393,6 +415,7 @@ export type IConfigurableProductSiblingsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
+
 /** Configurable Product (Proxy) */
 export type IConfigurableProductSimulatedPriceRangeArgs = {
   currencyCode?: InputMaybe<Scalars['String']['input']>;
@@ -401,6 +424,7 @@ export type IConfigurableProductSimulatedPriceRangeArgs = {
   useNetPrice?: InputMaybe<Scalars['Boolean']['input']>;
   vectors?: InputMaybe<Array<IProductAssignmentVectorInput>>;
 };
+
 
 /** Configurable Product (Proxy) */
 export type IConfigurableProductTextsArgs = {
@@ -433,6 +457,7 @@ export type ICountry = {
   isoCode?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
 };
+
 
 export type ICountryNameArgs = {
   forceLocale?: InputMaybe<Scalars['Locale']['input']>;
@@ -525,6 +550,7 @@ export type IDeliveryProvider = {
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
+
 export type IDeliveryProviderSimulatedPriceArgs = {
   context?: InputMaybe<Scalars['JSON']['input']>;
   currencyCode?: InputMaybe<Scalars['String']['input']>;
@@ -536,7 +562,7 @@ export enum IDeliveryProviderError {
   AdapterNotFound = 'ADAPTER_NOT_FOUND',
   IncompleteConfiguration = 'INCOMPLETE_CONFIGURATION',
   NotImplemented = 'NOT_IMPLEMENTED',
-  WrongCredentials = 'WRONG_CREDENTIALS',
+  WrongCredentials = 'WRONG_CREDENTIALS'
 }
 
 export type IDeliveryProviderPickUp = IDeliveryProvider & {
@@ -552,6 +578,7 @@ export type IDeliveryProviderPickUp = IDeliveryProvider & {
   type?: Maybe<IDeliveryProviderType>;
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
 };
+
 
 export type IDeliveryProviderPickUpSimulatedPriceArgs = {
   context?: InputMaybe<Scalars['JSON']['input']>;
@@ -573,6 +600,7 @@ export type IDeliveryProviderShipping = IDeliveryProvider & {
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
+
 export type IDeliveryProviderShippingSimulatedPriceArgs = {
   context?: InputMaybe<Scalars['JSON']['input']>;
   currencyCode?: InputMaybe<Scalars['String']['input']>;
@@ -584,7 +612,7 @@ export enum IDeliveryProviderType {
   /** Pick-Up */
   Pickup = 'PICKUP',
   /** Shipping */
-  Shipping = 'SHIPPING',
+  Shipping = 'SHIPPING'
 }
 
 export type IDimensions = {
@@ -594,17 +622,21 @@ export type IDimensions = {
   width?: Maybe<Scalars['Float']['output']>;
 };
 
+
 export type IDimensionsHeightArgs = {
   unit?: InputMaybe<ILengthUnit>;
 };
+
 
 export type IDimensionsLengthArgs = {
   unit?: InputMaybe<ILengthUnit>;
 };
 
+
 export type IDimensionsWeightArgs = {
   unit?: InputMaybe<IMassUnit>;
 };
+
 
 export type IDimensionsWidthArgs = {
   unit?: InputMaybe<ILengthUnit>;
@@ -644,6 +676,7 @@ export type IEnrollment = {
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
   user: IUser;
 };
+
 
 /** Enrollment */
 export type IEnrollmentIsExpiredArgs = {
@@ -695,7 +728,7 @@ export enum IEnrollmentStatus {
   /** Paused because of overdue payments */
   Paused = 'PAUSED',
   /** Terminated / Ended enrollment */
-  Terminated = 'TERMINATED',
+  Terminated = 'TERMINATED'
 }
 
 export type IEvent = {
@@ -817,6 +850,7 @@ export enum IEventType {
   QuotationRemove = 'QUOTATION_REMOVE',
   QuotationRequestCreate = 'QUOTATION_REQUEST_CREATE',
   QuotationUpdate = 'QUOTATION_UPDATE',
+  ShopSettingsUpdated = 'SHOP_SETTINGS_UPDATED',
   TokenInvalidated = 'TOKEN_INVALIDATED',
   TokenOwnershipChanged = 'TOKEN_OWNERSHIP_CHANGED',
   Unknown = 'UNKNOWN',
@@ -843,14 +877,14 @@ export enum IEventType {
   WorkAllocated = 'WORK_ALLOCATED',
   WorkDeleted = 'WORK_DELETED',
   WorkFinished = 'WORK_FINISHED',
-  WorkRescheduled = 'WORK_RESCHEDULED',
+  WorkRescheduled = 'WORK_RESCHEDULED'
 }
 
 export enum IExternalLinkTarget {
   /** Open on new tab */
   Blank = 'BLANK',
   /** Open in own Iframe */
-  Self = 'SELF',
+  Self = 'SELF'
 }
 
 export type IFilter = {
@@ -864,6 +898,7 @@ export type IFilter = {
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
+
 export type IFilterTextsArgs = {
   forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 };
@@ -873,6 +908,7 @@ export type IFilterOption = {
   texts?: Maybe<IFilterTexts>;
   value?: Maybe<Scalars['String']['output']>;
 };
+
 
 export type IFilterOptionTextsArgs = {
   forceLocale?: InputMaybe<Scalars['Locale']['input']>;
@@ -904,7 +940,7 @@ export enum IFilterType {
   /** Single-choice */
   SingleChoice = 'SINGLE_CHOICE',
   /** Switch / Boolean */
-  Switch = 'SWITCH',
+  Switch = 'SWITCH'
 }
 
 export type IGeoPosition = {
@@ -918,19 +954,7 @@ export type IGlobalSearchResponse = {
   results: Array<IGlobalSearchResult>;
 };
 
-export type IGlobalSearchResult =
-  | IAssortment
-  | IBundleProduct
-  | IConfigurableProduct
-  | IEnrollment
-  | IFilter
-  | IOrder
-  | IPlanProduct
-  | IQuotation
-  | ISimpleProduct
-  | ITokenizedProduct
-  | IUser
-  | IWork;
+export type IGlobalSearchResult = IAssortment | IBundleProduct | IConfigurableProduct | IEnrollment | IFilter | IOrder | IPlanProduct | IQuotation | ISimpleProduct | ITokenizedProduct | IUser | IWork;
 
 export type IGlobalSearchTypeCount = {
   authorized: Scalars['Boolean']['output'];
@@ -955,7 +979,7 @@ export type ILanguage = {
 export enum ILengthUnit {
   Feet = 'FEET',
   Meters = 'METERS',
-  Millimeters = 'MILLIMETERS',
+  Millimeters = 'MILLIMETERS'
 }
 
 export type ILoadedFilter = {
@@ -985,7 +1009,7 @@ export type ILoginMethodResponse = {
 export enum IMassUnit {
   Gram = 'GRAM',
   Kilogram = 'KILOGRAM',
-  Pounds = 'POUNDS',
+  Pounds = 'POUNDS'
 }
 
 export type IMedia = {
@@ -995,6 +1019,7 @@ export type IMedia = {
   type: Scalars['String']['output'];
   url?: Maybe<Scalars['String']['output']>;
 };
+
 
 export type IMediaUrlArgs = {
   baseUrl?: InputMaybe<Scalars['String']['input']>;
@@ -1172,6 +1197,7 @@ export type IMutation = {
   /**
    * Log the user out of all sessions by invalidating all JWT tokens.
    * This increments the token version, making all existing tokens invalid.
+   * Pass a userId to force-logout another user (requires updateUser permission).
    */
   logoutAllSessions?: Maybe<ISuccessResponse>;
   /** Make a proposal as answer to the RFP by changing its status to PROCESSED */
@@ -1309,9 +1335,7 @@ export type IMutation = {
   /** Sign a generic order payment */
   signPaymentProviderForCheckout: Scalars['String']['output'];
   /** Sign a generic payment provider for registration */
-  signPaymentProviderForCredentialRegistration?: Maybe<
-    Scalars['String']['output']
-  >;
+  signPaymentProviderForCredentialRegistration?: Maybe<Scalars['String']['output']>;
   /** End customer impersonated user session and resume the impersonator session */
   stopImpersonation?: Maybe<ILoginMethodResponse>;
   /** Terminate an actively running enrollment by changing it's status to TERMINATED */
@@ -1384,6 +1408,12 @@ export type IMutation = {
   updateProductVariationTexts: Array<IProductVariationTexts>;
   /** Modify warehousing part of a product */
   updateProductWarehousing?: Maybe<IProduct>;
+  /**
+   * Update runtime settings for a given namespace. Validates against the
+   * registered zod schema and emits SHOP_SETTINGS_UPDATED on success.
+   * Requires the manageShopSettings permission.
+   */
+  updateShopSettings: Scalars['JSON']['output'];
   /** Update Profile of any user or logged in user if userId is not provided */
   updateUserProfile: IUser;
   /** Updates warehousing provider information with the provided ID */
@@ -1395,9 +1425,11 @@ export type IMutation = {
   verifyWeb3Address: IUser;
 };
 
+
 export type IMutationActivateEnrollmentArgs = {
   enrollmentId: Scalars['ID']['input'];
 };
+
 
 export type IMutationAddAssortmentFilterArgs = {
   assortmentId: Scalars['ID']['input'];
@@ -1405,11 +1437,13 @@ export type IMutationAddAssortmentFilterArgs = {
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
 
+
 export type IMutationAddAssortmentLinkArgs = {
   childAssortmentId: Scalars['ID']['input'];
   parentAssortmentId: Scalars['ID']['input'];
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
+
 
 export type IMutationAddAssortmentProductArgs = {
   assortmentId: Scalars['ID']['input'];
@@ -1417,10 +1451,12 @@ export type IMutationAddAssortmentProductArgs = {
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
 
+
 export type IMutationAddCartDiscountArgs = {
   code: Scalars['String']['input'];
   orderId?: InputMaybe<Scalars['ID']['input']>;
 };
+
 
 export type IMutationAddCartProductArgs = {
   configuration?: InputMaybe<Array<IProductConfigurationParameterInput>>;
@@ -1429,6 +1465,7 @@ export type IMutationAddCartProductArgs = {
   quantity?: InputMaybe<Scalars['Int']['input']>;
 };
 
+
 export type IMutationAddCartQuotationArgs = {
   configuration?: InputMaybe<Array<IProductConfigurationParameterInput>>;
   orderId?: InputMaybe<Scalars['ID']['input']>;
@@ -1436,15 +1473,18 @@ export type IMutationAddCartQuotationArgs = {
   quotationId: Scalars['ID']['input'];
 };
 
+
 export type IMutationAddEmailArgs = {
   email: Scalars['String']['input'];
   userId?: InputMaybe<Scalars['ID']['input']>;
 };
 
+
 export type IMutationAddMultipleCartProductsArgs = {
   items: Array<IOrderItemInput>;
   orderId?: InputMaybe<Scalars['ID']['input']>;
 };
+
 
 export type IMutationAddProductAssignmentArgs = {
   productId: Scalars['ID']['input'];
@@ -1452,24 +1492,29 @@ export type IMutationAddProductAssignmentArgs = {
   vectors: Array<IProductAssignmentVectorInput>;
 };
 
+
 export type IMutationAddProductReviewVoteArgs = {
   meta?: InputMaybe<Scalars['JSON']['input']>;
   productReviewId: Scalars['ID']['input'];
   type: IProductReviewVoteType;
 };
 
+
 export type IMutationAddPushSubscriptionArgs = {
   subscription: Scalars['JSON']['input'];
   unsubscribeFromOtherUsers?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+
 export type IMutationAddWeb3AddressArgs = {
   address: Scalars['String']['input'];
 };
 
+
 export type IMutationAddWebAuthnCredentialsArgs = {
   credentials: Scalars['JSON']['input'];
 };
+
 
 export type IMutationAddWorkArgs = {
   input?: InputMaybe<Scalars['JSON']['input']>;
@@ -1481,56 +1526,68 @@ export type IMutationAddWorkArgs = {
   worker?: InputMaybe<Scalars['String']['input']>;
 };
 
+
 export type IMutationAllocateWorkArgs = {
   types?: InputMaybe<Array<InputMaybe<IWorkType>>>;
   worker?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 export type IMutationBookmarkArgs = {
   bookmarked?: InputMaybe<Scalars['Boolean']['input']>;
   productId: Scalars['ID']['input'];
 };
 
+
 export type IMutationBulkAssignProductsToAssortmentArgs = {
   assortmentId: Scalars['ID']['input'];
   productIds: Array<Scalars['ID']['input']>;
 };
 
+
 export type IMutationBulkRemoveAssortmentsArgs = {
   assortmentIds: Array<Scalars['ID']['input']>;
 };
+
 
 export type IMutationBulkRemoveFiltersArgs = {
   filterIds: Array<Scalars['ID']['input']>;
 };
 
+
 export type IMutationBulkRemoveProductsArgs = {
   productIds: Array<Scalars['ID']['input']>;
 };
 
+
 export type IMutationBulkRemoveUsersArgs = {
   userIds: Array<Scalars['ID']['input']>;
 };
+
 
 export type IMutationBulkSetAssortmentActiveArgs = {
   assortmentIds: Array<Scalars['ID']['input']>;
   isActive: Scalars['Boolean']['input'];
 };
 
+
 export type IMutationBulkSetFilterActiveArgs = {
   filterIds: Array<Scalars['ID']['input']>;
   isActive: Scalars['Boolean']['input'];
 };
+
 
 export type IMutationBulkSetProductStatusArgs = {
   productIds: Array<Scalars['ID']['input']>;
   status: IProductStatus;
 };
 
+
 export type IMutationBulkSetUserRolesArgs = {
   roles: Array<Scalars['String']['input']>;
   userIds: Array<Scalars['ID']['input']>;
 };
+
 
 export type IMutationBulkUpdateAssortmentTagsArgs = {
   add?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
@@ -1538,11 +1595,13 @@ export type IMutationBulkUpdateAssortmentTagsArgs = {
   remove?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
 
+
 export type IMutationBulkUpdateProductTagsArgs = {
   add?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
   productIds: Array<Scalars['ID']['input']>;
   remove?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
+
 
 export type IMutationBulkUpdateUserTagsArgs = {
   add?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
@@ -1550,10 +1609,12 @@ export type IMutationBulkUpdateUserTagsArgs = {
   userIds: Array<Scalars['ID']['input']>;
 };
 
+
 export type IMutationChangePasswordArgs = {
   newPassword: Scalars['String']['input'];
   oldPassword: Scalars['String']['input'];
 };
+
 
 export type IMutationCheckoutCartArgs = {
   deliveryContext?: InputMaybe<Scalars['JSON']['input']>;
@@ -1561,11 +1622,13 @@ export type IMutationCheckoutCartArgs = {
   paymentContext?: InputMaybe<Scalars['JSON']['input']>;
 };
 
+
 export type IMutationConfirmMediaUploadArgs = {
   mediaUploadTicketId: Scalars['ID']['input'];
   size: Scalars['Int']['input'];
   type: Scalars['String']['input'];
 };
+
 
 export type IMutationConfirmOrderArgs = {
   comment?: InputMaybe<Scalars['String']['input']>;
@@ -1574,10 +1637,12 @@ export type IMutationConfirmOrderArgs = {
   paymentContext?: InputMaybe<Scalars['JSON']['input']>;
 };
 
+
 export type IMutationCreateAssortmentArgs = {
   assortment: ICreateAssortmentInput;
   texts?: InputMaybe<Array<IAssortmentTextInput>>;
 };
+
 
 export type IMutationCreateBookmarkArgs = {
   meta?: InputMaybe<Scalars['JSON']['input']>;
@@ -1585,21 +1650,26 @@ export type IMutationCreateBookmarkArgs = {
   userId: Scalars['ID']['input'];
 };
 
+
 export type IMutationCreateCartArgs = {
   orderNumber: Scalars['String']['input'];
 };
+
 
 export type IMutationCreateCountryArgs = {
   country: ICreateCountryInput;
 };
 
+
 export type IMutationCreateCurrencyArgs = {
   currency: ICreateCurrencyInput;
 };
 
+
 export type IMutationCreateDeliveryProviderArgs = {
   deliveryProvider: ICreateDeliveryProviderInput;
 };
+
 
 export type IMutationCreateEnrollmentArgs = {
   billingAddress?: InputMaybe<IAddressInput>;
@@ -1610,10 +1680,12 @@ export type IMutationCreateEnrollmentArgs = {
   plan: IEnrollmentPlanInput;
 };
 
+
 export type IMutationCreateFilterArgs = {
   filter: ICreateFilterInput;
   texts?: InputMaybe<Array<IFilterTextInput>>;
 };
+
 
 export type IMutationCreateFilterOptionArgs = {
   filterId: Scalars['ID']['input'];
@@ -1621,28 +1693,34 @@ export type IMutationCreateFilterOptionArgs = {
   texts?: InputMaybe<Array<IFilterTextInput>>;
 };
 
+
 export type IMutationCreateLanguageArgs = {
   language: ICreateLanguageInput;
 };
 
+
 export type IMutationCreatePaymentProviderArgs = {
   paymentProvider: ICreatePaymentProviderInput;
 };
+
 
 export type IMutationCreateProductArgs = {
   product: ICreateProductInput;
   texts?: InputMaybe<Array<IProductTextInput>>;
 };
 
+
 export type IMutationCreateProductBundleItemArgs = {
   item: ICreateProductBundleItemInput;
   productId: Scalars['ID']['input'];
 };
 
+
 export type IMutationCreateProductReviewArgs = {
   productId: Scalars['ID']['input'];
   productReview: IProductReviewInput;
 };
+
 
 export type IMutationCreateProductVariationArgs = {
   productId: Scalars['ID']['input'];
@@ -1650,11 +1728,13 @@ export type IMutationCreateProductVariationArgs = {
   variation: ICreateProductVariationInput;
 };
 
+
 export type IMutationCreateProductVariationOptionArgs = {
   option: Scalars['String']['input'];
   productVariationId: Scalars['ID']['input'];
   texts?: InputMaybe<Array<IProductVariationTextInput>>;
 };
+
 
 export type IMutationCreateUserArgs = {
   email?: InputMaybe<Scalars['String']['input']>;
@@ -1664,27 +1744,33 @@ export type IMutationCreateUserArgs = {
   webAuthnPublicKeyCredentials?: InputMaybe<Scalars['JSON']['input']>;
 };
 
+
 export type IMutationCreateWarehousingProviderArgs = {
   warehousingProvider: ICreateWarehousingProviderInput;
 };
+
 
 export type IMutationCreateWebAuthnCredentialCreationOptionsArgs = {
   extensionOptions?: InputMaybe<Scalars['JSON']['input']>;
   username: Scalars['String']['input'];
 };
 
+
 export type IMutationCreateWebAuthnCredentialRequestOptionsArgs = {
   extensionOptions?: InputMaybe<Scalars['JSON']['input']>;
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
+
 export type IMutationDeliverOrderArgs = {
   orderId: Scalars['ID']['input'];
 };
 
+
 export type IMutationEmptyCartArgs = {
   orderId?: InputMaybe<Scalars['ID']['input']>;
 };
+
 
 export type IMutationEnrollUserArgs = {
   email: Scalars['String']['input'];
@@ -1692,11 +1778,13 @@ export type IMutationEnrollUserArgs = {
   profile: IUserProfileInput;
 };
 
+
 export type IMutationExportTokenArgs = {
   quantity?: Scalars['Int']['input'];
   recipientWalletAddress: Scalars['String']['input'];
   tokenId: Scalars['ID']['input'];
 };
+
 
 export type IMutationFinishWorkArgs = {
   error?: InputMaybe<Scalars['JSON']['input']>;
@@ -1708,17 +1796,21 @@ export type IMutationFinishWorkArgs = {
   worker?: InputMaybe<Scalars['String']['input']>;
 };
 
+
 export type IMutationForgotPasswordArgs = {
   email: Scalars['String']['input'];
 };
+
 
 export type IMutationImpersonateArgs = {
   userId: Scalars['ID']['input'];
 };
 
+
 export type IMutationInvalidateTokenArgs = {
   tokenId: Scalars['ID']['input'];
 };
+
 
 export type IMutationLoginWithPasswordArgs = {
   email?: InputMaybe<Scalars['String']['input']>;
@@ -1726,55 +1818,72 @@ export type IMutationLoginWithPasswordArgs = {
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
+
 export type IMutationLoginWithWebAuthnArgs = {
   webAuthnPublicKeyCredentials: Scalars['JSON']['input'];
 };
+
+
+export type IMutationLogoutAllSessionsArgs = {
+  userId?: InputMaybe<Scalars['ID']['input']>;
+};
+
 
 export type IMutationMakeQuotationProposalArgs = {
   quotationContext?: InputMaybe<Scalars['JSON']['input']>;
   quotationId: Scalars['ID']['input'];
 };
 
+
 export type IMutationMarkPaymentCredentialsPreferredArgs = {
   paymentCredentialsId: Scalars['ID']['input'];
 };
+
 
 export type IMutationPageViewArgs = {
   path: Scalars['String']['input'];
   referrer?: InputMaybe<Scalars['String']['input']>;
 };
 
+
 export type IMutationPayOrderArgs = {
   orderId: Scalars['ID']['input'];
 };
+
 
 export type IMutationPrepareAssortmentMediaUploadArgs = {
   assortmentId: Scalars['ID']['input'];
   mediaName: Scalars['String']['input'];
 };
 
+
 export type IMutationPrepareProductMediaUploadArgs = {
   mediaName: Scalars['String']['input'];
   productId: Scalars['ID']['input'];
 };
+
 
 export type IMutationPrepareUserAvatarUploadArgs = {
   mediaName: Scalars['String']['input'];
   userId?: InputMaybe<Scalars['ID']['input']>;
 };
 
+
 export type IMutationProcessNextWorkArgs = {
   worker?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 export type IMutationPublishProductArgs = {
   productId: Scalars['ID']['input'];
 };
 
+
 export type IMutationRegisterPaymentCredentialsArgs = {
   paymentProviderId: Scalars['ID']['input'];
   transactionContext: Scalars['JSON']['input'];
 };
+
 
 export type IMutationRejectOrderArgs = {
   comment?: InputMaybe<Scalars['String']['input']>;
@@ -1783,240 +1892,295 @@ export type IMutationRejectOrderArgs = {
   paymentContext?: InputMaybe<Scalars['JSON']['input']>;
 };
 
+
 export type IMutationRejectQuotationArgs = {
   quotationContext?: InputMaybe<Scalars['JSON']['input']>;
   quotationId: Scalars['ID']['input'];
 };
 
+
 export type IMutationRemoveAssortmentArgs = {
   assortmentId: Scalars['ID']['input'];
 };
+
 
 export type IMutationRemoveAssortmentFilterArgs = {
   assortmentFilterId: Scalars['ID']['input'];
 };
 
+
 export type IMutationRemoveAssortmentLinkArgs = {
   assortmentLinkId: Scalars['ID']['input'];
 };
+
 
 export type IMutationRemoveAssortmentMediaArgs = {
   assortmentMediaId: Scalars['ID']['input'];
 };
 
+
 export type IMutationRemoveAssortmentProductArgs = {
   assortmentProductId: Scalars['ID']['input'];
 };
 
+
 export type IMutationRemoveBookmarkArgs = {
   bookmarkId: Scalars['ID']['input'];
 };
+
 
 export type IMutationRemoveBundleItemArgs = {
   index: Scalars['Int']['input'];
   productId: Scalars['ID']['input'];
 };
 
+
 export type IMutationRemoveCartDiscountArgs = {
   discountId: Scalars['ID']['input'];
 };
+
 
 export type IMutationRemoveCartItemArgs = {
   itemId: Scalars['ID']['input'];
 };
 
+
 export type IMutationRemoveCountryArgs = {
   countryId: Scalars['ID']['input'];
 };
+
 
 export type IMutationRemoveCurrencyArgs = {
   currencyId: Scalars['ID']['input'];
 };
 
+
 export type IMutationRemoveDeliveryProviderArgs = {
   deliveryProviderId: Scalars['ID']['input'];
 };
+
 
 export type IMutationRemoveEmailArgs = {
   email: Scalars['String']['input'];
   userId?: InputMaybe<Scalars['ID']['input']>;
 };
 
+
 export type IMutationRemoveFilterArgs = {
   filterId: Scalars['ID']['input'];
 };
+
 
 export type IMutationRemoveFilterOptionArgs = {
   filterId: Scalars['ID']['input'];
   filterOptionValue: Scalars['String']['input'];
 };
 
+
 export type IMutationRemoveLanguageArgs = {
   languageId: Scalars['ID']['input'];
 };
+
 
 export type IMutationRemoveOrderArgs = {
   orderId: Scalars['ID']['input'];
 };
 
+
 export type IMutationRemovePaymentCredentialsArgs = {
   paymentCredentialsId: Scalars['ID']['input'];
 };
+
 
 export type IMutationRemovePaymentProviderArgs = {
   paymentProviderId: Scalars['ID']['input'];
 };
 
+
 export type IMutationRemoveProductArgs = {
   productId: Scalars['ID']['input'];
 };
+
 
 export type IMutationRemoveProductAssignmentArgs = {
   proxyId: Scalars['ID']['input'];
   vectors: Array<IProductAssignmentVectorInput>;
 };
 
+
 export type IMutationRemoveProductMediaArgs = {
   productMediaId: Scalars['ID']['input'];
 };
 
+
 export type IMutationRemoveProductReviewArgs = {
   productReviewId: Scalars['ID']['input'];
 };
+
 
 export type IMutationRemoveProductReviewVoteArgs = {
   productReviewId: Scalars['ID']['input'];
   type?: InputMaybe<IProductReviewVoteType>;
 };
 
+
 export type IMutationRemoveProductVariationArgs = {
   productVariationId: Scalars['ID']['input'];
 };
+
 
 export type IMutationRemoveProductVariationOptionArgs = {
   productVariationId: Scalars['ID']['input'];
   productVariationOptionValue: Scalars['String']['input'];
 };
 
+
 export type IMutationRemovePushSubscriptionArgs = {
   p256dh: Scalars['String']['input'];
 };
+
 
 export type IMutationRemoveUserArgs = {
   removeUserReviews?: InputMaybe<Scalars['Boolean']['input']>;
   userId?: InputMaybe<Scalars['ID']['input']>;
 };
 
+
 export type IMutationRemoveUserProductReviewsArgs = {
   userId: Scalars['ID']['input'];
 };
+
 
 export type IMutationRemoveWarehousingProviderArgs = {
   warehousingProviderId: Scalars['ID']['input'];
 };
 
+
 export type IMutationRemoveWeb3AddressArgs = {
   address: Scalars['String']['input'];
 };
+
 
 export type IMutationRemoveWebAuthnCredentialsArgs = {
   credentialsId: Scalars['ID']['input'];
 };
 
+
 export type IMutationRemoveWorkArgs = {
   workId: Scalars['ID']['input'];
 };
+
 
 export type IMutationReorderAssortmentFiltersArgs = {
   sortKeys: Array<IReorderAssortmentFilterInput>;
 };
 
+
 export type IMutationReorderAssortmentLinksArgs = {
   sortKeys: Array<IReorderAssortmentLinkInput>;
 };
+
 
 export type IMutationReorderAssortmentMediaArgs = {
   sortKeys: Array<IReorderAssortmentMediaInput>;
 };
 
+
 export type IMutationReorderAssortmentProductsArgs = {
   sortKeys: Array<IReorderAssortmentProductInput>;
 };
 
+
 export type IMutationReorderProductMediaArgs = {
   sortKeys: Array<IReorderProductMediaInput>;
 };
+
 
 export type IMutationRequestQuotationArgs = {
   configuration?: InputMaybe<Array<IProductConfigurationParameterInput>>;
   productId: Scalars['ID']['input'];
 };
 
+
 export type IMutationResetPasswordArgs = {
   newPassword: Scalars['String']['input'];
   token: Scalars['String']['input'];
 };
 
+
 export type IMutationSendEnrollmentEmailArgs = {
   email: Scalars['String']['input'];
 };
 
+
 export type IMutationSendVerificationEmailArgs = {
   email?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 export type IMutationSetPasswordArgs = {
   newPassword: Scalars['String']['input'];
   userId: Scalars['ID']['input'];
 };
 
+
 export type IMutationSetRolesArgs = {
   roles: Array<Scalars['String']['input']>;
   userId: Scalars['ID']['input'];
 };
+
 
 export type IMutationSetUserTagsArgs = {
   tags: Array<InputMaybe<Scalars['LowerCaseString']['input']>>;
   userId: Scalars['ID']['input'];
 };
 
+
 export type IMutationSetUsernameArgs = {
   userId: Scalars['ID']['input'];
   username: Scalars['String']['input'];
 };
+
 
 export type IMutationSignPaymentProviderForCheckoutArgs = {
   orderPaymentId?: InputMaybe<Scalars['ID']['input']>;
   transactionContext?: InputMaybe<Scalars['JSON']['input']>;
 };
 
+
 export type IMutationSignPaymentProviderForCredentialRegistrationArgs = {
   paymentProviderId: Scalars['ID']['input'];
   transactionContext?: InputMaybe<Scalars['JSON']['input']>;
 };
 
+
 export type IMutationTerminateEnrollmentArgs = {
   enrollmentId: Scalars['ID']['input'];
 };
 
+
 export type IMutationUnpublishProductArgs = {
   productId: Scalars['ID']['input'];
 };
+
 
 export type IMutationUpdateAssortmentArgs = {
   assortment: IUpdateAssortmentInput;
   assortmentId: Scalars['ID']['input'];
 };
 
+
 export type IMutationUpdateAssortmentMediaTextsArgs = {
   assortmentMediaId: Scalars['ID']['input'];
   texts: Array<IAssortmentMediaTextInput>;
 };
 
+
 export type IMutationUpdateAssortmentTextsArgs = {
   assortmentId: Scalars['ID']['input'];
   texts: Array<IAssortmentTextInput>;
 };
+
 
 export type IMutationUpdateCartArgs = {
   billingAddress?: InputMaybe<IAddressInput>;
@@ -2027,12 +2191,14 @@ export type IMutationUpdateCartArgs = {
   paymentProviderId?: InputMaybe<Scalars['ID']['input']>;
 };
 
+
 export type IMutationUpdateCartDeliveryPickUpArgs = {
   deliveryProviderId: Scalars['ID']['input'];
   meta?: InputMaybe<Scalars['JSON']['input']>;
   orderId?: InputMaybe<Scalars['ID']['input']>;
   orderPickUpLocationId: Scalars['ID']['input'];
 };
+
 
 export type IMutationUpdateCartDeliveryShippingArgs = {
   address?: InputMaybe<IAddressInput>;
@@ -2041,11 +2207,13 @@ export type IMutationUpdateCartDeliveryShippingArgs = {
   orderId?: InputMaybe<Scalars['ID']['input']>;
 };
 
+
 export type IMutationUpdateCartItemArgs = {
   configuration?: InputMaybe<Array<IProductConfigurationParameterInput>>;
   itemId: Scalars['ID']['input'];
   quantity?: InputMaybe<Scalars['Int']['input']>;
 };
+
 
 export type IMutationUpdateCartPaymentGenericArgs = {
   meta?: InputMaybe<Scalars['JSON']['input']>;
@@ -2053,26 +2221,31 @@ export type IMutationUpdateCartPaymentGenericArgs = {
   paymentProviderId: Scalars['ID']['input'];
 };
 
+
 export type IMutationUpdateCartPaymentInvoiceArgs = {
   meta?: InputMaybe<Scalars['JSON']['input']>;
   orderId?: InputMaybe<Scalars['ID']['input']>;
   paymentProviderId: Scalars['ID']['input'];
 };
 
+
 export type IMutationUpdateCountryArgs = {
   country: IUpdateCountryInput;
   countryId: Scalars['ID']['input'];
 };
+
 
 export type IMutationUpdateCurrencyArgs = {
   currency: IUpdateCurrencyInput;
   currencyId: Scalars['ID']['input'];
 };
 
+
 export type IMutationUpdateDeliveryProviderArgs = {
   deliveryProvider: IUpdateProviderInput;
   deliveryProviderId: Scalars['ID']['input'];
 };
+
 
 export type IMutationUpdateEnrollmentArgs = {
   billingAddress?: InputMaybe<IAddressInput>;
@@ -2084,10 +2257,12 @@ export type IMutationUpdateEnrollmentArgs = {
   plan?: InputMaybe<IEnrollmentPlanInput>;
 };
 
+
 export type IMutationUpdateFilterArgs = {
   filter: IUpdateFilterInput;
   filterId: Scalars['ID']['input'];
 };
+
 
 export type IMutationUpdateFilterTextsArgs = {
   filterId: Scalars['ID']['input'];
@@ -2095,55 +2270,66 @@ export type IMutationUpdateFilterTextsArgs = {
   texts: Array<IFilterTextInput>;
 };
 
+
 export type IMutationUpdateLanguageArgs = {
   language: IUpdateLanguageInput;
   languageId: Scalars['ID']['input'];
 };
+
 
 export type IMutationUpdatePaymentProviderArgs = {
   paymentProvider: IUpdateProviderInput;
   paymentProviderId: Scalars['ID']['input'];
 };
 
+
 export type IMutationUpdateProductArgs = {
   product: IUpdateProductInput;
   productId: Scalars['ID']['input'];
 };
+
 
 export type IMutationUpdateProductCommerceArgs = {
   commerce: IUpdateProductCommerceInput;
   productId: Scalars['ID']['input'];
 };
 
+
 export type IMutationUpdateProductMediaTextsArgs = {
   productMediaId: Scalars['ID']['input'];
   texts: Array<IProductMediaTextInput>;
 };
+
 
 export type IMutationUpdateProductPlanArgs = {
   plan: IUpdateProductPlanInput;
   productId: Scalars['ID']['input'];
 };
 
+
 export type IMutationUpdateProductReviewArgs = {
   productReview: IProductReviewInput;
   productReviewId: Scalars['ID']['input'];
 };
+
 
 export type IMutationUpdateProductSupplyArgs = {
   productId: Scalars['ID']['input'];
   supply: IUpdateProductSupplyInput;
 };
 
+
 export type IMutationUpdateProductTextsArgs = {
   productId: Scalars['ID']['input'];
   texts: Array<IProductTextInput>;
 };
 
+
 export type IMutationUpdateProductTokenizationArgs = {
   productId: Scalars['ID']['input'];
   tokenization: IUpdateProductTokenizationInput;
 };
+
 
 export type IMutationUpdateProductVariationTextsArgs = {
   productVariationId: Scalars['ID']['input'];
@@ -2151,10 +2337,18 @@ export type IMutationUpdateProductVariationTextsArgs = {
   texts: Array<IProductVariationTextInput>;
 };
 
+
 export type IMutationUpdateProductWarehousingArgs = {
   productId: Scalars['ID']['input'];
   warehousing: IUpdateProductWarehousingInput;
 };
+
+
+export type IMutationUpdateShopSettingsArgs = {
+  namespace: Scalars['String']['input'];
+  value: Scalars['JSON']['input'];
+};
+
 
 export type IMutationUpdateUserProfileArgs = {
   meta?: InputMaybe<Scalars['JSON']['input']>;
@@ -2162,19 +2356,23 @@ export type IMutationUpdateUserProfileArgs = {
   userId?: InputMaybe<Scalars['ID']['input']>;
 };
 
+
 export type IMutationUpdateWarehousingProviderArgs = {
   warehousingProvider: IUpdateProviderInput;
   warehousingProviderId: Scalars['ID']['input'];
 };
 
+
 export type IMutationVerifyEmailArgs = {
   token: Scalars['String']['input'];
 };
+
 
 export type IMutationVerifyQuotationArgs = {
   quotationContext?: InputMaybe<Scalars['JSON']['input']>;
   quotationId: Scalars['ID']['input'];
 };
+
 
 export type IMutationVerifyWeb3AddressArgs = {
   address: Scalars['String']['input'];
@@ -2206,6 +2404,7 @@ export type IOrder = {
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
   user?: Maybe<IUser>;
 };
+
 
 /** Just an order */
 export type IOrderTotalArgs = {
@@ -2255,7 +2454,7 @@ export enum IOrderDeliveryStatus {
   /** Order is not delivered */
   Open = 'OPEN',
   /** Delivery returned */
-  Returned = 'RETURNED',
+  Returned = 'RETURNED'
 }
 
 export type IOrderDiscount = {
@@ -2268,6 +2467,7 @@ export type IOrderDiscount = {
   trigger: IOrderDiscountTrigger;
 };
 
+
 export type IOrderDiscountTotalArgs = {
   useNetPrice?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -2276,7 +2476,7 @@ export enum IOrderDiscountTrigger {
   /** System triggered */
   System = 'SYSTEM',
   /** User triggered */
-  User = 'USER',
+  User = 'USER'
 }
 
 export type IOrderDiscountable = {
@@ -2307,10 +2507,12 @@ export type IOrderItem = {
   unitPrice?: Maybe<IPrice>;
 };
 
+
 export type IOrderItemTotalArgs = {
   category?: InputMaybe<IOrderItemPriceCategory>;
   useNetPrice?: InputMaybe<Scalars['Boolean']['input']>;
 };
+
 
 export type IOrderItemUnitPriceArgs = {
   useNetPrice?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2335,7 +2537,7 @@ export enum IOrderItemPriceCategory {
   /** Items */
   Item = 'ITEM',
   /** Tax */
-  Tax = 'TAX',
+  Tax = 'TAX'
 }
 
 export type IOrderPayment = {
@@ -2387,7 +2589,7 @@ export enum IOrderPaymentStatus {
   /** Order has been paid */
   Paid = 'PAID',
   /** Order has been refunded */
-  Refunded = 'REFUNDED',
+  Refunded = 'REFUNDED'
 }
 
 export enum IOrderPriceCategory {
@@ -2400,7 +2602,7 @@ export enum IOrderPriceCategory {
   /** Payment Fees */
   Payment = 'PAYMENT',
   /** Tax */
-  Taxes = 'TAXES',
+  Taxes = 'TAXES'
 }
 
 export type IOrderStatistics = {
@@ -2432,7 +2634,7 @@ export enum IOrderStatus {
   /** Order has been sent but confirmation awaiting */
   Pending = 'PENDING',
   /** Order has been rejected */
-  Rejected = 'REJECTED',
+  Rejected = 'REJECTED'
 }
 
 export type IPaymentCredentials = {
@@ -2464,6 +2666,7 @@ export type IPaymentProvider = {
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
+
 export type IPaymentProviderSimulatedPriceArgs = {
   context?: InputMaybe<Scalars['JSON']['input']>;
   currencyCode?: InputMaybe<Scalars['String']['input']>;
@@ -2475,14 +2678,14 @@ export enum IPaymentProviderError {
   AdapterNotFound = 'ADAPTER_NOT_FOUND',
   IncompleteConfiguration = 'INCOMPLETE_CONFIGURATION',
   NotImplemented = 'NOT_IMPLEMENTED',
-  WrongCredentials = 'WRONG_CREDENTIALS',
+  WrongCredentials = 'WRONG_CREDENTIALS'
 }
 
 export enum IPaymentProviderType {
   /** Generic */
   Generic = 'GENERIC',
   /** Invoice */
-  Invoice = 'INVOICE',
+  Invoice = 'INVOICE'
 }
 
 export type IPickUpLocation = {
@@ -2517,10 +2720,12 @@ export type IPlanProduct = IProduct & {
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
+
 /** Plan (Virtual Product that somebody can enroll to) */
 export type IPlanProductAssortmentPathsArgs = {
   forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 };
+
 
 /** Plan (Virtual Product that somebody can enroll to) */
 export type IPlanProductCatalogPriceArgs = {
@@ -2528,10 +2733,12 @@ export type IPlanProductCatalogPriceArgs = {
   quantity?: InputMaybe<Scalars['Int']['input']>;
 };
 
+
 /** Plan (Virtual Product that somebody can enroll to) */
 export type IPlanProductLeveledCatalogPricesArgs = {
   currencyCode?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 /** Plan (Virtual Product that somebody can enroll to) */
 export type IPlanProductMediaArgs = {
@@ -2539,6 +2746,7 @@ export type IPlanProductMediaArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
+
 
 /** Plan (Virtual Product that somebody can enroll to) */
 export type IPlanProductReviewsArgs = {
@@ -2548,10 +2756,12 @@ export type IPlanProductReviewsArgs = {
   sort?: InputMaybe<Array<ISortOptionInput>>;
 };
 
+
 /** Plan (Virtual Product that somebody can enroll to) */
 export type IPlanProductReviewsCountArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 /** Plan (Virtual Product that somebody can enroll to) */
 export type IPlanProductSiblingsArgs = {
@@ -2561,6 +2771,7 @@ export type IPlanProductSiblingsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
+
 /** Plan (Virtual Product that somebody can enroll to) */
 export type IPlanProductSimulatedPriceArgs = {
   configuration?: InputMaybe<Array<IProductConfigurationParameterInput>>;
@@ -2568,6 +2779,7 @@ export type IPlanProductSimulatedPriceArgs = {
   quantity?: InputMaybe<Scalars['Int']['input']>;
   useNetPrice?: InputMaybe<Scalars['Boolean']['input']>;
 };
+
 
 /** Plan (Virtual Product that somebody can enroll to) */
 export type IPlanProductTextsArgs = {
@@ -2610,12 +2822,14 @@ export type IProduct = {
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
+
 /** Abstract Product */
 export type IProductMediaArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
+
 
 /** Abstract Product */
 export type IProductReviewsArgs = {
@@ -2625,10 +2839,12 @@ export type IProductReviewsArgs = {
   sort?: InputMaybe<Array<ISortOptionInput>>;
 };
 
+
 /** Abstract Product */
 export type IProductReviewsCountArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 /** Abstract Product */
 export type IProductSiblingsArgs = {
@@ -2637,6 +2853,7 @@ export type IProductSiblingsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
+
 
 /** Abstract Product */
 export type IProductTextsArgs = {
@@ -2693,6 +2910,7 @@ export type IProductMedia = {
   texts?: Maybe<IProductMediaTexts>;
 };
 
+
 export type IProductMediaTextsArgs = {
   forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 };
@@ -2723,12 +2941,12 @@ export enum IProductPlanConfigurationInterval {
   Hours = 'HOURS',
   Months = 'MONTHS',
   Weeks = 'WEEKS',
-  Years = 'YEARS',
+  Years = 'YEARS'
 }
 
 export enum IProductPlanUsageCalculationType {
   Licensed = 'LICENSED',
-  Metered = 'METERED',
+  Metered = 'METERED'
 }
 
 export type IProductReview = {
@@ -2744,6 +2962,7 @@ export type IProductReview = {
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
   voteCount?: Maybe<Scalars['Int']['output']>;
 };
+
 
 export type IProductReviewVoteCountArgs = {
   type?: InputMaybe<IProductReviewVoteType>;
@@ -2764,7 +2983,7 @@ export type IProductReviewVote = {
 export enum IProductReviewVoteType {
   Downvote = 'DOWNVOTE',
   Report = 'REPORT',
-  Upvote = 'UPVOTE',
+  Upvote = 'UPVOTE'
 }
 
 /** Search result */
@@ -2774,6 +2993,7 @@ export type IProductSearchResult = {
   products: Array<IProduct>;
   productsCount: Scalars['Int']['output'];
 };
+
 
 /** Search result */
 export type IProductSearchResultProductsArgs = {
@@ -2787,7 +3007,7 @@ export enum IProductStatus {
   /** Deleted */
   Deleted = 'DELETED',
   /** Unpublished (hidden from catalog) */
-  Draft = 'DRAFT',
+  Draft = 'DRAFT'
 }
 
 export type IProductTextInput = {
@@ -2818,7 +3038,7 @@ export enum IProductType {
   ConfigurableProduct = 'CONFIGURABLE_PRODUCT',
   PlanProduct = 'PLAN_PRODUCT',
   SimpleProduct = 'SIMPLE_PRODUCT',
-  TokenizedProduct = 'TOKENIZED_PRODUCT',
+  TokenizedProduct = 'TOKENIZED_PRODUCT'
 }
 
 export type IProductVariation = {
@@ -2828,6 +3048,7 @@ export type IProductVariation = {
   texts?: Maybe<IProductVariationTexts>;
   type?: Maybe<IProductVariationType>;
 };
+
 
 export type IProductVariationTextsArgs = {
   forceLocale?: InputMaybe<Scalars['Locale']['input']>;
@@ -2855,6 +3076,7 @@ export type IProductVariationOption = {
   value?: Maybe<Scalars['String']['output']>;
 };
 
+
 export type IProductVariationOptionTextsArgs = {
   forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 };
@@ -2876,7 +3098,7 @@ export enum IProductVariationType {
   /** Color Picker */
   Color = 'COLOR',
   /** Text Answers */
-  Text = 'TEXT',
+  Text = 'TEXT'
 }
 
 export type IPushSubscription = {
@@ -2995,6 +3217,14 @@ export type IQuery = {
   searchProducts: IProductSearchResult;
   /** Get shop-global data and the resolved country/language pair */
   shopInfo: IShop;
+  /** List all registered settings namespace keys. */
+  shopSettingsNamespaces: Array<Scalars['String']['output']>;
+  /**
+   * JSON Schema for the given settings namespace, so admin forms can be
+   * generated rather than hand-built. Returns null when the namespace is
+   * not registered.
+   */
+  shopSettingsSchema?: Maybe<Scalars['JSON']['output']>;
   /** Get token */
   token?: Maybe<IToken>;
   /** Get all tokens */
@@ -3041,10 +3271,12 @@ export type IQuery = {
   workStatistics: Array<IWorkStatistics>;
 };
 
+
 export type IQueryAssortmentArgs = {
   assortmentId?: InputMaybe<Scalars['ID']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 export type IQueryAssortmentsArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3057,6 +3289,7 @@ export type IQueryAssortmentsArgs = {
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
 
+
 export type IQueryAssortmentsCountArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
   includeLeaves?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3064,6 +3297,7 @@ export type IQueryAssortmentsCountArgs = {
   slugs?: InputMaybe<Array<Scalars['String']['input']>>;
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
+
 
 export type IQueryCountriesArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3073,14 +3307,17 @@ export type IQueryCountriesArgs = {
   sort?: InputMaybe<Array<ISortOptionInput>>;
 };
 
+
 export type IQueryCountriesCountArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
 
+
 export type IQueryCountryArgs = {
   countryId: Scalars['ID']['input'];
 };
+
 
 export type IQueryCurrenciesArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3090,34 +3327,42 @@ export type IQueryCurrenciesArgs = {
   sort?: InputMaybe<Array<ISortOptionInput>>;
 };
 
+
 export type IQueryCurrenciesCountArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
 
+
 export type IQueryCurrencyArgs = {
   currencyId: Scalars['ID']['input'];
 };
+
 
 export type IQueryDeliveryInterfacesArgs = {
   type?: InputMaybe<IDeliveryProviderType>;
 };
 
+
 export type IQueryDeliveryProviderArgs = {
   deliveryProviderId: Scalars['ID']['input'];
 };
+
 
 export type IQueryDeliveryProvidersArgs = {
   type?: InputMaybe<IDeliveryProviderType>;
 };
 
+
 export type IQueryDeliveryProvidersCountArgs = {
   type?: InputMaybe<IDeliveryProviderType>;
 };
 
+
 export type IQueryEnrollmentArgs = {
   enrollmentId: Scalars['ID']['input'];
 };
+
 
 export type IQueryEnrollmentsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -3127,19 +3372,23 @@ export type IQueryEnrollmentsArgs = {
   status?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+
 export type IQueryEnrollmentsCountArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+
 export type IQueryEventArgs = {
   eventId: Scalars['ID']['input'];
 };
+
 
 export type IQueryEventStatisticsArgs = {
   dateRange?: InputMaybe<IDateFilterInput>;
   types?: InputMaybe<Array<Scalars['String']['input']>>;
 };
+
 
 export type IQueryEventsArgs = {
   created?: InputMaybe<IDateFilterInput>;
@@ -3150,15 +3399,18 @@ export type IQueryEventsArgs = {
   types?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+
 export type IQueryEventsCountArgs = {
   created?: InputMaybe<IDateFilterInput>;
   queryString?: InputMaybe<Scalars['String']['input']>;
   types?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+
 export type IQueryFilterArgs = {
   filterId?: InputMaybe<Scalars['ID']['input']>;
 };
+
 
 export type IQueryFiltersArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3168,10 +3420,12 @@ export type IQueryFiltersArgs = {
   sort?: InputMaybe<Array<ISortOptionInput>>;
 };
 
+
 export type IQueryFiltersCountArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 export type IQueryGlobalSearchArgs = {
   includeCarts?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3185,9 +3439,11 @@ export type IQueryGlobalSearchArgs = {
   types?: InputMaybe<Array<ISearchableEntity>>;
 };
 
+
 export type IQueryLanguageArgs = {
   languageId: Scalars['ID']['input'];
 };
+
 
 export type IQueryLanguagesArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3197,18 +3453,22 @@ export type IQueryLanguagesArgs = {
   sort?: InputMaybe<Array<ISortOptionInput>>;
 };
 
+
 export type IQueryLanguagesCountArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
 
+
 export type IQueryOrderArgs = {
   orderId: Scalars['ID']['input'];
 };
 
+
 export type IQueryOrderStatisticsArgs = {
   dateRange?: InputMaybe<IDateFilterInput>;
 };
+
 
 export type IQueryOrdersArgs = {
   dateRange?: InputMaybe<IDateFilterInput>;
@@ -3222,6 +3482,7 @@ export type IQueryOrdersArgs = {
   status?: InputMaybe<Array<IOrderStatus>>;
 };
 
+
 export type IQueryOrdersCountArgs = {
   dateRange?: InputMaybe<IDateFilterInput>;
   deliveryProviderIds?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -3231,34 +3492,42 @@ export type IQueryOrdersCountArgs = {
   status?: InputMaybe<Array<IOrderStatus>>;
 };
 
+
 export type IQueryPaymentInterfacesArgs = {
   type?: InputMaybe<IPaymentProviderType>;
 };
+
 
 export type IQueryPaymentProviderArgs = {
   paymentProviderId: Scalars['ID']['input'];
 };
 
+
 export type IQueryPaymentProvidersArgs = {
   type?: InputMaybe<IPaymentProviderType>;
 };
 
+
 export type IQueryPaymentProvidersCountArgs = {
   type?: InputMaybe<IPaymentProviderType>;
 };
+
 
 export type IQueryProductArgs = {
   productId?: InputMaybe<Scalars['ID']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
 };
 
+
 export type IQueryProductCatalogPricesArgs = {
   productId: Scalars['ID']['input'];
 };
 
+
 export type IQueryProductReviewArgs = {
   productReviewId: Scalars['ID']['input'];
 };
+
 
 export type IQueryProductReviewsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -3267,9 +3536,11 @@ export type IQueryProductReviewsArgs = {
   sort?: InputMaybe<Array<ISortOptionInput>>;
 };
 
+
 export type IQueryProductReviewsCountArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 export type IQueryProductsArgs = {
   includeDrafts?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3281,6 +3552,7 @@ export type IQueryProductsArgs = {
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
 
+
 export type IQueryProductsCountArgs = {
   includeDrafts?: InputMaybe<Scalars['Boolean']['input']>;
   queryString?: InputMaybe<Scalars['String']['input']>;
@@ -3288,9 +3560,11 @@ export type IQueryProductsCountArgs = {
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
 
+
 export type IQueryQuotationArgs = {
   quotationId: Scalars['ID']['input'];
 };
+
 
 export type IQueryQuotationsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -3299,9 +3573,11 @@ export type IQueryQuotationsArgs = {
   sort?: InputMaybe<Array<ISortOptionInput>>;
 };
 
+
 export type IQueryQuotationsCountArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 export type IQuerySearchAssortmentsArgs = {
   assortmentIds?: InputMaybe<Array<Scalars['ID']['input']>>;
@@ -3309,6 +3585,7 @@ export type IQuerySearchAssortmentsArgs = {
   orderBy?: InputMaybe<ISearchOrderBy>;
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 export type IQuerySearchProductsArgs = {
   assortmentId?: InputMaybe<Scalars['ID']['input']>;
@@ -3319,9 +3596,16 @@ export type IQuerySearchProductsArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
 
+
+export type IQueryShopSettingsSchemaArgs = {
+  namespace: Scalars['String']['input'];
+};
+
+
 export type IQueryTokenArgs = {
   tokenId: Scalars['ID']['input'];
 };
+
 
 export type IQueryTokensArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -3329,39 +3613,48 @@ export type IQueryTokensArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
 
+
 export type IQueryTokensCountArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 export type IQueryTranslatedAssortmentMediaTextsArgs = {
   assortmentMediaId: Scalars['ID']['input'];
 };
 
+
 export type IQueryTranslatedAssortmentTextsArgs = {
   assortmentId: Scalars['ID']['input'];
 };
+
 
 export type IQueryTranslatedFilterTextsArgs = {
   filterId: Scalars['ID']['input'];
   filterOptionValue?: InputMaybe<Scalars['String']['input']>;
 };
 
+
 export type IQueryTranslatedProductMediaTextsArgs = {
   productMediaId: Scalars['ID']['input'];
 };
 
+
 export type IQueryTranslatedProductTextsArgs = {
   productId: Scalars['ID']['input'];
 };
+
 
 export type IQueryTranslatedProductVariationTextsArgs = {
   productVariationId: Scalars['ID']['input'];
   productVariationOptionValue?: InputMaybe<Scalars['String']['input']>;
 };
 
+
 export type IQueryUserArgs = {
   userId?: InputMaybe<Scalars['ID']['input']>;
 };
+
 
 export type IQueryUsersArgs = {
   emailVerified?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3374,6 +3667,7 @@ export type IQueryUsersArgs = {
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
 
+
 export type IQueryUsersCountArgs = {
   emailVerified?: InputMaybe<Scalars['Boolean']['input']>;
   includeGuests?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3382,33 +3676,41 @@ export type IQueryUsersCountArgs = {
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
 
+
 export type IQueryValidateResetPasswordTokenArgs = {
   token: Scalars['String']['input'];
 };
+
 
 export type IQueryValidateVerifyEmailTokenArgs = {
   token: Scalars['String']['input'];
 };
 
+
 export type IQueryWarehousingInterfacesArgs = {
   type?: InputMaybe<IWarehousingProviderType>;
 };
+
 
 export type IQueryWarehousingProviderArgs = {
   warehousingProviderId: Scalars['ID']['input'];
 };
 
+
 export type IQueryWarehousingProvidersArgs = {
   type?: InputMaybe<IWarehousingProviderType>;
 };
+
 
 export type IQueryWarehousingProvidersCountArgs = {
   type?: InputMaybe<IWarehousingProviderType>;
 };
 
+
 export type IQueryWorkArgs = {
   workId: Scalars['ID']['input'];
 };
+
 
 export type IQueryWorkQueueArgs = {
   created?: InputMaybe<IDateFilterInput>;
@@ -3420,12 +3722,14 @@ export type IQueryWorkQueueArgs = {
   types?: InputMaybe<Array<IWorkType>>;
 };
 
+
 export type IQueryWorkQueueCountArgs = {
   created?: InputMaybe<IDateFilterInput>;
   queryString?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<Array<IWorkStatus>>;
   types?: InputMaybe<Array<IWorkType>>;
 };
+
 
 export type IQueryWorkStatisticsArgs = {
   dateRange?: InputMaybe<IDateFilterInput>;
@@ -3452,6 +3756,7 @@ export type IQuotation = {
   user: IUser;
 };
 
+
 /** Quotation */
 export type IQuotationIsExpiredArgs = {
   referenceDate?: InputMaybe<Scalars['Timestamp']['input']>;
@@ -3461,7 +3766,7 @@ export enum IQuotationDocumentType {
   /** Other */
   Other = 'OTHER',
   /** Proposal */
-  Proposal = 'PROPOSAL',
+  Proposal = 'PROPOSAL'
 }
 
 export enum IQuotationStatus {
@@ -3474,7 +3779,7 @@ export enum IQuotationStatus {
   /** Quotation has been rejected by either party */
   Rejected = 'REJECTED',
   /** Request for Proposal */
-  Requested = 'REQUESTED',
+  Requested = 'REQUESTED'
 }
 
 export type IReorderAssortmentFilterInput = {
@@ -3548,6 +3853,7 @@ export enum IRoleAction {
   ManageProductReviews = 'manageProductReviews',
   ManageProducts = 'manageProducts',
   ManageQuotations = 'manageQuotations',
+  ManageShopSettings = 'manageShopSettings',
   ManageUsers = 'manageUsers',
   ManageWarehousingProviders = 'manageWarehousingProviders',
   ManageWorker = 'manageWorker',
@@ -3627,11 +3933,11 @@ export enum IRoleAction {
   ViewWarehousingProviders = 'viewWarehousingProviders',
   ViewWork = 'viewWork',
   ViewWorkQueue = 'viewWorkQueue',
-  VoteProductReview = 'voteProductReview',
+  VoteProductReview = 'voteProductReview'
 }
 
 export enum ISearchOrderBy {
-  Default = 'default',
+  Default = 'default'
 }
 
 /** Search result */
@@ -3641,6 +3947,7 @@ export type ISearchResult = {
   products: Array<IProduct>;
   productsCount: Scalars['Int']['output'];
 };
+
 
 /** Search result */
 export type ISearchResultProductsArgs = {
@@ -3656,7 +3963,7 @@ export enum ISearchableEntity {
   Product = 'PRODUCT',
   Quotation = 'QUOTATION',
   User = 'USER',
-  Work = 'WORK',
+  Work = 'WORK'
 }
 
 export type IShop = {
@@ -3664,9 +3971,20 @@ export type IShop = {
   adminUiConfig: IAdminUiConfig;
   country?: Maybe<ICountry>;
   language?: Maybe<ILanguage>;
+  /**
+   * Runtime settings for the given namespace. Public namespaces are readable
+   * by anyone; private namespaces require the manageShopSettings permission.
+   * Returns null when the namespace is not registered.
+   */
+  settings?: Maybe<Scalars['JSON']['output']>;
   userRoles: Array<Scalars['String']['output']>;
   vapidPublicKey?: Maybe<Scalars['String']['output']>;
   version?: Maybe<Scalars['String']['output']>;
+};
+
+
+export type IShopSettingsArgs = {
+  namespace: Scalars['String']['input'];
 };
 
 /** Simple Product */
@@ -3698,16 +4016,19 @@ export type ISimpleProduct = IProduct & {
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
+
 /** Simple Product */
 export type ISimpleProductCatalogPriceArgs = {
   currencyCode?: InputMaybe<Scalars['String']['input']>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
 };
 
+
 /** Simple Product */
 export type ISimpleProductLeveledCatalogPricesArgs = {
   currencyCode?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 /** Simple Product */
 export type ISimpleProductMediaArgs = {
@@ -3715,6 +4036,7 @@ export type ISimpleProductMediaArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
+
 
 /** Simple Product */
 export type ISimpleProductReviewsArgs = {
@@ -3724,10 +4046,12 @@ export type ISimpleProductReviewsArgs = {
   sort?: InputMaybe<Array<ISortOptionInput>>;
 };
 
+
 /** Simple Product */
 export type ISimpleProductReviewsCountArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 /** Simple Product */
 export type ISimpleProductSiblingsArgs = {
@@ -3737,12 +4061,14 @@ export type ISimpleProductSiblingsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
+
 /** Simple Product */
 export type ISimpleProductSimulatedDispatchesArgs = {
   deliveryProviderType?: InputMaybe<IDeliveryProviderType>;
   quantity?: InputMaybe<Scalars['Int']['input']>;
   referenceDate?: InputMaybe<Scalars['Timestamp']['input']>;
 };
+
 
 /** Simple Product */
 export type ISimpleProductSimulatedPriceArgs = {
@@ -3752,11 +4078,13 @@ export type ISimpleProductSimulatedPriceArgs = {
   useNetPrice?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+
 /** Simple Product */
 export type ISimpleProductSimulatedStocksArgs = {
   deliveryProviderType?: InputMaybe<IDeliveryProviderType>;
   referenceDate?: InputMaybe<Scalars['Timestamp']['input']>;
 };
+
 
 /** Simple Product */
 export type ISimpleProductTextsArgs = {
@@ -3765,12 +4093,12 @@ export type ISimpleProductTextsArgs = {
 
 export enum ISmartContractStandard {
   Erc721 = 'ERC721',
-  Erc1155 = 'ERC1155',
+  Erc1155 = 'ERC1155'
 }
 
 export enum ISortDirection {
   Asc = 'ASC',
-  Desc = 'DESC',
+  Desc = 'DESC'
 }
 
 export type ISortOptionInput = {
@@ -3806,6 +4134,7 @@ export type IToken = {
   walletAddress?: Maybe<Scalars['String']['output']>;
 };
 
+
 export type ITokenErcMetadataArgs = {
   forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 };
@@ -3813,7 +4142,7 @@ export type ITokenErcMetadataArgs = {
 export enum ITokenExportStatus {
   Centralized = 'CENTRALIZED',
   Decentralized = 'DECENTRALIZED',
-  Exporting = 'EXPORTING',
+  Exporting = 'EXPORTING'
 }
 
 /** Tokenized Product (Blockchain materialized Product) */
@@ -3843,10 +4172,12 @@ export type ITokenizedProduct = IProduct & {
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
 };
 
+
 /** Tokenized Product (Blockchain materialized Product) */
 export type ITokenizedProductAssortmentPathsArgs = {
   forceLocale?: InputMaybe<Scalars['Locale']['input']>;
 };
+
 
 /** Tokenized Product (Blockchain materialized Product) */
 export type ITokenizedProductCatalogPriceArgs = {
@@ -3854,10 +4185,12 @@ export type ITokenizedProductCatalogPriceArgs = {
   quantity?: InputMaybe<Scalars['Int']['input']>;
 };
 
+
 /** Tokenized Product (Blockchain materialized Product) */
 export type ITokenizedProductLeveledCatalogPricesArgs = {
   currencyCode?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 /** Tokenized Product (Blockchain materialized Product) */
 export type ITokenizedProductMediaArgs = {
@@ -3865,6 +4198,7 @@ export type ITokenizedProductMediaArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
 };
+
 
 /** Tokenized Product (Blockchain materialized Product) */
 export type ITokenizedProductReviewsArgs = {
@@ -3874,10 +4208,12 @@ export type ITokenizedProductReviewsArgs = {
   sort?: InputMaybe<Array<ISortOptionInput>>;
 };
 
+
 /** Tokenized Product (Blockchain materialized Product) */
 export type ITokenizedProductReviewsCountArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 /** Tokenized Product (Blockchain materialized Product) */
 export type ITokenizedProductSiblingsArgs = {
@@ -3887,6 +4223,7 @@ export type ITokenizedProductSiblingsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
+
 /** Tokenized Product (Blockchain materialized Product) */
 export type ITokenizedProductSimulatedPriceArgs = {
   configuration?: InputMaybe<Array<IProductConfigurationParameterInput>>;
@@ -3895,10 +4232,12 @@ export type ITokenizedProductSimulatedPriceArgs = {
   useNetPrice?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+
 /** Tokenized Product (Blockchain materialized Product) */
 export type ITokenizedProductSimulatedStocksArgs = {
   referenceDate?: InputMaybe<Scalars['Timestamp']['input']>;
 };
+
 
 /** Tokenized Product (Blockchain materialized Product) */
 export type ITokenizedProductTextsArgs = {
@@ -3989,7 +4328,6 @@ export type IUpdateProviderInput = {
 export type IUser = {
   _id: Scalars['ID']['output'];
   allowedActions: Array<IRoleAction>;
-  viewerAllowedActions: Array<IRoleAction>;
   avatar?: Maybe<IMedia>;
   bookmarks: Array<IBookmark>;
   cart?: Maybe<IOrder>;
@@ -4018,13 +4356,17 @@ export type IUser = {
   tokens: Array<IToken>;
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
   username?: Maybe<Scalars['String']['output']>;
+  /** Built-in user-target actions the current viewer can perform on this user. */
+  viewerAllowedActions: Array<IRoleAction>;
   web3Addresses: Array<IWeb3Address>;
   webAuthnCredentials: Array<IWebAuthnCredentials>;
 };
 
+
 export type IUserCartArgs = {
   orderNumber?: InputMaybe<Scalars['String']['input']>;
 };
+
 
 export type IUserEnrollmentsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -4033,6 +4375,7 @@ export type IUserEnrollmentsArgs = {
   sort?: InputMaybe<Array<ISortOptionInput>>;
   status?: InputMaybe<Array<Scalars['String']['input']>>;
 };
+
 
 export type IUserOrdersArgs = {
   includeCarts?: InputMaybe<Scalars['Boolean']['input']>;
@@ -4043,12 +4386,14 @@ export type IUserOrdersArgs = {
   status?: InputMaybe<Array<IOrderStatus>>;
 };
 
+
 export type IUserQuotationsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   queryString?: InputMaybe<Scalars['String']['input']>;
   sort?: InputMaybe<Array<ISortOptionInput>>;
 };
+
 
 export type IUserReviewsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -4108,14 +4453,14 @@ export enum IWarehousingProviderError {
   AdapterNotFound = 'ADAPTER_NOT_FOUND',
   IncompleteConfiguration = 'INCOMPLETE_CONFIGURATION',
   NotImplemented = 'NOT_IMPLEMENTED',
-  WrongCredentials = 'WRONG_CREDENTIALS',
+  WrongCredentials = 'WRONG_CREDENTIALS'
 }
 
 export enum IWarehousingProviderType {
   /** Physical warehousing providers resemble stores or facilities that hold a quantity of stocks physically in stock. */
   Physical = 'PHYSICAL',
   /** Virtual warehousing providers resemble software that control ownership and validity of virtual products (for ex. smart contract bridges) */
-  Virtual = 'VIRTUAL',
+  Virtual = 'VIRTUAL'
 }
 
 export type IWeb3Address = {
@@ -4195,7 +4540,7 @@ export enum IWorkStatus {
   Deleted = 'DELETED',
   Failed = 'FAILED',
   New = 'NEW',
-  Success = 'SUCCESS',
+  Success = 'SUCCESS'
 }
 
 export enum IWorkType {
@@ -4220,7 +4565,7 @@ export enum IWorkType {
   UpdateCoinbaseRates = 'UPDATE_COINBASE_RATES',
   UpdateEcbRates = 'UPDATE_ECB_RATES',
   UpdateTokenOwnership = 'UPDATE_TOKEN_OWNERSHIP',
-  ZombieKiller = 'ZOMBIE_KILLER',
+  ZombieKiller = 'ZOMBIE_KILLER'
 }
 
 /** One possible value for a given Enum. Enum values are unique values, not a placeholder for a string or numeric value. However an Enum value is returned in a JSON response as a string. */
@@ -4240,6 +4585,7 @@ export type I__Field = {
   isDeprecated: Scalars['Boolean']['output'];
   deprecationReason?: Maybe<Scalars['String']['output']>;
 };
+
 
 /** Object and Interface types are described by a list of Fields, each of which has a name, potentially a list of arguments, and a return type. */
 export type I__FieldArgsArgs = {
@@ -4276,6 +4622,7 @@ export type I__Type = {
   isOneOf?: Maybe<Scalars['Boolean']['output']>;
 };
 
+
 /**
  * The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.
  *
@@ -4285,6 +4632,7 @@ export type I__TypeFieldsArgs = {
   includeDeprecated?: Scalars['Boolean']['input'];
 };
 
+
 /**
  * The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.
  *
@@ -4293,6 +4641,7 @@ export type I__TypeFieldsArgs = {
 export type I__TypeEnumValuesArgs = {
   includeDeprecated?: Scalars['Boolean']['input'];
 };
+
 
 /**
  * The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.
@@ -4320,5 +4669,5 @@ export enum I__TypeKind {
   /** Indicates this type is a list. `ofType` is a valid field. */
   List = 'LIST',
   /** Indicates this type is a non-null. `ofType` is a valid field. */
-  NonNull = 'NON_NULL',
+  NonNull = 'NON_NULL'
 }
