@@ -19,7 +19,7 @@ alpha.6 skipped to re-align engine version with admin-ui.
 ### Breaking
 
 - **Net order pricing (#611):** Order category balances (ITEMS, DELIVERY, PAYMENT, DISCOUNTS) now exclude tax; separate TAXES rows contribute to the gross total — matching the product, delivery, and payment pricing sheets. `OrderPricingSheet` drops its special-case gross/net/total overrides and inherits correct `BasePricingSheet` arithmetic. A startup migration (`20260907120000`) converts persisted orders by adding offset rows (preserving original rows and audit metadata). See `MIGRATION.md`.
-- **Startup migrations are worker-only and non-fatal (#784):** Migration execution moved out of `setupWorkqueue` into `startPlatform` and runs before workers start. A failed migration now rejects startup and releases initialized resources (plugins, event emitter, GraphQL, audit log, database) via a shared `resourceShutdownSequence()`.
+- **Startup migrations are worker-only and non-fatal (#784):** Migrations run in `setupWorkqueue` on worker-enabled instances only, before the queue managers start; `disableWorker` and `UNCHAINED_DISABLE_WORKER` skip them. A failed migration stops the remaining sequence without recording it as completed and is logged, but startup continues; the next start resumes after the last completed migration. `runMigrations()` now propagates errors, so direct callers must handle rejection. There is no distributed migration lock.
 
 ### Improvements
 

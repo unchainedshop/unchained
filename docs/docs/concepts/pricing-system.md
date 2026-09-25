@@ -117,7 +117,7 @@ Each tier is keyed by **`minQuantity`**, the *inclusive lower bound* of the quan
 | `10` | `800` | quantity ≥ 10 → 8.00 each |
 
 :::info Upgrading from v4: `maxQuantity` → `minQuantity`
-Before v5, tiers were keyed by `maxQuantity` (an inclusive *upper* bound). v5 uses `minQuantity` (a *lower* bound). An **automatic, idempotent migration runs on startup** and converts existing `commerce.pricing` data per `(countryCode, currencyCode)` — no operator action is required, and re-running is safe. If you write product prices from a storefront, import pipeline, or client codegen, switch those payloads from `maxQuantity` to `minQuantity`.
+Before v5, tiers were keyed by `maxQuantity` (an inclusive *upper* bound). v5 uses `minQuantity` (a *lower* bound). An **automatic, idempotent migration runs on startup** of a worker-enabled instance and converts existing `commerce.pricing` data per `(countryCode, currencyCode)` — no operator action is required, and re-running is safe. If you write product prices from a storefront, import pipeline, or client codegen, switch those payloads from `maxQuantity` to `minQuantity`.
 :::
 
 ### Set tiers (GraphQL)
