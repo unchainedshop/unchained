@@ -104,6 +104,14 @@ pluginRegistry.register(HalfPriceManualPlugin);
 pluginRegistry.register(HundredOffPlugin);
 ```
 
+## Custom Plugin Sets
+
+Presets register fixed bundles and cannot leave out a single plugin. For a custom set, skip the preset and register the plugins you want individually; [`presets/base.ts`](https://github.com/unchainedshop/unchained/blob/master/packages/plugins/src/presets/base.ts) is a good starting point. It also calls `setEmitAdapter(NodeEventEmitter())`, which a custom set has to do itself (or register another event emitter).
+
+- `registerAllPlugins()` imports the crypto plugins, so it needs the optional `@scure/*` and `@noble/*` peer dependencies even if you do not use crypto payments.
+- The first registered file adapter is the active file storage: register `MinioPlugin` before `registerBasePlugins()` to store files in MinIO/S3 (GridFS stays registered), or leave GridFS out of a custom set.
+- Many plugins read their `process.env` configuration when they are imported, so load environment variables before importing plugins.
+
 ## Best Practices
 
 1. **Start with Base**: Begin with the base preset and add plugins as needed

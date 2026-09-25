@@ -65,7 +65,7 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 For local storefront development against a remote engine, the server adapters accept a dev-only escape hatch (it throws if `NODE_ENV=production`):
 
 ```typescript
-connect(fastify, platform, {
+await connect(fastify, platform, {
   allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
 });
 ```
@@ -246,7 +246,7 @@ Register trusted providers when connecting the server adapter. Bearer JWTs issue
 ```typescript
 import { connect } from '@unchainedshop/api/fastify';
 
-connect(fastify, platform, {
+await connect(fastify, platform, {
   authConfig: {
     oidcProviders: [
       {

@@ -126,18 +126,19 @@ infrastructure → Base utilities (mongodb, events, logger, utils, roles)
 
 ### Key Packages
 - **@unchainedshop/platform**: Complete engine bundle - the main entry point bundling api, core, plugins, and infrastructure
-- **@unchainedshop/api**: GraphQL API with server adapters (Express, Fastify), MCP server integration, and session management
+- **@unchainedshop/api**: GraphQL API with server adapters (Express, Fastify), MCP server integration, and stateless JWT authentication
 - **@unchainedshop/core**: Orchestrates all core-* modules and provides cross-module services
-- **@unchainedshop/plugins**: Plugin system with Directors and Adapters for payment, delivery, pricing, and warehousing
+- **@unchainedshop/plugins**: Built-in plugins (adapters, webhook routes, plugin DB modules) and the preset registration functions; directors and the plugin registry live in `@unchainedshop/core`
 - **@unchainedshop/ticketing**: Event ticketing functionality
 - **Infrastructure packages**: mongodb, events, logger, utils, roles - foundational utilities used across all layers
 
 ### Plugin Architecture
 The plugin system uses a Director/Adapter pattern:
-- **Directors** manage collections of adapters (e.g., PaymentDirector, DeliveryDirector)
+- **Plugin registry** (`pluginRegistry` in `@unchainedshop/core`) holds all registered plugins and their adapters
+- **Directors** (e.g., PaymentDirector, DeliveryDirector) select and invoke adapters; they look them up in the registry by the adapter's `adapterType`
 - **Adapters** implement specific behaviors (e.g., Stripe payment adapter, GridFS file storage)
-- **Explicit registration**: Plugins must be explicitly registered before platform startup
-- **Side-effect free**: Plugin files export plugin objects without auto-registration
+- **Explicit registration**: Plugins must be explicitly registered before platform startup; importing a plugin file never registers anything
+- **Env at import time**: many plugins read their `process.env` configuration when their module is imported, so load environment variables before importing plugins
 
 #### Plugin Registration Pattern
 Plugins are registered explicitly before starting the platform. Use the named preset registration functions. `startPlatform` needs no `modules` argument for built-ins (core modules are defaulted internally):
@@ -155,15 +156,18 @@ const platform = await startPlatform({});
 Note: import preset and plugin subpaths WITHOUT a file extension — the package `exports` map (`"./presets/*": "./lib/presets/*.js"`) appends `.js` itself, so `presets/all.js` would resolve to `all.js.js` and fail.
 
 #### Available Presets
-- **base**: Essential plugins (Invoice payment, Post delivery, core pricing, workers)
+- **base**: Essential plugins (Invoice payment, Post delivery, core pricing, workers) and the in-memory event emitter
   - Use `registerBasePlugins()` from `@unchainedshop/plugins/presets/base`
-- **all**: Complete plugin bundle (includes base + additional payment gateways, filters, workers)
+- **all**: base + crypto + Swiss tax presets plus the remaining payment gateways, filters and workers; needs the optional crypto peers (`@scure/*`, `@noble/*`)
   - Use `registerAllPlugins()` from `@unchainedshop/plugins/presets/all`
 - **crypto**: Cryptocurrency plugins (Cryptopay, token minting, rate conversion)
   - Use `registerCryptoPlugins()` from `@unchainedshop/plugins/presets/crypto`
+- **countries**: opt-in tax presets `registerSwissTaxPlugins`, `registerEuTaxPlugins`, `registerUkTaxPlugins`, `registerUsSalesTaxPlugins` from `@unchainedshop/plugins/presets/countries/{ch,eu,uk,us}`
+
+Presets cannot exclude individual plugins; for a custom set, register the plugins individually (below).
 
 #### Registering Individual Plugins
-`Director.registerAdapter()` is removed in v5. Built-in plugins export an `IPlugin` object (named `XPlugin` and as default export) that bundles the adapter with its HTTP routes and DB modules — register it via `pluginRegistry`:
+`Director.registerAdapter()` is removed in v5. Built-in plugins export an `IPlugin` object (named `XPlugin` and as default export) that bundles the adapter with its HTTP routes and DB module; the raw adapters are not exported — register it via `pluginRegistry`:
 
 ```typescript
 import { pluginRegistry } from '@unchainedshop/core';
@@ -173,6 +177,8 @@ import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-h
 pluginRegistry.register(StripePlugin);
 pluginRegistry.register(HalfPriceManualPlugin);
 ```
+
+Event emitters (`@unchainedshop/plugins/events/*`) are not `IPlugin`s: register them with `setEmitAdapter()` from `@unchainedshop/events` (the base preset sets the in-memory Node emitter).
 
 Custom adapters are authored with the typed `registerX()` factories re-exported from `@unchainedshop/core` (e.g. `registerPaymentProvider`, `registerProductPricing`, `registerWorker`) — see `packages/core/src/factory/`.
 
@@ -187,7 +193,7 @@ Example modules: core-orders, core-products, core-users, core-payment, core-deli
 
 ### Architectural Constraints
 **IMPORTANT**: Respect layer boundaries when working with packages:
-- **DO NOT import `@unchainedshop/mongodb` outside of core-* and infrastructure packages**
+- **DO NOT import `@unchainedshop/mongodb` outside of core-* and infrastructure packages** (exception: a plugin `module` factory receives a `mongodb.Db` and may use `@unchainedshop/mongodb` for the plugin's own collections, as gridfs, apple-iap, cryptopay, saferpay and ticketing do)
 - The API layer (`@unchainedshop/api`) should only use types from core packages, never direct MongoDB imports
 - Database queries and MongoDB-specific logic belong exclusively in core-* modules
 - Higher-level packages (api, platform) should use the module APIs exposed by core packages

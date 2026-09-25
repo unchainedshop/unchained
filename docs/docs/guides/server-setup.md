@@ -27,7 +27,7 @@ const fastify = Fastify({
 
 const platform = await startPlatform({});
 
-connect(fastify, platform, {
+await connect(fastify, platform, {
   allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
   adminUI: true,
 });
@@ -54,7 +54,7 @@ const httpServer = http.createServer(app);
 
 const platform = await startPlatform({});
 
-connect(app, platform, {
+await connect(app, platform, {
   allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
   adminUI: true,
 });
@@ -71,7 +71,7 @@ Import the preset without a file extension (`@unchainedshop/plugins/presets/all`
 Both adapters accept the same options in the third argument:
 
 ```typescript
-connect(server, platform, {
+await connect(server, platform, {
   // Allow secure cookies over HTTP for development;
   // connect() throws if this is enabled with NODE_ENV=production
   allowRemoteToLocalhostSecureCookies: boolean,
@@ -146,10 +146,10 @@ Enable the Admin UI via the `adminUI` option:
 
 ```typescript
 // Serve at the root path
-connect(server, platform, { adminUI: true });
+await connect(server, platform, { adminUI: true });
 
 // Serve under a prefix
-connect(server, platform, { adminUI: { prefix: '/admin' } });
+await connect(server, platform, { adminUI: { prefix: '/admin' } });
 ```
 
 The options object also accepts `theme` (design token overrides) and `plugins` (custom Admin UI extensions) — see the kitchensink examples for a full configuration.

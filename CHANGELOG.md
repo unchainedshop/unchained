@@ -88,7 +88,7 @@ alpha.6 skipped to re-align engine version with admin-ui.
 - **CHANGED**: `changePassword` is no longer self-permitted by the default ACL — review custom roles if you relied on this.
 
 ### Roles
-- **CHANGED**: The global `Roles` singleton is replaced by a `createRoles()` factory that returns an isolated instance (removes shared global state across server instances). The `Role` constructor no longer auto-registers into a global registry and no longer throws on duplicate names; register explicitly via `addRole()` / `configureRoles()`. Default `admin` / `__loggedIn__` / `__all__` roles are no longer created at module import. `UnchainedServerOptions.roles` and `Context.roles` are now typed `RolesInterface` (was `any`).
+- **CHANGED**: The global `Roles` singleton is replaced by a `createRoles()` factory that returns an isolated instance per `configureRoles()` call (a default `Roles` instance is still exported). The action map and the `allRoles` lookup in `@unchainedshop/api` remain module-level, so several engines in one process still share their actions and custom roles. The `Role` constructor no longer auto-registers into a global registry and no longer throws on duplicate names; register explicitly via `addRole()` / `configureRoles()`. Default `admin` / `__loggedIn__` / `__all__` roles are no longer created at module import. `UnchainedServerOptions.roles` and `Context.roles` are now typed `RolesInterface` (was `any`).
 
 ### Admin UI
 - **CHANGED**: Permissions moved from a build-time generated artifact (`generate-permissions.js`, `window.AdminUiPermissions`) to a typed runtime model in `src/modules/Auth/permissionConfig.ts`. The build no longer runs `generate-permissions.js` or emits `public/admin-ui-permissions.js`.

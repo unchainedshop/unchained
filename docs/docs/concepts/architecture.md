@@ -154,6 +154,8 @@ flowchart TD
     api --> coremods["core-* modules<br/><i>core-products, core-orders, core-users, …</i>"]
     core --> coremods
     coremods --> infra["infrastructure<br/><i>mongodb, events, logger, utils, roles</i>"]
+    plugins --> core
+    plugins --> coremods
 ```
 
 Note that `@unchainedshop/api` depends on `@unchainedshop/core` **and** directly on every `core-*` package — the GraphQL resolvers use the module APIs and types of the individual domain modules, not just the `core` orchestration layer.

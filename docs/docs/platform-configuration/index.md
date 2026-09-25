@@ -49,7 +49,7 @@ try {
   const platform = await startPlatform({});
 
   // Connect Unchained to Fastify, setting up the basic endpoints like /graphql
-  connect(fastify, platform, {
+  await connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== "production",
   });
 

@@ -21,7 +21,7 @@ import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 const { delivery } = platform.unchainedAPI.modules;
 const provider = await delivery.create({
   type: DeliveryProviderType.SHIPPING,
-  adapterKey: 'shop.unchained.delivery.post',
+  adapterKey: 'shop.unchained.post',
   configuration: [],
 });
 const providers = await delivery.findProviders({});

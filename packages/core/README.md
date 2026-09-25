@@ -43,7 +43,7 @@ pluginRegistry.register(StripePlugin);
 
 Alternatively, call `registerBasePlugins()`, `registerAllPlugins()`, or `registerCryptoPlugins()` from the corresponding `@unchainedshop/plugins/presets/base`, `/all`, or `/crypto` subpath. Package subpaths have no file extension.
 
-Directors resolve adapters from `pluginRegistry` by the `adapterType` symbol provided by each domain's base adapter. `getAllAdapters()` lists adapters across the core directors.
+Directors resolve adapters from `pluginRegistry` by the `adapterType` symbol provided by each domain's base adapter. `getAllAdapters()` lists the adapters of all registered plugins that were not skipped during startup.
 
 ### Custom adapters
 

@@ -43,13 +43,13 @@ Requirements: Node.js 26+ (see .nvmrc), MongoDB (or MongoDB Memory Server for te
 
 ## Architectural constraints (strict)
 
-- Do NOT import `@unchainedshop/mongodb` outside core-* and infrastructure packages. The API layer uses only types and module APIs from core packages; MongoDB logic belongs exclusively in core-* modules.
+- Do NOT import `@unchainedshop/mongodb` outside core-* and infrastructure packages. The API layer uses only types and module APIs from core packages; MongoDB logic belongs exclusively in core-* modules. Exception: a plugin `module` factory receives a `mongodb.Db` and may use `@unchainedshop/mongodb` for the plugin's own collections.
 - Do NOT create standalone `types.ts` files for internal types — place types in the most coherent implementation file. Exception: external API contract types (e.g. payment gateway APIs).
 - Do NOT create standalone scripts (Node/Python) to modify code; use direct shell find-and-replace (sed/grep/find) so changes are auditable.
 
 ## Plugin system
 
-Directors manage adapters (Director/Adapter pattern). Plugins are side-effect free and must be registered explicitly before platform start. Use the named preset registration functions. `startPlatform` needs no `modules` argument for built-ins:
+Adapters are held by `pluginRegistry` (`@unchainedshop/core`); directors look them up there by `adapterType` (Director/Adapter pattern). Importing a plugin never registers it: plugins must be registered explicitly before platform start. Many plugins read their `process.env` configuration at import time, so load env first. Presets cannot exclude single plugins; register plugins individually for a custom set. Use the named preset registration functions. `startPlatform` needs no `modules` argument for built-ins:
 
 ```typescript
 import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
