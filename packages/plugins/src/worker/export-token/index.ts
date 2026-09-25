@@ -3,7 +3,7 @@ import { ExportTokenWorker, configureExportToken } from './adapter.ts';
 
 // Plugin definition
 export const ExportTokenPlugin: IPlugin = {
-  key: 'shop.unchained.worker.export-token',
+  key: 'shop.unchained.worker-plugin.export-token',
   label: 'Export Token Worker Plugin',
   version: '1.0.0',
 

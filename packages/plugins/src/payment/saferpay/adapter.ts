@@ -21,7 +21,7 @@ const addTransactionId = (urlString, saferpayTransactionId) => {
   return urlWithTransactionId.href;
 };
 
-export const WordlineSaferpay: IPaymentAdapter = {
+export const WorldlineSaferpay: IPaymentAdapter = {
   ...PaymentAdapter,
 
   key: 'shop.unchained.payment.saferpay',

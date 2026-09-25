@@ -65,7 +65,10 @@ export type PluginModuleFactory = (options: { db: mongodb.Db }) => Record<string
  * Each plugin is a self-contained bounded context following DDD principles
  */
 export interface IPlugin {
-  /** Unique plugin identifier (e.g., 'shop.unchained.gridfs') */
+  /**
+   * Unique plugin identifier. A single-adapter plugin uses its adapter key
+   * (e.g. 'shop.unchained.payment.stripe').
+   */
   key: string;
 
   /** Human-readable plugin name */
@@ -129,9 +132,11 @@ class PluginRegistry {
    * @param plugin Plugin to register
    */
   register(plugin: IPlugin): void {
-    if (this.plugins.has(plugin.key)) {
+    const registered = this.plugins.get(plugin.key);
+    if (registered) {
       logger.warn(`Plugin ${plugin.key} already registered, skipping`, {
         label: plugin.label,
+        registeredLabel: registered.label,
       });
       return;
     }

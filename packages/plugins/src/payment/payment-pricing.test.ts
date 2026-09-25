@@ -3,7 +3,7 @@ import { describe, test, type TestContext } from 'node:test';
 import { OrderPricingSheet, type OrderPricingCalculation } from '@unchainedshop/core';
 import { PostfinanceCheckout } from './postfinance-checkout/adapter.ts';
 import { PostFinanceApiClient } from './postfinance-checkout/api-client.ts';
-import { WordlineSaferpay } from './saferpay/adapter.ts';
+import { WorldlineSaferpay } from './saferpay/adapter.ts';
 
 // Run this same contract suite on the pre-net revision with
 // PRICING_CONTRACT_FORMAT=gross. Only fixture storage changes, never expectations.
@@ -130,7 +130,7 @@ describe('payment plugin pricing contracts', () => {
           },
         });
       });
-      const actions = WordlineSaferpay.actions([{ key: 'terminalId', value: 'test-terminal' }], {
+      const actions = WorldlineSaferpay.actions([{ key: 'terminalId', value: 'test-terminal' }], {
         ...context,
         modules: {
           saferpayTransactions: {

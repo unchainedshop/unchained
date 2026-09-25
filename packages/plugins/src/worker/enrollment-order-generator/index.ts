@@ -3,7 +3,7 @@ import { GenerateOrderWorker, configureGenerateOrderAutoscheduling } from './ada
 
 // Plugin definition
 export const EnrollmentOrderGeneratorPlugin: IPlugin = {
-  key: 'shop.unchained.worker.enrollment-order-generator',
+  key: 'shop.unchained.worker-plugin.generate-enrollment-orders',
   label: 'Enrollment Order Generator Worker Plugin',
   version: '1.0.0',
 
