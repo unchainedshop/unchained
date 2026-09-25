@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-import { IUserCartQuery, IUserCartQueryVariables } from '@/gql/types';
+import { IUserCartQuery, IUserCartQueryVariables } from '../../../gql/types';
 
 const UserCartQuery = gql`
   query UserCart($userId: ID) {

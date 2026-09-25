@@ -40,9 +40,15 @@ This example demonstrates how to integrate [Unchained Commerce](https://unchaine
 
 3. **Configure Application Settings**
    - Set the redirect URI to `http://localhost:4010/login/zitadel/callback` (or your `ROOT_URL` plus `UNCHAINED_ZITADEL_CALLBACK_PATH`)
+   - Enable *Development Mode* while you use `http://` redirect URIs
    - Note down your Client ID
 
-4. **Environment Configuration**
+4. **Roles and Logout**
+   - Create a project role `admin` and grant it to the users who should manage the shop. On login, the project roles become the user's Unchained roles.
+   - Enable *Assert Roles on Authentication* on the project and *User roles inside ID Token* on the application. Otherwise the ID token carries no roles and users log in without permissions.
+   - Optional: set the back-channel logout URI to `ROOT_URL/backchannel-logout`. Zitadel only accepts publicly reachable hosts there.
+
+5. **Environment Configuration**
 
    Create a `.env` file with the following variables:
 
@@ -80,10 +86,20 @@ This example demonstrates how to integrate [Unchained Commerce](https://unchaine
 4. **Create a Client**
    - Navigate to "Clients" and create a new client
    - Set Client ID to "myclient" (or your preferred name)
-   - Set the redirect URI to `http://localhost:4010/login/keycloak/callback` (or your `ROOT_URL` plus `UNCHAINED_KEYCLOAK_CALLBACK_PATH`)
+   - Set the redirect URI to `http://localhost:4010/login/keycloak/callback` (or your `ROOT_URL` plus `UNCHAINED_KEYCLOAK_CALLBACK_PATH`) and the post logout redirect URI to `http://localhost:4010/*`
    - If client authentication is enabled, copy the client secret into `UNCHAINED_KEYCLOAK_CLIENT_SECRET`
+   - Set the backchannel logout URL to `ROOT_URL/backchannel-logout` and keep *Backchannel logout session required* on. Keycloak running in Docker reaches your machine at `http://host.docker.internal:4010/backchannel-logout`
 
-5. **Environment Configuration**
+5. **Roles**
+   - Create a client role `admin` (Clients → your client → Roles) and assign it to the users who should manage the shop
+   - On login, the client roles become the user's Unchained roles. The example reads them from the access token, because Keycloak doesn't add client roles to the ID token by default
+   - Users are stored as `<client id>:<subject>`. The provider's `userIdFromSubject` maps back-channel logout and bearer tokens to the same user
+
+6. **Bearer Tokens (optional)**
+
+   To call the GraphQL API with a Keycloak access token (`Authorization: Bearer …`), the token's audience must contain your client id. Add an *Audience* mapper for your client to its dedicated client scope.
+
+7. **Environment Configuration**
 
    Add to your `.env` file:
 
@@ -113,6 +129,13 @@ This example implements OAuth 2.1 authorization as specified in the [MCP Authori
 ### Usage
 
 Once configured, you can expose your MCP server to compatible MCP clients with proper OAuth 2.1 authentication, ensuring secure access to your Unchained Commerce data and operations.
+
+MCP clients register themselves with Keycloak (Dynamic Client Registration) and use the client credentials grant. The MCP server requires the `admin` role, so after a client registered:
+
+1. Grant the registered client's service account the `admin` role of your Unchained client (`UNCHAINED_KEYCLOAK_CLIENT_ID`).
+2. Add that role to the registered client's scope mappings. Dynamically registered clients have full scope disabled, so otherwise the role never reaches the token.
+
+`npm run test-mcp-oauth` walks through the whole flow. Anonymous registration is limited by the realm's client registration policies; set `INITIAL_ACCESS_TOKEN` (Realm settings → Client registration → Initial access token) or add your host to the *Trusted Hosts* policy.
 
 ## Learn More
 

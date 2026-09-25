@@ -11,6 +11,3 @@ export const OrderItemsPlugin: IPlugin = {
 };
 
 export default OrderItemsPlugin;
-
-// Re-export adapter for direct use
-export { OrderItems } from './adapter.ts';

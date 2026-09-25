@@ -29,6 +29,3 @@ export const DatatransPlugin: IPlugin = {
 };
 
 export default DatatransPlugin;
-
-// Re-export adapter for direct use
-export { Datatrans } from './adapter.ts';

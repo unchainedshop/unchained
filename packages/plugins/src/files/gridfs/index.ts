@@ -39,8 +39,5 @@ export const GridFSPlugin: IPlugin = {
 
 export default GridFSPlugin;
 
-// Re-export adapter for direct use
-export { GridFSAdapter } from './adapter.ts';
-
 // Type exports
 export { type GridFSFileUploadsModule } from './module.ts';

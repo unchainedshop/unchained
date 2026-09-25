@@ -11,6 +11,3 @@ export const HeartbeatPlugin: IPlugin = {
 };
 
 export default HeartbeatPlugin;
-
-// Re-export adapter for direct use
-export { Heartbeat } from './adapter.ts';

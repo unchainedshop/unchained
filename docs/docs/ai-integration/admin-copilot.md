@@ -47,7 +47,7 @@ if (process.env.OPENAI_COMPAT_API_URL && process.env.OPENAI_COMPAT_MODEL) {
     name: 'local',
     baseURL: process.env.OPENAI_COMPAT_API_URL,
   });
-  connect(fastify, engine, {
+  await connect(fastify, engine, {
     chat: {
       model: provider.chatModel(process.env.OPENAI_COMPAT_MODEL),
     },
@@ -64,7 +64,7 @@ import { openai } from '@ai-sdk/openai';
 // ... after creating fastify instance and unchained platform ...
 
 if (process.env.OPENAI_API_KEY) {
-  connect(fastify, engine, {
+  await connect(fastify, engine, {
     chat: {
       model: openai('gpt-5.2'),
       imageGenerationTool: { model: openai.imageModel('gpt-image-1') },
@@ -82,7 +82,7 @@ import { connect } from '@unchainedshop/api/fastify';
 import { anthropic } from '@ai-sdk/anthropic';
 
 if (process.env.ANTHROPIC_API_KEY) {
-  connect(fastify, engine, {
+  await connect(fastify, engine, {
     chat: {
       model: anthropic('claude-sonnet-5'),
     },
@@ -121,7 +121,7 @@ You can extend the Copilot with additional tools:
 import { tool } from 'ai';
 import { z } from 'zod';
 
-connect(fastify, engine, {
+await connect(fastify, engine, {
   chat: {
     model: openai('gpt-5.2'),
     tools: {

@@ -34,7 +34,7 @@
     "dev": "run-p dev:server dev:plugin",
     "dev:server": "node --no-warnings --env-file .env.defaults --env-file-if-exists=.env --import ./load_env.js --watch src/boot.ts",
     "dev:plugin": "npm --prefix plugins/bookmark-manager run build:watch",
-    "build:plugin": "npm --prefix plugins/bookmark-manager run build",
+    "build:plugin": "npm --prefix plugins/bookmark-manager install --no-audit --no-fund && npm --prefix plugins/bookmark-manager run build",
     "test-mcp": "npx @modelcontextprotocol/inspector"
   },
   "dependencies": {
@@ -45,17 +45,16 @@
     "@scure/btc-signer": "^2.0.0",
     "@unchainedshop/admin-ui": "^5.0.0-alpha.7",
     "@unchainedshop/api": "^5.0.0-alpha.7",
+    "@unchainedshop/core": "^5.0.0-alpha.7",
     "@unchainedshop/core-delivery": "^5.0.0-alpha.7",
     "@unchainedshop/core-payment": "^5.0.0-alpha.7",
+    "@unchainedshop/logger": "^5.0.0-alpha.7",
     "@unchainedshop/platform": "^5.0.0-alpha.7",
     "@unchainedshop/plugins": "^5.0.0-alpha.7",
     "express": "^5.1.0",
-    "express-session": "^1.18.1",
     "graphql": "^17.0.2",
     "graphql-yoga": "^5.22.0",
-    "multer": "^2.0.1",
     "nodemailer": "^10.0.0",
-    "passport": "^0.7.0",
     "stripe": "^22.1.0",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"

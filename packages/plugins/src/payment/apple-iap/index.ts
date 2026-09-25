@@ -7,7 +7,7 @@ const { APPLE_IAP_WEBHOOK_PATH = '/payment/apple-iap', APPLE_IAP_SHARED_SECRET }
 
 // Plugin definition
 export const AppleIAPPlugin: IPlugin = {
-  key: 'shop.unchained.payment.apple-iap',
+  key: 'shop.unchained.apple-iap',
   label: 'Apple In-App-Purchase Payment Plugin',
   version: '1.0.0',
 
@@ -33,9 +33,6 @@ export const AppleIAPPlugin: IPlugin = {
 };
 
 export default AppleIAPPlugin;
-
-// Re-export adapter for direct use
-export { AppleIAP } from './adapter.ts';
 
 // Type exports
 export { type AppleTransactionsModule };

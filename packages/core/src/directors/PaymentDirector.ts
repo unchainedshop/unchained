@@ -1,4 +1,4 @@
-import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
+import type { IBaseDirector } from '@unchainedshop/utils';
 import { createLogger } from '@unchainedshop/logger';
 import {
   PaymentError,
@@ -10,7 +10,7 @@ import {
 import type { PaymentProvider } from '@unchainedshop/core-payment';
 import { type Order, type OrderPayment, OrderPaymentStatus } from '@unchainedshop/core-orders';
 import type { Modules } from '../modules.ts';
-import { pluginRegistry } from '../plugins/PluginRegistry.ts';
+import { registryDirector } from './registryDirector.ts';
 
 const buildPaymentProviderActionsContext = (
   orderPayment: OrderPayment,
@@ -59,22 +59,8 @@ export type IPaymentDirector = IBaseDirector<IPaymentAdapter> & {
   ) => Promise<IPaymentActions>;
 };
 const logger = createLogger('unchained:core:payment');
-const baseDirector = BaseDirector<IPaymentAdapter>('PaymentDirector');
-
 export const PaymentDirector: IPaymentDirector = {
-  ...baseDirector,
-
-  // Override to query pluginRegistry dynamically
-  getAdapter: (key: string) => {
-    const adapters = pluginRegistry.getAdapters(PaymentAdapter.adapterType!) as IPaymentAdapter[];
-    return adapters.find((adapter) => adapter.key === key) || null;
-  },
-
-  // Override to query pluginRegistry dynamically
-  getAdapters: ({ adapterFilter } = {}) => {
-    const adapters = pluginRegistry.getAdapters(PaymentAdapter.adapterType!) as IPaymentAdapter[];
-    return adapters.filter(adapterFilter || (() => true));
-  },
+  ...registryDirector<IPaymentAdapter>(PaymentAdapter.adapterType!),
 
   actions: async (paymentProvider, paymentContext, unchainedAPI) => {
     const Adapter = PaymentDirector.getAdapter(paymentProvider.adapterKey) as IPaymentAdapter;

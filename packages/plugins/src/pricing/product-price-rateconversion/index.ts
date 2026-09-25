@@ -11,6 +11,3 @@ export const ProductPriceRateConversionPlugin: IPlugin = {
 };
 
 export default ProductPriceRateConversionPlugin;
-
-// Re-export adapter for direct use
-export { ProductPriceRateConversion } from './adapter.ts';

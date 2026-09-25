@@ -32,5 +32,5 @@ export const MinioPlugin: IPlugin = {
 
 export default MinioPlugin;
 
-// Re-export adapter for direct use
-export { MinioAdapter, connectToMinio } from './adapter.ts';
+// Helpers
+export { connectToMinio } from './adapter.ts';

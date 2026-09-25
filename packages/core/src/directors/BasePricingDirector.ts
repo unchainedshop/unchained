@@ -1,4 +1,4 @@
-import { BaseDirector, type IBaseDirector, type PricingCalculation } from '@unchainedshop/utils';
+import type { IBaseDirector, PricingCalculation } from '@unchainedshop/utils';
 import type {
   BasePricingAdapterContext,
   BasePricingContext,
@@ -6,6 +6,7 @@ import type {
 } from './BasePricingAdapter.ts';
 import type { IPricingSheet } from './BasePricingSheet.ts';
 import { OrderDiscountDirector } from './OrderDiscountDirector.ts';
+import { registryDirector } from './registryDirector.ts';
 import { createLogger } from '@unchainedshop/logger';
 import type { Modules } from '../modules.ts';
 
@@ -40,7 +41,7 @@ export const BasePricingDirector = <
   Calculation extends PricingCalculation,
   PricingAdapter extends IPricingAdapter<AdapterContext, Calculation, IPricingSheet<Calculation>>,
 >(
-  directorName: string,
+  adapterType: symbol,
 ): IPricingDirector<
   DirectorContext,
   Calculation,
@@ -48,10 +49,6 @@ export const BasePricingDirector = <
   IPricingSheet<Calculation>,
   PricingAdapter
 > => {
-  const baseDirector = BaseDirector<PricingAdapter>(directorName, {
-    adapterSortKey: 'orderIndex',
-  });
-
   const director: IPricingDirector<
     DirectorContext,
     Calculation,
@@ -59,7 +56,7 @@ export const BasePricingDirector = <
     IPricingSheet<Calculation>,
     PricingAdapter
   > = {
-    ...baseDirector,
+    ...registryDirector<PricingAdapter>(adapterType),
 
     buildPricingContext: async () => {
       throw new Error('Method not implemented');

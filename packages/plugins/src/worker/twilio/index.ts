@@ -11,6 +11,3 @@ export const TwilioPlugin: IPlugin = {
 };
 
 export default TwilioPlugin;
-
-// Re-export adapter for direct use
-export { SmsWorkerPlugin } from './adapter.ts';

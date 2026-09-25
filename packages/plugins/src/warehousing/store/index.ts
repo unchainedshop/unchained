@@ -11,6 +11,3 @@ export const StorePlugin: IPlugin = {
 };
 
 export default StorePlugin;
-
-// Re-export adapter for direct use
-export { Store } from './adapter.ts';

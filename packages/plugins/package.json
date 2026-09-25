@@ -2,8 +2,6 @@
   "name": "@unchainedshop/plugins",
   "description": "Official plugin collection for the Unchained Engine with payment, delivery, and pricing adapters",
   "version": "5.0.0-alpha.7",
-  "main": "lib/plugins-index.js",
-  "types": "lib/plugins-index.d.ts",
   "exports": {
     "./presets/*": "./lib/presets/*.js",
     "./presets/countries/*": "./lib/presets/countries/*.js",
@@ -15,6 +13,7 @@
     "./warehousing/*": "./lib/warehousing/*/index.js",
     "./payment/*": "./lib/payment/*/index.js",
     "./files/*": "./lib/files/*/index.js",
+    "./pricing/tax/*": "./lib/pricing/tax/*.js",
     "./pricing/*": "./lib/pricing/*/index.js",
     "./worker/*": "./lib/worker/*/index.js"
   },
@@ -75,8 +74,6 @@
     "@scure/bip32": ">= 2",
     "@scure/btc-signer": ">= 2",
     "mime": ">= 4 < 5",
-    "express": ">= 5 < 6",
-    "fastify": ">= 5.2 < 6",
     "minio": "8.x",
     "nodemailer": ">= 6.9 < 11",
     "stripe": ">= 19 < 23",
@@ -102,12 +99,6 @@
     "@scure/btc-signer": {
       "optional": true
     },
-    "express": {
-      "optional": true
-    },
-    "fastify": {
-      "optional": true
-    },
     "minio": {
       "optional": true
     },
@@ -130,10 +121,7 @@
     "@redis/client": "^6.0.0",
     "@scure/bip32": "^2.0.0",
     "@scure/btc-signer": "^2.0.0",
-    "@types/express": "^5.0.3",
     "@types/node": "^26.2.0",
-    "express": "^5.1.0",
-    "fastify": "^5.4.0",
     "minio": "^8.0.5",
     "nodemailer": "^10.0.0",
     "stripe": "^22.5.0",

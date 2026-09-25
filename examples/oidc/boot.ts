@@ -1,7 +1,9 @@
 import { startPlatform } from '@unchainedshop/platform';
 import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
-import { connect, unchainedLogger } from '@unchainedshop/api/lib/fastify/index.js';
-import type { OIDCProviderConfig } from '@unchainedshop/api/lib/auth.js';
+import { SendMessagePlugin } from '@unchainedshop/plugins/delivery/send-message';
+import { pluginRegistry } from '@unchainedshop/core';
+import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
+import type { OIDCProviderConfig } from '@unchainedshop/api';
 import seed from './seed.ts';
 import Fastify from 'fastify';
 import setupZitadel, { getZitadelOIDCConfig } from './zitadel.ts';
@@ -16,6 +18,8 @@ const fastify = Fastify({
 try {
   // Register base plugins before starting platform
   registerBasePlugins();
+  // seed.ts creates a send-message delivery provider, which the base preset does not include
+  pluginRegistry.register(SendMessagePlugin);
 
   let context;
   let oidcProviders: OIDCProviderConfig[] = [];
@@ -44,7 +48,7 @@ try {
     },
   });
 
-  connect(fastify, platform, {
+  await connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
     adminUI: true,
     // Pass OIDC providers for back-channel logout support

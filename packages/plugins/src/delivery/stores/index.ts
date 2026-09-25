@@ -11,6 +11,3 @@ export const PickMupPlugin: IPlugin = {
 };
 
 export default PickMupPlugin;
-
-// Re-export adapter for direct use
-export { PickMup } from './adapter.ts';

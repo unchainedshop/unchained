@@ -29,7 +29,19 @@ export interface OIDCProviderConfig {
   issuer: string;
   jwksUri?: string;
   audience?: string | string[];
+  /**
+   * Maps a verified token's `sub` claim to the Unchained user id (defaults to `sub`).
+   * Used for inbound access tokens and back-channel logout, e.g. when users are stored
+   * as `${clientId}:${sub}`.
+   */
+  userIdFromSubject?: (sub: string, claims: jose.JWTPayload) => string;
 }
+
+export const resolveOIDCUserId = (
+  provider: OIDCProviderConfig,
+  sub: string,
+  claims: jose.JWTPayload,
+): string => (provider.userIdFromSubject ? provider.userIdFromSubject(sub, claims) : sub);
 
 export interface AuthConfig {
   oidcProviders?: OIDCProviderConfig[];
@@ -121,6 +133,9 @@ export async function verifyLocalToken(token: string): Promise<AccessTokenPayloa
       error instanceof jose.errors.JWTClaimValidationFailed
     ) {
       logger.debug('Invalid token signature or claims');
+    } else if (error instanceof jose.errors.JOSEAlgNotAllowed) {
+      // Signed with another algorithm, e.g. by an OIDC provider: not a local token
+      logger.debug('Token algorithm not allowed for local tokens');
     } else {
       // SECURITY: Only log error message and type, not full object (may contain sensitive data)
       logger.error('Token verification error:', {
@@ -132,11 +147,43 @@ export async function verifyLocalToken(token: string): Promise<AccessTokenPayloa
   }
 }
 
+// jwks_uri per issuer, resolved once via OIDC discovery
+const discoveredJwksUris = new Map<string, Promise<string>>();
+
+/**
+ * Resolve the JWKS URL of a provider: the configured jwksUri, otherwise the jwks_uri of the
+ * issuer's OIDC discovery document (Keycloak, Zitadel & co. do not serve /.well-known/jwks.json),
+ * falling back to `${issuer}/.well-known/jwks.json` when discovery is unavailable.
+ */
+export function resolveJwksUri(provider: OIDCProviderConfig): Promise<string> {
+  if (provider.jwksUri) return Promise.resolve(provider.jwksUri);
+  const issuer = provider.issuer.replace(/\/+$/, '');
+  let jwksUri = discoveredJwksUris.get(issuer);
+  if (!jwksUri) {
+    jwksUri = fetch(`${issuer}/.well-known/openid-configuration`, {
+      signal: AbortSignal.timeout(5000),
+    })
+      .then(async (response) => {
+        const { jwks_uri } = response.ok ? ((await response.json()) as { jwks_uri?: string }) : {};
+        if (!jwks_uri) throw new Error(`no jwks_uri in discovery document (HTTP ${response.status})`);
+        return jwks_uri;
+      })
+      .catch((error: Error) => {
+        // Retry discovery with the next token, use the conventional location meanwhile
+        discoveredJwksUris.delete(issuer);
+        logger.warn(`OIDC discovery failed for ${issuer}: ${error.message}`);
+        return `${issuer}/.well-known/jwks.json`;
+      });
+    discoveredJwksUris.set(issuer, jwksUri);
+  }
+  return jwksUri;
+}
+
 /**
  * Get or create a JWKS fetcher for the given URI
  * jose library handles caching and key rotation automatically
  */
-function getJWKS(jwksUri: string): jose.JWTVerifyGetKey {
+export function getJWKS(jwksUri: string): jose.JWTVerifyGetKey {
   let jwks = jwksCache.get(jwksUri);
   if (!jwks) {
     jwks = jose.createRemoteJWKSet(new URL(jwksUri), {
@@ -187,8 +234,7 @@ export async function verifyOIDCToken(
     return null;
   }
 
-  // Construct JWKS URI if not provided
-  const jwksUri = provider.jwksUri || `${provider.issuer}/.well-known/jwks.json`;
+  const jwksUri = await resolveJwksUri(provider);
 
   try {
     // Get the JWKS fetcher (cached)
@@ -210,7 +256,7 @@ export async function verifyOIDCToken(
     logger.debug('OIDC token verified successfully', { issuer: iss, subject: sub });
 
     return {
-      userId: payload.sub as string,
+      userId: resolveOIDCUserId(provider, payload.sub as string, payload),
       roles: (payload as any).roles,
     };
   } catch (error) {

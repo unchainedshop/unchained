@@ -22,7 +22,8 @@
 import * as jose from 'jose';
 
 const {
-  UNCHAINED_KEYCLOAK_REALM_URL = 'http://localhost:8080/realms/publicare',
+  UNCHAINED_KEYCLOAK_REALM_URL = 'http://localhost:8080/realms/master',
+  UNCHAINED_KEYCLOAK_CLIENT_ID = '',
   ROOT_URL = 'http://localhost:4010',
   MCP_API_PATH = '/mcp',
   INITIAL_ACCESS_TOKEN = '', // Optional: Some Keycloak setups require this
@@ -58,7 +59,8 @@ async function registerClient(registrationEndpoint: string): Promise<ClientRegis
       client_name: 'MCP Test Client',
       grant_types: ['client_credentials'],
       token_endpoint_auth_method: 'client_secret_basic',
-      scope: 'openid profile email',
+      // No scope: Keycloak's registration policies reject 'openid' (not a client scope); the
+      // realm's default client scopes apply, including 'roles' for resource_access claims.
     };
 
     const headers: HeadersInit = {
@@ -163,6 +165,8 @@ async function testMCPEndpoint(accessToken: string): Promise<void> {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
+        // Streamable HTTP transport requires both media types
+        'Accept': 'application/json, text/event-stream',
       },
       body: JSON.stringify({
         jsonrpc: '2.0',
@@ -185,8 +189,14 @@ async function testMCPEndpoint(accessToken: string): Promise<void> {
       } catch {
         // Response wasn't JSON, that's ok
       }
+    } else if (response.status === 403) {
+      throw new Error(
+        `MCP requires the admin role: grant the registered client's service account the "admin" role of client ` +
+          `"${UNCHAINED_KEYCLOAK_CLIENT_ID}" and add that role to the registered client's scope mappings ` +
+          `(dynamically registered clients have full scope disabled)`,
+      );
     } else {
-      console.log('⚠️  MCP endpoint returned an error status');
+      throw new Error(`MCP endpoint returned ${response.status}`);
     }
   } catch (error) {
     console.error('❌ Failed to test MCP endpoint:', error.message);
@@ -320,7 +330,7 @@ async function main() {
     console.error('\n' + '=' .repeat(60));
     console.error('\n❌ Test suite failed:', error.message);
     console.error('\n💡 Troubleshooting tips:');
-    console.error('   1. Ensure Keycloak is running: docker-compose up -d');
+    console.error('   1. Ensure Keycloak is running (see README: docker run ... quay.io/keycloak/keycloak start-dev)');
     console.error('   2. Ensure Unchained server is running: npm run dev');
     console.error('   3. Check environment variables in .env file');
     console.error('   4. Enable Dynamic Client Registration in Keycloak:');

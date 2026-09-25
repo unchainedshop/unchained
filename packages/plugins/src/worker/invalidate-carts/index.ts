@@ -16,5 +16,5 @@ export const InvalidateCartsPlugin: IPlugin = {
 
 export default InvalidateCartsPlugin;
 
-// Re-export adapter for direct use
-export * from './adapter.ts';
+// Helpers
+export { configureInvalidateCartsAutoscheduling } from './adapter.ts';

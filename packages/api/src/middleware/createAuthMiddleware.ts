@@ -59,7 +59,7 @@ function getTokenCookieOptions(expires?: Date): CookieOptions {
         '1': true,
         '0': false,
       } as Record<string, boolean | 'none' | 'lax' | 'strict'>
-    )[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] || 'lax'; // Default to 'lax' for safety
+    )[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] ?? 'lax'; // Unknown values default to 'lax'; '0' must stay false
 
   // Warn if using insecure configuration in production
   if (!secure && process.env.NODE_ENV === 'production') {
@@ -132,8 +132,8 @@ export async function createAuthContext(
   const login: LoginFn = async (user: User, options = {}) => {
     const { impersonator } = options;
 
-    // Get current token version, defaulting to 1
-    const tokenVersion = user.tokenVersion ?? 1;
+    // Get current token version; a missing field is 0 (never revoked)
+    const tokenVersion = user.tokenVersion ?? 0;
 
     const { token: newToken, expires } = await signAccessToken(user._id, tokenVersion, {
       impersonatorId: impersonator?._id,

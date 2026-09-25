@@ -22,7 +22,7 @@ const RecentExports = () => {
 
   const sortOptions = convertSortFieldsToQueryFormat(query?.sort);
   const workId = query?.workId as string;
-  const recentExports = useRecentExports({ sortOptions, queryString: workId });
+  const recentExports = useRecentExports({ sortOptions, queryString: workId, formatDateTime });
 
   const handleShowAll = () => {
     const { workId: _, ...remainingQuery } = query;

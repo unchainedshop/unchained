@@ -11,6 +11,3 @@ export const ProductUsSalesTaxPlugin: IPlugin = {
 };
 
 export default ProductUsSalesTaxPlugin;
-
-// Re-export adapter for direct use
-export { ProductUsSalesTax } from './adapter.ts';

@@ -1,10 +1,10 @@
 import type { Work, WorkData, WorkResult } from '@unchainedshop/core-worker';
-import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
+import type { IBaseDirector } from '@unchainedshop/utils';
 import type { ScheduleData } from '../utils/schedule.ts';
 import { type IWorkerAdapter, WorkerAdapter } from './WorkerAdapter.ts';
 import type { Modules } from '../modules.ts';
 import { createLogger } from '@unchainedshop/logger';
-import { pluginRegistry } from '../plugins/PluginRegistry.ts';
+import { registryDirector } from './registryDirector.ts';
 
 const logger = createLogger('unchained:core');
 
@@ -34,30 +34,8 @@ export type IWorkerDirector = IBaseDirector<IWorkerAdapter<any, any>> & {
 
 const AutoScheduleMap = new Map<string, WorkScheduleConfiguration>();
 
-const baseDirector = BaseDirector<IWorkerAdapter<any, any>>('WorkerDirector', {
-  adapterKeyField: 'key',
-});
-
 export const WorkerDirector: IWorkerDirector = {
-  ...baseDirector,
-
-  // Override to query pluginRegistry dynamically
-  getAdapter: (key: string) => {
-    const adapters = pluginRegistry.getAdapters(WorkerAdapter.adapterType!) as IWorkerAdapter<
-      any,
-      any
-    >[];
-    return adapters.find((adapter) => adapter.key === key) || null;
-  },
-
-  // Override to query pluginRegistry dynamically
-  getAdapters: ({ adapterFilter } = {}) => {
-    const adapters = pluginRegistry.getAdapters(WorkerAdapter.adapterType!) as IWorkerAdapter<
-      any,
-      any
-    >[];
-    return adapters.filter(adapterFilter || (() => true));
-  },
+  ...registryDirector<IWorkerAdapter<any, any>>(WorkerAdapter.adapterType!),
 
   getActivePluginTypes: ({ external } = {}) => {
     return WorkerDirector.getAdapters()

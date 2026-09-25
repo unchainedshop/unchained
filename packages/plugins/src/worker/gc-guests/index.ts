@@ -16,5 +16,5 @@ export const GCGuestsPlugin: IPlugin = {
 
 export default GCGuestsPlugin;
 
-// Re-export adapter for direct use
-export * from './adapter.ts';
+// Helpers
+export { configureGCGuestsAutoscheduling } from './adapter.ts';

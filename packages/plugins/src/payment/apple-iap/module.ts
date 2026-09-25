@@ -23,12 +23,6 @@ export const configureAppleTransactionsModule = async ({ db }) => {
   };
 };
 
-export default {
-  appleTransactions: {
-    configure: configureAppleTransactionsModule,
-  },
-};
-
 export interface AppleTransactionsModule {
   appleTransactions: Awaited<ReturnType<typeof configureAppleTransactionsModule>>;
 }

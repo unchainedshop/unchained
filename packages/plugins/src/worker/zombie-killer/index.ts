@@ -15,6 +15,3 @@ export const ZombieKillerPlugin: IPlugin = {
 };
 
 export default ZombieKillerPlugin;
-
-// Re-export adapter for direct use
-export { ZombieKillerWorker } from './adapter.ts';

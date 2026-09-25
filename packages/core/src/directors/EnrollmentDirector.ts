@@ -1,4 +1,4 @@
-import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
+import type { IBaseDirector } from '@unchainedshop/utils';
 import type {
   EnrollmentAdapterActions,
   EnrollmentContext,
@@ -10,7 +10,7 @@ import type { Product, ProductPlan } from '@unchainedshop/core-products';
 import type { Enrollment } from '@unchainedshop/core-enrollments';
 import { createLogger } from '@unchainedshop/logger';
 import type { Modules } from '../modules.ts';
-import { pluginRegistry } from '../plugins/PluginRegistry.ts';
+import { registryDirector } from './registryDirector.ts';
 
 const logger = createLogger('unchained:core');
 
@@ -33,10 +33,6 @@ export type IEnrollmentDirector = IBaseDirector<IEnrollmentAdapter> & {
   ) => Promise<EnrollmentAdapterActions>;
 };
 
-const baseDirector = BaseDirector<IEnrollmentAdapter>('EnrollmentDirector', {
-  adapterSortKey: 'orderIndex',
-});
-
 const findAppropriateAdapters = (productPlan?: ProductPlan) =>
   EnrollmentDirector.getAdapters({
     adapterFilter: (Adapter: IEnrollmentAdapter) => {
@@ -49,19 +45,7 @@ const findAppropriateAdapters = (productPlan?: ProductPlan) =>
   });
 
 export const EnrollmentDirector: IEnrollmentDirector = {
-  ...baseDirector,
-
-  // Override to query pluginRegistry dynamically
-  getAdapter: (key: string) => {
-    const adapters = pluginRegistry.getAdapters(EnrollmentAdapter.adapterType!) as IEnrollmentAdapter[];
-    return adapters.find((adapter) => adapter.key === key) || null;
-  },
-
-  // Override to query pluginRegistry dynamically
-  getAdapters: ({ adapterFilter } = {}) => {
-    const adapters = pluginRegistry.getAdapters(EnrollmentAdapter.adapterType!) as IEnrollmentAdapter[];
-    return adapters.filter(adapterFilter || (() => true));
-  },
+  ...registryDirector<IEnrollmentAdapter>(EnrollmentAdapter.adapterType!),
 
   transformOrderItemToEnrollment: async ({ orderPosition, product }, doc, unchainedAPI) => {
     const Adapter = findAppropriateAdapters(product.plan)?.[0];

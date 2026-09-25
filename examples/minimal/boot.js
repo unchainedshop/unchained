@@ -9,7 +9,7 @@ const fastify = Fastify();
 registerBasePlugins();
 
 const platform = await startPlatform({});
-connect(fastify, platform, {
+await connect(fastify, platform, {
   allowRemoteToLocalhostSecureCookies: true,
   adminUI: true,
 });

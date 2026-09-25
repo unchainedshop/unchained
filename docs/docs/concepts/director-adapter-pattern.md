@@ -11,15 +11,16 @@ The Director/Adapter pattern is the foundation of Unchained Engine's extensibili
 
 ## Overview
 
-**Adapters** implement a specific behavior (a payment gateway, a pricing rule, a delivery method…). **Directors** are the internal machinery that holds the adapters for a domain and selects/invokes the right one(s) at runtime. In v5 you rarely touch a director directly — adapters self-route to their director via an `adapterType` symbol when you register the plugin.
+**Adapters** implement a specific behavior (a payment gateway, a pricing rule, a delivery method…). **Directors** are the internal machinery that selects and invokes the right adapter(s) of a domain at runtime. The adapters themselves are held by the plugin registry (`pluginRegistry`); each director looks up the adapters whose `adapterType` symbol matches its domain. In v5 you rarely touch a director directly: registering the plugin is enough.
 
 ```mermaid
 flowchart LR
-    subgraph Director
+    subgraph Registry["pluginRegistry"]
         A1[Adapter 1]
         A2[Adapter 2]
         A3[Adapter 3]
     end
+    D[Director] -- "getAdapters(adapterType)" --> Registry
 ```
 
 ## How to register a plugin

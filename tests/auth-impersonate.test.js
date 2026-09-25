@@ -215,3 +215,81 @@ test.describe('Impersonation', () => {
     });
   });
 });
+
+test.describe('Impersonation after revocation', () => {
+  let db;
+  let adminFetch;
+
+  test.before(async () => {
+    [db] = await setupDatabase();
+    adminFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+  });
+
+  test.after(async () => {
+    await disconnect();
+  });
+
+  test('a revoked impersonation token cannot be exchanged for an admin session', async () => {
+    // Pin the target's version so revoking it works independently of the version default.
+    await db.collection('users').updateOne({ _id: 'user' }, { $set: { tokenVersion: 5 } });
+
+    const impersonation = await adminFetch({
+      query: /* GraphQL */ `
+        mutation Impersonate($userId: ID!) {
+          impersonate(userId: $userId) {
+            user {
+              _id
+            }
+          }
+        }
+      `,
+      variables: { userId: 'user' },
+    });
+    const impersonationToken = impersonation.headers
+      .get('set-cookie')
+      ?.match(/unchained_token=([^;,]+)/)?.[1];
+    assert.ok(impersonationToken, 'impersonate should set the unchained_token cookie');
+
+    await adminFetch({
+      query: /* GraphQL */ `
+        mutation LogoutAllSessions($userId: ID) {
+          logoutAllSessions(userId: $userId) {
+            success
+          }
+        }
+      `,
+      variables: { userId: 'user' },
+    });
+
+    const withImpersonationToken = (request) =>
+      createLoggedInGraphqlFetch(null)({
+        ...request,
+        headers: { cookie: `unchained_token=${impersonationToken}` },
+      });
+
+    const { data: meData } = await withImpersonationToken({
+      query: /* GraphQL */ `
+        query {
+          me {
+            _id
+          }
+        }
+      `,
+    });
+    assert.strictEqual(meData?.me ?? null, null, 'the impersonation token itself is revoked');
+
+    const { data, headers } = await withImpersonationToken({
+      query: /* GraphQL */ `
+        mutation {
+          stopImpersonation {
+            user {
+              _id
+            }
+          }
+        }
+      `,
+    });
+    assert.strictEqual(data?.stopImpersonation ?? null, null);
+    assert.doesNotMatch(headers.get('set-cookie') ?? '', /unchained_token=[^;]+/);
+  });
+});

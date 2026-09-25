@@ -50,6 +50,14 @@ npm install @unchainedshop/plugins
 | Free Payment | `pricing/free-payment` | Free payment processing |
 | Product Swiss Tax | `pricing/product-swiss-tax` | Swiss VAT on products |
 | Delivery Swiss Tax | `pricing/delivery-swiss-tax` | Swiss VAT on delivery |
+| Product EU Tax | `pricing/product-eu-tax` | EU destination VAT on products (opt-in `registerEuTaxPlugins`) |
+| Delivery EU Tax | `pricing/delivery-eu-tax` | EU destination VAT on delivery |
+| Product UK Tax | `pricing/product-uk-tax` | UK VAT on products (opt-in `registerUkTaxPlugins`) |
+| Delivery UK Tax | `pricing/delivery-uk-tax` | UK VAT on delivery |
+| Product US Sales Tax | `pricing/product-us-sales-tax` | US sales tax on products (opt-in `registerUsSalesTaxPlugins`) |
+| Delivery US Sales Tax | `pricing/delivery-us-sales-tax` | US sales tax on delivery |
+| 100 Off Discount | `pricing/discount-100-off` | Example order discount (not in any preset) |
+| Half Price Manual Discount | `pricing/discount-half-price-manual` | Example manual product discount (not in any preset) |
 
 ### Filter Adapters
 
@@ -64,6 +72,7 @@ npm install @unchainedshop/plugins
 |--------|-------------|-------------|
 | GridFS | `files/gridfs` | MongoDB GridFS storage |
 | MinIO | `files/minio` | MinIO/S3-compatible storage |
+| Temp Upload | `files/temp-upload` | Route for temporary uploads (e.g. bulk import payloads) |
 
 ### Worker Adapters
 
@@ -81,6 +90,14 @@ npm install @unchainedshop/plugins
 | Update Token Ownership | `worker/update-token-ownership` | NFT ownership sync |
 | Zombie Killer | `worker/zombie-killer` | Stale job cleanup |
 | Error Notifications | `worker/error-notifications` | Error alerting |
+| BudgetSMS | `worker/budgetsms` | BudgetSMS SMS integration |
+| BulkGate | `worker/bulkgate` | BulkGate SMS integration |
+| Bulk Export | `worker/bulk-export` | Bulk data export |
+| Enrollment Order Generator | `worker/enrollment-order-generator` | Generates orders from enrollments |
+| Export Token | `worker/export-token` | Holds the state of token minting/export |
+| GC Guests | `worker/gc-guests` | Garbage-collects guest users |
+| Invalidate Carts | `worker/invalidate-carts` | Recalculates open carts |
+| Message | `worker/message` | Renders a message template and starts the delivery jobs |
 
 ### Event Adapters
 
@@ -96,6 +113,7 @@ npm install @unchainedshop/plugins
 |--------|-------------|-------------|
 | Store | `warehousing/store` | Basic inventory |
 | ETH Minter | `warehousing/eth-minter` | Ethereum NFT minting |
+| ERC Metadata | `warehousing/erc-metadata` | ERC token metadata routes (`/erc-metadata/...`) |
 
 ### Other Adapters
 
@@ -122,7 +140,7 @@ const platform = await startPlatform({
 });
 ```
 
-Plugins must be registered explicitly before `startPlatform()`. Importing them alone does not register adapters or routes. Use named `XPlugin` exports (or the default plugin export), or the `registerBasePlugins()`, `registerAllPlugins()`, and `registerCryptoPlugins()` preset functions. Import package subpaths without a file extension.
+Plugins must be registered explicitly before `startPlatform()`. Importing them alone does not register adapters or routes. Use named `XPlugin` exports (or the default plugin export), or the preset functions `registerBasePlugins()`, `registerAllPlugins()`, `registerCryptoPlugins()` and the opt-in country tax presets (`presets/countries/{ch,eu,uk,us}`). `registerAllPlugins()` includes the crypto and Swiss tax presets and needs the optional crypto peers. Presets cannot exclude single plugins; for a custom set, register the plugins individually. Import package subpaths without a file extension. Many plugins read their `process.env` configuration when they are imported, so load environment variables before importing plugins.
 
 Event adapters use `setEmitAdapter()` from `@unchainedshop/events`; see their [Node Event Emitter example](src/events/node-event-emitter.ts). The base and all presets configure the default event emitter; the crypto preset supplements a base setup. Install the optional peer dependencies needed by the plugins you enable; see [package.json](package.json).
 

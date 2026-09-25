@@ -11,6 +11,3 @@ export const MessagePlugin: IPlugin = {
 };
 
 export default MessagePlugin;
-
-// Re-export adapter for direct use
-export * from './adapter.ts';

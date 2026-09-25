@@ -1,6 +1,7 @@
-import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
+import type { IBaseDirector } from '@unchainedshop/utils';
 import type { DiscountContext, IDiscountAdapter } from './BaseDiscountAdapter.ts';
 import type { Modules } from '../modules.ts';
+import { registryDirector } from './registryDirector.ts';
 
 export type IDiscountDirector<DiscountConfiguration> = IBaseDirector<
   IDiscountAdapter<DiscountConfiguration>
@@ -17,14 +18,10 @@ export type IDiscountDirector<DiscountConfiguration> = IBaseDirector<
 };
 
 export const BaseDiscountDirector = <DiscountConfigurationType>(
-  directorName: string,
+  adapterType: symbol,
 ): IDiscountDirector<DiscountConfigurationType> => {
-  const baseDirector = BaseDirector<IDiscountAdapter<DiscountConfigurationType>>(directorName, {
-    adapterSortKey: 'orderIndex',
-  });
-
   const director: IDiscountDirector<DiscountConfigurationType> = {
-    ...baseDirector,
+    ...registryDirector<IDiscountAdapter<DiscountConfigurationType>>(adapterType),
 
     actions: async function (discountContext, unchainedAPI) {
       // Use regular function instead of arrow function to get proper 'this' binding

@@ -192,7 +192,7 @@ Note: import plugin subpaths WITHOUT a file extension. The package `exports` map
 
 #### Plugin Preset Default Exports Removed
 
-Default exports from the base and all presets have been removed. The crypto preset retains an empty legacy default export, which does not register plugins. Use named registration functions for every preset:
+Default exports from the presets have been removed. Use the named registration functions:
 
 ```typescript
 // ❌ REMOVED
@@ -320,22 +320,31 @@ Already marked net calculations are skipped, and each order is updated atomicall
 so interrupted runs can safely resume. Item, delivery and payment calculations
 already have the required representation and are left intact.
 
-The existing initialization order is retained: plugins and API setup precede
-migrations, and workers start afterward. Migrations run even with `disableWorker`
-or `UNCHAINED_DISABLE_WORKER` enabled, and must finish before `startPlatform`
-returns so the application can start serving requests. A failed migration rejects
-platform startup. Tax rows without `baseCategory` are attributed to their preceding
-category row (the built-in adapters' historical layout); an unresolvable tax row
-stops migration with the order ID so its attribution can be repaired. Invalid
-amounts or contradictory historical discount views also stop startup without
-rewriting that order. Successful conversions remain safe to resume. Failed startup
-closes initialized plugins, API resources and its database connection before
-rejecting.
+Migrations run only on instances with workers enabled (`disableWorker` and
+`UNCHAINED_DISABLE_WORKER` skip them), after plugins and API setup and before the
+queue managers start. A failed migration is logged and stops the remaining
+migrations, but it does not stop startup; the next start resumes after the last
+completed migration. Tax rows without `baseCategory` are attributed to their
+preceding category row (the built-in adapters' historical layout); an unresolvable
+tax row stops the migration with the order ID so its attribution can be repaired.
+Invalid amounts or contradictory historical discount views also stop it without
+rewriting that order. Successful conversions remain safe to resume.
 
-Stop older application instances before upgrading: they must not write gross order
-calculations after the migration. Restore a database backup before rolling back to
-a release that expects gross order rows. Custom integrations using `initCore`
-directly must run the registered migrations before serving requests.
+Until this migration has completed, the new release reads orders that were not
+converted yet as net and shows wrong totals. Upgrade in this order:
+
+1. Stop all older application instances: they must not write gross order
+   calculations after the migration.
+2. Start one instance with workers enabled and wait for the migration: the
+   `last-migration` collection contains a document with `_id: 20260907120000`
+   (category `unchained`), and the log shows `Migrated 'up' to 20260907120000`.
+3. Only then start or scale up instances that run with workers disabled.
+4. Treat `Migration failed; continuing startup` in the log as a release blocker:
+   repair the reported order and restart a worker-enabled instance to resume.
+
+Restore a database backup before rolling back to a release that expects gross order
+rows. Custom integrations using `initCore` directly must run the registered
+migrations before serving requests.
 
 Custom order pricing adapters must pass **net** `amount` values and the separate
 `taxAmount` to `addItems`, `addDelivery`, `addPayment` and `addDiscount`. For example,
@@ -363,6 +372,10 @@ setEmitAdapter(RedisEventEmitter());
 ```
 
 The Node.js in-memory emitter is still wired automatically by `registerBasePlugins()`. `EmitAdapter` also gained an optional `shutdown()` (the redis/eventbridge adapters implement it to close connections; `startPlatform` calls it on graceful shutdown).
+
+### Upgrading from an earlier v5 alpha: one-time re-login
+
+A user without a stored `tokenVersion` is now treated as version `0` (earlier alphas used `1`, which made the first revocation a no-op). Tokens those alphas issued to such users are rejected after the upgrade, so affected users log in once more. No data change is needed.
 
 ---
 

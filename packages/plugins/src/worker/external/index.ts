@@ -11,6 +11,3 @@ export const ExternalPlugin: IPlugin = {
 };
 
 export default ExternalPlugin;
-
-// Re-export adapter for direct use
-export { ExternalWorkerPlugin } from './adapter.ts';

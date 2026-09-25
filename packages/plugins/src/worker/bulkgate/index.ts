@@ -11,6 +11,3 @@ export const BulkGatePlugin: IPlugin = {
 };
 
 export default BulkGatePlugin;
-
-// Re-export adapter for direct use
-export { BulkGateWorker } from './adapter.ts';

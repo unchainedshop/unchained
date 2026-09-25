@@ -1,5 +1,7 @@
-import { describe, it, before } from 'node:test';
+import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert';
+import http from 'node:http';
+import { once } from 'node:events';
 import * as jose from 'jose';
 
 // Secure test secret (must be at least 32 characters)
@@ -9,6 +11,7 @@ const TEST_SECRET = 'test-secret-that-is-at-least-32-characters-long-for-securit
 let signAccessToken: typeof import('./auth.ts').signAccessToken;
 let verifyLocalToken: typeof import('./auth.ts').verifyLocalToken;
 let createAuthHandler: typeof import('./auth.ts').createAuthHandler;
+let resolveJwksUri: typeof import('./auth.ts').resolveJwksUri;
 
 // Set environment variables and load module before all tests
 before(async () => {
@@ -22,6 +25,7 @@ before(async () => {
   signAccessToken = auth.signAccessToken;
   verifyLocalToken = auth.verifyLocalToken;
   createAuthHandler = auth.createAuthHandler;
+  resolveJwksUri = auth.resolveJwksUri;
 });
 
 describe('signAccessToken', () => {
@@ -106,6 +110,23 @@ describe('verifyLocalToken', () => {
     assert.strictEqual(result, null, 'malformed JWS should return null');
   });
 
+  it('returns null without an error log for tokens of an OIDC provider (RS256)', async (t) => {
+    const { privateKey } = await jose.generateKeyPair('RS256');
+    const token = await new jose.SignJWT({ sub: 'user-123' })
+      .setProtectedHeader({ alg: 'RS256' })
+      .setIssuer('https://idp.example.com')
+      .setExpirationTime('1h')
+      .sign(privateKey);
+
+    const log = t.mock.method(console, 'log', () => undefined);
+    const result = await verifyLocalToken(token);
+    assert.strictEqual(result, null);
+    assert.ok(
+      !log.mock.calls.some(({ arguments: args }) => args.some((arg) => String(arg).includes('error'))),
+      'a token of another issuer is expected, not an error',
+    );
+  });
+
   it('returns null for wrong issuer', async () => {
     // Create a token with a different issuer
     const secret = new TextEncoder().encode(TEST_SECRET);
@@ -173,5 +194,54 @@ describe('createAuthHandler', () => {
     const result = await handler(token);
 
     assert.strictEqual(result.impersonatorId, impersonatorId);
+  });
+});
+
+describe('resolveJwksUri', () => {
+  let issuer: string;
+  let discoveryRequests = 0;
+  let discoveryStatus = 200;
+  const server = http.createServer((req, res) => {
+    if (req.url?.endsWith('/.well-known/openid-configuration')) {
+      discoveryRequests += 1;
+      res.writeHead(discoveryStatus, { 'content-type': 'application/json' });
+      res.end(JSON.stringify({ issuer, jwks_uri: `${issuer}/oauth/v2/keys` }));
+      return;
+    }
+    res.writeHead(404);
+    res.end();
+  });
+
+  before(async () => {
+    server.listen(0, '127.0.0.1');
+    await once(server, 'listening');
+    issuer = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+  });
+
+  after(() => {
+    server.close();
+  });
+
+  it('prefers a configured jwksUri without discovery', async () => {
+    const jwksUri = await resolveJwksUri({ issuer, jwksUri: 'https://idp.example/keys' });
+    assert.strictEqual(jwksUri, 'https://idp.example/keys');
+    assert.strictEqual(discoveryRequests, 0);
+  });
+
+  it('uses the jwks_uri from OIDC discovery once per issuer', async () => {
+    assert.strictEqual(await resolveJwksUri({ issuer: `${issuer}/` }), `${issuer}/oauth/v2/keys`);
+    assert.strictEqual(await resolveJwksUri({ issuer }), `${issuer}/oauth/v2/keys`);
+    assert.strictEqual(discoveryRequests, 1);
+  });
+
+  it('falls back to /.well-known/jwks.json and retries discovery after a failure', async () => {
+    const failingIssuer = `${issuer}/realms/failing`;
+    discoveryStatus = 503;
+    assert.strictEqual(
+      await resolveJwksUri({ issuer: failingIssuer }),
+      `${failingIssuer}/.well-known/jwks.json`,
+    );
+    discoveryStatus = 200;
+    assert.strictEqual(await resolveJwksUri({ issuer: failingIssuer }), `${issuer}/oauth/v2/keys`);
   });
 });

@@ -50,7 +50,7 @@ No. Unchained is designed around MongoDB's document model. The flexible schema i
 npm update @unchainedshop/platform @unchainedshop/api @unchainedshop/plugins
 ```
 
-Check [MIGRATION.md](https://github.com/unchainedshop/unchained/blob/master/MIGRATION.md) for breaking changes between major versions. Database migrations run automatically when the platform boots.
+Check [MIGRATION.md](https://github.com/unchainedshop/unchained/blob/master/MIGRATION.md) for breaking changes between major versions. Database migrations run automatically when a worker-enabled instance boots.
 
 ## Development
 
@@ -184,7 +184,7 @@ See [Deployment](../deployment/index.md).
 
 ### How do I handle database migrations?
 
-Migrations run automatically on startup when the Unchained platform boots. The migration system handles schema updates and data transformations between versions.
+Migrations run automatically when an Unchained instance with workers enabled boots (instances started with `disableWorker` or `UNCHAINED_DISABLE_WORKER` skip them). A failed migration is logged, stops the remaining migrations and does not stop startup; the next start resumes. The migration system handles schema updates and data transformations between versions.
 
 ## Security
 

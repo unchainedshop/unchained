@@ -4,7 +4,14 @@ import {
   createAnonymousGraphqlFetch,
   disconnect,
 } from './helpers.js';
-import { getServerPort, getOidcPrivateKey, TEST_OIDC_ISSUER, TEST_OIDC_AUDIENCE } from './setup.js';
+import {
+  getServerPort,
+  getOidcPrivateKey,
+  TEST_OIDC_ISSUER,
+  TEST_OIDC_AUDIENCE,
+  TEST_OIDC_PREFIXED_ISSUER,
+  oidcSubjectToUserId,
+} from './setup.js';
 import { Admin, User, ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -155,6 +162,122 @@ test.describe('Auth: logoutAllSessions Mutation', () => {
 
       assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
+  });
+});
+
+test.describe('Auth: JWT revocation for users without a stored tokenVersion', () => {
+  let adminFetch;
+
+  // Fresh accounts never get a tokenVersion field, so the first revocation is the one
+  // that has to work.
+  const createUserSession = async (username) => {
+    const { data, errors, headers } = await createAnonymousGraphqlFetch()({
+      query: /* GraphQL */ `
+        mutation CreateUser($username: String, $email: String, $password: String) {
+          createUser(username: $username, email: $email, password: $password) {
+            user {
+              _id
+            }
+          }
+        }
+      `,
+      variables: { username, email: `${username}@unchained.local`, password: 'Revocation-Test-1' },
+    });
+    assert.ifError(errors?.[0]);
+    const token = headers.get('set-cookie')?.match(/unchained_token=([^;,]+)/)?.[1];
+    assert.ok(token, 'createUser should set the unchained_token cookie');
+    return { userId: data.createUser.user._id, token };
+  };
+
+  const withSession = (token) => (request) =>
+    createAnonymousGraphqlFetch()({ ...request, headers: { cookie: `unchained_token=${token}` } });
+
+  const currentUserId = async (token) => {
+    const { data } = await withSession(token)({
+      query: /* GraphQL */ `
+        query {
+          me {
+            _id
+          }
+        }
+      `,
+    });
+    return data?.me?._id ?? null;
+  };
+
+  test.before(async () => {
+    [db] = await setupDatabase();
+    adminFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+  });
+
+  test.after(async () => {
+    await disconnect();
+  });
+
+  test('logoutAllSessions revokes the old token on the first call', async () => {
+    const { userId, token } = await createUserSession('revoke-self');
+    assert.strictEqual(await currentUserId(token), userId);
+
+    const { data } = await withSession(token)({
+      query: /* GraphQL */ `
+        mutation {
+          logoutAllSessions {
+            success
+          }
+        }
+      `,
+    });
+    assert.strictEqual(data.logoutAllSessions.success, true);
+
+    assert.strictEqual(await currentUserId(token), null);
+  });
+
+  test('admin force-logout revokes the old token on the first call', async () => {
+    const { userId, token } = await createUserSession('revoke-by-admin');
+    assert.strictEqual(await currentUserId(token), userId);
+
+    const { data } = await adminFetch({
+      query: /* GraphQL */ `
+        mutation LogoutAllSessions($userId: ID) {
+          logoutAllSessions(userId: $userId) {
+            success
+          }
+        }
+      `,
+      variables: { userId },
+    });
+    assert.strictEqual(data.logoutAllSessions.success, true);
+
+    assert.strictEqual(await currentUserId(token), null);
+  });
+
+  test('removing a user with order history invalidates their token', async () => {
+    const { userId, token } = await createUserSession('revoke-removed');
+    assert.strictEqual(await currentUserId(token), userId);
+
+    // With order history the user is only marked deleted (soft delete), not purged.
+    await db.collection('orders').insertOne({
+      _id: `revoke-removed-order-${userId}`,
+      userId,
+      status: 'CONFIRMED',
+      created: new Date(),
+      currencyCode: 'CHF',
+      countryCode: 'CH',
+    });
+
+    const { errors } = await adminFetch({
+      query: /* GraphQL */ `
+        mutation RemoveUser($userId: ID) {
+          removeUser(userId: $userId) {
+            _id
+          }
+        }
+      `,
+      variables: { userId },
+    });
+    assert.ifError(errors?.[0]);
+
+    assert.strictEqual(await currentUserId(token), null);
   });
 });
 
@@ -335,5 +458,56 @@ test.describe('Auth: Backchannel Logout Handler', () => {
     // Verify user's tokenVersion was incremented
     const user = await Users.findOne({ _id: BACKCHANNEL_USER_ID });
     assert.strictEqual(user.tokenVersion, 11, 'tokenVersion should be incremented');
+  });
+
+  test.describe('provider with userIdFromSubject', () => {
+    const subject = 'prefixed-subject';
+    const mappedUserId = oidcSubjectToUserId(subject);
+
+    test.before(async () => {
+      await db.collection('users').findOrInsertOne({
+        _id: mappedUserId,
+        created: new Date(),
+        username: 'prefixed-oidc-user',
+        emails: [{ address: 'prefixed-oidc@unchained.local', verified: true }],
+        roles: [],
+        services: {},
+        tokenVersion: 3,
+        oidcLogoutAt: null,
+      });
+    });
+
+    test('logout token revokes the user stored under the mapped id', async () => {
+      const logoutToken = await createLogoutToken({ iss: TEST_OIDC_PREFIXED_ISSUER, sub: subject });
+      const response = await callHandler('POST', { logout_token: logoutToken });
+      assert.strictEqual(response.status, 200);
+
+      const user = await db.collection('users').findOne({ _id: mappedUserId });
+      assert.strictEqual(user.tokenVersion, 4, 'tokenVersion of the mapped user should be incremented');
+    });
+
+    test('access token authenticates the user stored under the mapped id', async () => {
+      const now = Math.floor(Date.now() / 1000);
+      const accessToken = await new jose.SignJWT({
+        iss: TEST_OIDC_PREFIXED_ISSUER,
+        sub: subject,
+        aud: TEST_OIDC_AUDIENCE,
+        iat: now,
+        exp: now + 300,
+      })
+        .setProtectedHeader({ alg: 'RS256', kid: 'test-key-id' })
+        .sign(getOidcPrivateKey());
+
+      const { data } = await createLoggedInGraphqlFetch(`Bearer ${accessToken}`)({
+        query: /* GraphQL */ `
+          query {
+            me {
+              _id
+            }
+          }
+        `,
+      });
+      assert.strictEqual(data?.me?._id, mappedUserId);
+    });
   });
 });

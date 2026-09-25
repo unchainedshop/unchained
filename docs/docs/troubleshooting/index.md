@@ -86,6 +86,34 @@ MONGO_URL=mongodb://localhost:27017/unchained
 
 3. For MongoDB Atlas, ensure IP whitelist includes your IP
 
+#### MongoDB Won't Start: `DBException in initAndListen`
+
+Without `MONGO_URL`, the engine starts its own MongoDB for local development. Outside `NODE_ENV=test` it is **not** in-memory: the data is kept in `.db` in the working directory, and MongoDB listens on `PORT + 1`. That has three consequences:
+
+- Data survives restarts. Delete `.db` to start from scratch.
+- Two instances started from the same directory share `.db`, and the second MongoDB fails with `DBException in initAndListen`.
+- An instance on `PORT` blocks `PORT + 1` for anything else, e.g. a second instance you want to start on the next port.
+
+**Solution:** give each instance its own directory and a port gap of two, or point additional instances at the first MongoDB with a separate database name:
+
+```bash
+MONGO_URL=mongodb://127.0.0.1:4011/second-instance PORT=4020 npm start
+```
+
+#### Environment Variables Are Ignored
+
+The examples load `.env.defaults` first, then `.env`. Variables already set in the shell take precedence over both files, which is handy for one-off overrides:
+
+```bash
+PORT=4020 ROOT_URL=http://localhost:4020 npm start
+```
+
+If a value in `.env` seems to have no effect, check whether your shell exports the same variable.
+
+#### `The decorator 'serializeCookie' has already been added!`
+
+Up to v5.0.0-alpha.7, `connect()` and `@fastify/oauth2` (or any plugin that brings its own `@fastify/cookie`) both registered the cookie plugin, and Fastify refused to start. Upgrade, or `await fastify.register(fastifyCookie)` yourself before registering `@fastify/oauth2` and calling `connect()`; both skip their own registration when the cookie plugin is already loaded.
+
 #### Missing Environment Variables
 
 ```
@@ -131,6 +159,65 @@ Authorization: Bearer <your-token>
 1. Check user module is properly initialized
 2. Verify database is writable
 3. Check for validation errors in logs
+
+### Single Sign-On (OIDC)
+
+The [OIDC example](https://github.com/unchainedshop/unchained/tree/master/examples/oidc) describes a complete Keycloak and Zitadel setup.
+
+#### SSO Users Have No Permissions in the Admin UI
+
+The login works, but every Admin UI request fails with `NoPermissionError` because the user was created without roles.
+
+- **Keycloak** adds client roles (`resource_access`) to the access token, not to the ID token. Read the roles from the verified access token (the OIDC example does), or enable *Add to ID token* on the client roles mapper.
+- **Zitadel** only adds project roles (`urn:zitadel:iam:org:project:roles`) to the ID token when *Assert Roles on Authentication* is enabled on the project and *User roles inside ID Token* on the application.
+
+Roles are copied on every login, so the user has to log in again after you fix the mapping.
+
+#### Back-Channel Logout Returns 200, but the User Stays Logged In
+
+- If you store users under a provider-specific id such as `${clientId}:${sub}`, configure `userIdFromSubject` on the OIDC provider. Without it the logout token's `sub` matches no user, and the endpoint still answers 200 as the specification requires.
+- The identity provider must reach `ROOT_URL/backchannel-logout`. An identity provider running in Docker reaches your machine at `host.docker.internal`, not `localhost`.
+- Zitadel refuses back-channel logout URLs on private or internal hosts (`Errors.Project.App.Blocked.BackchannelLogoutURL`). Use a publicly reachable URL.
+
+#### Identity Provider Access Tokens Are Not Accepted as Bearer Tokens
+
+- The token's `aud` must contain the provider's configured `audience`. Keycloak does not add the client id to access tokens by default: add an *Audience* protocol mapper to the client.
+- The token only authenticates users that already exist; the OIDC example creates them on their first browser login.
+- Up to v5.0.0-alpha.7 the engine expected the keys at `${issuer}/.well-known/jwks.json`, which neither Keycloak nor Zitadel serve. Set `jwksUri` explicitly there (Keycloak: `…/protocol/openid-connect/certs`, Zitadel: `…/oauth/v2/keys`). Newer versions use OIDC discovery.
+
+#### `Token verification error: "alg" (Algorithm) Header Parameter value not allowed`
+
+Harmless. Up to v5.0.0-alpha.7 every bearer token is first checked as an Unchained token (HS256). An identity provider's token (RS256) fails that check and was logged at error level before it was verified against the OIDC providers. If the request is authenticated, you can ignore the line. Newer versions log it at debug level.
+
+#### MCP OAuth with Keycloak Dynamic Client Registration Fails
+
+- `Policy 'Allowed Client Scopes' rejected request`: don't request `openid` in the registration metadata, it is not a Keycloak client scope. Without a `scope`, the realm's default client scopes apply.
+- `Policy 'Trusted Hosts' rejected request … Host not trusted`: register with an initial access token (`INITIAL_ACCESS_TOKEN`) or configure the trusted hosts of the anonymous registration policy.
+- `403 MCP requires admin privileges`: grant the registered client's service account the `admin` role of your Unchained client **and** add that role to the registered client's scope mappings. Dynamically registered clients have full scope disabled, so otherwise the role never reaches the token.
+
+### MCP
+
+#### `/mcp` Answers 400 or 406
+
+The streamable HTTP transport requires both media types in the `Accept` header:
+
+```bash
+curl -X POST http://localhost:4010/mcp \
+  -H 'authorization: Bearer <token>' \
+  -H 'content-type: application/json' \
+  -H 'accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+### Plugin Routes and Webhooks
+
+#### Route Returns 404 on Fastify, but Works on Express
+
+Fastify matches paths exactly: `/rest/print_tickets/` does not match a route registered as `/rest/print_tickets`. Call the exact path, or create the Fastify instance with `routerOptions: { ignoreTrailingSlash: true }`.
+
+#### Webhooks and Uploads Time Out on Express
+
+Up to v5.0.0-alpha.7, routes registered by plugins (payment webhooks, file uploads, bulk import, back-channel logout) ran on Express but never sent their response. Upgrade.
 
 ### Cart and Checkout
 
@@ -262,6 +349,16 @@ mutation UpdateProductPricing {
 2. Check email verification isn't required
 3. Verify user has admin role
 
+#### An Admin UI Plugin Is Missing
+
+```
+Failed to read bundle for plugin "bookmark-manager" at …/dist/index.js: ENOENT
+```
+
+Admin UI plugins are standalone packages that are built separately; installing the engine does not build them. Run `npm install` and `npm run build` in the plugin folder (in the kitchensink examples: `npm run build:plugin`).
+
+Import hooks and components from `@unchainedshop/admin-ui/modules/*` and `@unchainedshop/admin-ui/plugins`. The Admin UI provides them at runtime, so the plugin shares its Apollo client and session. Don't bundle a second copy through `@unchainedshop/client`.
+
 ### File Uploads
 
 #### Upload Fails
@@ -339,8 +436,14 @@ NODE_OPTIONS="--max-old-space-size=4096" npm start
 MAIL_URL=smtp://user:pass@smtp.example.com:587
 ```
 
-2. Outside production (`NODE_ENV !== 'production'`), emails are intercepted and logged instead of sent unless `UNCHAINED_DISABLE_EMAIL_INTERCEPTION` is set
+2. Outside production (`NODE_ENV !== 'production'`), emails are intercepted instead of sent unless `UNCHAINED_DISABLE_EMAIL_INTERCEPTION` is set (see below)
 3. Verify SMTP credentials and check the spam folder
+
+#### Every Email Opens a Browser Tab
+
+Outside production, the email worker intercepts messages: it writes an HTML preview to a temporary folder and opens it with your system's `open`/`xdg-open`. Every sign-up, verification or order confirmation therefore opens a browser tab while you develop.
+
+Set `UNCHAINED_DISABLE_EMAIL_INTERCEPTION=1` to turn this off, for example when scripting against a local engine. Emails are then sent through `MAIL_URL`; without `MAIL_URL`, the email work items fail with `NO_MAIL_URL_SET`.
 
 #### Email Template Errors
 

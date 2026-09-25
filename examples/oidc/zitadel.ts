@@ -1,5 +1,4 @@
-import type { UnchainedContextResolver } from '@unchainedshop/api';
-import type { OIDCProviderConfig } from '@unchainedshop/api/lib/auth.js';
+import type { OIDCProviderConfig, UnchainedContextResolver } from '@unchainedshop/api';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import FastifyOAuth2 from '@fastify/oauth2';
 import * as jose from 'jose';
@@ -29,6 +28,10 @@ interface ZitadelIdToken {
   'urn:zitadel:iam:org:project:roles'?: Record<string, Record<string, string>>;
 }
 
+// Zitadel users are stored under a client-scoped id; login, bearer tokens and
+// back-channel logout must all resolve the same id.
+const userIdFromSubject = (sub: string) => `${UNCHAINED_ZITADEL_CLIENT_ID}:${sub}`;
+
 /**
  * Returns the OIDC provider configuration for Zitadel
  * This is used by the platform's JWT auth to verify back-channel logout tokens
@@ -37,6 +40,7 @@ export function getZitadelOIDCConfig(): OIDCProviderConfig {
   return {
     issuer: UNCHAINED_ZITADEL_DISCOVERY_URL!,
     audience: UNCHAINED_ZITADEL_CLIENT_ID,
+    userIdFromSubject,
   };
 }
 
@@ -158,7 +162,7 @@ export default async function setupZitadel(app: FastifyInstance) {
         } = decoded;
 
         const roles = projectRoles ? Object.keys(projectRoles) : [];
-        const userId = `${UNCHAINED_ZITADEL_CLIENT_ID}:${sub}`;
+        const userId = userIdFromSubject(sub);
 
         const { modules } = request.unchainedContext;
         let user = await modules.users.findUserById(userId);
@@ -169,8 +173,8 @@ export default async function setupZitadel(app: FastifyInstance) {
             preferred_username && (await modules.users.findUserByUsername(preferred_username));
           const usernameAvailable = preferred_username && (!userByUsername || userByUsername._id === userId);
 
-          // Create new user
-          user = await modules.users.createUser(
+          // Create new user (createUser returns the new user id)
+          const newUserId = await modules.users.createUser(
             {
               _id: userId,
               username: usernameAvailable ? preferred_username : sub,
@@ -187,6 +191,7 @@ export default async function setupZitadel(app: FastifyInstance) {
             } as any,
             { skipMessaging: true, skipPasswordEnrollment: true },
           );
+          user = await modules.users.findUserById(newUserId);
         } else {
           // Update roles if changed
           if (roles.join(':') !== (user.roles || []).join(':')) {

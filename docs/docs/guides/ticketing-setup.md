@@ -53,7 +53,7 @@ setupTicketing(platform.unchainedAPI as TicketingAPI, {
   createGoogleWalletPass,
 });
 
-connect(fastify, platform, {
+await connect(fastify, platform, {
   allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
 });
 

@@ -1,6 +1,6 @@
 import type { IPlugin } from '@unchainedshop/core';
-import { WordlineSaferpay } from './adapter.ts';
-import saferpayModules from './module.ts';
+import { WorldlineSaferpay } from './adapter.ts';
+import { configureSaferpayTransactionsModule } from './module.ts';
 import { saferpayWebhookHandler } from './webhook.ts';
 
 const { SAFERPAY_WEBHOOK_PATH = '/payment/saferpay/webhook' } = process.env;
@@ -8,13 +8,13 @@ const { SAFERPAY_WEBHOOK_PATH = '/payment/saferpay/webhook' } = process.env;
 // Plugin definition
 export const SaferpayPlugin: IPlugin = {
   key: 'shop.unchained.payment.saferpay',
-  label: 'Wordline Saferpay Payment Plugin',
+  label: 'Worldline Saferpay Payment Plugin',
   version: '1.0.0',
 
-  adapters: [WordlineSaferpay],
+  adapters: [WorldlineSaferpay],
 
   module: ({ db }) => ({
-    saferpayTransactions: saferpayModules.saferpayTransactions.configure({ db }),
+    saferpayTransactions: configureSaferpayTransactionsModule({ db }),
   }),
 
   routes: [
@@ -48,9 +48,6 @@ export const SaferpayPlugin: IPlugin = {
 };
 
 export default SaferpayPlugin;
-
-// Re-export adapter for direct use
-export { WordlineSaferpay } from './adapter.ts';
 
 // Type exports
 export { type SaferpayTransactionsModule } from './module.ts';

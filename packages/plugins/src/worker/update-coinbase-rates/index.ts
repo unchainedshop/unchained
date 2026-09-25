@@ -16,5 +16,5 @@ export const UpdateCoinbaseRatesPlugin: IPlugin = {
 
 export default UpdateCoinbaseRatesPlugin;
 
-// Re-export adapter for direct use
-export { UpdateCoinbaseRates, configureUpdateCoinbaseRatesAutoscheduling } from './adapter.ts';
+// Helpers
+export { configureUpdateCoinbaseRatesAutoscheduling } from './adapter.ts';

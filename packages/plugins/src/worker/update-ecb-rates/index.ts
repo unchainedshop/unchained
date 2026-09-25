@@ -16,5 +16,5 @@ export const UpdateECBRatesPlugin: IPlugin = {
 
 export default UpdateECBRatesPlugin;
 
-// Re-export adapter for direct use
-export { UpdateECBRates, configureUpdateECBRatesAutoscheduling } from './adapter.ts';
+// Helpers
+export { configureUpdateECBRatesAutoscheduling } from './adapter.ts';

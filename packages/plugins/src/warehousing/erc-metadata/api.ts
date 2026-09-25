@@ -47,6 +47,9 @@ export async function ercMetadataHandler(
     }
 
     const [token] = await modules.warehousing.findTokens(tokenSelector);
+    if (!token) {
+      return new Response(null, { status: 404 });
+    }
 
     // Determine locale: use path parameter if tokenFileName exists, otherwise fall back to context locale
     const resolvedLocale = tokenFileName

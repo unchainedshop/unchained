@@ -27,7 +27,7 @@ const createAdapter = (
 
 const createActions = (adapters: IDiscountAdapter<unknown>[]) => {
   const director = {
-    ...BaseDiscountDirector<unknown>('TestDiscountDirector'),
+    ...BaseDiscountDirector<unknown>(Symbol('test-discount')),
     getAdapters: () => adapters,
   };
   return director.actions({ order: { _id: 'order-id' } } as DiscountContext, { modules: {} as Modules });

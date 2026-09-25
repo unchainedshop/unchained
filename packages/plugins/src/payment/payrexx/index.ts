@@ -28,6 +28,3 @@ export const PayrexxPlugin: IPlugin = {
 };
 
 export default PayrexxPlugin;
-
-// Re-export adapter for direct use
-export { Payrexx } from './adapter.ts';

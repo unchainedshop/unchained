@@ -3,7 +3,7 @@ import { ProductPrice } from './adapter.ts';
 
 // Plugin definition
 export const ProductPricePlugin: IPlugin = {
-  key: 'shop.unchained.pricing.product-catalog',
+  key: 'shop.unchained.pricing.product-price',
   label: 'Product Catalog Price Plugin',
   version: '1.0.0',
 
@@ -11,6 +11,3 @@ export const ProductPricePlugin: IPlugin = {
 };
 
 export default ProductPricePlugin;
-
-// Re-export adapter for direct use
-export { ProductPrice } from './adapter.ts';

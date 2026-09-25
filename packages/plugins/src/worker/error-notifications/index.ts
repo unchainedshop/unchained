@@ -17,5 +17,5 @@ export const ErrorNotificationsPlugin: IPlugin = {
 
 export default ErrorNotificationsPlugin;
 
-// Re-export adapter for direct use
-export * from './adapter.ts';
+// Helpers
+export { configureErrorNotificationsAutoscheduling } from './adapter.ts';

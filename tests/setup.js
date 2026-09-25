@@ -21,6 +21,9 @@ let oidcPrivateKey = null;
 let oidcPublicKey = null;
 export const TEST_OIDC_ISSUER = 'https://test-oidc-provider.example.com';
 export const TEST_OIDC_AUDIENCE = 'test-client-id';
+// Second provider that stores users as `${clientId}:${sub}`, like examples/oidc
+export const TEST_OIDC_PREFIXED_ISSUER = 'https://test-oidc-prefixed.example.com';
+export const oidcSubjectToUserId = (sub) => `${TEST_OIDC_AUDIENCE}:${sub}`;
 
 // Check if a port is available
 async function isPortAvailable(port) {
@@ -188,6 +191,12 @@ export async function initializeTestPlatform() {
       issuer: TEST_OIDC_ISSUER,
       jwksUri: `http://localhost:${port}/.well-known/jwks.json`,
       audience: TEST_OIDC_AUDIENCE,
+    },
+    {
+      issuer: TEST_OIDC_PREFIXED_ISSUER,
+      jwksUri: `http://localhost:${port}/.well-known/jwks.json`,
+      audience: TEST_OIDC_AUDIENCE,
+      userIdFromSubject: oidcSubjectToUserId,
     },
   ];
 

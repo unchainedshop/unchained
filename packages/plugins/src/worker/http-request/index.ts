@@ -11,6 +11,3 @@ export const HttpRequestPlugin: IPlugin = {
 };
 
 export default HttpRequestPlugin;
-
-// Re-export adapter for direct use
-export { HttpRequestWorkerPlugin } from './adapter.ts';

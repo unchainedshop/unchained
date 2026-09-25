@@ -11,6 +11,3 @@ export const PostPlugin: IPlugin = {
 };
 
 export default PostPlugin;
-
-// Re-export adapter for direct use
-export { Post } from './adapter.ts';

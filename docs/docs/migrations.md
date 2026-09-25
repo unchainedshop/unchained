@@ -26,7 +26,7 @@ The full details (with before/after snippets) are in [MIGRATION.md](https://gith
 
 1. **Read the migration guide** for your target version
 2. **Update dependencies** in `package.json`
-3. **Start the platform** - database migrations run automatically on startup
+3. **Start the platform** - database migrations run automatically on startup of instances with workers enabled (`disableWorker` / `UNCHAINED_DISABLE_WORKER` skip them); a failed migration is logged and startup continues
 4. **Update code** for any breaking API changes
 5. **Test thoroughly** before deploying to production
 

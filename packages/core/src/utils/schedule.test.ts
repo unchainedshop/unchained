@@ -872,17 +872,26 @@ describe('raw ScheduleData', () => {
 // Performance: the optimized algorithm should be fast for all schedule types
 // ============================================================================
 
+// CPU time of this process in ms. Unlike wall-clock time it does not grow while the test runner
+// executes other test files in parallel, which made these thresholds flaky under load.
+const cpuTimeMs = (run: () => void) => {
+  const start = process.cpuUsage();
+  run();
+  const { user, system } = process.cpuUsage(start);
+  return (user + system) / 1000;
+};
+
 describe('performance', () => {
   it('should find daily schedule next occurrence in under 5ms', () => {
     const sched = schedule.parse.cron('0 3 * * *');
     // Worst case: just after 03:00, need to jump ~24 hours
     const ref = new Date(2024, 0, 15, 3, 0, 1);
 
-    const start = performance.now();
-    for (let i = 0; i < 1000; i++) {
-      schedule.schedule(sched).next(1, ref);
-    }
-    const elapsed = performance.now() - start;
+    const elapsed = cpuTimeMs(() => {
+      for (let i = 0; i < 1000; i++) {
+        schedule.schedule(sched).next(1, ref);
+      }
+    });
 
     // 1000 iterations should complete in well under 50ms (old algo would take seconds)
     assert.ok(elapsed < 50, `1000 daily next() calls took ${elapsed.toFixed(1)}ms, expected < 50ms`);
@@ -893,11 +902,11 @@ describe('performance', () => {
     const sched = schedule.parse.cron('0 0 1 1 *');
     const ref = new Date(2024, 0, 1, 0, 0, 0); // exactly on match
 
-    const start = performance.now();
-    for (let i = 0; i < 1000; i++) {
-      schedule.schedule(sched).next(1, ref);
-    }
-    const elapsed = performance.now() - start;
+    const elapsed = cpuTimeMs(() => {
+      for (let i = 0; i < 1000; i++) {
+        schedule.schedule(sched).next(1, ref);
+      }
+    });
 
     assert.ok(elapsed < 50, `1000 yearly next() calls took ${elapsed.toFixed(1)}ms, expected < 50ms`);
   });
@@ -906,9 +915,10 @@ describe('performance', () => {
     const sched = schedule.parse.cron('0 3 * * *');
     const ref = new Date(2024, 0, 1, 0, 0, 0);
 
-    const start = performance.now();
-    const dates = schedule.schedule(sched).next(365, ref) as Date[];
-    const elapsed = performance.now() - start;
+    let dates: Date[] = [];
+    const elapsed = cpuTimeMs(() => {
+      dates = schedule.schedule(sched).next(365, ref) as Date[];
+    });
 
     assert.strictEqual(dates.length, 365);
     assert.ok(elapsed < 50, `365 daily occurrences took ${elapsed.toFixed(1)}ms, expected < 50ms`);
@@ -919,12 +929,12 @@ describe('performance', () => {
     const sched = schedule.parse.cron('0 3 * * *');
     sched.schedules[0].s = [0]; // BaseWorker override
 
-    const start = performance.now();
-    for (let i = 0; i < 10000; i++) {
-      const ref = new Date(2024, 0, 15, 3, 0, i % 60); // varying reference seconds
-      schedule.schedule(sched).next(1, ref);
-    }
-    const elapsed = performance.now() - start;
+    const elapsed = cpuTimeMs(() => {
+      for (let i = 0; i < 10000; i++) {
+        const ref = new Date(2024, 0, 15, 3, 0, i % 60); // varying reference seconds
+        schedule.schedule(sched).next(1, ref);
+      }
+    });
 
     // 10k calls should be trivial with the optimized algorithm
     assert.ok(

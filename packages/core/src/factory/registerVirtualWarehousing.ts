@@ -52,7 +52,7 @@ export default function registerVirtualWarehousing<Metadata = Record<string, any
     ...WarehousingAdapter,
 
     key: 'shop.unchained.warehousing.virtual.' + adapterId,
-    label: 'Virtual Wareshousing: ' + adapterId,
+    label: 'Virtual Warehousing: ' + adapterId,
     version: '1.0.0',
     orderIndex,
 

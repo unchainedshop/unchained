@@ -10,7 +10,6 @@ import { PaymentPricingSheet } from './PaymentPricingSheet.ts';
 import type { PaymentProvider } from '@unchainedshop/core-payment';
 import type { OrderPayment, Order } from '@unchainedshop/core-orders';
 import type { User } from '@unchainedshop/core-users';
-import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 export type PaymentPricingContext =
   | {
       countryCode?: string;
@@ -38,26 +37,10 @@ const baseDirector = BasePricingDirector<
   PaymentPricingAdapterContext,
   PaymentPricingCalculation,
   IPaymentPricingAdapter
->('PaymentPricingDirector');
+>(PaymentPricingAdapter.adapterType!);
 
 export const PaymentPricingDirector: IPaymentPricingDirector<any> = {
   ...baseDirector,
-
-  // Override to query pluginRegistry dynamically
-  getAdapter: (key: string) => {
-    const adapters = pluginRegistry.getAdapters(
-      PaymentPricingAdapter.adapterType!,
-    ) as IPaymentPricingAdapter[];
-    return adapters.find((adapter) => adapter.key === key) || null;
-  },
-
-  // Override to query pluginRegistry dynamically
-  getAdapters: ({ adapterFilter } = {}) => {
-    const adapters = pluginRegistry.getAdapters(
-      PaymentPricingAdapter.adapterType!,
-    ) as IPaymentPricingAdapter[];
-    return adapters.filter(adapterFilter || (() => true));
-  },
 
   async buildPricingContext(context, unchainedAPI) {
     const { modules } = unchainedAPI;

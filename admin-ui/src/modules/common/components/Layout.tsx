@@ -39,6 +39,7 @@ import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline';
 import useApp from '../hooks/useApp';
 import useShopConfiguration from '../hooks/useShopConfiguration';
 import useRecentExports from '../../work/hooks/useRecentExports';
+import useFormatDateTime from '../utils/useFormatDateTime';
 import { usePlugins } from '../../plugins/PluginContext';
 import * as HeroIcons from '@heroicons/react/24/outline';
 import CommandPalette from '../../search/components/CommandPalette';
@@ -107,8 +108,10 @@ const LayoutContent = ({
   const { currentUser } = useCurrentUser();
   const { configuration } = useShopConfiguration();
   const { isAdmin, hasRole } = useAuth();
+  const { formatDateTime } = useFormatDateTime();
   const recentExports = useRecentExports({
     skip: !hasRole(IRoleAction.ViewWorkQueue),
+    formatDateTime,
   });
 
   const { shopInfo } = useShopInfo();

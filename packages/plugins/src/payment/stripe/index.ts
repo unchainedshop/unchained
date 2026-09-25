@@ -34,6 +34,3 @@ export const StripePlugin: IPlugin = {
 };
 
 export default StripePlugin;
-
-// Re-export adapter for direct use
-export { Stripe } from './adapter.ts';

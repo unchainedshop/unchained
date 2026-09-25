@@ -77,7 +77,7 @@ try {
 
   const engine = await startPlatform({});
 
-  connect(app, engine, {
+  await connect(app, engine, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
     adminUI: {
       theme: adminUITheme,

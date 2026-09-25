@@ -65,7 +65,7 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 For local storefront development against a remote engine, the server adapters accept a dev-only escape hatch (it throws if `NODE_ENV=production`):
 
 ```typescript
-connect(fastify, platform, {
+await connect(fastify, platform, {
   allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
 });
 ```
@@ -246,22 +246,25 @@ Register trusted providers when connecting the server adapter. Bearer JWTs issue
 ```typescript
 import { connect } from '@unchainedshop/api/fastify';
 
-connect(fastify, platform, {
+await connect(fastify, platform, {
   authConfig: {
     oidcProviders: [
       {
         issuer: 'https://auth.example.com',
-        // optional, defaults to `${issuer}/.well-known/jwks.json`
-        jwksUri: 'https://auth.example.com/.well-known/jwks.json',
-        // optional audience validation
+        // optional: defaults to the jwks_uri of the issuer's OIDC discovery document
+        // (falls back to `${issuer}/.well-known/jwks.json` when discovery is unavailable)
+        jwksUri: 'https://auth.example.com/oauth/v2/keys',
+        // optional audience validation: the token's `aud` must contain it
         audience: 'my-client-id',
+        // optional: map the token's `sub` to your Unchained user id (defaults to `sub`)
+        userIdFromSubject: (sub) => `my-client-id:${sub}`,
       },
     ],
   },
 });
 ```
 
-When `oidcProviders` is configured, an OIDC back-channel logout route is mounted automatically.
+When `oidcProviders` is configured, an OIDC back-channel logout route is mounted automatically at `/backchannel-logout`. It verifies the provider's logout token, resolves the user through `userIdFromSubject` and invalidates all of the user's Unchained tokens. Configure `ROOT_URL/backchannel-logout` as the back-channel logout URL of your client at the identity provider; it has to be reachable from the identity provider.
 
 The browser-facing login flow (authorization redirect, code exchange, user provisioning) is implemented with custom resolvers via `startPlatform`'s `context` parameter. See the [OIDC example](https://github.com/unchainedshop/unchained/tree/master/examples/oidc) for complete Keycloak and Zitadel setups.
 
