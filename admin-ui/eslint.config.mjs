@@ -38,6 +38,12 @@ export default [
       'src/lib/permissionConfig.js',
       'src/modules/assortment/utils/contructTangleLayout.js',
       'src/modules/common/utils/matomo.js',
+      // Generated GraphQL types (graphql-codegen output — see codegen.ts)
+      'src/gql/operation-types.ts',
+      'src/gql/schema-types.ts',
+      // SDK shim stubs written by tsup.config.ts (gitignored); host.ts is hand-written
+      'src/sdk/shims/*.ts',
+      '!src/sdk/shims/host.ts',
     ],
   },
 
@@ -246,6 +252,19 @@ export default [
           ],
         },
       ],
+    },
+  },
+
+  // ESM helper/build/runtime scripts (src/sdk/*.mjs) run under Node and the browser
+  {
+    files: ['**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+        ...globals.browser,
+      },
     },
   },
 ];
