@@ -199,10 +199,14 @@ export const connect = async (
     });
   }
 
-  // Register cookie plugin for JWT cookie handling
-  if (!fastify.hasPlugin('@fastify/cookie')) {
-    fastify.register(fastifyCookie);
-  }
+  // Register cookie plugin for JWT cookie handling. Plugins registered before connect()
+  // (e.g. @fastify/oauth2) may register their own @fastify/cookie, but only once Fastify
+  // loads them; decide after everything queued so far has loaded to avoid a duplicate.
+  fastify.after(() => {
+    if (!fastify.hasReplyDecorator('setCookie')) {
+      fastify.register(fastifyCookie);
+    }
+  });
 
   fastify.decorateRequest('unchainedContext');
   // Note: allowRemoteToLocalhostSecureCookies implies trustProxy for dev convenience
