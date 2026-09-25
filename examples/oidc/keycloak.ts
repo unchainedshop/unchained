@@ -42,7 +42,6 @@ export function getKeycloakOIDCConfig(): OIDCProviderConfig {
   return {
     issuer: UNCHAINED_KEYCLOAK_REALM_URL!,
     audience: UNCHAINED_KEYCLOAK_CLIENT_ID,
-    jwksUri: `${UNCHAINED_KEYCLOAK_REALM_URL}/protocol/openid-connect/certs`,
     userIdFromSubject,
   };
 }
@@ -132,6 +131,18 @@ export default async function setupKeycloak(app: FastifyInstance) {
     return payload as KeycloakIdToken;
   };
 
+  // Keycloak's default mappers put client roles (resource_access) into the access token only,
+  // not into the ID token, so read them from the verified access token issued to this client.
+  const verifyClientRoles = async (accessToken: string): Promise<string[]> => {
+    const { payload } = await jose.jwtVerify(accessToken, JWKS, {
+      issuer: UNCHAINED_KEYCLOAK_REALM_URL,
+    });
+    if (payload.azp !== UNCHAINED_KEYCLOAK_CLIENT_ID) {
+      throw new Error('Access token was issued to a different client');
+    }
+    return (payload as KeycloakIdToken).resource_access?.[UNCHAINED_KEYCLOAK_CLIENT_ID!]?.roles || [];
+  };
+
   // OAuth2 callback - creates/updates user and issues local JWT
   app.get(
     UNCHAINED_KEYCLOAK_CALLBACK_PATH,
@@ -155,7 +166,6 @@ export default async function setupKeycloak(app: FastifyInstance) {
 
         const {
           sub,
-          resource_access,
           preferred_username,
           name,
           given_name,
@@ -164,7 +174,7 @@ export default async function setupKeycloak(app: FastifyInstance) {
           email_verified,
         } = decoded;
 
-        const roles = resource_access?.[UNCHAINED_KEYCLOAK_CLIENT_ID!]?.roles || [];
+        const roles = await verifyClientRoles(accessToken.token.access_token);
         const userId = userIdFromSubject(sub);
 
         const { modules } = request.unchainedContext;
@@ -176,8 +186,8 @@ export default async function setupKeycloak(app: FastifyInstance) {
             preferred_username && (await modules.users.findUserByUsername(preferred_username));
           const usernameAvailable = preferred_username && (!userByUsername || userByUsername._id === userId);
 
-          // Create new user
-          user = await modules.users.createUser(
+          // Create new user (createUser returns the new user id)
+          const newUserId = await modules.users.createUser(
             {
               _id: userId,
               username: usernameAvailable ? preferred_username : sub,
@@ -194,6 +204,7 @@ export default async function setupKeycloak(app: FastifyInstance) {
             } as any,
             { skipMessaging: true, skipPasswordEnrollment: true },
           );
+          user = await modules.users.findUserById(newUserId);
         } else {
           // Update roles if changed
           if (roles.join(':') !== (user.roles || []).join(':')) {
@@ -255,7 +266,9 @@ export default async function setupKeycloak(app: FastifyInstance) {
       try {
         const encodedToken = req.headers.authorization?.replace('Bearer ', '');
         if (encodedToken) {
-          const { payload, protectedHeader } = await jose.jwtVerify(encodedToken, JWKS);
+          const { payload, protectedHeader } = await jose.jwtVerify(encodedToken, JWKS, {
+            issuer: UNCHAINED_KEYCLOAK_REALM_URL,
+          });
           (req as any).mcp = { payload, header: protectedHeader };
         }
       } catch {

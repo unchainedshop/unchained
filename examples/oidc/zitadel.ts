@@ -173,8 +173,8 @@ export default async function setupZitadel(app: FastifyInstance) {
             preferred_username && (await modules.users.findUserByUsername(preferred_username));
           const usernameAvailable = preferred_username && (!userByUsername || userByUsername._id === userId);
 
-          // Create new user
-          user = await modules.users.createUser(
+          // Create new user (createUser returns the new user id)
+          const newUserId = await modules.users.createUser(
             {
               _id: userId,
               username: usernameAvailable ? preferred_username : sub,
@@ -191,6 +191,7 @@ export default async function setupZitadel(app: FastifyInstance) {
             } as any,
             { skipMessaging: true, skipPasswordEnrollment: true },
           );
+          user = await modules.users.findUserById(newUserId);
         } else {
           // Update roles if changed
           if (roles.join(':') !== (user.roles || []).join(':')) {
