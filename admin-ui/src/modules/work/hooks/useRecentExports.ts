@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { ISortOptionInput, IWorkStatus, IWorkType } from '../../../gql/types';
 import useWorkQueue from './useWorkQueue';
-import useFormatDateTime from '@/modules/common/utils/useFormatDateTime';
 
 interface ExportFileInfo {
   url: string;
@@ -35,7 +34,12 @@ interface RecentExportsResult {
   exports: ExportGroup[];
 }
 
-type FormatDateTime = ReturnType<typeof useFormatDateTime>['formatDateTime'];
+type FormatDateTime = (date: unknown, options?: Intl.DateTimeFormatOptions) => string;
+
+// The Admin UI passes its locale-aware formatter; keep the hook free of Admin UI internals so
+// it can be shipped in @unchainedshop/client.
+const defaultFormatDateTime: FormatDateTime = (date, options) =>
+  new Intl.DateTimeFormat(undefined, options).format(new Date(date as string | number | Date));
 
 const getActiveFilesAndCount = (
   workQueue: ExportedWork[],
@@ -91,19 +95,20 @@ interface UseRecentExportsParams {
   sortOptions?: ISortOptionInput[];
   queryString?: string | null;
   skip?: boolean;
+  formatDateTime?: FormatDateTime;
 }
 
 const useRecentExports = ({
   queryString = null,
   sortOptions,
   skip = false,
+  formatDateTime = defaultFormatDateTime,
 }: UseRecentExportsParams = {}): RecentExportsResult => {
   const twentyFourHoursAgo = useMemo(
     () => new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     [],
   );
 
-  const { formatDateTime } = useFormatDateTime();
   const { workQueue } = useWorkQueue({
     types: [IWorkType.BulkExport],
     queryString,
