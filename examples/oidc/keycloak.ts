@@ -1,5 +1,4 @@
-import type { UnchainedContextResolver } from '@unchainedshop/api';
-import type { OIDCProviderConfig } from '@unchainedshop/api/lib/auth.js';
+import type { OIDCProviderConfig, UnchainedContextResolver } from '@unchainedshop/api';
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import FastifyOAuth2 from '@fastify/oauth2';
 import * as jose from 'jose';
