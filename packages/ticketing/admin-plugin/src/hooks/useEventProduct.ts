@@ -44,27 +44,15 @@ export const TicketEventDetailQuery = gql`
           walletAddress
           user {
             _id
-            username
-            isGuest
-            primaryEmail {
-              address
-              verified
-            }
             avatar {
               _id
               url
             }
-            profile {
-              displayName
-              address {
-                firstName
-                lastName
-              }
-            }
-            lastContact {
-              emailAddress
-              telNumber
-            }
+          }
+          attendee {
+            name
+            email
+            phone
           }
         }
       }

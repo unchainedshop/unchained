@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useIntl } from 'react-intl';
 import { Table, Badge, MediaAvatar } from '@unchainedshop/admin-ui/ui';
-import { useFormatDateTime, formatUsername } from '../utils/misc';
+import { useFormatDateTime } from '../utils/misc';
 
 const EventTokenListItem = ({ token, onCancelTicket, onInvalidateTicket }) => {
   const { formatMessage } = useIntl();
@@ -21,17 +21,15 @@ const EventTokenListItem = ({ token, onCancelTicket, onInvalidateTicket }) => {
             className="flex items-center text-sm text-text-primary hover:underline"
           >
             <MediaAvatar file={token.user?.avatar} className="mr-2" />
-            <span>{formatUsername(token.user)}</span>
+            <span>{token.attendee?.name || token.user._id}</span>
           </Link>
         )}
       </Table.Cell>
       <Table.Cell>
-        <span className="text-sm text-text-secondary">
-          {token.user?.lastContact?.emailAddress || token.user?.primaryEmail?.address || '-'}
-        </span>
+        <span className="text-sm text-text-secondary">{token.attendee?.email || '-'}</span>
       </Table.Cell>
       <Table.Cell>
-        <span className="text-sm text-text-secondary">{token.user?.lastContact?.telNumber || '-'}</span>
+        <span className="text-sm text-text-secondary">{token.attendee?.phone || '-'}</span>
       </Table.Cell>
       <Table.Cell>
         {token.invalidatedDate ? (

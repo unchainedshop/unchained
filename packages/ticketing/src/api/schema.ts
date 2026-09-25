@@ -48,8 +48,23 @@ export default [
       isCanceled: Boolean
     }
 
+    """
+    Contact details of a ticket holder, as shown on attendee lists
+    """
+    type TicketAttendee @cacheControl(maxAge: 0, scope: PRIVATE) {
+      name: String
+      email: String
+      phone: String
+    }
+
     extend type Token {
       isCanceled: Boolean
+
+      """
+      The current ticket holder. Requires the viewAttendees action: gate operators see
+      attendees of active events, product managers also those of draft events.
+      """
+      attendee: TicketAttendee
     }
   `,
 ];

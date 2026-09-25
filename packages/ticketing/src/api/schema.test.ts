@@ -57,7 +57,7 @@ test('ticketing schema is optional and every plugin operation validates when ins
   assert.ok(operations >= 7);
 });
 
-test('GraphQL lets scanner staff list attendees and redeem without exposing token access keys', async () => {
+test('GraphQL lets scanner staff list attendees and redeem without exposing user accounts or access keys', async () => {
   registerEvents(['ACL_DENIED']);
   const permissions = roles.configureRoles({
     additionalActions: ticketingActions,
@@ -68,7 +68,13 @@ test('GraphQL lets scanner staff list attendees and redeem without exposing toke
     resolvers: [coreResolvers, ticketingResolvers],
   });
   const event = { _id: 'event', type: 'TOKENIZED_PRODUCT', status: 'ACTIVE' };
-  const buyer = { _id: 'buyer', profile: { displayName: 'Buyer' } };
+  const buyer = {
+    _id: 'buyer',
+    profile: { displayName: 'Buyer' },
+    lastContact: { emailAddress: 'buyer@example.com', telNumber: '+41790000000' },
+    lastBillingAddress: { firstName: 'Jane', lastName: 'Doe', addressLine: 'Secret 1' },
+    services: { webAuthn: [{ id: 'credential' }] },
+  };
   const token: any = { _id: 'ticket', productId: event._id, userId: buyer._id };
   const context = {
     userId: 'scanner',
@@ -79,11 +85,9 @@ test('GraphQL lets scanner staff list attendees and redeem without exposing toke
       products: {
         findProducts: async () => [event],
         findProduct: async () => event,
-        findProductIds: async () => [event._id],
       },
       warehousing: {
         findTokens: async () => [token],
-        findTokensForUser: async () => [token],
         findToken: async () => token,
         buildAccessKeyFromToken: async () => 'secret',
         invalidateToken: async () => {
@@ -91,15 +95,43 @@ test('GraphQL lets scanner staff list attendees and redeem without exposing toke
           return token;
         },
       },
+      users: { primaryEmail: () => undefined },
+      payment: {
+        paymentCredentials: {
+          findPaymentCredentials: async () => [{ _id: 'card', token: { alias: 'stored-card' } }],
+        },
+      },
     },
     loaders: { userLoader: { load: async () => buyer }, productLoader: { load: async () => event } },
     services: { warehousing: { isTokenInvalidateable: async () => !token.invalidatedDate } },
   };
   const query =
-    '{ ticketEvents { _id ... on TokenizedProduct { tokens { _id user { profile { displayName } } } } } }';
+    '{ ticketEvents { _id ... on TokenizedProduct { tokens { _id attendee { name email phone } } } } }';
   const list = await graphql({ schema, source: query, contextValue: context });
   assert.equal(list.errors, undefined);
-  assert.equal((list.data as any).ticketEvents[0].tokens[0].user.profile.displayName, 'Buyer');
+  assert.deepEqual(
+    { ...(list.data as any).ticketEvents[0].tokens[0].attendee },
+    {
+      name: 'Buyer',
+      email: 'buyer@example.com',
+      phone: '+41790000000',
+    },
+  );
+  // Gate staff get the attendee contact, not the ticket holder's account.
+  for (const field of [
+    'profile { displayName }',
+    'primaryEmail { address }',
+    'lastBillingAddress { addressLine }',
+    'webAuthnCredentials { _id }',
+    'paymentCredentials { _id token }',
+  ]) {
+    const exposed = await graphql({
+      schema,
+      source: `{ ticketEvents { ... on TokenizedProduct { tokens { user { _id ${field} } } } } }`,
+      contextValue: context,
+    });
+    assert.match(exposed.errors?.[0]?.message ?? '', /permission/i, field);
+  }
   const mutation = 'mutation { scanTicket(tokenId: "ticket") { _id invalidatedDate isInvalidateable } }';
   const scanned = await graphql({ schema, source: mutation, contextValue: context });
   assert.equal(scanned.errors, undefined);
