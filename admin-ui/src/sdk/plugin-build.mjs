@@ -57,9 +57,11 @@ const SHIM_NS = 'unchained-cjs-esm-bridge';
  * Without this, esbuild wraps them as __require() which throws in the browser.
  *
  * This plugin replaces both tsup's built-in `external` option (which cannot
- * distinguish import kinds) and the previous rewriteCjsExternals plugin.
+ * distinguish import kinds) and the previous rewriteCjsExternals plugin. The
+ * admin-ui SDK build uses it too: Headless UI and recharts bundle the CJS
+ * use-sync-external-store, which require()s react.
  */
-function handleExternals(externals) {
+export function handleExternals(externals) {
   const isExternal = (id) =>
     externals.some((ext) =>
       ext instanceof RegExp ? ext.test(id) : ext === id,
