@@ -144,11 +144,43 @@ export async function verifyLocalToken(token: string): Promise<AccessTokenPayloa
   }
 }
 
+// jwks_uri per issuer, resolved once via OIDC discovery
+const discoveredJwksUris = new Map<string, Promise<string>>();
+
+/**
+ * Resolve the JWKS URL of a provider: the configured jwksUri, otherwise the jwks_uri of the
+ * issuer's OIDC discovery document (Keycloak, Zitadel & co. do not serve /.well-known/jwks.json),
+ * falling back to `${issuer}/.well-known/jwks.json` when discovery is unavailable.
+ */
+export function resolveJwksUri(provider: OIDCProviderConfig): Promise<string> {
+  if (provider.jwksUri) return Promise.resolve(provider.jwksUri);
+  const issuer = provider.issuer.replace(/\/+$/, '');
+  let jwksUri = discoveredJwksUris.get(issuer);
+  if (!jwksUri) {
+    jwksUri = fetch(`${issuer}/.well-known/openid-configuration`, {
+      signal: AbortSignal.timeout(5000),
+    })
+      .then(async (response) => {
+        const { jwks_uri } = response.ok ? ((await response.json()) as { jwks_uri?: string }) : {};
+        if (!jwks_uri) throw new Error(`no jwks_uri in discovery document (HTTP ${response.status})`);
+        return jwks_uri;
+      })
+      .catch((error: Error) => {
+        // Retry discovery with the next token, use the conventional location meanwhile
+        discoveredJwksUris.delete(issuer);
+        logger.warn(`OIDC discovery failed for ${issuer}: ${error.message}`);
+        return `${issuer}/.well-known/jwks.json`;
+      });
+    discoveredJwksUris.set(issuer, jwksUri);
+  }
+  return jwksUri;
+}
+
 /**
  * Get or create a JWKS fetcher for the given URI
  * jose library handles caching and key rotation automatically
  */
-function getJWKS(jwksUri: string): jose.JWTVerifyGetKey {
+export function getJWKS(jwksUri: string): jose.JWTVerifyGetKey {
   let jwks = jwksCache.get(jwksUri);
   if (!jwks) {
     jwks = jose.createRemoteJWKSet(new URL(jwksUri), {
@@ -199,8 +231,7 @@ export async function verifyOIDCToken(
     return null;
   }
 
-  // Construct JWKS URI if not provided
-  const jwksUri = provider.jwksUri || `${provider.issuer}/.well-known/jwks.json`;
+  const jwksUri = await resolveJwksUri(provider);
 
   try {
     // Get the JWKS fetcher (cached)

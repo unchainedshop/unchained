@@ -1,7 +1,7 @@
 import * as jose from 'jose';
 import { createLogger } from '@unchainedshop/logger';
 import type { PluginHttpRoute } from '@unchainedshop/core';
-import { resolveOIDCUserId, type OIDCProviderConfig } from '../auth.ts';
+import { getJWKS, resolveJwksUri, resolveOIDCUserId, type OIDCProviderConfig } from '../auth.ts';
 
 const logger = createLogger('unchained:api:backchannel-logout');
 
@@ -17,24 +17,6 @@ function normalizeIssuer(url: string): string {
   } catch {
     return url;
   }
-}
-
-// JWKS cache using jose's createRemoteJWKSet (handles caching internally)
-const jwksCache = new Map<string, jose.JWTVerifyGetKey>();
-
-/**
- * Get or create a JWKS fetcher for the given URI
- */
-function getJWKS(jwksUri: string): jose.JWTVerifyGetKey {
-  let jwks = jwksCache.get(jwksUri);
-  if (!jwks) {
-    jwks = jose.createRemoteJWKSet(new URL(jwksUri), {
-      cooldownDuration: 30000, // 30 seconds between refresh attempts
-      cacheMaxAge: 600000, // Cache for 10 minutes
-    });
-    jwksCache.set(jwksUri, jwks);
-  }
-  return jwks;
 }
 
 interface BackchannelLogoutTokenPayload extends jose.JWTPayload {
@@ -135,8 +117,7 @@ export function createBackchannelLogoutRoute(providers: OIDCProviderConfig[]): P
           });
         }
 
-        // Construct JWKS URI if not provided
-        const jwksUri = provider.jwksUri || `${provider.issuer}/.well-known/jwks.json`;
+        const jwksUri = await resolveJwksUri(provider);
 
         // CRITICAL: Verify the logout token signature using the provider's JWKS
         let verifiedPayload: BackchannelLogoutTokenPayload;
