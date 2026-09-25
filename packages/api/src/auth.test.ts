@@ -110,6 +110,23 @@ describe('verifyLocalToken', () => {
     assert.strictEqual(result, null, 'malformed JWS should return null');
   });
 
+  it('returns null without an error log for tokens of an OIDC provider (RS256)', async (t) => {
+    const { privateKey } = await jose.generateKeyPair('RS256');
+    const token = await new jose.SignJWT({ sub: 'user-123' })
+      .setProtectedHeader({ alg: 'RS256' })
+      .setIssuer('https://idp.example.com')
+      .setExpirationTime('1h')
+      .sign(privateKey);
+
+    const log = t.mock.method(console, 'log', () => undefined);
+    const result = await verifyLocalToken(token);
+    assert.strictEqual(result, null);
+    assert.ok(
+      !log.mock.calls.some(({ arguments: args }) => args.some((arg) => String(arg).includes('error'))),
+      'a token of another issuer is expected, not an error',
+    );
+  });
+
   it('returns null for wrong issuer', async () => {
     // Create a token with a different issuer
     const secret = new TextEncoder().encode(TEST_SECRET);

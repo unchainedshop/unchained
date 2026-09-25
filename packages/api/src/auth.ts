@@ -133,6 +133,9 @@ export async function verifyLocalToken(token: string): Promise<AccessTokenPayloa
       error instanceof jose.errors.JWTClaimValidationFailed
     ) {
       logger.debug('Invalid token signature or claims');
+    } else if (error instanceof jose.errors.JOSEAlgNotAllowed) {
+      // Signed with another algorithm, e.g. by an OIDC provider: not a local token
+      logger.debug('Token algorithm not allowed for local tokens');
     } else {
       // SECURITY: Only log error message and type, not full object (may contain sensitive data)
       logger.error('Token verification error:', {
