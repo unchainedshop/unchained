@@ -14,6 +14,7 @@
 - **OIDC subject mapping:** `OIDCProviderConfig.userIdFromSubject(sub, claims)` maps a provider's `sub` claim to the Unchained user id (default: `sub`). Back-channel logout and inbound OIDC access tokens both use it. Previously both looked users up by the raw `sub`, so with the `${clientId}:${sub}` ids used by `examples/oidc` a back-channel logout returned 200 and revoked nothing. The examples now configure the mapping.
 - **ERC metadata routes on Fastify:** the route used Express-only optional-segment syntax (`{/:tokenFileName}`), so `/erc-metadata/:productId/:tokenFileName` never matched on Fastify. It is now registered as two explicit routes.
 - **`UNCHAINED_COOKIE_SAMESITE=0`:** the documented value to omit the SameSite attribute was mapped to `false` and then replaced by the `lax` fallback. It now yields `sameSite: false`.
+- **`@unchainedshop/plugins` manifest:** removed `main`/`types`, which pointed at a deleted `lib/plugins-index.*`. The package only has subpath exports (`@unchainedshop/plugins/presets/all`, `…/payment/stripe`, …).
 
 ## v5.0.0-alpha.7 (2026-09-23)
 
