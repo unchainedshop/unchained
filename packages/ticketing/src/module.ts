@@ -2,20 +2,29 @@ import { createLogger } from '@unchainedshop/logger';
 import { buildDbIndexes, type ModuleInput } from '@unchainedshop/mongodb';
 import { MediaObjectsCollection } from '@unchainedshop/core-files';
 import { TokenSurrogateCollection } from '@unchainedshop/core-warehousing';
-import type { UnchainedCore } from '@unchainedshop/core';
+import { OrderPricingRowCategory, OrderPricingSheet, type UnchainedCore } from '@unchainedshop/core';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import type { File } from '@unchainedshop/core-files';
 
 import { RendererTypes, getRenderer } from './template-registry.ts';
 import { buildPassBinary, pushToApplePushNotificationService } from './mobile-tickets/apple-wallet.ts';
+import { type DiscountCodeHandlers, createDefaultDiscountCodeHandlers } from './discount-codes.ts';
+import { OrderDiscountsCollection, OrdersCollection, OrderStatus } from '@unchainedshop/core-orders';
 
 export const APPLE_WALLET_PASSES_FILE_DIRECTORY = 'apple-wallet-passes';
 
 const logger = createLogger('unchained:apple-wallet-webservice');
 
-const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
+export interface TicketingOptions {
+  discountCode?: DiscountCodeHandlers;
+}
+
+const configurePasses = async ({ db, options }: ModuleInput<TicketingOptions>) => {
+  const discountCodeHandlers = options?.discountCode || createDefaultDiscountCodeHandlers();
   const MediaObjects = await MediaObjectsCollection(db);
   const TokenSurrogates = await TokenSurrogateCollection(db);
+  const Orders = await OrdersCollection(db);
+  const OrderDiscounts = await OrderDiscountsCollection(db);
 
   await buildDbIndexes(MediaObjects as any, [
     { index: { path: 1, 'meta.passTypeIdentifier': 1, 'meta.serialNumber': 1 } },
@@ -220,6 +229,42 @@ const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
     }
     return TokenSurrogates.countDocuments(selector);
   };
+  const discountCodeUsageBalance = async (
+    discountCode: string,
+    excludeOrderId?: string,
+  ): Promise<number> => {
+    const discounts = await OrderDiscounts.find({ code: discountCode }).toArray();
+    const orderIds = [...new Set(discounts.map(({ orderId }) => orderId))].filter(
+      (orderId): orderId is string => Boolean(orderId) && orderId !== excludeOrderId,
+    );
+    if (!orderIds.length) return 0;
+    const orders = await Orders.find(
+      {
+        _id: { $in: orderIds },
+        status: { $in: [null, OrderStatus.PENDING, OrderStatus.CONFIRMED, OrderStatus.FULFILLED] },
+      },
+      { projection: { status: 1, currencyCode: 1, calculation: 1 } },
+    ).toArray();
+    const usage = orders.flatMap((order) =>
+      discounts
+        .filter(({ orderId }) => orderId === order._id)
+        .map((discount) =>
+          // Carts count the credit reserved at checkout, placed orders the discount rows they applied.
+          order.status === null
+            ? discount.reservation?.checkoutAmount || 0
+            : Math.abs(
+                OrderPricingSheet({
+                  calculation: order.calculation,
+                  currencyCode: order.currencyCode,
+                }).sum({
+                  category: OrderPricingRowCategory.Discounts,
+                  discountId: discount._id,
+                }),
+              ),
+        ),
+    );
+    return Math.round(usage.reduce((total, amount) => total + amount, 0));
+  };
 
   return {
     upsertAppleWalletPass,
@@ -233,6 +278,9 @@ const configurePasses = async ({ db }: ModuleInput<Record<string, never>>) => {
     cancelTicket,
     isTicketCancelled,
     getTicketsCreated,
+    generateDiscountCode: discountCodeHandlers.generate,
+    verifyDiscountCode: discountCodeHandlers.verify,
+    discountCodeUsageBalance,
   };
 };
 

@@ -23,6 +23,7 @@ export default async function invalidateToken(
 
   const token = await modules.warehousing.findToken({ tokenId });
   if (!token) throw new TokenNotFoundError({ tokenId });
+  if (token.invalidatedDate) throw new TokenWrongStatusError({ tokenId });
 
   const product = await modules.products.findProduct({ productId: token.productId });
   if (!product) throw new ProductNotFoundError({ productId: token.productId });
@@ -44,5 +45,9 @@ export default async function invalidateToken(
 
   if (!isInvalidateable) throw new TokenWrongStatusError({ tokenId });
 
-  return modules.warehousing.invalidateToken(tokenId);
+  // The update only matches tokens that are still valid, so a concurrent
+  // invalidation is reported like any other already invalidated token.
+  const invalidatedToken = await modules.warehousing.invalidateToken(tokenId);
+  if (!invalidatedToken) throw new TokenWrongStatusError({ tokenId });
+  return invalidatedToken;
 }

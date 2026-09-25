@@ -16,7 +16,16 @@ npm install @unchainedshop/ticketing
 ```typescript
 import { startPlatform } from '@unchainedshop/platform';
 import express from 'express';
-import setupTicketing, { ticketingModules, ticketingServices, type TicketingAPI } from '@unchainedshop/ticketing';
+import setupTicketing, {
+  ticketingModules,
+  ticketingServices,
+  ticketingTypeDefs,
+  ticketingResolvers,
+  ticketingActions,
+  configureTicketingRoles,
+  type TicketingAPI,
+} from '@unchainedshop/ticketing';
+import { ticketingAdminPlugin } from '@unchainedshop/ticketing/admin-plugin';
 import connectTicketing from '@unchainedshop/ticketing/lib/express.js';
 import { connect } from '@unchainedshop/api/express';
 import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
@@ -27,9 +36,17 @@ const app = express();
 const engine = await startPlatform({
   modules: ticketingModules,
   services: ticketingServices,
+  typeDefs: ticketingTypeDefs,
+  resolvers: [ticketingResolvers],
+  rolesOptions: {
+    additionalActions: ticketingActions,
+    additionalRoles: { ticketing: configureTicketingRoles },
+  },
 });
 
-await connect(app, engine);
+await connect(app, engine, {
+  adminUI: { plugins: [ticketingAdminPlugin()] },
+});
 connectTicketing(app);
 
 // Setup ticketing with your renderers
@@ -44,46 +61,64 @@ app.listen(4010);
 
 Define the three renderer callbacks before running this example, and configure `UNCHAINED_SECRET` plus the platform's required environment variables. Renderers and their third-party dependencies belong to your application; see the [ticketing example](../../examples/ticketing/boot.ts).
 
+### Admin UI and gate permissions
+
+The plugin groups event management and gate control under **Ticketing**. Users with
+`manageProducts` see **Events**, including drafts and attendee details; signed-in users with the
+`scanTicket` action see **Gate Control**. Assign the `ticketing` role registered above to gate
+operators, or grant `scanTicket` in a custom role. Administrators have access automatically. Gate
+operators can read active events and their attendees, and redeem eligible tickets through the
+`scanTicket` mutation. Attendee lists expose only `Token.attendee` (name, e-mail and phone, guarded
+by the `viewAttendees` action), never the ticket holder's user account. This grants no token
+export, cancellation, or reimbursement rights.
+Cancelling tickets or whole events requires `cancelTicket`, granted to administrators by default.
+
+Gate access uses the regular account session. Pass codes, gate cookies, and separate gate login
+mutations are not supported. All ticket queries, mutations, and cancellation fields are defined by
+this extension, and the Admin UI plugin only appears when registered. See the
+[example configuration](../../examples/ticketing/README.md#gate-access-and-reimbursements) for
+reimbursement signing and checkout setup.
+
 ## API Overview
 
 ### Setup Functions
 
-| Export | Description |
-|--------|-------------|
+| Export                            | Description                             |
+| --------------------------------- | --------------------------------------- |
 | default export (`setupTicketing`) | Initialize ticketing with all renderers |
-| `setupPDFTickets` | Setup only PDF rendering |
-| `setupMobileTickets` | Setup only wallet passes |
+| `setupPDFTickets`                 | Setup only PDF rendering                |
+| `setupMobileTickets`              | Setup only wallet passes                |
 
 ### Modules
 
-| Export | Description |
-|--------|-------------|
-| `ticketingModules` | Additional modules for ticketing |
+| Export              | Description                       |
+| ------------------- | --------------------------------- |
+| `ticketingModules`  | Additional modules for ticketing  |
 | `ticketingServices` | Additional services for ticketing |
 
 ### Server Adapters
 
-| Import Path | Description |
-|-------------|-------------|
+| Import Path                               | Description                              |
+| ----------------------------------------- | ---------------------------------------- |
 | `@unchainedshop/ticketing/lib/express.js` | Express route connector (default export) |
 | `@unchainedshop/ticketing/lib/fastify.js` | Fastify route connector (default export) |
 
 ### Renderer Types
 
-| Type | Description |
-|------|-------------|
-| `order` | PDF ticket/receipt rendering |
-| `apple-wallet` | Apple Wallet pass generation |
+| Type            | Description                   |
+| --------------- | ----------------------------- |
+| `order`         | PDF ticket/receipt rendering  |
+| `apple-wallet`  | Apple Wallet pass generation  |
 | `google-wallet` | Google Wallet pass generation |
 
 ### Types
 
-| Export | Description |
-|--------|-------------|
-| `TicketingAPI` | Ticketing API context type |
-| `TicketingModule` | Module interface type |
-| `TicketingServices` | Services interface type |
-| `RendererTypes` | Union of renderer type values |
+| Export              | Description                   |
+| ------------------- | ----------------------------- |
+| `TicketingAPI`      | Ticketing API context type    |
+| `TicketingModule`   | Module interface type         |
+| `TicketingServices` | Services interface type       |
+| `RendererTypes`     | Union of renderer type values |
 
 ## Apple Wallet Setup
 
@@ -92,11 +127,13 @@ Define the three renderer callbacks before running this example, and configure `
 2. Export with Keychain: Select "Certificates" tab, select the Pass Type ID, select both ID and key, export in p12 format.
 
 3. Convert to PEM (set a PEM passphrase as required):
+
 ```bash
 openssl pkcs12 -in Certificates.p12 -legacy -clcerts -out cert_and_key.pem
 ```
 
 4. Configure via environment variables:
+
 ```bash
 PASS_CERTIFICATE_PATH=./cert_and_key.pem
 PASS_CERTIFICATE_SECRET=YOUR_PEM_PASSPHRASE
@@ -111,11 +148,7 @@ PASS_TEAM_ID=SSCB95CV6U
 import React from 'react';
 import ReactPDF, { Document } from '@react-pdf/renderer';
 
-const TicketTemplate = ({ tickets }) => (
-  <Document>
-    {/* Your ticket layout */}
-  </Document>
-);
+const TicketTemplate = ({ tickets }) => <Document>{/* Your ticket layout */}</Document>;
 
 export default async ({ orderId, variant }, { modules }) => {
   const order = await modules.orders.findOrder({ orderId });
@@ -130,7 +163,7 @@ export default async ({ orderId, variant }, { modules }) => {
 import { Template, constants } from '@walletpass/pass-js';
 
 export default async (token, unchainedAPI) => {
-  const template = new Template('eventTicket', /* ... */);
+  const template = new Template('eventTicket' /* ... */);
   const pass = await template.createPass(/* ... */);
   return pass;
 };
@@ -167,12 +200,12 @@ The key is a deterministic SHA-256 digest of the order ID and `UNCHAINED_SECRET`
 
 ## Environment Variables
 
-| Variable | Description |
-|----------|-------------|
-| `UNCHAINED_SECRET` | Required for magic key derivation |
-| `PASS_CERTIFICATE_PATH` | Path to Apple pass certificate used by the example renderer |
-| `PASS_CERTIFICATE_SECRET` | PEM passphrase used by the example renderer |
-| `PASS_TEAM_ID` | Apple Developer Team ID used by the example renderer |
+| Variable                  | Description                                                 |
+| ------------------------- | ----------------------------------------------------------- |
+| `UNCHAINED_SECRET`        | Required for magic key derivation                           |
+| `PASS_CERTIFICATE_PATH`   | Path to Apple pass certificate used by the example renderer |
+| `PASS_CERTIFICATE_SECRET` | PEM passphrase used by the example renderer                 |
+| `PASS_TEAM_ID`            | Apple Developer Team ID used by the example renderer        |
 
 ## License
 
