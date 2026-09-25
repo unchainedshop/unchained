@@ -1095,7 +1095,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         { returnDocument: 'after' },
       );
       if (!user) return null;
-      return { tokenVersion: user.tokenVersion ?? 1 };
+      return { tokenVersion: user.tokenVersion ?? 0 };
     },
 
     updateOidcLogoutAt: async (userId: string, date: Date): Promise<User | null> => {

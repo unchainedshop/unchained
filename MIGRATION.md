@@ -364,6 +364,10 @@ setEmitAdapter(RedisEventEmitter());
 
 The Node.js in-memory emitter is still wired automatically by `registerBasePlugins()`. `EmitAdapter` also gained an optional `shutdown()` (the redis/eventbridge adapters implement it to close connections; `startPlatform` calls it on graceful shutdown).
 
+### Upgrading from an earlier v5 alpha: one-time re-login
+
+A user without a stored `tokenVersion` is now treated as version `0` (earlier alphas used `1`, which made the first revocation a no-op). Tokens those alphas issued to such users are rejected after the upgrade, so affected users log in once more. No data change is needed.
+
 ---
 
 ## v3 → v4

@@ -96,7 +96,7 @@ export const createContextResolver =
     // First, try API key authentication if accessToken is provided
     if (accessToken) {
       const accessTokenUser = await unchainedAPI.modules.users.findUserByToken(accessToken);
-      if (accessTokenUser) {
+      if (accessTokenUser && !accessTokenUser.deleted) {
         userContext.user = accessTokenUser;
         userContext.userId = accessTokenUser._id;
       }
@@ -105,10 +105,10 @@ export const createContextResolver =
     // Second, try JWT-based authentication if userId is provided from JWT
     if (userId && !userContext.userId) {
       const user = await unchainedAPI.modules.users.findUserById(userId);
-      if (user) {
+      if (user && !user.deleted) {
         // Validate token version if provided (from JWT)
-        // Token version defaults to 1 for users that haven't had their tokens revoked
-        const userTokenVersion = user.tokenVersion ?? 1;
+        // A missing token version is 0: the first revocation ($inc) moves the user to 1
+        const userTokenVersion = user.tokenVersion ?? 0;
         if (tokenVersion !== undefined && tokenVersion !== userTokenVersion) {
           // Token has been revoked (tokenVersion mismatch), don't authenticate
           // User will remain unauthenticated

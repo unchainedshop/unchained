@@ -2,9 +2,14 @@
 
 ## Unreleased
 
+### Breaking
+
+- **One-time re-login for v5 alpha users:** tokens are now signed and checked with a default `tokenVersion` of `0` instead of `1`. Tokens issued by earlier alphas to users without a stored `tokenVersion` stop working once after the upgrade; those users log in again.
+
 ### Fixed
 
 - **Express plugin routes send their response:** routes mounted from the plugin registry (payment webhooks, file uploads, bulk import, ERC metadata, back-channel logout) ran their handler but never wrote the response on Express, so requests hung until they timed out. Fastify was not affected.
+- **Token revocation works on the first call:** `logoutAllSessions`, back-channel logout and user deletion increment `tokenVersion`, but a missing field was treated as `1` while `$inc` also produced `1`, so the first revocation of a user invalidated nothing. Soft-deleted users are now rejected by the context resolver as well.
 
 ## v5.0.0-alpha.7 (2026-09-23)
 

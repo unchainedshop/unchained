@@ -132,8 +132,8 @@ export async function createAuthContext(
   const login: LoginFn = async (user: User, options = {}) => {
     const { impersonator } = options;
 
-    // Get current token version, defaulting to 1
-    const tokenVersion = user.tokenVersion ?? 1;
+    // Get current token version; a missing field is 0 (never revoked)
+    const tokenVersion = user.tokenVersion ?? 0;
 
     const { token: newToken, expires } = await signAccessToken(user._id, tokenVersion, {
       impersonatorId: impersonator?._id,

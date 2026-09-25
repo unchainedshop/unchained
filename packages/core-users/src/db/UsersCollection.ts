@@ -55,7 +55,7 @@ export type User = {
   pushSubscriptions: PushSubscriptionObject[];
   username?: string;
   meta?: any;
-  tokenVersion?: number; // Defaults to 1, incremented to revoke all JWT tokens
+  tokenVersion?: number; // Missing means 0; incremented to revoke all JWT tokens
   oidcLogoutAt?: Date; // Set when back-channel logout received from OIDC provider
 } & TimestampFields;
 
