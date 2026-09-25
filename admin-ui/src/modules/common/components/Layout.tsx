@@ -98,11 +98,7 @@ const SearchButton = ({ narrowNav }: { narrowNav: boolean }) => {
   );
 };
 
-const LayoutContent = ({
-  children,
-  pageHeader = '',
-  componentName,
-}) => {
+const LayoutContent = ({ children, pageHeader = '', componentName }) => {
   const { isSystemReady } = useApp();
   const { formatMessage } = useIntl();
   const { currentUser } = useCurrentUser();
