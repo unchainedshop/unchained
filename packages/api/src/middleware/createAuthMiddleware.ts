@@ -59,7 +59,7 @@ function getTokenCookieOptions(expires?: Date): CookieOptions {
         '1': true,
         '0': false,
       } as Record<string, boolean | 'none' | 'lax' | 'strict'>
-    )[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] || 'lax'; // Default to 'lax' for safety
+    )[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] ?? 'lax'; // Unknown values default to 'lax'; '0' must stay false
 
   // Warn if using insecure configuration in production
   if (!secure && process.env.NODE_ENV === 'production') {
