@@ -1,4 +1,4 @@
-import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
+import type { IBaseDirector } from '@unchainedshop/utils';
 import {
   QuotationError,
   type IQuotationAdapter,
@@ -7,17 +7,13 @@ import {
   QuotationAdapter,
 } from './QuotationAdapter.ts';
 import { createLogger } from '@unchainedshop/logger';
-import { pluginRegistry } from '../plugins/PluginRegistry.ts';
+import { registryDirector } from './registryDirector.ts';
 
 const logger = createLogger('unchained:core');
 
 export type IQuotationDirector = IBaseDirector<IQuotationAdapter> & {
   actions: (quotationContext: QuotationContext, unchainedAPI) => Promise<QuotationAdapterActions>;
 };
-
-const baseDirector = BaseDirector<IQuotationAdapter>('QuotationDirector', {
-  adapterSortKey: 'orderIndex',
-});
 
 const findAppropriateAdapters = (quotationContext: QuotationContext, unchainedAPI) =>
   QuotationDirector.getAdapters({
@@ -31,19 +27,7 @@ const findAppropriateAdapters = (quotationContext: QuotationContext, unchainedAP
   });
 
 export const QuotationDirector: IQuotationDirector = {
-  ...baseDirector,
-
-  // Override to query pluginRegistry dynamically
-  getAdapter: (key: string) => {
-    const adapters = pluginRegistry.getAdapters(QuotationAdapter.adapterType!) as IQuotationAdapter[];
-    return adapters.find((adapter) => adapter.key === key) || null;
-  },
-
-  // Override to query pluginRegistry dynamically
-  getAdapters: ({ adapterFilter } = {}) => {
-    const adapters = pluginRegistry.getAdapters(QuotationAdapter.adapterType!) as IQuotationAdapter[];
-    return adapters.filter(adapterFilter || (() => true));
-  },
+  ...registryDirector<IQuotationAdapter>(QuotationAdapter.adapterType!),
 
   actions: async (quotationContext, unchainedAPI) => {
     const context = { ...quotationContext, ...unchainedAPI };

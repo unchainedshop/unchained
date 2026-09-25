@@ -75,9 +75,8 @@ Available under the `calculation` namespace:
 | Export | Description |
 |--------|-------------|
 | `BaseAdapter` | Base object for adapter implementations with logging support |
-| `BaseDirector` | Factory for creating adapter directors |
 | `IBaseAdapter` | Interface for adapter implementations |
-| `IBaseDirector` | Interface for director implementations |
+| `IBaseDirector` | Interface implemented by the directors in `@unchainedshop/core` (adapters come from the plugin registry) |
 
 ### Swiss-specific Helpers
 

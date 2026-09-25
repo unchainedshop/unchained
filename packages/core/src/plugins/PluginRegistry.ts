@@ -301,6 +301,17 @@ class PluginRegistry {
   }
 
   /**
+   * Get the adapters of every plugin that was not skipped during initialization,
+   * in plugin registration order
+   * @returns Array of adapters of all types
+   */
+  getAllAdapters(): IBaseAdapter[] {
+    return this.getAllPlugins()
+      .filter((plugin) => !this.skippedPlugins.has(plugin.key))
+      .flatMap((plugin) => plugin.adapters ?? []);
+  }
+
+  /**
    * Check if a plugin is registered
    * @param key Plugin key
    * @returns true if plugin is registered

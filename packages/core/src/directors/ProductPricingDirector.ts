@@ -12,7 +12,6 @@ import {
   ProductPricingAdapter,
 } from './ProductPricingAdapter.ts';
 import { BasePricingDirector, type IPricingDirector } from './BasePricingDirector.ts';
-import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 export type ProductPricingContext =
   | {
       currencyCode: string;
@@ -35,7 +34,7 @@ const baseDirector = BasePricingDirector<
   ProductPricingAdapterContext,
   ProductPricingCalculation,
   IProductPricingAdapter
->('ProductPricingDirector');
+>(ProductPricingAdapter.adapterType!);
 
 export type IProductPricingDirector<DiscountConfiguration = unknown> = IPricingDirector<
   ProductPricingContext,
@@ -47,22 +46,6 @@ export type IProductPricingDirector<DiscountConfiguration = unknown> = IPricingD
 
 export const ProductPricingDirector: IProductPricingDirector<any> = {
   ...baseDirector,
-
-  // Override to query pluginRegistry dynamically
-  getAdapter: (key: string) => {
-    const adapters = pluginRegistry.getAdapters(
-      ProductPricingAdapter.adapterType!,
-    ) as IProductPricingAdapter[];
-    return adapters.find((adapter) => adapter.key === key) || null;
-  },
-
-  // Override to query pluginRegistry dynamically
-  getAdapters: ({ adapterFilter } = {}) => {
-    const adapters = pluginRegistry.getAdapters(
-      ProductPricingAdapter.adapterType!,
-    ) as IProductPricingAdapter[];
-    return adapters.filter(adapterFilter || (() => true));
-  },
 
   async buildPricingContext(context, unchainedAPI) {
     const { modules } = unchainedAPI;

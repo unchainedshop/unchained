@@ -1,4 +1,4 @@
-import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
+import type { IBaseDirector } from '@unchainedshop/utils';
 import {
   type DeliveryAdapterActions,
   type DeliveryContext,
@@ -10,7 +10,7 @@ import type { DeliveryProvider } from '@unchainedshop/core-delivery';
 import { type Order, OrderDeliveryStatus } from '@unchainedshop/core-orders';
 import type { Modules } from '../modules.ts';
 import { createLogger } from '@unchainedshop/logger';
-import { pluginRegistry } from '../plugins/PluginRegistry.ts';
+import { registryDirector } from './registryDirector.ts';
 
 const logger = createLogger('unchained:core');
 
@@ -27,22 +27,8 @@ export type IDeliveryDirector = IBaseDirector<IDeliveryAdapter> & {
   ) => Promise<DeliveryAdapterActions>;
 };
 
-const baseDirector = BaseDirector<IDeliveryAdapter>('DeliveryDirector');
-
 export const DeliveryDirector: IDeliveryDirector = {
-  ...baseDirector,
-
-  // Override to query pluginRegistry dynamically
-  getAdapter: (key: string) => {
-    const adapters = pluginRegistry.getAdapters(DeliveryAdapter.adapterType!) as IDeliveryAdapter[];
-    return adapters.find((adapter) => adapter.key === key) || null;
-  },
-
-  // Override to query pluginRegistry dynamically
-  getAdapters: ({ adapterFilter } = {}) => {
-    const adapters = pluginRegistry.getAdapters(DeliveryAdapter.adapterType!) as IDeliveryAdapter[];
-    return adapters.filter(adapterFilter || (() => true));
-  },
+  ...registryDirector<IDeliveryAdapter>(DeliveryAdapter.adapterType!),
 
   actions: async (deliveryProvider, deliveryContext, unchainedAPI) => {
     const Adapter = DeliveryDirector.getAdapter(deliveryProvider.adapterKey);

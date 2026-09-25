@@ -1,5 +1,5 @@
 import { mongodb } from '@unchainedshop/mongodb';
-import { BaseDirector, type IBaseDirector } from '@unchainedshop/utils';
+import type { IBaseDirector } from '@unchainedshop/utils';
 import type { FilterAdapterActions, FilterContext, IFilterAdapter } from './FilterAdapter.ts';
 import {
   type Filter,
@@ -12,7 +12,7 @@ import {
 } from '@unchainedshop/core-filters';
 import type { Product } from '@unchainedshop/core-products';
 import type { Modules } from '../modules.ts';
-import { pluginRegistry } from '../plugins/PluginRegistry.ts';
+import { registryDirector } from './registryDirector.ts';
 import { FilterAdapter } from './FilterAdapter.ts';
 export const parseQueryArray = (query?: SearchFilterQuery): Record<string, string[]> =>
   (query || []).reduce(
@@ -66,24 +66,8 @@ export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
   ) => Promise<string[]>;
 };
 
-const baseDirector = BaseDirector<IFilterAdapter>('FilterDirector', {
-  adapterSortKey: 'orderIndex',
-});
-
 export const FilterDirector: IFilterDirector = {
-  ...baseDirector,
-
-  // Override to query pluginRegistry dynamically
-  getAdapter: (key: string) => {
-    const adapters = pluginRegistry.getAdapters(FilterAdapter.adapterType!) as IFilterAdapter[];
-    return adapters.find((adapter) => adapter.key === key) || null;
-  },
-
-  // Override to query pluginRegistry dynamically
-  getAdapters: ({ adapterFilter } = {}) => {
-    const adapters = pluginRegistry.getAdapters(FilterAdapter.adapterType!) as IFilterAdapter[];
-    return adapters.filter(adapterFilter || (() => true));
-  },
+  ...registryDirector<IFilterAdapter>(FilterAdapter.adapterType!),
 
   actions: async (filterContext, unchainedAPI) => {
     const context = { ...filterContext, ...unchainedAPI };

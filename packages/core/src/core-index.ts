@@ -6,23 +6,7 @@ import createBulkImporterFactory, {
   type BulkImportHandler,
 } from './bulk-importer/index.ts';
 
-import {
-  WorkerDirector,
-  DeliveryDirector,
-  DeliveryPricingDirector,
-  EnrollmentDirector,
-  FileDirector,
-  FilterDirector,
-  OrderDiscountDirector,
-  OrderPricingDirector,
-  PaymentDirector,
-  PaymentPricingDirector,
-  ProductDiscountDirector,
-  ProductPricingDirector,
-  QuotationDirector,
-  WarehousingDirector,
-} from './directors/index.ts';
-import type { IBaseAdapter } from '@unchainedshop/utils';
+import { pluginRegistry } from './plugins/PluginRegistry.ts';
 import createBulkExporterFactory, {
   type BulkExporter,
   type BulkExportHandler,
@@ -93,36 +77,4 @@ export const initCore = async ({
   };
 };
 
-export const getAllAdapters = () => {
-  const worker = WorkerDirector.getAdapters();
-  const delivery = DeliveryDirector.getAdapters();
-  const deliveryPricing = DeliveryPricingDirector.getAdapters();
-  const enrollment = EnrollmentDirector.getAdapters();
-  const file = FileDirector.getAdapters();
-  const filter = FilterDirector.getAdapters();
-  const orderDiscount = OrderDiscountDirector.getAdapters();
-  const orderPricing = OrderPricingDirector.getAdapters();
-  const payment = PaymentDirector.getAdapters();
-  const paymentPricing = PaymentPricingDirector.getAdapters();
-  const productDiscount = ProductDiscountDirector.getAdapters();
-  const productPricing = ProductPricingDirector.getAdapters();
-  const quotation = QuotationDirector.getAdapters();
-  const warehousing = WarehousingDirector.getAdapters();
-
-  return ([] as IBaseAdapter[]).concat(
-    worker,
-    delivery,
-    deliveryPricing,
-    enrollment,
-    file,
-    filter,
-    orderDiscount,
-    orderPricing,
-    payment,
-    paymentPricing,
-    productDiscount,
-    productPricing,
-    quotation,
-    warehousing,
-  );
-};
+export const getAllAdapters = () => pluginRegistry.getAllAdapters();

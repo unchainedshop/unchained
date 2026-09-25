@@ -1,5 +1,4 @@
 import type { IBaseDirector } from '@unchainedshop/utils';
-import { BaseDirector } from '@unchainedshop/utils';
 import type { WarehousingProvider, TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { createLogger } from '@unchainedshop/logger';
 
@@ -13,7 +12,7 @@ import {
   WarehousingAdapter,
 } from './WarehousingAdapter.ts';
 import type { Modules } from '../modules.ts';
-import { pluginRegistry } from '../plugins/PluginRegistry.ts';
+import { registryDirector } from './registryDirector.ts';
 
 export interface EstimatedDispatch {
   shipping?: Date;
@@ -60,28 +59,8 @@ const getReferenceDate = (context: WarehousingContext) => {
   return context && context.referenceDate ? context.referenceDate : new Date();
 };
 
-const baseDirector = BaseDirector<IWarehousingAdapter>('WarehousingDirector', {
-  adapterSortKey: 'orderIndex',
-});
-
 export const WarehousingDirector: IWarehousingDirector = {
-  ...baseDirector,
-
-  // Override to query pluginRegistry dynamically
-  getAdapter: (key: string) => {
-    const adapters = pluginRegistry.getAdapters(
-      WarehousingAdapter.adapterType!,
-    ) as IWarehousingAdapter[];
-    return adapters.find((adapter) => adapter.key === key) || null;
-  },
-
-  // Override to query pluginRegistry dynamically
-  getAdapters: ({ adapterFilter } = {}) => {
-    const adapters = pluginRegistry.getAdapters(
-      WarehousingAdapter.adapterType!,
-    ) as IWarehousingAdapter[];
-    return adapters.filter(adapterFilter || (() => true));
-  },
+  ...registryDirector<IWarehousingAdapter>(WarehousingAdapter.adapterType!),
 
   actions: async (warehousingProvider, warehousingContext, unchainedAPI) => {
     const Adapter = WarehousingDirector.getAdapter(warehousingProvider.adapterKey);

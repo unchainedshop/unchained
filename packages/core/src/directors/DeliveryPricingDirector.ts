@@ -13,7 +13,6 @@ import type { DeliveryProvider } from '@unchainedshop/core-delivery';
 import type { Order } from '@unchainedshop/core-orders';
 import type { User } from '@unchainedshop/core-users';
 import type { OrderDelivery } from '@unchainedshop/core-orders';
-import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 export type DeliveryPricingContext =
   | {
       currencyCode: string;
@@ -38,26 +37,10 @@ const baseDirector = BasePricingDirector<
   DeliveryPricingAdapterContext,
   DeliveryPricingCalculation,
   IDeliveryPricingAdapter
->('DeliveryPricingDirector');
+>(DeliveryPricingAdapter.adapterType!);
 
 export const DeliveryPricingDirector: IDeliveryPricingDirector<any> = {
   ...baseDirector,
-
-  // Override to query pluginRegistry dynamically
-  getAdapter: (key: string) => {
-    const adapters = pluginRegistry.getAdapters(
-      DeliveryPricingAdapter.adapterType!,
-    ) as IDeliveryPricingAdapter[];
-    return adapters.find((adapter) => adapter.key === key) || null;
-  },
-
-  // Override to query pluginRegistry dynamically
-  getAdapters: ({ adapterFilter } = {}) => {
-    const adapters = pluginRegistry.getAdapters(
-      DeliveryPricingAdapter.adapterType!,
-    ) as IDeliveryPricingAdapter[];
-    return adapters.filter(adapterFilter || (() => true));
-  },
 
   async buildPricingContext(context, unchainedAPI) {
     const { modules } = unchainedAPI;
