@@ -1,5 +1,11 @@
 # Unchained Engine v5.0 (Breaking Changes)
 
+## Unreleased
+
+### Fixed
+
+- **Express plugin routes send their response:** routes mounted from the plugin registry (payment webhooks, file uploads, bulk import, ERC metadata, back-channel logout) ran their handler but never wrote the response on Express, so requests hung until they timed out. Fastify was not affected.
+
 ## v5.0.0-alpha.7 (2026-09-23)
 
 alpha.6 skipped to re-align engine version with admin-ui.

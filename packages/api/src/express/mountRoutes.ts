@@ -2,6 +2,7 @@ import type { Express, RequestHandler } from 'express';
 import type { UnchainedCore, PluginHttpRoute } from '@unchainedshop/core';
 import { createServerAdapter } from '@whatwg-node/server';
 import { createLogger } from '@unchainedshop/logger';
+import { sendWebResponse } from '../mcp/nodeHttpBridge.ts';
 
 const logger = createLogger('express');
 
@@ -66,13 +67,14 @@ export function mountRoutes(app: Express, unchainedAPI: UnchainedCore, routes: P
 
     const expressHandler: RequestHandler = async (req, res) => {
       try {
-        // Use handleNodeRequestAndResponse - properly converts Node.js IncomingMessage to WHATWG Request
-        // and automatically sends the response
-        await adapter.handleNodeRequestAndResponse(req, res, {
+        // handleNodeRequestAndResponse converts the Node.js request to a WHATWG Request and
+        // returns the handler's Response; it does not write it, so send it explicitly.
+        const response = await adapter.handleNodeRequestAndResponse(req, res, {
           unchainedContext: (req as any).unchainedContext,
           params: req.params as Record<string, string>,
           rawRequest: req,
         } as PluginServerContext);
+        await sendWebResponse(res, response);
       } catch (error) {
         logger.error(`Error handling request for ${route.method} ${route.path}`, {
           error: error instanceof Error ? error.message : String(error),
