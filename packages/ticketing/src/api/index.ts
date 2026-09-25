@@ -4,6 +4,7 @@ import ticketEventsCount from './resolvers/queries/ticketEventsCount.ts';
 import cancelTicket from './resolvers/mutations/cancelTicket.ts';
 import cancelEvent from './resolvers/mutations/cancelEvent.ts';
 import scanTicket from './resolvers/mutations/scanTicket.ts';
+import attendee from './resolvers/type/attendee.ts';
 import typeDefs from './schema.ts';
 import { ticketingActions, configureTicketingRoles } from './roles.ts';
 
@@ -28,6 +29,7 @@ const ticketingResolvers = {
     isCanceled(token: any) {
       return Boolean(token.meta?.cancelled);
     },
+    attendee,
   },
 };
 

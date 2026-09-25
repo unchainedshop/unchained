@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 import { Table, Badge } from '@unchainedshop/admin-ui/ui';
-import { useFormatDateTime, formatUsername } from '../utils/misc';
+import { useFormatDateTime } from '../utils/misc';
 import useInvalidateTicket from '../hooks/useInvalidateTicket';
 
 const GateAttendeeList = ({ event, onRefetch }) => {
@@ -110,14 +110,10 @@ const GateAttendeeList = ({ event, onRefetch }) => {
                   </span>
                 </Table.Cell>
                 <Table.Cell>
-                  <span className="text-sm text-text-primary">
-                    {token.user ? formatUsername(token.user) : '-'}
-                  </span>
+                  <span className="text-sm text-text-primary">{token.attendee?.name || '-'}</span>
                 </Table.Cell>
                 <Table.Cell>
-                  <span className="text-sm text-text-secondary">
-                    {token.user?.lastContact?.emailAddress || token.user?.primaryEmail?.address || '-'}
-                  </span>
+                  <span className="text-sm text-text-secondary">{token.attendee?.email || '-'}</span>
                 </Table.Cell>
                 <Table.Cell>
                   {token.invalidatedDate ? (

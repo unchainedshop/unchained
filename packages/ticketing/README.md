@@ -68,7 +68,9 @@ The plugin groups event management and gate control under **Ticketing**. Users w
 `scanTicket` action see **Gate Control**. Assign the `ticketing` role registered above to gate
 operators, or grant `scanTicket` in a custom role. Administrators have access automatically. Gate
 operators can read active events and their attendees, and redeem eligible tickets through the
-`scanTicket` mutation. This grants no token export, cancellation, or reimbursement rights.
+`scanTicket` mutation. Attendee lists expose only `Token.attendee` (name, e-mail and phone, guarded
+by the `viewAttendees` action), never the ticket holder's user account. This grants no token
+export, cancellation, or reimbursement rights.
 Cancelling tickets or whole events requires `cancelTicket`, granted to administrators by default.
 
 Gate access uses the regular account session. Pass codes, gate cookies, and separate gate login
