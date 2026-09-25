@@ -12,6 +12,7 @@
 - **Token revocation works on the first call:** `logoutAllSessions`, back-channel logout and user deletion increment `tokenVersion`, but a missing field was treated as `1` while `$inc` also produced `1`, so the first revocation of a user invalidated nothing. Soft-deleted users are now rejected by the context resolver as well.
 - **Revoked impersonation tokens stay revoked:** the `imp` claim was trusted even when the token itself was rejected, so `stopImpersonation` with a revoked impersonation token still logged the impersonator back in. The impersonator is now only taken from a token that is still valid.
 - **OIDC subject mapping:** `OIDCProviderConfig.userIdFromSubject(sub, claims)` maps a provider's `sub` claim to the Unchained user id (default: `sub`). Back-channel logout and inbound OIDC access tokens both use it. Previously both looked users up by the raw `sub`, so with the `${clientId}:${sub}` ids used by `examples/oidc` a back-channel logout returned 200 and revoked nothing. The examples now configure the mapping.
+- **ERC metadata routes on Fastify:** the route used Express-only optional-segment syntax (`{/:tokenFileName}`), so `/erc-metadata/:productId/:tokenFileName` never matched on Fastify. It is now registered as two explicit routes.
 
 ## v5.0.0-alpha.7 (2026-09-23)
 

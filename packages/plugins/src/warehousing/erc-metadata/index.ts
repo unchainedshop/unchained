@@ -10,9 +10,16 @@ export const ERCMetadataPlugin: IPlugin = {
   label: 'ERC Metadata Plugin',
   version: '1.0.0',
 
+  // Two explicit routes instead of an optional segment: `{/:param}` is Express-only syntax
+  // and never matched the single-segment form on Fastify.
   routes: [
     {
-      path: `${ERC_METADATA_API_PATH}/:productId/:localeOrTokenFilename{/:tokenFileName}`,
+      path: `${ERC_METADATA_API_PATH}/:productId/:localeOrTokenFilename`,
+      method: 'GET',
+      handler: ercMetadataHandler,
+    },
+    {
+      path: `${ERC_METADATA_API_PATH}/:productId/:localeOrTokenFilename/:tokenFileName`,
       method: 'GET',
       handler: ercMetadataHandler,
     },
