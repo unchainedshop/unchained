@@ -20,3 +20,6 @@ fly.toml
 dist
 .playwright-mcp/
 .unchained-docs/
+
+# Claude Code session state
+.claude/scheduled_tasks.lock
