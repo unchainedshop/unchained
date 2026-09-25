@@ -13,14 +13,16 @@ test.describe('Plugin: ERC metadata routes', () => {
     await disconnect();
   });
 
+  // The seeded tokens belong to a different contract than TokenizedProduct1, so no token matches.
   for (const path of [
     `/erc-metadata/${TokenizedProduct1._id}/${TestToken1.tokenSerialNumber}.json`,
     `/erc-metadata/${TokenizedProduct1._id}/en/${TestToken1.tokenSerialNumber}.json`,
   ]) {
-    test(`GET ${path} reaches the metadata handler`, async () => {
+    test(`GET ${path} reaches the handler and answers 404 without a matching token`, async () => {
       const response = await fetch(`${getServerBaseUrl()}${path}`);
       const body = await response.text();
       assert.doesNotMatch(body, /Route GET:.* not found/);
+      assert.strictEqual(response.status, 404);
     });
   }
 });
