@@ -1,7 +1,7 @@
 import * as jose from 'jose';
 import { createLogger } from '@unchainedshop/logger';
 import type { PluginHttpRoute } from '@unchainedshop/core';
-import type { OIDCProviderConfig } from '../auth.ts';
+import { resolveOIDCUserId, type OIDCProviderConfig } from '../auth.ts';
 
 const logger = createLogger('unchained:api:backchannel-logout');
 
@@ -202,10 +202,10 @@ export function createBackchannelLogoutRoute(providers: OIDCProviderConfig[]): P
           });
         }
 
-        // Find the user by their OIDC subject ID
-        // The sub claim from the OIDC provider should match the user's ID
-        // or be stored in the user's profile
-        const user = await context.modules.users.findUserById(sub);
+        // Find the user by their OIDC subject, mapped through the provider's userIdFromSubject
+        const user = await context.modules.users.findUserById(
+          resolveOIDCUserId(provider, sub, verifiedPayload),
+        );
 
         if (!user) {
           // User not found - this is not an error, just log and return success

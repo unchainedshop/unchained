@@ -29,6 +29,10 @@ interface ZitadelIdToken {
   'urn:zitadel:iam:org:project:roles'?: Record<string, Record<string, string>>;
 }
 
+// Zitadel users are stored under a client-scoped id; login, bearer tokens and
+// back-channel logout must all resolve the same id.
+const userIdFromSubject = (sub: string) => `${UNCHAINED_ZITADEL_CLIENT_ID}:${sub}`;
+
 /**
  * Returns the OIDC provider configuration for Zitadel
  * This is used by the platform's JWT auth to verify back-channel logout tokens
@@ -37,6 +41,7 @@ export function getZitadelOIDCConfig(): OIDCProviderConfig {
   return {
     issuer: UNCHAINED_ZITADEL_DISCOVERY_URL!,
     audience: UNCHAINED_ZITADEL_CLIENT_ID,
+    userIdFromSubject,
   };
 }
 
@@ -158,7 +163,7 @@ export default async function setupZitadel(app: FastifyInstance) {
         } = decoded;
 
         const roles = projectRoles ? Object.keys(projectRoles) : [];
-        const userId = `${UNCHAINED_ZITADEL_CLIENT_ID}:${sub}`;
+        const userId = userIdFromSubject(sub);
 
         const { modules } = request.unchainedContext;
         let user = await modules.users.findUserById(userId);

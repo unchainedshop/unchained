@@ -31,6 +31,10 @@ interface KeycloakIdToken {
   email_verified?: boolean;
 }
 
+// Keycloak users are stored under a client-scoped id; login, bearer tokens and
+// back-channel logout must all resolve the same id.
+const userIdFromSubject = (sub: string) => `${UNCHAINED_KEYCLOAK_CLIENT_ID}:${sub}`;
+
 /**
  * Returns the OIDC provider configuration for Keycloak
  * This is used by the platform's JWT auth to verify back-channel logout tokens
@@ -40,6 +44,7 @@ export function getKeycloakOIDCConfig(): OIDCProviderConfig {
     issuer: UNCHAINED_KEYCLOAK_REALM_URL!,
     audience: UNCHAINED_KEYCLOAK_CLIENT_ID,
     jwksUri: `${UNCHAINED_KEYCLOAK_REALM_URL}/protocol/openid-connect/certs`,
+    userIdFromSubject,
   };
 }
 
@@ -161,7 +166,7 @@ export default async function setupKeycloak(app: FastifyInstance) {
         } = decoded;
 
         const roles = resource_access?.[UNCHAINED_KEYCLOAK_CLIENT_ID!]?.roles || [];
-        const userId = `${UNCHAINED_KEYCLOAK_CLIENT_ID}:${sub}`;
+        const userId = userIdFromSubject(sub);
 
         const { modules } = request.unchainedContext;
         let user = await modules.users.findUserById(userId);

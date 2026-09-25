@@ -29,7 +29,19 @@ export interface OIDCProviderConfig {
   issuer: string;
   jwksUri?: string;
   audience?: string | string[];
+  /**
+   * Maps a verified token's `sub` claim to the Unchained user id (defaults to `sub`).
+   * Used for inbound access tokens and back-channel logout, e.g. when users are stored
+   * as `${clientId}:${sub}`.
+   */
+  userIdFromSubject?: (sub: string, claims: jose.JWTPayload) => string;
 }
+
+export const resolveOIDCUserId = (
+  provider: OIDCProviderConfig,
+  sub: string,
+  claims: jose.JWTPayload,
+): string => (provider.userIdFromSubject ? provider.userIdFromSubject(sub, claims) : sub);
 
 export interface AuthConfig {
   oidcProviders?: OIDCProviderConfig[];
@@ -210,7 +222,7 @@ export async function verifyOIDCToken(
     logger.debug('OIDC token verified successfully', { issuer: iss, subject: sub });
 
     return {
-      userId: payload.sub as string,
+      userId: resolveOIDCUserId(provider, payload.sub as string, payload),
       roles: (payload as any).roles,
     };
   } catch (error) {
