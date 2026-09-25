@@ -3,6 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'tsup';
 import { SHARED_DEP_SHIMS, SDK_ENTRY_KEYS } from './src/sdk/plugin-runtime.mjs';
+import { handleExternals } from './src/sdk/plugin-build.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const VALID_IDENT = /^[a-zA-Z$_][a-zA-Z0-9$_]*$/;
@@ -171,8 +172,9 @@ export default defineConfig({
   treeshake: true,
   clean: true,
   outDir: 'dist',
-  external: Object.keys(SHARED_DEP_SHIMS),
-  esbuildPlugins: [shimPlugin],
+  // Shared host dependencies stay external for imports and require() alike
+  // (tsup's `external` option would leave bundled CJS code with a __require()).
+  esbuildPlugins: [handleExternals(Object.keys(SHARED_DEP_SHIMS)), shimPlugin],
   esbuildOptions(options) {
     options.alias = {
       '@/*': './src/*',
