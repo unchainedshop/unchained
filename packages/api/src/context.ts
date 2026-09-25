@@ -91,7 +91,7 @@ export const createContextResolver =
     const loaders = instantiateLoaders(unchainedAPI);
     const localeContext = await getLocaleContext(abstractHttpServerContext, unchainedAPI);
 
-    const userContext: UnchainedUserContext = { login, logout, impersonatorId };
+    const userContext: UnchainedUserContext = { login, logout };
 
     // First, try API key authentication if accessToken is provided
     if (accessToken) {
@@ -115,6 +115,9 @@ export const createContextResolver =
         } else {
           userContext.user = user;
           userContext.userId = user._id;
+          // Only trust the impersonation claim of a token that is still valid, otherwise a
+          // revoked token could be exchanged for a fresh impersonator session via stopImpersonation
+          userContext.impersonatorId = impersonatorId;
         }
       }
     }

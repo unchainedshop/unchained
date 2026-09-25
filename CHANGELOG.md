@@ -10,6 +10,7 @@
 
 - **Express plugin routes send their response:** routes mounted from the plugin registry (payment webhooks, file uploads, bulk import, ERC metadata, back-channel logout) ran their handler but never wrote the response on Express, so requests hung until they timed out. Fastify was not affected.
 - **Token revocation works on the first call:** `logoutAllSessions`, back-channel logout and user deletion increment `tokenVersion`, but a missing field was treated as `1` while `$inc` also produced `1`, so the first revocation of a user invalidated nothing. Soft-deleted users are now rejected by the context resolver as well.
+- **Revoked impersonation tokens stay revoked:** the `imp` claim was trusted even when the token itself was rejected, so `stopImpersonation` with a revoked impersonation token still logged the impersonator back in. The impersonator is now only taken from a token that is still valid.
 
 ## v5.0.0-alpha.7 (2026-09-23)
 
