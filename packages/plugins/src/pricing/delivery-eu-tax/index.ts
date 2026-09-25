@@ -11,6 +11,3 @@ export const DeliveryEuTaxPlugin: IPlugin = {
 };
 
 export default DeliveryEuTaxPlugin;
-
-// Re-export adapter for direct use
-export { DeliveryEuTax } from './adapter.ts';

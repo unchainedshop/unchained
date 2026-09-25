@@ -11,6 +11,3 @@ export const HundredOffPlugin: IPlugin = {
 };
 
 export default HundredOffPlugin;
-
-// Re-export adapter for direct use
-export { HundredOff } from './adapter.ts';

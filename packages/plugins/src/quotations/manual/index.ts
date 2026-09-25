@@ -11,6 +11,3 @@ export const ManualOfferingPlugin: IPlugin = {
 };
 
 export default ManualOfferingPlugin;
-
-// Re-export adapter for direct use
-export { ManualOffering } from './adapter.ts';

@@ -22,6 +22,3 @@ export const BulkImportPlugin: IPlugin = {
 };
 
 export default BulkImportPlugin;
-
-// Re-export adapter for direct use
-export { BulkImportWorker } from './adapter.ts';

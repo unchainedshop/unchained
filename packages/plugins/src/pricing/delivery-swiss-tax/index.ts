@@ -11,6 +11,3 @@ export const DeliverySwissTaxPlugin: IPlugin = {
 };
 
 export default DeliverySwissTaxPlugin;
-
-// Re-export adapter for direct use
-export { DeliverySwissTax } from './adapter.ts';

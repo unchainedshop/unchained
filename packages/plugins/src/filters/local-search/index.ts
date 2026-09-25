@@ -11,6 +11,3 @@ export const LocalSearchPlugin: IPlugin = {
 };
 
 export default LocalSearchPlugin;
-
-// Re-export adapter for direct use
-export { LocalSearch } from './adapter.ts';

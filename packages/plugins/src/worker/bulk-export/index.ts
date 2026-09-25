@@ -11,6 +11,3 @@ export const BulkExportPlugin: IPlugin = {
 };
 
 export default BulkExportPlugin;
-
-// Re-export adapter for direct use
-export { BulkExport } from './adapter.ts';

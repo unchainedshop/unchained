@@ -11,6 +11,3 @@ export const SendMessagePlugin: IPlugin = {
 };
 
 export default SendMessagePlugin;
-
-// Re-export adapter for direct use
-export { SendMessage } from './adapter.ts';

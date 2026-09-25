@@ -12,5 +12,5 @@ export const LicensedEnrollmentsPlugin: IPlugin = {
 
 export default LicensedEnrollmentsPlugin;
 
-// Re-export adapter for direct use
-export { LicensedEnrollments, rangeMatcher } from './adapter.ts';
+// Helpers
+export { rangeMatcher } from './adapter.ts';

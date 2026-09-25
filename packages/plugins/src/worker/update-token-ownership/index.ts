@@ -16,5 +16,5 @@ export const UpdateTokenOwnershipPlugin: IPlugin = {
 
 export default UpdateTokenOwnershipPlugin;
 
-// Re-export adapter for direct use
-export { UpdateTokenOwnership, RefreshTokens, configureRefreshTokensAutoscheduling } from './adapter.ts';
+// Helpers
+export { configureRefreshTokensAutoscheduling } from './adapter.ts';

@@ -34,8 +34,5 @@ export const AppleIAPPlugin: IPlugin = {
 
 export default AppleIAPPlugin;
 
-// Re-export adapter for direct use
-export { AppleIAP } from './adapter.ts';
-
 // Type exports
 export { type AppleTransactionsModule };

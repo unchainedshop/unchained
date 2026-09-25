@@ -16,5 +16,5 @@ export const ExportTokenPlugin: IPlugin = {
 
 export default ExportTokenPlugin;
 
-// Re-export adapter for direct use
-export { ExportTokenWorker, configureExportToken } from './adapter.ts';
+// Helpers
+export { configureExportToken } from './adapter.ts';

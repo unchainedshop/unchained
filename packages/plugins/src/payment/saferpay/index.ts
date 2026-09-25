@@ -49,8 +49,5 @@ export const SaferpayPlugin: IPlugin = {
 
 export default SaferpayPlugin;
 
-// Re-export adapter for direct use
-export { WordlineSaferpay } from './adapter.ts';
-
 // Type exports
 export { type SaferpayTransactionsModule } from './module.ts';

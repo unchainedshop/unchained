@@ -11,6 +11,3 @@ export const OrderPaymentPlugin: IPlugin = {
 };
 
 export default OrderPaymentPlugin;
-
-// Re-export adapter for direct use
-export { OrderPayment } from './adapter.ts';

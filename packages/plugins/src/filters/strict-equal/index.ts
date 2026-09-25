@@ -11,6 +11,3 @@ export const StrictQualFilterPlugin: IPlugin = {
 };
 
 export default StrictQualFilterPlugin;
-
-// Re-export adapter for direct use
-export { StrictQualFilter } from './adapter.ts';

@@ -12,5 +12,5 @@ export const BudgetSMSPlugin: IPlugin = {
 
 export default BudgetSMSPlugin;
 
-// Re-export adapter for direct use
-export { BudgetSMSWorker, checkBudgetSmsCredentials } from './adapter.ts';
+// Helpers
+export { checkBudgetSmsCredentials } from './adapter.ts';

@@ -11,6 +11,3 @@ export const ProductPricePlugin: IPlugin = {
 };
 
 export default ProductPricePlugin;
-
-// Re-export adapter for direct use
-export { ProductPrice } from './adapter.ts';

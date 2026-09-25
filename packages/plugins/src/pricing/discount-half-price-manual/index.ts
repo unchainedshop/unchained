@@ -11,6 +11,3 @@ export const HalfPriceManualPlugin: IPlugin = {
 };
 
 export default HalfPriceManualPlugin;
-
-// Re-export adapter for direct use
-export { HalfPriceManual } from './adapter.ts';

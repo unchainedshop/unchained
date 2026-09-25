@@ -6,6 +6,7 @@
 
 - **One-time re-login for v5 alpha users:** tokens are now signed and checked with a default `tokenVersion` of `0` instead of `1`. Tokens issued by earlier alphas to users without a stored `tokenVersion` stop working once after the upgrade; those users log in again.
 - **Directors read adapters from the plugin registry only:** the `BaseDirector` factory is removed from `@unchainedshop/utils`; since v5 its adapter map was never filled and every director replaced its lookups (`IBaseDirector` remains). `BasePricingDirector` and `BaseDiscountDirector` take the adapter type symbol instead of a director name. `getAllAdapters()` now returns the adapters of all non-skipped plugins from `pluginRegistry` (new `pluginRegistry.getAllAdapters()`).
+- **Plugin entry points export plugins, not adapters:** the ~55 remaining raw adapter re-exports (e.g. `Invoice`, `Stripe`, `GridFSAdapter`) are removed, as the v5 notes below already state. Use the `*Plugin` export (its adapter is `XPlugin.adapters[0]`). Helper functions (`configure…Autoscheduling`, `rangeMatcher`, `connectToMinio`, `checkEmailInterceptionEnabled`, `checkBudgetSmsCredentials`, `configureExportToken`, the Postfinance utils) and module types stay exported.
 
 ### Fixed
 

@@ -11,6 +11,3 @@ export const PushNotificationPlugin: IPlugin = {
 };
 
 export default PushNotificationPlugin;
-
-// Re-export adapter for direct use
-export { PushNotificationWorkerPlugin } from './adapter.ts';

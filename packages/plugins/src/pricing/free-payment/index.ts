@@ -11,6 +11,3 @@ export const PaymentFreePricePlugin: IPlugin = {
 };
 
 export default PaymentFreePricePlugin;
-
-// Re-export adapter for direct use
-export { PaymentFreePrice } from './adapter.ts';

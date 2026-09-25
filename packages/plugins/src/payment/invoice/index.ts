@@ -11,6 +11,3 @@ export const InvoicePlugin: IPlugin = {
 };
 
 export default InvoicePlugin;
-
-// Re-export adapter for direct use
-export { Invoice } from './adapter.ts';

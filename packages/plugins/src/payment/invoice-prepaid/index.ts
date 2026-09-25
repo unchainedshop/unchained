@@ -11,6 +11,3 @@ export const InvoicePrepaidPlugin: IPlugin = {
 };
 
 export default InvoicePrepaidPlugin;
-
-// Re-export adapter for direct use
-export { InvoicePrepaid } from './adapter.ts';

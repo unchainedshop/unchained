@@ -16,5 +16,5 @@ export const EnrollmentOrderGeneratorPlugin: IPlugin = {
 
 export default EnrollmentOrderGeneratorPlugin;
 
-// Re-export adapter for direct use
-export { GenerateOrderWorker, configureGenerateOrderAutoscheduling } from './adapter.ts';
+// Helpers
+export { configureGenerateOrderAutoscheduling } from './adapter.ts';

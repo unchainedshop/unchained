@@ -12,5 +12,5 @@ export const EmailPlugin: IPlugin = {
 
 export default EmailPlugin;
 
-// Re-export adapter for direct use
-export { EmailWorkerPlugin, checkEmailInterceptionEnabled } from './adapter.ts';
+// Helpers
+export { checkEmailInterceptionEnabled } from './adapter.ts';

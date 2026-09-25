@@ -43,9 +43,6 @@ export const PostfinanceCheckoutPlugin: IPlugin = {
 
 export default PostfinanceCheckoutPlugin;
 
-// Re-export adapter for direct use
-export { PostfinanceCheckout } from './adapter.ts';
-
 // Type and utility exports
 export * from './types.ts';
 export * from './api-types.ts';

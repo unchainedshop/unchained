@@ -42,8 +42,5 @@ export const CryptopayPlugin: IPlugin = {
 
 export default CryptopayPlugin;
 
-// Re-export adapter for direct use
-export { Cryptopay } from './adapter.ts';
-
 // Type exports
 export { type CryptopayModule } from './module.ts';

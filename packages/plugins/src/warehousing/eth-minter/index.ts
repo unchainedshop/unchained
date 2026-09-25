@@ -11,6 +11,3 @@ export const ETHMinterPlugin: IPlugin = {
 };
 
 export default ETHMinterPlugin;
-
-// Re-export adapter for direct use
-export { ETHMinter } from './adapter.ts';
