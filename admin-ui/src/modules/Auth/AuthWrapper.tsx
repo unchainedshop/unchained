@@ -63,7 +63,9 @@ const AuthWrapper = ({ children }) => {
   // Anonymous visitors of protected pages are redirected by the effect above; don't render
   // the page meanwhile, its queries would only fail with NoPermissionError.
   const awaitingRedirect =
-    !loading && !isUserAuthenticated(currentUser) && !checkAccess(currentUser, router.pathname);
+    !loading &&
+    !isUserAuthenticated(currentUser) &&
+    !checkAccess(currentUser, router.pathname);
 
   return (
     <AuthContext.Provider value={ctx}>

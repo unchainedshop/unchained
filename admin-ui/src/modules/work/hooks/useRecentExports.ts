@@ -34,12 +34,17 @@ interface RecentExportsResult {
   exports: ExportGroup[];
 }
 
-type FormatDateTime = (date: unknown, options?: Intl.DateTimeFormatOptions) => string;
+type FormatDateTime = (
+  date: unknown,
+  options?: Intl.DateTimeFormatOptions,
+) => string;
 
 // The Admin UI passes its locale-aware formatter; keep the hook free of Admin UI internals so
 // it can be shipped in @unchainedshop/client.
 const defaultFormatDateTime: FormatDateTime = (date, options) =>
-  new Intl.DateTimeFormat(undefined, options).format(new Date(date as string | number | Date));
+  new Intl.DateTimeFormat(undefined, options).format(
+    new Date(date as string | number | Date),
+  );
 
 const getActiveFilesAndCount = (
   workQueue: ExportedWork[],

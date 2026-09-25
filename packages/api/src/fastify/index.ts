@@ -33,7 +33,6 @@ export type {
   AdminUIPluginTabConfig,
   AdminUIPluginWidgetConfig,
   AdminUIPluginSlotConfig,
-  AdminUIPluginLinkConfig,
   AdminUIThemeTokens,
   AdminUIThemeConfig,
 } from '../adminUiPlugins.ts';

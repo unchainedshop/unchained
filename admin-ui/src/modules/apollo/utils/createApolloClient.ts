@@ -83,8 +83,8 @@ const createApolloClient = ({
   const apolloClient = new ApolloClient({
     defaultOptions: {
       watchQuery: {
-        errorPolicy: 'all',
         fetchPolicy: 'cache-and-network',
+        errorPolicy: 'all',
       },
     },
 

@@ -89,6 +89,9 @@
     "./modules/quotation": {
       "import": "./dist/modules/quotation.js"
     },
+    "./modules/token": {
+      "import": "./dist/modules/token.js"
+    },
     "./modules/warehousing-providers": {
       "import": "./dist/modules/warehousing-providers.js"
     },

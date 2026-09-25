@@ -44,7 +44,7 @@ const TokenDetailPage = ({ tokenId }) => {
           );
         }}
         okText={formatMessage({
-          id: 'invalidate_token',
+          id: 'invalidate-token',
           defaultMessage: 'Invalidate',
         })}
       />,
@@ -72,21 +72,19 @@ const TokenDetailPage = ({ tokenId }) => {
               </div>
             )}
         </PageHeader>
-        <div className="flex items-center gap-2">
-          {!token.invalidatedDate &&
-          token.isInvalidateable &&
-          hasRole(IRoleAction.UpdateToken) ? (
-            <Button
-              variant="danger"
-              icon={<XMarkIcon className="h-5 w-5" />}
-              text={formatMessage({
-                id: 'invalidate-token',
-                defaultMessage: 'Invalidate',
-              })}
-              onClick={onInvalidateToken}
-            />
-          ) : null}
-        </div>
+        {!token.invalidatedDate &&
+        token.isInvalidateable &&
+        hasRole(IRoleAction.UpdateToken) ? (
+          <Button
+            variant="danger"
+            icon={<XMarkIcon className="h-5 w-5" />}
+            text={formatMessage({
+              id: 'invalidate-token',
+              defaultMessage: 'Invalidate',
+            })}
+            onClick={onInvalidateToken}
+          />
+        ) : null}
       </div>
       <TokenDetail token={token} />
     </>
