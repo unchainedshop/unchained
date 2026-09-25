@@ -1,9 +1,9 @@
 import { type IFilterAdapter, FilterAdapter } from '@unchainedshop/core';
 
-export const StrictQualFilter: IFilterAdapter = {
+export const StrictEqualFilter: IFilterAdapter = {
   ...FilterAdapter,
 
-  key: 'shop.unchained.filters.strict-qual',
+  key: 'shop.unchained.filters.strict-equal',
   label: 'Simple Strict Equal DB Filter',
   version: '1.0.0',
   orderIndex: 0,

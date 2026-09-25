@@ -1,13 +1,13 @@
 import { type IPlugin } from '@unchainedshop/core';
-import { StrictQualFilter } from './adapter.ts';
+import { StrictEqualFilter } from './adapter.ts';
 
 // Plugin definition
-export const StrictQualFilterPlugin: IPlugin = {
-  key: 'shop.unchained.filters.strict-qual',
+export const StrictEqualFilterPlugin: IPlugin = {
+  key: 'shop.unchained.filters.strict-equal',
   label: 'Strict Equal Filter Plugin',
   version: '1.0.0',
 
-  adapters: [StrictQualFilter],
+  adapters: [StrictEqualFilter],
 };
 
-export default StrictQualFilterPlugin;
+export default StrictEqualFilterPlugin;

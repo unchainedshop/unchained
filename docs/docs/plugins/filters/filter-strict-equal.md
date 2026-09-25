@@ -17,22 +17,18 @@ If you use the `base` preset or register plugins individually:
 
 ```typescript
 import { pluginRegistry } from '@unchainedshop/core';
-import { StrictQualFilterPlugin } from '@unchainedshop/plugins/filters/strict-equal';
+import { StrictEqualFilterPlugin } from '@unchainedshop/plugins/filters/strict-equal';
 
-pluginRegistry.register(StrictQualFilterPlugin);
+pluginRegistry.register(StrictEqualFilterPlugin);
 ```
 
 ## Adapter Details
 
 | Property | Value |
 |----------|-------|
-| Key | `shop.unchained.filters.strict-qual` |
+| Key | `shop.unchained.filters.strict-equal` |
 | Order Index | `0` (runs first) |
 | Source | [filters/strict-equal](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/filters/strict-equal) |
-
-:::note
-The adapter key really is `strict-qual`, not `strict-equal`.
-:::
 
 ## Behavior
 

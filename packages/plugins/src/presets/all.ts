@@ -24,7 +24,7 @@ import { PostfinanceCheckoutPlugin } from '../payment/postfinance-checkout/index
 import { SaferpayPlugin } from '../payment/saferpay/index.ts';
 
 // Import filter plugins
-import { StrictQualFilterPlugin } from '../filters/strict-equal/index.ts';
+import { StrictEqualFilterPlugin } from '../filters/strict-equal/index.ts';
 import { LocalSearchPlugin } from '../filters/local-search/index.ts';
 
 // Import worker plugins
@@ -56,7 +56,7 @@ export function registerAllPlugins() {
   pluginRegistry.register(PickMupPlugin);
 
   // Filters
-  pluginRegistry.register(StrictQualFilterPlugin);
+  pluginRegistry.register(StrictEqualFilterPlugin);
   pluginRegistry.register(LocalSearchPlugin);
 
   // Workers
