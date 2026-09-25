@@ -15,6 +15,7 @@
 - **ERC metadata routes on Fastify:** the route used Express-only optional-segment syntax (`{/:tokenFileName}`), so `/erc-metadata/:productId/:tokenFileName` never matched on Fastify. It is now registered as two explicit routes.
 - **`UNCHAINED_COOKIE_SAMESITE=0`:** the documented value to omit the SameSite attribute was mapped to `false` and then replaced by the `lax` fallback. It now yields `sameSite: false`.
 - **`@unchainedshop/plugins` manifest:** removed `main`/`types`, which pointed at a deleted `lib/plugins-index.*`. The package only has subpath exports (`@unchainedshop/plugins/presets/all`, `…/payment/stripe`, …).
+- **Examples:** all examples now `await connect(...)` (it is async since v5). The oidc and ticketing examples register `SendMessagePlugin`, because their seeds create a `send-message` delivery provider that the base preset does not include.
 
 ## v5.0.0-alpha.7 (2026-09-23)
 

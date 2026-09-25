@@ -166,7 +166,7 @@ try {
     ],
   });
 
-  connect(fastify, platform, {
+  await connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
     adminUI: {
       theme: adminUITheme,
