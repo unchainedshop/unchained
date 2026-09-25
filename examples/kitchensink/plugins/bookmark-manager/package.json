@@ -10,7 +10,6 @@
   "devDependencies": {
     "@types/react": "^19.0.0",
     "@unchainedshop/admin-ui": "file:../../../../admin-ui",
-    "@unchainedshop/client": "file:../../../../admin-ui/client",
     "esbuild": "^0.25.0",
     "react": "^19.0.0",
     "tsup": "^8.0.0"

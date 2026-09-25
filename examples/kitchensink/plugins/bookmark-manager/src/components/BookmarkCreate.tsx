@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/router';
 import useBookmarks from '../hooks/useBookmarks';
 import useBookmarkProduct from '../hooks/useBookmarkProduct';
-import { useProducts } from '@unchainedshop/client/product';
+import { useProducts } from '@unchainedshop/admin-ui/modules/product';
 
 const styles = {
   page: 'space-y-6',
