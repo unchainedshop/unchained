@@ -110,7 +110,6 @@ const LayoutContent = ({ children, pageHeader = '', componentName }) => {
     formatDateTime,
   });
 
-  const isAuthenticated = !!currentUser?._id;
   const { shopInfo } = useShopInfo();
   const [hideNav, setHideNav] = useState(true);
   const [narrowNav, setNarrowNav] = useState(false);
@@ -165,6 +164,7 @@ const LayoutContent = ({ children, pageHeader = '', componentName }) => {
         _sortOrder: page.sortOrder as number | undefined,
       });
     });
+
     if (children.length === 0) return [];
 
     const nav = manifest.navigation;
@@ -377,16 +377,6 @@ const LayoutContent = ({ children, pageHeader = '', componentName }) => {
       if (bOrder != null) return 1;
       return 0;
     });
-
-  if (!isAuthenticated) {
-    return (
-      <AuthWrapper>
-        <main className="container mx-auto max-w-7xl flex-1 px-4 py-5 pb-20 sm:px-6 md:px-8">
-          {React.cloneElement(children)}
-        </main>
-      </AuthWrapper>
-    );
-  }
 
   return (
     <AuthWrapper>

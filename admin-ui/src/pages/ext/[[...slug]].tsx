@@ -2,22 +2,25 @@ import { useRouter } from 'next/router';
 import { usePlugins } from '../../modules/plugins/PluginContext';
 import { PluginRuntimeProvider } from '../../modules/plugins/PluginRuntimeContext';
 import PluginErrorBoundary from '../../modules/plugins/PluginErrorBoundary';
-import useCurrentUser from '../../modules/accounts/hooks/useCurrentUser';
-import { getPluginPageRedirect } from '../../modules/Auth/permissionConfig';
+import useAuth from '../../modules/Auth/useAuth';
 import Loading from '@/components/ui/Loading';
 
 const PluginEntityPage = () => {
   const router = useRouter();
   const { slug } = router.query;
   const { manifests, getComponent, loading } = usePlugins();
-  const { currentUser, loading: userLoading } = useCurrentUser();
+  const { hasRole } = useAuth();
 
-  if (loading || userLoading) return <Loading />;
+  if (loading) return <Loading />;
 
   const slugParts = Array.isArray(slug) ? slug : slug ? [slug] : [];
 
   if (slugParts.length === 0) {
-    return <div className="text-center py-16 text-text-muted">No plugin path specified.</div>;
+    return (
+      <div className="text-center py-16 text-text-muted">
+        No plugin path specified.
+      </div>
+    );
   }
 
   const pathStr = slugParts[0];
@@ -25,11 +28,12 @@ const PluginEntityPage = () => {
   const isNew = entityId === 'new';
 
   for (const manifest of manifests) {
-    const entity = manifest.slots.entities?.find((e) => e.path.replace(/^\//, '') === pathStr);
+    const entity = manifest.slots.entities?.find(
+      (e) => e.path.replace(/^\//, '') === pathStr,
+    );
     if (entity) {
-      const redirect = getPluginPageRedirect(currentUser, entity);
-      if (redirect) {
-        router.replace(redirect);
+      if (entity.requiredRole && !hasRole(entity.requiredRole)) {
+        router.replace('/403');
         return <Loading />;
       }
 
@@ -52,7 +56,10 @@ const PluginEntityPage = () => {
         );
 
       return (
-        <PluginErrorBoundary pluginName={manifest.name} componentName={componentName}>
+        <PluginErrorBoundary
+          pluginName={manifest.name}
+          componentName={componentName}
+        >
           <PluginRuntimeProvider
             value={{
               pluginName: manifest.name,
@@ -67,17 +74,21 @@ const PluginEntityPage = () => {
       );
     }
 
-    const page = manifest.slots.pages?.find((p) => p.path.replace(/^\//, '') === pathStr);
+    const page = manifest.slots.pages?.find(
+      (p) => p.path.replace(/^\//, '') === pathStr,
+    );
     if (page) {
-      const redirect = getPluginPageRedirect(currentUser, page);
-      if (redirect) {
-        router.replace(redirect);
+      if (page.requiredRole && !hasRole(page.requiredRole)) {
+        router.replace('/403');
         return <Loading />;
       }
       const Component = getComponent(manifest.name, page.component);
       if (Component)
         return (
-          <PluginErrorBoundary pluginName={manifest.name} componentName={page.component}>
+          <PluginErrorBoundary
+            pluginName={manifest.name}
+            componentName={page.component}
+          >
             <PluginRuntimeProvider
               value={{
                 pluginName: manifest.name,
@@ -94,7 +105,9 @@ const PluginEntityPage = () => {
   }
 
   return (
-    <div className="text-center py-16 text-text-muted">Plugin page &quot;{pathStr}&quot; not found.</div>
+    <div className="text-center py-16 text-text-muted">
+      Plugin page &quot;{pathStr}&quot; not found.
+    </div>
   );
 };
 

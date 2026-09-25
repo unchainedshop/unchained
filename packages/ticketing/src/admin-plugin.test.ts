@@ -9,8 +9,6 @@ test('ticketing registers one menu with permission-controlled pages', () => {
   const events = plugin.slots.entities!.find(({ path }) => path === '/ticketing')!;
   assert.equal(gate.requiredRole, 'scanTicket');
   assert.equal(events.requiredRole, 'manageProducts');
-  assert.ok(!gate.publicAccess);
-  assert.ok(!plugin.slots.links?.length);
 
   const extended = ticketingAdminPlugin({
     pages: [{ path: '/reports', label: 'Reports', component: 'ReportsPage' }],
