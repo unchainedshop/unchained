@@ -1,5 +1,5 @@
 import type { IPlugin } from '@unchainedshop/core';
-import cryptopayModules from './module.ts';
+import { configureCryptopayModule } from './module.ts';
 import { Cryptopay } from './adapter.ts';
 import { cryptopayWebhookHandler } from './api.ts';
 
@@ -19,7 +19,7 @@ export const CryptopayPlugin: IPlugin = {
   adapters: [Cryptopay],
 
   module: ({ db }) => ({
-    cryptopay: cryptopayModules.cryptopay.configure({ db }),
+    cryptopay: configureCryptopayModule({ db }),
   }),
 
   routes: [

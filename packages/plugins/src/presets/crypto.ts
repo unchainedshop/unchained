@@ -18,10 +18,6 @@ import { UpdateECBRatesPlugin } from '../worker/update-ecb-rates/index.ts';
 import { UpdateCoinbaseRatesPlugin } from '../worker/update-coinbase-rates/index.ts';
 import { UpdateTokenOwnershipPlugin } from '../worker/update-token-ownership/index.ts';
 
-// Export empty default for backward compatibility
-// Modules are now provided via plugin registry
-export default {};
-
 // Export registration function
 export function registerCryptoPlugins() {
   // Payment

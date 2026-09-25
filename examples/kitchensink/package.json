@@ -41,7 +41,6 @@
     "@ai-sdk/openai": "^4.0.47",
     "@ai-sdk/openai-compatible": "^3.0.37",
     "@fastify/cookie": "^11.0.2",
-    "@fastify/multipart": "^10.0.0",
     "@fastify/session": "^11.1.0",
     "@modelcontextprotocol/server": "^2.0.0",
     "@scure/bip32": "^2.0.0",

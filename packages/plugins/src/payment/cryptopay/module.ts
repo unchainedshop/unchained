@@ -4,7 +4,7 @@ import {
   CryptopayTransactionsCollection,
 } from './db/CryptopayTransactions.ts';
 
-const configureCryptopayModule = async ({ db }) => {
+export const configureCryptopayModule = async ({ db }) => {
   const CryptoTransactions = await CryptopayTransactionsCollection(db);
 
   const getWalletAddress = async (
@@ -131,12 +131,6 @@ const configureCryptopayModule = async ({ db }) => {
     getNextDerivationNumber,
     getWalletAddressesByOrderPaymentId,
   };
-};
-
-export default {
-  cryptopay: {
-    configure: configureCryptopayModule,
-  },
 };
 
 export interface CryptopayModule {

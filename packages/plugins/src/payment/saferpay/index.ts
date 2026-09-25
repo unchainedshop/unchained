@@ -1,6 +1,6 @@
 import type { IPlugin } from '@unchainedshop/core';
 import { WorldlineSaferpay } from './adapter.ts';
-import saferpayModules from './module.ts';
+import { configureSaferpayTransactionsModule } from './module.ts';
 import { saferpayWebhookHandler } from './webhook.ts';
 
 const { SAFERPAY_WEBHOOK_PATH = '/payment/saferpay/webhook' } = process.env;
@@ -14,7 +14,7 @@ export const SaferpayPlugin: IPlugin = {
   adapters: [WorldlineSaferpay],
 
   module: ({ db }) => ({
-    saferpayTransactions: saferpayModules.saferpayTransactions.configure({ db }),
+    saferpayTransactions: configureSaferpayTransactionsModule({ db }),
   }),
 
   routes: [

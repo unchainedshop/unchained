@@ -43,12 +43,6 @@ export const configureGridFSFileUploadModule = ({ db }) => {
   };
 };
 
-export default {
-  gridfsFileUploads: {
-    configure: configureGridFSFileUploadModule,
-  },
-};
-
 export interface GridFSFileUploadsModule {
   gridfsFileUploads: ReturnType<typeof configureGridFSFileUploadModule>;
 }

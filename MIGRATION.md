@@ -192,7 +192,7 @@ Note: import plugin subpaths WITHOUT a file extension. The package `exports` map
 
 #### Plugin Preset Default Exports Removed
 
-Default exports from the base and all presets have been removed. The crypto preset retains an empty legacy default export, which does not register plugins. Use named registration functions for every preset:
+Default exports from the presets have been removed. Use the named registration functions:
 
 ```typescript
 // ❌ REMOVED
