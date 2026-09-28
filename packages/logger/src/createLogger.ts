@@ -3,6 +3,31 @@ import { safeStringify } from './safe-stringify.ts';
 import { LogLevel } from './logger.types.ts';
 
 /**
+ * A function returning an object of extra fields to attach to every JSON log
+ * line. Called synchronously on each log invocation, so keep it cheap.
+ * Examples: pulling `trace_id`/`span_id` from an OTel span context, attaching
+ * a request ID from AsyncLocalStorage, etc.
+ */
+export type LogContextProvider = () => Record<string, unknown> | undefined | null;
+
+let currentContextProvider: LogContextProvider | null = null;
+
+/**
+ * Register (or clear, by passing null) a single context provider. Subsequent
+ * log calls will merge the provider's output into the JSON payload, after the
+ * standard `timestamp`/`level`/`name`/`message` fields and before any keys
+ * passed via `args[0]` (so callers can still override context per-call).
+ *
+ * Provider errors are swallowed — a thrown provider never breaks logging.
+ */
+export const setLogContextProvider = (provider: LogContextProvider | null): void => {
+  currentContextProvider = provider;
+};
+
+const RESERVED_KEYS = new Set(['timestamp', 'level', 'name', 'message']);
+const UNSAFE_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+
+/**
  * Performance optimization: Cache compiled regex patterns to avoid recreating them
  * on every DEBUG pattern match. This provides ~190% improvement in pattern matching.
  */
@@ -153,6 +178,9 @@ const formatTimestamp = (): string => {
 export const resetLoggerInitialization = (): void => {
   regexCache.clear();
   debugPatternCache.clear();
+  // Also clear the context provider so test runs don't leak state across
+  // suites. Production code never calls this; it's intended for tests.
+  currentContextProvider = null;
 };
 
 /**
@@ -207,11 +235,30 @@ export const createLogger = (moduleName: string): Logger => {
         message: typeof message === 'string' ? message : message,
       };
 
-      // Merge additional args if they're objects, guarding against prototype pollution
+      // Merge context provider fields, skipping reserved/unsafe keys and
+      // anything already on the log object (provider can't override standard
+      // fields).
+      if (currentContextProvider) {
+        let context: Record<string, unknown> | undefined | null;
+        try {
+          context = currentContextProvider();
+        } catch {
+          context = undefined;
+        }
+        if (context && typeof context === 'object') {
+          for (const key in context) {
+            if (UNSAFE_KEYS.has(key) || RESERVED_KEYS.has(key)) continue;
+            if (key in logObject) continue;
+            logObject[key] = (context as Record<string, unknown>)[key];
+          }
+        }
+      }
+
+      // Per-call args[0] can still override context fields.
       if (args.length > 0 && typeof args[0] === 'object' && args[0] !== null) {
         for (const key in args[0]) {
           // Skip prototype pollution vectors
-          if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+          if (UNSAFE_KEYS.has(key)) continue;
           logObject[key] = args[0][key];
         }
       }

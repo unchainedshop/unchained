@@ -1,6 +1,10 @@
 import { describe, it, beforeEach, afterEach, mock } from 'node:test';
 import assert from 'node:assert';
-import { createLogger, resetLoggerInitialization } from '../src/createLogger.ts';
+import {
+  createLogger,
+  resetLoggerInitialization,
+  setLogContextProvider,
+} from '../src/createLogger.ts';
 
 describe('createLogger', () => {
   const originalEnv = process.env;
@@ -794,6 +798,98 @@ describe('createLogger', () => {
       assert(parsed.emoji === '🚀');
       assert(parsed.chinese === '你好');
       assert(parsed.arabic === 'مرحبا');
+    });
+  });
+
+  describe('Log context provider', () => {
+    const lastJsonLine = () => {
+      for (let i = consoleOutput.length - 1; i >= 0; i -= 1) {
+        const line = consoleOutput[i];
+        if (line && line.startsWith('{')) return JSON.parse(line);
+      }
+      return null;
+    };
+
+    it('attaches provider fields to JSON output', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      setLogContextProvider(() => ({ trace_id: 'abc123', span_id: 'def456' }));
+      const logger = createLogger('test-module');
+
+      consoleOutput = [];
+      logger.info('hello');
+
+      const parsed = lastJsonLine();
+      assert(parsed, 'expected a JSON log line');
+      assert.equal(parsed.trace_id, 'abc123');
+      assert.equal(parsed.span_id, 'def456');
+      assert.equal(parsed.message, 'hello');
+    });
+
+    it('does not let the provider override reserved fields', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      setLogContextProvider(() => ({ level: 'TRACE', name: 'evil', timestamp: 'hax' }));
+      const logger = createLogger('real-name');
+
+      consoleOutput = [];
+      logger.info('hello');
+
+      const parsed = lastJsonLine();
+      assert.equal(parsed.level, 'INFO');
+      assert.equal(parsed.name, 'real-name');
+      assert.notEqual(parsed.timestamp, 'hax');
+    });
+
+    it('lets per-call args[0] override context fields', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      setLogContextProvider(() => ({ trace_id: 'from-provider' }));
+      const logger = createLogger('test-module');
+
+      consoleOutput = [];
+      logger.info('hello', { trace_id: 'override' });
+
+      const parsed = lastJsonLine();
+      assert.equal(parsed.trace_id, 'override');
+    });
+
+    it('swallows errors thrown by the provider', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      setLogContextProvider(() => {
+        throw new Error('boom');
+      });
+      const logger = createLogger('test-module');
+
+      consoleOutput = [];
+      logger.info('hello');
+
+      const parsed = lastJsonLine();
+      assert(parsed, 'expected a JSON log line even when provider throws');
+      assert.equal(parsed.message, 'hello');
+      assert.equal(parsed.trace_id, undefined);
+    });
+
+    it('clears the registration when set to null', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      setLogContextProvider(() => ({ trace_id: 'abc' }));
+      setLogContextProvider(null);
+      const logger = createLogger('test-module');
+
+      consoleOutput = [];
+      logger.info('hello');
+
+      const parsed = lastJsonLine();
+      assert.equal(parsed.trace_id, undefined);
+    });
+
+    it('does not affect the human-readable format', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'unchained';
+      setLogContextProvider(() => ({ trace_id: 'should-not-appear' }));
+      const logger = createLogger('test-module');
+
+      consoleOutput = [];
+      logger.info('hello');
+
+      const combined = consoleOutput.join('\n');
+      assert(!combined.includes('should-not-appear'), 'pretty format must not embed provider fields');
     });
   });
 });
