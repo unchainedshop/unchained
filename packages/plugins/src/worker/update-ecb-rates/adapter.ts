@@ -1,35 +1,26 @@
 import { type IWorkerAdapter, WorkerAdapter, WorkerDirector, schedule } from '@unchainedshop/core';
 import type { ProductPriceRate } from '@unchainedshop/core-products';
-import { createLogger } from '@unchainedshop/logger';
 
-const logger = createLogger('unchained:worker:update-ecb-rates');
-
-let xml2json;
-try {
-  const module = await import('xml-js');
-  xml2json = module.xml2json;
-} catch {
-  logger.warn(`optional peer npm package 'xml-js' not installed, skipped ECB rate updates`);
+interface FrankfurterRate {
+  quote: string;
+  rate: number;
 }
 
-const getExchangeRates = async (): Promise<{ currency: string; rate: string }[]> => {
-  return fetch(`https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml`, {
-    method: 'GET',
-  })
-    .then((res) => res.text())
-    .then((text) => JSON.parse(xml2json(text)))
-    .then((json) =>
-      json.elements?.[0]?.elements
-        .filter((e) => e.name.toLowerCase() === 'cube')[0]
-        ?.elements[0]?.elements.map((element) => element.attributes),
-    );
+const baseCurrency = 'EUR';
+
+// ECB euro reference rates as JSON, served by https://frankfurter.dev
+const getExchangeRates = async (): Promise<FrankfurterRate[]> => {
+  const res = await fetch(`https://api.frankfurter.dev/v2/rates?base=${baseCurrency}&providers=ecb`);
+  if (!res.ok) throw new Error(`Frankfurter responded with HTTP ${res.status}`);
+  const rates = (await res.json()) as FrankfurterRate[];
+  // Frankfurter answers an unknown provider with an empty list instead of an error
+  if (!rates?.length) throw new Error('Frankfurter returned no ECB rates');
+  return rates;
 };
 
 // https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html
 // CET = UTC + 1
 const everyDayAtFour = schedule.parse.cron('0 15 * * *');
-
-const baseCurrency = 'EUR';
 
 export const UpdateECBRates: IWorkerAdapter<any, any> = {
   ...WorkerAdapter,
@@ -42,21 +33,7 @@ export const UpdateECBRates: IWorkerAdapter<any, any> = {
   doWork: async (input, unchainedAPI) => {
     const { modules } = unchainedAPI;
 
-    if (!xml2json) {
-      return {
-        success: false,
-        error: {
-          name: 'XML2JSON_NOT_INSTALLED',
-          message: 'npm dependency xml2json is not installed, please install it to use this worker',
-        },
-      };
-    }
-
     try {
-      const data = await getExchangeRates();
-      const timestamp = new Date();
-      const expiresAt = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-
       const currencies = await modules.currencies.findCurrencies({ includeInactive: true });
       const currencyCodes = currencies.map((currency) => currency.isoCode);
 
@@ -69,12 +46,16 @@ export const UpdateECBRates: IWorkerAdapter<any, any> = {
           },
         };
 
+      const data = await getExchangeRates();
+      const timestamp = new Date();
+      const expiresAt = new Date(timestamp.getTime() + 24 * 60 * 60 * 1000);
+
       const rates: ProductPriceRate[] = data
         .map((d) => {
           return {
             baseCurrency,
-            quoteCurrency: d.currency,
-            rate: parseFloat(d.rate),
+            quoteCurrency: d.quote,
+            rate: d.rate,
             timestamp,
             expiresAt,
           };
@@ -91,12 +72,12 @@ export const UpdateECBRates: IWorkerAdapter<any, any> = {
           ratesUpdated: rates.length,
         },
       };
-    } catch {
+    } catch (err) {
       return {
         success: false,
         error: {
           name: 'UPDATE_ECB_RATES_FAILED',
-          message: 'Updating ECB Rates failed',
+          message: `Updating ECB Rates failed: ${err.message}`,
         },
       };
     }
@@ -106,11 +87,9 @@ export const UpdateECBRates: IWorkerAdapter<any, any> = {
 export default UpdateECBRates;
 
 export const configureUpdateECBRatesAutoscheduling = () => {
-  if (xml2json) {
-    WorkerDirector.configureAutoscheduling({
-      type: UpdateECBRates.type,
-      schedule: everyDayAtFour,
-      retries: 5,
-    });
-  }
+  WorkerDirector.configureAutoscheduling({
+    type: UpdateECBRates.type,
+    schedule: everyDayAtFour,
+    retries: 5,
+  });
 };

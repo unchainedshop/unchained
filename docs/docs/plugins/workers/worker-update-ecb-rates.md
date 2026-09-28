@@ -7,7 +7,7 @@ description: Automatically update currency exchange rates from European Central 
 
 # ECB Exchange Rate Worker
 
-Automatically fetches and updates EUR-based currency exchange rates from the European Central Bank. Requires the optional `xml-js` package (`npm install xml-js`).
+Automatically fetches and updates EUR-based currency exchange rates from the European Central Bank, retrieved as JSON through the [Frankfurter API](https://frankfurter.dev).
 
 :::info Included in Crypto Preset
 Registered automatically by `registerCryptoPlugins()` / `registerAllPlugins()`.
@@ -26,12 +26,14 @@ pluginRegistry.register(UpdateECBRatesPlugin);
 
 The ECB publishes daily reference exchange rates for major currencies against EUR. This worker:
 
-- Fetches the latest rates from the ECB XML feed
+- Fetches the latest ECB reference rates from Frankfurter (`https://api.frankfurter.dev/v2/rates?base=EUR&providers=ecb`)
 - Updates product price rates in the database (rates expire after 24 hours)
+
+The worker needs outbound HTTPS access to `api.frankfurter.dev`.
 
 ## Auto-Scheduling
 
-During plugin initialization, this worker schedules itself to run daily at 15:00 in the server's local timezone (cron `0 15 * * *`), provided `xml-js` is installed. Set the server's `TZ` and schedule to match when you want to fetch rates.
+During plugin initialization, this worker schedules itself to run daily at 15:00 in the server's local timezone (cron `0 15 * * *`). Set the server's `TZ` and schedule to match when you want to fetch rates.
 
 ## Manual Trigger
 
@@ -63,7 +65,9 @@ Only currencies that exist in your Unchained system (active or inactive) are upd
 }
 ```
 
-If EUR is not configured, the result is `{ "ratesUpdated": 0, "info": "EUR not enabled" }`.
+If EUR is not configured, the result is `{ "ratesUpdated": 0, "info": "EUR not enabled" }` and no request is made.
+
+If Frankfurter responds with an HTTP error or returns no rates, the work fails with `UPDATE_ECB_RATES_FAILED` (the message names the cause) and is retried.
 
 ## Adapter Details
 

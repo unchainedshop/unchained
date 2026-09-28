@@ -77,8 +77,7 @@
     "minio": "8.x",
     "nodemailer": ">= 6.9 < 11",
     "stripe": ">= 19 < 23",
-    "web-push": ">= 3.6 <4",
-    "xml-js": ">= 1.6 < 2"
+    "web-push": ">= 3.6 <4"
   },
   "peerDependenciesMeta": {
     "@aws-sdk/client-eventbridge": {
@@ -110,9 +109,6 @@
     },
     "web-push": {
       "optional": true
-    },
-    "xml-js": {
-      "optional": true
     }
   },
   "devDependencies": {
@@ -126,7 +122,6 @@
     "nodemailer": "^10.0.0",
     "stripe": "^22.5.0",
     "typescript": "^6.0.3",
-    "web-push": "^3.6.7",
-    "xml-js": "^1.6.11"
+    "web-push": "^3.6.7"
   }
 }
