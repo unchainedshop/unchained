@@ -57,7 +57,7 @@ test('ticketing schema is optional and every plugin operation validates when ins
   assert.ok(operations >= 7);
 });
 
-test('GraphQL lets scanner staff list attendees and redeem without exposing user accounts or access keys', async () => {
+test('GraphQL lets scanner staff list attendees and redeem without exposing private user data or access keys', async () => {
   registerEvents(['ACL_DENIED']);
   const permissions = roles.configureRoles({
     additionalActions: ticketingActions,
@@ -95,7 +95,6 @@ test('GraphQL lets scanner staff list attendees and redeem without exposing user
           return token;
         },
       },
-      users: { primaryEmail: () => undefined },
       payment: {
         paymentCredentials: {
           findPaymentCredentials: async () => [{ _id: 'card', token: { alias: 'stored-card' } }],
@@ -105,19 +104,11 @@ test('GraphQL lets scanner staff list attendees and redeem without exposing user
     loaders: { userLoader: { load: async () => buyer }, productLoader: { load: async () => event } },
     services: { warehousing: { isTokenInvalidateable: async () => !token.invalidatedDate } },
   };
-  const query =
-    '{ ticketEvents { _id ... on TokenizedProduct { tokens { _id attendee { name email phone } } } } }';
+  const query = '{ ticketEvents { _id ... on TokenizedProduct { tokens { _id user { _id name } } } } }';
   const list = await graphql({ schema, source: query, contextValue: context });
   assert.equal(list.errors, undefined);
-  assert.deepEqual(
-    { ...(list.data as any).ticketEvents[0].tokens[0].attendee },
-    {
-      name: 'Buyer',
-      email: 'buyer@example.com',
-      phone: '+41790000000',
-    },
-  );
-  // Gate staff get the attendee contact, not the ticket holder's account.
+  assert.equal((list.data as any).ticketEvents[0].tokens[0].user.name, 'Buyer');
+  // Gate staff see the ticket holder's public profile (viewUserPublicInfos), nothing private.
   for (const field of [
     'profile { displayName }',
     'primaryEmail { address }',

@@ -64,13 +64,13 @@ Define the three renderer callbacks before running this example, and configure `
 ### Admin UI and gate permissions
 
 The plugin groups event management and gate control under **Ticketing**. Users with
-`manageProducts` see **Events**, including drafts and attendee details; signed-in users with the
+`manageProducts` see **Events**, including drafts and their attendees; signed-in users with the
 `scanTicket` action see **Gate Control**. Assign the `ticketing` role registered above to gate
 operators, or grant `scanTicket` in a custom role. Administrators have access automatically. Gate
 operators can read active events and their attendees, and redeem eligible tickets through the
-`scanTicket` mutation. Attendee lists expose only `Token.attendee` (name, e-mail and phone, guarded
-by the `viewAttendees` action), never the ticket holder's user account. This grants no token
-export, cancellation, or reimbursement rights.
+`scanTicket` mutation. An attendee is the ticket's `Token.user`, of which only the public profile
+(`name`, `avatar`, guarded by `viewUserPublicInfos`) is visible: ticketing grants no
+`viewUserPrivateInfos`. This grants no token export, cancellation, or reimbursement rights.
 Cancelling tickets or whole events requires `cancelTicket`, granted to administrators by default.
 
 Gate access uses the regular account session. Pass codes, gate cookies, and separate gate login

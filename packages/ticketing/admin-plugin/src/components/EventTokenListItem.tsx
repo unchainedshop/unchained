@@ -21,15 +21,9 @@ const EventTokenListItem = ({ token, onCancelTicket, onInvalidateTicket }) => {
             className="flex items-center text-sm text-text-primary hover:underline"
           >
             <MediaAvatar file={token.user?.avatar} className="mr-2" />
-            <span>{token.attendee?.name || token.user._id}</span>
+            <span>{token.user.name}</span>
           </Link>
         )}
-      </Table.Cell>
-      <Table.Cell>
-        <span className="text-sm text-text-secondary">{token.attendee?.email || '-'}</span>
-      </Table.Cell>
-      <Table.Cell>
-        <span className="text-sm text-text-secondary">{token.attendee?.phone || '-'}</span>
       </Table.Cell>
       <Table.Cell>
         {token.invalidatedDate ? (

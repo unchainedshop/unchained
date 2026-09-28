@@ -85,12 +85,6 @@ const GateAttendeeList = ({ event, onRefetch }) => {
               </Table.Cell>
               <Table.Cell>
                 {formatMessage({
-                  id: 'email',
-                  defaultMessage: 'E-Mail',
-                })}
-              </Table.Cell>
-              <Table.Cell>
-                {formatMessage({
                   id: 'status',
                   defaultMessage: 'Status',
                 })}
@@ -110,10 +104,7 @@ const GateAttendeeList = ({ event, onRefetch }) => {
                   </span>
                 </Table.Cell>
                 <Table.Cell>
-                  <span className="text-sm text-text-primary">{token.attendee?.name || '-'}</span>
-                </Table.Cell>
-                <Table.Cell>
-                  <span className="text-sm text-text-secondary">{token.attendee?.email || '-'}</span>
+                  <span className="text-sm text-text-primary">{token.user?.name || '-'}</span>
                 </Table.Cell>
                 <Table.Cell>
                   {token.invalidatedDate ? (

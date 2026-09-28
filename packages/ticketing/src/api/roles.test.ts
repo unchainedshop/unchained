@@ -52,7 +52,7 @@ const allowed = (context: any, action: string, args: any[] = []) =>
 const canViewPrivateInfos = (context: any, userId: string) =>
   acl.checkAction(context, 'viewUserPrivateInfos', [{ _id: userId }, {}]);
 
-test('scanners see active events and attendee contacts but no user accounts, and cannot export, cancel or reimburse', async () => {
+test('scanners see active events and ticket holders but no private user data, and cannot export, cancel or reimburse', async () => {
   const context = createContext({ _id: 'operator', roles: ['ticketing'] });
   const advertised = await listPermissions(['ticketing', '__all__', '__loggedIn__'], permissions.roles);
   assert.ok(advertised.includes('scanTicket'), 'User.allowedActions must expose the scanner menu');
@@ -64,8 +64,6 @@ test('scanners see active events and attendee contacts but no user accounts, and
   assert.equal(await allowed(context, 'viewTokens', [draft, {}]), false);
   assert.equal(await allowed(context, 'viewTokens', [{ ...event, type: 'SIMPLE_PRODUCT' }, {}]), false);
   assert.equal(await allowed(context, 'viewTokens'), false);
-  assert.equal(await allowed(context, 'viewAttendees', [event, {}]), true);
-  assert.equal(await allowed(context, 'viewAttendees', [draft, {}]), false);
   for (const holder of ['buyer', 'early-bird', 'unrelated']) {
     await assert.rejects(canViewPrivateInfos(context, holder), /permission/i);
   }
@@ -96,7 +94,6 @@ test('product managers browse drafts and attendees but need cancelTicket to canc
   assert.equal(await allowed(context, 'viewTokens', [event, {}]), true);
   assert.equal(await allowed(context, 'viewTokens', [draft, {}]), true);
   assert.equal(await allowed(context, 'viewTokens', [{ ...draft, type: 'SIMPLE_PRODUCT' }, {}]), false);
-  assert.equal(await allowed(context, 'viewAttendees', [draft, {}]), true);
   for (const holder of ['buyer', 'early-bird', 'unrelated']) {
     await assert.rejects(canViewPrivateInfos(context, holder), /permission/i);
   }
@@ -120,7 +117,6 @@ test('anonymous requests, customers and guests are denied gate access', async ()
     assert.equal(await allowed(denied, 'scanTicket'), false);
     assert.equal(await allowed(denied, 'gateControl'), false);
     assert.equal(await allowed(denied, 'viewTokens', [event, {}]), false);
-    assert.equal(await allowed(denied, 'viewAttendees', [event, {}]), false);
     await assert.rejects(canViewPrivateInfos(denied, 'buyer'), /permission/i);
     await assert.rejects(
       ticketingResolvers.Query.ticketEvents(undefined, {}, denied as any),

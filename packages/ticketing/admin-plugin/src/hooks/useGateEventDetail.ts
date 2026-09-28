@@ -22,9 +22,9 @@ const GateEventDetailQuery = gql`
           isCanceled
           invalidatedDate
           isInvalidateable
-          attendee {
+          user {
+            _id
             name
-            email
           }
         }
       }

@@ -21,8 +21,6 @@ const EventTokenList = ({ tokens, onCancelTicket, onInvalidateTicket }) => {
       <Table.Row header>
         <Table.Cell>{formatMessage({ id: 'ticket_number', defaultMessage: 'Ticket #' })}</Table.Cell>
         <Table.Cell>{formatMessage({ id: 'attendee', defaultMessage: 'Attendee' })}</Table.Cell>
-        <Table.Cell>{formatMessage({ id: 'email', defaultMessage: 'E-Mail' })}</Table.Cell>
-        <Table.Cell>{formatMessage({ id: 'phone', defaultMessage: 'Phone' })}</Table.Cell>
         <Table.Cell>{formatMessage({ id: 'redeemed', defaultMessage: 'Redeemed' })}</Table.Cell>
         <Table.Cell>{formatMessage({ id: 'actions', defaultMessage: 'Actions' })}</Table.Cell>
       </Table.Row>

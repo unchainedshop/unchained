@@ -2,7 +2,7 @@ import type { Context } from '@unchainedshop/api';
 import { roles } from '@unchainedshop/api';
 import { ProductStatus, ProductType, type Product } from '@unchainedshop/core-products';
 
-export const ticketingActions = ['scanTicket', 'gateControl', 'cancelTicket', 'viewAttendees'];
+export const ticketingActions = ['scanTicket', 'gateControl', 'cancelTicket'];
 
 export interface TicketingAccess {
   /** Product managers may work with draft events, gate operators only with active ones. */
@@ -20,7 +20,7 @@ export function isActiveTicketEvent(product?: Product | null): product is Produc
 const isAuthenticated = (context: Context | null) =>
   Boolean(context?.userId && context.user && !context.user.guest);
 
-// Role rules run once per resolved field and attendee lists resolve one per ticket,
+// Role rules run once per resolved field and event lists check viewTokens for every event,
 // so the viewer's access is derived once per request.
 const accessByRequest = new WeakMap<Context, Promise<TicketingAccess | null>>();
 
@@ -42,12 +42,6 @@ export function resolveTicketingAccess(context: Context | null): Promise<Ticketi
   return accessByRequest.get(context!)!;
 }
 
-async function canWorkWithEvent(product: Product | undefined, context: Context) {
-  if (!isTicketEvent(product)) return false;
-  const access = await resolveTicketingAccess(context);
-  return Boolean(access && (access.includeDrafts || isActiveTicketEvent(product)));
-}
-
 export function configureTicketingRoles(role: any, actions: Record<string, string>) {
   const { allRoles } = roles;
 
@@ -62,11 +56,14 @@ export function configureTicketingRoles(role: any, actions: Record<string, strin
   allRoles.ALL.allow(actions.gateControl, async (_root: never, _params: never, context: Context) =>
     Boolean(await resolveTicketingAccess(context)),
   );
-  // Gate staff and event managers see an event's tickets and their Token.attendee contact
-  // details, never the ticket holder's user account (viewUserPrivateInfos stays untouched).
-  for (const action of [actions.viewTokens, actions.viewAttendees]) {
-    allRoles.ALL.allow(action, (product: Product | undefined, _params: never, context: Context) =>
-      canWorkWithEvent(product, context),
-    );
-  }
+  // Gate staff and event managers see an event's tickets. Token.user then only exposes the
+  // ticket holder's public profile (viewUserPublicInfos); private fields stay admin-only.
+  allRoles.ALL.allow(
+    actions.viewTokens,
+    async (product: Product | undefined, _params: never, context: Context) => {
+      if (!isTicketEvent(product)) return false;
+      const access = await resolveTicketingAccess(context);
+      return Boolean(access && (access.includeDrafts || isActiveTicketEvent(product)));
+    },
+  );
 }

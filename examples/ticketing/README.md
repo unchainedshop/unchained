@@ -71,10 +71,9 @@ Server starts at http://localhost:4010 with:
 Gate operators sign in with a regular user account. Assign the `ticketing` role configured in
 `boot.ts`, or grant the `scanTicket` action to a custom role. **Ticketing → Gate Control** then
 appears in the Admin UI, with access to active events and their attendees. Attendee lists show
-each ticket holder's name, e-mail and phone (`Token.attendee`, `viewAttendees` action) but never
-their user account. Administrators have access automatically. Guests and ordinary customers
-cannot use gate control. Event pass codes
-and gate cookies are no longer supported.
+each ticket holder's public profile (`Token.user` name and avatar); private user data stays
+behind `viewUserPrivateInfos`. Administrators have access automatically. Guests and ordinary
+customers cannot use gate control. Event pass codes and gate cookies are no longer supported.
 
 Users with `manageProducts` see **Ticketing → Events**, including draft events and their
 attendees. Cancelling a ticket or a whole event, with or without reimbursement credit, requires
