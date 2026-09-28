@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/admin-ui",
   "license": "EUPL-1.2",
-  "version": "4.8.27",
+  "version": "4.8.28",
   "description": "Unchained Commerce Admin UI Template",
   "main": "./out/index.html",
   "files": [
@@ -71,7 +71,7 @@
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-cypress": "^7.0.0",
-    "eslint-plugin-formatjs": "^6.5.0",
+    "eslint-plugin-formatjs": "^8.1.0",
     "eslint-plugin-prettier": "^5.5.4",
     "formik": "^2.4.9",
     "globals": "^17.0.0",
