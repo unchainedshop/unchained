@@ -20,14 +20,17 @@ import {
   SimplePaymentProvider,
 } from './seeds/payments.js';
 import { PickupDeliveryProvider, SimpleDeliveryProvider } from './seeds/deliveries.js';
+import { SimpleWarehousingProvider } from './seeds/warehousings.js';
+import { SimpleProduct } from './seeds/products.js';
 
+let db;
 let graphqlFetchAsAdmin;
 let graphqlFetchAsUser;
 let graphqlFetchAsAnonymous;
 
 test.describe('Cart: Delivery and Payment Updates', () => {
   test.before(async () => {
-    await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetchAsAdmin = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymous = createAnonymousGraphqlFetch();
@@ -962,5 +965,82 @@ test.describe('Cart: Delivery and Payment Updates', () => {
       assert.ok(errors);
       assert.strictEqual(errors[0].extensions?.code, 'OrderPaymentTypeError');
     });
+  });
+
+  test.describe('Providers without a registered adapter', () => {
+    const STALE_PROVIDER_ID = 'provider-without-adapter';
+    const staleProviders = [
+      { collection: 'delivery-providers', type: 'SHIPPING' },
+      { collection: 'payment-providers', type: 'INVOICE' },
+      { collection: 'warehousing-providers', type: 'PHYSICAL' },
+    ];
+
+    for (const { collection, type } of staleProviders) {
+      test(`a stale row in ${collection} does not break the cart`, async () => {
+        await db.collection(collection).insertOne({
+          _id: STALE_PROVIDER_ID,
+          adapterKey: 'shop.unchained.removed-plugin',
+          type,
+          configuration: [],
+          created: new Date(),
+        });
+        try {
+          const created = await graphqlFetchAsUser({
+            query: /* GraphQL */ `
+              mutation CreateCart($orderNumber: String!) {
+                createCart(orderNumber: $orderNumber) {
+                  _id
+                }
+              }
+            `,
+            variables: { orderNumber: `stale-${collection}` },
+          });
+          assert.deepStrictEqual(created.errors, undefined);
+
+          const added = await graphqlFetchAsUser({
+            query: /* GraphQL */ `
+              mutation AddCartProduct($orderId: ID!, $productId: ID!) {
+                addCartProduct(orderId: $orderId, productId: $productId) {
+                  _id
+                  order {
+                    supportedDeliveryProviders {
+                      _id
+                    }
+                    supportedPaymentProviders {
+                      _id
+                    }
+                    items {
+                      dispatches {
+                        warehousingProvider {
+                          _id
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `,
+            variables: { orderId: created.data.createCart._id, productId: SimpleProduct._id },
+          });
+          assert.deepStrictEqual(added.errors, undefined);
+
+          const { supportedDeliveryProviders, supportedPaymentProviders, items } =
+            added.data.addCartProduct.order;
+          const deliveryProviderIds = supportedDeliveryProviders.map(({ _id }) => _id);
+          const paymentProviderIds = supportedPaymentProviders.map(({ _id }) => _id);
+          const warehousingProviderIds = items.flatMap(({ dispatches }) =>
+            dispatches.map(({ warehousingProvider }) => warehousingProvider._id),
+          );
+          assert.ok(deliveryProviderIds.includes(SimpleDeliveryProvider._id));
+          assert.ok(paymentProviderIds.includes(SimplePaymentProvider._id));
+          assert.ok(warehousingProviderIds.includes(SimpleWarehousingProvider._id));
+          assert.ok(!deliveryProviderIds.includes(STALE_PROVIDER_ID));
+          assert.ok(!paymentProviderIds.includes(STALE_PROVIDER_ID));
+          assert.ok(!warehousingProviderIds.includes(STALE_PROVIDER_ID));
+        } finally {
+          await db.collection(collection).deleteOne({ _id: STALE_PROVIDER_ID });
+        }
+      });
+    }
   });
 });
