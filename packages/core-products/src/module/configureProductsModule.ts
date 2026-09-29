@@ -34,6 +34,7 @@ export interface ProductQuery {
   slugs?: string[];
   tags?: string[];
   skus?: string[];
+  type?: ProductType;
   bundleItemProductIds?: string[];
   proxyAssignmentProductIds?: string[];
 }
@@ -81,6 +82,7 @@ export const buildFindSelector = ({
   productSelector,
   queryString,
   skus,
+  type,
   bundleItemProductIds,
   proxyAssignmentProductIds,
 }: ProductQuery) => {
@@ -88,6 +90,10 @@ export const buildFindSelector = ({
 
   if (productIds && !selector._id) {
     selector._id = { $in: productIds };
+  }
+
+  if (type && !selector.type) {
+    selector.type = type;
   }
 
   if (slugs && !selector.slugs) {
