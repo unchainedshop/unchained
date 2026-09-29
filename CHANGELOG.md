@@ -13,6 +13,11 @@
 - **Strict equal filter key:** the filter plugin's key had a typo (`shop.unchained.filters.strict-qual`) and is now `shop.unchained.filters.strict-equal`; the export is renamed from `StrictQualFilterPlugin` to `StrictEqualFilterPlugin`. Filter adapter keys are not stored, so no data changes.
 - **ECB rates come from Frankfurter:** the `UPDATE_ECB_RATES` worker fetches the ECB reference rates as JSON from the [Frankfurter API](https://frankfurter.dev) instead of parsing the ECB XML feed, so the optional `xml-js` peer of `@unchainedshop/plugins` is dropped (also from the kitchensink examples). Deployments that restrict outbound traffic need to allow `api.frankfurter.dev` instead of `www.ecb.europa.eu`. Registering the plugin now always schedules the daily run (before, it was skipped without `xml-js`); the run makes no request when no `EUR` currency exists, and a failed run names the cause in its error message.
 
+### Improvements
+
+- **Filter products by type:** `Query.products` and `Query.productsCount` accept an optional `type: ProductType` argument, and `ProductQuery` a `type` filter (e.g. to list tokenized products).
+- **`viewTokens` rules see the product:** `TokenizedProduct.tokens` and `tokensCount` pass the product to the `viewTokens` check, like the other type resolvers pass their root object, so custom roles can grant token visibility per product.
+
 ### Fixed
 
 - **Express plugin routes send their response:** routes mounted from the plugin registry (payment webhooks, file uploads, bulk import, ERC metadata, back-channel logout) ran their handler but never wrote the response on Express, so requests hung until they timed out. Fastify was not affected.
@@ -36,6 +41,9 @@
 - **Admin UI roles editor:** ticking a role replaced the selected roles with a boolean and crashed the form, so roles could not be changed. The multi-select `ChoicesField` now keeps an array.
 - **Admin UI token invalidation** asked to confirm deleting a payment provider; it now asks to invalidate the token.
 - **Admin UI lint** passes again: generated GraphQL types and the SDK shim stubs are no longer linted.
+- **ETH minter stock and serial numbers:** issued tokens were looked up by `contractAddress: contractStandard`, which never matched, so tokenized products never sold out and every ERC721 order numbered its tokens from 1 again. Tokens are now counted per product (and token id for ERC1155).
+- **ERC metadata localization:** the `localization.uri` of the ETH minter now contains the `{locale}` placeholder ERC-1155 wallets substitute, instead of the locale of the request.
+- **Invalidating an invalidated token** answers `TokenWrongStatusError` instead of an internal error, also when two requests race.
 
 ## v5.0.0-alpha.7 (2026-09-23)
 
