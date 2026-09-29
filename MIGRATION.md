@@ -373,6 +373,203 @@ setEmitAdapter(RedisEventEmitter());
 
 The Node.js in-memory emitter is still wired automatically by `registerBasePlugins()`. `EmitAdapter` also gained an optional `shutdown()` (the redis/eventbridge adapters implement it to close connections; `startPlatform` calls it on graceful shutdown).
 
+### Server wiring: `connect()` and plugin routes
+
+`connect()` is async and no longer takes `initPluginMiddlewares`. HTTP routes of registered plugins (payment webhooks, file uploads, the ERC metadata route, ticketing) are mounted by `connect()` itself, before the Admin UI. The framework route presets (`presets/base-fastify.js`, `presets/all-express.js`, …) and the per-plugin `handler-express` / `handler-fastify` files are gone.
+
+```ts
+// ❌ v4
+connect(fastify, platform, {
+  adminUI: true,
+  initPluginMiddlewares: (app) => {
+    connectBasePluginsToFastify(app);
+    connectTicketingToFastify(app);
+  },
+});
+fastify.route({ url: '/payment/payrexx', method: 'POST', handler: payrexxHandler });
+
+// ✅ v5
+registerBasePlugins(); // or pluginRegistry.register(PayrexxPlugin), … before startPlatform
+const platform = await startPlatform({});
+await connect(fastify, platform, { adminUI: true });
+```
+
+Remove routes you mounted by hand for built-in plugins (they would be registered twice). On Express, `connect()` mounts the Admin UI with a catch-all `GET` route last: `GET` routes you add after `connect()` are only reached when the Admin UI is disabled. Ship your own routes as `routes` of an `IPlugin` (see [Plugin Factories](https://docs.unchained.shop/extend/plugin-factories)) or mount them before `connect()`.
+
+Sessions are stateless JWTs that expire after `UNCHAINED_TOKEN_EXPIRY_SECONDS` (default `3600`) and are not renewed while in use; v4 sessions lasted 7 days. Long shifts (for example gate staff) need a higher value or a new login; the value applies to all users.
+
+### Tokenized products and the ERC metadata route
+
+- `UpdateProductTokenizationInput.contractAddress` and `tokenId` are optional; off-chain tokens (tickets) no longer need `0x0` / `0` placeholders. `updateProductTokenization` (and the MCP product tool) keep `contractAddress`, `tokenId` and `ercMetadataProperties` when the input omits them; send `null` to clear one. Before, omitting `ercMetadataProperties` (as the Admin UI does) wiped the stored event date.
+- `ContractConfiguration.tokenId` is nullable, and `ProductTokenization.contractAddress` / `tokenId` are optional in TypeScript. Regenerate typed clients.
+- The public ERC metadata route (`/erc-metadata/:productId/[:locale/]:serial.json`) looks tokens up by product and serial number for ERC-721 and ERC-1155 alike, matches the serial case-sensitively, answers `404` for unknown or non-tokenized products and serves only the EIP metadata keys (`name`, `description`, `image`, `properties`, `attributes`, `localization`, `external_url`, `animation_url`, `background_color`, `decimals`). ERC-721 URLs that used the product's `tokenId` instead of the token serial now answer `404`.
+- With several active `VIRTUAL` warehousing providers, the first one (oldest) decides alone whether a token can be invalidated and what its metadata is; a later provider can no longer override its answer.
+- Bulk import: product `CREATE` / `UPDATE` payloads declare `specification.tokenization` (`contractAddress`, `contractStandard`, `tokenId`, `supply`, `ercMetadataProperties`) and accept `published` as a date or a date string.
+
+### ETH minter is web3-only
+
+The ETH minter (`shop.unchained.warehousing.infinite-minter`) knows nothing about events: no entry window around `ercMetadataProperties.slot` (a token can be invalidated until it is invalidated), cancelled tokens count against the supply, and tokens carry no `meta.orderId`. Event tickets use the ticket issuer of `@unchainedshop/ticketing` ([Ticketing](#ticketing-unchainedshopticketing)), which has those rules. Changes against v4:
+
+- `token.meta` is no longer part of the ERC metadata; the public route serves only the EIP keys (see above). Code that read `Token.ercMetadata.orderId` reads `Token.order { _id orderNumber }` instead (the order the token was issued for, `null` when the viewer may not view it), as the Admin UI token list does.
+- `localization.uri` contains the `{locale}` placeholder wallets substitute and the token serial, and honours `ERC_METADATA_API_PATH`.
+- Stock counts the issued tokens of the product (of its `tokenId` for ERC-1155). Before, the lookup never matched, so tokenized products never sold out and ERC-721 serials started at 1 again for every order.
+
+### Ticketing (`@unchainedshop/ticketing`)
+
+The ticketing package is a plugin now, adds a GraphQL API and an Admin UI plugin, and ships its own ticket issuer. The [Event Ticketing guide](https://docs.unchained.shop/guides/ticketing-setup) describes the result, the [Ticket Renderers guide](https://docs.unchained.shop/guides/ticketing-renderers) the renderers. Go through these steps:
+
+**1. Boot.** `setupTicketing` (the default export), `setupPDFTickets`, `setupMobileTickets` and the connectors `@unchainedshop/ticketing/lib/express.js` / `lib/fastify.js` are removed.
+
+```ts
+// ❌ v4
+import setupTicketing, { ticketingModules, ticketingServices } from '@unchainedshop/ticketing';
+import connectTicketingToFastify from '@unchainedshop/ticketing/lib/fastify.js';
+
+const platform = await startPlatform({
+  modules: { ...baseModules, ...ticketingModules },
+  services: { ...ticketingServices },
+});
+connect(fastify, platform, { initPluginMiddlewares: (app) => connectTicketingToFastify(app) });
+setupTicketing(platform.unchainedAPI, { renderOrderPDF, createAppleWalletPass, createGoogleWalletPass });
+
+// ✅ v5
+import { pluginRegistry } from '@unchainedshop/core';
+import { createTicketingPlugin, validateTicketOrderPosition, withTicketing } from '@unchainedshop/ticketing';
+import { createTicketWarehousingPlugin } from '@unchainedshop/ticketing/warehousing/ticket';
+import { ticketingAdminPlugin } from '@unchainedshop/ticketing/admin-plugin';
+
+pluginRegistry.register(createTicketingPlugin({ renderOrderPDF, createAppleWalletPass, createGoogleWalletPass }));
+pluginRegistry.register(createTicketWarehousingPlugin({ ticketMeta })); // replaces your ticket minter, see 6
+const platform = await startPlatform(
+  withTicketing({ options: { orders: { validateOrderPosition: validateTicketOrderPosition } } }),
+);
+await connect(fastify, platform, { adminUI: { plugins: [ticketingAdminPlugin()] } });
+```
+
+Do not pass `ticketingModules` any more; the plugin provides the `passes` module. `UNCHAINED_SECRET` is still required; without it the engine does not start (`TICKETING_SECRET_MISSING`). The ticketing route paths are read when `createTicketingPlugin()` is called, and a missing `@parse/node-apn` is reported when the first Apple pass update is pushed instead of at startup.
+
+**2. Custom GraphQL schema.** A `schema` passed to `startPlatform` makes the server ignore `typeDefs` and `resolvers`, so the ticketing API would silently be missing. Add `ticketingTypeDefs` and `ticketingResolvers` to your own schema, and build it after `startPlatform` from `Object.keys(roles.actions)` (the `RoleAction` enum needs `scanTicket`, `gateControl` and `cancelTicket`, or `User.allowedActions` fails for admins and staff); see [Custom GraphQL schema](https://docs.unchained.shop/guides/ticketing-setup#custom-graphql-schema). A list of `actions` you copied from `roles.actions` at import time does not contain them.
+
+Delete your own `cancelEvent`, `cancelTicket` and `isCanceled` definitions and resolvers. `Mutation.cancelEvent` returns `Int!` (a `Boolean` definition cannot be merged), `TokenizedProduct.isCanceled` is a nullable `Boolean`, and resolvers listed later silently replace ticketing's. The mutations require the `cancelTicket` action (administrators by default); grant it to the roles that cancelled through `viewUsers`, `viewTokens` or `updateToken` before.
+
+**3. Cancellation service and e-mails.**
+
+```diff
+- services.ticketing.cancelTicketsForProduct(productId): Promise<number>
++ services.ticketing.cancelTicketsForProduct(productId, { generateDiscount, countryCode, currencyCode }?): Promise<{ cancelledCount }>
++ services.ticketing.cancelTicketWithDiscount(tokenId, { generateDiscount, countryCode, currencyCode, refuseRedeemed }?)
+```
+
+Both set `meta.cancelled` and `meta.cancelledDate` before they invalidate a ticket, emit `TICKET_CANCELLED` per ticket and queue the `TICKET_CANCELLED` / `EVENT_CANCELLED` e-mails; `cancelTicketsForProduct` also marks the event (`product.meta.cancelled`, `meta.cancelledDate`) and emits `TICKET_EVENT_CANCELLED`. A kept project mutation that checks `if (!cancelled)` on the returned object never stops, and one that sends its own e-mails sends them twice.
+
+`cancelTicketWithDiscount` still cancels redeemed tickets by default. With `refuseRedeemed` (the `cancelTicket` mutation sets it) it throws an `Error` with `cause: 'TICKET_ALREADY_REDEEMED'` for a redeemed ticket, also when a scan redeems it while the cancellation runs, before any e-mail is queued or event emitted; if another cancellation wins, it returns that ticket without reimbursing again. `scanTicket` in turn refuses a ticket cancelled while it is scanned, so a ticket is not both admitted and reimbursed.
+
+`TOKEN_INVALIDATED` handlers that must not react to cancellations (for example badge printing) can now check `token.meta.cancelled`, or subscribe to `TICKET_REDEEMED` instead, which only `scanTicket` emits.
+
+**4. E-mail templates.** Ticketing registers `EVENT_CANCELLED` and `TICKET_CANCELLED` only if you have not: your templates win in any registration order. The template input is `{ productId | tokenId, userId, discountCode?, discountAmount? }`; the built-in templates read `EMAIL_FROM`, `EMAIL_WEBSITE_NAME` and `EMAIL_WEBSITE_URL` when a message is built.
+
+**5. Reimbursement codes.** The built-in code handlers check `DISCOUNT_CODE_SECRET` when the engine starts: set it to 32 random bytes as hex (`openssl rand -hex 32`, 64 characters) or leave it unset. Any other value (for example a 16-byte siphash key) stops the engine. The built-in codes (`v1.<payload>.<signature>`) do not verify codes of your own format. To keep codes you already sent out working, pass your generator:
+
+```ts
+pluginRegistry.register(
+  createTicketingPlugin({
+    // Replaces the built-in handlers; DISCOUNT_CODE_SECRET is then not checked by ticketing
+    discountCode: {
+      generate: async (amount, currencyCode) => myLegacyGenerate(amount, currencyCode),
+      verify: async (code, currencyCode) => myLegacyVerify(code, currencyCode), // amount in minor units, or null
+    },
+  }),
+);
+```
+
+`ReimbursementCodePlugin` uses the discount key `shop.unchained.discount.reimbursement-code`. Order discounts store the key: open carts with a code of your own reimbursement adapter need that adapter, so keep yours registered under its key, or move the stored discounts once your handlers verify the old codes:
+
+```js
+db.order_discounts.updateMany(
+  { discountKey: '<your reimbursement discount key>' },
+  { $set: { discountKey: 'shop.unchained.discount.reimbursement-code' } },
+);
+```
+
+**6. Ticket issuer and the provider swap.** Replace custom ticket minters (typically v4 adapters registered with `WarehousingDirector.registerAdapter`) and the ETH minter with the ticket issuer (`shop.unchained.warehousing.ticket`): one ticket per seat, atomic serial numbers per event, stock from `tokenization.supply`, redemption within an entry window (`entryOpensMinutesBefore`, default 120; `entryClosesMinutesAfter`, default 60; 480 opens the gate 8 hours early), and `ticketMeta` for per-seat data such as `{ attendeeName }` (for example the participant names from the order context). Serial numbers continue after the highest serial an event already has; for new events, `serialOffset` replaces `MINTER_TOKEN_OFFSET` (`-1` keeps 0-based numbering).
+
+The adapter key of a provider cannot be changed through GraphQL or the Admin UI, and deleting the old provider and creating a new one leaves a gap: while two `VIRTUAL` providers are active every ticket is issued twice (and the older one decides at the gate); while none is, confirmed orders silently get no tickets. Swap the key in place (the collection name has a hyphen, so use `getCollection`; `db.warehousing-providers` is a subtraction in mongosh):
+
+```js
+db.getCollection('warehousing-providers').updateOne(
+  { _id: '<your ticket provider id>', type: 'VIRTUAL' },
+  {
+    $set: {
+      adapterKey: 'shop.unchained.warehousing.ticket',
+      configuration: [
+        { key: 'entryOpensMinutesBefore', value: '480' },
+        { key: 'entryClosesMinutesAfter', value: '60' },
+        { key: 'serialOffset', value: '0' },
+      ],
+    },
+  },
+);
+// must report matchedCount: 1
+
+db.getCollection('warehousing-providers').find({ type: 'VIRTUAL', deleted: null }, { adapterKey: 1 });
+// must list exactly one provider, with adapterKey 'shop.unchained.warehousing.ticket'
+```
+
+Restart the engine and remove the old adapter only after both checks pass; until then, keep it registered. A provider whose adapter is not registered is not skipped: `WarehousingDirector.actions` throws `Warehousing Plugin <key> not available`, so checkouts fail after the payment is confirmed (the order is `CONFIRMED` but has no tickets), and `scanTicket` fails for every valid ticket.
+
+Existing tickets keep working: tokens do not reference their provider. They have no `meta.attendeeName`, though, which is the only attendee source of `Token.attendeeName`, Gate Control, the event detail, the CSV export and the name search of `ticketLookup`. If your old adapter stored names under other keys, backfill them once. The example reads `meta.firstName` / `meta.lastName`; adapt the keys to yours:
+
+```js
+db.token_surrogates.updateMany(
+  {
+    'meta.attendeeName': { $exists: false },
+    $or: [{ 'meta.firstName': { $type: 'string' } }, { 'meta.lastName': { $type: 'string' } }],
+  },
+  [
+    {
+      $set: {
+        'meta.attendeeName': {
+          $trim: {
+            input: {
+              $concat: [
+                { $cond: [{ $eq: [{ $type: '$meta.firstName' }, 'string'] }, '$meta.firstName', ''] },
+                ' ',
+                { $cond: [{ $eq: [{ $type: '$meta.lastName' }, 'string'] }, '$meta.lastName', ''] },
+              ],
+            },
+          },
+        },
+      },
+    },
+  ],
+);
+```
+
+Have `ticketMeta` write the same format for new tickets, for example `{ attendeeName: [firstName, lastName].filter(Boolean).join(' ') }`.
+
+Event facts are read from `tokenization.ercMetadataProperties` (`slot`, `location`, `durationMinutes`, `doorsOpenMinutesBefore`, `category`), with `product.meta.slot` / `meta.location` as fallback; move other keys such as `meta.doorOpeningBeforeMinutes` there (`updateTicketEvent`, bulk import). These properties are public.
+
+CMS or ETL syncs through the bulk importer: `cancelEvent` stores the cancellation in `product.meta.cancelled` / `meta.cancelledDate`, and a product `CREATE` (upsert) or `UPDATE` that sends `specification.meta` replaces `meta` as a whole, which un-cancels the event so it sells again. Leave `meta` out of the sync, carry `cancelled` / `cancelledDate` over from the engine, or unpublish cancelled events in the source. Likewise, a sync that sends `specification.tokenization` replaces `ercMetadataProperties`, so the event details (`slot`, `location`, `durationMinutes`, `doorsOpenMinutesBefore`, `category`) must then come from the sync, not from `updateTicketEvent` or the event editor.
+
+Wire `validateTicketOrderPosition` (or `createTicketOrderPositionValidator({ getSaleRules })`, which also runs core's default check) as `options.orders.validateOrderPosition`, or call it from your own validator; it keeps sales within the supply and refuses tickets of cancelled events.
+
+**7. Gate access.** Gate staff use their own accounts with the `ticketing` role and the `scanTicket` mutation. Pass codes (such as a `meta.scannerPassCode` on the event), gate cookies and scanner logins are not supported. Ticketing gives staff the buyer's public profile only: roles that granted `viewUserPrivateInfos`, orders or e-mail addresses to scanners should go. Show attendees through `Token.attendeeName`, filled by `ticketMeta`. Custom adapters that spread `token.meta` into their `tokenMetadata` put per-ticket data into `Token.ercMetadata`; the ticket issuer serves only public product facts there (name, description, image, properties), so clients that read `Token.ercMetadata.<field>` (visitor lists, for example) switch to `Token.attendeeName`. Organizers that share a shop are separated with `withTicketing(options, { canAccessEvent })`.
+
+Gate Control's camera only accepts ticket QR codes, a ticket id with its access key (`?hash=`), so renderers must print `buildTicketScanPayload`. Serials, names and order numbers can be typed, but they prove nothing about who holds the ticket and are never redeemed without a tap. One gate can admit several events: tick them in the event list, or admit all categories of one performance at once (stored as `?event=a,b`). This replaces event-agnostic scanner pages for performances sold as several products (category × time slot).
+
+**8. `scanTicket` instead of `invalidateToken`.** Storefront and scanner flows that redeemed tickets with the core `invalidateToken` mutation and the QR code's access key should call `scanTicket(tokenId, productId)` with a staff account. `scanTicket` refuses with `TicketWrongEventError`, `TicketCanceledError`, `TicketAlreadyRedeemedError` or `TicketNotRedeemableError` (with a `reason`) instead of `TokenWrongStatusError`, and emits `TICKET_REDEEMED`. `invalidateToken` still works for owners, access-key and magic-key holders within the entry window.
+
+**9. Magic keys and the print link.** The `viewOrder` rule accepts the magic key as `x-magic-key` header or as `otp` parameter, so `/rest/print_tickets?orderId=…&otp=…` links work without a custom rule; token rules find the order through the order position when `meta.orderId` is missing. Delete project overrides of these rules. `Order.magicKey` and `Order.ticketsPdfUrl` return the key and the link; `getTicketAttachments()` builds e-mail attachments.
+
+**10. Wallet routes and renderers.**
+
+- `GET /rest/google-wallet/download/<tokenId>` redirects (`302`) to the save link again; v5 alphas answered JSON `{ passLink }`. The renderer returns the link as a string or as `{ asURL }`; `null` answers `404`.
+- The Apple PassKit web service works under the default `/rest/apple-wallet` path again (v5 alphas answered `404` to device registrations and pass updates).
+- Routes answer `404` for renderers you do not register.
+- Use the canonical QR payload (`buildTicketScanPayload`), key Google objects by `token._id` instead of the serial number (serials repeat across events), expire Google objects on `TICKET_REDEEMED` / `TICKET_CANCELLED`, use `token._id` as Apple `serialNumber`, and check latitude/longitude. The [Ticket Renderers guide](https://docs.unchained.shop/guides/ticketing-renderers) has complete renderers. Google objects saved under serial-based ids and Apple passes with other serial numbers are not updated by the new renderers.
+
+**11. Passes module.** `getTicketsCreated` is deprecated (use `countIssuedTickets(productId, { skipCancelled })`); it now sums token quantities and treats `meta.cancelled: false` as not cancelled. `invalidateAppleWalletPasses(unchainedAPI, token?)` re-renders only the given ticket's pass. New: `reserveTicketSerials`, `countIssuedTickets`, `countReservedTickets`. `cancelTicket(tokenId, { onlyValid })` only marks a ticket that is neither redeemed nor cancelled yet and returns `null` otherwise.
+
 ### Upgrading from an earlier v5 alpha: one-time re-login
 
 A user without a stored `tokenVersion` is now treated as version `0` (earlier alphas used `1`, which made the first revocation a no-op). Tokens those alphas issued to such users are rejected after the upgrade, so affected users log in once more. No data change is needed.

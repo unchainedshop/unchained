@@ -17,26 +17,67 @@ import {
 test('ticketing schema is optional and every plugin operation validates when installed', () => {
   const coreTypes = buildDefaultTypeDefs({ actions: Object.keys(roles.actions) });
   const core = makeExecutableSchema({ typeDefs: coreTypes });
-  for (const field of ['ticketEvents', 'ticketEventsCount', 'isPassCodeValid']) {
+  for (const field of ['ticketEvents', 'ticketEventsCount', 'ticketLookup', 'isPassCodeValid']) {
     assert.equal(core.getQueryType()!.getFields()[field], undefined);
   }
   for (const field of [
     'scanTicket',
     'cancelTicket',
     'cancelEvent',
+    'updateTicketEvent',
     'authenticateGate',
     'deauthenticateGate',
     'setEventScannerPassCode',
   ]) {
     assert.equal(core.getMutationType()!.getFields()[field], undefined);
   }
-  for (const name of ['Token', 'TokenizedProduct']) {
-    assert.equal((core.getType(name) as GraphQLObjectType).getFields().isCanceled, undefined);
+  const ticketingFields = {
+    Token: ['isCanceled', 'cancelledDate', 'ticketStatus', 'attendeeName'],
+    TokenizedProduct: [
+      'isCanceled',
+      'eventStartsAt',
+      'eventEndsAt',
+      'eventDoorsOpenAt',
+      'eventLocation',
+      'eventCategory',
+    ],
+    Order: ['magicKey', 'ticketsPdfUrl'],
+  };
+  for (const [name, fields] of Object.entries(ticketingFields)) {
+    for (const field of fields) {
+      assert.equal((core.getType(name) as GraphQLObjectType).getFields()[field], undefined, field);
+    }
   }
   const extended = makeExecutableSchema({
     typeDefs: [...coreTypes, ...ticketingTypeDefs],
     resolvers: [coreResolvers, ticketingResolvers],
   });
+  for (const [name, fields] of Object.entries(ticketingFields)) {
+    for (const field of fields) {
+      assert.ok((extended.getType(name) as GraphQLObjectType).getFields()[field], field);
+    }
+  }
+  assert.deepEqual(
+    extended
+      .getMutationType()!
+      .getFields()
+      .scanTicket.args.map(({ name }) => name),
+    ['tokenId', 'productId', 'accessKey'],
+  );
+  for (const field of ['slotFrom', 'slotTo', 'tags']) {
+    assert.ok(
+      extended
+        .getQueryType()!
+        .getFields()
+        .ticketEvents.args.some(({ name }) => name === field),
+    );
+    assert.ok(
+      extended
+        .getQueryType()!
+        .getFields()
+        .ticketEventsCount.args.some(({ name }) => name === field),
+    );
+  }
   assert.equal(extended.getQueryType()!.getFields().isPassCodeValid, undefined);
   for (const field of ['authenticateGate', 'deauthenticateGate', 'setEventScannerPassCode']) {
     assert.equal(extended.getMutationType()!.getFields()[field], undefined);
@@ -75,7 +116,13 @@ test('GraphQL lets scanner staff list attendees and redeem without exposing priv
     lastBillingAddress: { firstName: 'Jane', lastName: 'Doe', addressLine: 'Secret 1' },
     services: { webAuthn: [{ id: 'credential' }] },
   };
-  const token: any = { _id: 'ticket', productId: event._id, userId: buyer._id };
+  const token: any = {
+    _id: 'ticket',
+    productId: event._id,
+    userId: buyer._id,
+    tokenSerialNumber: '7',
+    meta: { orderId: 'order', attendeeName: 'Anna Muster' },
+  };
   const context = {
     userId: 'scanner',
     user: { _id: 'scanner', roles: ['ticketing'] },
@@ -88,13 +135,15 @@ test('GraphQL lets scanner staff list attendees and redeem without exposing priv
       },
       warehousing: {
         findTokens: async () => [token],
-        findToken: async () => token,
+        findToken: async ({ tokenId }: any) => (tokenId === token._id ? token : null),
         buildAccessKeyFromToken: async () => 'secret',
         invalidateToken: async () => {
           token.invalidatedDate = new Date();
           return token;
         },
+        allProviders: async () => [],
       },
+      orders: { findOrder: async () => null },
       payment: {
         paymentCredentials: {
           findPaymentCredentials: async () => [{ _id: 'card', token: { alias: 'stored-card' } }],
@@ -123,12 +172,55 @@ test('GraphQL lets scanner staff list attendees and redeem without exposing priv
     });
     assert.match(exposed.errors?.[0]?.message ?? '', /permission/i, field);
   }
-  const mutation = 'mutation { scanTicket(tokenId: "ticket") { _id invalidatedDate isInvalidateable } }';
+  // The attendee name stored with the ticket is visible at the gate, also through a lookup.
+  const lookup = await graphql({
+    schema,
+    source: `{ ticketLookup(code: "https://shop.example/download/ticket?hash=secret") {
+      _id tokenSerialNumber ticketStatus attendeeName user { _id name }
+    } }`,
+    contextValue: context,
+  });
+  assert.equal(lookup.errors, undefined);
+  // GraphQL results have no prototype; compare their JSON.
+  assert.deepEqual(JSON.parse(JSON.stringify(lookup.data)).ticketLookup, [
+    {
+      _id: 'ticket',
+      tokenSerialNumber: '7',
+      ticketStatus: 'VALID',
+      attendeeName: 'Anna Muster',
+      user: { _id: 'buyer', name: 'Buyer' },
+    },
+  ]);
+  for (const field of ['primaryEmail { address }', 'lastBillingAddress { addressLine }']) {
+    const exposed = await graphql({
+      schema,
+      source: `{ ticketLookup(code: "ticket") { attendeeName user { _id ${field} } } }`,
+      contextValue: context,
+    });
+    assert.match(exposed.errors?.[0]?.message ?? '', /permission/i, field);
+  }
+  const edit = await graphql({
+    schema,
+    source: 'mutation { updateTicketEvent(productId: "event", event: { location: "Hall" }) { _id } }',
+    contextValue: context,
+  });
+  assert.match(edit.errors![0].message, /permission/i, 'editing events needs manageProducts');
+
+  const mutation =
+    'mutation { scanTicket(tokenId: "ticket", productId: "event") { _id invalidatedDate isInvalidateable ticketStatus } }';
   const scanned = await graphql({ schema, source: mutation, contextValue: context });
   assert.equal(scanned.errors, undefined);
   assert.equal((scanned.data as any).scanTicket.isInvalidateable, false);
+  assert.equal((scanned.data as any).scanTicket.ticketStatus, 'REDEEMED');
   const repeated = await graphql({ schema, source: mutation, contextValue: context });
-  assert.ok(repeated.errors?.length);
+  assert.equal(repeated.errors?.[0]?.extensions?.code, 'TicketAlreadyRedeemedError');
+  assert.ok(repeated.errors?.[0]?.extensions?.invalidatedDate);
+  const elsewhere = await graphql({
+    schema,
+    source: 'mutation { scanTicket(tokenId: "ticket", productId: "other-event") { _id } }',
+    contextValue: context,
+  });
+  assert.equal(elsewhere.errors?.[0]?.extensions?.code, 'TicketWrongEventError');
   const keys = await graphql({
     schema,
     source: '{ ticketEvents { ... on TokenizedProduct { tokens { accessKey } } } }',
@@ -138,4 +230,10 @@ test('GraphQL lets scanner staff list attendees and redeem without exposing priv
   const anonymous = { ...context, userId: undefined, user: undefined };
   const denied = await graphql({ schema, source: query, contextValue: anonymous });
   assert.match(denied.errors![0].message, /permission/i);
+  const deniedLookup = await graphql({
+    schema,
+    source: '{ ticketLookup(code: "ticket") { _id attendeeName } }',
+    contextValue: anonymous,
+  });
+  assert.match(deniedLookup.errors![0].message, /permission/i);
 });

@@ -5,18 +5,51 @@ import upsertVariations, { ProductVariationSchema } from './upsertVariations.ts'
 import upsertMedia from './upsertMedia.ts';
 import { MediaSchema } from '../assortment/upsertMedia.ts';
 import convertTagsToLowerCase from '../utils/convertTagsToLowerCase.ts';
-import { ProductStatus, ProductType } from '@unchainedshop/core-products';
+import {
+  ProductContractStandard,
+  ProductStatus,
+  ProductType,
+  type ProductTokenization,
+} from '@unchainedshop/core-products';
 
-export const ProductCreateSpecificationSchema = z.object({
-  type: z.enum(ProductType),
+// A Date (in-process imports) or any Date-parseable string (the historical import contract for
+// JSON imports) rather than only strict RFC 3339, e.g. a seconds-less "2020-01-01T00:00Z" that
+// new Date() accepts but z.iso.datetime() rejects. Persisted via new Date() during transform.
+export const DateLikeSchema = z.union([
+  z.date(),
+  z.string().check(z.refine((value) => !Number.isNaN(new Date(value).getTime()), 'Invalid date')),
+]);
+
+// Every field is optional: off-chain products (tickets) have no contract address or token id, and
+// the import has always stored a partial tokenization as given (hence the ProductTokenization cast
+// in transformSpecification). ercMetadataProperties stays untyped, so an event slot keeps its type
+// (Date or ISO string).
+export const ProductTokenizationSchema = z.object({
+  contractAddress: z.optional(z.string()),
+  contractStandard: z.optional(z.enum(ProductContractStandard)),
+  tokenId: z.optional(z.string()),
+  supply: z.optional(z.int().check(z.gte(0))),
+  ercMetadataProperties: z.optional(z.record(z.string(), z.any())),
+});
+
+export const ProductContentSchema = z.record(
+  z.string(), // locale
+  z.object({
+    title: z.optional(z.string()),
+    subtitle: z.optional(z.string()),
+    slug: z.optional(z.string()),
+    description: z.optional(z.string()),
+    brand: z.optional(z.string()),
+    vendor: z.optional(z.string()),
+    labels: z.optional(z.array(z.string())),
+  }),
+);
+
+// Fields shared by the CREATE and UPDATE specifications (see update.ts), so the two cannot drift
+export const ProductSpecificationFields = {
   sequence: z.optional(z.number()),
   status: z.nullish(z.enum(ProductStatus)),
-  // Accept any Date-parseable string (the historical import contract) rather than
-  // only strict RFC 3339 — e.g. a seconds-less "2020-01-01T00:00Z" that new Date()
-  // accepts but z.iso.datetime() rejects. Persisted via new Date() during transform.
-  published: z.nullish(
-    z.string().check(z.refine((value) => !Number.isNaN(new Date(value).getTime()), 'Invalid date')),
-  ), // or null!
+  published: z.nullish(DateLikeSchema), // or null!
   tags: z.optional(z.array(z.string())),
   commerce: z.optional(
     z.object({
@@ -46,6 +79,7 @@ export const ProductCreateSpecificationSchema = z.object({
       widthInMillimeters: z.optional(z.number()),
     }),
   ),
+  tokenization: z.optional(ProductTokenizationSchema),
   bundleItems: z.optional(
     z.array(
       z.object({
@@ -61,18 +95,6 @@ export const ProductCreateSpecificationSchema = z.object({
     ),
   ),
   meta: z.optional(z.record(z.any(), z.any())),
-  content: z.record(
-    z.string(), // locale
-    z.object({
-      title: z.optional(z.string()),
-      subtitle: z.optional(z.string()),
-      slug: z.optional(z.string()),
-      description: z.optional(z.string()),
-      brand: z.optional(z.string()),
-      vendor: z.optional(z.string()),
-      labels: z.optional(z.array(z.string())),
-    }),
-  ),
   variationResolvers: z.optional(
     z.array(
       z.object({
@@ -81,6 +103,12 @@ export const ProductCreateSpecificationSchema = z.object({
       }),
     ),
   ),
+};
+
+export const ProductCreateSpecificationSchema = z.object({
+  ...ProductSpecificationFields,
+  type: z.enum(ProductType),
+  content: ProductContentSchema,
 });
 
 export const ProductCreatePayloadSchema = z.object({
@@ -104,6 +132,7 @@ const transformSpecification = (specification: z.infer<typeof ProductCreateSpeci
     supply,
     warehousing,
     sequence,
+    tokenization,
     ...productData
   } = specification;
 
@@ -115,6 +144,7 @@ const transformSpecification = (specification: z.infer<typeof ProductCreateSpeci
     ...(sequence != null && { sequence }),
     published: productData.published ? new Date(productData.published) : undefined,
     ...(productData.status !== undefined && { status: normalizeStatus(productData.status) }),
+    ...(tokenization !== undefined && { tokenization: tokenization as ProductTokenization }),
     tags,
     warehousing,
     supply,

@@ -97,12 +97,18 @@ const TokenDetail = ({ token }) => {
           <span className="block font-medium text-text-secondary">
             {formatMessage({ id: 'order', defaultMessage: 'Order' })}:
           </span>
-          <Link
-            href={`/orders?orderId=${token.ercMetadata?.orderId}`}
-            className="text-slate-800 dark:text-slate-700 hover:underline"
-          >
-            {token?.ercMetadata?.orderId}
-          </Link>
+          {token.order ? (
+            <Link
+              href={`/orders?orderId=${token.order._id}`}
+              className="text-slate-800 dark:text-slate-700 hover:underline"
+            >
+              {token.order.orderNumber || token.order._id}
+            </Link>
+          ) : (
+            <p className="text-text-primary">
+              {formatMessage({ id: 'not-applicable', defaultMessage: 'N/A' })}
+            </p>
+          )}
         </div>
 
         <div>

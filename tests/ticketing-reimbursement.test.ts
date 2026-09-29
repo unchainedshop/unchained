@@ -2,19 +2,20 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongoClient } from 'mongodb';
-import { configureOrdersModule, OrderStatus } from '@unchainedshop/core-orders';
+import { configureOrdersModule, ordersSettings, OrderStatus } from '@unchainedshop/core-orders';
 import { ticketingModules } from '@unchainedshop/ticketing';
 import { ReimbursementCode } from '@unchainedshop/ticketing/pricing/discount-reimbursement-code';
 
-// The shared test platform does not load the ticketing module, so the reimbursement
-// adapter runs against its own database here.
+// The reimbursement adapter runs against its own database with stub discount code handlers,
+// independent of the ticketing module of the shared test platform.
 test('concurrent checkouts reserve voucher credit, and settled orders retain exact usage', async () => {
   const server = await MongoMemoryServer.create();
   const client = new MongoClient(server.getUri());
   try {
     await client.connect();
     const db = client.db('ticketing-credit');
-    const orders = await configureOrdersModule({ db } as any);
+    // Keep the process-wide order settings of the shared test platform (options reset them)
+    const orders = await configureOrdersModule({ db, options: { ...ordersSettings } } as any);
     const passes = await ticketingModules.passes.configure({
       db,
       options: {

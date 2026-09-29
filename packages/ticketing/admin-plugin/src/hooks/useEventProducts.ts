@@ -1,12 +1,16 @@
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 
+// DateTime arguments are served as the DateTimeISO scalar, so the variables are declared as such.
 const TicketEventsQuery = gql`
   query TicketEvents(
     $queryString: String
     $limit: Int
     $offset: Int
     $includeDrafts: Boolean = true
+    $sort: [SortOptionInput!]
+    $slotFrom: DateTimeISO
+    $slotTo: DateTimeISO
     $forceLocale: Locale
   ) {
     ticketEvents(
@@ -14,19 +18,19 @@ const TicketEventsQuery = gql`
       limit: $limit
       offset: $offset
       includeDrafts: $includeDrafts
+      sort: $sort
+      slotFrom: $slotFrom
+      slotTo: $slotTo
     ) {
       _id
       status
       tags
-      updated
-      published
       ... on TokenizedProduct {
         texts(forceLocale: $forceLocale) {
           _id
           slug
           title
           subtitle
-          description
         }
         media(limit: 1) {
           _id
@@ -45,23 +49,38 @@ const TicketEventsQuery = gql`
         }
         tokensCount
         isCanceled
+        eventStartsAt
+        eventLocation
+        eventCategory
       }
     }
-    ticketEventsCount(includeDrafts: $includeDrafts, queryString: $queryString)
+    ticketEventsCount(
+      includeDrafts: $includeDrafts
+      queryString: $queryString
+      slotFrom: $slotFrom
+      slotTo: $slotTo
+    )
   }
 `;
 
+/** One page of ticket events; slotFrom/slotTo filter and sort order by event start. */
 const useEventProducts = ({
   queryString = null,
   limit = 50,
   offset = 0,
+  slotFrom,
+  slotTo,
+  sort,
 }: {
   queryString?: string;
   limit?: number;
   offset?: number;
+  slotFrom?: string;
+  slotTo?: string;
+  sort?: { key: string; value: string }[];
 }) => {
   const { data, loading, error } = useQuery<any>(TicketEventsQuery, {
-    variables: { queryString, limit, offset },
+    variables: { queryString, limit, offset, slotFrom, slotTo, sort },
   });
 
   return {

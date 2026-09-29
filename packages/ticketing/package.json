@@ -22,6 +22,10 @@
       "import": "./lib/pricing/*/index.js",
       "types": "./lib/pricing/*/index.d.ts"
     },
+    "./warehousing/*": {
+      "import": "./lib/warehousing/*/index.js",
+      "types": "./lib/warehousing/*/index.d.ts"
+    },
     "./admin-plugin": {
       "import": "./lib/admin-plugin.js",
       "types": "./lib/admin-plugin.d.ts"
@@ -75,17 +79,13 @@
   },
   "peerDependencies": {
     "@parse/node-apn": "^8.1.0",
-    "express": "5.x",
-    "fastify": ">= 5.2 < 6"
+    "@unchainedshop/admin-ui": "^5.0.0-alpha.7"
   },
   "peerDependenciesMeta": {
     "@parse/node-apn": {
       "optional": true
     },
-    "express": {
-      "optional": true
-    },
-    "fastify": {
+    "@unchainedshop/admin-ui": {
       "optional": true
     }
   },

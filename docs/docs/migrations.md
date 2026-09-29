@@ -21,6 +21,8 @@ The full details (with before/after snippets) are in [MIGRATION.md](https://gith
 - **Leveled pricing.** Catalog price tiers are keyed by `minQuantity` (lower bound; base `= 0`) instead of `maxQuantity`. An automatic, idempotent startup migration converts existing data — but update any code that *writes* prices to use `minQuantity`. See [Leveled Pricing](./concepts/pricing-system.md#leveled-quantity-tier-catalog-pricing).
 - **Events.** Redis / EventBridge transports must be registered explicitly with `setEmitAdapter(RedisEventEmitter())` (no more auto-registration on import).
 - **Auth, admin-ui, dependencies.** Stateless JWT auth (set `UNCHAINED_TOKEN_SECRET`), runtime admin-ui permissions, and several dependency bumps — see the full guide.
+- **Server wiring.** `connect()` is async and mounts plugin routes itself; `initPluginMiddlewares` and the framework route presets are gone.
+- **Ticketing.** `@unchainedshop/ticketing` is registered as a plugin (`createTicketingPlugin`, `withTicketing`) with its own ticket issuer; `setupTicketing` and the `lib/express.js` / `lib/fastify.js` connectors are removed, and the ETH minter no longer applies ticket rules. The [Ticketing section of MIGRATION.md](https://github.com/unchainedshop/unchained/blob/master/MIGRATION.md#ticketing-unchainedshopticketing) walks through custom schemas, templates, reimbursement codes, the provider swap and gate access; see also [Event Ticketing](./guides/ticketing-setup.md).
 
 ## General Upgrade Process
 

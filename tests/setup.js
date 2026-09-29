@@ -11,6 +11,12 @@ import * as jose from 'jose';
 import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
 import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
 import { pluginRegistry } from '@unchainedshop/core';
+import {
+  createTicketingPlugin,
+  createTicketOrderPositionValidator,
+  withTicketing,
+} from '@unchainedshop/ticketing';
+import { createTicketWarehousingPlugin } from '@unchainedshop/ticketing/warehousing/ticket';
 
 let fastify = null;
 let platform = null;
@@ -132,10 +138,32 @@ export async function initializeTestPlatform() {
   pluginRegistry.register(HalfPriceManualPlugin);
   pluginRegistry.register(HundredOffPlugin);
 
+  // Ticketing without renderers (the ticketing tests register stub renderers themselves). The
+  // ticket issuer only issues tickets where a test seeds its VIRTUAL provider (tests/seeds/ticketing.js).
+  pluginRegistry.register(createTicketingPlugin());
+  pluginRegistry.register(
+    createTicketWarehousingPlugin({
+      // Attendee names per seat, as a storefront would pass them with updateCart(meta)
+      ticketMeta: ({ order, index }) => {
+        const attendeeName = order.context?.attendees?.[index];
+        return attendeeName ? { attendeeName } : undefined;
+      },
+    }),
+  );
+
   const auditCollectorPort = await startAuditCollector();
 
-  // Start platform with in-memory MongoDB
-  platform = await startPlatform({
+  // Platform options with in-memory MongoDB
+  const platformOptions = {
+    options: {
+      orders: {
+        // Ticket supply, cancelled events and the sale rules the ticketing tests put into
+        // product.meta.saleRules; other products only get core's default validation
+        validateOrderPosition: createTicketOrderPositionValidator({
+          getSaleRules: ({ product }) => product.meta?.saleRules,
+        }),
+      },
+    },
     rolesOptions: {
       additionalRoles: {
         sessionManager: (role, actions) => {
@@ -154,6 +182,10 @@ export async function initializeTestPlatform() {
         userRemover: (role, actions) => {
           role.allow(actions.removeUser, () => true);
         },
+        // Cancels tickets without other ticketing access; the organizer scope still applies
+        eventManager: (role, actions) => {
+          role.allow(actions.cancelTicket, () => true);
+        },
       },
     },
     workQueueOptions: {
@@ -166,7 +198,18 @@ export async function initializeTestPlatform() {
       batchSize: 1, // flush every event promptly so tests can assert on it
       flushIntervalMs: 100,
     },
-  });
+  };
+
+  // Ticketing schema, services, actions and the `ticketing` role. The organizer scope limits
+  // users tagged `organizer-*` to ticket events carrying one of their organizer tags.
+  platform = await startPlatform(
+    withTicketing(platformOptions, {
+      canAccessEvent: (event, { user }) => {
+        const organizers = user?.tags?.filter((tag) => tag.startsWith('organizer-')) || [];
+        return !organizers.length || organizers.some((tag) => event.tags?.includes(tag));
+      },
+    }),
+  );
 
   // Generate OIDC test keypair for backchannel logout tests
   const keyPair = await jose.generateKeyPair('RS256');

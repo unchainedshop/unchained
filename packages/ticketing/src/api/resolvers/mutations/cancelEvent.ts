@@ -3,6 +3,7 @@ import { log } from '@unchainedshop/logger';
 import { ProductStatus } from '@unchainedshop/core-products';
 import { InvalidIdError, ProductNotFoundError, ProductWrongStatusError } from '@unchainedshop/api';
 import { TicketingModuleNotFoundError } from '../../errors.ts';
+import { assertTicketEventInScope } from '../../roles.ts';
 
 export default async function cancelEvent(
   root: never,
@@ -16,6 +17,9 @@ export default async function cancelEvent(
 
   const product = await modules.products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
+
+  // A role granted cancelTicket stays within its organizer scope.
+  await assertTicketEventInScope(product, context, 'cancelTicket');
 
   if (product.status !== ProductStatus.ACTIVE) {
     throw new ProductWrongStatusError({ productId });

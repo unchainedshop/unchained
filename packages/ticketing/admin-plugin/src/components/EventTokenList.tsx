@@ -1,8 +1,8 @@
 import { useIntl } from 'react-intl';
 import { Table } from '@unchainedshop/admin-ui/ui';
-import EventTokenListItem from './EventTokenListItem';
+import EventTokenListItem from './EventTokenListItem.tsx';
 
-const EventTokenList = ({ tokens, onCancelTicket, onInvalidateTicket }) => {
+const EventTokenList = ({ tokens, onCancelTicket, onRedeemTicket }) => {
   const { formatMessage } = useIntl();
 
   if (!tokens?.length) {
@@ -21,7 +21,8 @@ const EventTokenList = ({ tokens, onCancelTicket, onInvalidateTicket }) => {
       <Table.Row header>
         <Table.Cell>{formatMessage({ id: 'ticket_number', defaultMessage: 'Ticket #' })}</Table.Cell>
         <Table.Cell>{formatMessage({ id: 'attendee', defaultMessage: 'Attendee' })}</Table.Cell>
-        <Table.Cell>{formatMessage({ id: 'redeemed', defaultMessage: 'Redeemed' })}</Table.Cell>
+        <Table.Cell>{formatMessage({ id: 'ticket_buyer', defaultMessage: 'Buyer' })}</Table.Cell>
+        <Table.Cell>{formatMessage({ id: 'ticket_status', defaultMessage: 'Status' })}</Table.Cell>
         <Table.Cell>{formatMessage({ id: 'actions', defaultMessage: 'Actions' })}</Table.Cell>
       </Table.Row>
       {tokens.map((token) => (
@@ -29,7 +30,7 @@ const EventTokenList = ({ tokens, onCancelTicket, onInvalidateTicket }) => {
           key={token._id}
           token={token}
           onCancelTicket={onCancelTicket}
-          onInvalidateTicket={onInvalidateTicket}
+          onRedeemTicket={onRedeemTicket}
         />
       ))}
     </Table>

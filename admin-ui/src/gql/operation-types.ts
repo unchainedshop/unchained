@@ -6898,6 +6898,7 @@ export type ITokenFragment = {
   invalidatedDate: unknown;
   expiryDate: unknown;
   ercMetadata: unknown;
+  order: { _id: string; orderNumber: string | null } | null;
   accessKey: string;
   isInvalidateable: boolean;
 };
@@ -7416,6 +7417,7 @@ export type IExportTokenMutation = {
     invalidatedDate: unknown;
     expiryDate: unknown;
     ercMetadata: unknown;
+    order: { _id: string; orderNumber: string | null } | null;
     accessKey: string;
     isInvalidateable: boolean;
   };
@@ -11201,6 +11203,7 @@ export type IInvalidateTokenMutation = {
     invalidatedDate: unknown;
     expiryDate: unknown;
     ercMetadata: unknown;
+    order: { _id: string; orderNumber: string | null } | null;
     accessKey: string;
     isInvalidateable: boolean;
   };
@@ -11223,6 +11226,7 @@ export type ITokenQuery = {
     invalidatedDate: unknown;
     expiryDate: unknown;
     ercMetadata: unknown;
+    order: { _id: string; orderNumber: string | null } | null;
     accessKey: string;
     isInvalidateable: boolean;
     product: {
@@ -11289,6 +11293,7 @@ export type ITokensQuery = {
     invalidatedDate: unknown;
     expiryDate: unknown;
     ercMetadata: unknown;
+    order: { _id: string; orderNumber: string | null } | null;
     accessKey: string;
     isInvalidateable: boolean;
     product: {

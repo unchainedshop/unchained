@@ -185,6 +185,47 @@ curl -X POST \
 }
 ```
 
+`published` accepts an ISO date string or, for in-process imports, a `Date`; `null` leaves the product unpublished.
+
+### Tokenized Products
+
+`specification.tokenization` configures tokenized products, for example an event ticket for the [ticket issuer](./ticketing-setup.md#the-ticket-issuer). All fields are optional; off-chain tickets need no `contractAddress` or `tokenId`. `ercMetadataProperties` is public (it is served as token metadata):
+
+```json
+{
+  "entity": "PRODUCT",
+  "operation": "CREATE",
+  "payload": {
+    "_id": "concert-2026-10-01",
+    "specification": {
+      "type": "TOKENIZED_PRODUCT",
+      "status": "ACTIVE",
+      "published": "2026-09-01T00:00:00Z",
+      "tags": ["concert"],
+      "commerce": {
+        "pricing": [{ "amount": 4500, "currencyCode": "CHF", "countryCode": "CH" }]
+      },
+      "tokenization": {
+        "contractStandard": "ERC721",
+        "supply": 300,
+        "ercMetadataProperties": {
+          "slot": "2026-10-01T18:00:00Z",
+          "location": "Main Hall",
+          "durationMinutes": 120,
+          "doorsOpenMinutesBefore": 30,
+          "category": "Concert"
+        }
+      },
+      "content": {
+        "en": { "title": "Autumn Concert", "slug": "autumn-concert" }
+      }
+    }
+  }
+}
+```
+
+An `UPDATE` with `tokenization` replaces the stored object as a whole (without it, the stored one is kept); to change single event details use `updateTicketEvent`. `specification.meta` is replaced as a whole as well, which clears the cancellation of a ticket event (`meta.cancelled`, set by `cancelEvent`): leave `meta` out of syncs of ticket events, or carry those keys over.
+
 ## Assortment Import
 
 ### Create Category Hierarchy

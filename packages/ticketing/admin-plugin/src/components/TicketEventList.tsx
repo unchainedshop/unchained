@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl';
 import { Table } from '@unchainedshop/admin-ui/ui';
-import TicketEventListItem from './TicketEventListItem';
+import TicketEventListItem from './TicketEventListItem.tsx';
 
 const TicketEventList = ({ products }) => {
   const { formatMessage } = useIntl();

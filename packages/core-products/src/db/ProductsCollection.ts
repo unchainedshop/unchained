@@ -82,9 +82,10 @@ export interface ProductCommerce {
 }
 
 export interface ProductTokenization {
-  contractAddress: string;
+  // Off-chain tokens (e.g. tickets) have no contract address or token id
+  contractAddress?: string;
   contractStandard: ProductContractStandard;
-  tokenId: string;
+  tokenId?: string;
   supply: number;
   ercMetadataProperties?: Record<string, any>;
 }

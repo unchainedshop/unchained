@@ -78,7 +78,8 @@
     "clean": "tsc --build --clean",
     "build": "run-p build:*",
     "build:packages": "npm run clean && tsc --build",
-    "build:admin-ui": "cd admin-ui && npm run build"
+    "build:admin-ui": "cd admin-ui && npm run build",
+    "build:ticketing-admin-plugin": "npm run build -w @unchainedshop/ticketing-admin-plugin"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",

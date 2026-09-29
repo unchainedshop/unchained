@@ -1,7 +1,7 @@
 import { useIntl } from 'react-intl';
 import { Loading, PageHeader } from '@unchainedshop/admin-ui/ui';
-import TicketEventDetail from '../components/TicketEventDetail';
-import useEventProduct from '../hooks/useEventProduct';
+import TicketEventDetail from '../components/TicketEventDetail.tsx';
+import useEventProduct from '../hooks/useEventProduct.ts';
 
 const TicketEventDetailPage = ({ entityId }) => {
   const { formatMessage } = useIntl();

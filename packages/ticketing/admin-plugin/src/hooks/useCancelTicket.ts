@@ -5,10 +5,11 @@ const CancelTicketMutation = gql`
   mutation CancelTicket($tokenId: ID!, $generateDiscount: Boolean) {
     cancelTicket(tokenId: $tokenId, generateDiscount: $generateDiscount) {
       _id
-      isCanceled
-      invalidatedDate
-      isInvalidateable
       tokenSerialNumber
+      isCanceled
+      ticketStatus
+      invalidatedDate
+      cancelledDate
     }
   }
 `;
@@ -23,17 +24,10 @@ const useCancelTicket = () => {
     tokenId: string;
     generateDiscount?: boolean;
   }) => {
+    // The cached ticket updates from the result; the refetch brings the stock and counters.
     const result = await cancelTicketMutation({
       variables: { tokenId, generateDiscount },
-      refetchQueries: [
-        'TicketEventDetail',
-        'Product',
-        'TicketEvents',
-        'Tokens',
-        'Token',
-        'GateEvents',
-        'GateEventDetail',
-      ],
+      refetchQueries: ['TicketEventDetail'],
       awaitRefetchQueries: true,
     });
     return result;

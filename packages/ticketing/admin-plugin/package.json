@@ -11,6 +11,7 @@
     "@types/react": "^19.0.0",
     "@unchainedshop/admin-ui": "*",
     "esbuild": "^0.27.0",
+    "jsqr": "^1.4.0",
     "react": "^19.0.0",
     "tsup": "^8.0.0",
     "typescript": "^6.0.3"

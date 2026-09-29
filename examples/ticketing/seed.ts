@@ -1,6 +1,10 @@
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
+import { ProductContractStandard, ProductType } from '@unchainedshop/core-products';
+import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import type { UnchainedCore } from '@unchainedshop/core';
+import { TicketEventProperty } from '@unchainedshop/ticketing';
+import { TICKET_WAREHOUSING_ADAPTER_KEY } from '@unchainedshop/ticketing/warehousing/ticket';
 
 const logger = console;
 const {
@@ -31,6 +35,19 @@ export default async (unchainedAPI: UnchainedCore) => {
         password: seedPassword ? seedPassword : undefined,
         roles: ['admin'],
         username: 'admin',
+      },
+      { skipMessaging: true },
+    );
+
+    // Gate staff sign in with a regular account that has the `ticketing` role (scanTicket).
+    await modules.users.createUser(
+      {
+        email: 'gate@unchained.local',
+        guest: false,
+        initialPassword: seedPassword ? true : undefined,
+        password: seedPassword ? seedPassword : undefined,
+        roles: ['ticketing'],
+        username: 'gate',
       },
       { skipMessaging: true },
     );
@@ -92,13 +109,71 @@ export default async (unchainedAPI: UnchainedCore) => {
       configuration: [],
     });
 
+    // The ticket issuer: the only VIRTUAL provider, a second one (e.g. the ETH minter) would
+    // issue every ticket twice. initialConfiguration only applies to providers created through
+    // GraphQL or the Admin UI, so a seed sets the configuration itself. Gates open 2 hours before
+    // the event start and close 1 hour after it; an empty value leaves that side open.
+    const warehousingProvider = await modules.warehousing.create({
+      adapterKey: TICKET_WAREHOUSING_ADAPTER_KEY,
+      type: WarehousingProviderType.VIRTUAL,
+      configuration: [
+        { key: 'entryOpensMinutesBefore', value: '120' },
+        { key: 'entryClosesMinutesAfter', value: '60' },
+        { key: 'serialOffset', value: '0' },
+      ],
+    });
+
+    // A demo event starting one hour after the first boot, so its gate is open right away.
+    // The event facts live in the public tokenization properties (see TicketEventProperty);
+    // change them in the Admin UI (Ticketing → Events) or with the updateTicketEvent mutation.
+    const startsAt = new Date(Date.now() + 60 * 60 * 1000);
+    startsAt.setSeconds(0, 0);
+    const event = await modules.products.create({
+      type: ProductType.TOKENIZED_PRODUCT,
+      tags: ['example-event'],
+      commerce: {
+        pricing: [
+          {
+            amount: 2500,
+            currencyCode: currencies[0],
+            countryCode: countries[0],
+            isTaxable: false,
+            isNetPrice: false,
+          },
+        ],
+      },
+      // Off-chain tickets need no contract address or token id; supply caps the tickets sold.
+      tokenization: {
+        contractStandard: ProductContractStandard.ERC721,
+        supply: 500,
+        ercMetadataProperties: {
+          [TicketEventProperty.START]: startsAt,
+          [TicketEventProperty.LOCATION]: 'Unchained Hall, Zurich',
+          [TicketEventProperty.DURATION_MINUTES]: 120,
+          [TicketEventProperty.DOORS_OPEN_MINUTES_BEFORE]: 30,
+          [TicketEventProperty.CATEGORY]: 'Concert',
+        },
+      },
+    });
+    await modules.products.texts.updateTexts(event._id, [
+      {
+        locale: languages[0],
+        title: 'Unchained Live',
+        subtitle: 'An evening of commerce and music',
+        slug: 'unchained-live',
+      },
+    ]);
+    await modules.products.publish(event);
+
     logger.log(`initialized database with
 countries: ${countries.join(',')}
 currencies: ${currencies.join(',')}
 languages: ${languages.join(',')}
 deliveryProvider: ${deliveryProvider._id} (${deliveryProvider.adapterKey})
 paymentProvider: ${paymentProvider._id} (${paymentProvider.adapterKey})
-user: admin@unchained.local / ${seedPassword}`);
+warehousingProvider: ${warehousingProvider._id} (${warehousingProvider.adapterKey})
+event: ${event._id} (starts ${startsAt.toISOString()})
+users: admin@unchained.local, gate@unchained.local / ${seedPassword}`);
   } catch (e) {
     logger.error(e);
   }

@@ -1,6 +1,5 @@
 import type { TemplateResolver } from '@unchainedshop/core';
-
-const { EMAIL_FROM, EMAIL_WEBSITE_NAME = 'Unchained Shop', EMAIL_WEBSITE_URL } = process.env;
+import { getTicketEventDetails } from '../event-details.ts';
 
 export const resolveTicketCancelledTemplate: TemplateResolver<{
   tokenId: string;
@@ -8,6 +7,7 @@ export const resolveTicketCancelledTemplate: TemplateResolver<{
   discountCode?: string;
   discountAmount?: number;
 }> = async ({ tokenId, userId, discountCode, discountAmount }, { modules }) => {
+  const { EMAIL_FROM, EMAIL_WEBSITE_NAME = 'Unchained Shop', EMAIL_WEBSITE_URL } = process.env;
   const user = await modules.users.findUserById(userId);
   if (!user) return [];
 
@@ -27,12 +27,10 @@ export const resolveTicketCancelledTemplate: TemplateResolver<{
   });
   const eventTitle = productText?.title || 'Event';
 
-  const slot = (product as any).tokenization?.ercMetadataProperties?.slot || product.meta?.slot;
-  const slotText = slot
-    ? new Date(slot).toLocaleString(locale.baseName, { dateStyle: 'medium', timeStyle: 'short' })
+  const { startsAt, location } = getTicketEventDetails(product);
+  const slotText = startsAt
+    ? startsAt.toLocaleString(locale.baseName, { dateStyle: 'medium', timeStyle: 'short' })
     : '';
-
-  const location = product.meta?.location || '';
 
   const eventDetails = [slotText, location].filter(Boolean).join(' at ');
 

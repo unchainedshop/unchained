@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { beforeEach, describe, test } from 'node:test';
 import { OrderPricingSheet, OrderPricingRowCategory } from '@unchainedshop/core';
-import { configureOrdersModule } from '@unchainedshop/core-orders';
+import { configureOrdersModule, ordersSettings } from '@unchainedshop/core-orders';
 import { Collection } from 'mongodb';
 import { setupDatabase } from './helpers.js';
 
@@ -28,6 +28,9 @@ describe('persisted order pricing migration', () => {
     const migrations = new Map();
     // Exercise the normal core-orders registration, not a separate test transform.
     ordersModule = await configureOrdersModule({
+      // Without options the module resets the process-wide order settings of the shared test
+      // platform (e.g. its validateOrderPosition), so keep them
+      options: { ...ordersSettings },
       db,
       migrationRepository: {
         db,

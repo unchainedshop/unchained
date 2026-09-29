@@ -1,10 +1,20 @@
 export default [
   /* GraphQL */ `
+    """
+    The optional fields follow partial update rules: omit a field to keep the stored value,
+    pass null to clear it, pass a value to replace it.
+    """
     input UpdateProductTokenizationInput {
-      contractAddress: String!
+      "Omit for off-chain tokens (e.g. tickets)"
+      contractAddress: String
       contractStandard: SmartContractStandard!
-      tokenId: String!
+      "Omit for off-chain tokens (e.g. tickets); required by on-chain ERC1155 minters"
+      tokenId: String
       supply: Int!
+      """
+      Omit to keep the stored properties (e.g. a ticket event's slot), pass null to clear them;
+      an object replaces them entirely (no deep merge)
+      """
       ercMetadataProperties: JSON
     }
 
@@ -14,7 +24,7 @@ export default [
     }
 
     type ContractConfiguration @cacheControl(maxAge: 180) {
-      tokenId: String!
+      tokenId: String
       supply: Int!
       ercMetadataProperties: JSON
     }

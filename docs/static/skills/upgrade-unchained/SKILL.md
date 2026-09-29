@@ -28,9 +28,20 @@ Fetch example boot files for the target version to understand current patterns:
 |-----------|-------------|
 | Express | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/kitchensink-express/src/boot.ts` |
 | Fastify | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/kitchensink/src/boot.ts` |
-| Minimal | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/minimal/src/boot.ts` |
-| Ticketing | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/ticketing/src/boot.ts` |
-| OIDC | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/oidc/src/boot.ts` |
+| Minimal | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/minimal/boot.js` |
+| Ticketing | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/ticketing/boot.ts` |
+| OIDC | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/examples/oidc/boot.ts` |
+
+If an example URL returns 404, list `https://api.github.com/repos/unchainedshop/unchained/contents/examples?ref=v{version}` and use the boot file found there.
+
+## Feature Guides
+
+Fetch these when the project uses the feature:
+
+| Feature | Guide URL |
+|---------|-----------|
+| Ticketing (`@unchainedshop/ticketing`) | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/docs/docs/guides/ticketing-setup.md` |
+| Ticket renderers (PDF, Apple Wallet, Google Wallet) | `https://raw.githubusercontent.com/unchainedshop/unchained/refs/tags/v{version}/docs/docs/guides/ticketing-renderers.md` |
 
 ## Additional Resources
 

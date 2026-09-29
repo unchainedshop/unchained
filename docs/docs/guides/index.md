@@ -34,7 +34,8 @@ Practical, step-by-step guides for common development tasks with Unchained Engin
 
 ## Extensions
 
-- [Event Ticketing](./ticketing-setup) - Set up event ticketing with PDF tickets and mobile wallet passes
+- [Event Ticketing](./ticketing-setup) - Sell tickets, redeem them at the gate, cancel events and deliver tickets
+- [Ticket Renderers](./ticketing-renderers) - Build the tickets PDF, Apple Wallet and Google Wallet passes
 
 ## Development
 

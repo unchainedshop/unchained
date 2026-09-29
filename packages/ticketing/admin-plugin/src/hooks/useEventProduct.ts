@@ -1,7 +1,9 @@
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-import { parseUniqueId } from '../utils/misc';
+import { parseUniqueId } from '../utils/misc.ts';
 
+// Attendee names come from the ticket (issued with the ticketMeta hook), the buyer only shows
+// the public User.name: no private user data and no per-ticket redeemability check.
 export const TicketEventDetailQuery = gql`
   query TicketEventDetail($productId: ID!) {
     product(productId: $productId) {
@@ -28,20 +30,21 @@ export const TicketEventDetailQuery = gql`
           ercMetadataProperties
           supply
         }
-        simulatedStocks {
-          quantity
-        }
         tokensCount
         isCanceled
+        eventStartsAt
+        eventEndsAt
+        eventDoorsOpenAt
+        eventLocation
+        eventCategory
         tokens {
           _id
           tokenSerialNumber
-          invalidatedDate
-          isInvalidateable
-          isCanceled
           quantity
-          status
-          walletAddress
+          ticketStatus
+          invalidatedDate
+          cancelledDate
+          attendeeName
           user {
             _id
             name

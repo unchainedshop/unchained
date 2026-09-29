@@ -12,6 +12,10 @@ const TokenFragment = gql`
     invalidatedDate
     expiryDate
     ercMetadata
+    order {
+      _id
+      orderNumber
+    }
     accessKey
     isInvalidateable
   }

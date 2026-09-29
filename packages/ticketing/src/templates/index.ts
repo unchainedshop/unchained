@@ -1,4 +1,4 @@
-import { MessagingDirector } from '@unchainedshop/core';
+import { MessagingDirector, type TemplateResolver } from '@unchainedshop/core';
 import { resolveEventCancelledTemplate } from './resolveEventCancelledTemplate.ts';
 import { resolveTicketCancelledTemplate } from './resolveTicketCancelledTemplate.ts';
 
@@ -11,14 +11,16 @@ export type TicketingMessageTypes = (typeof TicketingMessageTypes)[keyof typeof 
 
 export { resolveEventCancelledTemplate, resolveTicketCancelledTemplate };
 
-/** Register the ticketing cancellation e-mail templates with the shared messaging director. */
+const registerTemplateIfAbsent = (templateName: string, templateResolver: TemplateResolver<any>) => {
+  if (MessagingDirector.getTemplate(templateName)) return;
+  MessagingDirector.registerTemplate(templateName, templateResolver);
+};
+
+/**
+ * Register the default ticketing cancellation e-mail templates with the shared messaging director.
+ * A template the project registered under the same name wins, no matter which one is registered first.
+ */
 export const registerTicketingTemplates = () => {
-  MessagingDirector.registerTemplate(
-    TicketingMessageTypes.EVENT_CANCELLED,
-    resolveEventCancelledTemplate,
-  );
-  MessagingDirector.registerTemplate(
-    TicketingMessageTypes.TICKET_CANCELLED,
-    resolveTicketCancelledTemplate,
-  );
+  registerTemplateIfAbsent(TicketingMessageTypes.EVENT_CANCELLED, resolveEventCancelledTemplate);
+  registerTemplateIfAbsent(TicketingMessageTypes.TICKET_CANCELLED, resolveTicketCancelledTemplate);
 };

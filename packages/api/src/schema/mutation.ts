@@ -379,7 +379,8 @@ export default [
       updateProductPlan(productId: ID!, plan: UpdateProductPlanInput!): Product
 
       """
-      Modify tokenization part of a product
+      Modify tokenization part of a product. Omitted optional fields keep their stored value,
+      so ercMetadataProperties (e.g. a ticket event's slot) survives an update that does not send it
       """
       updateProductTokenization(
         productId: ID!

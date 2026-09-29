@@ -37,7 +37,9 @@ Two URL forms — the filename must end in `.json`:
 /erc-metadata/{productId}/{locale}/{tokenFileName}.json  # explicit locale, e.g. de-CH
 ```
 
-The handler loads the product, looks up the token (for `ERC721` products by contract address only; for other contract standards the token serial number is parsed from the filename), and returns the metadata built by the `services.warehousing.ercMetadata` service. Responds `404` if no metadata exists, `503` on errors.
+The handler loads the product, looks up the token by product and serial number (the filename without `.json`, matched case-sensitively, for ERC-721 and ERC-1155 alike) and returns the metadata built by the `services.warehousing.ercMetadata` service, which asks the first active `VIRTUAL` warehousing provider. It responds `404` for an unknown or non-tokenized product, an unknown token or missing metadata, and `503` on errors.
+
+The route is public, so it only serves the keys of the EIP metadata standards (`PUBLIC_ERC_METADATA_KEYS`): `name`, `description`, `image`, `properties`, `attributes`, `localization`, `external_url`, `animation_url`, `background_color` and `decimals`. Everything else an adapter returns is left out, and `token.meta` is never part of it. `properties` carries the product's `tokenization.ercMetadataProperties`, so keep private data out of them (event tickets store their public event facts there).
 
 See [ETH Minter](./warehousing-eth-minter.md) for the shape of the returned metadata document.
 

@@ -1,11 +1,5 @@
-import { subscribe } from '@unchainedshop/events';
-import type { RawPayloadType } from '@unchainedshop/events';
-import { WorkerEventTypes, type Work } from '@unchainedshop/core-worker';
 import { type UnchainedCore } from '@unchainedshop/core';
-import { RendererTypes, registerRenderer } from './template-registry.ts';
 import ticketingModules, { type TicketingModule, type TicketingOptions } from './module.ts';
-
-import setupMagicKey from './magic-key.ts';
 import ticketingServices, { type TicketingServices } from './services.ts';
 import type { DiscountCodeHandlers } from './discount-codes.ts';
 import { registerTicketingTemplates, TicketingMessageTypes } from './templates/index.ts';
@@ -14,6 +8,8 @@ import {
   ticketingResolvers,
   ticketingActions,
   configureTicketingRoles,
+  createTicketingRoles,
+  type TicketingRolesOptions,
 } from './api/index.ts';
 
 export type TicketingAPI = UnchainedCore & {
@@ -22,12 +18,63 @@ export type TicketingAPI = UnchainedCore & {
 };
 
 export type {
-  RendererTypes,
   TicketingModule,
   TicketingServices,
   TicketingOptions,
   DiscountCodeHandlers,
+  TicketingRolesOptions,
 };
+
+export {
+  RendererTypes,
+  type PDFRenderer,
+  type PassRenderer,
+  type GoogleWalletPassRenderer,
+} from './template-registry.ts';
+export { createTicketingPlugin, type TicketingPluginOptions } from './plugin.ts';
+export {
+  withTicketing,
+  type WithTicketingOptions,
+  type CanAccessTicketEvent,
+} from './with-ticketing.ts';
+export { getTicketingPaths, type TicketingPaths } from './routes.ts';
+export {
+  buildTicketsPdfUrl,
+  buildWalletPassUrls,
+  getTicketAttachments,
+  type TicketAttachment,
+} from './ticket-delivery.ts';
+export {
+  TicketEventProperty,
+  getTicketEventDetails,
+  getTicketEventStart,
+  isTicketEventCancelled,
+  isTicketCancelled,
+  type TicketEventDetails,
+} from './event-details.ts';
+export { isWithinEntryWindow } from './entry-window.ts';
+export {
+  buildTicketScanPayload,
+  parseTicketScanPayload,
+  type TicketScanPayload,
+} from './scan-payload.ts';
+export {
+  TicketingEventTypes,
+  registerTicketingEvents,
+  type TicketRedeemedEventPayload,
+  type TicketCancelledEventPayload,
+  type TicketEventCancelledEventPayload,
+} from './events.ts';
+export { TicketStatus, getTicketStatus } from './api/resolvers/type/token.ts';
+export { TicketNotRedeemableReason } from './api/resolvers/mutations/scanTicket.ts';
+export {
+  createTicketOrderPositionValidator,
+  validateTicketOrderPosition,
+  type TicketSaleRules,
+  type TicketSaleRulesInput,
+  type TicketOrderPositionValidatorOptions,
+  type TicketValidationAPI,
+} from './validate-order-position.ts';
 
 export {
   ticketingServices,
@@ -36,61 +83,7 @@ export {
   ticketingResolvers,
   ticketingActions,
   configureTicketingRoles,
+  createTicketingRoles,
   registerTicketingTemplates,
   TicketingMessageTypes,
 };
-
-export function setupPDFTickets({ renderOrderPDF }: { renderOrderPDF: any }) {
-  registerRenderer(RendererTypes.ORDER_PDF, renderOrderPDF);
-}
-
-export function setupMobileTickets({
-  createGoogleWalletPass,
-  createAppleWalletPass,
-}: {
-  createGoogleWalletPass: any;
-  createAppleWalletPass: any;
-}) {
-  registerRenderer(RendererTypes.GOOGLE_WALLET, createGoogleWalletPass);
-  registerRenderer(RendererTypes.APPLE_WALLET, createAppleWalletPass);
-}
-
-export default function setupTicketing(
-  unchainedAPI: TicketingAPI,
-  {
-    renderOrderPDF,
-    createAppleWalletPass,
-    createGoogleWalletPass,
-  }: {
-    renderOrderPDF?: any;
-    createAppleWalletPass?: any;
-    createGoogleWalletPass?: any;
-  } = {},
-) {
-  setupPDFTickets({
-    renderOrderPDF,
-  });
-  setupMobileTickets({
-    createAppleWalletPass,
-    createGoogleWalletPass,
-  });
-
-  registerTicketingTemplates();
-
-  if (!process.env.UNCHAINED_SECRET)
-    throw new Error(
-      'Unchained Ticketing needs the UNCHAINED_SECRET environment variable to be set in order to allow magic key access to orders and tokens.',
-    );
-
-  setupMagicKey();
-
-  subscribe('TOKEN_INVALIDATED', async () => {
-    await unchainedAPI.modules.passes.invalidateAppleWalletPasses(unchainedAPI);
-  });
-
-  subscribe(WorkerEventTypes.FINISHED, async ({ payload: work }: RawPayloadType<Work>) => {
-    if ((work.type === 'EXPORT_TOKEN' || work.type === 'UPDATE_TOKEN_OWNERSHIP') && work.success) {
-      await unchainedAPI.modules.passes.invalidateAppleWalletPasses(unchainedAPI);
-    }
-  });
-}

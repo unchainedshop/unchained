@@ -13,6 +13,22 @@ export const Token = {
     return loaders.userLoader.load({ userId: token.userId });
   },
 
+  // A token can outlive its order's ownership (web3 transfer, ticket handed on), so the order is
+  // guarded by viewOrder on its own and resolves to null instead of failing the whole token.
+  order: async (token: TokenSurrogate, _params: never, context: Context) => {
+    if (!token.orderPositionId) return null;
+    const orderPosition = await context.modules.orders.positions.findOrderPosition(
+      { itemId: token.orderPositionId },
+      { projection: { orderId: 1 } },
+    );
+    if (!orderPosition?.orderId) return null;
+
+    const params = { orderId: orderPosition.orderId };
+    if (!(await context.roles!.userHasPermission(context, actions.viewOrder, [undefined, params])))
+      return null;
+    return context.loaders.orderLoader.load(params);
+  },
+
   status: async (token: TokenSurrogate, params: never, { loaders }: Context) => {
     return loaders.tokenExportStatusLoader.load({ token });
   },

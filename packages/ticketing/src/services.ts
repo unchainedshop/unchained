@@ -1,6 +1,8 @@
 import type { TicketingModule } from './module.ts';
 import type { Bound, UnchainedCore } from '@unchainedshop/core';
+import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { TicketingMessageTypes } from './templates/index.ts';
+import { TicketingEventTypes, emitTicketingEvent } from './events.ts';
 
 type Modules = UnchainedCore['modules'];
 type TicketingModules = Modules & TicketingModule;
@@ -9,6 +11,32 @@ interface DiscountOptions {
   generateDiscount?: boolean;
   countryCode?: string;
   currencyCode?: string;
+}
+
+interface CancelTicketOptions extends DiscountOptions {
+  /**
+   * Refuse a redeemed ticket instead of cancelling it, also when a scan redeems it while the
+   * cancellation runs: throws an Error with cause `TICKET_ALREADY_REDEEMED`.
+   */
+  refuseRedeemed?: boolean;
+}
+
+const alreadyRedeemed = (tokenId: string) =>
+  new Error(`Ticket ${tokenId} has already been redeemed`, { cause: 'TICKET_ALREADY_REDEEMED' });
+
+// The cancellation is written first, so TOKEN_INVALIDATED and the Apple pass it re-renders already
+// see a cancelled ticket. Tickets redeemed earlier are not invalidated again and keep their date.
+// With onlyValid nothing happens (null) unless the ticket is still valid when the cancel is written.
+async function cancelAndInvalidateTicket(
+  modules: Modules,
+  tokenId: string,
+  { onlyValid }: { onlyValid?: boolean } = {},
+): Promise<TokenSurrogate | null> {
+  const { passes } = modules as TicketingModules;
+  const cancelledToken = await passes.cancelTicket(tokenId, { onlyValid });
+  if (!cancelledToken && onlyValid) return null;
+  const invalidatedToken = await modules.warehousing.invalidateToken(tokenId);
+  return invalidatedToken || cancelledToken;
 }
 
 async function cancelTicketsForProduct(
@@ -59,12 +87,20 @@ async function cancelTicketsForProduct(
   }
 
   for (const token of tokensToCancel) {
-    await this.warehousing.invalidateToken(token._id);
-    await passes.cancelTicket(token._id);
+    const cancelledToken = await cancelAndInvalidateTicket(this, token._id);
+    await emitTicketingEvent(TicketingEventTypes.TICKET_CANCELLED, {
+      token: cancelledToken || token,
+    });
   }
 
   await this.products.update(productId, {
     'meta.cancelled': true,
+    'meta.cancelledDate': new Date(),
+  });
+
+  await emitTicketingEvent(TicketingEventTypes.TICKET_EVENT_CANCELLED, {
+    productId,
+    cancelledCount: tokensToCancel.length,
   });
 
   await Promise.allSettled(
@@ -89,11 +125,12 @@ async function cancelTicketsForProduct(
 async function cancelTicketWithDiscount(
   this: Modules,
   tokenId: string,
-  options?: DiscountOptions,
+  options?: CancelTicketOptions,
 ): Promise<{ token: any }> {
   const { passes } = this as unknown as TicketingModules;
   const token = await this.warehousing.findToken({ tokenId });
   if (!token || token.meta?.cancelled) return { token };
+  if (options?.refuseRedeemed && token.invalidatedDate) throw alreadyRedeemed(tokenId);
 
   let discountCode: string | undefined;
   let discountAmount: number | undefined;
@@ -113,8 +150,19 @@ async function cancelTicketWithDiscount(
     }
   }
 
-  await this.warehousing.invalidateToken(tokenId);
-  const cancelledToken = await passes.cancelTicket(tokenId);
+  const cancelledToken = await cancelAndInvalidateTicket(this, tokenId, {
+    onlyValid: options?.refuseRedeemed,
+  });
+  if (!cancelledToken && options?.refuseRedeemed) {
+    // A scan or another cancellation got there after the read above. The code issued for this
+    // attempt is dropped unsent, so the ticket is reimbursed at most once and never after entry.
+    const current = await this.warehousing.findToken({ tokenId });
+    if (!current || current.meta?.cancelled) return { token: current };
+    throw alreadyRedeemed(tokenId);
+  }
+  await emitTicketingEvent(TicketingEventTypes.TICKET_CANCELLED, {
+    token: cancelledToken || token,
+  });
 
   if (token.userId) {
     await this.worker.addWork({

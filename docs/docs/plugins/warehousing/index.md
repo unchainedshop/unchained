@@ -13,6 +13,7 @@ Warehousing plugins manage inventory, stock levels, and product fulfillment.
 |-------------|-------------|--------|
 | [`shop.unchained.warehousing.store`](./warehousing-store.md) | Basic inventory management | `base` |
 | [`shop.unchained.warehousing.infinite-minter`](./warehousing-eth-minter.md) | Ethereum NFT minting | `crypto` |
+| [`shop.unchained.warehousing.ticket`](../../guides/ticketing-setup.md#the-ticket-issuer) | Event tickets, from `@unchainedshop/ticketing/warehousing/ticket` | - |
 
 The [`ERC Metadata` plugin](./warehousing-erc-metadata.md), included in `base`, serves token metadata over HTTP. It has no warehousing adapter.
 

@@ -45,12 +45,14 @@ const TokenListItem = ({ token }) => {
       </Table.Cell>
       <Table.Cell>
         <div className="flex items-center text-sm">
-          <Link
-            href={`/orders?orderId=${token.ercMetadata?.orderId}`}
-            className="font-medium text-slate-800 dark:text-slate-700"
-          >
-            {token?.ercMetadata?.orderId}
-          </Link>
+          {token.order ? (
+            <Link
+              href={`/orders?orderId=${token.order._id}`}
+              className="font-medium text-slate-800 dark:text-slate-700"
+            >
+              {token.order.orderNumber || token.order._id}
+            </Link>
+          ) : null}
         </div>
       </Table.Cell>
       <Table.Cell>

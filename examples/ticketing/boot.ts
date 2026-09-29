@@ -4,16 +4,13 @@ import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
 import { SendMessagePlugin } from '@unchainedshop/plugins/delivery/send-message';
 import { pluginRegistry } from '@unchainedshop/core';
 import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
-import setupTicketing, {
-  ticketingModules,
-  ticketingTypeDefs,
-  ticketingResolvers,
-  ticketingActions,
-  configureTicketingRoles,
-  type TicketingAPI,
+import {
+  createTicketingPlugin,
+  validateTicketOrderPosition,
+  withTicketing,
 } from '@unchainedshop/ticketing';
-import connectTicketingToFastify from '@unchainedshop/ticketing/lib/fastify.js';
-import ticketingServices from '@unchainedshop/ticketing/lib/services.js';
+import { createTicketWarehousingPlugin } from '@unchainedshop/ticketing/warehousing/ticket';
+import { ReimbursementCodePlugin } from '@unchainedshop/ticketing/pricing/discount-reimbursement-code';
 import { ticketingAdminPlugin } from '@unchainedshop/ticketing/admin-plugin';
 import seed from './seed.ts';
 
@@ -24,40 +21,55 @@ const fastify = Fastify({
 });
 
 try {
-  // Register base plugins before starting platform
+  // Register all plugins before starting the platform
   registerBasePlugins();
   // seed.ts creates a send-message delivery provider, which the base preset does not include
   pluginRegistry.register(SendMessagePlugin);
 
-  const platform = await startPlatform({
-    modules: ticketingModules,
-    services: { ...ticketingServices },
-    typeDefs: ticketingTypeDefs,
-    resolvers: [ticketingResolvers],
-    rolesOptions: {
-      additionalActions: ticketingActions,
-      additionalRoles: {
-        ticketing: configureTicketingRoles,
+  // Passes module, ticket PDF and wallet routes, magic keys and cancellation e-mails. The example
+  // passes no renderers, so the PDF and wallet routes answer 404: see the ticket renderers guide
+  // (docs/docs/guides/ticketing-renderers.md) for renderOrderPDF, createAppleWalletPass and
+  // createGoogleWalletPass.
+  pluginRegistry.register(createTicketingPlugin());
+
+  // The ticket issuer; seed.ts creates the one VIRTUAL warehousing provider that uses it.
+  pluginRegistry.register(
+    createTicketWarehousingPlugin({
+      // Attendee names for gate staff, one per seat: the storefront sends them as the order
+      // position configuration `attendees`, e.g. [{ key: "attendees", value: "Ada, Alan" }].
+      ticketMeta: ({ orderPosition, index }) => {
+        const attendees = orderPosition.configuration
+          ?.find(({ key }) => key === 'attendees')
+          ?.value?.split(',');
+        const attendeeName = attendees?.[index]?.trim();
+        return attendeeName ? { attendeeName } : undefined;
       },
-    },
-  });
+    }),
+  );
 
-  // Unchained Ticketing Extension
-  setupTicketing(platform.unchainedAPI as TicketingAPI, {
-    renderOrderPDF: () => fastify.log.info('TODO: Rendering Order PDF'),
-    createAppleWalletPass: () => fastify.log.info('TODO: Creating Apple Wallet Pass'),
-    createGoogleWalletPass: () => fastify.log.info('TODO: Creating Google Wallet Pass'),
-  });
+  // Redeems the reimbursement codes cancelTicket / cancelEvent issue with generateDiscount
+  // (signed with DISCOUNT_CODE_SECRET)
+  pluginRegistry.register(ReimbursementCodePlugin);
 
+  // withTicketing adds the ticketing GraphQL schema, services, actions and the `ticketing` role
+  const platform = await startPlatform(
+    withTicketing({
+      options: {
+        orders: {
+          // Keeps ticket sales within the supply and refuses tickets of cancelled events
+          validateOrderPosition: validateTicketOrderPosition,
+        },
+      },
+    }),
+  );
+
+  // Mounts the plugin routes (including the ticketing routes) before the Admin UI
   await connect(fastify, platform, {
     allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
     adminUI: {
       plugins: [ticketingAdminPlugin()],
     },
   });
-
-  // Register ticketing routes (ticketing package not yet migrated to plugin system)
-  connectTicketingToFastify(fastify);
 
   await seed(platform.unchainedAPI);
 

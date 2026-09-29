@@ -2,6 +2,7 @@ import type { Context } from '@unchainedshop/api';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, TokenNotFoundError } from '@unchainedshop/api';
 import { TicketingModuleNotFoundError, TokenAlreadyRedeemedError } from '../../errors.ts';
+import { assertTicketEventInScope, hasTicketEventScope } from '../../roles.ts';
 
 export default async function cancelTicket(
   root: never,
@@ -15,6 +16,12 @@ export default async function cancelTicket(
 
   const token = await modules.warehousing.findToken({ tokenId });
   if (!token) throw new TokenNotFoundError({ tokenId });
+
+  // A role granted cancelTicket stays within its organizer scope.
+  if (hasTicketEventScope(context)) {
+    const product = await modules.products.findProduct({ productId: token.productId });
+    await assertTicketEventInScope(product, context, 'cancelTicket');
+  }
 
   if (token.meta?.cancelled) {
     return token;
@@ -34,11 +41,20 @@ export default async function cancelTicket(
     throw new TicketingModuleNotFoundError({});
   }
 
-  const result = await ticketingServices.cancelTicketWithDiscount(tokenId, {
-    generateDiscount,
-    countryCode,
-    currencyCode,
-  });
-
-  return result.token;
+  // The check above read the ticket earlier; the service refuses a ticket that a scan redeems in
+  // the meantime, so it is never both admitted and reimbursed.
+  try {
+    const result = await ticketingServices.cancelTicketWithDiscount(tokenId, {
+      generateDiscount,
+      countryCode,
+      currencyCode,
+      refuseRedeemed: true,
+    });
+    return result.token;
+  } catch (error) {
+    if ((error as Error)?.cause === 'TICKET_ALREADY_REDEEMED') {
+      throw new TokenAlreadyRedeemedError({ tokenId });
+    }
+    throw error;
+  }
 }

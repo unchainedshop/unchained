@@ -1,377 +1,319 @@
 import { Readable } from 'node:stream';
-import { checkAction } from '@unchainedshop/api/lib/acl.js';
-import { actions } from '@unchainedshop/api/lib/roles/index.js';
-import type { Context } from '@unchainedshop/api';
-import { RendererTypes, getRenderer } from './template-registry.ts';
+import { acl, roles, type Context } from '@unchainedshop/api';
+import type { PluginHttpRoute } from '@unchainedshop/core';
+import type { File } from '@unchainedshop/core-files';
+import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { createLogger } from '@unchainedshop/logger';
-import { getFileAdapter } from '@unchainedshop/core';
+import { timingSafeStringEqual } from '@unchainedshop/utils';
+import { RendererTypes, getRenderer, hasRenderer } from './template-registry.ts';
 import type { TicketingAPI } from './index.ts';
+
 const logger = createLogger('unchained:ticketing');
 
-const {
-  APPLE_WALLET_WEBSERVICE_PATH = '/rest/apple-wallet',
-  GOOGLE_WALLET_WEBSERVICE_PATH = '/rest/google-wallet',
-  UNCHAINED_PDF_PRINT_HANDLER_PATH = '/rest/print_tickets',
-} = process.env;
-
-const isAuthenticationTokenCorrect = (authHeader: string | null, authenticationToken: string) => {
-  const expectedAuthorizationValue = `ApplePass ${authenticationToken}`;
-  return authHeader === expectedAuthorizationValue;
-};
-
-// Print tickets handler
-export async function printTicketsHandler(request: Request, context: Context): Promise<Response> {
-  const url = new URL(request.url);
-  const variant = url.searchParams.get('variant');
-  const orderId = url.searchParams.get('orderId');
-  const otp = url.searchParams.get('otp');
-
-  try {
-    if (!orderId || !otp) {
-      throw new Error('Missing required query parameters: orderId and otp');
-    }
-
-    await checkAction(context, actions.viewOrder, [undefined, { orderId, otp }]);
-
-    const render = getRenderer(RendererTypes.ORDER_PDF);
-    const pdfStream = await render({ orderId, variant: variant as string }, context);
-
-    // Convert Node.js Readable to WHATWG ReadableStream
-    const webStream = Readable.toWeb(pdfStream) as ReadableStream;
-
-    return new Response(webStream, {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/pdf',
-      },
-    });
-  } catch (error) {
-    logger.error(error);
-    return new Response(null, { status: 403 });
-  }
+export interface TicketingPaths {
+  printTickets: string;
+  googleWallet: string;
+  appleWallet: string;
 }
 
-// Google Wallet handler
-export async function googleWalletHandler(
-  request: Request,
-  context: TicketingAPI & { params: Record<string, string> },
+const withoutTrailingSlash = (path: string) => path.replace(/\/+$/, '');
+
+/**
+ * Base paths of the ticketing routes, read from the environment on every call.
+ * Issued Apple passes carry ROOT_URL + appleWallet as webServiceURL, so keep it stable.
+ */
+export function getTicketingPaths(): TicketingPaths {
+  const {
+    UNCHAINED_PDF_PRINT_HANDLER_PATH = '/rest/print_tickets',
+    GOOGLE_WALLET_WEBSERVICE_PATH = '/rest/google-wallet',
+    APPLE_WALLET_WEBSERVICE_PATH = '/rest/apple-wallet',
+  } = process.env;
+  return {
+    printTickets: withoutTrailingSlash(UNCHAINED_PDF_PRINT_HANDLER_PATH),
+    googleWallet: withoutTrailingSlash(GOOGLE_WALLET_WEBSERVICE_PATH),
+    appleWallet: withoutTrailingSlash(APPLE_WALLET_WEBSERVICE_PATH),
+  };
+}
+
+/** The HTTP connectors pass the request context merged with the unchained API and the path params. */
+export type TicketingRouteContext = Context & TicketingAPI & { params: Record<string, string> };
+
+type TicketingRouteHandler = (request: Request, context: TicketingRouteContext) => Promise<Response>;
+
+const json = (status: number, body: unknown) => Response.json(body, { status });
+
+const hasValidAccessKey = async (
+  token: TokenSurrogate,
+  hash: string | null,
+  { modules }: TicketingRouteContext,
+) =>
+  Boolean(hash) &&
+  timingSafeStringEqual(await modules.warehousing.buildAccessKeyFromToken(token), hash!);
+
+const toWebStream = (stream: NodeJS.ReadableStream) =>
+  Readable.toWeb(stream instanceof Readable ? stream : new Readable().wrap(stream)) as ReadableStream;
+
+async function sendPassFile(
+  file: File,
+  { services }: TicketingRouteContext,
+  headers: Record<string, string> = {},
 ): Promise<Response> {
-  const { modules } = context;
-  const { tokenId } = context.params;
+  const stream = await services.files.createDownloadStream({ fileId: file._id });
+  if (!stream) return json(404, { error: 'Pass file not found' });
+  return new Response(toWebStream(stream), {
+    status: 200,
+    headers: { 'Content-Type': 'application/vnd.apple.pkpass', ...headers },
+  });
+}
+
+// PassKit authenticates with the authenticationToken baked into the pass, which is the token id.
+const isAuthorizedForPass = async (request: Request, pass: File) => {
+  const rawData = pass.meta?.rawData as { _id?: string; tokenId?: string } | undefined;
+  const authenticationToken = rawData?._id || rawData?.tokenId;
+  const authorization = request.headers.get('authorization');
+  if (!authenticationToken || !authorization) return false;
+  return timingSafeStringEqual(authorization, `ApplePass ${authenticationToken}`);
+};
+
+/** GET {print}?orderId&otp[&variant]: the order's ticket PDF for viewers of the order. */
+export async function printTicketsHandler(
+  request: Request,
+  context: TicketingRouteContext,
+): Promise<Response> {
+  const url = new URL(request.url);
+  const orderId = url.searchParams.get('orderId');
+  const otp = url.searchParams.get('otp') || undefined;
+  const variant = url.searchParams.get('variant') || undefined;
+  if (!orderId) return new Response(null, { status: 403 });
 
   try {
-    if (!tokenId) {
-      return new Response(JSON.stringify({ error: 'Token ID required' }), {
-        status: 404,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
+    // The ticketing magic-key rule accepts the otp, the order owner and admins pass without one.
+    await acl.checkAction(context, roles.actions.viewOrder, [undefined, { orderId, otp }]);
+  } catch {
+    return new Response(null, { status: 403 });
+  }
 
-    const token = await modules.warehousing.findToken({ tokenId });
+  if (!hasRenderer(RendererTypes.ORDER_PDF)) return json(404, { error: 'Ticket PDF not configured' });
+  const order = await context.modules.orders.findOrder({ orderId });
+  if (!order) return json(404, { error: 'Order not found' });
 
-    if (!token) {
-      return new Response(JSON.stringify({ error: 'Token not found' }), {
-        status: 404,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    const url = new URL(request.url);
-    const hash = url.searchParams.get('hash');
-    const correctHash = await modules.warehousing.buildAccessKeyFromToken(token);
-
-    if (!hash || hash !== correctHash) {
-      return new Response(JSON.stringify({ error: 'Token hash invalid for current owner' }), {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    const passLink = await modules.passes.upsertGoogleWalletPass(token, context);
-
-    return new Response(JSON.stringify({ passLink }), {
+  try {
+    const render = getRenderer(RendererTypes.ORDER_PDF);
+    const pdfStream = await render({ orderId, variant }, context);
+    return new Response(toWebStream(pdfStream), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/pdf', 'Cache-Control': 'private, no-store' },
     });
   } catch (e) {
     logger.error(e);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
+    return new Response(null, { status: 500 });
+  }
+}
+
+/** GET {google}/download/:tokenId?hash=: redirects to the Google Wallet save link. */
+export async function googleWalletDownloadHandler(
+  request: Request,
+  context: TicketingRouteContext,
+): Promise<Response> {
+  const { tokenId } = context.params;
+  const token = tokenId ? await context.modules.warehousing.findToken({ tokenId }) : null;
+  if (!token) return json(404, { error: 'Token not found' });
+
+  const hash = new URL(request.url).searchParams.get('hash');
+  if (!(await hasValidAccessKey(token, hash, context))) {
+    return json(403, { error: 'Token hash invalid for current owner' });
+  }
+  if (!hasRenderer(RendererTypes.GOOGLE_WALLET)) {
+    return json(404, { error: 'Google Wallet not configured' });
+  }
+
+  try {
+    const pass = await context.modules.passes.upsertGoogleWalletPass(token, context);
+    const passLink = typeof pass === 'string' ? pass : await pass?.asURL();
+    if (!passLink) return json(404, { error: 'Google Wallet pass not available' });
+
+    // Reject anything but an absolute http(s) URL before it ends up in the Location header.
+    if (!['https:', 'http:'].includes(new URL(passLink).protocol)) {
+      throw new Error(`Google Wallet renderer returned an unsupported link for token ${token._id}`);
+    }
+    return new Response(null, {
+      status: 302,
+      headers: { Location: passLink, 'Cache-Control': 'no-store' },
+    });
+  } catch (e) {
+    logger.error(e);
+    return json(500, { error: 'Internal server error' });
+  }
+}
+
+/** GET {apple}/download/:passFileName?hash=: the pkpass of the token named `<tokenId>.pkpass`. */
+export async function appleWalletDownloadHandler(
+  request: Request,
+  context: TicketingRouteContext,
+): Promise<Response> {
+  const tokenId = context.params.passFileName?.replace(/\.pkpass$/, '');
+  const token = tokenId ? await context.modules.warehousing.findToken({ tokenId }) : null;
+  if (!token) return json(404, { error: 'Token not found' });
+
+  const hash = new URL(request.url).searchParams.get('hash');
+  if (!(await hasValidAccessKey(token, hash, context))) {
+    return json(403, { error: 'Token hash invalid for current owner' });
+  }
+  if (!hasRenderer(RendererTypes.APPLE_WALLET)) {
+    return json(404, { error: 'Apple Wallet not configured' });
+  }
+
+  try {
+    const passFile = await context.modules.passes.upsertAppleWalletPass(token, context);
+    return await sendPassFile(passFile, context, {
+      'Content-Disposition': `attachment; filename=${token._id}.pkpass`,
+      'Cache-Control': 'no-store',
+    });
+  } catch (e) {
+    logger.error(e);
+    return new Response(null, { status: 500 });
+  }
+}
+
+/** POST {apple}/v1/devices/:deviceLibraryIdentifier/registrations/:passTypeIdentifier/:serialNumber */
+export async function appleRegisterDeviceHandler(
+  request: Request,
+  context: TicketingRouteContext,
+): Promise<Response> {
+  const { deviceLibraryIdentifier, passTypeIdentifier, serialNumber } = context.params;
+  const { passes } = context.modules;
+  try {
+    const pass = await passes.findAppleWalletPass(passTypeIdentifier, serialNumber);
+    if (!pass) return new Response(null, { status: 404 });
+    if (!(await isAuthorizedForPass(request, pass))) return new Response(null, { status: 401 });
+
+    const { pushToken } = await request.json().catch(() => ({}));
+    if (!pushToken) return new Response(null, { status: 400 });
+
+    const newRegistration = await passes.registerDeviceForAppleWalletPass(
+      passTypeIdentifier,
+      serialNumber,
+      { deviceLibraryIdentifier, pushToken },
+    );
+    return new Response(null, { status: newRegistration ? 201 : 200 });
+  } catch (e) {
+    logger.error(e);
+    return new Response(null, { status: 500 });
+  }
+}
+
+/** DELETE {apple}/v1/devices/:deviceLibraryIdentifier/registrations/:passTypeIdentifier/:serialNumber */
+export async function appleUnregisterDeviceHandler(
+  request: Request,
+  context: TicketingRouteContext,
+): Promise<Response> {
+  const { deviceLibraryIdentifier, passTypeIdentifier, serialNumber } = context.params;
+  const { passes } = context.modules;
+  try {
+    const pass = await passes.findAppleWalletPass(passTypeIdentifier, serialNumber);
+    if (!pass) return new Response(null, { status: 404 });
+    if (!(await isAuthorizedForPass(request, pass))) return new Response(null, { status: 401 });
+
+    await passes.unregisterDeviceForAppleWalletPass(
+      passTypeIdentifier,
+      serialNumber,
+      deviceLibraryIdentifier,
+    );
+    return new Response(null, { status: 200 });
+  } catch (e) {
+    logger.error(e);
+    return new Response(null, { status: 500 });
+  }
+}
+
+/** GET {apple}/v1/devices/:deviceLibraryIdentifier/registrations/:passTypeIdentifier[?passesUpdatedSince] */
+export async function appleUpdatablePassesHandler(
+  request: Request,
+  context: TicketingRouteContext,
+): Promise<Response> {
+  const { deviceLibraryIdentifier, passTypeIdentifier } = context.params;
+  const passesUpdatedSinceParam = new URL(request.url).searchParams.get('passesUpdatedSince');
+  const passesUpdatedSinceDate = passesUpdatedSinceParam ? new Date(passesUpdatedSinceParam) : undefined;
+  const passesUpdatedSince =
+    passesUpdatedSinceDate && !Number.isNaN(passesUpdatedSinceDate.getTime())
+      ? passesUpdatedSinceDate
+      : undefined;
+
+  try {
+    const passes = await context.modules.passes.findUpdatedAppleWalletPasses(
+      passTypeIdentifier,
+      deviceLibraryIdentifier,
+      passesUpdatedSince,
+    );
+    const serialNumbers = passes.map((pass) => pass.meta?.serialNumber).filter(Boolean) as string[];
+    if (!serialNumbers.length) return new Response(null, { status: 204 });
+    return json(200, { serialNumbers, lastUpdated: new Date().toISOString() });
+  } catch (e) {
+    logger.error(e);
+    return new Response(null, { status: 500 });
+  }
+}
+
+/** GET {apple}/v1/passes/:passTypeIdentifier/:serialNumber: the latest version of a pass. */
+export async function appleLatestPassHandler(
+  request: Request,
+  context: TicketingRouteContext,
+): Promise<Response> {
+  const { passTypeIdentifier, serialNumber } = context.params;
+  try {
+    const pass = await context.modules.passes.findAppleWalletPass(passTypeIdentifier, serialNumber);
+    if (!pass) return new Response(null, { status: 404 });
+    if (!(await isAuthorizedForPass(request, pass))) return new Response(null, { status: 401 });
+
+    const lastModifiedDate = new Date(pass.updated || pass.created);
+    lastModifiedDate.setMilliseconds(0);
+
+    const ifModifiedSinceHeader = request.headers.get('if-modified-since');
+    if (ifModifiedSinceHeader) {
+      const ifModifiedSinceDate = new Date(ifModifiedSinceHeader);
+      ifModifiedSinceDate.setMilliseconds(0);
+      if (ifModifiedSinceDate.getTime() >= lastModifiedDate.getTime()) {
+        return new Response(null, { status: 304 });
+      }
+    }
+
+    return await sendPassFile(pass, context, { 'Last-Modified': lastModifiedDate.toUTCString() });
+  } catch (e) {
+    logger.error(e);
+    return new Response(null, { status: 500 });
+  }
+}
+
+/** POST {apple}/v1/log: error messages reported by devices. */
+export async function appleLogHandler(request: Request): Promise<Response> {
+  const { logs } = await request.json().catch(() => ({}));
+  if (Array.isArray(logs)) {
+    logs.forEach((log) => {
+      if (typeof log === 'string') logger.info(log);
     });
   }
+  return new Response(null, { status: 200 });
 }
 
-// Apple Wallet handler
-export async function appleWalletHandler(
-  request: Request,
-  context: TicketingAPI & { params: Record<string, string> },
-): Promise<Response> {
-  const { modules } = context;
-  const url = new URL(request.url);
-  const pathname = url.pathname;
+// PluginHttpRoute types its context as UnchainedCore; the connectors pass the full request context.
+const route = (
+  method: PluginHttpRoute['method'],
+  path: string,
+  handler: TicketingRouteHandler,
+): PluginHttpRoute => ({ method, path, handler: handler as unknown as PluginHttpRoute['handler'] });
 
-  logger.info(`${pathname} (${JSON.stringify(Object.fromEntries(url.searchParams))})`);
-
-  // Handle download path
-  if (pathname.includes('/download/')) {
-    try {
-      const pathParts = pathname.split('/');
-      const passFileName = pathParts[pathParts.length - 1];
-      const [tokenId] = passFileName.split('.pkpass');
-
-      if (!tokenId) {
-        return new Response(null, { status: 404 });
-      }
-
-      const token = await modules.warehousing.findToken({ tokenId });
-
-      if (!token) {
-        return new Response(JSON.stringify({ error: 'Token not found' }), {
-          status: 404,
-          headers: { 'Content-Type': 'application/json' },
-        });
-      }
-
-      const hash = url.searchParams.get('hash');
-      const correctHash = await modules.warehousing.buildAccessKeyFromToken(token);
-
-      if (!hash || hash !== correctHash) {
-        return new Response(JSON.stringify({ error: 'Token hash invalid for current owner' }), {
-          status: 403,
-          headers: { 'Content-Type': 'application/json' },
-        });
-      }
-
-      const passFile = await modules.passes.upsertAppleWalletPass(token, context);
-
-      const fileUploadAdapter = getFileAdapter();
-      const signedUrl = await fileUploadAdapter.createDownloadURL(passFile);
-      const downloadUrl = signedUrl && (await modules.files.normalizeUrl(signedUrl, {}));
-
-      if (!downloadUrl) {
-        return new Response(
-          JSON.stringify({
-            success: false,
-            message: 'Could not create download URL',
-            name: 'URL_SIGNING_FAILED',
-          }),
-          {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' },
-          },
-        );
-      }
-
-      const response = await fetch(downloadUrl);
-      const data = await response.arrayBuffer();
-
-      return new Response(data, {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/vnd.apple.pkpass',
-          'Content-Disposition': `attachment; filename=${tokenId}.pkpass`,
-        },
-      });
-    } catch (e) {
-      logger.error(e);
-      return new Response(null, { status: 500 });
-    }
-  }
-
-  const pathParts = pathname.split('/').filter(Boolean);
-  const [, , endpoint, ...pathComponents] = pathParts;
-
-  // Device registration endpoints
-  if (endpoint === 'devices') {
-    if (request.method === 'POST') {
-      // Register Device
-      const [deviceLibraryIdentifier, , passTypeIdentifier, serialNumber] = pathComponents;
-
-      try {
-        const body = await request.json();
-        const { pushToken } = body;
-
-        const pass = await modules.passes.findAppleWalletPass(passTypeIdentifier, serialNumber);
-
-        if (!pass) {
-          return new Response(null, { status: 404 });
-        }
-
-        const authToken = (pass.meta?.rawData as any)?._id || (pass.meta?.rawData as any)?.tokenId;
-        if (!isAuthenticationTokenCorrect(request.headers.get('authorization'), authToken)) {
-          return new Response(null, { status: 401 });
-        }
-
-        const newRegistration = await modules.passes.registerDeviceForAppleWalletPass(
-          passTypeIdentifier,
-          serialNumber,
-          {
-            deviceLibraryIdentifier,
-            pushToken,
-          },
-        );
-
-        return new Response(null, { status: newRegistration ? 201 : 200 });
-      } catch (e) {
-        logger.error(e);
-        return new Response(null, { status: 500 });
-      }
-    } else if (request.method === 'GET') {
-      // Get the List of Updatable Passes
-      const [deviceLibraryIdentifier, , passTypeIdentifier] = pathComponents;
-      const passesUpdatedSinceParam = url.searchParams.get('passesUpdatedSince');
-      const passesUpdatedSince = passesUpdatedSinceParam ? new Date(passesUpdatedSinceParam) : undefined;
-
-      try {
-        const passes = await modules.passes.findUpdatedAppleWalletPasses(
-          passTypeIdentifier,
-          deviceLibraryIdentifier,
-          passesUpdatedSince,
-        );
-        const serialNumbers = passes.map((t) => t.meta?.serialNumber).filter(Boolean) as string[];
-
-        if (serialNumbers?.length) {
-          return new Response(
-            JSON.stringify({
-              serialNumbers,
-              lastUpdated: new Date(),
-            }),
-            {
-              status: 200,
-              headers: { 'Content-Type': 'application/json' },
-            },
-          );
-        }
-
-        return new Response(null, { status: 204 });
-      } catch (e) {
-        logger.error(e);
-        return new Response(null, { status: 500 });
-      }
-    } else if (request.method === 'DELETE') {
-      // Unregister Device
-      const [deviceLibraryIdentifier, , passTypeIdentifier, serialNumber] = pathComponents;
-
-      try {
-        const pass = await modules.passes.findAppleWalletPass(passTypeIdentifier, serialNumber);
-
-        if (!pass) {
-          return new Response(null, { status: 404 });
-        }
-
-        const authToken = (pass.meta?.rawData as any)?._id || (pass.meta?.rawData as any)?.tokenId;
-        if (!isAuthenticationTokenCorrect(request.headers.get('authorization'), authToken)) {
-          return new Response(null, { status: 401 });
-        }
-
-        await modules.passes.unregisterDeviceForAppleWalletPass(
-          passTypeIdentifier,
-          serialNumber,
-          deviceLibraryIdentifier,
-        );
-
-        return new Response(null, { status: 200 });
-      } catch (e) {
-        logger.error(e);
-        return new Response(null, { status: 500 });
-      }
-    }
-  } else if (endpoint === 'log') {
-    // Log Message
-    try {
-      const body = await request.json();
-      const { logs } = body;
-      logs?.forEach((log: any) => {
-        if (typeof log === 'string') {
-          logger.info(log);
-        }
-      });
-      return new Response(null, { status: 200 });
-    } catch (e) {
-      logger.error(e);
-      return new Response(null, { status: 500 });
-    }
-  } else if (endpoint === 'passes') {
-    if (request.method === 'GET') {
-      // Get an updated Pass
-      const [passTypeIdentifier, serialNumber] = pathComponents;
-
-      try {
-        const pass = await modules.passes.findAppleWalletPass(passTypeIdentifier, serialNumber);
-
-        if (!pass) {
-          return new Response(null, { status: 404 });
-        }
-
-        const authToken = (pass.meta?.rawData as any)?._id || (pass.meta?.rawData as any)?.tokenId;
-        if (!isAuthenticationTokenCorrect(request.headers.get('authorization'), authToken)) {
-          return new Response(null, { status: 401 });
-        }
-
-        const { updated, created } = pass;
-        const lastModifiedDate = new Date(updated || created);
-        lastModifiedDate.setMilliseconds(0);
-
-        const ifModifiedSinceHeader = request.headers.get('if-modified-since');
-        if (ifModifiedSinceHeader) {
-          const ifModifiedSinceDate = new Date(ifModifiedSinceHeader);
-          ifModifiedSinceDate.setMilliseconds(0);
-
-          if (ifModifiedSinceDate.getTime() >= lastModifiedDate.getTime()) {
-            return new Response(null, { status: 304 });
-          }
-        }
-
-        const fileUploadAdapter = getFileAdapter();
-        const signedUrl = await fileUploadAdapter.createDownloadURL(pass);
-        const downloadUrl = signedUrl && (await modules.files.normalizeUrl(signedUrl, {}));
-
-        if (!downloadUrl) {
-          return new Response(
-            JSON.stringify({
-              success: false,
-              message: 'Could not create download URL',
-              name: 'URL_SIGNING_FAILED',
-            }),
-            {
-              status: 500,
-              headers: { 'Content-Type': 'application/json' },
-            },
-          );
-        }
-
-        const result = await fetch(downloadUrl);
-        const data = await result.arrayBuffer();
-
-        return new Response(data, {
-          status: 200,
-          headers: {
-            'Content-Type': 'application/vnd.apple.pkpass',
-            'Last-Modified': lastModifiedDate.toUTCString(),
-          },
-        });
-      } catch (e) {
-        logger.error(e);
-        return new Response(null, { status: 500 });
-      }
-    }
-  }
-
-  return new Response(null, { status: 404 });
+/** The ticketing HTTP routes: ticket PDF, Google Wallet redirect and the Apple PassKit web service. */
+export function createTicketingRoutes(paths: TicketingPaths = getTicketingPaths()): PluginHttpRoute[] {
+  const { printTickets, googleWallet, appleWallet } = paths;
+  const deviceRegistrations = `${appleWallet}/v1/devices/:deviceLibraryIdentifier/registrations/:passTypeIdentifier`;
+  return [
+    route('GET', printTickets, printTicketsHandler),
+    route('GET', `${googleWallet}/download/:tokenId`, googleWalletDownloadHandler),
+    route('GET', `${appleWallet}/download/:passFileName`, appleWalletDownloadHandler),
+    route('POST', `${deviceRegistrations}/:serialNumber`, appleRegisterDeviceHandler),
+    route('DELETE', `${deviceRegistrations}/:serialNumber`, appleUnregisterDeviceHandler),
+    route('GET', deviceRegistrations, appleUpdatablePassesHandler),
+    route('GET', `${appleWallet}/v1/passes/:passTypeIdentifier/:serialNumber`, appleLatestPassHandler),
+    route('POST', `${appleWallet}/v1/log`, appleLogHandler),
+  ];
 }
-
-export const ticketingRoutes = [
-  {
-    path: UNCHAINED_PDF_PRINT_HANDLER_PATH,
-    handler: printTicketsHandler,
-  },
-  {
-    path: `${GOOGLE_WALLET_WEBSERVICE_PATH}/download/:tokenId`,
-    handler: googleWalletHandler,
-  },
-  {
-    path: `${APPLE_WALLET_WEBSERVICE_PATH}/*`,
-    handler: appleWalletHandler,
-  },
-];

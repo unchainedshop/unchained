@@ -1,9 +1,32 @@
 import { createLogger } from '@unchainedshop/logger';
 import type { UnchainedCore } from '@unchainedshop/core';
-import { ProductContractStandard } from '@unchainedshop/core-products';
+import { ProductType } from '@unchainedshop/core-products';
 import { systemLocale } from '@unchainedshop/utils';
 
 const logger = createLogger('unchained:erc-metadata');
+
+// EIP-721 / EIP-1155 metadata keys. This route is public: everything else an adapter returns
+// (e.g. token.meta with order ids or attendee data) stays behind the authorized GraphQL API.
+export const PUBLIC_ERC_METADATA_KEYS = [
+  'name',
+  'description',
+  'image',
+  'properties',
+  'attributes',
+  'localization',
+  'external_url',
+  'animation_url',
+  'background_color',
+  'decimals',
+] as const;
+
+const pickPublicErcMetadata = (ercMetadata: Record<string, unknown>) =>
+  Object.fromEntries(
+    PUBLIC_ERC_METADATA_KEYS.filter((key) => ercMetadata[key] !== undefined).map((key) => [
+      key,
+      ercMetadata[key],
+    ]),
+  );
 
 export async function ercMetadataHandler(
   request: Request,
@@ -35,18 +58,18 @@ export async function ercMetadataHandler(
       ? await loaders.productLoader.load({ productId })
       : await modules.products.findProduct({ productId });
 
-    const tokenSelector: { contractAddress?: string; tokenSerialNumber?: string } = {
-      contractAddress: product?.tokenization?.contractAddress,
-    };
-
-    // For non-ERC721 tokens, extract serial number from filename
-    if (product?.tokenization?.contractStandard !== ProductContractStandard.ERC721) {
-      tokenSelector.tokenSerialNumber = (tokenFileName || localeOrTokenFilename)
-        .toLowerCase()
-        .replace('.json', '');
+    if (product?.type !== ProductType.TOKENIZED_PRODUCT) {
+      return new Response(null, { status: 404 });
     }
 
-    const [token] = await modules.warehousing.findTokens(tokenSelector);
+    // One token of this product per serial, for ERC721 and ERC1155 alike. Several products can
+    // share a contract address (off-chain tickets all use a placeholder), so the address alone
+    // would return any product's token.
+    const tokenSerialNumber = (tokenFileName || localeOrTokenFilename).replace(/\.json$/i, '');
+    const [token] = await modules.warehousing.findTokens(
+      { productId: product._id, tokenSerialNumber },
+      { limit: 1 },
+    );
     if (!token) {
       return new Response(null, { status: 404 });
     }
@@ -66,7 +89,7 @@ export async function ercMetadataHandler(
       return new Response(null, { status: 404 });
     }
 
-    return Response.json(ercMetadata, { status: 200 });
+    return Response.json(pickPublicErcMetadata(ercMetadata), { status: 200 });
   } catch (e: any) {
     logger.error(e);
     return Response.json({ name: e.name, code: e.code, message: e.message }, { status: 503 });

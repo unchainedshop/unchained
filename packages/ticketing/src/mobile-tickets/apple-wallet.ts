@@ -3,30 +3,32 @@ import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:apple-wallet-webservice');
 
-let apn;
-try {
-  const module = await import('@parse/node-apn');
-  apn = module.default;
-} catch (error) {
-  if (
-    (error as { code?: string })?.code === 'ERR_MODULE_NOT_FOUND' &&
-    String((error as Error)?.message).includes('@parse/node-apn')
-  ) {
-    logger.warn(
-      `optional peer npm package '@parse/node-apn' not installed, apple wallet pass update notifications will not work`,
-    );
-  } else {
-    // An installed apn that fails to load is a real error, not a missing peer.
-    logger.error(`failed to load '@parse/node-apn'`, error);
-  }
-}
+let apnModule: Promise<any> | undefined;
 
-export const pushToApplePushNotificationService = async (deviceTokens) => {
-  if (!apn) {
-    throw new Error(
-      "npm dependency '@parse/node-apn' is not installed, please install it to push pass updates",
-    );
-  }
+// The optional peer is loaded on the first push, so importing ticketing has no side effects.
+const loadApn = () => {
+  apnModule ??= import('@parse/node-apn').then(
+    (module) => module.default,
+    (error) => {
+      apnModule = undefined;
+      if (
+        (error as { code?: string })?.code === 'ERR_MODULE_NOT_FOUND' &&
+        String((error as Error)?.message).includes('@parse/node-apn')
+      ) {
+        throw new Error(
+          "npm dependency '@parse/node-apn' is not installed, please install it to push pass updates",
+        );
+      }
+      // An installed apn that fails to load is a real error, not a missing peer.
+      logger.error(`failed to load '@parse/node-apn'`, error);
+      throw error;
+    },
+  );
+  return apnModule;
+};
+
+export const pushToApplePushNotificationService = async (deviceTokens: string[]) => {
+  const apn = await loadApn();
 
   const apnProvider = new apn.Provider({
     cert: process.env.PASS_CERTIFICATE_PATH,
@@ -35,8 +37,13 @@ export const pushToApplePushNotificationService = async (deviceTokens) => {
     production: true,
   });
 
-  const note = new apn.Notification({});
-  return apnProvider.send(note, deviceTokens);
+  try {
+    const note = new apn.Notification({});
+    return await apnProvider.send(note, deviceTokens);
+  } finally {
+    // Every push opens its own HTTP/2 session to APNs; close it again.
+    await apnProvider.shutdown();
+  }
 };
 
 export const buildPassBinary = async (

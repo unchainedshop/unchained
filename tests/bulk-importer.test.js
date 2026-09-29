@@ -279,6 +279,86 @@ test.describe('Bulk Importer', () => {
 
       assert.strictEqual(result, true);
     }, 45000);
+
+    test('imports the tokenization of an off-chain ticket product', async () => {
+      const { data: { addWork } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addWork($input: JSON) {
+            addWork(type: BULK_IMPORT, input: $input, retries: 0, priority: 10) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          input: {
+            events: [
+              {
+                entity: 'PRODUCT',
+                operation: 'CREATE',
+                payload: {
+                  _id: 'ticket-event',
+                  specification: {
+                    type: 'TOKENIZED_PRODUCT',
+                    published: '2020-01-01T00:00Z',
+                    tokenization: {
+                      contractStandard: 'ERC721',
+                      supply: 100,
+                      ercMetadataProperties: { slot: '2030-01-01T19:30:00.000Z', category: 'jazz' },
+                    },
+                    content: { de: { title: 'Konzert' } },
+                  },
+                },
+              },
+              {
+                entity: 'PRODUCT',
+                operation: 'UPDATE',
+                payload: {
+                  _id: 'ticket-event',
+                  specification: {
+                    published: '2020-01-02T00:00:00.000Z',
+                    tokenization: {
+                      contractStandard: 'ERC721',
+                      supply: 80,
+                      ercMetadataProperties: { slot: '2030-01-02T19:30:00.000Z', category: 'jazz' },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+      });
+      assert.ok(addWork);
+      await waitForImport(addWork._id);
+
+      const {
+        data: { product },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query TicketEvent($productId: ID!) {
+            product(productId: $productId) {
+              published
+              ... on TokenizedProduct {
+                contractAddress
+                contractConfiguration {
+                  tokenId
+                  supply
+                  ercMetadataProperties
+                }
+              }
+            }
+          }
+        `,
+        variables: { productId: 'ticket-event' },
+      });
+      assert.strictEqual(new Date(product.published).toISOString(), '2020-01-02T00:00:00.000Z');
+      assert.strictEqual(product.contractAddress, null);
+      assert.deepStrictEqual(product.contractConfiguration, {
+        tokenId: null,
+        supply: 80,
+        ercMetadataProperties: { slot: '2030-01-02T19:30:00.000Z', category: 'jazz' },
+      });
+    }, 45000);
   });
 
   test.describe('Import Filters', () => {

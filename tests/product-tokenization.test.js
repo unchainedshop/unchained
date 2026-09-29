@@ -92,6 +92,104 @@ test.describe('Product Tokenization', () => {
       );
     });
 
+    test('keeps, replaces and clears ercMetadataProperties by partial update rules', async () => {
+      const {
+        data: { createProduct },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation CreateProduct($product: CreateProductInput!, $texts: [ProductTextInput!]) {
+            createProduct(product: $product, texts: $texts) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          product: { type: 'TOKENIZED_PRODUCT' },
+          texts: [{ title: 'Concert', locale: 'de' }],
+        },
+      });
+
+      const updateTokenization = async (tokenization) => {
+        const { data, errors } = await graphqlFetchAsAdmin({
+          query: /* GraphQL */ `
+            mutation UpdateProductTokenization(
+              $productId: ID!
+              $tokenization: UpdateProductTokenizationInput!
+            ) {
+              updateProductTokenization(productId: $productId, tokenization: $tokenization) {
+                _id
+                ... on TokenizedProduct {
+                  contractAddress
+                  contractStandard
+                  contractConfiguration {
+                    tokenId
+                    supply
+                    ercMetadataProperties
+                  }
+                }
+              }
+            }
+          `,
+          variables: { productId: createProduct._id, tokenization },
+        });
+        assert.strictEqual(errors, undefined);
+        return data.updateProductTokenization;
+      };
+
+      // Off-chain: no contract address and no token id
+      const created = await updateTokenization({
+        contractStandard: 'ERC721',
+        supply: 100,
+        ercMetadataProperties: { slot: '2030-01-01T19:30:00.000Z', category: 'jazz' },
+      });
+      assert.strictEqual(created.contractAddress, null);
+      assert.deepStrictEqual(created.contractConfiguration, {
+        tokenId: null,
+        supply: 100,
+        ercMetadataProperties: { slot: '2030-01-01T19:30:00.000Z', category: 'jazz' },
+      });
+
+      // The admin Token tab never sends ercMetadataProperties: the slot must survive
+      const kept = await updateTokenization({
+        contractAddress: '0x0',
+        contractStandard: 'ERC721',
+        tokenId: '0',
+        supply: 80,
+      });
+      assert.strictEqual(kept.contractAddress, '0x0');
+      assert.deepStrictEqual(kept.contractConfiguration, {
+        tokenId: '0',
+        supply: 80,
+        ercMetadataProperties: { slot: '2030-01-01T19:30:00.000Z', category: 'jazz' },
+      });
+
+      // An object replaces the stored properties as a whole
+      const replaced = await updateTokenization({
+        contractStandard: 'ERC721',
+        supply: 80,
+        ercMetadataProperties: { slot: '2030-01-02T19:30:00.000Z' },
+      });
+      assert.strictEqual(replaced.contractAddress, '0x0');
+      assert.deepStrictEqual(replaced.contractConfiguration.ercMetadataProperties, {
+        slot: '2030-01-02T19:30:00.000Z',
+      });
+
+      // null clears
+      const cleared = await updateTokenization({
+        contractAddress: null,
+        contractStandard: 'ERC721',
+        tokenId: null,
+        supply: 80,
+        ercMetadataProperties: null,
+      });
+      assert.strictEqual(cleared.contractAddress, null);
+      assert.deepStrictEqual(cleared.contractConfiguration, {
+        tokenId: null,
+        supply: 80,
+        ercMetadataProperties: null,
+      });
+    });
+
     test('should return error when product not found', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `

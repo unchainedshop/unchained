@@ -54,6 +54,10 @@ export default [
       accessKey: String!
       invalidatedDate: DateTime
       user: User
+      """
+      The order the token was issued for, null when the viewer may not view that order
+      """
+      order: Order
       expiryDate: DateTime
       contractAddress: String
       walletAddress: String

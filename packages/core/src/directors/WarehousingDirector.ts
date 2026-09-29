@@ -195,37 +195,37 @@ export const WarehousingDirector: IWarehousingDirector = {
     };
   },
 
+  // The first active virtual provider answers for the token. A later provider must not be able
+  // to override its answer, e.g. turn an entry window's false into true.
   async tokenMetadata(virtualProviders, warehousingContext, unchainedAPI) {
-    return virtualProviders.reduce(async (lastPromise, provider) => {
-      const last = await lastPromise;
-      if (last) return last;
-      const currentDirector = await WarehousingDirector.actions(
-        provider,
-        warehousingContext,
-        unchainedAPI,
-      );
-      const isActive = await currentDirector.isActive();
-      if (isActive) {
-        return currentDirector.tokenMetadata(warehousingContext.token.tokenSerialNumber);
-      }
-      return null;
-    }, Promise.resolve(null));
+    const activeActions = await findFirstActiveActions(
+      virtualProviders,
+      warehousingContext,
+      unchainedAPI,
+    );
+    if (!activeActions) return null;
+    return activeActions.tokenMetadata(warehousingContext.token.tokenSerialNumber);
   },
 
   async isInvalidateable(virtualProviders, warehousingContext, unchainedAPI) {
-    return virtualProviders.reduce(async (lastPromise, provider) => {
-      const last = await lastPromise;
-      if (last) return last;
-      const currentDirector = await WarehousingDirector.actions(
-        provider,
-        warehousingContext,
-        unchainedAPI,
-      );
-      const isActive = await currentDirector.isActive();
-      if (isActive) {
-        return currentDirector.isInvalidateable(warehousingContext.token.tokenSerialNumber);
-      }
-      return null;
-    }, Promise.resolve(null));
+    const activeActions = await findFirstActiveActions(
+      virtualProviders,
+      warehousingContext,
+      unchainedAPI,
+    );
+    if (!activeActions) return null;
+    return activeActions.isInvalidateable(warehousingContext.token.tokenSerialNumber);
   },
 };
+
+async function findFirstActiveActions(
+  virtualProviders: WarehousingProvider[],
+  warehousingContext: WarehousingContext,
+  unchainedAPI,
+) {
+  for (const provider of virtualProviders) {
+    const currentActions = await WarehousingDirector.actions(provider, warehousingContext, unchainedAPI);
+    if (currentActions.isActive()) return currentActions;
+  }
+  return null;
+}

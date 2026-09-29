@@ -3,209 +3,99 @@
 
 # @unchainedshop/ticketing
 
-Event ticketing extension for the Unchained Engine. Provides PDF ticket generation, Apple Wallet passes, Google Wallet passes, and magic key order access.
+Event ticketing for the Unchained Engine: a ticket issuer for tokenized products, sale rules and supply checks, gate control with a QR scanner, event and ticket cancellation with e-mails and optional reimbursement codes, magic-key order links, and routes that serve your tickets PDF and your Apple Wallet and Google Wallet passes.
+
+Guides: [Event Ticketing](https://docs.unchained.shop/guides/ticketing-setup) and [Ticket Renderers](https://docs.unchained.shop/guides/ticketing-renderers).
 
 ## Installation
 
 ```bash
 npm install @unchainedshop/ticketing
+# Optional: pushes updated Apple Wallet passes to the devices that saved them
+npm install @parse/node-apn
 ```
+
+`UNCHAINED_SECRET` must be set: it derives the magic keys of orders.
 
 ## Usage
 
 ```typescript
-import { startPlatform } from '@unchainedshop/platform';
 import express from 'express';
-import setupTicketing, {
-  ticketingModules,
-  ticketingServices,
-  ticketingTypeDefs,
-  ticketingResolvers,
-  ticketingActions,
-  configureTicketingRoles,
-  type TicketingAPI,
-} from '@unchainedshop/ticketing';
-import { ticketingAdminPlugin } from '@unchainedshop/ticketing/admin-plugin';
-import connectTicketing from '@unchainedshop/ticketing/lib/express.js';
+import { pluginRegistry } from '@unchainedshop/core';
+import { startPlatform } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/express';
 import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
+import {
+  createTicketingPlugin,
+  validateTicketOrderPosition,
+  withTicketing,
+} from '@unchainedshop/ticketing';
+import { TicketWarehousingPlugin } from '@unchainedshop/ticketing/warehousing/ticket';
+import { ticketingAdminPlugin } from '@unchainedshop/ticketing/admin-plugin';
 
 registerBasePlugins();
+pluginRegistry.register(
+  createTicketingPlugin({
+    // Your renderers (optional); their routes answer 404 until you provide them
+    renderOrderPDF,
+    createAppleWalletPass,
+    createGoogleWalletPass,
+  }),
+);
+pluginRegistry.register(TicketWarehousingPlugin);
+
+const platform = await startPlatform(
+  withTicketing({
+    options: { orders: { validateOrderPosition: validateTicketOrderPosition } },
+  }),
+);
+
 const app = express();
-
-const engine = await startPlatform({
-  modules: ticketingModules,
-  services: ticketingServices,
-  typeDefs: ticketingTypeDefs,
-  resolvers: [ticketingResolvers],
-  rolesOptions: {
-    additionalActions: ticketingActions,
-    additionalRoles: { ticketing: configureTicketingRoles },
-  },
-});
-
-await connect(app, engine, {
-  adminUI: { plugins: [ticketingAdminPlugin()] },
-});
-connectTicketing(app);
-
-// Setup ticketing with your renderers
-setupTicketing(engine.unchainedAPI as TicketingAPI, {
-  renderOrderPDF,
-  createAppleWalletPass,
-  createGoogleWalletPass,
-});
-
+// Mounts the ticketing routes together with the other plugin routes, before the Admin UI
+await connect(app, platform, { adminUI: { plugins: [ticketingAdminPlugin()] } });
 app.listen(4010);
 ```
 
-Define the three renderer callbacks before running this example, and configure `UNCHAINED_SECRET` plus the platform's required environment variables. Renderers and their third-party dependencies belong to your application; see the [ticketing example](../../examples/ticketing/boot.ts).
+Then create one `VIRTUAL` warehousing provider with the adapter key `shop.unchained.warehousing.ticket` (the ticket issuer) and give gate staff accounts the `ticketing` role. The [ticketing example](../../examples/ticketing) does both in its seed.
 
-### Admin UI and gate permissions
+## Exports
 
-The plugin groups event management and gate control under **Ticketing**. Users with
-`manageProducts` see **Events**, including drafts and their attendees; signed-in users with the
-`scanTicket` action see **Gate Control**. Assign the `ticketing` role registered above to gate
-operators, or grant `scanTicket` in a custom role. Administrators have access automatically. Gate
-operators can read active events and their attendees, and redeem eligible tickets through the
-`scanTicket` mutation. An attendee is the ticket's `Token.user`, of which only the public profile
-(`name`, `avatar`, guarded by `viewUserPublicInfos`) is visible: ticketing grants no
-`viewUserPrivateInfos`. This grants no token export, cancellation, or reimbursement rights.
-Cancelling tickets or whole events requires `cancelTicket`, granted to administrators by default.
+### `@unchainedshop/ticketing`
 
-Gate access uses the regular account session. Pass codes, gate cookies, and separate gate login
-mutations are not supported. All ticket queries, mutations, and cancellation fields are defined by
-this extension, and the Admin UI plugin only appears when registered. See the
-[example configuration](../../examples/ticketing/README.md#gate-access-and-reimbursements) for
-reimbursement signing and checkout setup.
+| Export | Description |
+| ------ | ----------- |
+| `createTicketingPlugin(options)` | The plugin: `passes` module, PDF and wallet routes, magic-key rules, cancellation e-mail templates, Apple pass refresh. Options: `renderOrderPDF`, `createAppleWalletPass`, `createGoogleWalletPass`, `discountCode` |
+| `withTicketing(platformOptions, { canAccessEvent })` | Adds the GraphQL schema, services, actions and the `ticketing` role to `startPlatform` options; `canAccessEvent` limits non-admins to their events |
+| `validateTicketOrderPosition`, `createTicketOrderPositionValidator({ getSaleRules })` | `orders.validateOrderPosition` that enforces supply, cancelled events and sale rules |
+| `createTicketingRoles({ canAccessEvent })`, `configureTicketingRoles` | The `ticketing` role, for projects that build their roles themselves |
+| `ticketingTypeDefs`, `ticketingResolvers`, `ticketingServices`, `ticketingActions`, `ticketingModules` | The building blocks `withTicketing` uses, for custom schemas |
+| `buildTicketsPdfUrl`, `buildWalletPassUrls`, `getTicketAttachments` | Ticket links and e-mail attachments |
+| `buildTicketScanPayload`, `parseTicketScanPayload` | The QR code content of a ticket, and its parser |
+| `getTicketEventDetails`, `TicketEventProperty`, `isTicketEventCancelled`, `isTicketCancelled`, `getTicketStatus`, `TicketStatus` | Event facts and ticket state |
+| `TicketingEventTypes`, `registerTicketingEvents` | `TICKET_REDEEMED`, `TICKET_CANCELLED`, `TICKET_EVENT_CANCELLED` |
+| `getTicketingPaths()` | The route base paths (for the Apple `webServiceURL`) |
+| `registerTicketingTemplates`, `TicketingMessageTypes` | The `EVENT_CANCELLED` / `TICKET_CANCELLED` templates |
+| Types | `TicketingAPI`, `TicketingModule`, `TicketingServices`, `PDFRenderer`, `PassRenderer`, `GoogleWalletPassRenderer`, `TicketSaleRules`, `CanAccessTicketEvent`, … |
 
-## API Overview
+### Subpaths
 
-### Setup Functions
-
-| Export                            | Description                             |
-| --------------------------------- | --------------------------------------- |
-| default export (`setupTicketing`) | Initialize ticketing with all renderers |
-| `setupPDFTickets`                 | Setup only PDF rendering                |
-| `setupMobileTickets`              | Setup only wallet passes                |
-
-### Modules
-
-| Export              | Description                       |
-| ------------------- | --------------------------------- |
-| `ticketingModules`  | Additional modules for ticketing  |
-| `ticketingServices` | Additional services for ticketing |
-
-### Server Adapters
-
-| Import Path                               | Description                              |
-| ----------------------------------------- | ---------------------------------------- |
-| `@unchainedshop/ticketing/lib/express.js` | Express route connector (default export) |
-| `@unchainedshop/ticketing/lib/fastify.js` | Fastify route connector (default export) |
-
-### Renderer Types
-
-| Type            | Description                   |
-| --------------- | ----------------------------- |
-| `order`         | PDF ticket/receipt rendering  |
-| `apple-wallet`  | Apple Wallet pass generation  |
-| `google-wallet` | Google Wallet pass generation |
-
-### Types
-
-| Export              | Description                   |
-| ------------------- | ----------------------------- |
-| `TicketingAPI`      | Ticketing API context type    |
-| `TicketingModule`   | Module interface type         |
-| `TicketingServices` | Services interface type       |
-| `RendererTypes`     | Union of renderer type values |
-
-## Apple Wallet Setup
-
-1. Add a new Pass Type ID on [developer.apple.com](https://developer.apple.com/account), then generate a production certificate. Download and import into Keychain.
-
-2. Export with Keychain: Select "Certificates" tab, select the Pass Type ID, select both ID and key, export in p12 format.
-
-3. Convert to PEM (set a PEM passphrase as required):
-
-```bash
-openssl pkcs12 -in Certificates.p12 -legacy -clcerts -out cert_and_key.pem
-```
-
-4. Configure via environment variables:
-
-```bash
-PASS_CERTIFICATE_PATH=./cert_and_key.pem
-PASS_CERTIFICATE_SECRET=YOUR_PEM_PASSPHRASE
-PASS_TEAM_ID=SSCB95CV6U
-```
-
-## Renderer Implementation
-
-### PDF Renderer
-
-```tsx
-import React from 'react';
-import ReactPDF, { Document } from '@react-pdf/renderer';
-
-const TicketTemplate = ({ tickets }) => <Document>{/* Your ticket layout */}</Document>;
-
-export default async ({ orderId, variant }, { modules }) => {
-  const order = await modules.orders.findOrder({ orderId });
-  // ... prepare data
-  return ReactPDF.renderToStream(<TicketTemplate tickets={tickets} />);
-};
-```
-
-### Apple Wallet Renderer
-
-```typescript
-import { Template, constants } from '@walletpass/pass-js';
-
-export default async (token, unchainedAPI) => {
-  const template = new Template('eventTicket' /* ... */);
-  const pass = await template.createPass(/* ... */);
-  return pass;
-};
-```
-
-### Google Wallet Renderer
-
-```typescript
-import { google } from 'googleapis';
-import jwt from 'jsonwebtoken';
-
-export default async (token, unchainedAPI) => {
-  // Upsert class and object
-  const asURL = async () => createJwtNewObjects(issuerId, productId, token.tokenSerialNumber);
-  return { asURL };
-};
-```
-
-## Magic Key Order Access
-
-Allow users to access orders and tickets without logging in via an order-specific magic key:
-
-```typescript
-// Generate magic key
-const magicKey = await modules.passes.buildMagicKey(orderId);
-
-// Use in URL: https://my-shop/:orderId?otp=:magicKey
-// Send via x-magic-key HTTP header for API access
-```
-
-Protected actions: `viewOrder`, `updateToken`, `viewToken`
-
-The key is a deterministic SHA-256 digest of the order ID and `UNCHAINED_SECRET`. It is reusable and has no built-in expiration; changing the secret changes every order's key.
+| Import | Description |
+| ------ | ----------- |
+| `@unchainedshop/ticketing/warehousing/ticket` | `TicketWarehousingPlugin`, `createTicketWarehousingPlugin({ ticketMeta })`: the ticket issuer |
+| `@unchainedshop/ticketing/pricing/discount-reimbursement-code` | `ReimbursementCodePlugin`: accepts reimbursement codes at checkout |
+| `@unchainedshop/ticketing/admin-plugin` | `ticketingAdminPlugin()`: the **Ticketing** menu of the Admin UI |
 
 ## Environment Variables
 
-| Variable                  | Description                                                 |
-| ------------------------- | ----------------------------------------------------------- |
-| `UNCHAINED_SECRET`        | Required for magic key derivation                           |
-| `PASS_CERTIFICATE_PATH`   | Path to Apple pass certificate used by the example renderer |
-| `PASS_CERTIFICATE_SECRET` | PEM passphrase used by the example renderer                 |
-| `PASS_TEAM_ID`            | Apple Developer Team ID used by the example renderer        |
+| Variable | Description |
+| -------- | ----------- |
+| `UNCHAINED_SECRET` | Required, derives the magic keys |
+| `ROOT_URL` | Public URL of the engine for ticket links |
+| `UNCHAINED_PDF_PRINT_HANDLER_PATH` | Tickets PDF route, default `/rest/print_tickets` |
+| `GOOGLE_WALLET_WEBSERVICE_PATH` | Google Wallet route, default `/rest/google-wallet` |
+| `APPLE_WALLET_WEBSERVICE_PATH` | Apple Wallet download and PassKit web service, default `/rest/apple-wallet` |
+| `PASS_CERTIFICATE_PATH`, `PASS_CERTIFICATE_SECRET` | Apple pass certificate and key (PEM) and passphrase, for push updates with `@parse/node-apn` |
+| `DISCOUNT_CODE_SECRET` | 32 bytes as hex, signs reimbursement codes |
 
 ## License
 

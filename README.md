@@ -105,7 +105,7 @@ Foundational utilities used across all layers:
 | Package | Description |
 |---------|-------------|
 | [@unchainedshop/plugins](packages/plugins/README.md) | Official plugin collection for payment, delivery, pricing, and more |
-| [@unchainedshop/ticketing](packages/ticketing/README.md) | Event ticketing with PDF generation and Apple/Google Wallet passes |
+| [@unchainedshop/ticketing](packages/ticketing/README.md) | Event ticketing: ticket issuer, gate control, cancellations, and routes for your PDF and wallet pass renderers |
 
 ### Admin UI
 
@@ -119,7 +119,7 @@ Foundational utilities used across all layers:
 |---------|-------------|
 | [Kitchensink (Fastify)](examples/kitchensink/README.md) | Full-featured example with Fastify, all plugins, Admin UI extensions, and AI integration |
 | [Kitchensink (Express)](examples/kitchensink-express/README.md) | Full-featured example with Express, MCP server, and AI integration |
-| [Ticketing](examples/ticketing/README.md) | Event ticketing with PDF and wallet passes |
+| [Ticketing](examples/ticketing/README.md) | Event ticketing with the ticket issuer, gate staff and sale validation |
 | [Minimal](examples/minimal/README.md) | Minimal setup example |
 | [OIDC](examples/oidc/README.md) | OpenID Connect authentication example |
 

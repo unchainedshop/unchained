@@ -29,26 +29,25 @@ export const ETHMinter: IWarehousingAdapter = {
   },
 
   actions: (configuration, context) => {
-    const { MINTER_TOKEN_OFFSET = '0', ROOT_URL = 'http://localhost:4010' } = process.env;
+    const {
+      MINTER_TOKEN_OFFSET = '0',
+      ROOT_URL = 'http://localhost:4010',
+      ERC_METADATA_API_PATH = '/erc-metadata',
+    } = process.env;
 
     const { product, orderPosition, token, modules, locale } = context as WarehousingContext &
       UnchainedCore;
     const { contractAddress, contractStandard, tokenId, supply, ercMetadataProperties } =
       product?.tokenization || {};
-    const getTokensCreated = async ({ skipCancelled = false } = {}) => {
-      const selector: Record<string, any> =
+    const getTokensCreated = async () => {
+      const existingTokens = await modules.warehousing.findTokens(
         contractStandard === ProductContractStandard.ERC721
           ? { productId: product!._id }
           : {
               productId: product!._id,
               tokenSerialNumber: tokenId,
-            };
-
-      if (skipCancelled) {
-        selector['meta.cancelled'] = { $ne: true };
-      }
-
-      const existingTokens = await modules.warehousing.findTokens(selector);
+            },
+      );
       const tokensCreated = existingTokens.reduce((acc, curToken) => {
         return acc + curToken.quantity;
       }, 0);
@@ -73,28 +72,14 @@ export const ETHMinter: IWarehousingAdapter = {
       },
 
       stock: async () => {
-        const tokensCreated = await getTokensCreated({ skipCancelled: true });
+        const tokensCreated = await getTokensCreated();
         return supply ? supply - tokensCreated : 0;
       },
 
-      async isInvalidateable(tokenSerialNumber, referenceDate) {
-        if (token?.invalidatedDate) return false;
-
-        const slot = ercMetadataProperties?.slot;
-        if (!slot) return true;
-
-        const currentDate = new Date(referenceDate);
-
-        const earliestEntry = new Date(slot);
-        earliestEntry.setHours(earliestEntry.getHours() - 2);
-
-        const latestEntry = new Date(slot);
-        latestEntry.setHours(latestEntry.getHours() + 1);
-
-        return (
-          earliestEntry.getTime() < currentDate.getTime() &&
-          latestEntry.getTime() > currentDate.getTime()
-        );
+      // Web3 only: ticket rules (entry window, cancellation, order reference) live in the
+      // ticket issuer of @unchainedshop/ticketing
+      async isInvalidateable() {
+        return !token?.invalidatedDate;
       },
 
       tokenize: async () => {
@@ -103,7 +88,7 @@ export const ETHMinter: IWarehousingAdapter = {
         // Prepare metadata
 
         const chainId = configuration.find(({ key }) => key === 'chainId')?.value || undefined;
-        const meta = { contractStandard, orderId: orderPosition?.orderId };
+        const meta = { contractStandard };
         const tokensCreated = await getTokensCreated();
 
         if (!orderPosition) {
@@ -164,12 +149,12 @@ export const ETHMinter: IWarehousingAdapter = {
           locale: locale || systemLocale,
         });
 
-        const name = `${text.title} #${tokenSerialNumber}`;
+        const name = `${text?.title || product._id} #${tokenSerialNumber}`;
 
         const isDefaultLanguageActive = locale ? locale.language === systemLocale.language : true;
         const localization = isDefaultLanguageActive
           ? {
-              uri: `${ROOT_URL}/erc-metadata/${product._id}/{locale}/${tokenId}.json`,
+              uri: `${ROOT_URL}${ERC_METADATA_API_PATH}/${product._id}/{locale}/${tokenSerialNumber}.json`,
               default: systemLocale.language,
               locales: allLanguages.map((lang) => lang.isoCode),
             }
@@ -177,11 +162,10 @@ export const ETHMinter: IWarehousingAdapter = {
 
         return {
           name,
-          description: text.description,
+          description: text?.description,
           image: url,
           properties: ercMetadataProperties,
           localization,
-          ...(token?.meta || {}),
         };
       },
     };

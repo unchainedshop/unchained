@@ -9,6 +9,10 @@ description: NFT tokenization adapter for Web3 products
 
 Virtual warehousing for tokenized (NFT) products. Creates token records for ERC-721 and ERC-1155 contracts and serves ERC-compatible token metadata.
 
+:::note Not for event tickets
+The ETH minter knows nothing about events: no entry window, cancelled tokens still count against the supply. For tickets use the ticket issuer of `@unchainedshop/ticketing` ([Event Ticketing](../../guides/ticketing-setup.md#the-ticket-issuer)). Only run one active `VIRTUAL` provider per tokenized product: every active one issues tokens.
+:::
+
 :::info Included in Crypto Preset
 Registered automatically by `registerCryptoPlugins()` and `registerAllPlugins()`.
 :::
@@ -50,6 +54,7 @@ mutation CreateETHMinter {
 |----------|-------------|---------|
 | `MINTER_TOKEN_OFFSET` | Starting token serial number offset (ERC-721) | `0` |
 | `ROOT_URL` | Base URL for the metadata localization URI | `http://localhost:4010` |
+| `ERC_METADATA_API_PATH` | Path of the metadata route in the localization URI | `/erc-metadata` |
 
 ## Configuration Options
 
@@ -91,8 +96,9 @@ mutation ConfigureTokenization {
 ## Behavior
 
 - `isActive()` returns `true` only for `TOKENIZED_PRODUCT` products.
-- `stock()` returns `supply - tokensCreated` (or `0` when no supply is set).
-- `tokenize()` creates the token records described above when an order position is fulfilled — actual on-chain minting is up to you.
+- `stock()` returns `supply - tokensCreated` (or `0` when no supply is set). Cancelled tokens count as created.
+- `tokenize()` creates the token records described above when an order position is fulfilled — actual on-chain minting is up to you. Tokens store `meta: { contractStandard }`.
+- `isInvalidateable()` allows invalidating a token until it is invalidated; there is no time window.
 - `tokenMetadata(tokenSerialNumber)` returns EIP-721/EIP-1155-compatible JSON built from the localized product texts, the first product media file, and `ercMetadataProperties`:
 
 ```json
@@ -102,7 +108,7 @@ mutation ConfigureTokenization {
   "image": "https://cdn.example.com/image.png",
   "properties": { "attributes": [{ "trait_type": "Rarity", "value": "Legendary" }] },
   "localization": {
-    "uri": "https://example.com/erc-metadata/{productId}/{locale}/{tokenId}.json",
+    "uri": "https://example.com/erc-metadata/{productId}/{locale}/{tokenSerialNumber}.json",
     "default": "en",
     "locales": ["en", "de", "fr"]
   }

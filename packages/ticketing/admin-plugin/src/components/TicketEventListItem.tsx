@@ -1,6 +1,7 @@
 import Link from 'next/link';
+import { useIntl } from 'react-intl';
 import { Table, Badge, ImageWithFallback } from '@unchainedshop/admin-ui/ui';
-import { useFormatDateTime, generateUniqueId, defaultNextImageLoader } from '../utils/misc';
+import { useFormatDateTime, generateUniqueId, defaultNextImageLoader } from '../utils/misc.ts';
 
 const EVENT_STATUSES = {
   ACTIVE: 'emerald',
@@ -9,12 +10,15 @@ const EVENT_STATUSES = {
 };
 
 const TicketEventListItem = ({ product }) => {
+  const { formatMessage } = useIntl();
   const { formatDateTime } = useFormatDateTime();
-  const slot = product?.contractConfiguration?.ercMetadataProperties?.slot;
 
   const supply = product?.contractConfiguration?.supply || 0;
   const remaining = product?.simulatedStocks?.reduce((acc, cur) => acc + cur.quantity, 0) || 0;
-  const sold = supply - remaining;
+  // Without a supply there is no stock to subtract from: count the issued tickets instead.
+  const sold = supply > 0 ? Math.max(0, supply - remaining) : product?.tokensCount || 0;
+  // A cancelled event has no stock left, which says nothing about sales.
+  const showSales = !product?.isCanceled;
   const ticketUrl = `/ext/ticketing/${generateUniqueId(product)}`;
 
   return (
@@ -38,11 +42,17 @@ const TicketEventListItem = ({ product }) => {
             <span className="ml-2 text-sm text-text-muted">{product.texts.subtitle}</span>
           )}
         </Link>
+        {product?.eventCategory && (
+          <div className="mt-1">
+            <Badge text={product.eventCategory} color="slate" square />
+          </div>
+        )}
       </Table.Cell>
       <Table.Cell>
         <div className="text-sm text-text-secondary">
-          {slot
-            ? formatDateTime(slot, {
+          {product?.eventStartsAt
+            ? formatDateTime(product.eventStartsAt, {
+                weekday: 'short',
                 month: 'short',
                 year: 'numeric',
                 day: 'numeric',
@@ -51,27 +61,36 @@ const TicketEventListItem = ({ product }) => {
               })
             : '-'}
         </div>
+        {product?.eventLocation && (
+          <div className="text-sm text-text-muted">{product.eventLocation}</div>
+        )}
       </Table.Cell>
       <Table.Cell>
         <div className="flex items-center gap-2 text-sm">
-          <span className="font-medium text-text-primary">{sold}</span>
-          <span className="text-text-muted">/</span>
-          <span className="text-text-muted">{supply}</span>
-          {supply > 0 && (
-            <div className="ml-2 h-2 w-20 rounded-full bg-surface-raised">
-              <div
-                className="h-2 rounded-full bg-emerald-500"
-                style={{
-                  width: `${Math.min(100, (sold / supply) * 100)}%`,
-                }}
-              />
-            </div>
+          <span className="font-medium text-text-primary">{showSales ? sold : '-'}</span>
+          {showSales && supply > 0 && (
+            <>
+              <span className="text-text-muted">/</span>
+              <span className="text-text-muted">{supply}</span>
+              <div className="ml-2 h-2 w-20 rounded-full bg-surface-raised">
+                <div
+                  className="h-2 rounded-full bg-emerald-500"
+                  style={{
+                    width: `${Math.min(100, (sold / supply) * 100)}%`,
+                  }}
+                />
+              </div>
+            </>
           )}
         </div>
       </Table.Cell>
       <Table.Cell>
         <Badge
-          text={product?.isCanceled ? 'CANCELLED' : product?.status}
+          text={
+            product?.isCanceled
+              ? formatMessage({ id: 'event_status_cancelled', defaultMessage: 'CANCELLED' })
+              : product?.status
+          }
           color={product?.isCanceled ? 'rose' : EVENT_STATUSES[product?.status] || 'slate'}
           square
         />

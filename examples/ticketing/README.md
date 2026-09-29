@@ -1,18 +1,20 @@
 # Ticketing Example
 
-Example demonstrating the Unchained Engine ticketing extension for event tickets and digital passes.
+Example demonstrating event ticketing with `@unchainedshop/ticketing`: selling tickets, redeeming them at the gate, cancelling them, and the ticket routes.
 
 ## Features
 
-- **Fastify** HTTP server with custom Unchained logger
+- **Fastify** HTTP server with the Unchained logger
 - **Base plugins** via `@unchainedshop/plugins/presets/base`
-- **Ticketing module** with `@unchainedshop/ticketing`
-- **PDF ticket rendering** (placeholder implementation)
-- **Apple Wallet pass** generation (placeholder implementation)
-- **Google Wallet pass** generation (placeholder implementation)
-- **Magic key order access** for ticket retrieval without login
-- **Database seeding** with admin user, country, currency, language, and providers
-- **Integration tests** for ticketing functionality
+- **Ticketing plugin** (`createTicketingPlugin`): passes module, ticket PDF and wallet routes, magic-key order access, cancellation e-mails
+- **Ticket issuer** (`createTicketWarehousingPlugin`) with attendee names per seat (`ticketMeta`)
+- **Sales within supply** (`validateTicketOrderPosition`)
+- **Reimbursement codes** (`ReimbursementCodePlugin`)
+- **Admin UI** with **Ticketing → Events** and **Ticketing → Gate Control**
+- **Seed data**: admin and gate staff accounts, providers, the ticket issuer and a demo event
+- **Integration tests** for buying, looking up, redeeming and cancelling tickets and for the ticket routes
+
+The example registers no renderers, so the tickets PDF and the wallet routes answer `404` (`Ticket PDF not configured`, …). [Ticket Renderers](../../docs/docs/guides/ticketing-renderers.md) builds all three.
 
 ## Prerequisites
 
@@ -29,134 +31,118 @@ npm run dev
 Server starts at http://localhost:4010 with:
 
 - GraphQL endpoint: `/graphql`
-- Default login: `admin@unchained.local` / `password`
+- Admin UI: `/`
+- Logins: `admin@unchained.local` (administrator) and `gate@unchained.local` (gate staff), both with password `password`
 
 ## Scripts
 
-| Command                        | Description                              |
-| ------------------------------ | ---------------------------------------- |
-| `npm run dev`                  | Start development server with watch mode |
-| `npm run build`                | Build TypeScript to `lib/`               |
-| `npm start`                    | Start production server                  |
-| `npm run test:run:integration` | Run integration tests                    |
-| `npm run lint`                 | Format code with Prettier                |
+| Command                        | Description                                                       |
+| ------------------------------ | ----------------------------------------------------------------- |
+| `npm run dev`                  | Start development server with watch mode                          |
+| `npm run build`                | Build TypeScript to `lib/`                                        |
+| `npm start`                    | Start production server                                           |
+| `npm run test:run:integration` | Start the example against the test settings and run `tests/`      |
+| `npm run lint`                 | Format code with Prettier                                         |
 
 ## Environment Variables
 
 ### Required
 
-| Variable                 | Description                                      | Default                   |
-| ------------------------ | ------------------------------------------------ | ------------------------- |
-| `ROOT_URL`               | Public URL of the server                         | `http://localhost:4010`   |
-| `PORT`                   | Server port                                      | `4010`                    |
-| `UNCHAINED_TOKEN_SECRET` | Secret for session tokens (min 32 chars)         | -                         |
-| `UNCHAINED_SECRET`       | Secret used to derive reusable order access keys | `secret`                  |
-| `EMAIL_FROM`             | Default sender email                             | `noreply@unchained.local` |
-| `EMAIL_WEBSITE_NAME`     | Website name for emails                          | `Unchained`               |
-| `EMAIL_WEBSITE_URL`      | Website URL for emails                           | `http://localhost:4010`   |
+| Variable                 | Description                                            | Default                   |
+| ------------------------ | ------------------------------------------------------ | ------------------------- |
+| `ROOT_URL`               | Public URL of the server, used for ticket links        | `http://localhost:4010`   |
+| `PORT`                   | Server port                                            | `4010`                    |
+| `UNCHAINED_TOKEN_SECRET` | Secret for session tokens (min 32 chars)               | -                         |
+| `UNCHAINED_SECRET`       | Derives the magic keys that open orders without login  | `secret`                  |
+| `EMAIL_FROM`             | Default sender email                                   | `noreply@unchained.local` |
+| `EMAIL_WEBSITE_NAME`     | Website name for emails                                | `Unchained`               |
+| `EMAIL_WEBSITE_URL`      | Website URL for emails                                 | `http://localhost:4010`   |
+
+### Ticketing
+
+| Variable                         | Description                                                              | Default                              |
+| -------------------------------- | ------------------------------------------------------------------------ | ------------------------------------ |
+| `DISCOUNT_CODE_SECRET`           | 32 bytes as hex, signs reimbursement codes (`openssl rand -hex 32`)      | a development-only value             |
+| `UNCHAINED_TOKEN_EXPIRY_SECONDS` | Login lifetime; raise it for gate shifts (applies to all users)          | `3600`                               |
 
 ### Seeding
 
-| Variable                  | Description                            | Default    |
-| ------------------------- | -------------------------------------- | ---------- |
-| `UNCHAINED_SEED_PASSWORD` | Admin password (`generate` for random) | `password` |
-| `UNCHAINED_COUNTRY`       | Default country ISO code               | `CH`       |
-| `UNCHAINED_CURRENCY`      | Default currency ISO code              | `CHF`      |
-| `UNCHAINED_LANG`          | Default language ISO code              | `de`       |
+| Variable                  | Description                                  | Default    |
+| ------------------------- | -------------------------------------------- | ---------- |
+| `UNCHAINED_SEED_PASSWORD` | Password of both accounts (`generate` for random) | `password` |
+| `UNCHAINED_COUNTRY`       | Default country ISO code                     | `CH`       |
+| `UNCHAINED_CURRENCY`      | Default currency ISO code                    | `CHF`      |
+| `UNCHAINED_LANG`          | Default language ISO code                    | `de`       |
 
 ## Ticketing Setup
 
-### Gate access and reimbursements
-
-Gate operators sign in with a regular user account. Assign the `ticketing` role configured in
-`boot.ts`, or grant the `scanTicket` action to a custom role. **Ticketing → Gate Control** then
-appears in the Admin UI, with access to active events and their attendees. Attendee lists show
-each ticket holder's public profile (`Token.user` name and avatar); private user data stays
-behind `viewUserPrivateInfos`. Administrators have access automatically. Guests and ordinary
-customers cannot use gate control. Event pass codes and gate cookies are no longer supported.
-
-Users with `manageProducts` see **Ticketing → Events**, including draft events and their
-attendees. Cancelling a ticket or a whole event, with or without reimbursement credit, requires
-the separate `cancelTicket` action (granted to administrators by default); the Admin UI hides
-those buttons otherwise. The ticketing-only `scanTicket` mutation redeems eligible tickets without
-granting token export, cancellation, or reimbursement permissions. Ticketing pages and GraphQL
-fields are registered by the extension; shops that do not load it do not expose ticketing
-navigation or schema fields.
-
-To redeem reimbursement codes, register `ReimbursementCodePlugin` from
-`@unchainedshop/ticketing/pricing/discount-reimbursement-code` with `pluginRegistry` before starting
-the platform. Set `DISCOUNT_CODE_SECRET` to a persistent, private 32-byte hex value, for example
-generated with `openssl rand -hex 32`. Without this secret the default handler rejects issuance
-and redemption; other ticketing features remain available. Credit generation is validated before
-tickets are cancelled.
-
-The default `v1` code format signs the exact integer minor-unit amount, the order currency code
-as stored by the currencies module (including multi-letter crypto symbols), and a random 128-bit
-identifier. Legacy codes from the earlier default format must be reissued. Custom
-`TicketingOptions.discountCode` handlers remain supported; they receive the currency as an optional
-second argument and should enforce currency restrictions themselves.
-
-Reimbursement amounts use the configured catalog unit price multiplied by the cancelled token
-quantity. Voucher balances use integer minor units and include pending orders. Checkout reserves
-the applied amount before payment and releases the reservation after the order status is saved,
-or on payment failure. After a process crash, retry the original checkout or remove its cart
-discount to release a stranded reservation; do not clear reservations for payments still in flight.
-
-Admin plugin pages require a non-guest authenticated user by default. Plugins may opt a page out
-with `publicAccess: true`; the option never bypasses a page's `requiredRole`, and the ticketing
-gate page does not use it.
-
-The example includes placeholder implementations for ticket rendering:
+`boot.ts` registers the plugins before `startPlatform` and passes the platform options through `withTicketing`:
 
 ```typescript
-setupTicketing(platform.unchainedAPI, {
-  renderOrderPDF: () => {
-    /* Implement PDF generation */
-  },
-  createAppleWalletPass: () => {
-    /* Implement Apple Wallet pass */
-  },
-  createGoogleWalletPass: () => {
-    /* Implement Google Wallet pass */
-  },
-});
+pluginRegistry.register(createTicketingPlugin());
+pluginRegistry.register(createTicketWarehousingPlugin({ ticketMeta }));
+pluginRegistry.register(ReimbursementCodePlugin);
+
+const platform = await startPlatform(
+  withTicketing({ options: { orders: { validateOrderPosition: validateTicketOrderPosition } } }),
+);
+
+await connect(fastify, platform, { adminUI: { plugins: [ticketingAdminPlugin()] } });
 ```
 
-### Implementing PDF Tickets
+`connect()` mounts the ticketing routes with the other plugin routes; there is no separate ticketing connector.
 
-```tsx
-import ReactPDF from '@react-pdf/renderer';
+### Selling tickets
 
-const renderOrderPDF = async ({ orderId }, { modules }) => {
-  const order = await modules.orders.findOrder({ orderId });
-  return ReactPDF.renderToStream(<TicketDocument order={order} />);
-};
+`seed.ts` creates the one `VIRTUAL` warehousing provider with the ticket issuer (`shop.unchained.warehousing.ticket`; gates open 120 minutes before the start and close 60 minutes after it) and the demo event "Unchained Live": a tokenized product with a supply of 500 tickets whose start, location, duration, doors and category are stored in `tokenization.ercMetadataProperties`. The event starts one hour after the first boot; move it in **Ticketing → Events** or with `updateTicketEvent`.
+
+Each seat becomes one ticket with its own serial number. The storefront passes attendee names as the order position configuration `attendees`, and `ticketMeta` in `boot.ts` stores one per ticket (`Token.attendeeName`):
+
+```graphql
+mutation AddTickets {
+  addCartProduct(
+    productId: "<event id>"
+    quantity: 2
+    configuration: [{ key: "attendees", value: "Ada Lovelace, Alan Turing" }]
+  ) {
+    _id
+  }
+}
 ```
 
-### Implementing Wallet Passes
+`validateTicketOrderPosition` refuses more tickets than the supply (`TicketSoldOutError`) and tickets of cancelled events.
 
-See the [@unchainedshop/ticketing](../../packages/ticketing/README.md) documentation for detailed implementation guides.
+### Gate access
 
-## Database Seeding
+Gate staff sign in with a regular account that has the `ticketing` role (`gate@unchained.local`), or a custom role with the `scanTicket` action. **Ticketing → Gate Control** then lists the events and scans or looks up tickets; `scanTicket(tokenId, productId)` redeems them. The ticket list shows the attendee name and the buyer's public profile; private user data stays behind `viewUserPrivateInfos`. Pass codes and gate cookies are not supported.
 
-On first start, the seed script creates:
+Users with `manageProducts` see **Ticketing → Events**, including drafts, and edit the event details. Cancelling a ticket or an event, with or without a reimbursement code, requires the `cancelTicket` action (administrators by default).
 
-- Admin user: `admin@unchained.local`
-- Country: Switzerland (CH)
-- Currency: Swiss Franc (CHF)
-- Language: German (de)
-- Delivery provider: Send Message
-- Payment provider: Invoice
+### Reimbursement codes
+
+`ReimbursementCodePlugin` accepts the codes `cancelTicket` and `cancelEvent` issue with `generateDiscount: true`. They are signed with `DISCOUNT_CODE_SECRET`, which must be 32 random bytes as hex; `.env.defaults` contains a development-only value, set your own in production. A value in another format stops the engine at startup.
+
+The default `v1` code format signs the integer minor-unit amount, the order currency and a random identifier. Custom `discountCode: { generate, verify }` handlers passed to `createTicketingPlugin()` keep other code formats working. Reimbursement amounts use the catalog unit price times the cancelled token quantity; voucher balances include pending orders, and checkout reserves the applied amount until the order status is saved.
+
+### Tickets PDF and wallet passes
+
+Add the renderers from [Ticket Renderers](../../docs/docs/guides/ticketing-renderers.md) to `createTicketingPlugin()`:
+
+```typescript
+pluginRegistry.register(
+  createTicketingPlugin({ renderOrderPDF, createAppleWalletPass, createGoogleWalletPass }),
+);
+```
+
+The buyer (or anyone with the order's magic key) then gets the PDF link as `Order.ticketsPdfUrl`, and the wallet links are `/rest/apple-wallet/download/<tokenId>.pkpass?hash=<accessKey>` and `/rest/google-wallet/download/<tokenId>?hash=<accessKey>`.
 
 ## Testing
-
-Run integration tests:
 
 ```bash
 npm run test:run:integration
 ```
 
-Tests are located in the `tests/` directory.
+This starts the example with the root `.env.tests` settings and runs `tests/`: `tickets.test.js` moves the demo event to today, buys two tickets as a guest, checks the supply limit, the magic key and the routes, looks a scanned QR code up and redeems it as gate staff, and refuses a cancelled ticket at the gate. The example database is kept in `.db`; the tests work on repeated runs.
 
 ## Docker
 

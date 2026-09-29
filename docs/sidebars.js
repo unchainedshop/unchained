@@ -333,6 +333,7 @@ const sidebars = {
         'guides/file-uploads',
         'guides/custom-pricing',
         'guides/ticketing-setup',
+        'guides/ticketing-renderers',
         'guides/server-setup',
         'guides/testing',
         'guides/seed-data',

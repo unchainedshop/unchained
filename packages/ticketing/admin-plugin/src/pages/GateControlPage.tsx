@@ -1,5 +1,5 @@
 import { useIntl } from 'react-intl';
-import GateControl from '../components/GateControl';
+import GateControl from '../components/GateControl.tsx';
 
 const GateControlPage = () => {
   const { formatMessage } = useIntl();

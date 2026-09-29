@@ -3798,6 +3798,7 @@ export type IToken = {
   expiryDate?: Maybe<Scalars['DateTimeISO']['output']>;
   invalidatedDate?: Maybe<Scalars['DateTimeISO']['output']>;
   isInvalidateable: Scalars['Boolean']['output'];
+  order?: Maybe<IOrder>;
   product: ITokenizedProduct;
   quantity: Scalars['Int']['output'];
   status: ITokenExportStatus;
