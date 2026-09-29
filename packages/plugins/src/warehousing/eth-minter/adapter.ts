@@ -38,9 +38,9 @@ export const ETHMinter: IWarehousingAdapter = {
     const getTokensCreated = async () => {
       const existingTokens = await modules.warehousing.findTokens(
         contractStandard === ProductContractStandard.ERC721
-          ? { contractAddress: contractStandard }
+          ? { productId: product!._id }
           : {
-              contractAddress: contractStandard,
+              productId: product!._id,
               tokenSerialNumber: tokenId,
             },
       );
@@ -144,7 +144,7 @@ export const ETHMinter: IWarehousingAdapter = {
         const isDefaultLanguageActive = locale ? locale.language === systemLocale.language : true;
         const localization = isDefaultLanguageActive
           ? {
-              uri: `${ROOT_URL}/erc-metadata/${product._id}/${locale}/${tokenId}.json`,
+              uri: `${ROOT_URL}/erc-metadata/${product._id}/{locale}/${tokenId}.json`,
               default: systemLocale.language,
               locales: allLanguages.map((lang) => lang.isoCode),
             }
