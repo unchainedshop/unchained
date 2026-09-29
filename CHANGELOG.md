@@ -70,7 +70,7 @@
 - **Invalidating an invalidated token** answers `TokenWrongStatusError` instead of an internal error, also when two requests race.
 - **Plan configuration is no longer copied from the cart item:** the default enrollment adapter used to forward `orderPosition.configuration` into the new enrollment's plan, so a cart item configuration leaked onto the enrollment even when no enrollment adapter asked for it. The default now returns no configuration; only an enrollment adapter's `transformOrderItem` can set it.
 
-## v5.0.0-alpha.7 (2026-09-23)
+## v5.0.0-alpha.8 (2026-09-23)
 
 alpha.6 skipped to re-align engine version with admin-ui.
 

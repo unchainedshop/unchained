@@ -112,7 +112,7 @@ If a value in `.env` seems to have no effect, check whether your shell exports t
 
 #### `The decorator 'serializeCookie' has already been added!`
 
-Up to v5.0.0-alpha.7, `connect()` and `@fastify/oauth2` (or any plugin that brings its own `@fastify/cookie`) both registered the cookie plugin, and Fastify refused to start. Upgrade, or `await fastify.register(fastifyCookie)` yourself before registering `@fastify/oauth2` and calling `connect()`; both skip their own registration when the cookie plugin is already loaded.
+Up to v5.0.0-alpha.8, `connect()` and `@fastify/oauth2` (or any plugin that brings its own `@fastify/cookie`) both registered the cookie plugin, and Fastify refused to start. Upgrade, or `await fastify.register(fastifyCookie)` yourself before registering `@fastify/oauth2` and calling `connect()`; both skip their own registration when the cookie plugin is already loaded.
 
 #### Missing Environment Variables
 
@@ -183,11 +183,11 @@ Roles are copied on every login, so the user has to log in again after you fix t
 
 - The token's `aud` must contain the provider's configured `audience`. Keycloak does not add the client id to access tokens by default: add an *Audience* protocol mapper to the client.
 - The token only authenticates users that already exist; the OIDC example creates them on their first browser login.
-- Up to v5.0.0-alpha.7 the engine expected the keys at `${issuer}/.well-known/jwks.json`, which neither Keycloak nor Zitadel serve. Set `jwksUri` explicitly there (Keycloak: `…/protocol/openid-connect/certs`, Zitadel: `…/oauth/v2/keys`). Newer versions use OIDC discovery.
+- Up to v5.0.0-alpha.8 the engine expected the keys at `${issuer}/.well-known/jwks.json`, which neither Keycloak nor Zitadel serve. Set `jwksUri` explicitly there (Keycloak: `…/protocol/openid-connect/certs`, Zitadel: `…/oauth/v2/keys`). Newer versions use OIDC discovery.
 
 #### `Token verification error: "alg" (Algorithm) Header Parameter value not allowed`
 
-Harmless. Up to v5.0.0-alpha.7 every bearer token is first checked as an Unchained token (HS256). An identity provider's token (RS256) fails that check and was logged at error level before it was verified against the OIDC providers. If the request is authenticated, you can ignore the line. Newer versions log it at debug level.
+Harmless. Up to v5.0.0-alpha.8 every bearer token is first checked as an Unchained token (HS256). An identity provider's token (RS256) fails that check and was logged at error level before it was verified against the OIDC providers. If the request is authenticated, you can ignore the line. Newer versions log it at debug level.
 
 #### MCP OAuth with Keycloak Dynamic Client Registration Fails
 
@@ -217,7 +217,7 @@ Fastify matches paths exactly: `/rest/print_tickets/` does not match a route reg
 
 #### Webhooks and Uploads Time Out on Express
 
-Up to v5.0.0-alpha.7, routes registered by plugins (payment webhooks, file uploads, bulk import, back-channel logout) ran on Express but never sent their response. Upgrade.
+Up to v5.0.0-alpha.8, routes registered by plugins (payment webhooks, file uploads, bulk import, back-channel logout) ran on Express but never sent their response. Upgrade.
 
 ### Cart and Checkout
 
