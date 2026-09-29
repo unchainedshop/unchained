@@ -4,18 +4,23 @@ import type { Product } from '@unchainedshop/core-products';
 import { WarehousingDirector } from '../directors/WarehousingDirector.ts';
 import type { WarehousingContext } from '../directors/WarehousingAdapter.ts';
 import type { WarehousingProvider } from '@unchainedshop/core-warehousing';
+import type { DeliveryProviderType } from '@unchainedshop/core-delivery';
 
 export async function simulateProductInventoryService(
   this: Modules,
   {
     product,
     referenceDate,
+    deliveryProviderType,
   }: {
     product: Product;
     referenceDate?: Date;
+    deliveryProviderType?: DeliveryProviderType | null;
   },
 ) {
-  const deliveryProviders = await this.delivery.allProviders();
+  const deliveryProviders = (await this.delivery.allProviders()).filter(
+    ({ type }) => !deliveryProviderType || type === deliveryProviderType,
+  );
 
   return deliveryProviders.reduce<
     Promise<
@@ -54,6 +59,6 @@ export async function simulateProductInventoryService(
       }),
     );
 
-    return result.concat(result, mappedWarehousingProviders);
+    return result.concat(mappedWarehousingProviders);
   }, Promise.resolve([]));
 }

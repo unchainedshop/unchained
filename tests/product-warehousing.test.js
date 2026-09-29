@@ -8,6 +8,12 @@ import {
 } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import { PlanProduct, SimpleProduct } from './seeds/products.js';
+import {
+  PickupDeliveryProvider,
+  SendMailDeliveryProvider,
+  SimpleDeliveryProvider,
+} from './seeds/deliveries.js';
+import { SimpleWarehousingProvider } from './seeds/warehousings.js';
 
 let graphqlFetch;
 
@@ -181,6 +187,56 @@ test.describe('Product: Warehousing', async () => {
       });
 
       assert.strictEqual(errors[0].extensions?.code, 'NoPermissionError');
+    });
+  });
+
+  test.describe('SimpleProduct.simulatedDispatches and simulatedStocks', async () => {
+    test('return one row per provider pair, filtered by deliveryProviderType', async () => {
+      const providerFields = /* GraphQL */ `
+        deliveryProvider {
+          _id
+        }
+        warehousingProvider {
+          _id
+        }
+      `;
+      const { data: { product } = {}, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query Simulations($productId: ID!) {
+            product(productId: $productId) {
+              ... on SimpleProduct {
+                dispatches: simulatedDispatches { ${providerFields} }
+                pickUpDispatches: simulatedDispatches(deliveryProviderType: PICKUP) { ${providerFields} }
+                allDispatches: simulatedDispatches(deliveryProviderType: null) { ${providerFields} }
+                stocks: simulatedStocks { ${providerFields} }
+                pickUpStocks: simulatedStocks(deliveryProviderType: PICKUP) { ${providerFields} }
+                allStocks: simulatedStocks(deliveryProviderType: null) { ${providerFields} }
+              }
+            }
+          }
+        `,
+        variables: { productId: SimpleProduct._id },
+      });
+      assert.strictEqual(errors, undefined);
+
+      const providerPairs = (rows) =>
+        rows.map(({ deliveryProvider, warehousingProvider }) => [
+          deliveryProvider._id,
+          warehousingProvider._id,
+        ]);
+      const shippingPairs = [
+        [SimpleDeliveryProvider._id, SimpleWarehousingProvider._id],
+        [SendMailDeliveryProvider._id, SimpleWarehousingProvider._id],
+      ];
+      const pickUpPairs = [[PickupDeliveryProvider._id, SimpleWarehousingProvider._id]];
+
+      // SHIPPING is the schema default, an explicit null asks for every delivery provider type
+      assert.deepStrictEqual(providerPairs(product.dispatches), shippingPairs);
+      assert.deepStrictEqual(providerPairs(product.pickUpDispatches), pickUpPairs);
+      assert.deepStrictEqual(providerPairs(product.allDispatches), [...shippingPairs, ...pickUpPairs]);
+      assert.deepStrictEqual(providerPairs(product.stocks), shippingPairs);
+      assert.deepStrictEqual(providerPairs(product.pickUpStocks), pickUpPairs);
+      assert.deepStrictEqual(providerPairs(product.allStocks), [...shippingPairs, ...pickUpPairs]);
     });
   });
 });
