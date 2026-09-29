@@ -32,6 +32,10 @@
 - **Admin UI:** anonymous visitors of protected pages see the loading state until they are redirected to the login page, instead of rendering the page and firing queries that fail with `NoPermissionError`.
 - **Ticketing example tests** run against the example again (`npm run test:run:integration`); the old tests asserted an outdated response format against another database.
 - **Timing tests** measure CPU time instead of wall-clock time and no longer fail when the test runner executes other files in parallel.
+- **Admin UI plugin SDK:** plugins importing `@unchainedshop/admin-ui/ui`, `/modal`, `/form` or `/providers` failed to load in the browser (`Dynamic require of "react" is not supported`), because the SDK build left a `require("react")` from the bundled CommonJS `use-sync-external-store` (Headless UI, recharts). The SDK is now built with the same external handling as plugin bundles. `Table` and `MediaAvatar` are exported from `@unchainedshop/admin-ui/ui` for plugins.
+- **Admin UI roles editor:** ticking a role replaced the selected roles with a boolean and crashed the form, so roles could not be changed. The multi-select `ChoicesField` now keeps an array.
+- **Admin UI token invalidation** asked to confirm deleting a payment provider; it now asks to invalidate the token.
+- **Admin UI lint** passes again: generated GraphQL types and the SDK shim stubs are no longer linted.
 
 ## v5.0.0-alpha.7 (2026-09-23)
 
