@@ -9,7 +9,7 @@ description: Configure event ticketing with PDF tickets, Apple Wallet, and Googl
 
 The `@unchainedshop/ticketing` extension adds PDF ticket printing, Apple Wallet and Google Wallet passes, and magic-key order access on top of tokenized products (tokens are managed by the [warehousing module](../platform-configuration/modules/warehousing)).
 
-The package provides the plumbing — DB module, REST routes, magic-key permissions, pass invalidation. *You* provide the renderers: three functions that produce the PDF, the Apple Wallet pass, and the Google Wallet link, using whatever libraries you prefer.
+The package provides the plumbing — DB module, REST routes, magic-key permissions, pass invalidation — plus a GraphQL API, permissions and an Admin UI plugin to manage events, cancel tickets and redeem them at the gate. *You* provide the renderers: three functions that produce the PDF, the Apple Wallet pass, and the Google Wallet link, using whatever libraries you prefer.
 
 ## Installation
 
@@ -30,9 +30,17 @@ import Fastify from 'fastify';
 import { startPlatform } from '@unchainedshop/platform';
 import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';
 import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
-import setupTicketing, { ticketingModules, type TicketingAPI } from '@unchainedshop/ticketing';
+import setupTicketing, {
+  ticketingModules,
+  ticketingTypeDefs,
+  ticketingResolvers,
+  ticketingActions,
+  configureTicketingRoles,
+  type TicketingAPI,
+} from '@unchainedshop/ticketing';
 import connectTicketingToFastify from '@unchainedshop/ticketing/lib/fastify.js';
 import ticketingServices from '@unchainedshop/ticketing/lib/services.js';
+import { ticketingAdminPlugin } from '@unchainedshop/ticketing/admin-plugin';
 
 const fastify = Fastify({
   loggerInstance: unchainedLogger('fastify'),
@@ -45,6 +53,12 @@ registerBasePlugins();
 const platform = await startPlatform({
   modules: ticketingModules,
   services: { ...ticketingServices },
+  typeDefs: ticketingTypeDefs,
+  resolvers: [ticketingResolvers],
+  rolesOptions: {
+    additionalActions: ticketingActions,
+    additionalRoles: { ticketing: configureTicketingRoles },
+  },
 });
 
 setupTicketing(platform.unchainedAPI as TicketingAPI, {
@@ -55,6 +69,7 @@ setupTicketing(platform.unchainedAPI as TicketingAPI, {
 
 await connect(fastify, platform, {
   allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
+  adminUI: { plugins: [ticketingAdminPlugin()] },
 });
 
 // Register ticketing REST routes (not yet migrated to the plugin registry)
@@ -65,7 +80,9 @@ await fastify.listen({ host: '::', port: 3000 });
 
 For Express, use `connectTicketingToExpress` from `@unchainedshop/ticketing/lib/express.js` instead — same sequence, called with your Express `app` after `connect(app, platform, ...)`.
 
-Besides wiring the renderers, `setupTicketing` registers the magic-key permission rules and subscribes to token events (`TOKEN_INVALIDATED`, finished `EXPORT_TOKEN` / `UPDATE_TOKEN_OWNERSHIP` work items) to re-render affected Apple Wallet passes automatically.
+Besides wiring the renderers, `setupTicketing` registers the magic-key permission rules and the `EVENT_CANCELLED` / `TICKET_CANCELLED` e-mail templates, and subscribes to token events (`TOKEN_INVALIDATED`, finished `EXPORT_TOKEN` / `UPDATE_TOKEN_OWNERSHIP` work items) to re-render affected Apple Wallet passes automatically.
+
+`typeDefs`, `resolvers` and `rolesOptions` add the ticketing GraphQL API and permissions described in [Events, Gate Control and Permissions](#events-gate-control-and-permissions); `ticketingAdminPlugin()` adds the **Ticketing** menu to the Admin UI. Leave them out if you only need PDF tickets and wallet passes.
 
 ## Renderers
 
@@ -118,6 +135,22 @@ x-magic-key: YOUR_MAGIC_KEY
 ```
 
 A valid magic key grants `viewOrder`, `viewToken`, and `updateToken` for the matching order. Keys are derived from `UNCHAINED_SECRET` — rotating the secret invalidates all previously sent links.
+
+## Events, Gate Control and Permissions
+
+Assign the `ticketing` role to gate staff (or grant `scanTicket` in a custom role): they get **Ticketing → Gate Control** in the Admin UI, see active events and their tickets, and redeem tickets. Users with `manageProducts` get **Ticketing → Events**, including draft events. Cancelling tickets or whole events requires `cancelTicket`, which only administrators hold by default. Ticket holders are the tokens' `Token.user`; staff only see its public profile (name, avatar), ticketing grants no access to private user data.
+
+| Operation | Requires | Description |
+|-----------|----------|-------------|
+| `ticketEvents`, `ticketEventsCount` | `scanTicket` or `manageProducts` | Ticket events (tokenized products); drafts only for product managers |
+| `scanTicket(tokenId)` | `scanTicket` | Redeems a valid ticket of an active event |
+| `cancelTicket(tokenId, generateDiscount)` | `cancelTicket` | Cancels a ticket and sends `TICKET_CANCELLED`, optionally with a reimbursement code |
+| `cancelEvent(productId, generateDiscount)` | `cancelTicket` | Cancels all tickets of an event and sends `EVENT_CANCELLED` to their holders |
+| `Token.isCanceled`, `TokenizedProduct.isCanceled` | — | Cancellation flags |
+
+With the ETH minter, tickets of products whose `ercMetadataProperties.slot` holds the event time can be redeemed from 2 hours before until 1 hour after it, and cancelled tickets no longer count against the supply.
+
+To accept reimbursement codes at checkout, register `ReimbursementCodePlugin` from `@unchainedshop/ticketing/pricing/discount-reimbursement-code` with `pluginRegistry` and set `DISCOUNT_CODE_SECRET` to 32 random bytes as hex (for example `openssl rand -hex 32`). Without the secret, issuing a code fails before any ticket is cancelled.
 
 ## Querying Tickets
 
