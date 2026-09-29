@@ -34,8 +34,9 @@ export const getOrderSummaryData = async (
     deliveryProviderId: orderDelivery.deliveryProviderId,
   });
 
+  // Shipping deliveries store their address as context.address (updateCartDeliveryShipping)
   const deliveryAddress = ch.addressToString(
-    orderDelivery?.context?.deliveryAddress || order.billingAddress,
+    orderDelivery?.context?.address || orderDelivery?.context?.deliveryAddress || order.billingAddress,
   );
   const billingAddress = ch.addressToString(order.billingAddress);
   const orderPricing = OrderPricingSheet({
