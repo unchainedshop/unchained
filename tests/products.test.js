@@ -13,6 +13,7 @@ import {
   UnpublishedProduct,
   ProxyProduct,
   ProxyPlanProduct1,
+  TokenizedProduct1,
 } from './seeds/products.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -98,6 +99,28 @@ test.describe('Products', () => {
       });
 
       assert.ok(productsCount >= 12);
+    });
+
+    test('filter products and their count by type', async () => {
+      const {
+        data: { products, productsCount },
+      } = await graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          query ProductsOfType($type: ProductType) {
+            products(type: $type, includeDrafts: true) {
+              _id
+            }
+            productsCount(type: $type, includeDrafts: true)
+          }
+        `,
+        variables: { type: 'TOKENIZED_PRODUCT' },
+      });
+
+      assert.deepStrictEqual(
+        products.map(({ _id }) => _id),
+        [TokenizedProduct1._id],
+      );
+      assert.strictEqual(productsCount, 1);
     });
   });
 
