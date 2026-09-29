@@ -61,7 +61,6 @@ export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'vers
 
   transformOrderItemToEnrollmentPlan: async (item) => {
     return {
-      configuration: item.configuration,
       productId: item.productId,
       quantity: item.quantity,
     };

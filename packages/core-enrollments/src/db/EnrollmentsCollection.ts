@@ -14,7 +14,7 @@ export interface EnrollmentPeriod {
 }
 
 export interface EnrollmentPlan {
-  configuration: { key: string; value: string }[] | null;
+  configuration?: { key: string; value: string }[] | null;
   productId: string;
   quantity: number;
 }
