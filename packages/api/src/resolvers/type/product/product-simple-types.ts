@@ -10,7 +10,7 @@ export const SimpleProduct = {
 
   async simulatedDispatches(
     obj: Product,
-    params: { referenceDate: Date; quantity: number; deliveryProviderType: DeliveryProviderType },
+    params: { referenceDate: Date; quantity: number; deliveryProviderType: DeliveryProviderType | null },
     requestContext: Context,
   ): Promise<
     {
@@ -20,12 +20,13 @@ export const SimpleProduct = {
       earliestDelivery?: Date;
     }[]
   > {
-    const { referenceDate, quantity } = params;
+    const { referenceDate, quantity, deliveryProviderType } = params;
     const { services } = requestContext;
     return services.products.simulateProductDispatching({
       product: obj,
       quantity,
       referenceDate,
+      deliveryProviderType,
     });
   },
 
@@ -33,7 +34,7 @@ export const SimpleProduct = {
     obj: Product,
     params: {
       referenceDate: Date;
-      deliveryProviderType: DeliveryProviderType;
+      deliveryProviderType: DeliveryProviderType | null;
     },
     requestContext: Context,
   ): Promise<
@@ -44,10 +45,11 @@ export const SimpleProduct = {
     }[]
   > {
     const { services } = requestContext;
-    const { referenceDate } = params;
+    const { referenceDate, deliveryProviderType } = params;
     return services.products.simulateProductInventory({
       product: obj,
       referenceDate,
+      deliveryProviderType,
     });
   },
 
