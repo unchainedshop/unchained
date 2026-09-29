@@ -212,9 +212,6 @@ const createAddContextMiddleware = (authConfig?: AuthConfig, trustProxy = false)
         {
           setHeader,
           getHeader,
-          getCookie,
-          setCookie,
-          clearCookie,
           remoteAddress,
           remotePort,
           login: authContext.login,
