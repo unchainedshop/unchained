@@ -58,7 +58,7 @@ export const EnrollmentDirector: IEnrollmentDirector = {
     return {
       ...doc,
       ...enrollmentPlan,
-      configuration: [],
+      configuration: enrollmentPlan.configuration ?? [],
     };
   },
 

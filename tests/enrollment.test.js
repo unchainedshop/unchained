@@ -105,6 +105,96 @@ test.describe('Enrollments', () => {
         },
       });
     });
+
+    test('checking out a plan product with a cart item configuration keeps the configuration on the new enrollment', async () => {
+      const configuration = [
+        { key: 'seats', value: '5' },
+        { key: 'note', value: 'hello' },
+      ];
+      const { data: { createCart } = {} } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation {
+            createCart(orderNumber: "enrollmentCartWithConfiguration") {
+              _id
+              orderNumber
+            }
+          }
+        `,
+      });
+      const { data: { addCartProduct, checkoutCart } = {} } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation prepareAndCheckout(
+            $productId: ID!
+            $quantity: Int
+            $orderId: ID
+            $configuration: [ProductConfigurationParameterInput!]
+            $billingAddress: AddressInput
+            $contact: ContactInput
+          ) {
+            addCartProduct(
+              productId: $productId
+              quantity: $quantity
+              orderId: $orderId
+              configuration: $configuration
+            ) {
+              _id
+              configuration {
+                key
+                value
+              }
+            }
+            updateCart(orderId: $orderId, billingAddress: $billingAddress, contact: $contact) {
+              _id
+            }
+            checkoutCart(orderId: $orderId) {
+              _id
+              status
+              enrollment {
+                _id
+                status
+                plan {
+                  quantity
+                  configuration {
+                    key
+                    value
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          productId: PlanProduct._id,
+          orderId: createCart._id,
+          quantity: 1,
+          configuration,
+          billingAddress: {
+            firstName: 'Hallo',
+            lastName: 'Velo',
+            addressLine: 'Strasse 1',
+            addressLine2: 'Postfach',
+            postalCode: '8000',
+            city: 'Zürich',
+          },
+          contact: {
+            emailAddress: 'hello@unchained.local',
+            telNumber: '+41999999999',
+          },
+        },
+      });
+      // Precondition: the cart item carries the configuration into checkout
+      assert.deepStrictEqual(addCartProduct.configuration, configuration);
+      assert.partialDeepStrictEqual(checkoutCart, {
+        status: 'CONFIRMED',
+        enrollment: {
+          status: 'ACTIVE',
+          plan: {
+            quantity: 1,
+          },
+        },
+      });
+      assert.deepStrictEqual(checkoutCart.enrollment.plan.configuration, configuration);
+    });
   });
 
   test.describe('Mutation.createEnrollment', () => {

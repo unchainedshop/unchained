@@ -47,6 +47,7 @@
 - **ETH minter stock and serial numbers:** issued tokens were looked up by `contractAddress: contractStandard`, which never matched, so tokenized products never sold out and every ERC721 order numbered its tokens from 1 again. Tokens are now counted per product (and token id for ERC1155).
 - **ERC metadata localization:** the `localization.uri` of the ETH minter now contains the `{locale}` placeholder ERC-1155 wallets substitute, instead of the locale of the request.
 - **Invalidating an invalidated token** answers `TokenWrongStatusError` instead of an internal error, also when two requests race.
+- **Plan configuration survives checkout:** `EnrollmentDirector.transformOrderItemToEnrollment` replaced the plan's `configuration` with an empty list, so the configuration of a plan product's cart item (and one set by an enrollment adapter's `transformOrderItem`) was lost when the enrollment was created at checkout. The configuration of the plan is kept now.
 
 ## v5.0.0-alpha.7 (2026-09-23)
 
