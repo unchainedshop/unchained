@@ -48,6 +48,7 @@ export const configureOrderModuleMutations = ({
       countryCode,
       billingAddress,
       contact,
+      originEnrollmentId,
       context,
     }: {
       userId: string;
@@ -71,6 +72,7 @@ export const configureOrderModuleMutations = ({
         calculation: [],
         log: [],
         orderNumber,
+        originEnrollmentId,
         context: context || {},
       });
 
