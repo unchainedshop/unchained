@@ -1,6 +1,9 @@
 {
   "name": "@unchainedshop/mongodb",
-  "version": "5.0.0-alpha.8",
+  "version": "5.0.0-alpha.9",
+  "files": [
+    "lib"
+  ],
   "description": "MongoDB database abstraction layer for the Unchained Engine",
   "main": "lib/mongodb-index.js",
   "types": "lib/mongodb-index.d.ts",
@@ -33,8 +36,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^5.0.0-alpha.8",
-    "@unchainedshop/utils": "^5.0.0-alpha.8"
+    "@unchainedshop/logger": "^5.0.0-alpha.9",
+    "@unchainedshop/utils": "^5.0.0-alpha.9"
   },
   "peerDependencies": {
     "@mongodb-js/zstd": ">= 7 < 8",
