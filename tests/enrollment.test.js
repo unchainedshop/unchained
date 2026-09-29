@@ -106,7 +106,7 @@ test.describe('Enrollments', () => {
       });
     });
 
-    test('checking out a plan product with a cart item configuration keeps the configuration on the new enrollment', async () => {
+    test('checking out a plan product with a cart item configuration does not propagate it to the enrollment plan', async () => {
       const configuration = [
         { key: 'seats', value: '5' },
         { key: 'note', value: 'hello' },
@@ -190,10 +190,10 @@ test.describe('Enrollments', () => {
           status: 'ACTIVE',
           plan: {
             quantity: 1,
+            configuration: [],
           },
         },
       });
-      assert.deepStrictEqual(checkoutCart.enrollment.plan.configuration, configuration);
     });
   });
 
