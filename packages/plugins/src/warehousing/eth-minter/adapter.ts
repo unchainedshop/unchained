@@ -35,15 +35,20 @@ export const ETHMinter: IWarehousingAdapter = {
       UnchainedCore;
     const { contractAddress, contractStandard, tokenId, supply, ercMetadataProperties } =
       product?.tokenization || {};
-    const getTokensCreated = async () => {
-      const existingTokens = await modules.warehousing.findTokens(
+    const getTokensCreated = async ({ skipCancelled = false } = {}) => {
+      const selector: Record<string, any> =
         contractStandard === ProductContractStandard.ERC721
           ? { productId: product!._id }
           : {
               productId: product!._id,
               tokenSerialNumber: tokenId,
-            },
-      );
+            };
+
+      if (skipCancelled) {
+        selector['meta.cancelled'] = { $ne: true };
+      }
+
+      const existingTokens = await modules.warehousing.findTokens(selector);
       const tokensCreated = existingTokens.reduce((acc, curToken) => {
         return acc + curToken.quantity;
       }, 0);
@@ -68,8 +73,28 @@ export const ETHMinter: IWarehousingAdapter = {
       },
 
       stock: async () => {
-        const tokensCreated = await getTokensCreated();
+        const tokensCreated = await getTokensCreated({ skipCancelled: true });
         return supply ? supply - tokensCreated : 0;
+      },
+
+      async isInvalidateable(tokenSerialNumber, referenceDate) {
+        if (token?.invalidatedDate) return false;
+
+        const slot = ercMetadataProperties?.slot;
+        if (!slot) return true;
+
+        const currentDate = new Date(referenceDate);
+
+        const earliestEntry = new Date(slot);
+        earliestEntry.setHours(earliestEntry.getHours() - 2);
+
+        const latestEntry = new Date(slot);
+        latestEntry.setHours(latestEntry.getHours() + 1);
+
+        return (
+          earliestEntry.getTime() < currentDate.getTime() &&
+          latestEntry.getTime() > currentDate.getTime()
+        );
       },
 
       tokenize: async () => {
@@ -78,7 +103,7 @@ export const ETHMinter: IWarehousingAdapter = {
         // Prepare metadata
 
         const chainId = configuration.find(({ key }) => key === 'chainId')?.value || undefined;
-        const meta = { contractStandard };
+        const meta = { contractStandard, orderId: orderPosition?.orderId };
         const tokensCreated = await getTokensCreated();
 
         if (!orderPosition) {
