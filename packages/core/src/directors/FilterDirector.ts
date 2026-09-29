@@ -232,7 +232,7 @@ export const FilterDirector: IFilterDirector = {
         })
       : [];
 
-    const intersectedProductIds = await filters.reduce(
+    const intersected = await filters.reduce(
       async (productIdSetPromise: Promise<Set<string>>, filter) => {
         const productIdSet = await productIdSetPromise;
 
@@ -254,7 +254,10 @@ export const FilterDirector: IFilterDirector = {
       Promise.resolve(new Set(productIds)),
     );
 
-    return [...intersectedProductIds];
+    // Set.prototype.intersection walks the smaller of the two sets, so once the input outgrows a
+    // filter's product ids the result comes back in the filter's order. The input carries the
+    // order the result is sorted by (search relevance, assortment sort keys), so restore it.
+    return productIds.filter((id) => intersected.has(id));
   },
 
   async filterFacets(filter, params, unchainedAPI) {
