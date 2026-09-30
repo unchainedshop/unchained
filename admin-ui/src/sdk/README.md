@@ -80,6 +80,27 @@ import { useQuery } from '@apollo/client/react';
 import { FormattedMessage } from 'react-intl';
 ```
 
+Form fields read their state from the `Form` provider, so wrap them in `Form`
+from the same `form` entry and pass it the result of `useForm`:
+
+```tsx
+import { Form, TextField, SubmitButton } from '@unchainedshop/admin-ui/form';
+import { useForm } from '@unchainedshop/admin-ui/hooks';
+
+const ThingForm = ({ onSave }) => {
+  const form = useForm({
+    submit: async ({ title }) => ({ success: await onSave(title) }),
+    initialValues: { title: '' },
+  });
+  return (
+    <Form form={form}>
+      <TextField name="title" label="Title" required />
+      <SubmitButton label="Save" />
+    </Form>
+  );
+};
+```
+
 ## Registering a plugin on the engine
 
 Pass the manifest in the `adminUI.plugins` option of the Express or Fastify

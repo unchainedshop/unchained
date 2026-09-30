@@ -1,3 +1,4 @@
+export { default as Form } from '../../../modules/forms/components/Form';
 export { default as FieldWrapper } from './FieldWrapper';
 export { default as FormErrors } from './FormErrors';
 export { default as SubmitButton } from './SubmitButton';
