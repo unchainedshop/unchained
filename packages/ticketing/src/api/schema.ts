@@ -126,6 +126,47 @@ export default [
 
       "Take a production with all its performances back to draft"
       unpublishTicketProduction(productionId: ID!): Product!
+
+      """
+      Change texts, tags, details and sale rules of a production. Texts (not the slugs), tags and the
+      details a performance does not override are taken over by the performances.
+      """
+      updateTicketProduction(productionId: ID!, production: UpdateTicketProductionInput!): Product!
+
+      """
+      Take texts, tags, details, status and media of a production over to its performances again,
+      e.g. after changes in the core product tabs or an import
+      """
+      syncTicketProduction(productionId: ID!): Product!
+
+      "Remove a production without tickets with its performances; cancel it otherwise"
+      removeTicketProduction(productionId: ID!): Product!
+
+      """
+      Cancel the tickets of the performance starting at startsAt, in all categories. Requires the
+      cancelTicket action. Returns the number of cancelled ticket records.
+      """
+      cancelTicketPerformance(productionId: ID!, startsAt: DateTime!, generateDiscount: Boolean): Int!
+
+      """
+      Add a ticket category. The first category takes over the performances that exist, every
+      further one adds a product per performance.
+      """
+      addTicketCategory(productionId: ID!, category: TicketCategoryInput!): Product!
+
+      """
+      Change the name and the defaults of a category; applyToPerformances also sets the supply and
+      price of the category in every performance
+      """
+      updateTicketCategory(
+        productionId: ID!
+        code: String!
+        category: UpdateTicketCategoryInput!
+        applyToPerformances: Boolean = false
+      ): Product!
+
+      "Remove a category without tickets; the last category cannot be removed"
+      removeTicketCategory(productionId: ID!, code: String!): Product!
     }
 
     """
@@ -237,6 +278,23 @@ export default [
       doorsOpenMinutesBefore: Int
       saleRules: TicketSaleRulesInput
       tickets: [TicketPerformanceTicketInput!]
+    }
+
+    input UpdateTicketCategoryInput {
+      texts: [TicketCategoryTextInput!]
+      capacity: Int
+      pricing: [TicketPriceInput!]
+    }
+
+    "Omitted values stay, null clears a detail or a sale rule"
+    input UpdateTicketProductionInput {
+      "Texts per locale; a slug changes the slug of the production only"
+      texts: [ProductTextInput!]
+      tags: [LowerCaseString!]
+      location: String
+      durationMinutes: Int
+      doorsOpenMinutesBefore: Int
+      saleRules: TicketSaleRulesInput
     }
 
     input CreateTicketProductionInput {

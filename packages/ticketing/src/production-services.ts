@@ -8,6 +8,8 @@ import {
   type ProductText,
 } from '@unchainedshop/core-products';
 import type { TicketingModule } from './module.ts';
+import { registerEvents, subscribe, type RawPayloadType } from '@unchainedshop/events';
+import { createLogger } from '@unchainedshop/logger';
 import { TicketEventProperty } from './event-details.ts';
 import { TICKET_PRODUCTION_TAG, isTicketProduction } from './production.ts';
 import { normalizeTicketSaleRulesInput, type UpdateTicketSaleRulesInput } from './sale-rules.ts';
@@ -250,18 +252,55 @@ async function writeChildTexts(
   );
 }
 
-// Media of a performance: rows that point to the files of the production media.
-async function copyProductionMedia(modules: Modules, productionId: string, productId: string) {
-  const medias = await modules.products.media.findProductMedias({ productId: productionId });
+/**
+ * Media of a performance: rows that point to the files of the production media, in the same order.
+ * Rows of production media that are gone are removed; only the rows, the files belong to the
+ * production. Media added to the performance itself stay.
+ */
+async function syncProductionMedia(modules: Modules, productionId: string, productId: string) {
+  const [medias, copies] = await Promise.all([
+    modules.products.media.findProductMedias({ productId: productionId }),
+    modules.products.media.findProductMedias({ productId }),
+  ]);
   for (const media of medias) {
-    await modules.products.media.create({
-      productId,
-      mediaId: media.mediaId,
-      tags: media.tags ?? [],
-      sortKey: media.sortKey,
-      meta: { productionMediaId: media._id },
-    });
+    const copy = copies.find(({ meta }) => meta?.productionMediaId === media._id);
+    if (!copy) {
+      await modules.products.media.create({
+        productId,
+        mediaId: media.mediaId,
+        tags: media.tags ?? [],
+        sortKey: media.sortKey,
+        meta: { productionMediaId: media._id },
+      });
+    } else if (copy.sortKey !== media.sortKey) {
+      await modules.products.media.update(copy._id, { sortKey: media.sortKey });
+    }
   }
+  for (const copy of copies) {
+    const productionMediaId = copy.meta?.productionMediaId;
+    if (productionMediaId && !medias.some(({ _id }) => _id === productionMediaId)) {
+      await modules.products.media.delete(copy._id);
+    }
+  }
+}
+
+// Issued tickets (also cancelled ones) and tickets of pending orders keep a product alive.
+async function hasTickets(modules: Modules, productId: string) {
+  const { passes } = modules as TicketingModules;
+  const [issued, reserved] = await Promise.all([
+    modules.warehousing.tokensCount({ productId }),
+    passes.countReservedTickets({ productId }),
+  ]);
+  return issued > 0 || reserved > 0;
+}
+
+async function findPerformanceProducts(modules: Modules, production: Product) {
+  return Promise.all(
+    (production.proxy?.assignments ?? []).map(async (assignment) => ({
+      assignment,
+      product: (await modules.products.findProduct({ productId: assignment.productId })) as Product,
+    })),
+  );
 }
 
 interface PerformancePlan {
@@ -341,7 +380,7 @@ async function createPerformanceProducts(
       throw fail(`Performance ${plan.slot.value} exists`, 'TICKET_PERFORMANCE_EXISTS');
     }
     await writeChildTexts(modules, product._id, productionTexts, { date: plan.slot.date, code });
-    await copyProductionMedia(modules, production._id, product._id);
+    await syncProductionMedia(modules, production._id, product._id);
     if (production.status === ProductStatus.ACTIVE) await modules.products.publish(product);
     created.push(product);
   }
@@ -614,24 +653,396 @@ async function unpublishTicketProduction(this: Modules, productionId: string) {
   return setTicketProductionStatus.call(this, productionId, false);
 }
 
+export interface UpdateTicketProductionInput extends TicketDetailsInput {
+  texts?: TicketProductionTextInput[] | null;
+  tags?: string[] | null;
+  saleRules?: UpdateTicketSaleRulesInput | null;
+}
+
+// Sets rules key by key where possible; a missing or broken saleRules object is replaced.
+function saleRulesChanges(
+  meta: Record<string, any> | null | undefined,
+  saleRules: Record<string, unknown>,
+) {
+  if (!Object.keys(saleRules).length) return {};
+  if (isPlainObject(meta?.saleRules)) {
+    return Object.fromEntries(
+      Object.entries(saleRules).map(([rule, value]) => [`saleRules.${rule}`, value]),
+    );
+  }
+  return {
+    saleRules: Object.fromEntries(Object.entries(saleRules).filter(([, value]) => value !== null)),
+  };
+}
+
+// Takes the texts, tags, details that are not overridden, status and media of a production over.
+async function syncPerformance(
+  modules: Modules,
+  production: Product,
+  product: Product,
+  { details, texts }: { details: Record<string, unknown>; texts: ProductText[] },
+) {
+  const overridden: string[] = Array.isArray(product.meta?.overridden) ? product.meta.overridden : [];
+  const inherited = Object.fromEntries(
+    Object.entries(details).filter(([key]) => !overridden.includes(key)),
+  );
+  const meta = isPlainObject(product.meta) ? product.meta : null;
+  await modules.products.update(product._id, {
+    tags: childTags(production),
+    ...(Object.keys(inherited).length &&
+      (meta ? toMetaModifier(inherited) : { meta: { ...inherited } })),
+  });
+  if (texts.length) {
+    const date = product.meta?.[SLOT] instanceof Date ? product.meta[SLOT] : new Date();
+    await writeChildTexts(modules, product._id, texts, { date, code: null, slugs: false });
+  }
+  await syncProductionMedia(modules, production._id, product._id);
+  const updated = (await modules.products.findProduct({ productId: product._id })) as Product;
+  if (production.status === ProductStatus.ACTIVE) await modules.products.publish(updated);
+  else await modules.products.unpublish(updated);
+}
+
+const productionDetails = (production: Product) =>
+  Object.fromEntries(
+    TICKET_PRODUCTION_DETAILS.map((key) => [key, production.meta?.[key] ?? null]),
+  ) as Record<string, unknown>;
+
+/**
+ * Changes the texts, tags, details and sale rules of a production. Texts (without the slugs),
+ * tags and the details a performance does not override are taken over by the performances;
+ * sale rules are inherited when a ticket is sold.
+ */
+async function updateTicketProduction(
+  this: Modules,
+  productionId: string,
+  input: UpdateTicketProductionInput,
+) {
+  const production = await findTicketProduction(this, productionId);
+  const details = normalizeDetails(input, 'INVALID_TICKET_PRODUCTION');
+  const saleRules = normalizeSaleRules(input.saleRules);
+
+  const meta = isPlainObject(production.meta) ? production.meta : {};
+  const metaChanges = { ...details, ...saleRulesChanges(meta, saleRules) };
+  await this.products.update(productionId, {
+    ...(input.tags && {
+      tags: [TICKET_PRODUCTION_TAG, ...input.tags.filter((tag) => tag !== TICKET_PRODUCTION_TAG)],
+    }),
+    ...(Object.keys(metaChanges).length &&
+      (isPlainObject(production.meta) ? toMetaModifier(metaChanges) : { meta: metaChanges })),
+  });
+  if (input.texts?.length) {
+    await this.products.texts.updateTexts(
+      productionId,
+      input.texts.map(({ locale, slug, ...text }) => ({
+        locale,
+        ...text,
+        ...(slug && { slug }),
+      })) as any,
+    );
+  }
+
+  const updated = await findTicketProduction(this, productionId);
+  const texts = input.texts?.length
+    ? await this.products.texts.findTexts({ productId: productionId })
+    : [];
+  for (const { product } of await findPerformanceProducts(this, updated)) {
+    if (!product) continue;
+    await syncPerformance(this, updated, product, { details, texts });
+  }
+  return updated;
+}
+
+/**
+ * Takes texts, tags, details, status and media of a production over to all its performances
+ * again, e.g. after the production was changed in the core product tabs or imported.
+ */
+async function syncTicketProduction(this: Modules, productionId: string) {
+  const production = await findTicketProduction(this, productionId);
+  const texts = await this.products.texts.findTexts({ productId: productionId });
+  const details = productionDetails(production);
+  for (const { product } of await findPerformanceProducts(this, production)) {
+    if (!product) continue;
+    await syncPerformance(this, production, product, { details, texts });
+  }
+  return production;
+}
+
+/** Removes the rows that shared a removed production media with the performances. */
+async function removeTicketProductionMediaCopies(this: Modules, productMediaId: string) {
+  const productions = await this.products.findProducts({
+    type: ProductType.CONFIGURABLE_PRODUCT,
+    tags: [TICKET_PRODUCTION_TAG],
+    includeDrafts: true,
+  });
+  const productIds = productions.flatMap((production) =>
+    (production.proxy?.assignments ?? []).map(({ productId }) => productId),
+  );
+  if (!productIds.length) return 0;
+  const copies = (await this.products.media.findProductMedias({ productIds })).filter(
+    ({ meta }) => meta?.productionMediaId === productMediaId,
+  );
+  for (const copy of copies) await this.products.media.delete(copy._id);
+  return copies.length;
+}
+
+async function addTicketCategory(this: Modules, productionId: string, input: TicketCategoryInput) {
+  const production = await findTicketProduction(this, productionId);
+  const [category] = normalizeCategories([input]);
+  const codes = await findTicketCategoryCodes(this, productionId);
+  if (codes.includes(category.code)) {
+    throw fail(`Ticket category ${category.code} exists`, 'TICKET_CATEGORY_EXISTS');
+  }
+  await this.products.update(productionId, {
+    [`meta.ticketCategories.${category.code}`]: category.defaults,
+  });
+
+  let variation = await this.products.variations.findProductVariationByKey({
+    productId: productionId,
+    key: CATEGORY,
+  });
+  const performances = await findPerformanceProducts(this, production);
+  if (!variation) {
+    // The first category takes over the performances that exist, with their tickets
+    variation = await this.products.variations.create({
+      productId: productionId,
+      key: CATEGORY,
+      type: 'TEXT',
+      options: [category.code],
+    });
+    const assignments = (production.proxy?.assignments ?? []).map((assignment) => ({
+      ...assignment,
+      vector: { ...assignment.vector, [CATEGORY]: category.code },
+    }));
+    await this.products.update(productionId, { 'proxy.assignments': assignments });
+    for (const { product } of performances) {
+      if (product) await this.products.update(product._id, { [`meta.${CATEGORY}`]: category.code });
+    }
+  } else {
+    await this.products.variations.addVariationOption(variation._id, { value: category.code });
+    const updated = await findTicketProduction(this, productionId);
+    const slots = [...new Set(performances.map(({ assignment }) => assignment.vector?.[SLOT]))];
+    for (const slot of slots) {
+      // The new tickets take the details and sale rules of the performance over
+      const sibling = performances.find(({ assignment }) => assignment.vector?.[SLOT] === slot)!;
+      const overridden: string[] = sibling.product?.meta?.overridden ?? [];
+      await createPerformanceProducts(
+        this,
+        updated,
+        {
+          slot: toSlot(slot),
+          details: Object.fromEntries(overridden.map((key) => [key, sibling.product.meta?.[key]])),
+          saleRules: sibling.product?.meta?.saleRules ?? {},
+          tickets: [],
+        },
+        [category.code],
+      );
+    }
+  }
+  if (category.texts.length) {
+    await this.products.variations.texts.updateVariationTexts(
+      variation._id,
+      category.texts.map(({ locale, title }) => ({ locale, title: title ?? undefined })),
+      category.code,
+    );
+  }
+  return findTicketProduction(this, productionId);
+}
+
+async function updateTicketCategory(
+  this: Modules,
+  productionId: string,
+  code: string,
+  input: Omit<TicketCategoryInput, 'code'>,
+  { applyToPerformances = false }: { applyToPerformances?: boolean } = {},
+) {
+  const { passes } = this as TicketingModules;
+  const production = await findTicketProduction(this, productionId);
+  const codes = await findTicketCategoryCodes(this, productionId);
+  if (!codes.includes(code)) throw fail(`Unknown ticket category: ${code}`, 'TICKET_CATEGORY_NOT_FOUND');
+  const [{ texts, defaults }] = normalizeCategories([{ ...input, code }]);
+  const stored: TicketCategoryDefaults = production.meta?.ticketCategories?.[code] ?? {};
+  const effective = { ...stored, ...defaults };
+  if (input.capacity === null) delete effective.capacity;
+
+  const performances = (await findPerformanceProducts(this, production)).filter(
+    ({ assignment }) => assignment.vector?.[CATEGORY] === code,
+  );
+  if (applyToPerformances && effective.capacity) {
+    for (const { product } of performances) {
+      const gone = await passes.countReservedTickets({ productId: product._id });
+      if (gone > effective.capacity) {
+        throw fail(
+          `Supply ${effective.capacity} is below the ${gone} tickets that are gone`,
+          'TICKET_SUPPLY_BELOW_SOLD',
+        );
+      }
+    }
+  }
+  await this.products.update(productionId, { [`meta.ticketCategories.${code}`]: effective });
+  if (texts.length) {
+    const variation = await this.products.variations.findProductVariationByKey({
+      productId: productionId,
+      key: CATEGORY,
+    });
+    await this.products.variations.texts.updateVariationTexts(
+      variation!._id,
+      texts.map(({ locale, title }) => ({ locale, title: title ?? undefined })),
+      code,
+    );
+  }
+  if (applyToPerformances) {
+    for (const { product } of performances) {
+      await this.products.update(product._id, {
+        tokenization: {
+          ...product.tokenization,
+          ...(effective.capacity !== undefined && { supply: effective.capacity }),
+        },
+        ...(effective.pricing && { commerce: { ...product.commerce, pricing: effective.pricing } }),
+      });
+    }
+  }
+  return findTicketProduction(this, productionId);
+}
+
+/**
+ * Removes a category without tickets and returns the ids of its performance products, which the
+ * caller removes (services.products.removeProduct). The last category cannot be removed.
+ */
+async function removeTicketCategory(this: Modules, productionId: string, code: string) {
+  const production = await findTicketProduction(this, productionId);
+  const codes = await findTicketCategoryCodes(this, productionId);
+  if (!codes.includes(code)) throw fail(`Unknown ticket category: ${code}`, 'TICKET_CATEGORY_NOT_FOUND');
+  if (codes.length === 1) {
+    throw fail('The last ticket category cannot be removed', 'INVALID_TICKET_CATEGORY');
+  }
+  const performances = (await findPerformanceProducts(this, production)).filter(
+    ({ assignment }) => assignment.vector?.[CATEGORY] === code,
+  );
+  for (const { product } of performances) {
+    if (await hasTickets(this, product._id)) {
+      throw fail(`Ticket category ${code} has tickets`, 'TICKET_CATEGORY_HAS_TICKETS');
+    }
+  }
+  for (const { assignment } of performances) {
+    await this.products.assignments.removeAssignment(productionId, {
+      vectors: Object.entries(assignment.vector ?? {}).map(([key, value]) => ({ key, value })),
+    });
+  }
+  const variation = await this.products.variations.findProductVariationByKey({
+    productId: productionId,
+    key: CATEGORY,
+  });
+  await this.products.variations.removeVariationOption(variation!._id, code);
+  const ticketCategories = Object.fromEntries(
+    Object.entries(production.meta?.ticketCategories ?? {}).filter(([key]) => key !== code),
+  );
+  await this.products.update(productionId, { 'meta.ticketCategories': ticketCategories });
+  return performances.map(({ product }) => product._id);
+}
+
+/**
+ * Checks that no performance of a production has tickets and returns the ids of the performance
+ * products and of the production, in the order the caller removes them
+ * (services.products.removeProduct).
+ */
+async function removeTicketProduction(this: Modules, productionId: string) {
+  const production = await findTicketProduction(this, productionId);
+  const performances = await findPerformanceProducts(this, production);
+  for (const { product } of performances) {
+    if (product && (await hasTickets(this, product._id))) {
+      throw fail('The production has tickets, cancel it instead', 'TICKET_PERFORMANCE_HAS_TICKETS');
+    }
+  }
+  return [...performances.map(({ product }) => product?._id).filter(Boolean), productionId] as string[];
+}
+
+/** Shares the media of a production with all its performances again. */
+async function syncTicketProductionMedia(this: Modules, productionId: string) {
+  const production = await findTicketProduction(this, productionId);
+  for (const { productId } of production.proxy?.assignments ?? []) {
+    await syncProductionMedia(this, productionId, productId);
+  }
+}
+
+const logger = createLogger('unchained:ticketing');
+
+/**
+ * Keeps the media of the performances in step with their production when media are added to,
+ * reordered on or removed from it, also through the core product media tab.
+ */
+export function subscribeTicketProductionMedia({ modules }: { modules: Modules }) {
+  // The products module may register its events after the plugins
+  registerEvents(['PRODUCT_ADD_MEDIA', 'PRODUCT_REORDER_MEDIA', 'PRODUCT_REMOVE_MEDIA']);
+  const run = (task: () => Promise<unknown>) => task().catch((error) => logger.error(error));
+  // One sync per production at a time, so media added together are not copied twice
+  const queues = new Map<string, Promise<unknown>>();
+  const sync = (productId?: string) => {
+    if (!productId) return Promise.resolve();
+    const next = (queues.get(productId) ?? Promise.resolve()).then(() =>
+      run(async () => {
+        const product = await modules.products.findProduct({ productId });
+        if (isTicketProduction(product)) await syncTicketProductionMedia.call(modules, productId);
+      }),
+    );
+    queues.set(productId, next);
+    return next.finally(() => {
+      if (queues.get(productId) === next) queues.delete(productId);
+    });
+  };
+
+  subscribe(
+    'PRODUCT_ADD_MEDIA',
+    ({ payload }: RawPayloadType<{ productMedia?: { productId?: string } }>) =>
+      sync(payload?.productMedia?.productId),
+  );
+  subscribe(
+    'PRODUCT_REORDER_MEDIA',
+    ({ payload }: RawPayloadType<{ productMedias?: { productId?: string }[] }>) =>
+      sync(payload?.productMedias?.[0]?.productId),
+  );
+  subscribe('PRODUCT_REMOVE_MEDIA', ({ payload }: RawPayloadType<{ productMediaId?: string }>) =>
+    run(async () => {
+      if (payload?.productMediaId) {
+        await removeTicketProductionMediaCopies.call(modules, payload.productMediaId);
+      }
+    }),
+  );
+}
+
 export default {
   ticketing: {
+    syncTicketProductionMedia,
     createTicketProduction,
+    updateTicketProduction,
+    syncTicketProduction,
+    removeTicketProduction,
+    removeTicketProductionMediaCopies,
     addTicketPerformance,
     updateTicketPerformance,
     removeTicketPerformance,
     publishTicketProduction,
     unpublishTicketProduction,
+    addTicketCategory,
+    updateTicketCategory,
+    removeTicketCategory,
   },
 };
 
 export interface TicketProductionServices {
   ticketing: {
     createTicketProduction: Bound<typeof createTicketProduction>;
+    updateTicketProduction: Bound<typeof updateTicketProduction>;
+    syncTicketProduction: Bound<typeof syncTicketProduction>;
+    removeTicketProduction: Bound<typeof removeTicketProduction>;
+    removeTicketProductionMediaCopies: Bound<typeof removeTicketProductionMediaCopies>;
     addTicketPerformance: Bound<typeof addTicketPerformance>;
     updateTicketPerformance: Bound<typeof updateTicketPerformance>;
     removeTicketPerformance: Bound<typeof removeTicketPerformance>;
     publishTicketProduction: Bound<typeof publishTicketProduction>;
     unpublishTicketProduction: Bound<typeof unpublishTicketProduction>;
+    addTicketCategory: Bound<typeof addTicketCategory>;
+    updateTicketCategory: Bound<typeof updateTicketCategory>;
+    removeTicketCategory: Bound<typeof removeTicketCategory>;
+    syncTicketProductionMedia: Bound<typeof syncTicketProductionMedia>;
   };
 }

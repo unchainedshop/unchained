@@ -14,6 +14,13 @@ import updateTicketPerformance from './resolvers/mutations/updateTicketPerforman
 import removeTicketPerformance from './resolvers/mutations/removeTicketPerformance.ts';
 import publishTicketProduction from './resolvers/mutations/publishTicketProduction.ts';
 import unpublishTicketProduction from './resolvers/mutations/unpublishTicketProduction.ts';
+import updateTicketProduction from './resolvers/mutations/updateTicketProduction.ts';
+import syncTicketProduction from './resolvers/mutations/syncTicketProduction.ts';
+import removeTicketProduction from './resolvers/mutations/removeTicketProduction.ts';
+import cancelTicketPerformance from './resolvers/mutations/cancelTicketPerformance.ts';
+import addTicketCategory from './resolvers/mutations/addTicketCategory.ts';
+import updateTicketCategory from './resolvers/mutations/updateTicketCategory.ts';
+import removeTicketCategory from './resolvers/mutations/removeTicketCategory.ts';
 import { ConfigurableProduct, TicketProduction } from './resolvers/type/configurable-product.ts';
 import { Order } from './resolvers/type/order.ts';
 import { Token } from './resolvers/type/token.ts';
@@ -48,6 +55,13 @@ const ticketingResolvers = {
     removeTicketPerformance: checkResolver('manageProducts')(removeTicketPerformance),
     publishTicketProduction: checkResolver('manageProducts')(publishTicketProduction),
     unpublishTicketProduction: checkResolver('manageProducts')(unpublishTicketProduction),
+    updateTicketProduction: checkResolver('manageProducts')(updateTicketProduction),
+    syncTicketProduction: checkResolver('manageProducts')(syncTicketProduction),
+    removeTicketProduction: checkResolver('manageProducts')(removeTicketProduction),
+    cancelTicketPerformance: checkResolver('cancelTicket')(cancelTicketPerformance),
+    addTicketCategory: checkResolver('manageProducts')(addTicketCategory),
+    updateTicketCategory: checkResolver('manageProducts')(updateTicketCategory),
+    removeTicketCategory: checkResolver('manageProducts')(removeTicketCategory),
   },
   TokenizedProduct,
   TicketEvent,
