@@ -2,7 +2,6 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   centsToDecimal,
-  emptyProductionFormValues,
   fromTicketSaleRules,
   toCents,
   toCreateTicketProductionInput,
@@ -50,136 +49,53 @@ test('the sale rules form keeps unset rules unset, inherit clears them', () => {
   );
   assert.deepEqual(
     toTicketSaleRulesInput({ onSale: 'open', salesStart: 'soon', salesEnd: '', maxPerOrder: '1.5' }),
-    { errors: ['saleRules.salesStart', 'saleRules.maxPerOrder'] },
+    { errors: ['salesStart', 'maxPerOrder'] },
   );
 });
 
-test('a new production with categories becomes one createTicketProduction input', () => {
-  const values = {
-    ...emptyProductionFormValues(),
-    title: ' Hamlet ',
-    subtitle: 'Tragödie',
-    tags: 'organizer-a, Festival',
-    location: 'Grosse Bühne',
-    durationMinutes: '150',
-    categories: [
-      { code: 'adult', name: 'Erwachsene', capacity: '100', price: '45' },
-      { code: 'reduced', name: 'Ermässigt', capacity: '20', price: '25.50' },
-    ],
-    performances: [{ startsAt: '2026-11-01T20:00', supply: '', price: '' }],
-  };
-  const result = toCreateTicketProductionInput(values, shop);
-  assert.ok('input' in result);
-  assert.deepEqual(result.input, {
-    texts: [{ locale: 'de', title: 'Hamlet', subtitle: 'Tragödie' }],
-    tags: ['organizer-a', 'festival'],
-    location: 'Grosse Bühne',
-    durationMinutes: 150,
-    saleRules: {},
-    categories: [
-      {
-        code: 'adult',
-        texts: [{ locale: 'de', title: 'Erwachsene' }],
-        capacity: 100,
-        pricing: [{ amount: 4500, currencyCode: 'CHF', countryCode: 'CH' }],
-      },
-      {
-        code: 'reduced',
-        texts: [{ locale: 'de', title: 'Ermässigt' }],
-        capacity: 20,
-        pricing: [{ amount: 2550, currencyCode: 'CHF', countryCode: 'CH' }],
-      },
-    ],
-    performances: [{ startsAt: new Date('2026-11-01T20:00').toISOString() }],
-  });
-});
-
-test('without categories each date carries its own supply and price', () => {
-  const result = toCreateTicketProductionInput(
-    {
-      ...emptyProductionFormValues(),
-      title: 'Kochkurs',
-      performances: [{ startsAt: '2026-11-01T18:00', supply: '12', price: '90' }],
-    },
-    shop,
-  );
-  assert.ok('input' in result);
-  assert.deepEqual(result.input.performances, [
-    {
-      startsAt: new Date('2026-11-01T18:00').toISOString(),
-      tickets: [{ supply: 12, pricing: [{ amount: 9000, currencyCode: 'CHF', countryCode: 'CH' }] }],
-    },
-  ]);
-  assert.equal(result.input.categories, undefined);
-});
-
-test('invalid fields are named instead of building an input', () => {
-  const result = toCreateTicketProductionInput(
-    {
-      ...emptyProductionFormValues(),
-      title: '',
-      durationMinutes: 'long',
-      categories: [
-        { code: 'Adult Price', name: '', capacity: '-1', price: 'x' },
-        { code: 'ok', name: '', capacity: '', price: '' },
-        { code: 'ok', name: '', capacity: '', price: '' },
-      ],
-      performances: [{ startsAt: '', supply: '', price: '' }],
-    },
-    shop,
-  );
-  assert.deepEqual(result, {
-    errors: [
-      'title',
-      'durationMinutes',
-      'categories.0.code',
-      'categories.0.capacity',
-      'categories.0.price',
-      'categories.2.code',
-      'performances.0.startsAt',
-    ],
-  });
-});
-
-test('editing a production sends every text, detail and rule; blanks clear them', () => {
-  const result = toUpdateTicketProductionInput(
-    {
-      title: 'Hamlet',
-      subtitle: '',
-      description: 'Neu',
-      tags: 'organizer-a',
-      location: '',
-      durationMinutes: '150',
-      doorsOpenMinutesBefore: '',
-      saleRules: { onSale: 'open', salesStart: '', salesEnd: '', maxPerOrder: '6' },
-    },
-    shop,
-  );
-  assert.deepEqual(result, {
-    input: {
-      texts: [{ locale: 'de', title: 'Hamlet', subtitle: null, description: 'Neu' }],
-      tags: ['organizer-a'],
-      location: null,
-      durationMinutes: 150,
-      doorsOpenMinutesBefore: null,
-      saleRules: { onSale: true, salesStart: null, salesEnd: null, maxPerOrder: 6 },
-    },
-  });
+test('a new production is created from its title, subtitle, tags and location', () => {
+  // The admin-ui form turns blank fields into null
   assert.deepEqual(
-    toUpdateTicketProductionInput(
-      {
-        title: '',
-        subtitle: '',
-        description: '',
-        tags: '',
-        location: '',
-        durationMinutes: 'x',
-        doorsOpenMinutesBefore: '',
-        saleRules: { onSale: 'inherit', salesStart: '', salesEnd: '', maxPerOrder: '' },
-      },
+    toCreateTicketProductionInput(
+      { title: ' Hamlet ', subtitle: null, tags: ['organizer-a'], location: 'Grosse Bühne' },
       shop,
     ),
-    { errors: ['title', 'durationMinutes'] },
+    {
+      input: {
+        texts: [{ locale: 'de', title: 'Hamlet' }],
+        tags: ['organizer-a'],
+        location: 'Grosse Bühne',
+      },
+    },
+  );
+  assert.deepEqual(toCreateTicketProductionInput({ title: null, tags: null }, shop), {
+    errors: ['title'],
+  });
+});
+
+test('the event form sends every detail and sale rule, blanks clear them', () => {
+  assert.deepEqual(
+    toUpdateTicketProductionInput({
+      location: null,
+      durationMinutes: '150',
+      doorsOpenMinutesBefore: null,
+      onSale: 'open',
+      salesStart: null,
+      salesEnd: '',
+      maxPerOrder: '6',
+    }),
+    {
+      input: {
+        location: null,
+        durationMinutes: 150,
+        doorsOpenMinutesBefore: null,
+        saleRules: { onSale: true, salesStart: null, salesEnd: null, maxPerOrder: 6 },
+      },
+    },
+  );
+  assert.deepEqual(
+    toUpdateTicketProductionInput({ durationMinutes: 'long', onSale: 'inherit', maxPerOrder: '1.5' }),
+    { errors: ['durationMinutes', 'maxPerOrder'] },
   );
 });
 
