@@ -82,20 +82,14 @@ test.describe('Plugin: ETH minter', () => {
   test('stays web3 only: no entry window around an event slot', async () => {
     await db
       .collection('products')
-      .updateOne(
-        { _id: TokenizedProduct1._id },
-        { $set: { 'meta.slot': '2099-01-01T19:30:00.000Z' } },
-      );
+      .updateOne({ _id: TokenizedProduct1._id }, { $set: { 'meta.slot': '2099-01-01T19:30:00.000Z' } });
     try {
       const token = await fetchToken(TestToken1._id);
       assert.strictEqual(token.isInvalidateable, true);
     } finally {
       await db
         .collection('products')
-        .updateOne(
-          { _id: TokenizedProduct1._id },
-          { $unset: { 'meta.slot': 1 } },
-        );
+        .updateOne({ _id: TokenizedProduct1._id }, { $unset: { 'meta.slot': 1 } });
     }
   });
 

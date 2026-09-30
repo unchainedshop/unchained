@@ -46,10 +46,13 @@ test('checkTicket judges a looked-up ticket in the order scanTicket refuses it',
     verdict: 'CANCELLED',
     scope: 'TICKET',
   });
-  assert.deepEqual(checkTicket({ ...ticket, product: { ...ticket.product, event: { isCanceled: true } } }, {}), {
-    verdict: 'CANCELLED',
-    scope: 'EVENT',
-  });
+  assert.deepEqual(
+    checkTicket({ ...ticket, product: { ...ticket.product, event: { isCanceled: true } } }, {}),
+    {
+      verdict: 'CANCELLED',
+      scope: 'EVENT',
+    },
+  );
   assert.deepEqual(
     checkTicket(
       { ...ticket, ticketStatus: 'REDEEMED', invalidatedDate: '2026-10-01T18:05:00.000Z' },
@@ -67,7 +70,10 @@ test('checkTicket judges a looked-up ticket in the order scanTicket refuses it',
       {
         ...ticket,
         isInvalidateable: false,
-        product: { ...ticket.product, event: { isCanceled: false, startsAt: '2026-10-01T18:00:00.000Z' } },
+        product: {
+          ...ticket.product,
+          event: { isCanceled: false, startsAt: '2026-10-01T18:00:00.000Z' },
+        },
       },
       {},
     ),

@@ -45,18 +45,18 @@ See [ETH Minter](./warehousing-eth-minter.md) for the shape of the returned meta
 
 ## Environment Variables
 
-| Variable                | Default                 | Description                            |
-| ----------------------- | ----------------------- | -------------------------------------- |
-| `ERC_METADATA_API_PATH` | `/erc-metadata`         | Path prefix the route is mounted at    |
-| `ROOT_URL`              | `http://localhost:4010` | Base URL used to parse the request URL |
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `ERC_METADATA_API_PATH` | `/erc-metadata` | Path prefix the route is mounted at |
+| `ROOT_URL` | `http://localhost:4010` | Base URL used to parse the request URL |
 
 ## Plugin Details
 
-| Property | Value                                                                                                                            |
-| -------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Key      | `shop.unchained.warehousing.erc-metadata`                                                                                        |
-| Version  | `1.0.0`                                                                                                                          |
-| Source   | [warehousing/erc-metadata](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/warehousing/erc-metadata) |
+| Property | Value |
+|----------|-------|
+| Key | `shop.unchained.warehousing.erc-metadata` |
+| Version | `1.0.0` |
+| Source | [warehousing/erc-metadata](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/warehousing/erc-metadata) |
 
 ## Related
 

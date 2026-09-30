@@ -173,7 +173,10 @@ test('tickets are redeemable within the configured entry window around the event
   const tokenSlot = event({
     tokenization: { supply: 10, ercMetadataProperties: { slot: inHours(5).toISOString() } },
   });
-  assert.equal(await actionsFor({ modules, token, product: tokenSlot }).isInvalidateable('5', now), true);
+  assert.equal(
+    await actionsFor({ modules, token, product: tokenSlot }).isInvalidateable('5', now),
+    true,
+  );
 });
 
 test('every seat becomes its own ticket with a reserved serial and the order reference', async () => {

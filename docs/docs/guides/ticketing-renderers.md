@@ -11,11 +11,11 @@ description: Build the tickets PDF, Apple Wallet passes and Google Wallet passes
 
 This guide builds all three step by step. The code is complete: copy it into your project, adjust the texts and the branding, and wire it up as shown in [Wiring](#wiring). It uses:
 
-| Renderer      | Library                                                                                             | Licence    |
-| ------------- | --------------------------------------------------------------------------------------------------- | ---------- |
-| Tickets PDF   | [`@react-pdf/renderer`](https://react-pdf.org) and [`qrcode`](https://www.npmjs.com/package/qrcode) | MIT        |
-| Apple Wallet  | [`passkit-generator`](https://github.com/alexandercerutti/passkit-generator) 3.x                    | MIT        |
-| Google Wallet | [`googleapis`](https://www.npmjs.com/package/googleapis) (Wallet REST API)                          | Apache-2.0 |
+| Renderer | Library | Licence |
+|----------|---------|---------|
+| Tickets PDF | [`@react-pdf/renderer`](https://react-pdf.org) and [`qrcode`](https://www.npmjs.com/package/qrcode) | MIT |
+| Apple Wallet | [`passkit-generator`](https://github.com/alexandercerutti/passkit-generator) 3.x | MIT |
+| Google Wallet | [`googleapis`](https://www.npmjs.com/package/googleapis) (Wallet REST API) | Apache-2.0 |
 
 ```bash
 npm install @react-pdf/renderer react qrcode passkit-generator googleapis
@@ -32,11 +32,11 @@ The setup of the package itself (plugin, ticket issuer, gate staff) is in [Event
 
 ## The renderer contracts
 
-| Option of `createTicketingPlugin()` | Type                       | Called by                                                                                                                    | Returns                                                                                                                     |
-| ----------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `renderOrderPDF`                    | `PDFRenderer`              | `GET /rest/print_tickets?orderId&otp[&variant]`                                                                              | a Node.js readable stream of the PDF                                                                                        |
-| `createAppleWalletPass`             | `PassRenderer`             | `GET /rest/apple-wallet/download/<tokenId>.pkpass?hash=`, and again when a ticket with a saved pass is redeemed or cancelled | `{ serialNumber, passTypeIdentifier, asBuffer(), asURL() }`                                                                 |
-| `createGoogleWalletPass`            | `GoogleWalletPassRenderer` | `GET /rest/google-wallet/download/<tokenId>?hash=`                                                                           | the "Add to Google Wallet" link as a string or as `{ asURL() }`; the route redirects to it with `302`, `null` answers `404` |
+| Option of `createTicketingPlugin()` | Type | Called by | Returns |
+|------|------|-----------|---------|
+| `renderOrderPDF` | `PDFRenderer` | `GET /rest/print_tickets?orderId&otp[&variant]` | a Node.js readable stream of the PDF |
+| `createAppleWalletPass` | `PassRenderer` | `GET /rest/apple-wallet/download/<tokenId>.pkpass?hash=`, and again when a ticket with a saved pass is redeemed or cancelled | `{ serialNumber, passTypeIdentifier, asBuffer(), asURL() }` |
+| `createGoogleWalletPass` | `GoogleWalletPassRenderer` | `GET /rest/google-wallet/download/<tokenId>?hash=` | the "Add to Google Wallet" link as a string or as `{ asURL() }`; the route redirects to it with `302`, `null` answers `404` |
 
 The types are exported from `@unchainedshop/ticketing`. The second argument is the request context on the routes and the Unchained API when a pass is refreshed in the background; both carry `modules` and `services`.
 
@@ -102,8 +102,7 @@ export async function loadTicketData(
     event: getTicketEventDetails(product),
     // VALID, REDEEMED or CANCELLED; a cancelled event cancels all its tickets
     status: isTicketEventCancelled(product) ? TicketStatus.CANCELLED : getTicketStatus(token),
-    attendeeName:
-      typeof attendeeName === 'string' && attendeeName.trim() ? attendeeName.trim() : undefined,
+    attendeeName: typeof attendeeName === 'string' && attendeeName.trim() ? attendeeName.trim() : undefined,
     scanPayload: buildTicketScanPayload({ tokenId: token._id, accessKey }, { baseUrl: scanBaseUrl }),
   };
 }
@@ -132,14 +131,7 @@ export interface TicketsPdfOptions extends TicketDataOptions {
   /** PNG or JPEG file; react-pdf cannot draw SVG */
   logoPath?: string;
   timeZone: string;
-  labels?: {
-    ticket: string;
-    doors: string;
-    attendee: string;
-    order: string;
-    redeemed: string;
-    cancelled: string;
-  };
+  labels?: { ticket: string; doors: string; attendee: string; order: string; redeemed: string; cancelled: string };
 }
 
 // ?variant=receipt prints one ticket per 80 mm receipt page, everything else one per A4 page.
@@ -210,20 +202,14 @@ export function createTicketsPdfRenderer(options: TicketsPdfOptions): PDFRendere
       (ticket.status === TicketStatus.REDEEMED && labels.redeemed);
     return h(
       Page,
-      receipt
-        ? { size: RECEIPT_PAGE_SIZE, style: styles.receiptPage }
-        : { size: 'A4', style: styles.page },
+      receipt ? { size: RECEIPT_PAGE_SIZE, style: styles.receiptPage } : { size: 'A4', style: styles.page },
       !receipt && options.logoPath ? h(Image, { src: options.logoPath, style: styles.logo }) : null,
       h(Text, { style: styles.title }, ticket.title),
       ticket.subtitle ? h(Text, { style: styles.line }, ticket.subtitle) : null,
       startsAt ? h(Text, { style: styles.line }, formatDateTime.format(startsAt)) : null,
-      doorsOpenAt
-        ? h(Text, { style: styles.line }, `${labels.doors}: ${formatTime.format(doorsOpenAt)}`)
-        : null,
+      doorsOpenAt ? h(Text, { style: styles.line }, `${labels.doors}: ${formatTime.format(doorsOpenAt)}`) : null,
       location ? h(Text, { style: styles.line }, location) : null,
-      ticket.attendeeName
-        ? h(Text, { style: styles.line }, `${labels.attendee}: ${ticket.attendeeName}`)
-        : null,
+      ticket.attendeeName ? h(Text, { style: styles.line }, `${labels.attendee}: ${ticket.attendeeName}`) : null,
       // A cancelled ticket must not look valid: no QR code, only the stamp.
       ticket.status === TicketStatus.CANCELLED ? null : h(Image, { src: qrCode, style: styles.qrCode }),
       stamp ? h(Text, { style: styles.stamp }, stamp) : null,
@@ -304,7 +290,6 @@ Pitfalls seen in production renderers:
    ```
 
    Download the certificate (`pass.cer`).
-
 3. Convert it into one PEM file that holds the certificate and the encrypted private key. The renderer signs passes with it, and the engine uses the same file to push pass updates:
 
    ```bash
@@ -328,11 +313,11 @@ Pitfalls seen in production renderers:
 
 5. Keep `pass.pem` and `wwdr.pem` out of the repository (mount them as secrets) and configure:
 
-   | Variable                               | Used by                       | Value                                    |
-   | -------------------------------------- | ----------------------------- | ---------------------------------------- |
-   | `PASS_CERTIFICATE_PATH`                | renderer and push updates     | path to `pass.pem`                       |
-   | `PASS_CERTIFICATE_SECRET`              | renderer and push updates     | the PEM passphrase                       |
-   | `PASS_WWDR_CERTIFICATE_PATH`           | renderer (your own variable)  | path to `wwdr.pem`                       |
+   | Variable | Used by | Value |
+   |----------|---------|-------|
+   | `PASS_CERTIFICATE_PATH` | renderer and push updates | path to `pass.pem` |
+   | `PASS_CERTIFICATE_SECRET` | renderer and push updates | the PEM passphrase |
+   | `PASS_WWDR_CERTIFICATE_PATH` | renderer (your own variable) | path to `wwdr.pem` |
    | `PASS_TYPE_IDENTIFIER`, `PASS_TEAM_ID` | renderer (your own variables) | `pass.com.example.tickets`, your Team ID |
 
 Pass certificates expire (`openssl x509 -enddate -noout -in pass.pem`). Renew yours in time: with an expired certificate new passes fail to install and saved passes stop receiving updates.
@@ -471,29 +456,19 @@ export function createAppleWalletPassRenderer(options: AppleWalletPassOptions): 
       });
     }
     eventTicket.primaryFields.push({ key: 'event', label: 'Event', value: ticket.title });
-    if (location)
-      eventTicket.secondaryFields.push({ key: 'location', label: 'Location', value: location });
+    if (location) eventTicket.secondaryFields.push({ key: 'location', label: 'Location', value: location });
     eventTicket.secondaryFields.push({
       key: 'ticket',
       label: 'Ticket',
       value: `#${token.tokenSerialNumber}`,
     });
     if (ticket.attendeeName) {
-      eventTicket.auxiliaryFields.push({
-        key: 'attendee',
-        label: 'Attendee',
-        value: ticket.attendeeName,
-      });
+      eventTicket.auxiliaryFields.push({ key: 'attendee', label: 'Attendee', value: ticket.attendeeName });
     }
     if (doorsOpenAt) {
-      eventTicket.auxiliaryFields.push({
-        key: 'doors',
-        label: 'Doors',
-        value: formatTime.format(doorsOpenAt),
-      });
+      eventTicket.auxiliaryFields.push({ key: 'doors', label: 'Doors', value: formatTime.format(doorsOpenAt) });
     }
-    if (category)
-      eventTicket.auxiliaryFields.push({ key: 'category', label: 'Category', value: category });
+    if (category) eventTicket.auxiliaryFields.push({ key: 'category', label: 'Category', value: category });
     if (ticket.status !== TicketStatus.VALID) {
       eventTicket.backFields.push({ key: 'status', label: 'Status', value: ticket.status });
     }
@@ -628,9 +603,7 @@ export function createGoogleWallet(options: GoogleWalletOptions) {
       payload: { eventTicketObjects: [{ id: objectId }] },
     };
     const unsigned = `${encode({ alg: 'RS256', typ: 'JWT' })}.${encode(claims)}`;
-    const signature = createSign('RSA-SHA256')
-      .update(unsigned)
-      .sign(credentials.private_key, 'base64url');
+    const signature = createSign('RSA-SHA256').update(unsigned).sign(credentials.private_key, 'base64url');
     return `https://pay.google.com/gp/v/save/${unsigned}.${signature}`;
   }
 
@@ -673,10 +646,7 @@ export function createGoogleWallet(options: GoogleWalletOptions) {
   };
 
   // Tickets someone never saved have no object: 404 is fine here.
-  async function patchSavedObject(
-    token: TokenSurrogate,
-    body: walletobjects_v1.Schema$EventTicketObject,
-  ) {
+  async function patchSavedObject(token: TokenSurrogate, body: walletobjects_v1.Schema$EventTicketObject) {
     try {
       await client.eventticketobject.patch({ resourceId: objectIdOf(token._id), requestBody: body });
     } catch (error) {
@@ -799,9 +769,7 @@ pluginRegistry.register(
           wwdrCertificatePath: process.env.PASS_WWDR_CERTIFICATE_PATH!,
           passTypeIdentifier: process.env.PASS_TYPE_IDENTIFIER!,
           teamIdentifier: process.env.PASS_TEAM_ID!,
-          locations: [
-            { latitude: 47.3769, longitude: 8.5417, relevantText: 'Show your ticket at the entrance' },
-          ],
+          locations: [{ latitude: 47.3769, longitude: 8.5417, relevantText: 'Show your ticket at the entrance' }],
         })
       : undefined,
     createGoogleWalletPass: googleWallet?.createGoogleWalletPass,
@@ -809,7 +777,7 @@ pluginRegistry.register(
 );
 pluginRegistry.register(TicketWarehousingPlugin);
 
-const platform = await startPlatform(withTicketing({/* your platform options */}));
+const platform = await startPlatform(withTicketing({ /* your platform options */ }));
 googleWallet?.subscribeToTicketEvents(platform.unchainedAPI);
 ```
 

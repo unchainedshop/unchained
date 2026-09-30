@@ -26,16 +26,16 @@ npm install @parse/node-apn
 
 The Admin UI plugin needs `@unchainedshop/admin-ui` (an optional peer). The HTTP routes are served by `connect()` of `@unchainedshop/api/express` or `@unchainedshop/api/fastify`; nothing framework-specific is imported from the ticketing package.
 
-| Variable                                                | Default                 | Description                                                                                                                                                 |
-| ------------------------------------------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `UNCHAINED_SECRET`                                      | -                       | **Required.** Derives the magic keys of orders; the engine does not start without it (`TICKETING_SECRET_MISSING`). Changing it revokes all magic-key links. |
-| `ROOT_URL`                                              | `http://localhost:4010` | Public URL of the engine, used for ticket and wallet links                                                                                                  |
-| `UNCHAINED_PDF_PRINT_HANDLER_PATH`                      | `/rest/print_tickets`   | Tickets PDF route                                                                                                                                           |
-| `GOOGLE_WALLET_WEBSERVICE_PATH`                         | `/rest/google-wallet`   | Google Wallet route                                                                                                                                         |
-| `APPLE_WALLET_WEBSERVICE_PATH`                          | `/rest/apple-wallet`    | Apple Wallet download and PassKit web service; issued passes keep this URL                                                                                  |
-| `PASS_CERTIFICATE_PATH`, `PASS_CERTIFICATE_SECRET`      | -                       | PEM with the Apple pass certificate and key, and its passphrase, for push updates (see [Ticket Renderers](./ticketing-renderers#certificates))              |
-| `DISCOUNT_CODE_SECRET`                                  | -                       | 32 bytes as hex (`openssl rand -hex 32`) to sign reimbursement codes; see [Cancellations](#cancellations-and-reimbursement-codes)                           |
-| `EMAIL_FROM`, `EMAIL_WEBSITE_NAME`, `EMAIL_WEBSITE_URL` | -                       | Used by the cancellation e-mails, read when a message is built                                                                                              |
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `UNCHAINED_SECRET` | - | **Required.** Derives the magic keys of orders; the engine does not start without it (`TICKETING_SECRET_MISSING`). Changing it revokes all magic-key links. |
+| `ROOT_URL` | `http://localhost:4010` | Public URL of the engine, used for ticket and wallet links |
+| `UNCHAINED_PDF_PRINT_HANDLER_PATH` | `/rest/print_tickets` | Tickets PDF route |
+| `GOOGLE_WALLET_WEBSERVICE_PATH` | `/rest/google-wallet` | Google Wallet route |
+| `APPLE_WALLET_WEBSERVICE_PATH` | `/rest/apple-wallet` | Apple Wallet download and PassKit web service; issued passes keep this URL |
+| `PASS_CERTIFICATE_PATH`, `PASS_CERTIFICATE_SECRET` | - | PEM with the Apple pass certificate and key, and its passphrase, for push updates (see [Ticket Renderers](./ticketing-renderers#certificates)) |
+| `DISCOUNT_CODE_SECRET` | - | 32 bytes as hex (`openssl rand -hex 32`) to sign reimbursement codes; see [Cancellations](#cancellations-and-reimbursement-codes) |
+| `EMAIL_FROM`, `EMAIL_WEBSITE_NAME`, `EMAIL_WEBSITE_URL` | - | Used by the cancellation e-mails, read when a message is built |
 
 The route paths are read when `createTicketingPlugin()` is called, so load your environment before.
 
@@ -74,9 +74,7 @@ pluginRegistry.register(
 pluginRegistry.register(
   createTicketWarehousingPlugin({
     ticketMeta: ({ orderPosition, index }) => {
-      const attendees = orderPosition.configuration
-        ?.find(({ key }) => key === 'attendees')
-        ?.value?.split(',');
+      const attendees = orderPosition.configuration?.find(({ key }) => key === 'attendees')?.value?.split(',');
       const attendeeName = attendees?.[index]?.trim();
       return attendeeName ? { attendeeName } : undefined;
     },
@@ -102,13 +100,13 @@ With Express, use `connect(app, platform, …)` from `@unchainedshop/api/express
 
 What each piece does:
 
-| Piece                                                                                  | From                                          | Does                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| -------------------------------------------------------------------------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `createTicketingPlugin(options)`                                                       | `@unchainedshop/ticketing`                    | Adds the `passes` module (magic keys, ticket serials and counts, Apple pass files, reimbursement codes), the [routes](#rest-routes), the magic-key permission rules, the `EVENT_CANCELLED` / `TICKET_CANCELLED` e-mail templates (only if you did not register your own) and, with an Apple renderer, the re-rendering of passes of redeemed and cancelled tickets. Options: `renderOrderPDF`, `createAppleWalletPass`, `createGoogleWalletPass`, `discountCode`. |
-| `TicketWarehousingPlugin` / `createTicketWarehousingPlugin({ ticketMeta })`            | `@unchainedshop/ticketing/warehousing/ticket` | The ticket issuer (adapter key `shop.unchained.warehousing.ticket`), see [below](#the-ticket-issuer).                                                                                                                                                                                                                                                                                                                                                             |
-| `withTicketing(platformOptions, { canAccessEvent })`                                   | `@unchainedshop/ticketing`                    | Merges the ticketing GraphQL type definitions, resolvers, services, the actions `scanTicket`, `gateControl`, `cancelTicket` and the `ticketing` role into your `startPlatform` options. Your own entries win. `canAccessEvent` sets an [organizer scope](#organizer-scope).                                                                                                                                                                                       |
-| `validateTicketOrderPosition` / `createTicketOrderPositionValidator({ getSaleRules })` | `@unchainedshop/ticketing`                    | Keeps ticket sales within the supply and your sale rules, see [Selling tickets](#selling-tickets).                                                                                                                                                                                                                                                                                                                                                                |
-| `ticketingAdminPlugin()`                                                               | `@unchainedshop/ticketing/admin-plugin`       | Adds the **Ticketing** menu (Events, Gate Control) to the Admin UI.                                                                                                                                                                                                                                                                                                                                                                                               |
+| Piece | From | Does |
+|-------|------|------|
+| `createTicketingPlugin(options)` | `@unchainedshop/ticketing` | Adds the `passes` module (magic keys, ticket serials and counts, Apple pass files, reimbursement codes), the [routes](#rest-routes), the magic-key permission rules, the `EVENT_CANCELLED` / `TICKET_CANCELLED` e-mail templates (only if you did not register your own) and, with an Apple renderer, the re-rendering of passes of redeemed and cancelled tickets. Options: `renderOrderPDF`, `createAppleWalletPass`, `createGoogleWalletPass`, `discountCode`. |
+| `TicketWarehousingPlugin` / `createTicketWarehousingPlugin({ ticketMeta })` | `@unchainedshop/ticketing/warehousing/ticket` | The ticket issuer (adapter key `shop.unchained.warehousing.ticket`), see [below](#the-ticket-issuer). |
+| `withTicketing(platformOptions, { canAccessEvent })` | `@unchainedshop/ticketing` | Merges the ticketing GraphQL type definitions, resolvers, services, the actions `scanTicket`, `gateControl`, `cancelTicket` and the `ticketing` role into your `startPlatform` options. Your own entries win. `canAccessEvent` sets an [organizer scope](#organizer-scope). |
+| `validateTicketOrderPosition` / `createTicketOrderPositionValidator({ getSaleRules })` | `@unchainedshop/ticketing` | Keeps ticket sales within the supply and your sale rules, see [Selling tickets](#selling-tickets). |
+| `ticketingAdminPlugin()` | `@unchainedshop/ticketing/admin-plugin` | Adds the **Ticketing** menu (Events, Gate Control) to the Admin UI. |
 
 Register the plugins before `startPlatform`. Do not also pass `modules: ticketingModules`: the plugin already provides the `passes` module.
 
@@ -134,11 +132,11 @@ await modules.warehousing.create({
 });
 ```
 
-| Configuration             | Default | Meaning                                                                                                                         |
-| ------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `entryOpensMinutesBefore` | `120`   | Tickets can be redeemed from this many minutes before the event start. Empty: no limit.                                         |
-| `entryClosesMinutesAfter` | `60`    | …until this many minutes after it. Empty: no limit. Events without a start can always be redeemed.                              |
-| `serialOffset`            | `0`     | Serial numbers of an event start after this number. Only applies to events that have no numbered tickets yet; `-1` starts at 0. |
+| Configuration | Default | Meaning |
+|---------------|---------|---------|
+| `entryOpensMinutesBefore` | `120` | Tickets can be redeemed from this many minutes before the event start. Empty: no limit. |
+| `entryClosesMinutesAfter` | `60` | …until this many minutes after it. Empty: no limit. Events without a start can always be redeemed. |
+| `serialOffset` | `0` | Serial numbers of an event start after this number. Only applies to events that have no numbered tickets yet; `-1` starts at 0. |
 
 What the issuer does:
 
@@ -152,14 +150,14 @@ What the issuer does:
 
 An event is a product of type `TOKENIZED_PRODUCT`. `tokenization.supply` caps the tickets sold (`0` or unset means no cap); off-chain tickets need no `contractAddress` or `tokenId`. The event facts live in `product.meta`, next to the cancellation flag (`meta.cancelled`):
 
-| Key in `product.meta`                               | Field on `TokenizedProduct.event`                         |
-| --------------------------------------------------- | --------------------------------------------------------- |
-| `slot` (`START`), a date                            | `startsAt`                                                |
-| `location`                                          | `location`                                                |
-| `durationMinutes`                                   | `durationMinutes`, `endsAt` (start + duration)            |
-| `doorsOpenMinutesBefore`                            | `doorsOpenMinutesBefore`, `doorsOpenAt` (start − minutes) |
-| `category`                                          | `category`                                                |
-| `cancelled`, `cancelledDate` (set by `cancelEvent`) | `isCanceled`, `cancelledDate`                             |
+| Key in `product.meta` | Field on `TokenizedProduct.event` |
+|---|---|
+| `slot` (`START`), a date | `startsAt` |
+| `location` | `location` |
+| `durationMinutes` | `durationMinutes`, `endsAt` (start + duration) |
+| `doorsOpenMinutesBefore` | `doorsOpenMinutesBefore`, `doorsOpenAt` (start − minutes) |
+| `category` | `category` |
+| `cancelled`, `cancelledDate` (set by `cancelEvent`) | `isCanceled`, `cancelledDate` |
 
 `TokenizedProduct.event` (type `TicketEvent`) holds every ticketing value of an event; the supply and the tickets come from the product itself (`contractConfiguration`, `tokens`, `tokensCount`). `product.meta` is not part of the GraphQL `Product` type or of the public ERC metadata; read the details through `event` or `getTicketEventDetails(product)`.
 
@@ -219,11 +217,11 @@ const validateOrderPosition = createTicketOrderPositionValidator({
 await startPlatform(withTicketing({ options: { orders: { validateOrderPosition } } }));
 ```
 
-| Rule                                                      | Error (`extensions.code`)                       |
-| --------------------------------------------------------- | ----------------------------------------------- |
-| `onSale: false`, or a date that cannot be parsed          | `TicketNotOnSaleError`                          |
-| before `salesStart`                                       | `TicketSaleNotStartedError` (`salesStart`)      |
-| from `salesEnd` on                                        | `TicketSaleEndedError` (`salesEnd`)             |
+| Rule | Error (`extensions.code`) |
+|------|---------------------------|
+| `onSale: false`, or a date that cannot be parsed | `TicketNotOnSaleError` |
+| before `salesStart` | `TicketSaleNotStartedError` (`salesStart`) |
+| from `salesEnd` on | `TicketSaleEndedError` (`salesEnd`) |
 | more than `maxPerOrder` tickets of the event in the order | `TicketOrderLimitExceededError` (`maxPerOrder`) |
 
 Cart mutations return these codes in `extensions.code`; `checkoutCart` fails with `OrderCheckoutError` and the code in `extensions.detailCode`. At checkout the second argument of `getSaleRules` only holds `modules`: look users up through `order.userId`. Tickets are issued when an order is confirmed, so checkouts that run at the very same moment can still sell a few tickets more than the supply.
@@ -235,35 +233,32 @@ Gate staff get their own user account with the `ticketing` role (it grants `scan
 - **One gate, several events.** Tick several events, or use **Admit all … categories** for a performance sold as several products (category × time slot); the gate keeps them in its URL (`?event=a,b`). Tickets of other events show as wrong event, and `scanTicket` gets each ticket's own event, so the server refuses foreign tickets as well.
 - **Only ticket QR codes from the camera.** The camera takes a code only when it holds a ticket id and its access key (`?hash=`), as [`buildTicketScanPayload`](./ticketing-renderers#one-qr-code-for-all-renderers) produces. Serials, names and order numbers can be typed, but they prove nothing about who holds the ticket: such matches are marked "found by search" and are never redeemed without a tap, even with the setting that redeems valid ticket QR codes right after scanning. A scanned QR code is redeemed with its access key, so the server refuses codes issued before the ticket changed hands ("Outdated ticket code").
 
-| Operation                                   | Requires         | Description                                                                                                                                                                                                                                                                            |
-| ------------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ticketEvents`, `ticketEventsCount`         | `gateControl`    | Ticket events. Gate staff see active events, users with `manageProducts` also drafts. Filters: `queryString`, `tags`, `slotFrom` / `slotTo` (event start, inclusive), `onlyInvalidateable` (events with a ticket that can be redeemed now; combine it with a date range).              |
-| `ticketLookup(code, productId, limit)`      | `gateControl`    | A token id or a scanned QR code returns that ticket; with `productId` also a serial number (`12` or `#12`), an order number or part of an attendee name. Includes redeemed and cancelled tickets, and tickets of other events for token ids and order numbers (compare `product._id`). |
-| `scanTicket(tokenId, productId, accessKey)` | `scanTicket`     | Redeems a ticket. `productId` is the event this gate admits. `accessKey` is the `hash` of a scanned ticket QR code; when given it must match the ticket's current access key. Emits `TICKET_REDEEMED`.                                                                                 |
-| `cancelTicket(tokenId, generateDiscount)`   | `cancelTicket`   | Cancels a ticket, see [Cancellations](#cancellations-and-reimbursement-codes).                                                                                                                                                                                                         |
-| `cancelEvent(productId, generateDiscount)`  | `cancelTicket`   | Cancels an event and all its tickets; returns the number of cancelled tokens.                                                                                                                                                                                                          |
-| `updateTicketEvent(productId, event)`       | `manageProducts` | Changes event details.                                                                                                                                                                                                                                                                 |
+| Operation | Requires | Description |
+|-----------|----------|-------------|
+| `ticketEvents`, `ticketEventsCount` | `gateControl` | Ticket events. Gate staff see active events, users with `manageProducts` also drafts. Filters: `queryString`, `tags`, `slotFrom` / `slotTo` (event start, inclusive), `onlyInvalidateable` (events with a ticket that can be redeemed now; combine it with a date range). |
+| `ticketLookup(code, productId, limit)` | `gateControl` | A token id or a scanned QR code returns that ticket; with `productId` also a serial number (`12` or `#12`), an order number or part of an attendee name. Includes redeemed and cancelled tickets, and tickets of other events for token ids and order numbers (compare `product._id`). |
+| `scanTicket(tokenId, productId, accessKey)` | `scanTicket` | Redeems a ticket. `productId` is the event this gate admits. `accessKey` is the `hash` of a scanned ticket QR code; when given it must match the ticket's current access key. Emits `TICKET_REDEEMED`. |
+| `cancelTicket(tokenId, generateDiscount)` | `cancelTicket` | Cancels a ticket, see [Cancellations](#cancellations-and-reimbursement-codes). |
+| `cancelEvent(productId, generateDiscount)` | `cancelTicket` | Cancels an event and all its tickets; returns the number of cancelled tokens. |
+| `updateTicketEvent(productId, event)` | `manageProducts` | Changes event details. |
 
 `scanTicket` answers with the redeemed ticket or refuses with one of these codes, in this order:
 
-| `extensions.code`             | Extensions                                     | When                                                                                                |
-| ----------------------------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `TokenNotFoundError`          |                                                | unknown ticket                                                                                      |
-| `NoPermissionError`           |                                                | the event is outside the viewer's [organizer scope](#organizer-scope)                               |
-| `TicketAccessKeyInvalidError` | `productId`                                    | `accessKey` does not match: the QR code was issued before the ticket changed hands, or it is forged |
-| `TicketWrongEventError`       | `productId`, `expectedProductId`               | the ticket is for another event than `productId`                                                    |
-| `TicketCanceledError`         | `scope` (`TICKET` or `EVENT`), `cancelledDate` | the ticket or its event was cancelled                                                               |
-| `TicketAlreadyRedeemedError`  | `invalidatedDate`                              | the ticket was redeemed before                                                                      |
-| `TicketNotRedeemableError`    | `reason`, `startsAt`, `opensAt`, `closesAt`    | `EVENT_INACTIVE`, `NOT_YET_OPEN`, `ENTRY_CLOSED` or `NOT_REDEEMABLE`                                |
+| `extensions.code` | Extensions | When |
+|-------------------|------------|------|
+| `TokenNotFoundError` | | unknown ticket |
+| `NoPermissionError` | | the event is outside the viewer's [organizer scope](#organizer-scope) |
+| `TicketAccessKeyInvalidError` | `productId` | `accessKey` does not match: the QR code was issued before the ticket changed hands, or it is forged |
+| `TicketWrongEventError` | `productId`, `expectedProductId` | the ticket is for another event than `productId` |
+| `TicketCanceledError` | `scope` (`TICKET` or `EVENT`), `cancelledDate` | the ticket or its event was cancelled |
+| `TicketAlreadyRedeemedError` | `invalidatedDate` | the ticket was redeemed before |
+| `TicketNotRedeemableError` | `reason`, `startsAt`, `opensAt`, `closesAt` | `EVENT_INACTIVE`, `NOT_YET_OPEN`, `ENTRY_CLOSED` or `NOT_REDEEMABLE` |
 
 Tickets expose their state to gate staff:
 
 ```graphql schema=page
 query GateLookup {
-  ticketLookup(
-    code: "https://shop.example.com/tickets/5f0c1e2d3a4b5c6d7e8f9a0b?hash=abc"
-    productId: "event-1"
-  ) {
+  ticketLookup(code: "https://shop.example.com/tickets/5f0c1e2d3a4b5c6d7e8f9a0b?hash=abc", productId: "event-1") {
     _id
     tokenSerialNumber
     ticketStatus
@@ -297,8 +292,7 @@ When several organizers share one shop, limit their staff to their own events:
 const platform = await startPlatform(
   withTicketing(platformOptions, {
     // Only asked for users with ticketing access who are not admins
-    canAccessEvent: async (event, context) =>
-      event.meta?.organizerId === context.user?.meta?.organizerId,
+    canAccessEvent: async (event, context) => event.meta?.organizerId === context.user?.meta?.organizerId,
   }),
 );
 ```
@@ -317,11 +311,11 @@ If you define the `ticketing` role yourself, build it with `createTicketingRoles
 
 ## Events and subscriptions
 
-| Event                    | Payload                         | Emitted                                                      |
-| ------------------------ | ------------------------------- | ------------------------------------------------------------ |
-| `TICKET_REDEEMED`        | `{ token, redeemedBy }`         | by `scanTicket` (not by the core `invalidateToken` mutation) |
-| `TICKET_CANCELLED`       | `{ token }`                     | for every cancelled ticket, also those of a cancelled event  |
-| `TICKET_EVENT_CANCELLED` | `{ productId, cancelledCount }` | after the tickets of a cancelled event                       |
+| Event | Payload | Emitted |
+|-------|---------|---------|
+| `TICKET_REDEEMED` | `{ token, redeemedBy }` | by `scanTicket` (not by the core `invalidateToken` mutation) |
+| `TICKET_CANCELLED` | `{ token }` | for every cancelled ticket, also those of a cancelled event |
+| `TICKET_EVENT_CANCELLED` | `{ productId, cancelledCount }` | after the tickets of a cancelled event |
 
 ```ts
 import { subscribe } from '@unchainedshop/events';
@@ -363,10 +357,10 @@ query OrderTickets {
 
 **Server-side helpers:**
 
-| Helper                                                                        | Returns                                                                                                                                      |
-| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `buildTicketsPdfUrl(orderId, context, { variant, rootUrl })`                  | the tickets PDF link with the magic key, or `null` without a PDF renderer                                                                    |
-| `buildWalletPassUrls(token, context, { rootUrl })`                            | `{ appleWallet, googleWallet }` download links, only for registered renderers                                                                |
+| Helper | Returns |
+|--------|---------|
+| `buildTicketsPdfUrl(orderId, context, { variant, rootUrl })` | the tickets PDF link with the magic key, or `null` without a PDF renderer |
+| `buildWalletPassUrls(token, context, { rootUrl })` | `{ appleWallet, googleWallet }` download links, only for registered renderers |
 | `getTicketAttachments(orderId, context, { pdf, appleWalletPasses, rootUrl })` | e-mail attachments `{ filename, href }`: the tickets PDF and, with `appleWalletPasses: true`, one `.pkpass` per ticket that is not cancelled |
 
 To attach the tickets to the order confirmation, register a template after `startPlatform` that extends the built-in one:
@@ -383,13 +377,7 @@ MessagingDirector.registerTemplate('ORDER_CONFIRMATION', async (params, context)
   });
   return messages.map((message) =>
     message.type === 'EMAIL'
-      ? {
-          ...message,
-          input: {
-            ...message.input,
-            attachments: [...(message.input.attachments || []), ...attachments],
-          },
-        }
+      ? { ...message, input: { ...message.input, attachments: [...(message.input.attachments || []), ...attachments] } }
       : message,
   );
 });
@@ -401,12 +389,12 @@ The e-mail worker downloads the attachments from `ROOT_URL` when it sends the me
 
 Mounted by `connect()` before the Admin UI:
 
-| Route                                              | Parameters                                                                                     | Answers                                                                                                                                 |
-| -------------------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET /rest/print_tickets`                          | `orderId`, `otp` (magic key; not needed for the owner's session or admins), optional `variant` | the PDF; `403` without access, `404` without a PDF renderer or for an unknown order                                                     |
-| `GET /rest/google-wallet/download/<tokenId>`       | `hash` (the ticket's access key)                                                               | `302` to the Google Wallet save link; `403` for a wrong hash, `404` for an unknown ticket, without a renderer or when it returns `null` |
-| `GET /rest/apple-wallet/download/<tokenId>.pkpass` | `hash`                                                                                         | the `.pkpass` file; `403` for a wrong hash, `404` for an unknown ticket or without a renderer                                           |
-| `/rest/apple-wallet/v1/…`                          | Apple's PassKit web service                                                                    | device registration and unregistration, updated serial numbers, latest pass, log                                                        |
+| Route | Parameters | Answers |
+|-------|------------|---------|
+| `GET /rest/print_tickets` | `orderId`, `otp` (magic key; not needed for the owner's session or admins), optional `variant` | the PDF; `403` without access, `404` without a PDF renderer or for an unknown order |
+| `GET /rest/google-wallet/download/<tokenId>` | `hash` (the ticket's access key) | `302` to the Google Wallet save link; `403` for a wrong hash, `404` for an unknown ticket, without a renderer or when it returns `null` |
+| `GET /rest/apple-wallet/download/<tokenId>.pkpass` | `hash` | the `.pkpass` file; `403` for a wrong hash, `404` for an unknown ticket or without a renderer |
+| `/rest/apple-wallet/v1/…` | Apple's PassKit web service | device registration and unregistration, updated serial numbers, latest pass, log |
 
 The paths follow the [environment variables](#installation). Base paths change the URLs, not the route patterns.
 

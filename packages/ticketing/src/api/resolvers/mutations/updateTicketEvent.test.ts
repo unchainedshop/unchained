@@ -10,7 +10,11 @@ test('event details are merged into the product meta without touching the tokeni
   try {
     await client.connect();
     const Products = client.db('ticket-event-update').collection<any>('products');
-    const tokenization = { contractStandard: 'ERC721', supply: 100, ercMetadataProperties: { seatMap: 'A' } };
+    const tokenization = {
+      contractStandard: 'ERC721',
+      supply: 100,
+      ercMetadataProperties: { seatMap: 'A' },
+    };
     await Products.insertMany([
       {
         _id: 'event',

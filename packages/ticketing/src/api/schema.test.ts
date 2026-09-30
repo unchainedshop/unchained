@@ -51,20 +51,17 @@ test('ticketing schema is optional and every plugin operation validates when ins
     }
   }
   assert.equal(core.getType('TicketEvent'), undefined);
-  assert.deepEqual(
-    Object.keys((extended.getType('TicketEvent') as GraphQLObjectType).getFields()),
-    [
-      'startsAt',
-      'endsAt',
-      'doorsOpenAt',
-      'location',
-      'durationMinutes',
-      'doorsOpenMinutesBefore',
-      'category',
-      'isCanceled',
-      'cancelledDate',
-    ],
-  );
+  assert.deepEqual(Object.keys((extended.getType('TicketEvent') as GraphQLObjectType).getFields()), [
+    'startsAt',
+    'endsAt',
+    'doorsOpenAt',
+    'location',
+    'durationMinutes',
+    'doorsOpenMinutesBefore',
+    'category',
+    'isCanceled',
+    'cancelledDate',
+  ]);
   assert.deepEqual(
     extended
       .getMutationType()!

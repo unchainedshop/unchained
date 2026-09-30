@@ -33,53 +33,48 @@ The `zod` dependency range of `@unchainedshop/api` and `@unchainedshop/core` nar
 
 `UNCHAINED_DOCUMENTDB_COMPAT_MODE` is no longer read. The helpers `isDocumentDBCompatModeEnabled` and `assertDocumentDBCompatMode` have been deleted from `@unchainedshop/mongodb`. Text indexes are now created unconditionally on every collection and `$text` queries run unconditionally. **If you still target AWS DocumentDB ≤4.0 or FerretDB 1.x, do not upgrade** — those runtimes do not support text indexes and startup will fail. Supported text-search targets now:
 
-| Runtime             | Text indexes       | Since         |
-| ------------------- | ------------------ | ------------- |
-| MongoDB 4.4+        | ✅                 | 2.6           |
-| AWS DocumentDB 5.0+ | ✅                 | Feb 2024      |
-| AWS DocumentDB 8.0  | ✅ (Text Index V2) | 2026          |
-| FerretDB 2.x        | ✅                 | 2.0 GA        |
-| AWS DocumentDB ≤4.0 | ❌                 | not supported |
-| FerretDB 1.x        | ❌                 | not supported |
+| Runtime | Text indexes | Since |
+|---|---|---|
+| MongoDB 4.4+ | ✅ | 2.6 |
+| AWS DocumentDB 5.0+ | ✅ | Feb 2024 |
+| AWS DocumentDB 8.0 | ✅ (Text Index V2) | 2026 |
+| FerretDB 2.x | ✅ | 2.0 GA |
+| AWS DocumentDB ≤4.0 | ❌ | not supported |
+| FerretDB 1.x | ❌ | not supported |
 
 Remove `UNCHAINED_DOCUMENTDB_COMPAT_MODE` from your deployment env. Any downstream code importing `isDocumentDBCompatModeEnabled` or `assertDocumentDBCompatMode` from `@unchainedshop/mongodb` must be deleted — there is no replacement.
 
 ## v4.8.x Index Refactor (Ops Migration)
 
-This release refactors MongoDB indexes across every collection: compound indexes replace several singletons, new indexes cover previously unindexed hot paths, and a few unused indexes are removed. All _new_ indexes are built automatically on boot via `buildDbIndexes`. However, **MongoDB does not drop removed indexes automatically** — they remain on existing production databases until explicitly dropped, consuming RAM and slowing writes.
+This release refactors MongoDB indexes across every collection: compound indexes replace several singletons, new indexes cover previously unindexed hot paths, and a few unused indexes are removed. All *new* indexes are built automatically on boot via `buildDbIndexes`. However, **MongoDB does not drop removed indexes automatically** — they remain on existing production databases until explicitly dropped, consuming RAM and slowing writes.
 
 Run the following `mongosh` script once per environment after deploying:
 
 ```js
 // Old singletons now covered by compound indexes — safe to drop.
 const toDrop = {
-  orders: ['deleted_1', 'userId_1', 'status_1'],
-  order_positions: ['productId_1_1'], // if exists under that exact name
-  order_discounts: ['trigger_1'],
-  quotations: ['userId_1', 'productId_1', 'status_1'],
-  enrollments: ['userId_1', 'productId_1', 'status_1'],
-  products: ['deleted_1', 'sequence_1', 'status_1'],
-  product_texts: ['locale_1'],
+  orders:              ['deleted_1', 'userId_1', 'status_1'],
+  order_positions:     ['productId_1_1'], // if exists under that exact name
+  order_discounts:     ['trigger_1'],
+  quotations:          ['userId_1', 'productId_1', 'status_1'],
+  enrollments:         ['userId_1', 'productId_1', 'status_1'],
+  products:            ['deleted_1', 'sequence_1', 'status_1'],
+  product_texts:       ['locale_1'],
   product_variation_texts: ['locale_1'],
   product_media_texts: ['locale_1'],
-  assortments: ['deleted_1', 'isActive_1', 'isRoot_1', 'sequence_1'],
-  assortment_texts: ['locale_1'],
+  assortments:         ['deleted_1', 'isActive_1', 'isRoot_1', 'sequence_1'],
+  assortment_texts:    ['locale_1'],
   assortment_media_texts: ['locale_1'],
-  work_queue: ['started_-1', 'scheduled_1', 'priority_-1', 'type_1'],
+  work_queue:          ['started_-1', 'scheduled_1', 'priority_-1', 'type_1'],
   payment_credentials: ['userId_1'],
-  'payment-providers': ['type_1', 'created_1', 'deleted_1'],
-  'delivery-providers': ['type_1', 'created_1', 'deleted_1'],
-  'warehousing-providers': ['type_1', 'created_1', 'deleted_1'],
+  'payment-providers':      ['type_1', 'created_1', 'deleted_1'],
+  'delivery-providers':     ['type_1', 'created_1', 'deleted_1'],
+  'warehousing-providers':  ['type_1', 'created_1', 'deleted_1'],
   filter_productId_cache: ['filterId_1'],
 };
 
 for (const [coll, names] of Object.entries(toDrop)) {
-  const existing = new Set(
-    db
-      .getCollection(coll)
-      .getIndexes()
-      .map((i) => i.name),
-  );
+  const existing = new Set(db.getCollection(coll).getIndexes().map(i => i.name));
   for (const name of names) {
     if (existing.has(name)) {
       print(`Dropping ${coll}.${name}`);
@@ -180,7 +175,6 @@ pluginRegistry.register(StripePlugin);
 Note: import plugin subpaths WITHOUT a file extension. The package `exports` map (e.g. `"./presets/*": "./lib/presets/*.js"`) appends `.js` itself, so `presets/all.js` would resolve to `all.js.js` and fail.
 
 **Affected Directors:**
-
 - PaymentDirector
 - DeliveryDirector
 - FileDirector
@@ -243,10 +237,10 @@ updateCartPaymentGeneric(orderId: ID!, paymentContext: JSON, meta: JSON)
 
 ```typescript
 // ❌ REMOVED
-OrderDeliveryPickUp.pickUpLocations;
+OrderDeliveryPickUp.pickUpLocations
 
 // ✅ USE - Access via DeliveryProvider
-DeliveryProvider.pickupLocations;
+DeliveryProvider.pickupLocations
 ```
 
 ### API Router Export Changes
@@ -275,7 +269,6 @@ import { PaypalCheckoutPlugin } from '@unchainedshop/plugins/payment/paypal-chec
 The Braintree plugin was also dropped in v5 (it only exists on the v4.8.x branch), so it is not a migration target.
 
 **Migration Options:**
-
 - Implement a custom PayPal integration using `@paypal/paypal-server-sdk` (new official SDK) via `registerPaymentProvider()`
 - Use alternative payment providers (Stripe, Datatrans, Saferpay, Payrexx, PostFinance Checkout)
 
@@ -291,7 +284,7 @@ Custom adapters can now be registered with a single typed call instead of a hand
 
 ### Leveled Pricing: `maxQuantity` → `minQuantity`
 
-**BREAKING CHANGE (with automatic data migration).** Product catalog price tiers are now keyed by **`minQuantity`** — an inclusive _lower_ bound — instead of v4's `maxQuantity` (inclusive _upper_ bound). The base tier is `minQuantity: 0` and the highest tier is open-ended (no upper cap).
+**BREAKING CHANGE (with automatic data migration).** Product catalog price tiers are now keyed by **`minQuantity`** — an inclusive *lower* bound — instead of v4's `maxQuantity` (inclusive *upper* bound). The base tier is `minQuantity: 0` and the highest tier is open-ended (no upper cap).
 
 - **GraphQL:** `UpdateProductCommercePricingInput.maxQuantity` is removed — use `minQuantity` (omit it for the base tier). `PriceLevel.minQuantity` is added; `PriceLevel.maxQuantity` is now derived (the next tier's floor − 1; `null` on the open-ended tier). `ProductCatalogPrice.minQuantity` replaces `maxQuantity`.
 - **Data:** an idempotent startup migration (`20260611120000-pricing-maxquantity-to-minquantity`) converts existing `commerce.pricing` per `(countryCode, currencyCode)` automatically. **No operator action is required** and re-running is safe.
@@ -441,17 +434,11 @@ setupTicketing(platform.unchainedAPI, { renderOrderPDF, createAppleWalletPass, c
 
 // ✅ v5
 import { pluginRegistry } from '@unchainedshop/core';
-import {
-  createTicketingPlugin,
-  validateTicketOrderPosition,
-  withTicketing,
-} from '@unchainedshop/ticketing';
+import { createTicketingPlugin, validateTicketOrderPosition, withTicketing } from '@unchainedshop/ticketing';
 import { createTicketWarehousingPlugin } from '@unchainedshop/ticketing/warehousing/ticket';
 import { ticketingAdminPlugin } from '@unchainedshop/ticketing/admin-plugin';
 
-pluginRegistry.register(
-  createTicketingPlugin({ renderOrderPDF, createAppleWalletPass, createGoogleWalletPass }),
-);
+pluginRegistry.register(createTicketingPlugin({ renderOrderPDF, createAppleWalletPass, createGoogleWalletPass }));
 pluginRegistry.register(createTicketWarehousingPlugin({ ticketMeta })); // replaces your ticket minter, see 6
 const platform = await startPlatform(
   withTicketing({ options: { orders: { validateOrderPosition: validateTicketOrderPosition } } }),
@@ -647,7 +634,6 @@ The MongoDB driver now throws errors instead of returning error objects for cert
 ```
 
 Update custom pricing plugins:
-
 ```diff
 - ProductPricingSheet({ calculation, currency, quantity })
 + ProductPricingSheet({ calculation, currencyCode, quantity })
@@ -656,7 +642,6 @@ Update custom pricing plugins:
 ### Locale Context
 
 When creating locale objects for API calls:
-
 ```diff
 - locale: "de"
 + locale: new Intl.Locale("de")
@@ -672,7 +657,6 @@ When creating locale objects for API calls:
 ### ProductType Enum Naming Convention
 
 All enum values now use SCREAMING_SNAKE_CASE:
-
 ```diff
 - ProductType.TokenizedProduct
 + ProductType.TOKENIZED_PRODUCT
@@ -714,7 +698,6 @@ export default async function loginResolver(_, args, context: Context) {
 Removed: `updateOrderPaymentCard`
 
 Deprecated (use new cart mutations instead):
-
 ```diff
 - setOrderDeliveryProvider / setOrderPaymentProvider
 - updateOrderDeliveryShipping / updateOrderDeliveryPickUp
@@ -858,20 +841,20 @@ connect(fastify, platform, { initPluginMiddlewares });
 
 The `@unchainedshop/types` package has been removed. Import types from their respective packages:
 
-| Old Import                                                            | New Import                        |
-| --------------------------------------------------------------------- | --------------------------------- |
-| `@unchainedshop/types/api.js` → `Context`                             | `@unchainedshop/api`              |
-| `@unchainedshop/types/common.js` → `ModuleInput`                      | `@unchainedshop/mongodb`          |
-| `@unchainedshop/types/common.js` → `TimestampFields`                  | `@unchainedshop/mongodb`          |
-| `@unchainedshop/types/user.js` → `User`                               | `@unchainedshop/core-users`       |
-| `@unchainedshop/types/orders.js` → `Order`, `OrderPosition`           | `@unchainedshop/core-orders`      |
-| `@unchainedshop/types/products.js` → `Product`                        | `@unchainedshop/core-products`    |
-| `@unchainedshop/types/files.js` → `File`                              | `@unchainedshop/core-files`       |
-| `@unchainedshop/types/worker.js` → `IWorkerAdapter`                   | `@unchainedshop/core`             |
-| `@unchainedshop/types/pricing.js` → pricing types                     | `@unchainedshop/core`             |
-| `@unchainedshop/types/filters.js` → `IFilterAdapter`, `FilterContext` | `@unchainedshop/core`             |
-| `@unchainedshop/types/warehousing.js` → `TokenSurrogate`              | `@unchainedshop/core-warehousing` |
-| `@unchainedshop/types/events.js` → `OrderStatus`                      | `@unchainedshop/core-orders`      |
+| Old Import | New Import |
+|------------|------------|
+| `@unchainedshop/types/api.js` → `Context` | `@unchainedshop/api` |
+| `@unchainedshop/types/common.js` → `ModuleInput` | `@unchainedshop/mongodb` |
+| `@unchainedshop/types/common.js` → `TimestampFields` | `@unchainedshop/mongodb` |
+| `@unchainedshop/types/user.js` → `User` | `@unchainedshop/core-users` |
+| `@unchainedshop/types/orders.js` → `Order`, `OrderPosition` | `@unchainedshop/core-orders` |
+| `@unchainedshop/types/products.js` → `Product` | `@unchainedshop/core-products` |
+| `@unchainedshop/types/files.js` → `File` | `@unchainedshop/core-files` |
+| `@unchainedshop/types/worker.js` → `IWorkerAdapter` | `@unchainedshop/core` |
+| `@unchainedshop/types/pricing.js` → pricing types | `@unchainedshop/core` |
+| `@unchainedshop/types/filters.js` → `IFilterAdapter`, `FilterContext` | `@unchainedshop/core` |
+| `@unchainedshop/types/warehousing.js` → `TokenSurrogate` | `@unchainedshop/core-warehousing` |
+| `@unchainedshop/types/events.js` → `OrderStatus` | `@unchainedshop/core-orders` |
 
 **Note:** The `Root` type is no longer exported. Use `unknown` instead in resolver signatures.
 
@@ -1076,22 +1059,22 @@ Same pattern for: `createProductVariation`, `createProductVariationOption`, `cre
 
 ## Common Errors & Solutions
 
-| Error                                                      | Solution                                                                                 |
-| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `Cannot find module '@unchainedshop/types/*'`              | Types moved to respective packages (see table above)                                     |
-| `Property 'req' does not exist on type 'Context'`          | Use `context.getHeader()` instead                                                        |
-| `Module has no exported member 'checkAction'`              | Use `acl.checkAction()` from namespace import                                            |
-| `Property 'accounts' does not exist`                       | Use `modules.users` instead                                                              |
-| `Cannot find module '@unchainedshop/core-worker'`          | Import directors from `@unchainedshop/core`                                              |
-| `Cannot find module 'multer'` or `'passport'`              | Install peer dependencies: `npm install multer@">=2 <3" passport@">=0.7 <1"`             |
-| `Property 'pricingSheet' does not exist on modules.orders` | Import `OrderPricingSheet` from `@unchainedshop/core`                                    |
-| `hashPassword is not a function`                           | Use `modules.users.hashPassword()`                                                       |
-| `Property 'currency' does not exist` (v4)                  | Renamed to `currencyCode`                                                                |
-| `ProductType.TokenizedProduct is undefined` (v4)           | Use `ProductType.TOKENIZED_PRODUCT`                                                      |
-| `PASSWORD_INVALID` when using `createUser` (v4)            | Pass plaintext password, not pre-hashed. The module hashes internally now                |
-| `UNCHAINED_TOKEN_SECRET` validation error (v4)             | Secret must be at least 32 characters                                                    |
-| Migration ID validation error (v4)                         | Use 14-digit IDs max (format: `YYYYMMDDHHmmss`)                                          |
-| `dropIndex` not catching errors                            | Use `await` and try/catch - MongoDB driver now throws instead of returning error objects |
+| Error | Solution |
+|-------|----------|
+| `Cannot find module '@unchainedshop/types/*'` | Types moved to respective packages (see table above) |
+| `Property 'req' does not exist on type 'Context'` | Use `context.getHeader()` instead |
+| `Module has no exported member 'checkAction'` | Use `acl.checkAction()` from namespace import |
+| `Property 'accounts' does not exist` | Use `modules.users` instead |
+| `Cannot find module '@unchainedshop/core-worker'` | Import directors from `@unchainedshop/core` |
+| `Cannot find module 'multer'` or `'passport'` | Install peer dependencies: `npm install multer@">=2 <3" passport@">=0.7 <1"` |
+| `Property 'pricingSheet' does not exist on modules.orders` | Import `OrderPricingSheet` from `@unchainedshop/core` |
+| `hashPassword is not a function` | Use `modules.users.hashPassword()` |
+| `Property 'currency' does not exist` (v4) | Renamed to `currencyCode` |
+| `ProductType.TokenizedProduct is undefined` (v4) | Use `ProductType.TOKENIZED_PRODUCT` |
+| `PASSWORD_INVALID` when using `createUser` (v4) | Pass plaintext password, not pre-hashed. The module hashes internally now |
+| `UNCHAINED_TOKEN_SECRET` validation error (v4) | Secret must be at least 32 characters |
+| Migration ID validation error (v4) | Use 14-digit IDs max (format: `YYYYMMDDHHmmss`) |
+| `dropIndex` not catching errors | Use `await` and try/catch - MongoDB driver now throws instead of returning error objects |
 
 ---
 
@@ -1118,7 +1101,7 @@ Remove custom login-with-single-sign-on and all code that involves loading stand
 import { defaultModules, connectDefaultPluginsToExpress4 } from '@unchainedshop/plugins';
 import { connect } from '@unchainedshop/api/express/index.js';
 
-const engine = await startPlatform({ modules: defaultModules /* ... */ });
+const engine = await startPlatform({ modules: defaultModules, /* ... */ });
 
 await engine.apolloGraphQLServer.start();
 connect(app, engine);
