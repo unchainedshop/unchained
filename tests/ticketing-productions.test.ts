@@ -384,3 +384,187 @@ test.describe('Ticketing: productions', () => {
     assert.equal(tooMany.errors?.[0]?.extensions?.code, 'TicketOrderLimitExceededError');
   });
 });
+
+test.describe('Ticketing: production changes', () => {
+  let adminFetch;
+  const start = new Date(Date.now() + 20 * DAY);
+  start.setUTCHours(19, 30, 0, 0);
+
+  const run = async (query: string, variables: Record<string, unknown>) => {
+    const { data, errors } = await adminFetch({ query: `${query}\n${PRODUCTION_FIELDS}`, variables });
+    assert.ifError(errors?.[0]);
+    return Object.values(data)[0] as any;
+  };
+
+  test.before(async () => {
+    adminFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+  });
+
+  test('changes, categories, cancellation and removal of a production', async () => {
+    const created = await run(
+      /* GraphQL */ `
+        mutation Create($production: CreateTicketProductionInput!) {
+          createTicketProduction(production: $production) {
+            ...ProductionFields
+          }
+        }
+      `,
+      {
+        production: {
+          texts: [{ locale: 'de', title: 'Faust', slug: 'faust' }],
+          location: 'Saal',
+          categories: [
+            {
+              code: 'adult',
+              capacity: 10,
+              pricing: [{ amount: 3000, currencyCode: 'CHF', countryCode: 'CH' }],
+            },
+          ],
+          performances: [{ startsAt: start.toISOString() }],
+        },
+      },
+    );
+    const productionId = created._id;
+
+    const changed = await run(
+      /* GraphQL */ `
+        mutation Change($productionId: ID!, $production: UpdateTicketProductionInput!) {
+          updateTicketProduction(productionId: $productionId, production: $production) {
+            ...ProductionFields
+          }
+        }
+      `,
+      {
+        productionId,
+        production: {
+          texts: [{ locale: 'de', title: 'Faust I' }],
+          location: 'Grosser Saal',
+          saleRules: { onSale: true },
+        },
+      },
+    );
+    assert.equal(changed.ticketProduction.location, 'Grosser Saal');
+    assert.equal(changed.assignments[0].product.event.location, 'Grosser Saal');
+
+    const withBox = await run(
+      /* GraphQL */ `
+        mutation AddCategory($productionId: ID!, $category: TicketCategoryInput!) {
+          addTicketCategory(productionId: $productionId, category: $category) {
+            ...ProductionFields
+          }
+        }
+      `,
+      {
+        productionId,
+        category: {
+          code: 'box',
+          texts: [{ locale: 'de', title: 'Loge' }],
+          capacity: 4,
+          pricing: [{ amount: 9000, currencyCode: 'CHF', countryCode: 'CH' }],
+        },
+      },
+    );
+    assert.deepEqual(
+      withBox.ticketProduction.categories.map(({ code }) => code),
+      ['adult', 'box'],
+    );
+    assert.equal(withBox.assignments.length, 2);
+
+    const resized = await run(
+      /* GraphQL */ `
+        mutation Resize($productionId: ID!, $code: String!, $category: UpdateTicketCategoryInput!) {
+          updateTicketCategory(
+            productionId: $productionId
+            code: $code
+            category: $category
+            applyToPerformances: true
+          ) {
+            ...ProductionFields
+          }
+        }
+      `,
+      { productionId, code: 'box', category: { capacity: 6 } },
+    );
+    const box = resized.assignments.find((assignment) => vectorOf(assignment).category === 'box');
+    assert.equal(box.product.contractConfiguration.supply, 6);
+
+    const withoutBox = await run(
+      /* GraphQL */ `
+        mutation RemoveCategory($productionId: ID!, $code: String!) {
+          removeTicketCategory(productionId: $productionId, code: $code) {
+            ...ProductionFields
+          }
+        }
+      `,
+      { productionId, code: 'box' },
+    );
+    assert.equal(withoutBox.assignments.length, 1);
+
+    const synced = await run(
+      /* GraphQL */ `
+        mutation Sync($productionId: ID!) {
+          syncTicketProduction(productionId: $productionId) {
+            ...ProductionFields
+          }
+        }
+      `,
+      { productionId },
+    );
+    assert.equal(synced._id, productionId);
+
+    await run(
+      /* GraphQL */ `
+        mutation Publish($productionId: ID!) {
+          publishTicketProduction(productionId: $productionId) {
+            ...ProductionFields
+          }
+        }
+      `,
+      { productionId },
+    );
+    const { data: cancelled, errors: cancelErrors } = await adminFetch({
+      query: /* GraphQL */ `
+        mutation Cancel($productionId: ID!, $startsAt: DateTimeISO!) {
+          cancelTicketPerformance(productionId: $productionId, startsAt: $startsAt)
+        }
+      `,
+      variables: { productionId, startsAt: start.toISOString() },
+    });
+    assert.ifError(cancelErrors?.[0]);
+    assert.equal(cancelled.cancelTicketPerformance, 0);
+    const afterCancel = await run(
+      /* GraphQL */ `
+        query Production($productId: ID!) {
+          product(productId: $productId) {
+            ...ProductionFields
+          }
+        }
+      `,
+      { productId: productionId },
+    );
+    const { data: event } = await adminFetch({
+      query: `query E($productId: ID!) { product(productId: $productId) { ... on TokenizedProduct { event { isCanceled } } } }`,
+      variables: { productId: afterCancel.assignments[0].product._id },
+    });
+    assert.equal(event.product.event.isCanceled, true);
+
+    const { data: removed, errors: removeErrors } = await adminFetch({
+      query: /* GraphQL */ `
+        mutation Remove($productionId: ID!) {
+          removeTicketProduction(productionId: $productionId) {
+            _id
+            status
+          }
+        }
+      `,
+      variables: { productionId },
+    });
+    assert.ifError(removeErrors?.[0]);
+    assert.equal(removed.removeTicketProduction.status, 'DELETED');
+    const { data: performance } = await adminFetch({
+      query: `query P($productId: ID!) { product(productId: $productId) { _id status } }`,
+      variables: { productId: afterCancel.assignments[0].product._id },
+    });
+    assert.equal(performance.product?.status ?? 'DELETED', 'DELETED');
+  });
+});

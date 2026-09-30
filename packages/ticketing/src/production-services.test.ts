@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongoClient } from 'mongodb';
 import { configureProductsModule } from '@unchainedshop/core-products';
-import productionServices from './production-services.ts';
+import { EventEmitter } from 'node:events';
+import { getEmitAdapter, setEmitAdapter } from '@unchainedshop/events';
+import productionServices, { subscribeTicketProductionMedia } from './production-services.ts';
 import { TICKET_PRODUCTION_TAG } from './production.ts';
 
 const {
@@ -13,6 +15,13 @@ const {
   removeTicketPerformance,
   publishTicketProduction,
   unpublishTicketProduction,
+  addTicketCategory,
+  updateTicketCategory,
+  removeTicketCategory,
+  updateTicketProduction,
+  syncTicketProduction,
+  removeTicketProductionMediaCopies,
+  removeTicketProduction,
 } = productionServices.ticketing;
 
 let server: MongoMemoryServer;
@@ -283,4 +292,230 @@ test('publishing a production publishes its performances, new ones follow its st
   await unpublishTicketProduction.call(modules, production._id);
   performances = await performancesOf(production._id);
   assert.ok(performances.every(({ product }: any) => product.status === null));
+});
+
+test('categories are added, changed and removed', async () => {
+  const production = await createTicketProduction.call(modules, {
+    texts: [{ locale: 'de', title: 'Lesung' }],
+    performances: [
+      { startsAt: first, tickets: [{ supply: 30, pricing: CHF(2000) }] },
+      { startsAt: second, tickets: [{ supply: 30, pricing: CHF(2000) }] },
+    ],
+  });
+  const before = (await performancesOf(production._id)).map(({ product }: any) => product._id);
+
+  // The first category takes over the performances that exist
+  await addTicketCategory.call(modules, production._id, {
+    code: 'adult',
+    texts: [{ locale: 'de', title: 'Erwachsene' }],
+    capacity: 40,
+    pricing: CHF(2500),
+  });
+  let performances = await performancesOf(production._id);
+  assert.deepEqual(
+    performances.map(({ vector }: any) => vector),
+    [
+      { slot: first, category: 'adult' },
+      { slot: second, category: 'adult' },
+    ],
+  );
+  assert.deepEqual(
+    performances.map(({ product }: any) => product._id),
+    before,
+  );
+  assert.equal(performances[0].product.meta.category, 'adult');
+  assert.equal(performances[0].product.tokenization.supply, 30, 'existing tickets are kept');
+  assert.deepEqual(await optionsOf(production._id, 'category'), ['adult']);
+
+  // Further categories get a product per performance
+  await addTicketCategory.call(modules, production._id, {
+    code: 'reduced',
+    capacity: 10,
+    pricing: CHF(1500),
+  });
+  performances = await performancesOf(production._id);
+  assert.equal(performances.length, 4);
+  const reduced = performances.filter(({ vector }: any) => vector.category === 'reduced');
+  assert.deepEqual(
+    reduced.map(({ product }: any) => product.tokenization.supply),
+    [10, 10],
+  );
+  for (const [input, cause] of [
+    [{ code: 'reduced' }, 'TICKET_CATEGORY_EXISTS'],
+    [{ code: 'Reduced!' }, 'INVALID_TICKET_CATEGORY_CODE'],
+  ] as const) {
+    await assert.rejects(addTicketCategory.call(modules, production._id, input), { cause });
+  }
+
+  // Defaults change, optionally also for the performances
+  await updateTicketCategory.call(modules, production._id, 'reduced', {
+    texts: [{ locale: 'de', title: 'Ermässigt' }],
+    capacity: 8,
+    pricing: CHF(1200),
+  });
+  performances = await performancesOf(production._id);
+  assert.equal(
+    performances.find(({ vector }: any) => vector.category === 'reduced').product.tokenization.supply,
+    10,
+  );
+  const updated = await modules.products.findProduct({ productId: production._id });
+  assert.deepEqual(updated.meta.ticketCategories.reduced, { capacity: 8, pricing: CHF(1200) });
+
+  reserved[reduced[0].product._id] = 9;
+  await assert.rejects(
+    updateTicketCategory.call(
+      modules,
+      production._id,
+      'reduced',
+      { capacity: 8 },
+      { applyToPerformances: true },
+    ),
+    { cause: 'TICKET_SUPPLY_BELOW_SOLD' },
+  );
+  delete reserved[reduced[0].product._id];
+  await updateTicketCategory.call(modules, production._id, 'reduced', {}, { applyToPerformances: true });
+  performances = await performancesOf(production._id);
+  for (const { vector, product } of performances.filter(
+    ({ vector }: any) => vector.category === 'reduced',
+  )) {
+    assert.equal(product.tokenization.supply, 8, vector.slot);
+    assert.deepEqual(product.commerce, { pricing: CHF(1200) });
+  }
+
+  // Removing needs a category without tickets and cannot remove the last one
+  issued[reduced[1].product._id] = 1;
+  await assert.rejects(removeTicketCategory.call(modules, production._id, 'reduced'), {
+    cause: 'TICKET_CATEGORY_HAS_TICKETS',
+  });
+  delete issued[reduced[1].product._id];
+  const removedIds = await removeTicketCategory.call(modules, production._id, 'reduced');
+  assert.deepEqual(removedIds.toSorted(), reduced.map(({ product }: any) => product._id).toSorted());
+  assert.deepEqual(await optionsOf(production._id, 'category'), ['adult']);
+  assert.equal((await performancesOf(production._id)).length, 2);
+  assert.equal(
+    (await modules.products.findProduct({ productId: production._id })).meta.ticketCategories.reduced,
+    undefined,
+  );
+  await assert.rejects(removeTicketCategory.call(modules, production._id, 'adult'), {
+    cause: 'INVALID_TICKET_CATEGORY',
+  });
+});
+
+test('changes of a production are taken over by its performances', async () => {
+  const production = await createHamlet();
+  await updateTicketPerformance.call(modules, production._id, second, { location: 'Studio' });
+  const [productionText] = await modules.products.texts.findTexts({ productId: production._id });
+
+  await updateTicketProduction.call(modules, production._id, {
+    texts: [{ locale: 'de', title: 'Hamlet (Neuinszenierung)', subtitle: null }],
+    tags: ['organizer-a', 'festival'],
+    location: 'Neue Bühne',
+    durationMinutes: null,
+    saleRules: { maxPerOrder: 4, salesStart: null },
+  });
+  const stored = await modules.products.findProduct({ productId: production._id });
+  assert.deepEqual(stored.tags, [TICKET_PRODUCTION_TAG, 'organizer-a', 'festival']);
+  assert.equal(stored.meta.location, 'Neue Bühne');
+  assert.equal(stored.meta.durationMinutes, null);
+  assert.deepEqual(stored.meta.saleRules, { maxPerOrder: 4, salesStart: null });
+  const [storedText] = await modules.products.texts.findTexts({ productId: production._id });
+  assert.equal(storedText.title, 'Hamlet (Neuinszenierung)');
+  assert.equal(storedText.slug, productionText.slug, 'the slug stays');
+
+  for (const { vector, product } of await performancesOf(production._id)) {
+    assert.deepEqual(product.tags, ['organizer-a', 'festival']);
+    assert.equal(product.meta.location, vector.slot === second ? 'Studio' : 'Neue Bühne');
+    assert.equal(product.meta.durationMinutes, null);
+    assert.equal(product.meta.saleRules, undefined, 'sale rules are inherited, not copied');
+    const [text] = await modules.products.texts.findTexts({ productId: product._id });
+    assert.equal(text.title, 'Hamlet (Neuinszenierung)');
+    assert.equal(text.subtitle, null);
+    assert.match(text.slug, /-20261[12]0[12]-1800-(adult|reduced)$/);
+  }
+});
+
+test('the media of a production are shared with its performances', async () => {
+  const production = await createHamlet();
+  const cover = await modules.products.media.create({
+    productId: production._id,
+    mediaId: 'cover-file',
+  });
+  await syncTicketProduction.call(modules, production._id);
+  await syncTicketProduction.call(modules, production._id);
+  const performances = await performancesOf(production._id);
+  for (const { product } of performances) {
+    const medias = await modules.products.media.findProductMedias({ productId: product._id });
+    assert.equal(medias.length, 1, 'copied once');
+    assert.equal(medias[0].mediaId, 'cover-file');
+    assert.deepEqual(medias[0].meta, { productionMediaId: cover._id });
+  }
+  // Performances added later get the media as well
+  await addTicketPerformance.call(modules, production._id, { startsAt: '2026-12-24T18:00:00.000Z' });
+  const added = (await performancesOf(production._id)).at(-1);
+  assert.equal(
+    (await modules.products.media.findProductMedias({ productId: added.product._id })).length,
+    1,
+  );
+
+  await modules.products.media.delete(cover._id);
+  await removeTicketProductionMediaCopies.call(modules, cover._id);
+  for (const { product } of await performancesOf(production._id)) {
+    assert.deepEqual(await modules.products.media.findProductMedias({ productId: product._id }), []);
+  }
+});
+
+test('a production without tickets is removed with its performances', async () => {
+  const production = await createHamlet();
+  const performances = await performancesOf(production._id);
+  issued[performances[0].product._id] = 2;
+  await assert.rejects(removeTicketProduction.call(modules, production._id), {
+    cause: 'TICKET_PERFORMANCE_HAS_TICKETS',
+  });
+  delete issued[performances[0].product._id];
+  const productIds = await removeTicketProduction.call(modules, production._id);
+  assert.deepEqual(
+    productIds,
+    [...performances.map(({ product }: any) => product._id), production._id],
+    'performances first, the production last',
+  );
+});
+
+test('media added to, reordered on and removed from a production reach its performances', async () => {
+  const emitter = new EventEmitter();
+  const previousAdapter = getEmitAdapter();
+  setEmitAdapter({
+    publish: (eventName, data) => emitter.emit(eventName, data),
+    subscribe: (eventName, callback) => emitter.on(eventName, callback),
+  });
+  const settle = () => new Promise((resolve) => setTimeout(resolve, 50));
+  try {
+    subscribeTicketProductionMedia({ modules });
+    const production = await createHamlet();
+    const [poster, photo] = [
+      await modules.products.media.create({ productId: production._id, mediaId: 'poster' }),
+      await modules.products.media.create({ productId: production._id, mediaId: 'photo' }),
+    ];
+    await settle();
+    const mediaOf = async (productId: string) =>
+      (await modules.products.media.findProductMedias({ productId })).map(({ mediaId }: any) => mediaId);
+    const performances = await performancesOf(production._id);
+    for (const { product } of performances)
+      assert.deepEqual(await mediaOf(product._id), ['poster', 'photo']);
+
+    await modules.products.media.updateManualOrder({
+      sortKeys: [
+        { productMediaId: photo._id, sortKey: 1 },
+        { productMediaId: poster._id, sortKey: 2 },
+      ],
+    });
+    await settle();
+    for (const { product } of performances)
+      assert.deepEqual(await mediaOf(product._id), ['photo', 'poster']);
+
+    await modules.products.media.delete(poster._id);
+    await settle();
+    for (const { product } of performances) assert.deepEqual(await mediaOf(product._id), ['photo']);
+  } finally {
+    setEmitAdapter(previousAdapter);
+  }
 });
