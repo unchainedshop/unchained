@@ -6,11 +6,13 @@ test('the event editor starts from the stored event details', () => {
   const startsAt = new Date(2026, 8, 29, 20, 0);
   assert.deepEqual(
     getTicketEventFormValues({
-      eventStartsAt: startsAt.toISOString(),
-      eventLocation: 'Main hall',
-      eventCategory: 'Parkett',
-      eventDurationMinutes: 90,
-      eventDoorsOpenMinutesBefore: 30,
+      event: {
+        startsAt: startsAt.toISOString(),
+        location: 'Main hall',
+        category: 'Parkett',
+        durationMinutes: 90,
+        doorsOpenMinutesBefore: 30,
+      },
     }),
     {
       startsAt: '2026-09-29T20:00',

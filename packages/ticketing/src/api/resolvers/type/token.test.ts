@@ -49,7 +49,7 @@ test('the attendee name comes from the ticket meta only', () => {
   }
 });
 
-test('ticket events expose their details from the product meta', () => {
+test('ticket events expose every value from the product meta as TokenizedProduct.event', () => {
   const product = {
     _id: 'event',
     meta: {
@@ -59,28 +59,33 @@ test('ticket events expose their details from the product meta', () => {
       doorsOpenMinutesBefore: 30,
       category: 'Parkett',
       cancelled: true,
+      cancelledDate: '2026-09-30T08:00:00.000Z',
     },
   } as any;
-  assert.deepEqual(TokenizedProduct.eventStartsAt(product), new Date('2026-10-01T19:00:00Z'));
-  assert.deepEqual(TokenizedProduct.eventEndsAt(product), new Date('2026-10-01T20:30:00Z'));
-  assert.deepEqual(TokenizedProduct.eventDoorsOpenAt(product), new Date('2026-10-01T18:30:00Z'));
-  assert.equal(TokenizedProduct.eventLocation(product), 'Theater');
-  assert.equal(TokenizedProduct.eventCategory(product), 'Parkett');
-  assert.equal(TokenizedProduct.eventDurationMinutes(product), 90);
-  assert.equal(TokenizedProduct.eventDoorsOpenMinutesBefore(product), 30);
-  assert.equal(TokenizedProduct.isCanceled(product), true);
+  assert.deepEqual(TokenizedProduct.event(product), {
+    startsAt: new Date('2026-10-01T19:00:00Z'),
+    endsAt: new Date('2026-10-01T20:30:00Z'),
+    doorsOpenAt: new Date('2026-10-01T18:30:00Z'),
+    location: 'Theater',
+    durationMinutes: 90,
+    doorsOpenMinutesBefore: 30,
+    category: 'Parkett',
+    isCanceled: true,
+    cancelledDate: new Date('2026-09-30T08:00:00Z'),
+  });
 
-  const unscheduled = { _id: 'nft', meta: { slot: 'soon' } } as any;
-  for (const field of [
-    'eventStartsAt',
-    'eventEndsAt',
-    'eventDoorsOpenAt',
-    'eventLocation',
-    'eventCategory',
-    'eventDurationMinutes',
-    'eventDoorsOpenMinutesBefore',
-  ] as const) {
-    assert.equal(TokenizedProduct[field](unscheduled), null, field);
-  }
-  assert.equal(TokenizedProduct.isCanceled(unscheduled), false);
+  // Unset or unparsable values are null; the cancellation date only counts for a cancelled event.
+  const unscheduled = { _id: 'nft', meta: { slot: 'soon', cancelledDate: new Date() } } as any;
+  assert.deepEqual(TokenizedProduct.event(unscheduled), {
+    startsAt: null,
+    endsAt: null,
+    doorsOpenAt: null,
+    location: null,
+    durationMinutes: null,
+    doorsOpenMinutesBefore: null,
+    category: null,
+    isCanceled: false,
+    cancelledDate: null,
+  });
+  assert.equal(TokenizedProduct.event({ _id: 'bare' } as any).isCanceled, false);
 });

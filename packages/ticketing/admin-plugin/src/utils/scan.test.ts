@@ -18,7 +18,7 @@ test('checkTicket judges a looked-up ticket in the order scanTicket refuses it',
     _id: 'ticket',
     ticketStatus: 'VALID',
     isInvalidateable: true,
-    product: { _id: 'event', status: 'ACTIVE', isCanceled: false },
+    product: { _id: 'event', status: 'ACTIVE', event: { isCanceled: false } },
   };
   assert.deepEqual(checkTicket(ticket, { eventIds: ['event'] }), { verdict: 'VALID' });
   assert.deepEqual(checkTicket(ticket, {}), { verdict: 'VALID' });
@@ -46,7 +46,7 @@ test('checkTicket judges a looked-up ticket in the order scanTicket refuses it',
     verdict: 'CANCELLED',
     scope: 'TICKET',
   });
-  assert.deepEqual(checkTicket({ ...ticket, product: { ...ticket.product, isCanceled: true } }, {}), {
+  assert.deepEqual(checkTicket({ ...ticket, product: { ...ticket.product, event: { isCanceled: true } } }, {}), {
     verdict: 'CANCELLED',
     scope: 'EVENT',
   });
@@ -67,7 +67,7 @@ test('checkTicket judges a looked-up ticket in the order scanTicket refuses it',
       {
         ...ticket,
         isInvalidateable: false,
-        product: { ...ticket.product, eventStartsAt: '2026-10-01T18:00:00.000Z' },
+        product: { ...ticket.product, event: { isCanceled: false, startsAt: '2026-10-01T18:00:00.000Z' } },
       },
       {},
     ),
@@ -175,7 +175,7 @@ test('checkTicket admits the tickets of every event of a gate', () => {
     _id: `ticket-of-${productId}`,
     ticketStatus: 'VALID',
     isInvalidateable: true,
-    product: { _id: productId, status: 'ACTIVE', isCanceled: false },
+    product: { _id: productId, status: 'ACTIVE', event: { isCanceled: false } },
   });
   // One performance sold as several products (categories): one gate admits them all.
   const gate = { eventIds: ['adults', 'reduced'] };
@@ -194,7 +194,7 @@ const validTicket = (overrides = {}) => ({
   tokenSerialNumber: '7',
   ticketStatus: 'VALID',
   isInvalidateable: true,
-  product: { _id: 'event', status: 'ACTIVE', isCanceled: false },
+  product: { _id: 'event', status: 'ACTIVE', event: { isCanceled: false } },
   ...overrides,
 });
 

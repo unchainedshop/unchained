@@ -98,8 +98,10 @@ test.describe('Ticketing example', () => {
           updateTicketEvent(productId: $productId, event: { startsAt: $startsAt }) {
             _id
             ... on TokenizedProduct {
-              eventStartsAt
-              eventDoorsOpenAt
+              event {
+                startsAt
+                doorsOpenAt
+              }
             }
           }
         }
@@ -108,9 +110,9 @@ test.describe('Ticketing example', () => {
       { cookie: adminCookie },
     );
     assert.ifError(updated.errors?.[0]);
-    assert.strictEqual(new Date(updated.data.updateTicketEvent.eventStartsAt).toISOString(), startsAt);
+    assert.strictEqual(new Date(updated.data.updateTicketEvent.event.startsAt).toISOString(), startsAt);
     // doorsOpenMinutesBefore (30) is kept when only the start changes
-    assert.ok(updated.data.updateTicketEvent.eventDoorsOpenAt);
+    assert.ok(updated.data.updateTicketEvent.event.doorsOpenAt);
   });
 
   test('gate staff see the seeded event among the events of today', async () => {
@@ -122,9 +124,11 @@ test.describe('Ticketing example', () => {
             _id
             tags
             ... on TokenizedProduct {
-              eventStartsAt
-              eventLocation
-              eventCategory
+              event {
+                startsAt
+                location
+                category
+              }
             }
           }
         }
@@ -138,8 +142,8 @@ test.describe('Ticketing example', () => {
     assert.ifError(errors?.[0]);
     event = data.ticketEvents.find(({ tags }) => tags.includes('example-event'));
     assert.ok(event, 'the seeded event is listed');
-    assert.strictEqual(event.eventCategory, 'Concert');
-    assert.ok(event.eventLocation);
+    assert.strictEqual(event.event.category, 'Concert');
+    assert.ok(event.event.location);
   });
 
   test('a guest buys two tickets and receives them with the attendee names', async () => {

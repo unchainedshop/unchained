@@ -80,7 +80,7 @@ test("the gate event picker loads today's events without their tickets", () => {
     assert.ok(argumentNames(events).includes(arg), arg);
   }
   assert.equal(selects(events, 'tokens'), false);
-  for (const field of ['eventStartsAt', 'eventLocation', 'eventCategory', 'tokensCount']) {
+  for (const field of ['event', 'startsAt', 'location', 'category', 'tokensCount']) {
     assert.ok(selects(events, field), field);
   }
 });
@@ -91,7 +91,8 @@ test('the event list pages and sorts by event start instead of loading everythin
   for (const arg of ['limit', 'offset', 'sort', 'slotFrom', 'slotTo', 'queryString']) {
     assert.ok(argumentNames(events).includes(arg), arg);
   }
-  assert.ok(selects(events, 'eventCategory'));
+  assert.ok(selects(events, 'event'));
+  assert.ok(selects(events, 'category'));
   const count = findField(operation, 'ticketEventsCount');
   for (const arg of ['slotFrom', 'slotTo', 'queryString']) {
     assert.ok(argumentNames(count).includes(arg), arg);

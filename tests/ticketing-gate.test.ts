@@ -67,9 +67,11 @@ const UPDATE_TICKET_EVENT = /* GraphQL */ `
     updateTicketEvent(productId: $productId, event: { startsAt: $startsAt }) {
       _id
       ... on TokenizedProduct {
-        eventStartsAt
-        eventLocation
-        eventCategory
+        event {
+          startsAt
+          location
+          category
+        }
       }
     }
   }
@@ -80,10 +82,12 @@ const TICKET_EVENTS = /* GraphQL */ `
     ticketEvents(slotFrom: $slotFrom, slotTo: $slotTo) {
       _id
       ... on TokenizedProduct {
-        eventStartsAt
-        eventLocation
-        eventCategory
-        isCanceled
+        event {
+          startsAt
+          location
+          category
+          isCanceled
+        }
       }
     }
     ticketEventsCount(slotFrom: $slotFrom, slotTo: $slotTo)
@@ -148,9 +152,9 @@ test.describe('Ticketing: gate control', () => {
       [ConcertEventId],
     );
     assert.equal(soon.data.ticketEventsCount, 1);
-    assert.equal(soon.data.ticketEvents[0].eventLocation, 'Stadttheater');
-    assert.equal(soon.data.ticketEvents[0].eventCategory, 'concert');
-    assert.equal(soon.data.ticketEvents[0].isCanceled, false);
+    assert.equal(soon.data.ticketEvents[0].event.location, 'Stadttheater');
+    assert.equal(soon.data.ticketEvents[0].event.category, 'concert');
+    assert.equal(soon.data.ticketEvents[0].event.isCanceled, false);
 
     const later = await gateFetch({
       query: TICKET_EVENTS,
@@ -253,8 +257,8 @@ test.describe('Ticketing: gate control', () => {
     try {
       const startsAt = new Date(Date.now() + 24 * 60 * MINUTE);
       const moved = await moveConcert(startsAt);
-      assert.equal(new Date(moved.eventStartsAt).getTime(), startsAt.getTime());
-      assert.equal(moved.eventLocation, 'Stadttheater');
+      assert.equal(new Date(moved.event.startsAt).getTime(), startsAt.getTime());
+      assert.equal(moved.event.location, 'Stadttheater');
 
       const early = await gateFetch({
         query: SCAN_TICKET,
@@ -515,7 +519,10 @@ test.describe('Ticketing: gate control', () => {
         query EventTickets($productId: ID!) {
           product(productId: $productId) {
             ... on TokenizedProduct {
-              isCanceled
+              event {
+                isCanceled
+                cancelledDate
+              }
               tokens {
                 _id
                 ticketStatus
@@ -529,7 +536,8 @@ test.describe('Ticketing: gate control', () => {
       variables: { productId: ConcertEventId },
     });
     assert.ifError(tickets.errors?.[0]);
-    assert.equal(tickets.data.product.isCanceled, true);
+    assert.equal(tickets.data.product.event.isCanceled, true);
+    assert.ok(tickets.data.product.event.cancelledDate);
     assert.ok(tickets.data.product.tokens.every(({ ticketStatus }) => ticketStatus === 'CANCELLED'));
     const redeemedAfter = tickets.data.product.tokens.find(({ _id }) => _id === redeemed._id);
     assert.equal(new Date(redeemedAfter.invalidatedDate).getTime(), before.invalidatedDate.getTime());

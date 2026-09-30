@@ -33,14 +33,7 @@ test('ticketing schema is optional and every plugin operation validates when ins
   }
   const ticketingFields = {
     Token: ['isCanceled', 'cancelledDate', 'ticketStatus', 'attendeeName'],
-    TokenizedProduct: [
-      'isCanceled',
-      'eventStartsAt',
-      'eventEndsAt',
-      'eventDoorsOpenAt',
-      'eventLocation',
-      'eventCategory',
-    ],
+    TokenizedProduct: ['event'],
     Order: ['magicKey', 'ticketsPdfUrl'],
   };
   for (const [name, fields] of Object.entries(ticketingFields)) {
@@ -57,6 +50,21 @@ test('ticketing schema is optional and every plugin operation validates when ins
       assert.ok((extended.getType(name) as GraphQLObjectType).getFields()[field], field);
     }
   }
+  assert.equal(core.getType('TicketEvent'), undefined);
+  assert.deepEqual(
+    Object.keys((extended.getType('TicketEvent') as GraphQLObjectType).getFields()),
+    [
+      'startsAt',
+      'endsAt',
+      'doorsOpenAt',
+      'location',
+      'durationMinutes',
+      'doorsOpenMinutesBefore',
+      'category',
+      'isCanceled',
+      'cancelledDate',
+    ],
+  );
   assert.deepEqual(
     extended
       .getMutationType()!

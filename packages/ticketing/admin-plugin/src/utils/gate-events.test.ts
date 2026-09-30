@@ -18,20 +18,19 @@ test('parseGateEventIds reads the events of a gate from the URL', () => {
   assert.deepEqual(parseGateEventIds(formatGateEventIds(['adults', 'reduced'])), ['adults', 'reduced']);
 });
 
-const event = (_id: string, overrides = {}) => ({
+const event = (_id: string, details = {}, overrides = {}) => ({
   _id,
   texts: { title: 'Hamlet' },
-  eventStartsAt: '2026-10-01T18:00:00.000Z',
-  eventLocation: 'Main stage',
+  event: { startsAt: '2026-10-01T18:00:00.000Z', location: 'Main stage', ...details },
   ...overrides,
 });
 
 test('findSamePerformance finds the products sold for one performance', () => {
-  const adults = event('adults', { eventCategory: 'Adults' });
-  const reduced = event('reduced', { eventCategory: 'Reduced' });
-  const matinee = event('matinee', { eventStartsAt: '2026-10-01T14:00:00.000Z' });
-  const otherStage = event('other-stage', { eventLocation: 'Studio' });
-  const otherShow = event('other-show', { texts: { title: 'Faust' } });
+  const adults = event('adults', { category: 'Adults' });
+  const reduced = event('reduced', { category: 'Reduced' });
+  const matinee = event('matinee', { startsAt: '2026-10-01T14:00:00.000Z' });
+  const otherStage = event('other-stage', { location: 'Studio' });
+  const otherShow = event('other-show', {}, { texts: { title: 'Faust' } });
   const events = [matinee, adults, otherShow, reduced, otherStage];
   assert.deepEqual(
     findSamePerformance(events, adults).map(({ _id }) => _id),
@@ -46,7 +45,7 @@ test('findSamePerformance finds the products sold for one performance', () => {
     ['matinee'],
   );
   // Without a start nothing says two events are one performance.
-  const undated = [event('a', { eventStartsAt: null }), event('b', { eventStartsAt: null })];
+  const undated = [event('a', { startsAt: null }), event('b', { startsAt: null })];
   assert.deepEqual(
     findSamePerformance(undated, undated[0]).map(({ _id }) => _id),
     ['a'],
@@ -56,8 +55,8 @@ test('findSamePerformance finds the products sold for one performance', () => {
 test('summarizeGateEvents names the events of a gate without repeating itself', () => {
   assert.deepEqual(
     summarizeGateEvents([
-      event('adults', { eventCategory: 'Adults' }),
-      event('reduced', { eventCategory: 'Reduced' }),
+      event('adults', { category: 'Adults' }),
+      event('reduced', { category: 'Reduced' }),
     ]),
     {
       titles: ['Hamlet'],
@@ -68,8 +67,8 @@ test('summarizeGateEvents names the events of a gate without repeating itself', 
   );
   assert.deepEqual(
     summarizeGateEvents([
-      event('a', { eventLocation: null }),
-      event('b', { texts: { title: 'Faust' }, eventStartsAt: '2026-10-01T20:00:00.000Z' }),
+      event('a', { location: null }),
+      event('b', { startsAt: '2026-10-01T20:00:00.000Z' }, { texts: { title: 'Faust' } }),
     ]),
     {
       titles: ['Hamlet', 'Faust'],
