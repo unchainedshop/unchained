@@ -27,7 +27,7 @@ const useCancelTicket = () => {
     // The cached ticket updates from the result; the refetch brings the stock and counters.
     const result = await cancelTicketMutation({
       variables: { tokenId, generateDiscount },
-      refetchQueries: ['TicketEventDetail'],
+      refetchQueries: ['TicketEventDetail', 'GateEventDetail'],
       awaitRefetchQueries: true,
     });
     return result;

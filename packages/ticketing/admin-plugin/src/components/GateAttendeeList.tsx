@@ -2,6 +2,9 @@ import { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { Button, SearchField, Table } from '@unchainedshop/admin-ui/ui';
 import { buyerLabel, matchesTicketFilter } from '../utils/attendees.ts';
+import { useAuth } from '@unchainedshop/admin-ui/hooks';
+import useAttendeeExport from '../hooks/useAttendeeExport.ts';
+import useCancelTicketDialog from '../hooks/useCancelTicketDialog.tsx';
 import TicketStatusBadge from './TicketStatusBadge.tsx';
 
 // Rendering thousands of rows makes a phone at the gate sluggish; the filter narrows them down.
@@ -46,6 +49,10 @@ const GateAttendeeList = ({
   const [filter, setFilter] = useState('');
   const guest = formatMessage({ id: 'gate_guest', defaultMessage: 'Guest' });
   const severalEvents = events.length > 1;
+  const { hasRole } = useAuth();
+  const canCancel = hasRole('cancelTicket');
+  const onCancel = useCancelTicketDialog();
+  const exportAttendees = useAttendeeExport();
 
   const tokens = useMemo(
     () =>
@@ -89,8 +96,18 @@ const GateAttendeeList = ({
             </p>
           )}
         </div>
-        <div className="w-full max-w-sm">
-          <SearchField onInputChange={setFilter} defaultValue={filter} />
+        <div className="flex w-full max-w-lg items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <SearchField onInputChange={setFilter} defaultValue={filter} />
+          </div>
+          <Button
+            variant="secondary"
+            disabled={!tokens.length}
+            text={formatMessage({ id: 'export_attendees_csv', defaultMessage: 'Export CSV' })}
+            onClick={() =>
+              exportAttendees(tokens, events.map((event) => event.texts?.title || event._id).join('-'))
+            }
+          />
         </div>
       </div>
 
@@ -161,13 +178,23 @@ const GateAttendeeList = ({
                 </Table.Cell>
                 <Table.Cell>
                   {token.ticketStatus === 'VALID' && (
-                    <Button
-                      variant="success"
-                      size="sm"
-                      disabled={busy}
-                      text={formatMessage({ id: 'gate_redeem', defaultMessage: 'Redeem' })}
-                      onClick={() => onRedeem(token)}
-                    />
+                    <div className="flex justify-end gap-2">
+                      {canCancel && (
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          text={formatMessage({ id: 'cancel_ticket', defaultMessage: 'Cancel' })}
+                          onClick={() => onCancel(token._id)}
+                        />
+                      )}
+                      <Button
+                        variant="success"
+                        size="sm"
+                        disabled={busy}
+                        text={formatMessage({ id: 'gate_redeem', defaultMessage: 'Redeem' })}
+                        onClick={() => onRedeem(token)}
+                      />
+                    </div>
                   )}
                 </Table.Cell>
               </Table.Row>

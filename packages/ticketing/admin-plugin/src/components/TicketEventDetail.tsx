@@ -8,12 +8,12 @@ import { EmptyNotice } from './Notice.tsx';
 import EventTokenList from './EventTokenList.tsx';
 import TicketEventEditor from './TicketEventEditor.tsx';
 import { useVerdictText } from './TicketCheckCard.tsx';
-import useCancelTicket from '../hooks/useCancelTicket.ts';
+import useCancelTicketDialog from '../hooks/useCancelTicketDialog.tsx';
+import useAttendeeExport from '../hooks/useAttendeeExport.ts';
 import useCancelEvent from '../hooks/useCancelEvent.ts';
 import useScanTicket from '../hooks/useScanTicket.ts';
 import { useAuth } from '@unchainedshop/admin-ui/hooks';
-import { buildAttendeeCsv, matchesTicketFilter } from '../utils/attendees.ts';
-import { downloadCsv, toFileName } from '../utils/download.ts';
+import { matchesTicketFilter } from '../utils/attendees.ts';
 import { describeScanError } from '../utils/scan.ts';
 import { useFormatDateTime, generateUniqueId } from '../utils/misc.ts';
 
@@ -89,7 +89,6 @@ const TicketEventDetail = ({ product }) => {
   const { setModal } = useModal();
   // The production this date belongs to, if any: it owns the start, category and inherited rules
   const production = product?.proxies?.find((proxy) => proxy?.ticketProduction) ?? null;
-  const { cancelTicket } = useCancelTicket();
   const { cancelEvent } = useCancelEvent();
   const { scanTicket } = useScanTicket();
   const { hasRole } = useAuth();
@@ -160,53 +159,7 @@ const TicketEventDetail = ({ product }) => {
     );
   }, [product?._id]);
 
-  const onCancelTicket = useCallback(async (tokenId: string) => {
-    let generateDiscount = false;
-    await setModal(
-      <DangerMessage
-        onCancelClick={() => setModal('')}
-        message={
-          <>
-            {formatMessage({
-              id: 'cancel_ticket_confirmation',
-              defaultMessage: 'Are you sure you want to cancel this ticket?',
-            })}
-            <label className="mt-3 flex items-center gap-2 text-sm text-text-secondary">
-              <input
-                type="checkbox"
-                className="rounded border-border-default"
-                onChange={(e) => {
-                  generateDiscount = e.target.checked;
-                }}
-              />
-              {formatMessage({
-                id: 'generate_discount_code',
-                defaultMessage: 'Generate discount code for the user',
-              })}
-            </label>
-          </>
-        }
-        onOkClick={async () => {
-          setModal('');
-          try {
-            await cancelTicket({ tokenId, generateDiscount });
-            toast.success(
-              formatMessage({
-                id: 'ticket_cancelled',
-                defaultMessage: 'Ticket cancelled successfully',
-              }),
-            );
-          } catch (e) {
-            toast.error(e.message);
-          }
-        }}
-        okText={formatMessage({
-          id: 'cancel_ticket',
-          defaultMessage: 'Cancel Ticket',
-        })}
-      />,
-    );
-  }, []);
+  const onCancelTicket = useCancelTicketDialog();
 
   const onRedeemTicket = async (tokenId: string) => {
     try {
@@ -225,22 +178,9 @@ const TicketEventDetail = ({ product }) => {
     }
   };
 
-  const onExport = () => {
-    const csv = buildAttendeeCsv(tokens, {
-      ticketId: formatMessage({ id: 'csv_ticket_id', defaultMessage: 'Ticket ID' }),
-      serial: formatMessage({ id: 'csv_serial', defaultMessage: 'Ticket #' }),
-      attendee: formatMessage({ id: 'csv_attendee', defaultMessage: 'Attendee' }),
-      buyer: formatMessage({ id: 'csv_buyer', defaultMessage: 'Buyer' }),
-      status: formatMessage({ id: 'csv_status', defaultMessage: 'Status' }),
-      redeemedAt: formatMessage({ id: 'csv_redeemed_at', defaultMessage: 'Redeemed at' }),
-      cancelledAt: formatMessage({ id: 'csv_cancelled_at', defaultMessage: 'Cancelled at' }),
-      guest: formatMessage({ id: 'ticket_guest_buyer', defaultMessage: 'Guest' }),
-    });
-    downloadCsv(
-      `${toFileName(product?.texts?.slug || product?.texts?.title || product._id)}-attendees.csv`,
-      csv,
-    );
-  };
+  const exportAttendees = useAttendeeExport();
+  const onExport = () =>
+    exportAttendees(tokens, product?.texts?.slug || product?.texts?.title || product._id);
 
   if (!product) return null;
 

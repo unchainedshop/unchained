@@ -29,6 +29,7 @@ const GateEventDetailQuery = gql`
           quantity
           ticketStatus
           invalidatedDate
+          cancelledDate
           attendeeName
           user {
             _id
