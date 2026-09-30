@@ -984,18 +984,10 @@ async function syncTicketProductionTags(this: Modules, productionId: string) {
 }
 
 /**
- * Keeps the performances in step with their production when its media, texts or tags change,
- * also through the core product tabs (media, texts, tags).
+ * The handlers of the product events that concern productions, by event name. Each returns once
+ * the performances are in step (errors are logged).
  */
-export function subscribeTicketProductionSync({ modules }: { modules: Modules }) {
-  // The products module may register its events after the plugins
-  registerEvents([
-    'PRODUCT_ADD_MEDIA',
-    'PRODUCT_REORDER_MEDIA',
-    'PRODUCT_REMOVE_MEDIA',
-    'PRODUCT_UPDATE_TEXT',
-    'PRODUCT_UPDATE',
-  ]);
+export function createTicketProductionSyncHandlers({ modules }: { modules: Modules }) {
   const run = (task: () => Promise<unknown>) => task().catch((error) => logger.error(error));
   // One sync per production at a time, so media added together are not copied twice
   const queues = new Map<string, Promise<unknown>>();
@@ -1016,30 +1008,36 @@ export function subscribeTicketProductionSync({ modules }: { modules: Modules })
     });
   };
 
-  subscribe(
-    'PRODUCT_ADD_MEDIA',
-    ({ payload }: RawPayloadType<{ productMedia?: { productId?: string } }>) =>
+  return {
+    PRODUCT_ADD_MEDIA: ({ payload }: RawPayloadType<{ productMedia?: { productId?: string } }>) =>
       enqueue(payload?.productMedia?.productId, syncTicketProductionMedia),
-  );
-  subscribe(
-    'PRODUCT_REORDER_MEDIA',
-    ({ payload }: RawPayloadType<{ productMedias?: { productId?: string }[] }>) =>
+    PRODUCT_REORDER_MEDIA: ({ payload }: RawPayloadType<{ productMedias?: { productId?: string }[] }>) =>
       enqueue(payload?.productMedias?.[0]?.productId, syncTicketProductionMedia),
-  );
-  subscribe('PRODUCT_UPDATE_TEXT', ({ payload }: RawPayloadType<{ productId?: string }>) =>
-    enqueue(payload?.productId, syncTicketProductionTexts),
-  );
-  // Only changed tags matter; the other product updates do not reach the performances
-  subscribe('PRODUCT_UPDATE', ({ payload }: RawPayloadType<{ productId?: string; tags?: string[] }>) =>
-    payload?.tags ? enqueue(payload.productId, syncTicketProductionTags) : undefined,
-  );
-  subscribe('PRODUCT_REMOVE_MEDIA', ({ payload }: RawPayloadType<{ productMediaId?: string }>) =>
-    run(async () => {
-      if (payload?.productMediaId) {
-        await removeTicketProductionMediaCopies.call(modules, payload.productMediaId);
-      }
-    }),
-  );
+    PRODUCT_UPDATE_TEXT: ({ payload }: RawPayloadType<{ productId?: string }>) =>
+      enqueue(payload?.productId, syncTicketProductionTexts),
+    // Only changed tags matter; the other product updates do not reach the performances
+    PRODUCT_UPDATE: ({ payload }: RawPayloadType<{ productId?: string; tags?: string[] }>) =>
+      payload?.tags ? enqueue(payload.productId, syncTicketProductionTags) : Promise.resolve(),
+    PRODUCT_REMOVE_MEDIA: ({ payload }: RawPayloadType<{ productMediaId?: string }>) =>
+      run(async () => {
+        if (payload?.productMediaId) {
+          await removeTicketProductionMediaCopies.call(modules, payload.productMediaId);
+        }
+      }),
+  };
+}
+
+/**
+ * Keeps the performances in step with their production when its media, texts or tags change,
+ * also through the core product tabs (media, texts, tags).
+ */
+export function subscribeTicketProductionSync(unchainedAPI: { modules: Modules }) {
+  const handlers = createTicketProductionSyncHandlers(unchainedAPI);
+  // The products module may register its events after the plugins
+  registerEvents(Object.keys(handlers));
+  for (const [eventName, handler] of Object.entries(handlers)) {
+    subscribe(eventName, handler as (payload: RawPayloadType<any>) => void);
+  }
 }
 
 export default {

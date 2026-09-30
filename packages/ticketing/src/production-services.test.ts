@@ -3,9 +3,7 @@ import assert from 'node:assert/strict';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongoClient } from 'mongodb';
 import { configureProductsModule } from '@unchainedshop/core-products';
-import { EventEmitter } from 'node:events';
-import { getEmitAdapter, setEmitAdapter } from '@unchainedshop/events';
-import productionServices, { subscribeTicketProductionSync } from './production-services.ts';
+import productionServices, { createTicketProductionSyncHandlers } from './production-services.ts';
 import { TICKET_PRODUCTION_TAG } from './production.ts';
 
 const {
@@ -481,74 +479,65 @@ test('a production without tickets is removed with its performances', async () =
 });
 
 test('media, texts and tags changed on a production in the core tabs reach its performances', async () => {
-  const emitter = new EventEmitter();
-  const previousAdapter = getEmitAdapter();
-  setEmitAdapter({
-    publish: (eventName, data) => emitter.emit(eventName, data),
-    subscribe: (eventName, callback) => emitter.on(eventName, callback),
-  });
-  // The subscribers run after the event; wait until the performances show the change.
-  const eventually = async (check: () => Promise<void>) => {
-    const until = Date.now() + 3000;
-    for (;;) {
-      try {
-        return await check();
-      } catch (error) {
-        if (Date.now() > until) throw error;
-        await new Promise((resolve) => setTimeout(resolve, 25));
-      }
-    }
+  // The handlers subscribed to the product events, called with the payloads core emits
+  const handlers = createTicketProductionSyncHandlers({ modules });
+  const production = await createHamlet();
+  const performances = await performancesOf(production._id);
+  const mediaOf = async (productId: string) =>
+    (await modules.products.media.findProductMedias({ productId })).map(({ mediaId }: any) => mediaId);
+  const forEachPerformance = async (check: (product: any) => Promise<void>) => {
+    for (const { product } of performances) await check(product);
   };
-  try {
-    subscribeTicketProductionSync({ modules });
-    const production = await createHamlet();
-    const performances = await performancesOf(production._id);
-    const mediaOf = async (productId: string) =>
-      (await modules.products.media.findProductMedias({ productId })).map(({ mediaId }: any) => mediaId);
-    const forEachPerformance = (check: (product: any) => Promise<void>) =>
-      eventually(async () => {
-        for (const { product } of performances) await check(product);
-      });
 
-    const poster = await modules.products.media.create({ productId: production._id, mediaId: 'poster' });
-    const photo = await modules.products.media.create({ productId: production._id, mediaId: 'photo' });
-    await forEachPerformance(async (product) =>
-      assert.deepEqual(await mediaOf(product._id), ['poster', 'photo']),
-    );
+  const poster = await modules.products.media.create({ productId: production._id, mediaId: 'poster' });
+  const photo = await modules.products.media.create({ productId: production._id, mediaId: 'photo' });
+  // Added together, synced one after another: no media is copied twice
+  await Promise.all([
+    handlers.PRODUCT_ADD_MEDIA({ payload: { productMedia: poster } }),
+    handlers.PRODUCT_ADD_MEDIA({ payload: { productMedia: photo } }),
+  ]);
+  await forEachPerformance(async (product) =>
+    assert.deepEqual(await mediaOf(product._id), ['poster', 'photo']),
+  );
 
-    await modules.products.media.updateManualOrder({
-      sortKeys: [
-        { productMediaId: photo._id, sortKey: 1 },
-        { productMediaId: poster._id, sortKey: 2 },
-      ],
-    });
-    await forEachPerformance(async (product) =>
-      assert.deepEqual(await mediaOf(product._id), ['photo', 'poster']),
-    );
+  const productMedias = await modules.products.media.updateManualOrder({
+    sortKeys: [
+      { productMediaId: photo._id, sortKey: 1 },
+      { productMediaId: poster._id, sortKey: 2 },
+    ],
+  });
+  await handlers.PRODUCT_REORDER_MEDIA({ payload: { productMedias } });
+  await forEachPerformance(async (product) =>
+    assert.deepEqual(await mediaOf(product._id), ['photo', 'poster']),
+  );
 
-    await modules.products.media.delete(poster._id);
-    await forEachPerformance(async (product) => assert.deepEqual(await mediaOf(product._id), ['photo']));
+  await modules.products.media.delete(poster._id);
+  await handlers.PRODUCT_REMOVE_MEDIA({ payload: { productMediaId: poster._id } });
+  await forEachPerformance(async (product) => assert.deepEqual(await mediaOf(product._id), ['photo']));
 
-    // The core texts tab changes texts one locale at a time; the slugs of the dates stay
-    const [slugBefore] = await modules.products.texts.findTexts({ productId: performances[0].product._id });
-    await modules.products.texts.updateTexts(production._id, [
-      { locale: 'de', title: 'Hamlet (Gastspiel)', description: 'Neu' },
-    ]);
-    await forEachPerformance(async (product) => {
-      const [text] = await modules.products.texts.findTexts({ productId: product._id });
-      assert.equal(text.title, 'Hamlet (Gastspiel)');
-      assert.equal(text.description, 'Neu');
-    });
-    const [slugAfter] = await modules.products.texts.findTexts({ productId: performances[0].product._id });
-    assert.equal(slugAfter.slug, slugBefore.slug);
+  // The core texts tab changes texts one locale at a time; the slugs of the dates stay
+  const [slugBefore] = await modules.products.texts.findTexts({
+    productId: performances[0].product._id,
+  });
+  await modules.products.texts.updateTexts(production._id, [
+    { locale: 'de', title: 'Hamlet (Gastspiel)', description: 'Neu' },
+  ]);
+  await handlers.PRODUCT_UPDATE_TEXT({ payload: { productId: production._id } });
+  await forEachPerformance(async (product) => {
+    const [text] = await modules.products.texts.findTexts({ productId: product._id });
+    assert.equal(text.title, 'Hamlet (Gastspiel)');
+    assert.equal(text.description, 'Neu');
+  });
+  const [slugAfter] = await modules.products.texts.findTexts({ productId: performances[0].product._id });
+  assert.equal(slugAfter.slug, slugBefore.slug);
 
-    // Tags changed in the core product list or tag editor
-    await modules.products.update(production._id, { tags: [TICKET_PRODUCTION_TAG, 'organizer-b'] });
-    await forEachPerformance(async (product) => {
-      const stored = await modules.products.findProduct({ productId: product._id });
-      assert.deepEqual(stored.tags, ['organizer-b']);
-    });
-  } finally {
-    setEmitAdapter(previousAdapter);
-  }
+  // Tags changed in the core product list or tag editor; other updates are ignored
+  const tags = [TICKET_PRODUCTION_TAG, 'organizer-b'];
+  await modules.products.update(production._id, { tags });
+  await handlers.PRODUCT_UPDATE({ payload: { productId: production._id, tags } });
+  await forEachPerformance(async (product) => {
+    const stored = await modules.products.findProduct({ productId: product._id });
+    assert.deepEqual(stored.tags, ['organizer-b']);
+  });
+  await handlers.PRODUCT_UPDATE({ payload: { productId: performances[0].product._id } });
 });
