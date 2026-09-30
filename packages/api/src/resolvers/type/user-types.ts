@@ -147,13 +147,6 @@ const USER_TARGET_ACTIONS = [
   viewUserTokens,
 ];
 
-// E-mail and phone (the contact) are private, but viewUserContactInfos opens them alone: for gate
-// staff or support that must reach a customer without seeing the rest of the private data.
-const checkContactAction = async (context, user, params) => {
-  if (await context.roles.userHasPermission(context, viewUserPrivateInfos, [user, params])) return;
-  await checkAction(context, viewUserContactInfos, [user, params]);
-};
-
 export const User: UserHelperTypes = {
   _id: checkTypeResolver(viewUserPublicInfos, '_id'),
   created: checkTypeResolver(viewUserPrivateInfos, 'created'),
@@ -161,10 +154,9 @@ export const User: UserHelperTypes = {
   deleted: checkTypeResolver(viewUserPrivateInfos, 'deleted'),
   emails: checkTypeResolver(viewUserPrivateInfos, 'emails'),
   lastBillingAddress: checkTypeResolver(viewUserPrivateInfos, 'lastBillingAddress'),
-  lastContact: async (user, params, context) => {
-    await checkContactAction(context, user, params);
-    return user.lastContact;
-  },
+  // E-mail and phone have their own action, so roles like gate staff can reach a customer without
+  // seeing the other private data.
+  lastContact: checkTypeResolver(viewUserContactInfos, 'lastContact'),
   lastLogin: checkTypeResolver(viewUserPrivateInfos, 'lastLogin'),
   profile: checkTypeResolver(viewUserPrivateInfos, 'profile'),
   roles: checkTypeResolver(viewUserRoles, 'roles'),
@@ -181,7 +173,7 @@ export const User: UserHelperTypes = {
   },
 
   primaryEmail: async (user, params, context) => {
-    await checkContactAction(context, user, params);
+    await checkAction(context, viewUserContactInfos, [user, params]);
     return context.modules.users.primaryEmail(user);
   },
 
