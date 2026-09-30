@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import useViewerActions from '../../hooks/useViewerActions.ts';
+import { useAuth } from '@unchainedshop/admin-ui/hooks';
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
@@ -58,7 +58,7 @@ const TicketProductionDetail = ({ productId }: { productId: string }) => {
   const { formatMessage } = useIntl();
   const { push } = useRouter();
   const { setModal } = useModal();
-  const { hasAction: hasRole } = useViewerActions();
+  const { hasRole } = useAuth();
   const { selectedLocale, shopInfo } = useApp();
   const { formatDateTime } = useFormatDateTime();
   const { production, loading } = useTicketProduction({ productId, locale: selectedLocale });

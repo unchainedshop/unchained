@@ -10,7 +10,7 @@ import { useVerdictText } from './TicketCheckCard.tsx';
 import useCancelTicket from '../hooks/useCancelTicket.ts';
 import useCancelEvent from '../hooks/useCancelEvent.ts';
 import useScanTicket from '../hooks/useScanTicket.ts';
-import useViewerActions from '../hooks/useViewerActions.ts';
+import { useAuth } from '@unchainedshop/admin-ui/hooks';
 import { buildAttendeeCsv, matchesTicketFilter } from '../utils/attendees.ts';
 import { downloadCsv, toFileName } from '../utils/download.ts';
 import { describeScanError } from '../utils/scan.ts';
@@ -38,10 +38,10 @@ const TicketEventDetail = ({ product }) => {
   const { cancelTicket } = useCancelTicket();
   const { cancelEvent } = useCancelEvent();
   const { scanTicket } = useScanTicket();
-  const { hasAction } = useViewerActions();
-  const canCancel = hasAction('cancelTicket');
-  const canRedeem = hasAction('scanTicket');
-  const canEdit = hasAction('manageProducts');
+  const { hasRole } = useAuth();
+  const canCancel = hasRole('cancelTicket');
+  const canRedeem = hasRole('scanTicket');
+  const canEdit = hasRole('manageProducts');
   const [editing, setEditing] = useState(false);
   const [filter, setFilter] = useState('');
 

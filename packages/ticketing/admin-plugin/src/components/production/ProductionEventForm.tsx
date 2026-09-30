@@ -1,5 +1,5 @@
 import { useIntl } from 'react-intl';
-import useViewerActions from '../../hooks/useViewerActions.ts';
+import { useAuth } from '@unchainedshop/admin-ui/hooks';
 import { FormWrapper } from '@unchainedshop/admin-ui/ui';
 import { Form, SubmitButton, TextField } from '@unchainedshop/admin-ui/form';
 import { useForm } from '@unchainedshop/admin-ui/hooks';
@@ -16,7 +16,7 @@ import { FormFooter, SaleRulesFields, errorMessage } from './fields.tsx';
  */
 const ProductionEventForm = ({ production }: { production: any }) => {
   const { formatMessage } = useIntl();
-  const { hasAction: hasRole } = useViewerActions();
+  const { hasRole } = useAuth();
   const { updateTicketProduction } = useTicketProductionMutations();
 
   const form = useForm({

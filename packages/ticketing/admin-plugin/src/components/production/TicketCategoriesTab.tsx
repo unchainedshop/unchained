@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import useViewerActions from '../../hooks/useViewerActions.ts';
+import { useAuth } from '@unchainedshop/admin-ui/hooks';
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 import { Button, FormWrapper, NoData, Table } from '@unchainedshop/admin-ui/ui';
@@ -151,7 +151,7 @@ const CategoryForm = ({ production, category, onDone }) => {
 const TicketCategoriesTab = ({ production }: { production: any }) => {
   const { formatMessage } = useIntl();
   const { formatPrice } = useFormatPrice();
-  const { hasAction: hasRole } = useViewerActions();
+  const { hasRole } = useAuth();
   const { setModal } = useModal();
   const { removeTicketCategory } = useTicketProductionMutations();
   const [editing, setEditing] = useState<string | null>(null);

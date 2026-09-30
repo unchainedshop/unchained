@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
-import useViewerActions from '../hooks/useViewerActions.ts';
+import { useAuth } from '@unchainedshop/admin-ui/hooks';
 import {
   BreadCrumbs,
   Loading,
@@ -25,7 +25,7 @@ type View = (typeof VIEWS)[number];
 const TicketingPage = () => {
   const { formatMessage } = useIntl();
   const { query, push } = useRouter();
-  const { hasAction: hasRole } = useViewerActions();
+  const { hasRole } = useAuth();
 
   const { queryString, ...rest } = query;
   const view = (VIEWS.includes(query.view as View) ? query.view : 'productions') as View;

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import useViewerActions from '../../hooks/useViewerActions.ts';
+import { useAuth } from '@unchainedshop/admin-ui/hooks';
 import { Fragment, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
@@ -36,7 +36,7 @@ const TicketDatesTab = ({ production }: { production: any }) => {
   const { formatMessage } = useIntl();
   const { formatDateTime } = useFormatDateTime();
   const { setModal } = useModal();
-  const { hasAction: hasRole } = useViewerActions();
+  const { hasRole } = useAuth();
   const { removeTicketPerformance, cancelTicketPerformance } = useTicketProductionMutations();
   const [editing, setEditing] = useState<string | null>(null);
   const { columns, rows } = buildPerformanceGrid(production);
