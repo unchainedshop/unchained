@@ -80,6 +80,14 @@ import { useQuery } from '@apollo/client/react';
 import { FormattedMessage } from 'react-intl';
 ```
 
+SDK components and hooks use the host app's contexts: `useModal` opens the
+admin-ui modal, `useApp` returns the selected locale and shop info, `useAuth`
+the roles of the user. Build pages like the admin-ui does, with `BreadCrumbs`,
+`PageHeader`, `Tab`, `FormWrapper` and `LocaleWrapper` from
+`@unchainedshop/admin-ui/ui`; core forms such as `ProductTextsForm` and
+`ProductMediaForm` (`@unchainedshop/admin-ui/modules/product`) can be embedded
+as they are.
+
 Form fields read their state from the `Form` provider, so wrap them in `Form`
 from the same `form` entry and pass it the result of `useForm`:
 

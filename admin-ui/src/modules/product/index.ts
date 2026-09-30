@@ -45,3 +45,5 @@ export { default as useUpdateProductTokenization } from './hooks/useUpdateProduc
 export { default as useUpdateProductVariationTexts } from './hooks/useUpdateProductVariationTexts';
 export { default as useUpdateProductWarehousing } from './hooks/useUpdateProductWarehousing';
 export { default as useUserTokens } from './hooks/useUserTokens';
+export { default as ProductTextsForm } from './components/ProductTextsForm';
+export { default as ProductMediaForm } from './components/ProductMediaForm';

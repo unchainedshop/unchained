@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import sharedContext from '../utils/sharedContext';
 import { useIntl } from 'react-intl';
 import useLanguages from '../../language/hooks/useLanguages';
 import useCountries from '../../country/hooks/useCountries';
@@ -24,16 +25,14 @@ type AppContextProps = IShopInfoQuery & {
   languageDialectList: { _id: string; isoCode: string }[];
 };
 
-const AppContext = createContext<AppContextProps | undefined>(undefined);
+const AppContext = sharedContext('AppContext', createContext<AppContextProps | undefined>(undefined));
 const createLanguageDialectList = (languages, countries) => {
   const result = [];
 
   languages.forEach(({ _id: languageId, isoCode: baseIsoCode }) => {
     result.push({ _id: languageId, isoCode: baseIsoCode });
     countries.forEach(({ isoCode: countryIsoCode, _id: countryId }) => {
-      const dialectIsoCode = [baseIsoCode, countryIsoCode.toUpperCase()].join(
-        '-',
-      );
+      const dialectIsoCode = [baseIsoCode, countryIsoCode.toUpperCase()].join('-');
       if (isSupportedLocale(dialectIsoCode))
         result.push({
           _id: `${countryId}-${languageId}`,
@@ -56,10 +55,7 @@ export const AppContextWrapper = ({
   const isAuthenticated = !!currentUser?._id && !currentUser?.isGuest;
   const { languages } = useLanguages({ skip: !isAuthenticated });
   const { locale } = useIntl();
-  const [storedLocale, setStoredLocale] = useLocalStorage(
-    'selectedLocale',
-    null,
-  );
+  const [storedLocale, setStoredLocale] = useLocalStorage('selectedLocale', null);
   const { shopInfo, loading: shopInfoLoading } = useShopInfo();
   const { countries } = useCountries({ skip: !isAuthenticated });
 
@@ -81,10 +77,9 @@ export const AppContextWrapper = ({
     }
   }, [shopInfo, shopInfoLoading, locale]);
 
-  const languageDialectList = createLanguageDialectList(
-    languages,
-    countries,
-  ).filter((l) => !onlyFull || l.isoCode.includes('-'));
+  const languageDialectList = createLanguageDialectList(languages, countries).filter(
+    (l) => !onlyFull || l.isoCode.includes('-'),
+  );
   const isSystemReady = !!shopInfo?.language && !!shopInfo?.country;
 
   return (

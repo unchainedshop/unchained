@@ -1,4 +1,5 @@
 import React from 'react';
+import sharedContext from '../../common/utils/sharedContext';
 import type { UseFormReturn } from 'react-hook-form';
 import type { FormAPI } from '../hooks/useForm';
 
@@ -10,12 +11,15 @@ export interface FormContextValue {
   disabled: boolean;
 }
 
-const FormContext = React.createContext<FormContextValue>({
-  submitError: '',
-  rhf: null,
-  api: null,
-  setSubmitError: () => {},
-  disabled: false,
-});
+const FormContext = sharedContext(
+  'FormContext',
+  React.createContext<FormContextValue>({
+    submitError: '',
+    rhf: null,
+    api: null,
+    setSubmitError: () => {},
+    disabled: false,
+  }),
+);
 
 export default FormContext;
