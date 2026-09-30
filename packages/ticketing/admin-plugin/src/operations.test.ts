@@ -162,3 +162,23 @@ test('productions are listed and shown without loading tickets', () => {
     assert.ok(operations.get(name), name);
   }
 });
+
+test('buyer e-mail and phone are only asked for when the viewer may see them', () => {
+  for (const name of ['GateEventDetail', 'TicketLookup', 'ScanTicket', 'TicketEventDetail']) {
+    const operation = operations.get(name)!;
+    assert.ok(
+      operation.variableDefinitions?.some(({ variable }) => variable.name.value === 'withContacts'),
+      `${name} $withContacts`,
+    );
+    for (const field of ['primaryEmail', 'lastContact']) {
+      const node = findField(operation, field);
+      assert.ok(
+        node.directives?.some(
+          ({ name: directive, arguments: args }) =>
+            directive.value === 'include' && print(args![0].value) === '$withContacts',
+        ),
+        `${name} ${field} @include(if: $withContacts)`,
+      );
+    }
+  }
+});

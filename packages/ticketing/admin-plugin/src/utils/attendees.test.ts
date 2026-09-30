@@ -1,6 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buyerLabel, matchesTicketFilter, csvCell, buildAttendeeCsv } from './attendees.ts';
+import {
+  buyerContact,
+  buyerLabel,
+  matchesTicketFilter,
+  csvCell,
+  buildAttendeeCsv,
+} from './attendees.ts';
 
 test('buyerLabel shows Guest instead of the user id User.name falls back to', () => {
   assert.equal(buyerLabel({ _id: 'u1', name: 'Jane Doe' }, 'Guest'), 'Jane Doe');
@@ -101,6 +107,61 @@ test('buildAttendeeCsv exports what the viewer sees, redeemed only when not canc
       't1,1,Anna Muster,Jane Doe,VALID,,',
       't2,2,,Guest,REDEEMED,2026-10-01T18:05:00.000Z,',
       `t3,3,"'=HYPERLINK(""x"")",,CANCELLED,,2026-09-30T10:00:00.001Z`,
+      '',
+    ].join('\r\n'),
+  );
+});
+
+test('the buyer contact is the primary e-mail (else the last contact e-mail) and the last phone', () => {
+  assert.deepEqual(
+    buyerContact({
+      _id: 'u1',
+      primaryEmail: { address: 'jane@example.com' },
+      lastContact: { emailAddress: 'order@example.com', telNumber: '+41 44 000 00 00' },
+    }),
+    { email: 'jane@example.com', phone: '+41 44 000 00 00' },
+  );
+  assert.deepEqual(buyerContact({ _id: 'u2', lastContact: { emailAddress: 'guest@example.com' } }), {
+    email: 'guest@example.com',
+    phone: null,
+  });
+  assert.deepEqual(buyerContact(null), { email: null, phone: null });
+});
+
+test('buildAttendeeCsv adds e-mail and phone columns for viewers who may see them', () => {
+  const csv = buildAttendeeCsv(
+    [
+      {
+        _id: 't1',
+        tokenSerialNumber: '1',
+        attendeeName: 'Anna Muster',
+        user: {
+          _id: 'u1',
+          name: 'Jane Doe',
+          primaryEmail: { address: 'jane@example.com' },
+          lastContact: { telNumber: '+41 44 000 00 00' },
+        },
+        ticketStatus: 'VALID',
+      },
+    ],
+    {
+      ticketId: 'Ticket ID',
+      serial: 'Ticket #',
+      attendee: 'Attendee',
+      buyer: 'Buyer',
+      status: 'Status',
+      redeemedAt: 'Redeemed at',
+      cancelledAt: 'Cancelled at',
+      guest: 'Guest',
+      email: 'E-mail',
+      phone: 'Phone',
+    },
+  );
+  assert.equal(
+    csv,
+    [
+      'Ticket ID,Ticket #,Attendee,Buyer,E-mail,Phone,Status,Redeemed at,Cancelled at',
+      't1,1,Anna Muster,Jane Doe,jane@example.com,+41 44 000 00 00,VALID,,',
       '',
     ].join('\r\n'),
   );
