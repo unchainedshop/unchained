@@ -966,22 +966,48 @@ async function syncTicketProductionMedia(this: Modules, productionId: string) {
 
 const logger = createLogger('unchained:ticketing');
 
+/** Takes the texts of a production over to its performances (not their slugs). */
+async function syncTicketProductionTexts(this: Modules, productionId: string) {
+  const production = await findTicketProduction(this, productionId);
+  const texts = await this.products.texts.findTexts({ productId: productionId });
+  for (const { productId } of production.proxy?.assignments ?? []) {
+    await writeChildTexts(this, productId, texts, { date: new Date(), code: null, slugs: false });
+  }
+}
+
+/** Takes the tags of a production over to its performances. */
+async function syncTicketProductionTags(this: Modules, productionId: string) {
+  const production = await findTicketProduction(this, productionId);
+  for (const { productId } of production.proxy?.assignments ?? []) {
+    await this.products.update(productId, { tags: childTags(production) });
+  }
+}
+
 /**
- * Keeps the media of the performances in step with their production when media are added to,
- * reordered on or removed from it, also through the core product media tab.
+ * Keeps the performances in step with their production when its media, texts or tags change,
+ * also through the core product tabs (media, texts, tags).
  */
-export function subscribeTicketProductionMedia({ modules }: { modules: Modules }) {
+export function subscribeTicketProductionSync({ modules }: { modules: Modules }) {
   // The products module may register its events after the plugins
-  registerEvents(['PRODUCT_ADD_MEDIA', 'PRODUCT_REORDER_MEDIA', 'PRODUCT_REMOVE_MEDIA']);
+  registerEvents([
+    'PRODUCT_ADD_MEDIA',
+    'PRODUCT_REORDER_MEDIA',
+    'PRODUCT_REMOVE_MEDIA',
+    'PRODUCT_UPDATE_TEXT',
+    'PRODUCT_UPDATE',
+  ]);
   const run = (task: () => Promise<unknown>) => task().catch((error) => logger.error(error));
   // One sync per production at a time, so media added together are not copied twice
   const queues = new Map<string, Promise<unknown>>();
-  const sync = (productId?: string) => {
+  const enqueue = (
+    productId: string | undefined,
+    syncProduction: (this: Modules, productionId: string) => Promise<unknown>,
+  ) => {
     if (!productId) return Promise.resolve();
     const next = (queues.get(productId) ?? Promise.resolve()).then(() =>
       run(async () => {
         const product = await modules.products.findProduct({ productId });
-        if (isTicketProduction(product)) await syncTicketProductionMedia.call(modules, productId);
+        if (isTicketProduction(product)) await syncProduction.call(modules, productId);
       }),
     );
     queues.set(productId, next);
@@ -993,12 +1019,19 @@ export function subscribeTicketProductionMedia({ modules }: { modules: Modules }
   subscribe(
     'PRODUCT_ADD_MEDIA',
     ({ payload }: RawPayloadType<{ productMedia?: { productId?: string } }>) =>
-      sync(payload?.productMedia?.productId),
+      enqueue(payload?.productMedia?.productId, syncTicketProductionMedia),
   );
   subscribe(
     'PRODUCT_REORDER_MEDIA',
     ({ payload }: RawPayloadType<{ productMedias?: { productId?: string }[] }>) =>
-      sync(payload?.productMedias?.[0]?.productId),
+      enqueue(payload?.productMedias?.[0]?.productId, syncTicketProductionMedia),
+  );
+  subscribe('PRODUCT_UPDATE_TEXT', ({ payload }: RawPayloadType<{ productId?: string }>) =>
+    enqueue(payload?.productId, syncTicketProductionTexts),
+  );
+  // Only changed tags matter; the other product updates do not reach the performances
+  subscribe('PRODUCT_UPDATE', ({ payload }: RawPayloadType<{ productId?: string; tags?: string[] }>) =>
+    payload?.tags ? enqueue(payload.productId, syncTicketProductionTags) : undefined,
   );
   subscribe('PRODUCT_REMOVE_MEDIA', ({ payload }: RawPayloadType<{ productMediaId?: string }>) =>
     run(async () => {

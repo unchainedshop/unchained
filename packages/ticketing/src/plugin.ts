@@ -6,7 +6,7 @@ import { createLogger } from '@unchainedshop/logger';
 import ticketingModules from './module.ts';
 import type { DiscountCodeHandlers } from './discount-codes.ts';
 import setupMagicKey from './magic-key.ts';
-import { subscribeTicketProductionMedia } from './production-services.ts';
+import { subscribeTicketProductionSync } from './production-services.ts';
 import { createTicketingRoutes } from './routes.ts';
 import { registerTicketingTemplates } from './templates/index.ts';
 import {
@@ -93,7 +93,7 @@ export function createTicketingPlugin(options: TicketingPluginOptions = {}): IPl
 
       registerTicketingTemplates();
       setupMagicKey();
-      subscribeTicketProductionMedia(unchainedAPI as TicketingAPI);
+      subscribeTicketProductionSync(unchainedAPI as TicketingAPI);
 
       // Without an Apple renderer there are no passes to refresh.
       if (createAppleWalletPass) subscribeAppleWalletPassInvalidation(unchainedAPI as TicketingAPI);
