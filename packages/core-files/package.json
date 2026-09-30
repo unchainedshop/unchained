@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/core-files",
   "description": "File management module for the Unchained Engine",
-  "version": "5.0.0-alpha.9",
+  "version": "5.0.0-alpha.10",
   "files": [
     "lib"
   ],
@@ -38,9 +38,9 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^5.0.0-alpha.9",
-    "@unchainedshop/mongodb": "^5.0.0-alpha.9",
-    "@unchainedshop/utils": "^5.0.0-alpha.9"
+    "@unchainedshop/events": "^5.0.0-alpha.10",
+    "@unchainedshop/mongodb": "^5.0.0-alpha.10",
+    "@unchainedshop/utils": "^5.0.0-alpha.10"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",

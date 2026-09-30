@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/platform",
   "description": "Complete e-commerce platform bundle for the Unchained Engine",
-  "version": "5.0.0-alpha.9",
+  "version": "5.0.0-alpha.10",
   "files": [
     "lib",
     "bin"
@@ -45,14 +45,14 @@
     "npm": ">=10.0.0"
   },
   "dependencies": {
-    "@unchainedshop/api": "^5.0.0-alpha.9",
-    "@unchainedshop/core": "^5.0.0-alpha.9",
-    "@unchainedshop/events": "^5.0.0-alpha.9",
-    "@unchainedshop/logger": "^5.0.0-alpha.9",
-    "@unchainedshop/mongodb": "^5.0.0-alpha.9",
-    "@unchainedshop/plugins": "^5.0.0-alpha.9",
-    "@unchainedshop/roles": "^5.0.0-alpha.9",
-    "@unchainedshop/utils": "^5.0.0-alpha.9"
+    "@unchainedshop/api": "^5.0.0-alpha.10",
+    "@unchainedshop/core": "^5.0.0-alpha.10",
+    "@unchainedshop/events": "^5.0.0-alpha.10",
+    "@unchainedshop/logger": "^5.0.0-alpha.10",
+    "@unchainedshop/mongodb": "^5.0.0-alpha.10",
+    "@unchainedshop/plugins": "^5.0.0-alpha.10",
+    "@unchainedshop/roles": "^5.0.0-alpha.10",
+    "@unchainedshop/utils": "^5.0.0-alpha.10"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",
