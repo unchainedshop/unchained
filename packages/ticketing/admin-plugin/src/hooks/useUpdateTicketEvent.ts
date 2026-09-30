@@ -16,6 +16,13 @@ const UpdateTicketEventMutation = gql`
           category
           durationMinutes
           doorsOpenMinutesBefore
+          overridden
+          ownSaleRules {
+            onSale
+            salesStart
+            salesEnd
+            maxPerOrder
+          }
         }
         contractConfiguration {
           supply
@@ -25,7 +32,7 @@ const UpdateTicketEventMutation = gql`
   }
 `;
 
-/** Needs manageProducts; fails with ProductWrongStatusError until the product has a ticket supply. */
+/** Needs manageProducts; the start and category of a date of a production are changed through the production. */
 const useUpdateTicketEvent = () => {
   const [updateTicketEventMutation] = useMutation<any>(UpdateTicketEventMutation);
 
@@ -34,7 +41,8 @@ const useUpdateTicketEvent = () => {
     event,
   }: {
     productId: string;
-    event: UpdateTicketEventInput;
+    // Partial for the dates of a production, which only send what changed
+    event: Partial<UpdateTicketEventInput> & { saleRules?: Record<string, unknown> };
   }) => {
     const { data } = await updateTicketEventMutation({ variables: { productId, event } });
     return data?.updateTicketEvent;

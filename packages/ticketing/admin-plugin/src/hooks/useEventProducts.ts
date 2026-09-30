@@ -12,6 +12,7 @@ const TicketEventsQuery = gql`
     $slotFrom: DateTimeISO
     $slotTo: DateTimeISO
     $forceLocale: Locale
+    $standalone: Boolean
   ) {
     ticketEvents(
       queryString: $queryString
@@ -21,6 +22,7 @@ const TicketEventsQuery = gql`
       sort: $sort
       slotFrom: $slotFrom
       slotTo: $slotTo
+      standalone: $standalone
     ) {
       _id
       status
@@ -60,11 +62,12 @@ const TicketEventsQuery = gql`
       queryString: $queryString
       slotFrom: $slotFrom
       slotTo: $slotTo
+      standalone: $standalone
     )
   }
 `;
 
-/** One page of ticket events; slotFrom/slotTo filter and sort order by event start. */
+/** One page of ticket events; slotFrom/slotTo filter and sort order by event start, standalone leaves the performances of productions out. */
 const useEventProducts = ({
   queryString = null,
   limit = 50,
@@ -72,6 +75,7 @@ const useEventProducts = ({
   slotFrom,
   slotTo,
   sort,
+  standalone = null,
 }: {
   queryString?: string;
   limit?: number;
@@ -79,9 +83,10 @@ const useEventProducts = ({
   slotFrom?: string;
   slotTo?: string;
   sort?: { key: string; value: string }[];
+  standalone?: boolean | null;
 }) => {
   const { data, loading, error } = useQuery<any>(TicketEventsQuery, {
-    variables: { queryString, limit, offset, slotFrom, slotTo, sort },
+    variables: { queryString, limit, offset, slotFrom, slotTo, sort, standalone },
   });
 
   return {

@@ -3,6 +3,12 @@ import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 import useUpdateTicketEvent from '../hooks/useUpdateTicketEvent.ts';
 import {
+  fromTicketSaleRules,
+  toTicketSaleRulesInput,
+  type SaleRulesFormValues,
+} from '../utils/production-form.ts';
+import { SaleRulesFields, errorMessage } from './production/fields.tsx';
+import {
   getTicketEventFormValues,
   toUpdateTicketEventInput,
   type TicketEventFormValues,
@@ -12,13 +18,19 @@ const inputClassName =
   'mt-1 block w-full rounded-md border border-border-default bg-surface-input px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-focus-ring';
 
 /**
- * Edits the event details stored in the public tokenization properties (updateTicketEvent):
- * start, location, category, duration and when doors open. Times are in the browser's time zone.
+ * Edits the event details and sale rules stored in the product meta (updateTicketEvent): start,
+ * location, category, duration, when doors open and the sale rules. A date of a production takes
+ * its start and category from the production, and its empty sale rules. Times are in the
+ * browser's time zone.
  */
-const TicketEventEditor = ({ product, onDone }) => {
+const TicketEventEditor = ({ product, production = null, onDone }) => {
   const { formatMessage } = useIntl();
   const { updateTicketEvent } = useUpdateTicketEvent();
-  const [values, setValues] = useState<TicketEventFormValues>(() => getTicketEventFormValues(product));
+  const [initial] = useState<TicketEventFormValues>(() => getTicketEventFormValues(product));
+  const [values, setValues] = useState<TicketEventFormValues>(initial);
+  const [saleRules, setSaleRules] = useState<SaleRulesFormValues>(() =>
+    fromTicketSaleRules(product?.event?.ownSaleRules),
+  );
   const [invalid, setInvalid] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
 
@@ -53,27 +65,31 @@ const TicketEventEditor = ({ product, onDone }) => {
   const onSubmit = async (e) => {
     e.preventDefault();
     const result = toUpdateTicketEventInput(values);
-    if ('errors' in result) {
-      setInvalid(result.errors);
+    const rules = toTicketSaleRulesInput(saleRules);
+    if ('errors' in result || 'errors' in rules) {
+      setInvalid([
+        ...('errors' in result ? result.errors : []),
+        ...('errors' in rules ? rules.errors : []),
+      ]);
       return;
     }
+    // The start and category of a date of a production are changed through the production, and
+    // only changed details are sent: a detail set here is no longer taken over from the production.
+    const { startsAt, category, ...details } = result.input;
+    const event = production
+      ? {
+          ...Object.fromEntries(Object.entries(details).filter(([key]) => values[key] !== initial[key])),
+          saleRules: rules.input,
+        }
+      : { ...details, startsAt, category, saleRules: rules.input };
     setInvalid([]);
     setSaving(true);
     try {
-      await updateTicketEvent({ productId: product._id, event: result.input });
+      await updateTicketEvent({ productId: product._id, event });
       toast.success(formatMessage({ id: 'event_form_saved', defaultMessage: 'Event details saved' }));
       onDone?.();
     } catch (error) {
-      const code = error?.errors?.[0]?.extensions?.code ?? error?.graphQLErrors?.[0]?.extensions?.code;
-      toast.error(
-        code === 'ProductWrongStatusError'
-          ? formatMessage({
-              id: 'event_form_needs_supply',
-              defaultMessage:
-                'Set up the ticket supply in the product token settings first, then add the event details.',
-            })
-          : error?.message,
-      );
+      toast.error(errorMessage(error));
     } finally {
       setSaving(false);
     }
@@ -81,11 +97,19 @@ const TicketEventEditor = ({ product, onDone }) => {
 
   return (
     <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2" noValidate>
-      {field('startsAt', { type: 'datetime-local' })}
+      {field('startsAt', { type: 'datetime-local', disabled: Boolean(production) })}
       {field('location', { type: 'text' })}
-      {field('category', { type: 'text' })}
+      {field('category', { type: 'text', disabled: Boolean(production) })}
       {field('durationMinutes', { type: 'number', min: 0, step: 1, inputMode: 'numeric' })}
       {field('doorsOpenMinutesBefore', { type: 'number', min: 0, step: 1, inputMode: 'numeric' })}
+      <div className="sm:col-span-2">
+        <SaleRulesFields
+          values={saleRules}
+          onChange={setSaleRules}
+          invalid={invalid}
+          inherited={production ? fromTicketSaleRules(production.ticketProduction?.saleRules) : null}
+        />
+      </div>
       {invalid.length > 0 && (
         <p role="alert" className="text-sm text-rose-600 sm:col-span-2">
           {formatMessage(
@@ -101,7 +125,7 @@ const TicketEventEditor = ({ product, onDone }) => {
         {formatMessage({
           id: 'event_form_hint',
           defaultMessage:
-            'These details are public (ticket metadata). An empty field removes the detail.',
+            'An empty field removes the detail. Details changed here are no longer taken over from the production.',
         })}
       </p>
       <div className="flex gap-3 sm:col-span-2">

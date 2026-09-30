@@ -16,6 +16,7 @@ export const ticketingEntities = [
     components: {
       list: 'TicketingPage',
       detail: 'TicketEventDetailPage',
+      create: 'TicketProductionCreatePage',
     },
   },
 ];

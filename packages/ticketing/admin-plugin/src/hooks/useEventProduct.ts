@@ -39,6 +39,32 @@ export const TicketEventDetailQuery = gql`
           category
           durationMinutes
           doorsOpenMinutesBefore
+          overridden
+          ownSaleRules {
+            onSale
+            salesStart
+            salesEnd
+            maxPerOrder
+          }
+        }
+        proxies {
+          ... on ConfigurableProduct {
+            _id
+            tags
+            texts {
+              _id
+              slug
+              title
+            }
+            ticketProduction {
+              saleRules {
+                onSale
+                salesStart
+                salesEnd
+                maxPerOrder
+              }
+            }
+          }
         }
         tokens {
           _id

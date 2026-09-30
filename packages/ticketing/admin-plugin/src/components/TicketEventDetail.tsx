@@ -33,6 +33,8 @@ const TicketEventDetail = ({ product }) => {
   const { formatDateTime } = useFormatDateTime();
   const verdictText = useVerdictText();
   const { setModal } = useModal();
+  // The production this date belongs to, if any: it owns the start, category and inherited rules
+  const production = product?.proxies?.find((proxy) => proxy?.ticketProduction) ?? null;
   const { cancelTicket } = useCancelTicket();
   const { cancelEvent } = useCancelEvent();
   const { scanTicket } = useScanTicket();
@@ -217,10 +219,30 @@ const TicketEventDetail = ({ product }) => {
             {product?.texts?.description && (
               <p className="mt-3 text-sm text-text-muted">{product.texts.description}</p>
             )}
+            {production && (
+              <p className="mt-2 text-sm">
+                <Link
+                  href={`/ext/ticketing/${generateUniqueId(production)}`}
+                  className="text-text-secondary underline hover:text-text-primary"
+                >
+                  {formatMessage(
+                    {
+                      id: 'performance_of_production',
+                      defaultMessage: 'Date of the production {title}',
+                    },
+                    { title: production.texts?.title || production._id },
+                  )}
+                </Link>
+              </p>
+            )}
 
             {editing ? (
               <div className="mt-6">
-                <TicketEventEditor product={product} onDone={() => setEditing(false)} />
+                <TicketEventEditor
+                  product={product}
+                  production={production}
+                  onDone={() => setEditing(false)}
+                />
               </div>
             ) : (
               <div className="mt-6 grid grid-cols-2 gap-4">

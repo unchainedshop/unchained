@@ -9,16 +9,25 @@ import {
   SearchField,
   Pagination,
 } from '@unchainedshop/admin-ui/ui';
+import Link from 'next/link';
 import TicketEventList from '../components/TicketEventList.tsx';
+import TicketProductionList from '../components/production/TicketProductionList.tsx';
+import { primaryButtonClassName } from '../components/production/fields.tsx';
 import useEventProducts from '../hooks/useEventProducts.ts';
+import useTicketProductions from '../hooks/useTicketProductions.ts';
 import { EVENT_LIST_PERIODS, getEventListFilter, type EventListPeriod } from '../utils/dates.ts';
 import { DefaultLimit } from '../utils/misc.ts';
+
+// Productions with their dates, single events, or every performance and event by date.
+const VIEWS = ['productions', 'events', 'performances'] as const;
+type View = (typeof VIEWS)[number];
 
 const TicketingPage = () => {
   const { formatMessage } = useIntl();
   const { query, push } = useRouter();
 
   const { queryString, ...rest } = query;
+  const view = (VIEWS.includes(query.view as View) ? query.view : 'productions') as View;
   const period = (
     EVENT_LIST_PERIODS.includes(query.period as EventListPeriod) ? query.period : 'upcoming'
   ) as EventListPeriod;
@@ -51,14 +60,38 @@ const TicketingPage = () => {
 
   // Day-granular dates, so the query variables stay the same while the page is open.
   const { slotFrom, slotTo, sort } = getEventListFilter(period, new Date());
-  const { products, productsCount, loading } = useEventProducts({
+  const events = useEventProducts({
     limit,
     offset,
     queryString: queryString as string,
     slotFrom,
     slotTo,
     sort,
+    standalone: view === 'events',
   });
+  const productionList = useTicketProductions({ limit, offset, queryString: queryString as string });
+  const showProductions = view === 'productions';
+  const { products, productsCount, loading } = showProductions
+    ? {
+        products: productionList.productions,
+        productsCount: productionList.productionsCount,
+        loading: productionList.loading,
+      }
+    : events;
+
+  const setView = (nextView: View) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { skip, ...withoutSkip } = query;
+    push({ query: { ...withoutSkip, view: nextView } });
+  };
+  const viewLabels: Record<View, string> = {
+    productions: formatMessage({ id: 'ticketing_view_productions', defaultMessage: 'Productions' }),
+    events: formatMessage({ id: 'ticketing_view_events', defaultMessage: 'Single events' }),
+    performances: formatMessage({
+      id: 'ticketing_view_performances',
+      defaultMessage: 'All dates',
+    }),
+  };
 
   const periodLabels: Record<EventListPeriod, string> = {
     upcoming: formatMessage({ id: 'events_upcoming', defaultMessage: 'Upcoming' }),
@@ -96,30 +129,57 @@ const TicketingPage = () => {
         <ListHeader />
         <div className="my-3 flex flex-wrap items-center gap-3">
           <div className="inline-flex rounded-md shadow-xs" role="group">
-            {EVENT_LIST_PERIODS.map((option, index) => (
+            {VIEWS.map((option, index) => (
               <button
                 key={option}
                 type="button"
-                aria-pressed={period === option}
-                onClick={() => setPeriod(option)}
+                aria-pressed={view === option}
+                onClick={() => setView(option)}
                 className={[
                   'border border-border-default px-4 py-2 text-sm font-medium',
                   index === 0 ? 'rounded-l-md' : '',
-                  index === EVENT_LIST_PERIODS.length - 1 ? 'rounded-r-md' : '',
-                  period === option
+                  index === VIEWS.length - 1 ? 'rounded-r-md' : '',
+                  view === option
                     ? 'bg-slate-800 text-white'
                     : 'bg-surface text-text-secondary hover:bg-surface-raised',
                 ].join(' ')}
               >
-                {periodLabels[option]}
+                {viewLabels[option]}
               </button>
             ))}
           </div>
+          <Link href="/ext/ticketing/new" className={primaryButtonClassName}>
+            {formatMessage({ id: 'production_new', defaultMessage: 'New production' })}
+          </Link>
+        </div>
+        <div className="my-3 flex flex-wrap items-center gap-3">
+          {!showProductions && (
+            <div className="inline-flex rounded-md shadow-xs" role="group">
+              {EVENT_LIST_PERIODS.map((option, index) => (
+                <button
+                  key={option}
+                  type="button"
+                  aria-pressed={period === option}
+                  onClick={() => setPeriod(option)}
+                  className={[
+                    'border border-border-default px-4 py-2 text-sm font-medium',
+                    index === 0 ? 'rounded-l-md' : '',
+                    index === EVENT_LIST_PERIODS.length - 1 ? 'rounded-r-md' : '',
+                    period === option
+                      ? 'bg-slate-800 text-white'
+                      : 'bg-surface text-text-secondary hover:bg-surface-raised',
+                  ].join(' ')}
+                >
+                  {periodLabels[option]}
+                </button>
+              ))}
+            </div>
+          )}
           <div className="min-w-0 flex-1">
             <SearchField onInputChange={setQueryString} defaultValue={queryString} />
           </div>
         </div>
-        {period !== 'all' && (
+        {!showProductions && period !== 'all' && (
           <p className="mb-3 text-xs text-text-muted">
             {formatMessage({
               id: 'events_without_date_hint',
@@ -127,7 +187,13 @@ const TicketingPage = () => {
             })}
           </p>
         )}
-        {loading && !products.length ? <Loading /> : <TicketEventList products={products} />}
+        {loading && !products.length ? (
+          <Loading />
+        ) : showProductions ? (
+          <TicketProductionList productions={products} />
+        ) : (
+          <TicketEventList products={products} />
+        )}
         {!loading && !products?.length && (
           <NoData
             message={formatMessage({

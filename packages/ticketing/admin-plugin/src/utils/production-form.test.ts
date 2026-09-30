@@ -7,6 +7,9 @@ import {
   toCents,
   toCreateTicketProductionInput,
   toTicketSaleRulesInput,
+  toUpdateTicketProductionInput,
+  performanceFormValues,
+  toTicketPerformanceInput,
 } from './production-form.ts';
 
 const shop = { locale: 'de', currencyCode: 'CHF', countryCode: 'CH' };
@@ -135,5 +138,114 @@ test('invalid fields are named instead of building an input', () => {
       'categories.2.code',
       'performances.0.startsAt',
     ],
+  });
+});
+
+test('editing a production sends every text, detail and rule; blanks clear them', () => {
+  const result = toUpdateTicketProductionInput(
+    {
+      title: 'Hamlet',
+      subtitle: '',
+      description: 'Neu',
+      tags: 'organizer-a',
+      location: '',
+      durationMinutes: '150',
+      doorsOpenMinutesBefore: '',
+      saleRules: { onSale: 'open', salesStart: '', salesEnd: '', maxPerOrder: '6' },
+    },
+    shop,
+  );
+  assert.deepEqual(result, {
+    input: {
+      texts: [{ locale: 'de', title: 'Hamlet', subtitle: null, description: 'Neu' }],
+      tags: ['organizer-a'],
+      location: null,
+      durationMinutes: 150,
+      doorsOpenMinutesBefore: null,
+      saleRules: { onSale: true, salesStart: null, salesEnd: null, maxPerOrder: 6 },
+    },
+  });
+  assert.deepEqual(
+    toUpdateTicketProductionInput(
+      {
+        title: '',
+        subtitle: '',
+        description: '',
+        tags: '',
+        location: '',
+        durationMinutes: 'x',
+        doorsOpenMinutesBefore: '',
+        saleRules: { onSale: 'inherit', salesStart: '', salesEnd: '', maxPerOrder: '' },
+      },
+      shop,
+    ),
+    { errors: ['title', 'durationMinutes'] },
+  );
+});
+
+test('a performance form shows its own values; blank details are taken from the production', () => {
+  const row = {
+    startsAt: '2026-11-01T18:00:00.000Z',
+    cells: {
+      adult: {
+        _id: 'a',
+        contractConfiguration: { supply: 100 },
+        catalogPrice: { amount: 4500, currencyCode: 'CHF' },
+        event: {
+          location: 'Studio',
+          durationMinutes: 150,
+          overridden: ['location'],
+          ownSaleRules: { maxPerOrder: 2 },
+        },
+      },
+      reduced: {
+        _id: 'b',
+        contractConfiguration: { supply: 20 },
+        catalogPrice: { amount: 2500, currencyCode: 'CHF' },
+        event: { location: 'Studio', overridden: ['location'], ownSaleRules: {} },
+      },
+    },
+    products: [],
+  };
+  const values = performanceFormValues(row, ['adult', 'reduced']);
+  assert.equal(values.location, 'Studio');
+  assert.equal(values.durationMinutes, '', 'inherited');
+  assert.equal(values.saleRules.maxPerOrder, '2');
+  assert.deepEqual(values.tickets, {
+    adult: { supply: '100', price: '45.00' },
+    reduced: { supply: '20', price: '25.00' },
+  });
+
+  // Only what changed is sent; a blank detail goes back to the production value
+  const changed = {
+    ...values,
+    location: '',
+    tickets: { ...values.tickets, reduced: { supply: '10', price: '25.00' } },
+  };
+  assert.deepEqual(toTicketPerformanceInput(changed, values, shop), {
+    input: {
+      location: null,
+      saleRules: { onSale: null, salesStart: null, salesEnd: null, maxPerOrder: 2 },
+      tickets: [{ category: 'reduced', supply: 10 }],
+    },
+  });
+  // A new start reschedules
+  const moved = { ...values, startsAt: '2026-11-03T20:00' };
+  const movedResult = toTicketPerformanceInput(moved, values, shop);
+  assert.ok('input' in movedResult);
+  assert.equal(movedResult.input.startsAt, new Date('2026-11-03T20:00').toISOString());
+});
+
+test('a new performance sends its start and the values that differ from the categories', () => {
+  const values = { ...performanceFormValues(null, ['adult']), startsAt: '2026-12-01T19:00' };
+  assert.deepEqual(values.tickets, { adult: { supply: '', price: '' } });
+  assert.deepEqual(toTicketPerformanceInput(values, null, shop), {
+    input: {
+      startsAt: new Date('2026-12-01T19:00').toISOString(),
+      saleRules: { onSale: null, salesStart: null, salesEnd: null, maxPerOrder: null },
+    },
+  });
+  assert.deepEqual(toTicketPerformanceInput({ ...values, startsAt: '' }, null, shop), {
+    errors: ['startsAt'],
   });
 });
