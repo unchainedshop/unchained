@@ -1,5 +1,6 @@
 import { useIntl } from 'react-intl';
 import { Table } from '@unchainedshop/admin-ui/ui';
+import { EmptyNotice } from './Notice.tsx';
 import EventTokenListItem from './EventTokenListItem.tsx';
 
 const EventTokenList = ({ tokens, onCancelTicket, onRedeemTicket }) => {
@@ -7,12 +8,12 @@ const EventTokenList = ({ tokens, onCancelTicket, onRedeemTicket }) => {
 
   if (!tokens?.length) {
     return (
-      <p className="py-4 text-sm text-text-muted">
+      <EmptyNotice>
         {formatMessage({
           id: 'no_tickets_issued',
           defaultMessage: 'No tickets have been issued yet.',
         })}
-      </p>
+      </EmptyNotice>
     );
   }
 

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
+import { Button } from '@unchainedshop/admin-ui/ui';
+import { AlertNotice } from './Notice.tsx';
 import {
   classifyCameraError,
   createQrDecoder,
@@ -168,7 +170,7 @@ const QrCameraScanner = ({
   return (
     <div>
       <div
-        className="relative overflow-hidden rounded-lg bg-slate-900"
+        className="relative overflow-hidden rounded-md bg-slate-900 shadow-sm"
         style={{ display: state === 'off' ? 'none' : 'block', aspectRatio: '4 / 3' }}
       >
         <video
@@ -199,30 +201,29 @@ const QrCameraScanner = ({
         )}
       </div>
       {problem && (
-        <p role="alert" className="mt-3 rounded-md bg-rose-50 p-3 text-sm text-rose-800">
-          {describeProblem(problem)}
-        </p>
+        <div className="mt-3">
+          <AlertNotice>{describeProblem(problem)}</AlertNotice>
+        </div>
       )}
       <div className="mt-3 flex gap-2">
         {state === 'off' ? (
-          <button
-            type="button"
+          <Button
+            size="lg"
+            fullWidth
+            text={formatMessage({ id: 'gate_camera_start', defaultMessage: 'Scan with camera' })}
             onClick={() => {
               onStart?.();
               start();
             }}
-            className="inline-flex flex-1 items-center justify-center rounded-md bg-slate-800 px-4 py-3 text-sm font-medium text-white hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
-          >
-            {formatMessage({ id: 'gate_camera_start', defaultMessage: 'Scan with camera' })}
-          </button>
+          />
         ) : (
-          <button
-            type="button"
+          <Button
+            variant="secondary"
+            size="lg"
+            fullWidth
+            text={formatMessage({ id: 'gate_camera_stop', defaultMessage: 'Stop camera' })}
             onClick={stop}
-            className="inline-flex flex-1 items-center justify-center rounded-md border border-border-default px-4 py-3 text-sm font-medium text-text-secondary hover:bg-surface-raised"
-          >
-            {formatMessage({ id: 'gate_camera_stop', defaultMessage: 'Stop camera' })}
-          </button>
+          />
         )}
       </div>
     </div>

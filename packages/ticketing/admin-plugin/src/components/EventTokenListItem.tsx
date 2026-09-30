@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useIntl } from 'react-intl';
-import { Table, MediaAvatar } from '@unchainedshop/admin-ui/ui';
+import { Button, Table, MediaAvatar } from '@unchainedshop/admin-ui/ui';
 import { buyerLabel } from '../utils/attendees.ts';
 import TicketStatusBadge from './TicketStatusBadge.tsx';
 
@@ -43,28 +43,20 @@ const EventTokenListItem = ({ token, onCancelTicket, onRedeemTicket }) => {
         {isValid && (
           <div className="flex items-center gap-2">
             {onCancelTicket && (
-              <button
-                type="button"
+              <Button
+                variant="danger"
+                size="sm"
+                text={formatMessage({ id: 'cancel_ticket', defaultMessage: 'Cancel' })}
                 onClick={() => onCancelTicket(token._id)}
-                className="inline-flex items-center rounded-md border border-border-default px-3 py-1 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20"
-              >
-                {formatMessage({
-                  id: 'cancel_ticket',
-                  defaultMessage: 'Cancel',
-                })}
-              </button>
+              />
             )}
             {onRedeemTicket && (
-              <button
-                type="button"
+              <Button
+                variant="success"
+                size="sm"
+                text={formatMessage({ id: 'redeem_ticket', defaultMessage: 'Redeem' })}
                 onClick={() => onRedeemTicket(token._id)}
-                className="inline-flex items-center rounded-md border border-border-default px-3 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
-              >
-                {formatMessage({
-                  id: 'redeem_ticket',
-                  defaultMessage: 'Redeem',
-                })}
-              </button>
+              />
             )}
           </div>
         )}

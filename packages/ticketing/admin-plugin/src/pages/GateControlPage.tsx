@@ -1,21 +1,20 @@
 import { useIntl } from 'react-intl';
+import { BreadCrumbs, PageHeader } from '@unchainedshop/admin-ui/ui';
 import GateControl from '../components/GateControl.tsx';
 
 const GateControlPage = () => {
   const { formatMessage } = useIntl();
 
   return (
-    <div className="px-6 pt-8 pb-6">
-      <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold text-text-primary">
-          {formatMessage({
-            id: 'gate_control_header',
-            defaultMessage: 'Gate Control',
-          })}
-        </h1>
+    <>
+      <BreadCrumbs depth={3} />
+      <PageHeader
+        headerText={formatMessage({ id: 'gate_control_header', defaultMessage: 'Gate Control' })}
+      />
+      <div className="mt-6">
+        <GateControl />
       </div>
-      <GateControl />
-    </div>
+    </>
   );
 };
 

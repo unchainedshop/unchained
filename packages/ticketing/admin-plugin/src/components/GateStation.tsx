@@ -1,24 +1,14 @@
 import { useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useLocalStorage } from '@unchainedshop/admin-ui/hooks';
+import { Button, Table, Toggle } from '@unchainedshop/admin-ui/ui';
+import { EmptyNotice } from './Notice.tsx';
 import useGateCheck from '../hooks/useGateCheck.ts';
 import { buyerLabel } from '../utils/attendees.ts';
 import QrCameraScanner from './QrCameraScanner.tsx';
 import TicketCheckCard from './TicketCheckCard.tsx';
 import TicketStatusBadge from './TicketStatusBadge.tsx';
 import GateAttendeeList from './GateAttendeeList.tsx';
-
-const Setting = ({ checked, onChange, children }) => (
-  <label className="flex items-center gap-2 text-sm text-text-secondary">
-    <input
-      type="checkbox"
-      className="rounded border-border-default"
-      checked={Boolean(checked)}
-      onChange={(e) => onChange(e.target.checked)}
-    />
-    {children}
-  </label>
-);
 
 /**
  * Admission for the gate's events (one, or all products of one performance): scan QR codes with
@@ -75,26 +65,28 @@ const GateStation = ({ events }: { events: any[] }) => {
               id: 'gate_code_placeholder',
               defaultMessage: 'Ticket code, #serial, order number or attendee name',
             })}
-            className="block w-full rounded-md border border-border-default bg-surface-input px-4 py-3 text-base text-text-primary shadow-xs placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-focus-ring"
+            className="relative block w-full appearance-none rounded-md border-1 border-slate-300 px-4 py-2.5 text-base text-slate-900 shadow-xs placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-focus-ring dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
           />
-          <button
+          <Button
             type="submit"
             disabled={!code.trim() || gate.busy}
-            className="inline-flex items-center rounded-md bg-slate-800 px-5 py-3 text-sm font-medium text-white hover:bg-slate-900 disabled:opacity-50"
-          >
-            {formatMessage({ id: 'gate_check', defaultMessage: 'Check' })}
-          </button>
+            text={formatMessage({ id: 'gate_check', defaultMessage: 'Check' })}
+          />
         </form>
-        <div className="flex flex-wrap gap-3">
-          <Setting checked={autoRedeem} onChange={setAutoRedeem}>
-            {formatMessage({
+        <div className="flex flex-col gap-3">
+          <Toggle
+            active={Boolean(autoRedeem)}
+            onToggle={() => setAutoRedeem(!autoRedeem)}
+            toggleText={formatMessage({
               id: 'gate_auto_redeem',
               defaultMessage: 'Redeem valid ticket QR codes right after scanning',
             })}
-          </Setting>
-          <Setting checked={feedback} onChange={setFeedback}>
-            {formatMessage({ id: 'gate_feedback', defaultMessage: 'Sound and vibration' })}
-          </Setting>
+          />
+          <Toggle
+            active={Boolean(feedback)}
+            onToggle={() => setFeedback(!feedback)}
+            toggleText={formatMessage({ id: 'gate_feedback', defaultMessage: 'Sound and vibration' })}
+          />
         </div>
       </div>
 
@@ -105,8 +97,8 @@ const GateStation = ({ events }: { events: any[] }) => {
           </p>
         )}
         {outcome?.candidates && (
-          <div className="rounded-lg border border-border-subtle bg-surface shadow-sm">
-            <p className="border-b border-border-subtle px-4 py-3 text-sm font-medium text-text-primary">
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-text-primary">
               {formatMessage(
                 {
                   id: 'gate_candidates',
@@ -115,15 +107,11 @@ const GateStation = ({ events }: { events: any[] }) => {
                 { count: outcome.candidates.length, code: outcome.code },
               )}
             </p>
-            <ul className="divide-y divide-slate-200 dark:divide-slate-700">
+            <Table className="min-w-full">
               {outcome.candidates.map((ticket) => (
-                <li key={ticket._id}>
-                  <button
-                    type="button"
-                    onClick={() => gate.choose(ticket)}
-                    className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-surface-raised"
-                  >
-                    <span className="min-w-0">
+                <Table.Row key={ticket._id}>
+                  <Table.Cell>
+                    <span className="flex min-w-0 flex-col">
                       <span className="block font-medium text-text-primary">
                         #{ticket.tokenSerialNumber || ticket._id.slice(-8)}{' '}
                         {ticket.attendeeName || buyerLabel(ticket.user, guest)}
@@ -144,11 +132,23 @@ const GateStation = ({ events }: { events: any[] }) => {
                         )
                       )}
                     </span>
+                  </Table.Cell>
+                  <Table.Cell>
                     <TicketStatusBadge token={ticket} />
-                  </button>
-                </li>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <div className="flex justify-end">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        text={formatMessage({ id: 'gate_choose', defaultMessage: 'Check' })}
+                        onClick={() => gate.choose(ticket)}
+                      />
+                    </div>
+                  </Table.Cell>
+                </Table.Row>
               ))}
-            </ul>
+            </Table>
           </div>
         )}
         {outcome?.check && (
@@ -164,12 +164,12 @@ const GateStation = ({ events }: { events: any[] }) => {
           />
         )}
         {!outcome && !gate.busy && (
-          <p className="rounded-lg border border-dashed border-border-default p-6 text-center text-sm text-text-muted">
+          <EmptyNotice>
             {formatMessage({
               id: 'gate_idle',
               defaultMessage: 'Scan a ticket or type its code to check it.',
             })}
-          </p>
+          </EmptyNotice>
         )}
       </div>
 

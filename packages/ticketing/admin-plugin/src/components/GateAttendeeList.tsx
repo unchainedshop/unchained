@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { Table } from '@unchainedshop/admin-ui/ui';
+import { Button, SearchField, Table } from '@unchainedshop/admin-ui/ui';
 import { buyerLabel, matchesTicketFilter } from '../utils/attendees.ts';
 import TicketStatusBadge from './TicketStatusBadge.tsx';
 
@@ -62,8 +62,8 @@ const GateAttendeeList = ({
   );
 
   return (
-    <div className="rounded-lg border border-border-subtle bg-surface shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border-subtle p-4">
+    <div className="overflow-hidden rounded-md bg-surface shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-b-border-subtle p-5">
         <div>
           <span className="text-2xl font-bold text-text-primary">{total.redeemed}</span>
           <span className="text-text-muted"> / {total.active} </span>
@@ -89,21 +89,13 @@ const GateAttendeeList = ({
             </p>
           )}
         </div>
-        <input
-          type="search"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          placeholder={formatMessage({
-            id: 'gate_filter_placeholder',
-            defaultMessage: 'Filter by #serial, attendee or buyer',
-          })}
-          aria-label={formatMessage({ id: 'gate_filter_label', defaultMessage: 'Filter tickets' })}
-          className="block w-full max-w-xs rounded-md border border-border-default bg-surface-input px-3 py-2 text-sm text-text-primary placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-focus-ring"
-        />
+        <div className="w-full max-w-sm">
+          <SearchField onInputChange={setFilter} defaultValue={filter} />
+        </div>
       </div>
 
       {!matches.length ? (
-        <p className="p-4 text-sm text-text-muted">
+        <p className="p-5 text-sm text-text-muted">
           {tokens.length
             ? formatMessage({ id: 'gate_no_matches', defaultMessage: 'No ticket matches the filter.' })
             : formatMessage(
@@ -169,14 +161,13 @@ const GateAttendeeList = ({
                 </Table.Cell>
                 <Table.Cell>
                   {token.ticketStatus === 'VALID' && (
-                    <button
-                      type="button"
+                    <Button
+                      variant="success"
+                      size="sm"
                       disabled={busy}
+                      text={formatMessage({ id: 'gate_redeem', defaultMessage: 'Redeem' })}
                       onClick={() => onRedeem(token)}
-                      className="inline-flex items-center rounded-md bg-emerald-600 px-4 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50"
-                    >
-                      {formatMessage({ id: 'gate_redeem', defaultMessage: 'Redeem' })}
-                    </button>
+                    />
                   )}
                 </Table.Cell>
               </Table.Row>
@@ -185,7 +176,7 @@ const GateAttendeeList = ({
         </Table>
       )}
       {matches.length > MAX_ROWS && (
-        <p className="p-4 text-sm text-text-muted">
+        <p className="p-5 text-sm text-text-muted">
           {formatMessage(
             {
               id: 'gate_more_rows',

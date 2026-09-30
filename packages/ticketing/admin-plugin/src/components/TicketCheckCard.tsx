@@ -1,4 +1,6 @@
 import { useIntl } from 'react-intl';
+import { Button } from '@unchainedshop/admin-ui/ui';
+import { AlertNotice } from './Notice.tsx';
 import { buyerLabel } from '../utils/attendees.ts';
 import { useFormatDateTime } from '../utils/misc.ts';
 import { getScanTone, TicketVerdict, type GateOutcome } from '../utils/scan.ts';
@@ -216,11 +218,7 @@ const TicketCheckCard = ({
   const quantity = ticket?.quantity || 1;
 
   return (
-    <div
-      role="status"
-      aria-live="assertive"
-      className="overflow-hidden rounded-lg border border-border-subtle bg-surface shadow-md"
-    >
+    <div role="status" aria-live="assertive" className="overflow-hidden rounded-md bg-surface shadow-sm">
       <div
         style={{
           backgroundColor: TONE_COLORS[getScanTone(check)],
@@ -257,46 +255,50 @@ const TicketCheckCard = ({
             )}
           </Fact>
           {outcome.matchedBy === 'SEARCH' && check.verdict === TicketVerdict.VALID && (
-            <div className="col-span-2 rounded-md bg-amber-50 p-3 text-base text-amber-800">
-              {formatMessage({
-                id: 'gate_ticket_found_by_search',
-                defaultMessage:
-                  'Found by search, not by its QR code: a serial, name or order number is no proof of holding the ticket. Check the ticket or the attendee before redeeming.',
-              })}
+            <div className="col-span-2">
+              <AlertNotice tone="warning">
+                {formatMessage({
+                  id: 'gate_ticket_found_by_search',
+                  defaultMessage:
+                    'Found by search, not by its QR code: a serial, name or order number is no proof of holding the ticket. Check the ticket or the attendee before redeeming.',
+                })}
+              </AlertNotice>
             </div>
           )}
           {quantity > 1 && (
-            <div className="col-span-2 rounded-md bg-amber-50 p-3 text-base font-semibold text-amber-800">
-              {formatMessage(
-                {
-                  id: 'gate_ticket_quantity',
-                  defaultMessage: 'This ticket admits {count} people.',
-                },
-                { count: quantity },
-              )}
+            <div className="col-span-2 font-semibold">
+              <AlertNotice tone="warning">
+                {formatMessage(
+                  {
+                    id: 'gate_ticket_quantity',
+                    defaultMessage: 'This ticket admits {count} people.',
+                  },
+                  { count: quantity },
+                )}
+              </AlertNotice>
             </div>
           )}
         </dl>
       )}
-      <div className="flex gap-3 border-t border-border-subtle p-4">
+      <div className="flex gap-3 border-t border-t-border-subtle bg-surface-subtle p-5">
         {check.verdict === TicketVerdict.VALID && onRedeem && (
-          <button
-            type="button"
+          <Button
+            variant="success"
+            size="lg"
+            fullWidth
             disabled={busy}
+            text={formatMessage({ id: 'gate_redeem', defaultMessage: 'Redeem' })}
             onClick={() => onRedeem(ticket)}
-            className="inline-flex flex-1 items-center justify-center rounded-md bg-emerald-600 px-4 py-3 text-base font-semibold text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50"
-          >
-            {formatMessage({ id: 'gate_redeem', defaultMessage: 'Redeem' })}
-          </button>
+          />
         )}
         {onDismiss && (
-          <button
-            type="button"
+          <Button
+            variant="secondary"
+            size="lg"
+            fullWidth
+            text={formatMessage({ id: 'gate_next_ticket', defaultMessage: 'Next ticket' })}
             onClick={onDismiss}
-            className="inline-flex flex-1 items-center justify-center rounded-md border border-border-default px-4 py-3 text-base font-medium text-text-secondary hover:bg-surface-raised"
-          >
-            {formatMessage({ id: 'gate_next_ticket', defaultMessage: 'Next ticket' })}
-          </button>
+          />
         )}
       </div>
     </div>

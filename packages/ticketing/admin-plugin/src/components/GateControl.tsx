@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
-import { Loading } from '@unchainedshop/admin-ui/ui';
+import { Button, Loading, Toggle } from '@unchainedshop/admin-ui/ui';
+import { AlertNotice, EmptyNotice } from './Notice.tsx';
 import useGateEvents from '../hooks/useGateEvents.ts';
 import useGateEventDetails from '../hooks/useGateEventDetails.ts';
 import { getGateSlotRange } from '../utils/dates.ts';
@@ -9,12 +10,6 @@ import { formatGateEventIds, parseGateEventIds, summarizeGateEvents } from '../u
 import { useFormatDateTime } from '../utils/misc.ts';
 import GateEventList from './GateEventList.tsx';
 import GateStation from './GateStation.tsx';
-
-const Notice = ({ children }) => (
-  <p className="rounded-lg border border-dashed border-border-default p-6 text-center text-sm text-text-muted">
-    {children}
-  </p>
-);
 
 const canUseFullscreen = () => typeof document !== 'undefined' && Boolean(document.fullscreenEnabled);
 
@@ -69,32 +64,22 @@ const GateControl = () => {
   return (
     <div
       ref={containerRef}
-      className="bg-surface-subtle"
+      className={isFullscreen ? 'bg-surface-subtle' : undefined}
       // Full screen turns a phone or tablet into a gate kiosk without the admin navigation.
       style={isFullscreen ? { overflowY: 'auto', padding: '1.5rem' } : undefined}
     >
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3 min-w-0">
           {hasGate && (
-            <button
-              type="button"
+            <Button
+              variant="secondary"
+              size="sm"
+              text={formatMessage({ id: 'gate_back', defaultMessage: 'Back' })}
               onClick={() => openGate([])}
-              className="inline-flex items-center rounded-md border border-border-default px-2 py-1.5 text-xs font-medium text-text-secondary hover:bg-surface-raised"
-            >
-              <svg
-                className="h-4 w-4 mr-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-              </svg>
-              {formatMessage({ id: 'gate_back', defaultMessage: 'Back' })}
-            </button>
+            />
           )}
           <div className="min-w-0">
-            <h2 className="text-xl font-semibold text-text-primary truncate">
+            <h2 className="truncate text-lg font-medium text-text-primary">
               {hasGate
                 ? summary.titles.join(' / ')
                 : formatMessage({ id: 'gate_todays_events', defaultMessage: "Today's events" })}
@@ -114,26 +99,26 @@ const GateControl = () => {
         </div>
         <div className="flex items-center gap-4">
           {!hasGate && (
-            <label className="flex items-center gap-2 text-sm text-text-secondary">
-              <input
-                type="checkbox"
-                className="rounded border-border-default"
-                checked={onlyOpen}
-                onChange={(e) => setOnlyOpen(e.target.checked)}
-              />
-              {formatMessage({ id: 'gate_only_open', defaultMessage: 'Only events open for entry' })}
-            </label>
+            <Toggle
+              active={onlyOpen}
+              onToggle={() => setOnlyOpen(!onlyOpen)}
+              toggleText={formatMessage({
+                id: 'gate_only_open',
+                defaultMessage: 'Only events open for entry',
+              })}
+            />
           )}
           {canUseFullscreen() && (
-            <button
-              type="button"
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={toggleFullscreen}
-              className="inline-flex items-center rounded-md border border-border-default px-3 py-1.5 text-xs font-medium text-text-secondary hover:bg-surface-raised"
-            >
-              {isFullscreen
-                ? formatMessage({ id: 'gate_exit_fullscreen', defaultMessage: 'Exit full screen' })
-                : formatMessage({ id: 'gate_fullscreen', defaultMessage: 'Full screen' })}
-            </button>
+              text={
+                isFullscreen
+                  ? formatMessage({ id: 'gate_exit_fullscreen', defaultMessage: 'Exit full screen' })
+                  : formatMessage({ id: 'gate_fullscreen', defaultMessage: 'Full screen' })
+              }
+            />
           )}
         </div>
       </div>
@@ -142,7 +127,7 @@ const GateControl = () => {
         gateEvents.length ? (
           <>
             {cancelledEvents.length > 0 && (
-              <p role="alert" className="mb-4 rounded-md bg-rose-50 p-3 text-sm text-rose-800">
+              <AlertNotice>
                 {gateEvents.length === 1
                   ? formatMessage({
                       id: 'gate_selected_event_cancelled',
@@ -155,10 +140,10 @@ const GateControl = () => {
                       },
                       { events: cancelledEvents.map(eventLabel).join(', ') },
                     )}
-              </p>
+              </AlertNotice>
             )}
             {missingEvents > 0 && !detailLoading && (
-              <p role="alert" className="mb-4 rounded-md bg-amber-50 p-3 text-sm text-amber-800">
+              <AlertNotice tone="warning">
                 {formatMessage(
                   {
                     id: 'gate_events_missing',
@@ -167,7 +152,7 @@ const GateControl = () => {
                   },
                   { count: missingEvents },
                 )}
-              </p>
+              </AlertNotice>
             )}
             <GateStation
               key={formatGateEventIds(gateEvents.map(({ _id }) => _id))}
@@ -177,7 +162,7 @@ const GateControl = () => {
         ) : detailLoading ? (
           <Loading />
         ) : (
-          <Notice>
+          <EmptyNotice>
             {formatMessage(
               {
                 id: 'gate_event_not_found',
@@ -186,7 +171,7 @@ const GateControl = () => {
               },
               { count: gateEventIds.length },
             )}
-          </Notice>
+          </EmptyNotice>
         )
       ) : eventsLoading && !events.length ? (
         <Loading />
@@ -198,14 +183,14 @@ const GateControl = () => {
           onOpen={openGate}
         />
       ) : (
-        <Notice>
+        <EmptyNotice>
           {onlyOpen
             ? formatMessage({
                 id: 'gate_no_open_events',
                 defaultMessage: 'No event of today is open for entry right now.',
               })
             : formatMessage({ id: 'gate_no_events_today', defaultMessage: 'No events today.' })}
-        </Notice>
+        </EmptyNotice>
       )}
     </div>
   );

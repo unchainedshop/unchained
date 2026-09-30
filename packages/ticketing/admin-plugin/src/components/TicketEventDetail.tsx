@@ -3,7 +3,8 @@ import { useCallback, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 import { useModal, DangerMessage } from '@unchainedshop/admin-ui/modal';
-import { Badge, ImageWithFallback } from '@unchainedshop/admin-ui/ui';
+import { Badge, BreadCrumbs, Button, PageHeader, SearchField, Tab } from '@unchainedshop/admin-ui/ui';
+import { EmptyNotice } from './Notice.tsx';
 import EventTokenList from './EventTokenList.tsx';
 import TicketEventEditor from './TicketEventEditor.tsx';
 import { useVerdictText } from './TicketCheckCard.tsx';
@@ -14,19 +15,72 @@ import { useAuth } from '@unchainedshop/admin-ui/hooks';
 import { buildAttendeeCsv, matchesTicketFilter } from '../utils/attendees.ts';
 import { downloadCsv, toFileName } from '../utils/download.ts';
 import { describeScanError } from '../utils/scan.ts';
-import { useFormatDateTime, generateUniqueId, defaultNextImageLoader } from '../utils/misc.ts';
+import { useFormatDateTime, generateUniqueId } from '../utils/misc.ts';
 
 // Big events stay responsive; the filter finds the other tickets and the CSV export holds all.
 const MAX_ROWS = 200;
 
 const units = (tokens) => tokens.reduce((sum, token) => sum + (token.quantity || 1), 0);
 
-const Fact = ({ label, children }) => (
-  <div>
-    <span className="block text-sm font-medium text-text-muted">{label}</span>
-    <div className="mt-1 text-text-primary">{children}</div>
-  </div>
-);
+// The tabs of a date: its attendees (search, CSV, cancel, redeem) and its event details and sale rules.
+const DateTab = ({
+  selectedView = 'attendees',
+  product,
+  production,
+  canEdit,
+  canCancel,
+  canRedeem,
+  tokens,
+  shownTokens,
+  filter,
+  setFilter,
+  onExport,
+  onCancelTicket,
+  onRedeemTicket,
+}: Record<string, any>) => {
+  const { formatMessage } = useIntl();
+  if (selectedView === 'event' && canEdit) {
+    return <TicketEventEditor product={product} production={production} onDone={null} />;
+  }
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="min-w-0 flex-1">
+          <SearchField onInputChange={setFilter} defaultValue={filter} />
+        </div>
+        <Button
+          variant="secondary"
+          disabled={!tokens.length}
+          onClick={onExport}
+          text={formatMessage({ id: 'export_attendees_csv', defaultMessage: 'Export CSV' })}
+        />
+      </div>
+      {tokens.length > 0 && !shownTokens.length ? (
+        <EmptyNotice>
+          {formatMessage({ id: 'attendee_no_matches', defaultMessage: 'No ticket matches the filter.' })}
+        </EmptyNotice>
+      ) : (
+        <EventTokenList
+          tokens={shownTokens.slice(0, MAX_ROWS)}
+          onCancelTicket={canCancel ? onCancelTicket : undefined}
+          onRedeemTicket={canRedeem ? onRedeemTicket : undefined}
+        />
+      )}
+      {shownTokens.length > MAX_ROWS && (
+        <p className="text-sm text-text-muted">
+          {formatMessage(
+            {
+              id: 'attendee_more_rows',
+              defaultMessage:
+                'Showing {shown} of {count} tickets. Filter to find the others; the CSV export contains all of them.',
+            },
+            { shown: MAX_ROWS, count: shownTokens.length },
+          )}
+        </p>
+      )}
+    </div>
+  );
+};
 
 const TicketEventDetail = ({ product }) => {
   const { formatMessage } = useIntl();
@@ -42,7 +96,6 @@ const TicketEventDetail = ({ product }) => {
   const canCancel = hasRole('cancelTicket');
   const canRedeem = hasRole('scanTicket');
   const canEdit = hasRole('manageProducts');
-  const [editing, setEditing] = useState(false);
   const [filter, setFilter] = useState('');
 
   const tokens = useMemo(() => product?.tokens || [], [product?.tokens]);
@@ -191,198 +244,108 @@ const TicketEventDetail = ({ product }) => {
 
   if (!product) return null;
 
+  const isCanceled = product.event?.isCanceled;
+  const status = isCanceled ? 'CANCELLED' : product.status;
+  const statusColor = isCanceled ? 'rose' : product.status === 'ACTIVE' ? 'emerald' : 'amber';
+  const facts = [
+    formatDate(product.event?.startsAt),
+    product.event?.location,
+    product.event?.category,
+    product.event?.doorsOpenAt &&
+      formatMessage(
+        { id: 'event_doors_open_at', defaultMessage: 'Doors {time}' },
+        { time: formatTime(product.event.doorsOpenAt) },
+      ),
+    product.event?.endsAt &&
+      formatMessage(
+        { id: 'event_ends_at', defaultMessage: 'Ends {time}' },
+        { time: formatTime(product.event.endsAt) },
+      ),
+  ].filter(Boolean);
+
+  const tabItems = [
+    {
+      id: 'attendees',
+      title: formatMessage({ id: 'attendees', defaultMessage: 'Attendees' }),
+      length: tokens.length || undefined,
+    },
+    ...(canEdit
+      ? [
+          {
+            id: 'event',
+            title: formatMessage({ id: 'production_event_tab', defaultMessage: 'Event & sale' }),
+          },
+        ]
+      : []),
+  ];
+
   return (
-    <div className="grid gap-6">
-      <div className="bg-surface rounded-lg shadow-md p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <Link
-              href={`/products?slug=${generateUniqueId(product)}`}
-              className="block overflow-hidden rounded-lg bg-surface-raised hover:opacity-90"
-            >
-              <ImageWithFallback
-                src={product?.media?.[0]?.file?.url || '/no-image.jpg'}
-                loader={defaultNextImageLoader}
-                alt={product?.texts?.title || ''}
-                width={300}
-                height={300}
-                layout="responsive"
-                className="h-full w-full object-cover"
-              />
-            </Link>
-          </div>
-          <div className="md:col-span-2">
-            <h2 className="text-2xl font-semibold text-text-primary">{product?.texts?.title}</h2>
-            {product?.texts?.subtitle && (
-              <p className="mt-1 text-lg text-text-secondary">{product.texts.subtitle}</p>
-            )}
-            {product?.texts?.description && (
-              <p className="mt-3 text-sm text-text-muted">{product.texts.description}</p>
-            )}
-            {production && (
-              <p className="mt-2 text-sm">
-                <Link
-                  href={`/ext/ticketing/${generateUniqueId(production)}`}
-                  className="text-text-secondary underline hover:text-text-primary"
-                >
-                  {formatMessage(
-                    {
-                      id: 'performance_of_production',
-                      defaultMessage: 'Date of the production {title}',
-                    },
-                    { title: production.texts?.title || production._id },
-                  )}
-                </Link>
-              </p>
-            )}
-
-            {editing ? (
-              <div className="mt-6">
-                <TicketEventEditor
-                  product={product}
-                  production={production}
-                  onDone={() => setEditing(false)}
-                />
-              </div>
-            ) : (
-              <div className="mt-6 grid grid-cols-2 gap-4">
-                <Fact label={formatMessage({ id: 'event_date', defaultMessage: 'Event Date' })}>
-                  {formatDate(product.event?.startsAt)}
-                </Fact>
-                <Fact label={formatMessage({ id: 'event_location', defaultMessage: 'Location' })}>
-                  {product.event?.location || '-'}
-                </Fact>
-                <Fact label={formatMessage({ id: 'event_doors_open', defaultMessage: 'Doors open' })}>
-                  {formatTime(product.event?.doorsOpenAt)}
-                </Fact>
-                <Fact label={formatMessage({ id: 'event_ends', defaultMessage: 'Ends' })}>
-                  {formatTime(product.event?.endsAt)}
-                </Fact>
-                <Fact label={formatMessage({ id: 'event_category', defaultMessage: 'Category' })}>
-                  {product.event?.category || '-'}
-                </Fact>
-                <Fact label={formatMessage({ id: 'status', defaultMessage: 'Status' })}>
-                  <Badge
-                    text={
-                      product?.event?.isCanceled
-                        ? formatMessage({ id: 'event_status_cancelled', defaultMessage: 'CANCELLED' })
-                        : product?.status
-                    }
-                    color={
-                      product?.event?.isCanceled
-                        ? 'rose'
-                        : product?.status === 'ACTIVE'
-                          ? 'emerald'
-                          : product?.status === 'DRAFT'
-                            ? 'amber'
-                            : 'rose'
-                    }
-                    square
-                  />
-                </Fact>
-                <Fact label={formatMessage({ id: 'tickets_sold', defaultMessage: 'Tickets Sold' })}>
-                  <span className="text-lg font-semibold">{units(activeTokens)}</span>
-                  {supply > 0 && <span className="text-text-muted"> / {supply}</span>}
-                </Fact>
-                <Fact
-                  label={formatMessage({ id: 'tickets_redeemed', defaultMessage: 'Tickets Redeemed' })}
-                >
-                  <span className="text-lg font-semibold">{units(redeemedTokens)}</span>
-                  <span className="text-text-muted"> / {units(activeTokens)}</span>
-                </Fact>
-              </div>
-            )}
-
-            <div className="mt-6 flex flex-wrap gap-3">
-              {canEdit && !editing && (
-                <button
-                  type="button"
-                  onClick={() => setEditing(true)}
-                  className="inline-flex items-center rounded-md border border-border-default px-4 py-2 text-sm font-medium text-text-secondary hover:bg-surface-raised"
-                >
-                  {formatMessage({ id: 'edit_event_details', defaultMessage: 'Edit event details' })}
-                </button>
-              )}
-              {product.status === 'ACTIVE' && !product.event?.isCanceled && canCancel && (
-                <button
-                  type="button"
-                  onClick={onCancelEvent}
-                  className="inline-flex items-center rounded-md bg-rose-600 px-4 py-2 text-sm font-medium text-white hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2"
-                >
-                  {formatMessage({
-                    id: 'cancel_event',
-                    defaultMessage: 'Cancel Event',
-                  })}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-surface rounded-lg shadow-md p-6">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-lg font-semibold text-text-primary">
-            {formatMessage(
-              {
-                id: 'attendee_list',
-                defaultMessage: 'Attendees ({count})',
-              },
-              { count: tokens.length },
-            )}
-          </h3>
-          <div className="flex flex-wrap items-center gap-3">
-            <input
-              type="search"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              placeholder={formatMessage({
-                id: 'attendee_filter_placeholder',
-                defaultMessage: 'Filter by #serial, attendee or buyer',
-              })}
-              aria-label={formatMessage({
-                id: 'attendee_filter_label',
-                defaultMessage: 'Filter tickets',
-              })}
-              className="block w-64 rounded-md border border-border-default bg-surface-input px-3 py-2 text-sm text-text-primary placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-focus-ring"
+    <div className="mt-5 max-w-full">
+      <BreadCrumbs depth={4} currentPageTitle={product.texts?.title} />
+      <div className="flex min-w-full flex-wrap items-center justify-between gap-5">
+        <PageHeader
+          headerText={product.texts?.title || product._id}
+          title={`${product.texts?.title || 'Event'} (${product._id})`}
+        />
+        <div className="flex flex-wrap gap-3">
+          <Badge text={status} color={statusColor} square />
+          {product.status === 'ACTIVE' && !isCanceled && canCancel && (
+            <Button
+              variant="danger"
+              text={formatMessage({ id: 'cancel_event', defaultMessage: 'Cancel Event' })}
+              onClick={onCancelEvent}
             />
-            <button
-              type="button"
-              disabled={!tokens.length}
-              onClick={onExport}
-              className="inline-flex items-center rounded-md border border-border-default px-4 py-2 text-sm font-medium text-text-secondary hover:bg-surface-raised disabled:opacity-50"
-            >
-              {formatMessage({ id: 'export_attendees_csv', defaultMessage: 'Export CSV' })}
-            </button>
-          </div>
+          )}
         </div>
-        {tokens.length > 0 && !shownTokens.length ? (
-          <p className="py-4 text-sm text-text-muted">
-            {formatMessage({
-              id: 'attendee_no_matches',
-              defaultMessage: 'No ticket matches the filter.',
-            })}
-          </p>
-        ) : (
-          <EventTokenList
-            tokens={shownTokens.slice(0, MAX_ROWS)}
-            onCancelTicket={canCancel ? onCancelTicket : undefined}
-            onRedeemTicket={canRedeem ? onRedeemTicket : undefined}
-          />
-        )}
-        {shownTokens.length > MAX_ROWS && (
-          <p className="pt-4 text-sm text-text-muted">
+      </div>
+      <div className="mt-8 flex flex-wrap gap-3 gap-x-10 text-sm text-text-secondary">
+        {facts.map((fact) => (
+          <span key={fact}>{fact}</span>
+        ))}
+        <span>
+          {formatMessage(
+            {
+              id: 'event_sold_summary',
+              defaultMessage:
+                '{sold} sold{supply, select, none {} other { of {supply}}}, {redeemed} redeemed',
+            },
+            {
+              sold: units(activeTokens),
+              supply: supply > 0 ? String(supply) : 'none',
+              redeemed: units(redeemedTokens),
+            },
+          )}
+        </span>
+        {production && (
+          <Link
+            href={`/ext/ticketing/${generateUniqueId(production)}`}
+            className="underline hover:text-text-primary"
+          >
             {formatMessage(
-              {
-                id: 'attendee_more_rows',
-                defaultMessage:
-                  'Showing {shown} of {count} tickets. Filter to find the others; the CSV export contains all of them.',
-              },
-              { shown: MAX_ROWS, count: shownTokens.length },
+              { id: 'performance_of_production', defaultMessage: 'Date of the production {title}' },
+              { title: production.texts?.title || production._id },
             )}
-          </p>
+          </Link>
         )}
       </div>
+      <Tab tabItems={tabItems} defaultTab="attendees">
+        <DateTab
+          {...{
+            product,
+            production,
+            canEdit,
+            canCancel,
+            canRedeem,
+            tokens,
+            shownTokens,
+            filter,
+            setFilter,
+            onExport,
+            onCancelTicket,
+            onRedeemTicket,
+          }}
+        />
+      </Tab>
     </div>
   );
 };
