@@ -191,7 +191,7 @@ A bulk import that sends `specification.meta` replaces `product.meta` as a whole
 
 A production is a play, concert series or course with several dates, and optionally several ticket categories per date. It is a `CONFIGURABLE_PRODUCT` tagged `ticket-production` whose variants are the dates: one `TOKENIZED_PRODUCT` per start (variation `slot`, the start as ISO string) and ticket category (variation `category`, the category code). Every date is a ticket event of its own, with supply, price, tickets, gate and cancellation; the production keeps what they share.
 
-Create and edit productions in the Admin UI (**Ticketing → Events → New production**) or with the ticketing mutations, which require `manageProducts` and stay within the [organizer scope](#organizer-scope):
+Create and edit productions in the Admin UI or with the ticketing mutations. In the Admin UI, **Ticketing → Events → Add production** asks for name, subtitle, location and tags like a new product; the production then opens with tabs for its dates, ticket categories, event details and sale rules, and the usual Texts and Media tabs. The mutations require `manageProducts` and stay within the [organizer scope](#organizer-scope):
 
 | Mutation | What it does |
 |---|---|
@@ -253,7 +253,7 @@ mutation CreateHamlet {
 What the dates take over from their production:
 
 - **Texts** (title, subtitle, description in every language; the slug of a date ends with its start and category), **tags** (without `ticket-production`, so tag-based organizer scopes keep working) and the **status**.
-- **Images**: images added to the production are shared with every date (the same file). Add and remove them on the production only; removing an image of a date in the core media tab deletes the shared file.
+- **Images**: images added to the production are shared with every date (the same file). Add and remove them on the production only; removing an image of a date in the core media tab deletes the shared file. Texts and tags changed in the Texts tab or the product list reach the dates as well.
 - **Details** (`location`, `durationMinutes`, `doorsOpenMinutesBefore`) are copied into each date unless the date sets its own (`TicketEvent.overridden`); clearing a date's detail takes the production value back.
 - **Sale rules** are not copied: a date's unset rules come from the production when a ticket is sold.
 - **Categories** (`ticketProduction.categories`) hold the capacity and price of a new date; `updateTicketCategory(applyToPerformances: true)` also sets them in every date. A date's supply and price can differ per category.
