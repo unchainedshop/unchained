@@ -187,30 +187,102 @@ mutation MoveEvent {
 A bulk import that sends `specification.meta` replaces `product.meta` as a whole: event details set with `updateTicketEvent` or the event editor are lost on the next sync, and the cancellation of a [cancelled event](#cancellations-and-reimbursement-codes) is cleared. Either let the sync own the event details and carry `cancelled` / `cancelledDate` over, or leave `meta` out of the sync.
 :::
 
+## Productions
+
+A production is a play, concert series or course with several dates, and optionally several ticket categories per date. It is a `CONFIGURABLE_PRODUCT` tagged `ticket-production` whose variants are the dates: one `TOKENIZED_PRODUCT` per start (variation `slot`, the start as ISO string) and ticket category (variation `category`, the category code). Every date is a ticket event of its own, with supply, price, tickets, gate and cancellation; the production keeps what they share.
+
+Create and edit productions in the Admin UI (**Ticketing → Events → New production**) or with the ticketing mutations, which require `manageProducts` and stay within the [organizer scope](#organizer-scope):
+
+| Mutation | What it does |
+|---|---|
+| `createTicketProduction(production)` | Creates a draft production with texts, tags, details, sale rules, categories and dates |
+| `updateTicketProduction(productionId, production)` | Changes texts, tags, details and sale rules |
+| `publishTicketProduction` / `unpublishTicketProduction` | Publishes or unpublishes the production with all dates |
+| `addTicketPerformance` / `updateTicketPerformance` / `removeTicketPerformance` | Adds a date, changes (reschedules) one, removes one without tickets |
+| `cancelTicketPerformance(productionId, startsAt, generateDiscount)` | Cancels the tickets of a date in all categories (requires `cancelTicket`) |
+| `addTicketCategory` / `updateTicketCategory` / `removeTicketCategory` | Manages the categories and their defaults for new dates |
+| `removeTicketProduction` | Removes a production without tickets with its dates |
+| `syncTicketProduction` | Takes texts, tags, details, status and images over to all dates again |
+
+```graphql schema=page
+mutation CreateHamlet {
+  createTicketProduction(
+    production: {
+      texts: [{ locale: "de", title: "Hamlet", slug: "hamlet" }]
+      tags: ["organizer-a"]
+      location: "Grosse Bühne"
+      durationMinutes: 150
+      saleRules: { salesStart: "2026-09-01T08:00:00Z", maxPerOrder: 6 }
+      categories: [
+        { code: "adult", texts: [{ locale: "de", title: "Erwachsene" }], capacity: 100, pricing: [{ amount: 4500, currencyCode: "CHF", countryCode: "CH" }] }
+        { code: "reduced", texts: [{ locale: "de", title: "Ermässigt" }], capacity: 20, pricing: [{ amount: 2500, currencyCode: "CHF", countryCode: "CH" }] }
+      ]
+      performances: [
+        { startsAt: "2026-11-01T19:00:00Z" }
+        { startsAt: "2026-11-02T19:00:00Z", tickets: [{ category: "adult", supply: 50 }] }
+      ]
+    }
+  ) {
+    _id
+    ... on ConfigurableProduct {
+      ticketProduction {
+        categories {
+          code
+          capacity
+        }
+      }
+      assignments(includeInactive: true) {
+        product {
+          _id
+          ... on TokenizedProduct {
+            event {
+              startsAt
+              category
+              saleRules {
+                maxPerOrder
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+What the dates take over from their production:
+
+- **Texts** (title, subtitle, description in every language; the slug of a date ends with its start and category), **tags** (without `ticket-production`, so tag-based organizer scopes keep working) and the **status**.
+- **Images**: images added to the production are shared with every date (the same file). Add and remove them on the production only; removing an image of a date in the core media tab deletes the shared file.
+- **Details** (`location`, `durationMinutes`, `doorsOpenMinutesBefore`) are copied into each date unless the date sets its own (`TicketEvent.overridden`); clearing a date's detail takes the production value back.
+- **Sale rules** are not copied: a date's unset rules come from the production when a ticket is sold.
+- **Categories** (`ticketProduction.categories`) hold the capacity and price of a new date; `updateTicketCategory(applyToPerformances: true)` also sets them in every date. A date's supply and price can differ per category.
+
+The start and category of a date only change through the production: `updateTicketEvent` refuses `startsAt` and `category` of a date with `TicketPerformanceManagedError`. Rescheduling a date with sold tickets keeps the tickets valid (they belong to the product); the supply can never go below the tickets that are sold or reserved (`TicketSupplyBelowSoldError`), and dates or categories with tickets can only be cancelled, not removed. `ticketEvents(productionId)` lists the dates of a production, `ticketEvents(standalone: true)` the events that are not a date of a production, and `ticketProductions` the productions.
+
+:::caution Core product tabs
+Changing a production in the core product tabs (texts, tags) reaches the dates with `syncTicketProduction` or the next production change. Do not remove a production through the core product list: its dates would stay on sale as single events; use `removeTicketProduction`.
+:::
+
 ## Selling tickets
 
 `validateTicketOrderPosition` runs whenever a ticket is added to a cart, its quantity changes and at checkout. After the core check (the product is active), for tokenized products it:
 
 1. refuses tickets of a cancelled event (`TicketEventCancelledError`),
 2. always allows reducing a quantity,
-3. applies your sale rules, if any,
+3. applies the sale rules,
 4. keeps the tickets within `tokenization.supply`: issued tickets that are not cancelled, plus the tickets of `PENDING` orders, plus this order must not exceed it (`TicketSoldOutError` with `available`).
 
-Sale rules come from your own data, for example from the product's meta or its configurable proxy:
+The built-in sale rules are stored in `meta.saleRules` of the ticket (`onSale`, `salesStart`, `salesEnd`, `maxPerOrder`); a date of a [production](#productions) takes the rules it does not set from `meta.saleRules` of its production. Set them in the Admin UI, with `updateTicketEvent(event: { saleRules })` or `updateTicketProduction`; `TicketEvent.saleRules` returns the rules that apply and `TicketEvent.ownSaleRules` the stored ones. To read the rules from somewhere else, pass `getSaleRules` (`getSaleRules: null` switches them off) and spread `getDefaultTicketSaleRules` to keep the built-in ones:
 
 ```ts
-import { createTicketOrderPositionValidator } from '@unchainedshop/ticketing';
+import { createTicketOrderPositionValidator, getDefaultTicketSaleRules } from '@unchainedshop/ticketing';
 
 const validateOrderPosition = createTicketOrderPositionValidator({
-  getSaleRules: async ({ product, getProxy }) => {
-    const proxy = await getProxy(); // the configurable product the ticket is a variant of, if any
-    const meta = { ...proxy?.meta, ...product.meta };
-    return {
-      onSale: meta.onSale !== false,
-      salesStart: meta.salesStart, // Date or date string
-      salesEnd: meta.salesEnd,
-      maxPerOrder: meta.maxPerOrder,
-    };
+  getSaleRules: async (input) => {
+    const rules = await getDefaultTicketSaleRules(input);
+    // e.g. never more than 10 tickets per order, whatever is stored
+    return { ...rules, maxPerOrder: Math.min(rules.maxPerOrder ?? 10, 10) };
   },
 });
 
@@ -447,6 +519,8 @@ export default [
         slotFrom: DateTime
         slotTo: DateTime
         tags: [LowerCaseString!]
+        productionId: ID
+        standalone: Boolean
       ): [Product!]!
       ticketEventsCount(
         queryString: String
@@ -455,8 +529,19 @@ export default [
         slotFrom: DateTime
         slotTo: DateTime
         tags: [LowerCaseString!]
+        productionId: ID
+        standalone: Boolean
       ): Int!
       ticketLookup(code: String!, productId: ID, limit: Int = 10): [Token!]!
+      ticketProductions(
+        queryString: String
+        limit: Int = 50
+        offset: Int = 0
+        includeDrafts: Boolean = true
+        sort: [SortOptionInput!]
+        tags: [LowerCaseString!]
+      ): [Product!]!
+      ticketProductionsCount(queryString: String, includeDrafts: Boolean = true, tags: [LowerCaseString!]): Int!
     }
 
     extend type Mutation {
@@ -464,6 +549,28 @@ export default [
       cancelTicket(tokenId: ID!, generateDiscount: Boolean): Token!
       cancelEvent(productId: ID!, generateDiscount: Boolean): Int!
       updateTicketEvent(productId: ID!, event: UpdateTicketEventInput!): Product!
+      createTicketProduction(production: CreateTicketProductionInput!): Product!
+      updateTicketProduction(productionId: ID!, production: UpdateTicketProductionInput!): Product!
+      publishTicketProduction(productionId: ID!): Product!
+      unpublishTicketProduction(productionId: ID!): Product!
+      syncTicketProduction(productionId: ID!): Product!
+      removeTicketProduction(productionId: ID!): Product!
+      addTicketPerformance(productionId: ID!, performance: TicketPerformanceInput!): Product!
+      updateTicketPerformance(
+        productionId: ID!
+        startsAt: DateTime!
+        performance: UpdateTicketPerformanceInput!
+      ): Product!
+      removeTicketPerformance(productionId: ID!, startsAt: DateTime!): Product!
+      cancelTicketPerformance(productionId: ID!, startsAt: DateTime!, generateDiscount: Boolean): Int!
+      addTicketCategory(productionId: ID!, category: TicketCategoryInput!): Product!
+      updateTicketCategory(
+        productionId: ID!
+        code: String!
+        category: UpdateTicketCategoryInput!
+        applyToPerformances: Boolean = false
+      ): Product!
+      removeTicketCategory(productionId: ID!, code: String!): Product!
     }
 
     input UpdateTicketEventInput {
@@ -472,6 +579,84 @@ export default [
       durationMinutes: Int
       doorsOpenMinutesBefore: Int
       category: String
+      saleRules: TicketSaleRulesInput
+    }
+
+    input TicketSaleRulesInput {
+      onSale: Boolean
+      salesStart: DateTime
+      salesEnd: DateTime
+      maxPerOrder: Int
+    }
+
+    input TicketPriceInput {
+      amount: Int!
+      currencyCode: String!
+      countryCode: String!
+      isTaxable: Boolean
+      isNetPrice: Boolean
+    }
+
+    input TicketCategoryTextInput {
+      locale: Locale!
+      title: String
+    }
+
+    input TicketCategoryInput {
+      code: String!
+      texts: [TicketCategoryTextInput!]
+      capacity: Int
+      pricing: [TicketPriceInput!]
+    }
+
+    input UpdateTicketCategoryInput {
+      texts: [TicketCategoryTextInput!]
+      capacity: Int
+      pricing: [TicketPriceInput!]
+    }
+
+    input TicketPerformanceTicketInput {
+      category: String
+      supply: Int
+      pricing: [TicketPriceInput!]
+    }
+
+    input TicketPerformanceInput {
+      startsAt: DateTime!
+      location: String
+      durationMinutes: Int
+      doorsOpenMinutesBefore: Int
+      saleRules: TicketSaleRulesInput
+      tickets: [TicketPerformanceTicketInput!]
+    }
+
+    input UpdateTicketPerformanceInput {
+      startsAt: DateTime
+      location: String
+      durationMinutes: Int
+      doorsOpenMinutesBefore: Int
+      saleRules: TicketSaleRulesInput
+      tickets: [TicketPerformanceTicketInput!]
+    }
+
+    input CreateTicketProductionInput {
+      texts: [ProductTextInput!]!
+      tags: [LowerCaseString!]
+      location: String
+      durationMinutes: Int
+      doorsOpenMinutesBefore: Int
+      saleRules: TicketSaleRulesInput
+      categories: [TicketCategoryInput!]
+      performances: [TicketPerformanceInput!]
+    }
+
+    input UpdateTicketProductionInput {
+      texts: [ProductTextInput!]
+      tags: [LowerCaseString!]
+      location: String
+      durationMinutes: Int
+      doorsOpenMinutesBefore: Int
+      saleRules: TicketSaleRulesInput
     }
 
     enum TicketStatus {
@@ -490,10 +675,47 @@ export default [
       category: String
       isCanceled: Boolean!
       cancelledDate: DateTime
+      saleRules: TicketSaleRules!
+      ownSaleRules: TicketSaleRules!
+      overridden: [String!]!
+    }
+
+    type TicketSaleRules {
+      onSale: Boolean
+      salesStart: DateTime
+      salesEnd: DateTime
+      maxPerOrder: Int
     }
 
     extend type TokenizedProduct {
       event: TicketEvent!
+    }
+
+    type TicketCategoryPrice {
+      amount: Int!
+      currencyCode: String!
+      countryCode: String!
+      isTaxable: Boolean
+      isNetPrice: Boolean
+    }
+
+    type TicketCategory {
+      code: String!
+      option: ProductVariationOption
+      capacity: Int
+      pricing: [TicketCategoryPrice!]!
+    }
+
+    type TicketProduction {
+      location: String
+      durationMinutes: Int
+      doorsOpenMinutesBefore: Int
+      saleRules: TicketSaleRules!
+      categories: [TicketCategory!]!
+    }
+
+    extend type ConfigurableProduct {
+      ticketProduction: TicketProduction
     }
 
     extend type Token {

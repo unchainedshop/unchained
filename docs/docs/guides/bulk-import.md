@@ -226,6 +226,8 @@ curl -X POST \
 
 An `UPDATE` with `tokenization` or `meta` replaces the stored object as a whole (without it, the stored one is kept). For ticket events, `meta` holds the event details and the cancellation (`meta.cancelled`, set by `cancelEvent`): a sync that sends `meta` owns the event details and un-cancels the event, so leave `meta` out and use `updateTicketEvent`, or carry `cancelled` / `cancelledDate` over.
 
+A ticket production (several dates and ticket categories, see [Productions](./ticketing-setup.md#productions)) is a `CONFIGURABLE_PRODUCT` tagged `ticket-production` with `meta` (`location`, `durationMinutes`, `doorsOpenMinutesBefore`, `saleRules`, `ticketCategories`), the variations `slot` (start as ISO string) and `category` (category code) and `variationResolvers` pointing to one tokenized product per start and category. Import the dates first, then the production, and run `syncTicketProduction` so the dates take texts, tags, details and images over; creating and editing productions in the Admin UI needs no import.
+
 ## Assortment Import
 
 ### Create Category Hierarchy
