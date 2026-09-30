@@ -121,7 +121,7 @@ test('scanning explains why a ticket cannot be redeemed, checking cancellation b
 
 test('outside the entry window the reason says whether the entrance is not open yet or closed', async () => {
   const startsAt = new Date(Date.now() + 5 * HOUR);
-  const event = { ...product, tokenization: { ercMetadataProperties: { slot: startsAt } } };
+  const event = { ...product, meta: { slot: startsAt } };
   const issuer = {
     type: 'VIRTUAL',
     adapterKey: 'shop.unchained.warehousing.ticket',
@@ -149,7 +149,7 @@ test('outside the entry window the reason says whether the entrance is not open 
 
   const past = {
     ...product,
-    tokenization: { ercMetadataProperties: { slot: new Date(Date.now() - 5 * HOUR).toISOString() } },
+    meta: { slot: new Date(Date.now() - 5 * HOUR).toISOString() },
   };
   assert.equal((await reasonFor(past, [issuer])).reason, 'ENTRY_CLOSED');
 

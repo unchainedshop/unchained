@@ -85,19 +85,19 @@ test('the slot range matches starts stored as Date or ISO string, falls back to 
       status: 'ACTIVE',
       ...fields,
     });
-    const withSlot = (slot: unknown) => ({ tokenization: { ercMetadataProperties: { slot } } });
+    const withSlot = (slot: unknown) => ({ meta: { slot } });
     await Products.insertMany([
       event('date', { ...withSlot(new Date('2026-10-01T19:00:00Z')), tags: ['organizer:a'] }),
       event('iso-string', { ...withSlot('2026-10-01T20:00:00.000Z'), tags: ['organizer:b'] }),
-      event('legacy-meta', { meta: { slot: new Date('2026-10-01T18:00:00Z') } }),
-      // The start in the tokenization wins over an older meta slot.
+      event('early', withSlot(new Date('2026-10-01T18:00:00Z'))),
+      // A slot in the public tokenization properties is not the event start.
       event('moved', {
         ...withSlot(new Date('2026-12-01T19:00:00Z')),
-        meta: { slot: '2026-10-01T19:00:00.000Z' },
+        tokenization: { ercMetadataProperties: { slot: '2026-10-01T19:00:00.000Z' } },
       }),
       event('next-day', withSlot(new Date('2026-10-02T19:00:00Z'))),
       event('dateless'),
-      event('cancelled', { ...withSlot(new Date('2026-10-01T19:30:00Z')), meta: { cancelled: true } }),
+      event('cancelled', { meta: { slot: new Date('2026-10-01T19:30:00Z'), cancelled: true } }),
       event('draft', { ...withSlot(new Date('2026-10-01T19:00:00Z')), status: null }),
       {
         _id: 'simple',
@@ -121,11 +121,11 @@ test('the slot range matches starts stored as Date or ISO string, falls back to 
       slotTo: new Date('2026-10-01T23:59:59Z'),
     };
 
-    assert.deepEqual(await find(october1), ['cancelled', 'date', 'iso-string', 'legacy-meta']);
+    assert.deepEqual(await find(october1), ['cancelled', 'date', 'early', 'iso-string']);
     assert.deepEqual(await find({ ...october1, onlyInvalidateable: true }), [
       'date',
+      'early',
       'iso-string',
-      'legacy-meta',
     ]);
     assert.deepEqual(await find({ ...october1, tags: ['organizer:a'] }), ['date']);
     // A text search next to the range is accepted by the server ($text stays outside the $or).
@@ -140,7 +140,7 @@ test('the slot range matches starts stored as Date or ISO string, falls back to 
       'moved',
       'next-day',
     ]);
-    assert.deepEqual(await find({ slotTo: new Date('2026-10-01T18:00:00Z') }), ['legacy-meta']);
+    assert.deepEqual(await find({ slotTo: new Date('2026-10-01T18:00:00Z') }), ['early']);
     // Without a range the events without a start stay listed.
     assert.ok((await find({})).includes('dateless'));
   } finally {
@@ -189,7 +189,7 @@ test('onlyInvalidateable stops scanning events and tickets once the requested pa
       limit: 2,
       offset: 1,
       onlyInvalidateable: true,
-      sort: [{ key: 'tokenization.ercMetadataProperties.slot', value: 'ASC' }],
+      sort: [{ key: 'meta.slot', value: 'ASC' }],
     },
     context,
   );
@@ -200,7 +200,7 @@ test('onlyInvalidateable stops scanning events and tickets once the requested pa
   // One batch of events was enough, and the requested order stays first with _id breaking ties.
   assert.equal(productQueries.length, 1);
   assert.deepEqual(productQueries[0].sort, [
-    { key: 'tokenization.ercMetadataProperties.slot', value: 'ASC' },
+    { key: 'meta.slot', value: 'ASC' },
     { key: '_id', value: 'ASC' },
   ]);
   assert.equal(productQueries[0].productSelector['meta.cancelled'].$ne, true);

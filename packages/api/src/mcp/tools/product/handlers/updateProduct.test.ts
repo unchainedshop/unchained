@@ -7,7 +7,7 @@ const stored = {
   contractStandard: 'ERC721',
   tokenId: '0',
   supply: 100,
-  ercMetadataProperties: { slot: '2030-01-01T19:30:00.000Z' },
+  ercMetadataProperties: { color: 'blue' },
 };
 
 const buildContext = () => {
@@ -28,7 +28,7 @@ const buildContext = () => {
 };
 
 describe('MCP updateProduct tokenization', () => {
-  it('keeps the stored ercMetadataProperties when the tokenization omits them', async () => {
+  it('replaces the tokenization as a whole', async () => {
     const { context, update } = buildContext();
     await updateProduct(context, {
       productId: 'product',
@@ -36,22 +36,7 @@ describe('MCP updateProduct tokenization', () => {
     } as any);
     assert.deepEqual(update.mock.calls[0].arguments, [
       'product',
-      { tokenization: { ...stored, supply: 80 } },
-    ]);
-  });
-
-  it('clears ercMetadataProperties passed as null', async () => {
-    const { context, update } = buildContext();
-    await updateProduct(context, {
-      productId: 'product',
-      product: {
-        tokenization: { contractStandard: 'ERC721', supply: 80, ercMetadataProperties: null },
-      },
-    } as any);
-    const { ercMetadataProperties, ...rest } = stored; // eslint-disable-line
-    assert.deepEqual(update.mock.calls[0].arguments, [
-      'product',
-      { tokenization: { ...rest, supply: 80 } },
+      { tokenization: { contractStandard: 'ERC721', supply: 80 } },
     ]);
   });
 });

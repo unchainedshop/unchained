@@ -41,8 +41,8 @@ describe('cancellation templates', () => {
 
   const eventWithDetails = {
     _id: 'event',
-    tokenization: { supply: 10, ercMetadataProperties: { slot, location: 'Main stage' } },
-    meta: { location: 'Old venue' },
+    meta: { slot, location: 'Main stage' },
+    tokenization: { supply: 10, ercMetadataProperties: { location: 'Not the venue' } },
   };
 
   test('cancellation e-mails describe the event from its event details', async () => {
@@ -54,15 +54,6 @@ describe('cancellation templates', () => {
       assert.ok(message.input.text.includes(eventText), message.input.text);
       assert.equal(message.input.to, 'buyer@example.com');
     }
-  });
-
-  test('events that keep the start and the location in the meta are still described', async () => {
-    const legacy = { _id: 'event', meta: { slot, location: 'Main stage' } };
-    const [message] = await resolveEventCancelledTemplate(
-      { template: 'EVENT_CANCELLED', productId: 'event', userId: 'buyer' },
-      context(legacy),
-    );
-    assert.ok(message.input.text.includes(eventText), message.input.text);
   });
 
   test('the sender is read from the environment when the e-mail is built', async () => {

@@ -92,7 +92,7 @@ test.describe('Product Tokenization', () => {
       );
     });
 
-    test('keeps, replaces and clears ercMetadataProperties by partial update rules', async () => {
+    test('replaces the tokenization as a whole', async () => {
       const {
         data: { createProduct },
       } = await graphqlFetchAsAdmin({
@@ -136,54 +136,24 @@ test.describe('Product Tokenization', () => {
         return data.updateProductTokenization;
       };
 
-      // Off-chain: no contract address and no token id
       const created = await updateTokenization({
-        contractStandard: 'ERC721',
-        supply: 100,
-        ercMetadataProperties: { slot: '2030-01-01T19:30:00.000Z', category: 'jazz' },
-      });
-      assert.strictEqual(created.contractAddress, null);
-      assert.deepStrictEqual(created.contractConfiguration, {
-        tokenId: null,
-        supply: 100,
-        ercMetadataProperties: { slot: '2030-01-01T19:30:00.000Z', category: 'jazz' },
-      });
-
-      // The admin Token tab never sends ercMetadataProperties: the slot must survive
-      const kept = await updateTokenization({
         contractAddress: '0x0',
         contractStandard: 'ERC721',
         tokenId: '0',
-        supply: 80,
+        supply: 100,
+        ercMetadataProperties: { color: 'blue' },
       });
-      assert.strictEqual(kept.contractAddress, '0x0');
-      assert.deepStrictEqual(kept.contractConfiguration, {
+      assert.deepStrictEqual(created.contractConfiguration, {
         tokenId: '0',
-        supply: 80,
-        ercMetadataProperties: { slot: '2030-01-01T19:30:00.000Z', category: 'jazz' },
+        supply: 100,
+        ercMetadataProperties: { color: 'blue' },
       });
 
-      // An object replaces the stored properties as a whole
-      const replaced = await updateTokenization({
-        contractStandard: 'ERC721',
-        supply: 80,
-        ercMetadataProperties: { slot: '2030-01-02T19:30:00.000Z' },
-      });
-      assert.strictEqual(replaced.contractAddress, '0x0');
-      assert.deepStrictEqual(replaced.contractConfiguration.ercMetadataProperties, {
-        slot: '2030-01-02T19:30:00.000Z',
-      });
-
-      // null clears
-      const cleared = await updateTokenization({
-        contractAddress: null,
-        contractStandard: 'ERC721',
-        tokenId: null,
-        supply: 80,
-        ercMetadataProperties: null,
-      });
-      assert.strictEqual(cleared.contractAddress, null);
-      assert.deepStrictEqual(cleared.contractConfiguration, {
+      // Like commerce, warehousing, supply and plan: omitted fields are not kept, so off-chain
+      // tokens simply leave out the contract address and the token id
+      const replaced = await updateTokenization({ contractStandard: 'ERC721', supply: 80 });
+      assert.strictEqual(replaced.contractAddress, null);
+      assert.deepStrictEqual(replaced.contractConfiguration, {
         tokenId: null,
         supply: 80,
         ercMetadataProperties: null,

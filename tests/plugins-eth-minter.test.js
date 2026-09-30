@@ -84,7 +84,7 @@ test.describe('Plugin: ETH minter', () => {
       .collection('products')
       .updateOne(
         { _id: TokenizedProduct1._id },
-        { $set: { 'tokenization.ercMetadataProperties': { slot: '2099-01-01T19:30:00.000Z' } } },
+        { $set: { 'meta.slot': '2099-01-01T19:30:00.000Z' } },
       );
     try {
       const token = await fetchToken(TestToken1._id);
@@ -94,7 +94,7 @@ test.describe('Plugin: ETH minter', () => {
         .collection('products')
         .updateOne(
           { _id: TokenizedProduct1._id },
-          { $unset: { 'tokenization.ercMetadataProperties': 1 } },
+          { $unset: { 'meta.slot': 1 } },
         );
     }
   });

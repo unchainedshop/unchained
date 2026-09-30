@@ -20,13 +20,13 @@ const event = (fields: Record<string, any> = {}) => ({
   _id: 'event',
   type: 'TOKENIZED_PRODUCT',
   status: 'ACTIVE',
-  tokenization: { supply: 10, contractStandard: 'ERC721', ercMetadataProperties: {} },
+  tokenization: { supply: 10, contractStandard: 'ERC721' },
   ...fields,
 });
 
 const startingAt = (start: Date | string | undefined, fields: Record<string, any> = {}) =>
   event({
-    tokenization: { supply: 10, contractStandard: 'ERC721', ercMetadataProperties: { slot: start } },
+    meta: { slot: start },
     ...fields,
   });
 
@@ -169,9 +169,11 @@ test('tickets are redeemable within the configured entry window around the event
   assert.equal(await redeemable('next friday'), false);
   assert.equal(await redeemable(inHours(1), { entryClosesMinutesAfter: 'one hour' }), false);
 
-  // Older events keep the start in the product meta.
-  const legacy = event({ meta: { slot: inHours(5).toISOString() } });
-  assert.equal(await actionsFor({ modules, token, product: legacy }).isInvalidateable('5', now), false);
+  // A slot in the public tokenization properties is not the event start.
+  const tokenSlot = event({
+    tokenization: { supply: 10, ercMetadataProperties: { slot: inHours(5).toISOString() } },
+  });
+  assert.equal(await actionsFor({ modules, token, product: tokenSlot }).isInvalidateable('5', now), true);
 });
 
 test('every seat becomes its own ticket with a reserved serial and the order reference', async () => {
@@ -251,16 +253,19 @@ test('the ticket meta hook can neither break issuing nor overwrite the reserved 
   await assert.rejects(actionsFor({ modules, product: event() }).tokenize(), /Order position not found/);
 });
 
-test('the public metadata never contains the ticket meta', async () => {
+test('the public metadata only carries the ERC metadata properties, never the product or ticket meta', async () => {
   const { modules } = createModules();
   const metadata = await actionsFor({
     modules,
-    product: startingAt('2026-10-01T18:00:00.000Z', {
-      tokenization: {
-        supply: 10,
-        contractStandard: 'ERC721',
-        ercMetadataProperties: { slot: '2026-10-01T18:00:00.000Z', location: 'Main stage' },
+    product: event({
+      meta: {
+        slot: '2026-10-01T18:00:00.000Z',
+        location: 'Main stage',
+        category: null,
+        cancelled: true,
+        internalNote: 'not public',
       },
+      tokenization: { supply: 10, contractStandard: 'ERC721', ercMetadataProperties: { seatMap: 'A' } },
     }),
     token: {
       _id: 'ticket',
@@ -272,7 +277,7 @@ test('the public metadata never contains the ticket meta', async () => {
     name: 'Premiere #5',
     description: 'Opening night',
     image: undefined,
-    properties: { slot: '2026-10-01T18:00:00.000Z', location: 'Main stage' },
+    properties: { seatMap: 'A' },
   });
 });
 

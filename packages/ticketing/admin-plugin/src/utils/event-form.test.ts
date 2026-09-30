@@ -9,13 +9,8 @@ test('the event editor starts from the stored event details', () => {
       eventStartsAt: startsAt.toISOString(),
       eventLocation: 'Main hall',
       eventCategory: 'Parkett',
-      contractConfiguration: {
-        ercMetadataProperties: {
-          slot: startsAt.toISOString(),
-          durationMinutes: 90,
-          doorsOpenMinutesBefore: '30',
-        },
-      },
+      eventDurationMinutes: 90,
+      eventDoorsOpenMinutesBefore: 30,
     }),
     {
       startsAt: '2026-09-29T20:00',

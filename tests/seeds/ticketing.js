@@ -86,8 +86,8 @@ const ticketEvent = ({ _id, tags, supply, slot }) => ({
   tokenization: {
     contractStandard: 'ERC721',
     supply,
-    ercMetadataProperties: { slot, location: 'Stadttheater', category: 'concert' },
   },
+  meta: { slot, location: 'Stadttheater', category: 'concert' },
 });
 
 export const ConcertEventId = 'ticket-event-concert';

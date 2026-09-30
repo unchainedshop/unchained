@@ -24,7 +24,7 @@ test('the gate lists the events of today, including the ones that started last e
 test('the event list pages upcoming, past or all events by event start', () => {
   const now = new Date(2026, 8, 29, 14, 30);
   const startOfToday = new Date(2026, 8, 29);
-  assert.equal(EVENT_START_SORT_KEY, 'tokenization.ercMetadataProperties.slot');
+  assert.equal(EVENT_START_SORT_KEY, 'meta.slot');
   assert.deepEqual(getEventListFilter('upcoming', now), {
     slotFrom: startOfToday.toISOString(),
     sort: [

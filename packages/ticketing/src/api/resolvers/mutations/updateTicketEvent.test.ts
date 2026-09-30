@@ -4,29 +4,22 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongoClient } from 'mongodb';
 import updateTicketEvent from './updateTicketEvent.ts';
 
-test('event details are merged into the public tokenization properties without touching the others', async () => {
+test('event details are merged into the product meta without touching the tokenization', async () => {
   const server = await MongoMemoryServer.create();
   const client = new MongoClient(server.getUri());
   try {
     await client.connect();
     const Products = client.db('ticket-event-update').collection<any>('products');
-    const tokenization = (ercMetadataProperties: unknown) => ({
-      contractStandard: 'ERC721',
-      supply: 100,
-      ercMetadataProperties,
-    });
+    const tokenization = { contractStandard: 'ERC721', supply: 100, ercMetadataProperties: { seatMap: 'A' } };
     await Products.insertMany([
       {
         _id: 'event',
         type: 'TOKENIZED_PRODUCT',
         status: 'ACTIVE',
-        tokenization: tokenization({
-          slot: '2026-10-01T19:00:00.000Z',
-          location: 'Old hall',
-          seatMap: 'A',
-        }),
+        meta: { slot: '2026-10-01T19:00:00.000Z', location: 'Old hall', cancelled: false },
+        tokenization,
       },
-      { _id: 'cleared', type: 'TOKENIZED_PRODUCT', status: null, tokenization: tokenization(null) },
+      { _id: 'cleared', type: 'TOKENIZED_PRODUCT', status: null, meta: null },
       { _id: 'unconfigured', type: 'TOKENIZED_PRODUCT', status: null },
       { _id: 'simple', type: 'SIMPLE_PRODUCT', status: 'ACTIVE' },
     ]);
@@ -55,28 +48,30 @@ test('event details are merged into the public tokenization properties without t
       doorsOpenMinutesBefore: 30,
       category: 'Parkett',
     });
-    assert.deepEqual(updated.tokenization.ercMetadataProperties, {
+    assert.deepEqual(updated.meta, {
       slot: startsAt,
       location: 'Old hall',
-      seatMap: 'A',
+      cancelled: false,
       durationMinutes: 90,
       doorsOpenMinutesBefore: 30,
       category: 'Parkett',
     });
-    assert.ok(updated.tokenization.ercMetadataProperties.slot instanceof Date, 'stored as a real date');
-    assert.equal(updated.tokenization.supply, 100);
-    assert.ok(
-      Object.keys(updates[0]).every((key) => key.startsWith('tokenization.ercMetadataProperties.')),
-    );
+    assert.ok(updated.meta.slot instanceof Date, 'stored as a real date');
+    assert.deepEqual(updated.tokenization, tokenization);
+    assert.ok(Object.keys(updates[0]).every((key) => key.startsWith('meta.')));
 
     // null or an empty text clears a detail, omitted details stay.
     const cleared = await update('event', { location: '  ', category: null });
-    assert.equal(cleared.tokenization.ercMetadataProperties.location, null);
-    assert.equal(cleared.tokenization.ercMetadataProperties.category, null);
-    assert.equal(cleared.tokenization.ercMetadataProperties.durationMinutes, 90);
+    assert.equal(cleared.meta.location, null);
+    assert.equal(cleared.meta.category, null);
+    assert.equal(cleared.meta.durationMinutes, 90);
 
     const fromNull = await update('cleared', { location: 'New hall', durationMinutes: null });
-    assert.deepEqual(fromNull.tokenization.ercMetadataProperties, { location: 'New hall' });
+    assert.deepEqual(fromNull.meta, { location: 'New hall' });
+
+    // The event details do not depend on a configured tokenization
+    const unconfigured = await update('unconfigured', { location: 'Hall' });
+    assert.deepEqual(unconfigured.meta, { location: 'Hall' });
 
     const nothing = await update('event', {});
     assert.equal(nothing._id, 'event');
@@ -84,7 +79,6 @@ test('event details are merged into the public tokenization properties without t
     for (const [productId, code] of [
       ['missing', 'ProductNotFoundError'],
       ['simple', 'ProductWrongTypeError'],
-      ['unconfigured', 'ProductWrongStatusError'],
       ['', 'InvalidIdError'],
     ]) {
       await assert.rejects(update(productId, { location: 'Hall' }), (error: any) => {

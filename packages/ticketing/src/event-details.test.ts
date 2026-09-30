@@ -8,7 +8,7 @@ import {
   isTicketEventCancelled,
 } from './event-details.ts';
 
-const event = (ercMetadataProperties?: Record<string, unknown>, meta?: Record<string, unknown>) =>
+const event = (meta?: Record<string, unknown>, ercMetadataProperties?: Record<string, unknown>) =>
   ({
     _id: 'event',
     type: 'TOKENIZED_PRODUCT',
@@ -16,7 +16,7 @@ const event = (ercMetadataProperties?: Record<string, unknown>, meta?: Record<st
     tokenization: ercMetadataProperties ? { supply: 10, ercMetadataProperties } : undefined,
   }) as any;
 
-test('event details are read from the public event properties of the tokenization', () => {
+test('event details are read from the product meta', () => {
   const details = getTicketEventDetails(
     event({
       [TicketEventProperty.START]: '2026-10-01T18:00:00.000Z',
@@ -42,10 +42,10 @@ test('a stored Date works as well as an ISO string', () => {
   assert.deepEqual(getTicketEventDetails(event({ slot })).startsAt, slot);
 });
 
-test('the start and the location fall back to the product meta', () => {
+test('the public tokenization properties are not event details', () => {
   assert.deepEqual(
     getTicketEventDetails(event(undefined, { slot: '2026-10-01T18:00:00.000Z', location: 'Hall' })),
-    { startsAt: new Date('2026-10-01T18:00:00.000Z'), location: 'Hall' },
+    {},
   );
   assert.deepEqual(
     getTicketEventDetails(event({ slot: '2026-12-24T18:00:00.000Z' }, { slot: '2026-10-01' })).startsAt,
@@ -80,13 +80,13 @@ test('the raw event start keeps an unparsable slot as an invalid date', () => {
   assert.equal(getTicketEventStart(event({ slot: '' })), undefined);
   assert.ok(Number.isNaN(getTicketEventStart(event({ slot: 'next friday' }))!.getTime()));
   assert.deepEqual(
-    getTicketEventStart(event(undefined, { slot: '2026-10-01T18:00:00.000Z' })),
+    getTicketEventStart(event({ slot: new Date('2026-10-01T18:00:00.000Z') })),
     new Date('2026-10-01T18:00:00.000Z'),
   );
 });
 
 test('cancellation flags are read from the meta of the event and of the ticket', () => {
-  assert.equal(isTicketEventCancelled(event({}, { cancelled: true })), true);
+  assert.equal(isTicketEventCancelled(event({ cancelled: true })), true);
   assert.equal(isTicketEventCancelled(event({})), false);
   assert.equal(isTicketEventCancelled(null), false);
   assert.equal(isTicketCancelled({ _id: 't', meta: { cancelled: true } } as any), true);
