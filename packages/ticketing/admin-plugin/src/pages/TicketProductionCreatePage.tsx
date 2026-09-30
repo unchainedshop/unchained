@@ -168,7 +168,7 @@ const TicketProductionCreatePage = () => {
             })}
           </p>
           {values.categories.map((category, index) => (
-            <div key={index} className="mb-3 grid items-end gap-3 sm:grid-cols-5">
+            <div key={index} className="mb-3 grid items-end gap-3 sm:grid-cols-4">
               <Field
                 label={formatMessage({ id: 'category_code', defaultMessage: 'Code' })}
                 value={category.code}

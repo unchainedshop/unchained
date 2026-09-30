@@ -15,7 +15,7 @@ import {
 } from '../utils/event-form.ts';
 
 const inputClassName =
-  'mt-1 block w-full rounded-md border border-border-default bg-surface-input px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-focus-ring';
+  'mt-1 block w-full rounded-md border border-border-default bg-surface-input px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:opacity-50';
 
 /**
  * Edits the event details and sale rules stored in the product meta (updateTicketEvent): start,

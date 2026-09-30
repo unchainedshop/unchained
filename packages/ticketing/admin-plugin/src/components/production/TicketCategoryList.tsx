@@ -99,7 +99,7 @@ const CategoryRow = ({ production, category, shop }) => {
     );
 
   return (
-    <div className="grid items-end gap-3 border-t border-border-default py-3 sm:grid-cols-6">
+    <div className="grid items-end gap-3 border-t border-border-default py-3 sm:grid-cols-4">
       <div className="text-sm font-medium text-text-primary">{category.code}</div>
       <Field
         label={formatMessage({ id: 'category_name', defaultMessage: 'Name' })}
@@ -187,7 +187,7 @@ const TicketCategoryList = ({ production, shop }: { production: any; shop: ShopD
       {categories.map((category) => (
         <CategoryRow key={category.code} production={production} category={category} shop={shop} />
       ))}
-      <div className="grid items-end gap-3 border-t border-border-default pt-3 sm:grid-cols-5">
+      <div className="grid items-end gap-3 border-t border-border-default pt-3 sm:grid-cols-4">
         <Field
           label={formatMessage({ id: 'category_code', defaultMessage: 'Code' })}
           value={values.code}
