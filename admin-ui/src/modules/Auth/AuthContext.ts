@@ -7,7 +7,12 @@ const AuthContext = sharedContext(
   'AuthContext',
   React.createContext<{
     isAdmin: Auth;
-    hasRole: (actionName: IRoleAction | ((user) => boolean), componentName?: string) => boolean;
+    // Plugin actions (rolesOptions.additionalActions) are strings the generated enum does not list;
+    // User.allowedActions contains them as well.
+    hasRole: (
+      actionName: IRoleAction | (string & {}) | ((user) => boolean),
+      componentName?: string,
+    ) => boolean;
   }>({
     isAdmin: () => false,
     hasRole: () => false,

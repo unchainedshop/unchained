@@ -81,8 +81,10 @@ import { FormattedMessage } from 'react-intl';
 ```
 
 SDK components and hooks use the host app's contexts: `useModal` opens the
-admin-ui modal, `useApp` returns the selected locale and shop info, `useAuth`
-the roles of the user. Build pages like the admin-ui does, with `BreadCrumbs`,
+admin-ui modal, `useApp` returns the selected locale and shop info, and
+`useAuth().hasRole(action)` checks the actions of the user
+(`User.allowedActions`), including the actions your plugin adds with
+`rolesOptions.additionalActions`; administrators hold all of them. Build pages like the admin-ui does, with `BreadCrumbs`,
 `PageHeader`, `Tab`, `FormWrapper` and `LocaleWrapper` from
 `@unchainedshop/admin-ui/ui`; core forms such as `ProductTextsForm` and
 `ProductMediaForm` (`@unchainedshop/admin-ui/modules/product`) can be embedded
