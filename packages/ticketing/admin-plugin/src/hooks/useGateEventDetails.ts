@@ -17,10 +17,12 @@ const GateEventDetailQuery = gql`
           title
           subtitle
         }
-        eventStartsAt
-        eventLocation
-        eventCategory
-        isCanceled
+        event {
+          startsAt
+          location
+          category
+          isCanceled
+        }
         tokens {
           _id
           tokenSerialNumber

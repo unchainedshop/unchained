@@ -20,9 +20,11 @@ const TicketLookupQuery = gql`
       product {
         _id
         status
-        isCanceled
-        eventStartsAt
-        eventCategory
+        event {
+          isCanceled
+          startsAt
+          category
+        }
         texts {
           _id
           title

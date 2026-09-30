@@ -2,9 +2,7 @@
 
 export interface GateEvent {
   _id: string;
-  eventStartsAt?: string | null;
-  eventLocation?: string | null;
-  eventCategory?: string | null;
+  event?: { startsAt?: string | null; location?: string | null; category?: string | null } | null;
   texts?: { title?: string | null } | null;
 }
 
@@ -18,8 +16,8 @@ export function parseGateEventIds(value: string | string[] | undefined | null): 
 export const formatGateEventIds = (eventIds: string[]) => eventIds.join(',');
 
 const performanceKey = (event: GateEvent) =>
-  event.eventStartsAt
-    ? JSON.stringify([event.texts?.title || '', event.eventStartsAt, event.eventLocation || ''])
+  event.event?.startsAt
+    ? JSON.stringify([event.texts?.title || '', event.event?.startsAt, event.event?.location || ''])
     : null;
 
 /**
@@ -39,8 +37,8 @@ const distinct = (values: (string | null | undefined)[]) => [...new Set(values.f
 export function summarizeGateEvents(events: GateEvent[]) {
   return {
     titles: distinct(events.map((event) => event.texts?.title)),
-    startsAt: distinct(events.map((event) => event.eventStartsAt)),
-    locations: distinct(events.map((event) => event.eventLocation)),
-    categories: distinct(events.map((event) => event.eventCategory)),
+    startsAt: distinct(events.map((event) => event.event?.startsAt)),
+    locations: distinct(events.map((event) => event.event?.location)),
+    categories: distinct(events.map((event) => event.event?.category)),
   };
 }

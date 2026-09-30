@@ -19,7 +19,7 @@ const Notice = ({ children }) => (
 const canUseFullscreen = () => typeof document !== 'undefined' && Boolean(document.fullscreenEnabled);
 
 const eventLabel = (event) =>
-  [event.texts?.title, event.eventCategory].filter(Boolean).join(' · ') || event._id;
+  [event.texts?.title, event.event?.category].filter(Boolean).join(' · ') || event._id;
 
 /**
  * Gate Control: pick today's events a gate admits (one, all products of one performance, or any
@@ -52,7 +52,7 @@ const GateControl = () => {
   });
   const { events: gateEvents, loading: detailLoading } = useGateEventDetails(gateEventIds);
   const summary = summarizeGateEvents(gateEvents);
-  const cancelledEvents = gateEvents.filter((event) => event.isCanceled);
+  const cancelledEvents = gateEvents.filter((event) => event.event?.isCanceled);
   const missingEvents = gateEventIds.length - gateEvents.length;
 
   useEffect(() => {

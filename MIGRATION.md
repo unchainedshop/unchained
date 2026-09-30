@@ -463,7 +463,7 @@ Do not pass `ticketingModules` any more; the plugin provides the `passes` module
 
 **2. Custom GraphQL schema.** A `schema` passed to `startPlatform` makes the server ignore `typeDefs` and `resolvers`, so the ticketing API would silently be missing. Add `ticketingTypeDefs` and `ticketingResolvers` to your own schema, and build it after `startPlatform` from `Object.keys(roles.actions)` (the `RoleAction` enum needs `scanTicket`, `gateControl` and `cancelTicket`, or `User.allowedActions` fails for admins and staff); see [Custom GraphQL schema](https://docs.unchained.shop/guides/ticketing-setup#custom-graphql-schema). A list of `actions` you copied from `roles.actions` at import time does not contain them.
 
-Delete your own `cancelEvent`, `cancelTicket` and `isCanceled` definitions and resolvers. `Mutation.cancelEvent` returns `Int!` (a `Boolean` definition cannot be merged), `TokenizedProduct.isCanceled` is a nullable `Boolean`, and resolvers listed later silently replace ticketing's. The mutations require the `cancelTicket` action (administrators by default); grant it to the roles that cancelled through `viewUsers`, `viewTokens` or `updateToken` before.
+Delete your own `cancelEvent`, `cancelTicket` and `isCanceled` definitions and resolvers, and your own `TokenizedProduct.event` or `TicketEvent` if you had one. `Mutation.cancelEvent` returns `Int!` (a `Boolean` definition cannot be merged), `TokenizedProduct.isCanceled` moved to `TokenizedProduct.event.isCanceled`, and resolvers listed later silently replace ticketing's. The mutations require the `cancelTicket` action (administrators by default); grant it to the roles that cancelled through `viewUsers`, `viewTokens` or `updateToken` before.
 
 **3. Cancellation service and e-mails.**
 

@@ -88,17 +88,27 @@ export default [
       CANCELLED
     }
 
+    """
+    The ticketing values of an event (tokenized product), stored in its product meta. Supply and
+    tickets come from the product itself (contractConfiguration, tokens, tokensCount).
+    """
+    type TicketEvent {
+      startsAt: DateTime
+      "startsAt + durationMinutes"
+      endsAt: DateTime
+      "startsAt - doorsOpenMinutesBefore"
+      doorsOpenAt: DateTime
+      location: String
+      durationMinutes: Int
+      doorsOpenMinutesBefore: Int
+      category: String
+      "Set by cancelEvent; the tickets are cancelled as well"
+      isCanceled: Boolean!
+      cancelledDate: DateTime
+    }
+
     extend type TokenizedProduct {
-      isCanceled: Boolean
-      eventStartsAt: DateTime
-      "eventStartsAt + durationMinutes"
-      eventEndsAt: DateTime
-      "eventStartsAt - doorsOpenMinutesBefore"
-      eventDoorsOpenAt: DateTime
-      eventLocation: String
-      eventCategory: String
-      eventDurationMinutes: Int
-      eventDoorsOpenMinutesBefore: Int
+      event: TicketEvent!
     }
 
     extend type Token {

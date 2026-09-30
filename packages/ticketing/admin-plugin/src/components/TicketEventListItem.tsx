@@ -18,7 +18,7 @@ const TicketEventListItem = ({ product }) => {
   // Without a supply there is no stock to subtract from: count the issued tickets instead.
   const sold = supply > 0 ? Math.max(0, supply - remaining) : product?.tokensCount || 0;
   // A cancelled event has no stock left, which says nothing about sales.
-  const showSales = !product?.isCanceled;
+  const showSales = !product?.event?.isCanceled;
   const ticketUrl = `/ext/ticketing/${generateUniqueId(product)}`;
 
   return (
@@ -42,16 +42,16 @@ const TicketEventListItem = ({ product }) => {
             <span className="ml-2 text-sm text-text-muted">{product.texts.subtitle}</span>
           )}
         </Link>
-        {product?.eventCategory && (
+        {product?.event?.category && (
           <div className="mt-1">
-            <Badge text={product.eventCategory} color="slate" square />
+            <Badge text={product.event?.category} color="slate" square />
           </div>
         )}
       </Table.Cell>
       <Table.Cell>
         <div className="text-sm text-text-secondary">
-          {product?.eventStartsAt
-            ? formatDateTime(product.eventStartsAt, {
+          {product?.event?.startsAt
+            ? formatDateTime(product.event?.startsAt, {
                 weekday: 'short',
                 month: 'short',
                 year: 'numeric',
@@ -61,8 +61,8 @@ const TicketEventListItem = ({ product }) => {
               })
             : '-'}
         </div>
-        {product?.eventLocation && (
-          <div className="text-sm text-text-muted">{product.eventLocation}</div>
+        {product?.event?.location && (
+          <div className="text-sm text-text-muted">{product.event?.location}</div>
         )}
       </Table.Cell>
       <Table.Cell>
@@ -87,11 +87,11 @@ const TicketEventListItem = ({ product }) => {
       <Table.Cell>
         <Badge
           text={
-            product?.isCanceled
+            product?.event?.isCanceled
               ? formatMessage({ id: 'event_status_cancelled', defaultMessage: 'CANCELLED' })
               : product?.status
           }
-          color={product?.isCanceled ? 'rose' : EVENT_STATUSES[product?.status] || 'slate'}
+          color={product?.event?.isCanceled ? 'rose' : EVENT_STATUSES[product?.status] || 'slate'}
           square
         />
       </Table.Cell>

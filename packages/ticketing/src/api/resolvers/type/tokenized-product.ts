@@ -1,30 +1,27 @@
 import type { Product } from '@unchainedshop/core-products';
 import { getTicketEventDetails, isTicketEventCancelled } from '../../../event-details.ts';
 
+const toDate = (value: unknown) => {
+  if (!(value instanceof Date) && typeof value !== 'string') return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+};
+
 // getTicketEventDetails only returns valid dates, which the DateTime scalar can serialize.
 export const TokenizedProduct = {
-  isCanceled(product: Product): boolean {
-    return isTicketEventCancelled(product);
-  },
-  eventStartsAt(product: Product): Date | null {
-    return getTicketEventDetails(product).startsAt ?? null;
-  },
-  eventEndsAt(product: Product): Date | null {
-    return getTicketEventDetails(product).endsAt ?? null;
-  },
-  eventDoorsOpenAt(product: Product): Date | null {
-    return getTicketEventDetails(product).doorsOpenAt ?? null;
-  },
-  eventLocation(product: Product): string | null {
-    return getTicketEventDetails(product).location ?? null;
-  },
-  eventCategory(product: Product): string | null {
-    return getTicketEventDetails(product).category ?? null;
-  },
-  eventDurationMinutes(product: Product): number | null {
-    return getTicketEventDetails(product).durationMinutes ?? null;
-  },
-  eventDoorsOpenMinutesBefore(product: Product): number | null {
-    return getTicketEventDetails(product).doorsOpenMinutesBefore ?? null;
+  event(product: Product) {
+    const details = getTicketEventDetails(product);
+    const isCanceled = isTicketEventCancelled(product);
+    return {
+      startsAt: details.startsAt ?? null,
+      endsAt: details.endsAt ?? null,
+      doorsOpenAt: details.doorsOpenAt ?? null,
+      location: details.location ?? null,
+      durationMinutes: details.durationMinutes ?? null,
+      doorsOpenMinutesBefore: details.doorsOpenMinutesBefore ?? null,
+      category: details.category ?? null,
+      isCanceled,
+      cancelledDate: isCanceled ? toDate(product.meta?.cancelledDate) : null,
+    };
   },
 };

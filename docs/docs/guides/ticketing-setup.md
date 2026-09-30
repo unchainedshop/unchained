@@ -152,15 +152,16 @@ What the issuer does:
 
 An event is a product of type `TOKENIZED_PRODUCT`. `tokenization.supply` caps the tickets sold (`0` or unset means no cap); off-chain tickets need no `contractAddress` or `tokenId`. The event facts live in `product.meta`, next to the cancellation flag (`meta.cancelled`):
 
-| Key (`TicketEventProperty`) | Field on `TokenizedProduct`          |
-| --------------------------- | ------------------------------------ |
-| `slot` (`START`), a date    | `eventStartsAt`                      |
-| `location`                  | `eventLocation`                      |
-| `durationMinutes`           | `eventEndsAt` (start + duration)     |
-| `doorsOpenMinutesBefore`    | `eventDoorsOpenAt` (start − minutes) |
-| `category`                  | `eventCategory`                      |
+| Key in `product.meta`                               | Field on `TokenizedProduct.event`                         |
+| --------------------------------------------------- | --------------------------------------------------------- |
+| `slot` (`START`), a date                            | `startsAt`                                                |
+| `location`                                          | `location`                                                |
+| `durationMinutes`                                   | `durationMinutes`, `endsAt` (start + duration)            |
+| `doorsOpenMinutesBefore`                            | `doorsOpenMinutesBefore`, `doorsOpenAt` (start − minutes) |
+| `category`                                          | `category`                                                |
+| `cancelled`, `cancelledDate` (set by `cancelEvent`) | `isCanceled`, `cancelledDate`                             |
 
-The plain values are also exposed as `eventDurationMinutes` and `eventDoorsOpenMinutesBefore`. `product.meta` is not part of the GraphQL `Product` type or of the public ERC metadata; read the details through these fields or `getTicketEventDetails(product)`.
+`TokenizedProduct.event` (type `TicketEvent`) holds every ticketing value of an event; the supply and the tickets come from the product itself (`contractConfiguration`, `tokens`, `tokensCount`). `product.meta` is not part of the GraphQL `Product` type or of the public ERC metadata; read the details through `event` or `getTicketEventDetails(product)`.
 
 Set them in the Admin UI (**Ticketing → Events**, event editor), in a [bulk import](./bulk-import) (`specification.meta`), or with `updateTicketEvent`, which changes only the details you pass (`null` clears one):
 
@@ -172,9 +173,11 @@ mutation MoveEvent {
   ) {
     _id
     ... on TokenizedProduct {
-      eventStartsAt
-      eventDoorsOpenAt
-      eventLocation
+      event {
+        startsAt
+        doorsOpenAt
+        location
+      }
     }
   }
 }
@@ -306,7 +309,7 @@ If you define the `ticketing` role yourself, build it with `createTicketingRoles
 
 ## Cancellations and reimbursement codes
 
-`cancelTicket(tokenId, generateDiscount)` and `cancelEvent(productId, generateDiscount)` require `cancelTicket` (administrators by default). They mark the tickets as cancelled (`Token.isCanceled`, `ticketStatus: CANCELLED`, `cancelledDate`), invalidate them, send `TICKET_CANCELLED` / `EVENT_CANCELLED` e-mails and emit the [events](#events-and-subscriptions) below. A cancelled event also gets `TokenizedProduct.isCanceled` and can no longer be sold (the flag lives in `product.meta`, see the [caution on syncs](#events)). `cancelTicket` refuses a redeemed ticket with `TokenAlreadyRedeemedError`, also one a gate redeems while the cancellation runs, and `scanTicket` refuses a ticket cancelled while it is scanned, so a ticket is never admitted and reimbursed both.
+`cancelTicket(tokenId, generateDiscount)` and `cancelEvent(productId, generateDiscount)` require `cancelTicket` (administrators by default). They mark the tickets as cancelled (`Token.isCanceled`, `ticketStatus: CANCELLED`, `cancelledDate`), invalidate them, send `TICKET_CANCELLED` / `EVENT_CANCELLED` e-mails and emit the [events](#events-and-subscriptions) below. A cancelled event also gets `TokenizedProduct.event.isCanceled` and `cancelledDate` and can no longer be sold (the flag lives in `product.meta`, see the [caution on syncs](#events)). `cancelTicket` refuses a redeemed ticket with `TokenAlreadyRedeemedError`, also one a gate redeems while the cancellation runs, and `scanTicket` refuses a ticket cancelled while it is scanned, so a ticket is never admitted and reimbursed both.
 
 **E-mail templates.** Register your own `EVENT_CANCELLED` and `TICKET_CANCELLED` templates with `MessagingDirector.registerTemplate()` to replace the built-in English ones; yours win in any registration order. They receive `{ productId | tokenId, userId, discountCode?, discountAmount? }`.
 
@@ -489,13 +492,20 @@ export default [
       CANCELLED
     }
 
+    type TicketEvent {
+      startsAt: DateTime
+      endsAt: DateTime
+      doorsOpenAt: DateTime
+      location: String
+      durationMinutes: Int
+      doorsOpenMinutesBefore: Int
+      category: String
+      isCanceled: Boolean!
+      cancelledDate: DateTime
+    }
+
     extend type TokenizedProduct {
-      isCanceled: Boolean
-      eventStartsAt: DateTime
-      eventEndsAt: DateTime
-      eventDoorsOpenAt: DateTime
-      eventLocation: String
-      eventCategory: String
+      event: TicketEvent!
     }
 
     extend type Token {

@@ -29,10 +29,12 @@ const GateEventsQuery = gql`
           title
           subtitle
         }
-        eventStartsAt
-        eventLocation
-        eventCategory
-        isCanceled
+        event {
+          startsAt
+          location
+          category
+          isCanceled
+        }
         tokensCount
       }
     }

@@ -73,8 +73,8 @@ export const useVerdictText = () => {
                   defaultMessage: 'This ticket is for {title} {date}.',
                 },
                 {
-                  title: [product.texts.title, product.eventCategory].filter(Boolean).join(' · '),
-                  date: time(product.eventStartsAt) || '',
+                  title: [product.texts.title, product.event?.category].filter(Boolean).join(' · '),
+                  date: time(product.event?.startsAt) || '',
                 },
               )
             : formatMessage({
@@ -244,12 +244,12 @@ const TicketCheckCard = ({
           </Fact>
           <Fact label={formatMessage({ id: 'gate_ticket_event', defaultMessage: 'Event' })}>
             {ticket.product?.texts?.title || '-'}
-            {ticket.product?.eventCategory && (
-              <span className="block text-sm text-text-muted">{ticket.product.eventCategory}</span>
+            {ticket.product?.event?.category && (
+              <span className="block text-sm text-text-muted">{ticket.product.event?.category}</span>
             )}
-            {ticket.product?.eventStartsAt && (
+            {ticket.product?.event?.startsAt && (
               <span className="block text-sm text-text-muted">
-                {formatDateTime(ticket.product.eventStartsAt, {
+                {formatDateTime(ticket.product.event?.startsAt, {
                   dateStyle: 'medium',
                   timeStyle: 'short',
                 })}

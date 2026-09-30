@@ -124,18 +124,20 @@ const GateEventList = ({
                       <p className="text-sm text-text-muted truncate">{event.texts.subtitle}</p>
                     )}
                     <p className="text-sm text-text-muted mt-1">
-                      {event.eventStartsAt
-                        ? formatDateTime(event.eventStartsAt, {
+                      {event.event?.startsAt
+                        ? formatDateTime(event.event?.startsAt, {
                             dateStyle: 'medium',
                             timeStyle: 'short',
                           })
                         : formatMessage({ id: 'gate_no_start', defaultMessage: 'No start date' })}
-                      {event.eventLocation && ` · ${event.eventLocation}`}
+                      {event.event?.location && ` · ${event.event?.location}`}
                     </p>
                   </div>
                   <div className="ml-4 flex items-center gap-3">
-                    {event.eventCategory && <Badge text={event.eventCategory} color="slate" square />}
-                    {event.isCanceled && (
+                    {event.event?.category && (
+                      <Badge text={event.event?.category} color="slate" square />
+                    )}
+                    {event.event?.isCanceled && (
                       <Badge
                         text={formatMessage({ id: 'gate_event_cancelled', defaultMessage: 'Cancelled' })}
                         color="rose"

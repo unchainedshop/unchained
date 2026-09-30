@@ -51,9 +51,7 @@ export interface GateTicket {
   product?: {
     _id: string;
     status?: string | null;
-    isCanceled?: boolean | null;
-    eventStartsAt?: string | null;
-    eventCategory?: string | null;
+    event?: { isCanceled?: boolean | null; startsAt?: string | null; category?: string | null } | null;
     texts?: { title?: string | null } | null;
   } | null;
 }
@@ -88,7 +86,7 @@ export function checkTicket(ticket: GateTicket, gate: GateEvents): TicketCheck {
   if (ticket.ticketStatus === 'CANCELLED') {
     return compact({ verdict: TicketVerdict.CANCELLED, scope: 'TICKET', date: ticket.cancelledDate });
   }
-  if (product?.isCanceled) return { verdict: TicketVerdict.CANCELLED, scope: 'EVENT' };
+  if (product?.event?.isCanceled) return { verdict: TicketVerdict.CANCELLED, scope: 'EVENT' };
   if (ticket.ticketStatus === 'REDEEMED') {
     return compact({ verdict: TicketVerdict.ALREADY_REDEEMED, date: ticket.invalidatedDate });
   }
@@ -96,7 +94,7 @@ export function checkTicket(ticket: GateTicket, gate: GateEvents): TicketCheck {
     return { verdict: TicketVerdict.NOT_REDEEMABLE, reason: 'EVENT_INACTIVE' };
   }
   if (ticket.isInvalidateable === false) {
-    return compact({ verdict: TicketVerdict.NOT_REDEEMABLE, startsAt: product?.eventStartsAt });
+    return compact({ verdict: TicketVerdict.NOT_REDEEMABLE, startsAt: product?.event?.startsAt });
   }
   return { verdict: TicketVerdict.VALID };
 }

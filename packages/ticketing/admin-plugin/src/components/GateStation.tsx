@@ -130,16 +130,16 @@ const GateStation = ({ events }: { events: any[] }) => {
                       </span>
                       {!eventIds.includes(ticket.product?._id) ? (
                         <span className="block truncate text-sm text-rose-600">
-                          {[ticket.product?.texts?.title, ticket.product?.eventCategory]
+                          {[ticket.product?.texts?.title, ticket.product?.event?.category]
                             .filter(Boolean)
                             .join(' · ') ||
                             formatMessage({ id: 'gate_other_event', defaultMessage: 'Other event' })}
                         </span>
                       ) : (
                         events.length > 1 &&
-                        ticket.product?.eventCategory && (
+                        ticket.product?.event?.category && (
                           <span className="block truncate text-sm text-text-muted">
-                            {ticket.product.eventCategory}
+                            {ticket.product.event?.category}
                           </span>
                         )
                       )}

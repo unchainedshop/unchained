@@ -8,13 +8,15 @@ const UpdateTicketEventMutation = gql`
     updateTicketEvent(productId: $productId, event: $event) {
       _id
       ... on TokenizedProduct {
-        eventStartsAt
-        eventEndsAt
-        eventDoorsOpenAt
-        eventLocation
-        eventCategory
-        eventDurationMinutes
-        eventDoorsOpenMinutesBefore
+        event {
+          startsAt
+          endsAt
+          doorsOpenAt
+          location
+          category
+          durationMinutes
+          doorsOpenMinutesBefore
+        }
         contractConfiguration {
           supply
         }

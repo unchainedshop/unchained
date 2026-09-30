@@ -18,22 +18,24 @@ export interface UpdateTicketEventInput {
 }
 
 interface TicketEventProduct {
-  eventStartsAt?: string | null;
-  eventLocation?: string | null;
-  eventCategory?: string | null;
-  eventDurationMinutes?: number | null;
-  eventDoorsOpenMinutesBefore?: number | null;
+  event?: {
+    startsAt?: string | null;
+    location?: string | null;
+    category?: string | null;
+    durationMinutes?: number | null;
+    doorsOpenMinutesBefore?: number | null;
+  } | null;
 }
 
 const text = (value: unknown) => (value === null || value === undefined ? '' : String(value));
 
 export function getTicketEventFormValues(product: TicketEventProduct): TicketEventFormValues {
   return {
-    startsAt: toDateTimeLocalValue(product?.eventStartsAt),
-    location: text(product?.eventLocation),
-    category: text(product?.eventCategory),
-    durationMinutes: text(product?.eventDurationMinutes),
-    doorsOpenMinutesBefore: text(product?.eventDoorsOpenMinutesBefore),
+    startsAt: toDateTimeLocalValue(product?.event?.startsAt),
+    location: text(product?.event?.location),
+    category: text(product?.event?.category),
+    durationMinutes: text(product?.event?.durationMinutes),
+    doorsOpenMinutesBefore: text(product?.event?.doorsOpenMinutesBefore),
   };
 }
 

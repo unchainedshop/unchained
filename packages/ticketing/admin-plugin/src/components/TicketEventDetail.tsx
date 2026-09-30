@@ -225,29 +225,29 @@ const TicketEventDetail = ({ product }) => {
             ) : (
               <div className="mt-6 grid grid-cols-2 gap-4">
                 <Fact label={formatMessage({ id: 'event_date', defaultMessage: 'Event Date' })}>
-                  {formatDate(product.eventStartsAt)}
+                  {formatDate(product.event?.startsAt)}
                 </Fact>
                 <Fact label={formatMessage({ id: 'event_location', defaultMessage: 'Location' })}>
-                  {product.eventLocation || '-'}
+                  {product.event?.location || '-'}
                 </Fact>
                 <Fact label={formatMessage({ id: 'event_doors_open', defaultMessage: 'Doors open' })}>
-                  {formatTime(product.eventDoorsOpenAt)}
+                  {formatTime(product.event?.doorsOpenAt)}
                 </Fact>
                 <Fact label={formatMessage({ id: 'event_ends', defaultMessage: 'Ends' })}>
-                  {formatTime(product.eventEndsAt)}
+                  {formatTime(product.event?.endsAt)}
                 </Fact>
                 <Fact label={formatMessage({ id: 'event_category', defaultMessage: 'Category' })}>
-                  {product.eventCategory || '-'}
+                  {product.event?.category || '-'}
                 </Fact>
                 <Fact label={formatMessage({ id: 'status', defaultMessage: 'Status' })}>
                   <Badge
                     text={
-                      product?.isCanceled
+                      product?.event?.isCanceled
                         ? formatMessage({ id: 'event_status_cancelled', defaultMessage: 'CANCELLED' })
                         : product?.status
                     }
                     color={
-                      product?.isCanceled
+                      product?.event?.isCanceled
                         ? 'rose'
                         : product?.status === 'ACTIVE'
                           ? 'emerald'
@@ -281,7 +281,7 @@ const TicketEventDetail = ({ product }) => {
                   {formatMessage({ id: 'edit_event_details', defaultMessage: 'Edit event details' })}
                 </button>
               )}
-              {product.status === 'ACTIVE' && !product.isCanceled && canCancel && (
+              {product.status === 'ACTIVE' && !product.event?.isCanceled && canCancel && (
                 <button
                   type="button"
                   onClick={onCancelEvent}

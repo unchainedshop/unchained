@@ -47,10 +47,12 @@ const TicketEventsQuery = gql`
           quantity
         }
         tokensCount
-        isCanceled
-        eventStartsAt
-        eventLocation
-        eventCategory
+        event {
+          isCanceled
+          startsAt
+          location
+          category
+        }
       }
     }
     ticketEventsCount(

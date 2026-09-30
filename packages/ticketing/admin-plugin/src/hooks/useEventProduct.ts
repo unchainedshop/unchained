@@ -30,14 +30,16 @@ export const TicketEventDetailQuery = gql`
           supply
         }
         tokensCount
-        isCanceled
-        eventStartsAt
-        eventEndsAt
-        eventDoorsOpenAt
-        eventLocation
-        eventCategory
-        eventDurationMinutes
-        eventDoorsOpenMinutesBefore
+        event {
+          isCanceled
+          startsAt
+          endsAt
+          doorsOpenAt
+          location
+          category
+          durationMinutes
+          doorsOpenMinutesBefore
+        }
         tokens {
           _id
           tokenSerialNumber

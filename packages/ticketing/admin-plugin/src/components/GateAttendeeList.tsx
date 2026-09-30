@@ -22,13 +22,11 @@ const countAdmissions = (tokens) => {
 const productOf = (event) => ({
   _id: event._id,
   status: event.status,
-  isCanceled: event.isCanceled,
-  eventStartsAt: event.eventStartsAt,
-  eventCategory: event.eventCategory,
+  event: event.event,
   texts: event.texts,
 });
 
-const eventLabel = (product) => product?.eventCategory || product?.texts?.title || '-';
+const eventLabel = (product) => product?.event?.category || product?.texts?.title || '-';
 
 /**
  * Tickets of the gate's events with a local filter (serial, attendee, buyer) and how many have
