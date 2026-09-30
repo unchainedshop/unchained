@@ -580,6 +580,14 @@ Gate Control's camera only accepts ticket QR codes, a ticket id with its access 
    - Run `syncTicketProduction` for every production.
 3. Storefronts list `ticketProductions` (or `products(tags: ["ticket-production"])`), read dates, location and sale rules from `TokenizedProduct.event` and handle `TicketSaleNotStartedError` / `TicketOrderLimitExceededError` instead of checking presale and order limits themselves.
 
+**13. Gate Control instead of scanner apps.** Door staff scan and redeem in the Admin UI (**Ticketing → Gate Control**, `/ext/gate-control`) instead of a scanner page in the storefront: camera or USB/Bluetooth scanner, lookup by serial, attendee name or order number, several events per gate, the attendee list with Redeem, Cancel (with `cancelTicket`) and Export CSV, and a full-screen kiosk mode. With steps 6, 7 and 12 done:
+
+- Printed and wallet tickets keep scanning: the scanner reads `https://…/download/<tokenId>?hash=…`, `unchained-scanner://<tokenId>?hash=…` and `unchained://ticket/<tokenId>?hash=…`, and the access key is still `buildAccessKeyFromToken` (keep `UNCHAINED_SECRET`). Codes with the MD5 key of tickets issued before mid 2024 are refused as outdated; look those tickets up by serial or name.
+- Give door staff accounts with the `ticketing` role (and `cancelTicket` if they cancel at the door). Buyer e-mail addresses and phone numbers are not shown at the gate. The camera needs the Admin UI on HTTPS.
+- Replace the storefront `/scan/…` pages with a redirect to `<admin-ui>/ext/gate-control` and remove their links (footer, event portal). Keep the `/download/<tokenId>` page for customers.
+- Remove what only served the old scanner: scan roles that granted private user data, `x-token-accesskey` or pass-code rules and cookies, and custom `updateToken` rules for staff (`scanTicket` checks the ticket, the event and the entry window on the server).
+- Label printers or other side effects on admission subscribe to `TICKET_REDEEMED` instead of `TOKEN_INVALIDATED`, which a cancellation emits as well.
+
 ### Upgrading from an earlier v5 alpha: one-time re-login
 
 A user without a stored `tokenVersion` is now treated as version `0` (earlier alphas used `1`, which made the first revocation a no-op). Tokens those alphas issued to such users are rejected after the upgrade, so affected users log in once more. No data change is needed.
