@@ -13,6 +13,7 @@ const actions: Record<string, string> = [
   'viewUserQuotations',
   'viewUserPublicInfos',
   'viewUserPrivateInfos',
+  'viewUserContactInfos',
   'viewUserEnrollments',
   'viewUserTokens',
   'viewLogs',

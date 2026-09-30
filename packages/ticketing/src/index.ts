@@ -9,6 +9,9 @@ import {
   ticketingActions,
   configureTicketingRoles,
   createTicketingRoles,
+  isGateTicketHolder,
+  GATE_CONTACT_HOURS_BEFORE_START,
+  GATE_CONTACT_HOURS_AFTER_START,
   type TicketingRolesOptions,
 } from './api/index.ts';
 
@@ -92,6 +95,9 @@ export {
   ticketingActions,
   configureTicketingRoles,
   createTicketingRoles,
+  isGateTicketHolder,
+  GATE_CONTACT_HOURS_BEFORE_START,
+  GATE_CONTACT_HOURS_AFTER_START,
   registerTicketingTemplates,
   TicketingMessageTypes,
 };

@@ -30,6 +30,9 @@ import {
   ticketingActions,
   configureTicketingRoles,
   createTicketingRoles,
+  isGateTicketHolder,
+  GATE_CONTACT_HOURS_BEFORE_START,
+  GATE_CONTACT_HOURS_AFTER_START,
   type CanAccessTicketEvent,
   type TicketingRolesOptions,
 } from './roles.ts';
@@ -77,6 +80,9 @@ export {
   ticketingActions,
   configureTicketingRoles,
   createTicketingRoles,
+  isGateTicketHolder,
+  GATE_CONTACT_HOURS_BEFORE_START,
+  GATE_CONTACT_HOURS_AFTER_START,
   type CanAccessTicketEvent,
   type TicketingRolesOptions,
 };

@@ -1,6 +1,7 @@
 import type { Context } from '@unchainedshop/api';
 import { NoPermissionError, roles } from '@unchainedshop/api';
 import { ProductStatus, ProductType, type Product } from '@unchainedshop/core-products';
+import { getTicketEventStart } from '../event-details.ts';
 
 export const ticketingActions = ['scanTicket', 'gateControl', 'cancelTicket'];
 
@@ -133,6 +134,58 @@ export async function canWorkWithTicketEvent(
   return isTicketEventInScope(event, context);
 }
 
+/**
+ * The gate period of an event for the contact of its ticket holders: from 24 hours before its start
+ * until 12 hours after. It covers the events of the day in every time zone and late admission.
+ */
+export const GATE_CONTACT_HOURS_BEFORE_START = 24;
+export const GATE_CONTACT_HOURS_AFTER_START = 12;
+
+const HOUR = 60 * 60 * 1000;
+
+const isInGatePeriod = (event: Product, now = Date.now()) => {
+  const start = getTicketEventStart(event);
+  if (!start || Number.isNaN(start.getTime())) return false;
+  return (
+    start.getTime() >= now - GATE_CONTACT_HOURS_AFTER_START * HOUR &&
+    start.getTime() <= now + GATE_CONTACT_HOURS_BEFORE_START * HOUR
+  );
+};
+
+const holderDecisionsByRequest = new WeakMap<Context, Map<string, Promise<boolean>>>();
+
+/**
+ * Whether the viewer may see the e-mail and phone of a user at the gate: the user holds a ticket
+ * of an event in its gate period that the viewer may work with (organizer scope included).
+ */
+export async function isGateTicketHolder(
+  user: { _id?: string } | null | undefined,
+  context: Context | null,
+): Promise<boolean> {
+  if (!user?._id || !context || !isAuthenticated(context)) return false;
+  if (!holderDecisionsByRequest.has(context)) holderDecisionsByRequest.set(context, new Map());
+  const decisions = holderDecisionsByRequest.get(context)!;
+  if (!decisions.has(user._id)) {
+    decisions.set(
+      user._id,
+      (async () => {
+        const tokens = await context.modules.warehousing.findTokens(
+          { userId: user._id },
+          { projection: { productId: 1 } },
+        );
+        for (const productId of new Set(tokens.map((token) => token.productId))) {
+          const event = await context.modules.products.findProduct({ productId });
+          if (event && isInGatePeriod(event) && (await canWorkWithTicketEvent(event, context))) {
+            return true;
+          }
+        }
+        return false;
+      })(),
+    );
+  }
+  return decisions.get(user._id)!;
+}
+
 // gateControl is checked without a root for menus and lists, and with the event for one event.
 const isEventRoot = (root: unknown): root is Product =>
   Boolean(root && typeof root === 'object' && '_id' in root);
@@ -152,6 +205,12 @@ export function createTicketingRoles({ canAccessEvent }: TicketingRolesOptions =
       actions.scanTicket,
       (_root: never, _params: never, context: Context | null) =>
         context === null || isAuthenticated(context),
+    );
+    // E-mail and phone of the holders of tickets of the gate period, not the other private data.
+    role.allow(
+      actions.viewUserContactInfos,
+      (user: { _id?: string } | undefined, _params: never, context: Context | null) =>
+        context === null || isGateTicketHolder(user, context),
     );
 
     const allRole = allRoles.ALL;

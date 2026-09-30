@@ -63,7 +63,7 @@ export interface UserHelperTypes {
   isInitialPassword: HelperType<any, boolean>;
   language: HelperType<{ locale: Intl.Locale }, Language>;
   lastBillingAddress: HelperType<any, UserType['lastBillingAddress']>;
-  lastContact: HelperType<any, Contact>;
+  lastContact: HelperType<any, Contact | undefined>;
   lastLogin: HelperType<any, UserType['lastLogin']>;
   allowedActions: HelperType<any, string[]>;
   viewerAllowedActions: HelperType<any, string[]>;
@@ -116,6 +116,7 @@ const {
   viewUser,
   viewUserRoles,
   viewUserPrivateInfos,
+  viewUserContactInfos,
   viewUserPublicInfos,
   viewUserOrders,
   viewUserEnrollments,
@@ -137,6 +138,7 @@ const USER_TARGET_ACTIONS = [
   viewUser,
   viewUserEnrollments,
   viewUserOrders,
+  viewUserContactInfos,
   viewUserPrivateInfos,
   viewUserProductReviews,
   viewUserPublicInfos,
@@ -145,6 +147,13 @@ const USER_TARGET_ACTIONS = [
   viewUserTokens,
 ];
 
+// E-mail and phone (the contact) are private, but viewUserContactInfos opens them alone: for gate
+// staff or support that must reach a customer without seeing the rest of the private data.
+const checkContactAction = async (context, user, params) => {
+  if (await context.roles.userHasPermission(context, viewUserPrivateInfos, [user, params])) return;
+  await checkAction(context, viewUserContactInfos, [user, params]);
+};
+
 export const User: UserHelperTypes = {
   _id: checkTypeResolver(viewUserPublicInfos, '_id'),
   created: checkTypeResolver(viewUserPrivateInfos, 'created'),
@@ -152,7 +161,10 @@ export const User: UserHelperTypes = {
   deleted: checkTypeResolver(viewUserPrivateInfos, 'deleted'),
   emails: checkTypeResolver(viewUserPrivateInfos, 'emails'),
   lastBillingAddress: checkTypeResolver(viewUserPrivateInfos, 'lastBillingAddress'),
-  lastContact: checkTypeResolver(viewUserPrivateInfos, 'lastContact'),
+  lastContact: async (user, params, context) => {
+    await checkContactAction(context, user, params);
+    return user.lastContact;
+  },
   lastLogin: checkTypeResolver(viewUserPrivateInfos, 'lastLogin'),
   profile: checkTypeResolver(viewUserPrivateInfos, 'profile'),
   roles: checkTypeResolver(viewUserRoles, 'roles'),
@@ -169,7 +181,7 @@ export const User: UserHelperTypes = {
   },
 
   primaryEmail: async (user, params, context) => {
-    await checkAction(context, viewUserPrivateInfos, [user, params]);
+    await checkContactAction(context, user, params);
     return context.modules.users.primaryEmail(user);
   },
 
