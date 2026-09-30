@@ -112,17 +112,17 @@ test('buildAttendeeCsv exports what the viewer sees, redeemed only when not canc
   );
 });
 
-test('the buyer contact is the primary e-mail (else the last contact e-mail) and the last phone', () => {
+test('the buyer contact is the e-mail and phone of the last checkout, else the primary e-mail', () => {
   assert.deepEqual(
     buyerContact({
       _id: 'u1',
       primaryEmail: { address: 'jane@example.com' },
       lastContact: { emailAddress: 'order@example.com', telNumber: '+41 44 000 00 00' },
     }),
-    { email: 'jane@example.com', phone: '+41 44 000 00 00' },
+    { email: 'order@example.com', phone: '+41 44 000 00 00' },
   );
-  assert.deepEqual(buyerContact({ _id: 'u2', lastContact: { emailAddress: 'guest@example.com' } }), {
-    email: 'guest@example.com',
+  assert.deepEqual(buyerContact({ _id: 'u2', primaryEmail: { address: 'jane@example.com' } }), {
+    email: 'jane@example.com',
     phone: null,
   });
   assert.deepEqual(buyerContact(null), { email: null, phone: null });
@@ -161,7 +161,8 @@ test('buildAttendeeCsv adds e-mail and phone columns for viewers who may see the
     csv,
     [
       'Ticket ID,Ticket #,Attendee,Buyer,E-mail,Phone,Status,Redeemed at,Cancelled at',
-      't1,1,Anna Muster,Jane Doe,jane@example.com,+41 44 000 00 00,VALID,,',
+      // A leading + starts a formula in spreadsheets, so the phone is defused like other cells
+      "t1,1,Anna Muster,Jane Doe,jane@example.com,'+41 44 000 00 00,VALID,,",
       '',
     ].join('\r\n'),
   );

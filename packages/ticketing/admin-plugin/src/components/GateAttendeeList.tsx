@@ -6,6 +6,7 @@ import { useAuth } from '@unchainedshop/admin-ui/hooks';
 import useAttendeeExport from '../hooks/useAttendeeExport.ts';
 import useCancelTicketDialog from '../hooks/useCancelTicketDialog.tsx';
 import TicketStatusBadge from './TicketStatusBadge.tsx';
+import BuyerContact from './BuyerContact.tsx';
 
 // Rendering thousands of rows makes a phone at the gate sluggish; the filter narrows them down.
 const MAX_ROWS = 100;
@@ -167,11 +168,16 @@ const GateAttendeeList = ({
                   <span className="text-sm text-text-primary">{token.attendeeName || '-'}</span>
                 </Table.Cell>
                 <Table.Cell>
-                  <span
-                    className={buyer === guest ? 'text-sm text-text-muted' : 'text-sm text-text-primary'}
-                  >
-                    {buyer || '-'}
-                  </span>
+                  <div className="flex flex-col">
+                    <span
+                      className={
+                        buyer === guest ? 'text-sm text-text-muted' : 'text-sm text-text-primary'
+                      }
+                    >
+                      {buyer || '-'}
+                    </span>
+                    <BuyerContact user={token.user} />
+                  </div>
                 </Table.Cell>
                 <Table.Cell>
                   <TicketStatusBadge token={token} dateStyle="time" />

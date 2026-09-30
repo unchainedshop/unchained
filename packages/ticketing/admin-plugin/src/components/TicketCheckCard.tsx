@@ -2,6 +2,7 @@ import { useIntl } from 'react-intl';
 import { Button } from '@unchainedshop/admin-ui/ui';
 import { AlertNotice } from './Notice.tsx';
 import { buyerLabel } from '../utils/attendees.ts';
+import BuyerContact from './BuyerContact.tsx';
 import { useFormatDateTime } from '../utils/misc.ts';
 import { getScanTone, TicketVerdict, type GateOutcome } from '../utils/scan.ts';
 
@@ -236,6 +237,7 @@ const TicketCheckCard = ({
           </Fact>
           <Fact label={formatMessage({ id: 'gate_ticket_buyer', defaultMessage: 'Buyer' })}>
             {buyerLabel(ticket.user, guest) || '-'}
+            <BuyerContact user={ticket.user} className="mt-1" />
           </Fact>
           <Fact label={formatMessage({ id: 'gate_ticket_number', defaultMessage: 'Ticket #' })}>
             {ticket.tokenSerialNumber || ticket._id.slice(-8)}

@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
+import { useAuth } from '@unchainedshop/admin-ui/hooks';
 import { batchQuery, batchResults, batchVariables } from '../utils/query.ts';
 import useRefetchWhenVisible, { pollWhileVisible } from './useRefetchWhenVisible.ts';
 
 // Only what the gate list shows: no per-ticket redeemability check, which would ask the
 // warehousing adapter once per ticket on every poll. scanTicket decides when redeeming.
 const GateEventDetailQuery = gql`
-  query GateEventDetail($productId: ID!) {
+  query GateEventDetail($productId: ID!, $withContacts: Boolean = false) {
     product(productId: $productId) {
       _id
       status
@@ -34,6 +35,13 @@ const GateEventDetailQuery = gql`
           user {
             _id
             name
+            primaryEmail @include(if: $withContacts) {
+              address
+            }
+            lastContact @include(if: $withContacts) {
+              emailAddress
+              telNumber
+            }
           }
         }
       }
@@ -47,10 +55,12 @@ const GateEventDetailQuery = gql`
  * event. Events that cannot be loaded are left out.
  */
 const useGateEventDetails = (productIds: string[]) => {
+  // Buyer e-mail and phone only for viewers who may see them
+  const withContacts = useAuth().hasRole('viewUserContactInfos');
   const count = productIds.length;
   const query = useMemo(() => batchQuery(GateEventDetailQuery, Math.max(count, 1)), [count]);
   const { data, loading, error, refetch, previousData } = useQuery<any>(query, {
-    variables: batchVariables(productIds.map((productId) => ({ productId }))),
+    variables: batchVariables(productIds.map((productId) => ({ productId, withContacts }))),
     skip: !count,
     fetchPolicy: 'cache-and-network',
     ...pollWhileVisible(15000),

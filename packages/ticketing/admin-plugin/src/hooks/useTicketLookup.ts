@@ -1,9 +1,10 @@
 import { useCallback } from 'react';
 import { gql } from '@apollo/client';
 import { useApolloClient } from '@apollo/client/react';
+import { useAuth } from '@unchainedshop/admin-ui/hooks';
 
 const TicketLookupQuery = gql`
-  query TicketLookup($code: String!, $productId: ID, $limit: Int) {
+  query TicketLookup($code: String!, $productId: ID, $limit: Int, $withContacts: Boolean = false) {
     ticketLookup(code: $code, productId: $productId, limit: $limit) {
       _id
       tokenSerialNumber
@@ -16,6 +17,13 @@ const TicketLookupQuery = gql`
       user {
         _id
         name
+        primaryEmail @include(if: $withContacts) {
+          address
+        }
+        lastContact @include(if: $withContacts) {
+          emailAddress
+          telNumber
+        }
       }
       product {
         _id
@@ -41,6 +49,8 @@ const TicketLookupQuery = gql`
  */
 const useTicketLookup = () => {
   const client = useApolloClient();
+  // Buyer e-mail and phone only for viewers who may see them
+  const withContacts = useAuth().hasRole('viewUserContactInfos');
 
   const lookupTickets = useCallback(
     async ({
@@ -54,12 +64,12 @@ const useTicketLookup = () => {
     }) => {
       const { data } = await client.query<any>({
         query: TicketLookupQuery,
-        variables: { code, productId: productId || null, limit },
+        variables: { code, productId: productId || null, limit, withContacts },
         fetchPolicy: 'network-only',
       });
       return (data?.ticketLookup || []) as any[];
     },
-    [client],
+    [client, withContacts],
   );
 
   return { lookupTickets };

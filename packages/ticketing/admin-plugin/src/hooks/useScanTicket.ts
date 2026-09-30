@@ -1,9 +1,15 @@
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
+import { useAuth } from '@unchainedshop/admin-ui/hooks';
 
 // The redeemed token updates the cached ticket, so lists show it as redeemed without a refetch.
 const ScanTicketMutation = gql`
-  mutation ScanTicket($tokenId: ID!, $productId: ID, $accessKey: String) {
+  mutation ScanTicket(
+    $tokenId: ID!
+    $productId: ID
+    $accessKey: String
+    $withContacts: Boolean = false
+  ) {
     scanTicket(tokenId: $tokenId, productId: $productId, accessKey: $accessKey) {
       _id
       tokenSerialNumber
@@ -16,6 +22,13 @@ const ScanTicketMutation = gql`
       user {
         _id
         name
+        primaryEmail @include(if: $withContacts) {
+          address
+        }
+        lastContact @include(if: $withContacts) {
+          emailAddress
+          telNumber
+        }
       }
       product {
         _id
@@ -41,6 +54,7 @@ const ScanTicketMutation = gql`
  */
 const useScanTicket = () => {
   const [scanTicketMutation] = useMutation<any>(ScanTicketMutation);
+  const withContacts = useAuth().hasRole('viewUserContactInfos');
 
   const scanTicket = async ({
     tokenId,
@@ -52,7 +66,12 @@ const useScanTicket = () => {
     accessKey?: string | null;
   }) => {
     const { data } = await scanTicketMutation({
-      variables: { tokenId, productId: productId || null, accessKey: accessKey || null },
+      variables: {
+        tokenId,
+        productId: productId || null,
+        accessKey: accessKey || null,
+        withContacts,
+      },
     });
     return data?.scanTicket;
   };

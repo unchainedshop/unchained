@@ -3,6 +3,7 @@ import { useIntl } from 'react-intl';
 import { Button, Table, MediaAvatar } from '@unchainedshop/admin-ui/ui';
 import { buyerLabel } from '../utils/attendees.ts';
 import TicketStatusBadge from './TicketStatusBadge.tsx';
+import BuyerContact from './BuyerContact.tsx';
 
 // Attendee names come from the ticket (ticketMeta hook of the ticket issuer); the buyer is the
 // user's public name, "Guest" when the buyer has none.
@@ -35,6 +36,7 @@ const EventTokenListItem = ({ token, onCancelTicket, onRedeemTicket }) => {
         ) : (
           <span className="text-sm text-text-muted">-</span>
         )}
+        <BuyerContact user={token.user} className="mt-1" />
       </Table.Cell>
       <Table.Cell>
         <TicketStatusBadge token={token} />
