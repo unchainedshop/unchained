@@ -21,4 +21,10 @@ export const TokenizedProduct = {
   eventCategory(product: Product): string | null {
     return getTicketEventDetails(product).category ?? null;
   },
+  eventDurationMinutes(product: Product): number | null {
+    return getTicketEventDetails(product).durationMinutes ?? null;
+  },
+  eventDoorsOpenMinutesBefore(product: Product): number | null {
+    return getTicketEventDetails(product).doorsOpenMinutesBefore ?? null;
+  },
 };

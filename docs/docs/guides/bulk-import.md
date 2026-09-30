@@ -43,10 +43,7 @@ mutation BulkImport {
           operation: "CREATE"
           payload: {
             _id: "product-1"
-            specification: {
-              type: "SIMPLE_PRODUCT"
-              content: { en: { title: "Product 1" } }
-            }
+            specification: { type: "SIMPLE_PRODUCT", content: { en: { title: "Product 1" } } }
           }
         }
       ]
@@ -84,29 +81,29 @@ Every event consists of three parts:
 
 ### Supported Entities
 
-| Entity | Description |
-|--------|-------------|
-| `PRODUCT` | Products (simple, configurable, bundle, plan) |
-| `ASSORTMENT` | Categories and collections |
-| `FILTER` | Product filters and facets |
+| Entity       | Description                                   |
+| ------------ | --------------------------------------------- |
+| `PRODUCT`    | Products (simple, configurable, bundle, plan) |
+| `ASSORTMENT` | Categories and collections                    |
+| `FILTER`     | Product filters and facets                    |
 
 ### Supported Operations
 
-| Operation | Description |
-|-----------|-------------|
-| `CREATE` | Create new entity |
-| `UPDATE` | Update existing entity |
-| `REMOVE` | Delete entity |
+| Operation | Description            |
+| --------- | ---------------------- |
+| `CREATE`  | Create new entity      |
+| `UPDATE`  | Update existing entity |
+| `REMOVE`  | Delete entity          |
 
 ## Import Options
 
 Pass options as query parameters (REST) or in the input object (GraphQL):
 
-| Option | Description |
-|--------|-------------|
-| `createShouldUpsertIfIDExists` | CREATE updates if entity exists |
-| `updateShouldUpsertIfIDNotExists` | UPDATE creates if entity missing |
-| `skipCacheInvalidation` | Skip filter/assortment cache updates |
+| Option                            | Description                          |
+| --------------------------------- | ------------------------------------ |
+| `createShouldUpsertIfIDExists`    | CREATE updates if entity exists      |
+| `updateShouldUpsertIfIDNotExists` | UPDATE creates if entity missing     |
+| `skipCacheInvalidation`           | Skip filter/assortment cache updates |
 
 ```bash
 # REST with options
@@ -189,7 +186,7 @@ curl -X POST \
 
 ### Tokenized Products
 
-`specification.tokenization` configures tokenized products, for example an event ticket for the [ticket issuer](./ticketing-setup.md#the-ticket-issuer). All fields are optional; off-chain tickets need no `contractAddress` or `tokenId`. `ercMetadataProperties` is public (it is served as token metadata):
+`specification.tokenization` configures tokenized products, for example an event ticket for the [ticket issuer](./ticketing-setup.md#the-ticket-issuer). All fields are optional; off-chain tickets need no `contractAddress` or `tokenId`. `ercMetadataProperties` is public (it is served as token metadata). The ticketing plugin reads the event details from `specification.meta`:
 
 ```json
 {
@@ -207,14 +204,14 @@ curl -X POST \
       },
       "tokenization": {
         "contractStandard": "ERC721",
-        "supply": 300,
-        "ercMetadataProperties": {
-          "slot": "2026-10-01T18:00:00Z",
-          "location": "Main Hall",
-          "durationMinutes": 120,
-          "doorsOpenMinutesBefore": 30,
-          "category": "Concert"
-        }
+        "supply": 300
+      },
+      "meta": {
+        "slot": "2026-10-01T18:00:00Z",
+        "location": "Main Hall",
+        "durationMinutes": 120,
+        "doorsOpenMinutesBefore": 30,
+        "category": "Concert"
       },
       "content": {
         "en": { "title": "Autumn Concert", "slug": "autumn-concert" }
@@ -224,7 +221,7 @@ curl -X POST \
 }
 ```
 
-An `UPDATE` with `tokenization` replaces the stored object as a whole (without it, the stored one is kept); to change single event details use `updateTicketEvent`. `specification.meta` is replaced as a whole as well, which clears the cancellation of a ticket event (`meta.cancelled`, set by `cancelEvent`): leave `meta` out of syncs of ticket events, or carry those keys over.
+An `UPDATE` with `tokenization` or `meta` replaces the stored object as a whole (without it, the stored one is kept). For ticket events, `meta` holds the event details and the cancellation (`meta.cancelled`, set by `cancelEvent`): a sync that sends `meta` owns the event details and un-cancels the event, so leave `meta` out and use `updateTicketEvent`, or carry `cancelled` / `cancelledDate` over.
 
 ## Assortment Import
 
@@ -329,12 +326,12 @@ An `UPDATE` with `tokenization` replaces the stored object as a whole (without i
 
 ### Filter Types
 
-| Type | Description |
-|------|-------------|
-| `SINGLE_CHOICE` | Select one option |
-| `MULTI_CHOICE` | Select multiple options |
-| `RANGE` | Numeric range (price, weight) |
-| `SWITCH` | Boolean toggle |
+| Type            | Description                   |
+| --------------- | ----------------------------- |
+| `SINGLE_CHOICE` | Select one option             |
+| `MULTI_CHOICE`  | Select multiple options       |
+| `RANGE`         | Numeric range (price, weight) |
+| `SWITCH`        | Boolean toggle                |
 
 ## Custom Import Handlers
 
@@ -405,12 +402,14 @@ Send multiple events in a single request:
 ### 2. Use REST for Large Imports
 
 Switch to REST endpoint when:
+
 - More than 5,000 entities
 - JSON payload exceeds 16MB
 
 ### 3. Order Dependencies
 
 Import in the correct order:
+
 1. Filters (referenced by assortments)
 2. Products (referenced by assortments)
 3. Assortments (may reference filters and products)
@@ -455,12 +454,12 @@ query ImportJobs {
 
 ### Import Statuses
 
-| Status | Description |
-|--------|-------------|
-| `NEW` | Queued for processing |
-| `ALLOCATED` | Being processed |
-| `SUCCESS` | Completed successfully |
-| `FAILED` | Failed with error |
+| Status      | Description            |
+| ----------- | ---------------------- |
+| `NEW`       | Queued for processing  |
+| `ALLOCATED` | Being processed        |
+| `SUCCESS`   | Completed successfully |
+| `FAILED`    | Failed with error      |
 
 ## Sync Service Example
 

@@ -39,24 +39,24 @@ Two URL forms — the filename must end in `.json`:
 
 The handler loads the product, looks up the token by product and serial number (the filename without `.json`, matched case-sensitively, for ERC-721 and ERC-1155 alike) and returns the metadata built by the `services.warehousing.ercMetadata` service, which asks the first active `VIRTUAL` warehousing provider. It responds `404` for an unknown or non-tokenized product, an unknown token or missing metadata, and `503` on errors.
 
-The route is public, so it only serves the keys of the EIP metadata standards (`PUBLIC_ERC_METADATA_KEYS`): `name`, `description`, `image`, `properties`, `attributes`, `localization`, `external_url`, `animation_url`, `background_color` and `decimals`. Everything else an adapter returns is left out, and `token.meta` is never part of it. `properties` carries the product's `tokenization.ercMetadataProperties`, so keep private data out of them (event tickets store their public event facts there).
+The route is public, so it only serves the keys of the EIP metadata standards (`PUBLIC_ERC_METADATA_KEYS`): `name`, `description`, `image`, `properties`, `attributes`, `localization`, `external_url`, `animation_url`, `background_color` and `decimals`. Everything else an adapter returns is left out, and `token.meta` is never part of it. `properties` carries the product's `tokenization.ercMetadataProperties`, so keep private data out of them.
 
 See [ETH Minter](./warehousing-eth-minter.md) for the shape of the returned metadata document.
 
 ## Environment Variables
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `ERC_METADATA_API_PATH` | `/erc-metadata` | Path prefix the route is mounted at |
-| `ROOT_URL` | `http://localhost:4010` | Base URL used to parse the request URL |
+| Variable                | Default                 | Description                            |
+| ----------------------- | ----------------------- | -------------------------------------- |
+| `ERC_METADATA_API_PATH` | `/erc-metadata`         | Path prefix the route is mounted at    |
+| `ROOT_URL`              | `http://localhost:4010` | Base URL used to parse the request URL |
 
 ## Plugin Details
 
-| Property | Value |
-|----------|-------|
-| Key | `shop.unchained.warehousing.erc-metadata` |
-| Version | `1.0.0` |
-| Source | [warehousing/erc-metadata](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/warehousing/erc-metadata) |
+| Property | Value                                                                                                                            |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Key      | `shop.unchained.warehousing.erc-metadata`                                                                                        |
+| Version  | `1.0.0`                                                                                                                          |
+| Source   | [warehousing/erc-metadata](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/warehousing/erc-metadata) |
 
 ## Related
 

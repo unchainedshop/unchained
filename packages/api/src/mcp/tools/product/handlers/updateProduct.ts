@@ -9,10 +9,6 @@ import {
 } from '../../../../errors.ts';
 import { getNormalizedProductDetails } from '../../../utils/getNormalizedProductDetails.ts';
 import type { Params } from '../schemas.ts';
-import {
-  mergeTokenizationInput,
-  type ProductTokenizationInput,
-} from '../../../../resolvers/mutations/products/updateProductTokenization.ts';
 
 export default async function updateProduct(context: Context, params: Params<'UPDATE'>) {
   const { modules, loaders } = context;
@@ -66,10 +62,7 @@ export default async function updateProduct(context: Context, params: Params<'UP
         required: ProductType.TOKENIZED_PRODUCT,
       });
     }
-    updateData.tokenization = mergeTokenizationInput(
-      existingProduct.tokenization,
-      product.tokenization as ProductTokenizationInput,
-    );
+    updateData.tokenization = product.tokenization;
   }
 
   if (product.commerce !== undefined) {

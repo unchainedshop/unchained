@@ -124,7 +124,7 @@ export default async (unchainedAPI: UnchainedCore) => {
     });
 
     // A demo event starting one hour after the first boot, so its gate is open right away.
-    // The event facts live in the public tokenization properties (see TicketEventProperty);
+    // The event facts live in the product meta (see TicketEventProperty);
     // change them in the Admin UI (Ticketing → Events) or with the updateTicketEvent mutation.
     const startsAt = new Date(Date.now() + 60 * 60 * 1000);
     startsAt.setSeconds(0, 0);
@@ -146,13 +146,13 @@ export default async (unchainedAPI: UnchainedCore) => {
       tokenization: {
         contractStandard: ProductContractStandard.ERC721,
         supply: 500,
-        ercMetadataProperties: {
-          [TicketEventProperty.START]: startsAt,
-          [TicketEventProperty.LOCATION]: 'Unchained Hall, Zurich',
-          [TicketEventProperty.DURATION_MINUTES]: 120,
-          [TicketEventProperty.DOORS_OPEN_MINUTES_BEFORE]: 30,
-          [TicketEventProperty.CATEGORY]: 'Concert',
-        },
+      },
+      meta: {
+        [TicketEventProperty.START]: startsAt,
+        [TicketEventProperty.LOCATION]: 'Unchained Hall, Zurich',
+        [TicketEventProperty.DURATION_MINUTES]: 120,
+        [TicketEventProperty.DOORS_OPEN_MINUTES_BEFORE]: 30,
+        [TicketEventProperty.CATEGORY]: 'Concert',
       },
     });
     await modules.products.texts.updateTexts(event._id, [

@@ -67,15 +67,14 @@ export default [
       cancelEvent(productId: ID!, generateDiscount: Boolean): Int!
 
       """
-      Set the details of a ticket event in its public tokenization properties
-      (contractConfiguration.ercMetadataProperties). Omitted details stay, null clears one.
+      Set the details of a ticket event (stored in the product meta). Omitted details stay, null
+      clears one.
       Requires the manageProducts action.
       """
       updateTicketEvent(productId: ID!, event: UpdateTicketEventInput!): Product!
     }
 
     input UpdateTicketEventInput {
-      "Event start, stored as ercMetadataProperties.slot"
       startsAt: DateTime
       location: String
       durationMinutes: Int
@@ -98,6 +97,8 @@ export default [
       eventDoorsOpenAt: DateTime
       eventLocation: String
       eventCategory: String
+      eventDurationMinutes: Int
+      eventDoorsOpenMinutesBefore: Int
     }
 
     extend type Token {

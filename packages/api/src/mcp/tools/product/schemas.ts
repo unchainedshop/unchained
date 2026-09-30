@@ -82,24 +82,18 @@ export const ProductSchema = z.object({
         .string()
         .min(1)
         .nullish()
-        .describe(
-          'Blockchain contract address. Omit for off-chain tokens (tickets); omitted = keep existing, null = clear',
-        ),
+        .describe('Blockchain contract address. Omit for off-chain tokens (tickets)'),
       contractStandard: z.string().describe('Smart contract standard (e.g., ERC-721)'),
       tokenId: z
         .string()
         .min(1)
         .nullish()
-        .describe(
-          'Unique token identifier. Omit for off-chain tokens (tickets); omitted = keep existing, null = clear',
-        ),
+        .describe('Unique token identifier. Omit for off-chain tokens (tickets)'),
       supply: z.number().int().positive().describe('Total supply of the token'),
       ercMetadataProperties: z
         .record(z.any(), z.any())
         .nullish()
-        .describe(
-          'ERC metadata properties (e.g. a ticket event slot). Omitted = keep existing, null = clear, an object replaces them entirely',
-        ),
+        .describe('Optional ERC metadata properties'),
     })
     .optional()
     .describe('Tokenization details - ONLY for TOKENIZED_PRODUCT'),

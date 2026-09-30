@@ -1,10 +1,5 @@
 import type { Context } from '@unchainedshop/api';
-import {
-  InvalidIdError,
-  ProductNotFoundError,
-  ProductWrongStatusError,
-  ProductWrongTypeError,
-} from '@unchainedshop/api';
+import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '@unchainedshop/api';
 import { ProductType } from '@unchainedshop/core-products';
 import { log } from '@unchainedshop/logger';
 import { assertTicketEventInScope } from '../../roles.ts';
@@ -40,8 +35,8 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
 /**
- * Sets the given event details in `tokenization.ercMetadataProperties` (the public ERC metadata)
- * key by key; omitted details and other properties stay as they are.
+ * Sets the given event details in `product.meta` key by key; omitted details and the other meta
+ * fields stay as they are.
  */
 export default async function updateTicketEvent(
   _root: never,
@@ -61,12 +56,6 @@ export default async function updateTicketEvent(
       required: ProductType.TOKENIZED_PRODUCT,
     });
   }
-  if (!isPlainObject(product.tokenization)) {
-    throw new ProductWrongStatusError({
-      productId,
-      message: 'Configure the tokenization (supply) of the ticket event before its details',
-    });
-  }
   await assertTicketEventInScope(product, context, 'manageProducts');
 
   const changes = Object.fromEntries(
@@ -77,18 +66,11 @@ export default async function updateTicketEvent(
   );
   if (!Object.keys(changes).length) return product;
 
-  // Properties cleared to null cannot take dotted keys, so they are replaced as a whole.
-  const modifier = isPlainObject(product.tokenization.ercMetadataProperties)
-    ? Object.fromEntries(
-        Object.entries(changes).map(([key, value]) => [
-          `tokenization.ercMetadataProperties.${key}`,
-          value,
-        ]),
-      )
+  // A meta that is not an object cannot take dotted keys, so it is replaced as a whole.
+  const modifier = isPlainObject(product.meta)
+    ? Object.fromEntries(Object.entries(changes).map(([key, value]) => [`meta.${key}`, value]))
     : {
-        'tokenization.ercMetadataProperties': Object.fromEntries(
-          Object.entries(changes).filter(([, value]) => value !== null),
-        ),
+        meta: Object.fromEntries(Object.entries(changes).filter(([, value]) => value !== null)),
       };
   await modules.products.update(productId, modifier);
   return modules.products.findProduct({ productId });

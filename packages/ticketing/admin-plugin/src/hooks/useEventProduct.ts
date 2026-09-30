@@ -27,7 +27,6 @@ export const TicketEventDetailQuery = gql`
           }
         }
         contractConfiguration {
-          ercMetadataProperties
           supply
         }
         tokensCount
@@ -37,6 +36,8 @@ export const TicketEventDetailQuery = gql`
         eventDoorsOpenAt
         eventLocation
         eventCategory
+        eventDurationMinutes
+        eventDoorsOpenMinutesBefore
         tokens {
           _id
           tokenSerialNumber

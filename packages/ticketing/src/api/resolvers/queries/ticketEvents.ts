@@ -17,8 +17,7 @@ export interface TicketEventQuery {
   tags?: string[] | null;
 }
 
-const SLOT_PATH = `tokenization.ercMetadataProperties.${TicketEventProperty.START}`;
-const LEGACY_SLOT_PATH = `meta.${TicketEventProperty.START}`;
+const SLOT_PATH = `meta.${TicketEventProperty.START}`;
 
 const toDate = (value?: Date | string | null) => {
   if (value === undefined || value === null || value === '') return null;
@@ -27,7 +26,7 @@ const toDate = (value?: Date | string | null) => {
 };
 
 // Starts are stored as BSON dates (bulk import) or ISO strings (JSON input), and range operators
-// only compare values of the same type, so both are matched. Older events keep the start in meta.
+// only compare values of the same type, so both are matched.
 function buildSlotRangeSelector(slotFrom?: Date | string | null, slotTo?: Date | string | null) {
   const from = toDate(slotFrom);
   const to = toDate(slotTo);
@@ -36,15 +35,8 @@ function buildSlotRangeSelector(slotFrom?: Date | string | null, slotTo?: Date |
     ...(from && { $gte: convert(from) }),
     ...(to && { $lte: convert(to) }),
   });
-  const startsInRange = (path: string) => [
-    { [path]: range((date) => date) },
-    { [path]: range((date) => date.toISOString()) },
-  ];
   return {
-    $or: [
-      ...startsInRange(SLOT_PATH),
-      { [SLOT_PATH]: { $in: [null, ''] }, $or: startsInRange(LEGACY_SLOT_PATH) },
-    ],
+    $or: [{ [SLOT_PATH]: range((date) => date) }, { [SLOT_PATH]: range((date) => date.toISOString()) }],
   };
 }
 

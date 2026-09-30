@@ -1,10 +1,7 @@
 import type { Product } from '@unchainedshop/core-products';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 
-/**
- * Keys of the event facts in `product.tokenization.ercMetadataProperties`. These properties are
- * public (they are part of the ERC metadata), so they must only hold what may be shown to anyone.
- */
+/** Keys of the event facts in `product.meta`, next to the `cancelled` flag of the event. */
 export const TicketEventProperty = {
   START: 'slot',
   LOCATION: 'location',
@@ -31,12 +28,7 @@ const MINUTE = 60_000;
 
 const isPresent = (value: unknown) => value !== undefined && value !== null && value !== '';
 
-// Older events keep the start and the location in the product meta.
-const readProperty = (product: Product, key: TicketEventProperty, withMetaFallback = false) => {
-  const value = product.tokenization?.ercMetadataProperties?.[key];
-  if (isPresent(value) || !withMetaFallback) return value;
-  return product.meta?.[key];
-};
+const readProperty = (product: Product, key: TicketEventProperty) => product.meta?.[key];
 
 const toNumber = (value: unknown) => {
   if (!isPresent(value) || typeof value === 'boolean') return undefined;
@@ -52,7 +44,7 @@ const toText = (value: unknown) => (typeof value === 'string' && value.trim() ? 
  */
 export function getTicketEventStart(product?: Product | null): Date | undefined {
   if (!product) return undefined;
-  const value = readProperty(product, TicketEventProperty.START, true);
+  const value = readProperty(product, TicketEventProperty.START);
   if (!isPresent(value)) return undefined;
   if (value instanceof Date) return value;
   if (typeof value === 'string' || typeof value === 'number') return new Date(value);
@@ -60,8 +52,7 @@ export function getTicketEventStart(product?: Product | null): Date | undefined 
 }
 
 /**
- * The event facts of a ticket product: `tokenization.ercMetadataProperties` first, then the
- * product meta for the start (`slot`) and the location. Missing or unparsable values are left out.
+ * The event facts of a ticket product from its meta. Missing or unparsable values are left out.
  */
 export function getTicketEventDetails(product?: Product | null): TicketEventDetails {
   if (!product) return {};
@@ -82,7 +73,7 @@ export function getTicketEventDetails(product?: Product | null): TicketEventDeta
       startsAt && doorsOpenMinutesBefore !== undefined
         ? new Date(startsAt.getTime() - doorsOpenMinutesBefore * MINUTE)
         : undefined,
-    location: toText(readProperty(product, TicketEventProperty.LOCATION, true)),
+    location: toText(readProperty(product, TicketEventProperty.LOCATION)),
     durationMinutes,
     doorsOpenMinutesBefore,
     category: toText(readProperty(product, TicketEventProperty.CATEGORY)),
@@ -94,8 +85,8 @@ export function getTicketEventDetails(product?: Product | null): TicketEventDeta
 
 /**
  * An event is cancelled through cancelEvent; the product itself stays active. The flag lives in
- * `product.meta`, so a bulk import that sends `specification.meta` replaces it and un-cancels
- * the event.
+ * `product.meta` with the event details, so a bulk import that sends `specification.meta` replaces
+ * them all and un-cancels the event.
  */
 export function isTicketEventCancelled(product?: Product | null): boolean {
   return Boolean(product?.meta?.cancelled);

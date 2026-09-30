@@ -21,19 +21,19 @@ interface TicketEventProduct {
   eventStartsAt?: string | null;
   eventLocation?: string | null;
   eventCategory?: string | null;
-  contractConfiguration?: { ercMetadataProperties?: Record<string, unknown> | null } | null;
+  eventDurationMinutes?: number | null;
+  eventDoorsOpenMinutesBefore?: number | null;
 }
 
 const text = (value: unknown) => (value === null || value === undefined ? '' : String(value));
 
 export function getTicketEventFormValues(product: TicketEventProduct): TicketEventFormValues {
-  const properties = product?.contractConfiguration?.ercMetadataProperties || {};
   return {
     startsAt: toDateTimeLocalValue(product?.eventStartsAt),
     location: text(product?.eventLocation),
     category: text(product?.eventCategory),
-    durationMinutes: text(properties.durationMinutes),
-    doorsOpenMinutesBefore: text(properties.doorsOpenMinutesBefore),
+    durationMinutes: text(product?.eventDurationMinutes),
+    doorsOpenMinutesBefore: text(product?.eventDoorsOpenMinutesBefore),
   };
 }
 

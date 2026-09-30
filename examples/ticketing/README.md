@@ -36,43 +36,43 @@ Server starts at http://localhost:4010 with:
 
 ## Scripts
 
-| Command                        | Description                                                       |
-| ------------------------------ | ----------------------------------------------------------------- |
-| `npm run dev`                  | Start development server with watch mode                          |
-| `npm run build`                | Build TypeScript to `lib/`                                        |
-| `npm start`                    | Start production server                                           |
-| `npm run test:run:integration` | Start the example against the test settings and run `tests/`      |
-| `npm run lint`                 | Format code with Prettier                                         |
+| Command                        | Description                                                  |
+| ------------------------------ | ------------------------------------------------------------ |
+| `npm run dev`                  | Start development server with watch mode                     |
+| `npm run build`                | Build TypeScript to `lib/`                                   |
+| `npm start`                    | Start production server                                      |
+| `npm run test:run:integration` | Start the example against the test settings and run `tests/` |
+| `npm run lint`                 | Format code with Prettier                                    |
 
 ## Environment Variables
 
 ### Required
 
-| Variable                 | Description                                            | Default                   |
-| ------------------------ | ------------------------------------------------------ | ------------------------- |
-| `ROOT_URL`               | Public URL of the server, used for ticket links        | `http://localhost:4010`   |
-| `PORT`                   | Server port                                            | `4010`                    |
-| `UNCHAINED_TOKEN_SECRET` | Secret for session tokens (min 32 chars)               | -                         |
-| `UNCHAINED_SECRET`       | Derives the magic keys that open orders without login  | `secret`                  |
-| `EMAIL_FROM`             | Default sender email                                   | `noreply@unchained.local` |
-| `EMAIL_WEBSITE_NAME`     | Website name for emails                                | `Unchained`               |
-| `EMAIL_WEBSITE_URL`      | Website URL for emails                                 | `http://localhost:4010`   |
+| Variable                 | Description                                           | Default                   |
+| ------------------------ | ----------------------------------------------------- | ------------------------- |
+| `ROOT_URL`               | Public URL of the server, used for ticket links       | `http://localhost:4010`   |
+| `PORT`                   | Server port                                           | `4010`                    |
+| `UNCHAINED_TOKEN_SECRET` | Secret for session tokens (min 32 chars)              | -                         |
+| `UNCHAINED_SECRET`       | Derives the magic keys that open orders without login | `secret`                  |
+| `EMAIL_FROM`             | Default sender email                                  | `noreply@unchained.local` |
+| `EMAIL_WEBSITE_NAME`     | Website name for emails                               | `Unchained`               |
+| `EMAIL_WEBSITE_URL`      | Website URL for emails                                | `http://localhost:4010`   |
 
 ### Ticketing
 
-| Variable                         | Description                                                              | Default                              |
-| -------------------------------- | ------------------------------------------------------------------------ | ------------------------------------ |
-| `DISCOUNT_CODE_SECRET`           | 32 bytes as hex, signs reimbursement codes (`openssl rand -hex 32`)      | a development-only value             |
-| `UNCHAINED_TOKEN_EXPIRY_SECONDS` | Login lifetime; raise it for gate shifts (applies to all users)          | `3600`                               |
+| Variable                         | Description                                                         | Default                  |
+| -------------------------------- | ------------------------------------------------------------------- | ------------------------ |
+| `DISCOUNT_CODE_SECRET`           | 32 bytes as hex, signs reimbursement codes (`openssl rand -hex 32`) | a development-only value |
+| `UNCHAINED_TOKEN_EXPIRY_SECONDS` | Login lifetime; raise it for gate shifts (applies to all users)     | `3600`                   |
 
 ### Seeding
 
-| Variable                  | Description                                  | Default    |
-| ------------------------- | -------------------------------------------- | ---------- |
+| Variable                  | Description                                       | Default    |
+| ------------------------- | ------------------------------------------------- | ---------- |
 | `UNCHAINED_SEED_PASSWORD` | Password of both accounts (`generate` for random) | `password` |
-| `UNCHAINED_COUNTRY`       | Default country ISO code                     | `CH`       |
-| `UNCHAINED_CURRENCY`      | Default currency ISO code                    | `CHF`      |
-| `UNCHAINED_LANG`          | Default language ISO code                    | `de`       |
+| `UNCHAINED_COUNTRY`       | Default country ISO code                          | `CH`       |
+| `UNCHAINED_CURRENCY`      | Default currency ISO code                         | `CHF`      |
+| `UNCHAINED_LANG`          | Default language ISO code                         | `de`       |
 
 ## Ticketing Setup
 
@@ -94,7 +94,7 @@ await connect(fastify, platform, { adminUI: { plugins: [ticketingAdminPlugin()] 
 
 ### Selling tickets
 
-`seed.ts` creates the one `VIRTUAL` warehousing provider with the ticket issuer (`shop.unchained.warehousing.ticket`; gates open 120 minutes before the start and close 60 minutes after it) and the demo event "Unchained Live": a tokenized product with a supply of 500 tickets whose start, location, duration, doors and category are stored in `tokenization.ercMetadataProperties`. The event starts one hour after the first boot; move it in **Ticketing → Events** or with `updateTicketEvent`.
+`seed.ts` creates the one `VIRTUAL` warehousing provider with the ticket issuer (`shop.unchained.warehousing.ticket`; gates open 120 minutes before the start and close 60 minutes after it) and the demo event "Unchained Live": a tokenized product with a supply of 500 tickets whose start, location, duration, doors and category are stored in `product.meta`. The event starts one hour after the first boot; move it in **Ticketing → Events** or with `updateTicketEvent`.
 
 Each seat becomes one ticket with its own serial number. The storefront passes attendee names as the order position configuration `attendees`, and `ticketMeta` in `boot.ts` stores one per ticket (`Token.attendeeName`):
 

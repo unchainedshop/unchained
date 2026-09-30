@@ -2,7 +2,7 @@
 // in node --test.
 
 /** Where the ticket event start lives; ticketEvents sorts by it (sort alias of the event date). */
-export const EVENT_START_SORT_KEY = 'tokenization.ercMetadataProperties.slot';
+export const EVENT_START_SORT_KEY = 'meta.slot';
 
 const startOfDay = (date: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
 

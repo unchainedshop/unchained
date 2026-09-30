@@ -13,8 +13,9 @@ const UpdateTicketEventMutation = gql`
         eventDoorsOpenAt
         eventLocation
         eventCategory
+        eventDurationMinutes
+        eventDoorsOpenMinutesBefore
         contractConfiguration {
-          ercMetadataProperties
           supply
         }
       }

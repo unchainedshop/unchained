@@ -22,8 +22,8 @@ export const DateLikeSchema = z.union([
 
 // Every field is optional: off-chain products (tickets) have no contract address or token id, and
 // the import has always stored a partial tokenization as given (hence the ProductTokenization cast
-// in transformSpecification). ercMetadataProperties stays untyped, so an event slot keeps its type
-// (Date or ISO string).
+// in transformSpecification). ercMetadataProperties stays untyped, so its values keep their type
+// (e.g. a Date).
 export const ProductTokenizationSchema = z.object({
   contractAddress: z.optional(z.string()),
   contractStandard: z.optional(z.enum(ProductContractStandard)),

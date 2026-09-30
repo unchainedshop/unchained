@@ -1,8 +1,7 @@
 export default [
   /* GraphQL */ `
     """
-    The optional fields follow partial update rules: omit a field to keep the stored value,
-    pass null to clear it, pass a value to replace it.
+    Replaces the tokenization of the product as a whole: send every field to keep
     """
     input UpdateProductTokenizationInput {
       "Omit for off-chain tokens (e.g. tickets)"
@@ -11,10 +10,6 @@ export default [
       "Omit for off-chain tokens (e.g. tickets); required by on-chain ERC1155 minters"
       tokenId: String
       supply: Int!
-      """
-      Omit to keep the stored properties (e.g. a ticket event's slot), pass null to clear them;
-      an object replaces them entirely (no deep merge)
-      """
       ercMetadataProperties: JSON
     }
 

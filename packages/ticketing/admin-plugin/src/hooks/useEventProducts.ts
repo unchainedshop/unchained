@@ -41,7 +41,6 @@ const TicketEventsQuery = gql`
           }
         }
         contractConfiguration {
-          ercMetadataProperties
           supply
         }
         simulatedStocks {

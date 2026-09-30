@@ -17,13 +17,14 @@
 - **Google Wallet route redirects:** `GET /rest/google-wallet/download/:tokenId` answers `302` to the save link again instead of JSON `{ passLink }`. The renderer returns the link as a string or as `{ asURL }`; `null` answers `404`. Routes answer `404` with `{ error: '… not configured' }` for renderers that are not registered.
 - **Cancellation order:** the ticketing cancel services set `meta.cancelled` (and the new `meta.cancelledDate`) before they invalidate a ticket, so `TOKEN_INVALIDATED` listeners see the cancellation. A ticket redeemed earlier keeps its redemption date.
 - **Ticket counts:** `passes.getTicketsCreated` is deprecated in favour of `countIssuedTickets(productId, { skipCancelled })`; both sum token quantities and treat `meta.cancelled: false` as not cancelled. `invalidateAppleWalletPasses(unchainedAPI, token?)` only re-renders the given ticket's pass.
-- **Tokenization input:** `UpdateProductTokenizationInput.contractAddress` and `tokenId` are optional, and `updateProductTokenization` (and the MCP product tool) keeps `contractAddress`, `tokenId` and `ercMetadataProperties` when they are omitted; send `null` to clear one. `ContractConfiguration.tokenId` is nullable, and `ProductTokenization.contractAddress` / `tokenId` are optional in TypeScript.
+- **Tokenization input:** `UpdateProductTokenizationInput.contractAddress` and `tokenId` are optional. `updateProductTokenization` (and the MCP product tool) replace the tokenization as a whole, like `commerce`, `warehousing`, `supply` and `plan`; against alpha.8 and alpha.9, omitted fields are no longer kept. `ContractConfiguration.tokenId` is nullable, and `ProductTokenization.contractAddress` / `tokenId` are optional in TypeScript.
 - **ERC metadata route:** tokens are looked up by product and serial for ERC-721 and ERC-1155 alike (serials match case-sensitively), unknown or non-tokenized products answer `404`, and only the EIP keys are served (`PUBLIC_ERC_METADATA_KEYS`: `name`, `description`, `image`, `properties`, `attributes`, `localization`, `external_url`, `animation_url`, `background_color`, `decimals`). ERC-721 URLs that used the product's `tokenId` instead of the token serial answer `404`.
 - **Several `VIRTUAL` warehousing providers:** the first active one (oldest) alone decides `isInvalidateable` and `tokenMetadata`; a later provider can no longer turn its `false` into `true`.
+- **Ticket event details live in `product.meta`:** against alpha.8 and alpha.9, the ticketing plugin reads and writes `slot`, `location`, `durationMinutes`, `doorsOpenMinutesBefore` and `category` in `product.meta` (next to `meta.cancelled`) instead of `tokenization.ercMetadataProperties`, so they are no longer part of the public ERC metadata and `updateProductTokenization` cannot wipe them. `updateTicketEvent` no longer needs a configured tokenization, sort `ticketEvents` by `meta.slot`, and the new `TokenizedProduct.eventDurationMinutes` / `eventDoorsOpenMinutesBefore` fields expose the remaining details. Move the keys of events created with these alphas from `tokenization.ercMetadataProperties` to `meta`.
 
 ### Improvements
 
-- **Built-in ticket management:** `@unchainedshop/ticketing` adds a GraphQL API (`ticketEvents` / `ticketEventsCount` with `slotFrom`, `slotTo` and `tags` filters, `ticketLookup`, `scanTicket`, `updateTicketEvent`, `cancelTicket`, `cancelEvent`; `Token.ticketStatus`, `cancelledDate`, `attendeeName`, `isCanceled`; `TokenizedProduct.isCanceled` and `eventStartsAt`, `eventEndsAt`, `eventDoorsOpenAt`, `eventLocation`, `eventCategory`; `Order.magicKey` and `ticketsPdfUrl`), the `scanTicket`, `gateControl` and `cancelTicket` actions with a `ticketing` role for gate staff, cancellation e-mails (`EVENT_CANCELLED` / `TICKET_CANCELLED`, only registered when the project has no template of that name), optional reimbursement codes (`ReimbursementCodePlugin`, `DISCOUNT_CODE_SECRET`) and an Admin UI plugin with events and gate control (`@unchainedshop/ticketing/admin-plugin`). Gate staff redeem with `scanTicket(tokenId, productId, accessKey)`, which refuses with `TicketAccessKeyInvalidError`, `TicketWrongEventError`, `TicketCanceledError`, `TicketAlreadyRedeemedError` or `TicketNotRedeemableError` (with a `reason`) and emits `TICKET_REDEEMED`. See the Event Ticketing guide for the wiring.
+- **Built-in ticket management:** `@unchainedshop/ticketing` adds a GraphQL API (`ticketEvents` / `ticketEventsCount` with `slotFrom`, `slotTo` and `tags` filters, `ticketLookup`, `scanTicket`, `updateTicketEvent`, `cancelTicket`, `cancelEvent`; `Token.ticketStatus`, `cancelledDate`, `attendeeName`, `isCanceled`; `TokenizedProduct.isCanceled` and `eventStartsAt`, `eventEndsAt`, `eventDoorsOpenAt`, `eventLocation`, `eventCategory`, `eventDurationMinutes`, `eventDoorsOpenMinutesBefore`; `Order.magicKey` and `ticketsPdfUrl`), the `scanTicket`, `gateControl` and `cancelTicket` actions with a `ticketing` role for gate staff, cancellation e-mails (`EVENT_CANCELLED` / `TICKET_CANCELLED`, only registered when the project has no template of that name), optional reimbursement codes (`ReimbursementCodePlugin`, `DISCOUNT_CODE_SECRET`) and an Admin UI plugin with events and gate control (`@unchainedshop/ticketing/admin-plugin`). Gate staff redeem with `scanTicket(tokenId, productId, accessKey)`, which refuses with `TicketAccessKeyInvalidError`, `TicketWrongEventError`, `TicketCanceledError`, `TicketAlreadyRedeemedError` or `TicketNotRedeemableError` (with a `reason`) and emits `TICKET_REDEEMED`. See the Event Ticketing guide for the wiring.
 - **Ticket issuer:** `TicketWarehousingPlugin` / `createTicketWarehousingPlugin({ ticketMeta })` from `@unchainedshop/ticketing/warehousing/ticket` (adapter key `shop.unchained.warehousing.ticket`) issues one off-chain ticket per seat with atomic serial numbers per event (`passes.reserveTicketSerials`), shows stock from `tokenization.supply`, lets tickets be redeemed within a configurable entry window around the event start (`entryOpensMinutesBefore`, `entryClosesMinutesAfter`, `serialOffset`) and stores per-seat data from the `ticketMeta` hook, such as `attendeeName`, in `token.meta`.
 - **Ticket sales within supply and sale rules:** `validateTicketOrderPosition` / `createTicketOrderPositionValidator({ getSaleRules })` for `options.orders.validateOrderPosition` refuses tickets of cancelled events (`TicketEventCancelledError`), keeps issued tickets, pending orders and the current cart within the supply (`TicketSoldOutError`) and applies `onSale`, `salesStart`, `salesEnd` and `maxPerOrder` (`TicketNotOnSaleError`, `TicketSaleNotStartedError`, `TicketSaleEndedError`, `TicketOrderLimitExceededError`).
 - **Organizer scope:** `withTicketing(options, { canAccessEvent })` (or `createTicketingRoles({ canAccessEvent })`) limits non-admin staff to their events in lists, lookups, redemption, cancellation and event editing.
@@ -37,7 +38,6 @@
 
 ### Fixed
 
-- **Event dates survive the Token tab:** saving a product's tokenization in the Admin UI (or through `updateProductTokenization` / the MCP product tool without `ercMetadataProperties`) wiped `ercMetadataProperties`, including the event start (`slot`).
 - **ERC metadata leaked token data:** the public ERC metadata route served `token.meta` (for example the order id) and, for ERC-721, looked tokens up by contract address, so it could serve another product's token. See the breaking change above.
 - **Bulk import of tokenized products:** product `CREATE` / `UPDATE` payloads declare `specification.tokenization` and accept `published` as a date or a date string.
 - **Tickets PDF links with `otp`:** the magic-key rule only checked the `x-magic-key` header, so the `/rest/print_tickets?orderId=…&otp=…` links in e-mails always answered `403`. It accepts the `otp` parameter as well (timing-safe), and token rules find the order through the order position when `meta.orderId` is missing.
@@ -52,7 +52,7 @@
 - **`UNCHAINED_COOKIE_SAMESITE=0`:** the documented value to omit the SameSite attribute was mapped to `false` and then replaced by the `lax` fallback. It now yields `sameSite: false`.
 - **`@unchainedshop/plugins` manifest:** removed `main`/`types`, which pointed at a deleted `lib/plugins-index.*`. The package only has subpath exports (`@unchainedshop/plugins/presets/all`, `…/payment/stripe`, …).
 - **Examples:** all examples now `await connect(...)` (it is async since v5). The oidc and ticketing examples register `SendMessagePlugin`, because their seeds create a `send-message` delivery provider that the base preset does not include.
-- **Fastify with `@fastify/oauth2` starts again:** `connect()` registered `@fastify/cookie` whenever it was not registered *yet*, but plugins registered earlier (like `@fastify/oauth2`) only load on `ready` and bring their own cookie plugin, so Fastify refused to start (`The decorator 'serializeCookie' has already been added!`). `connect()` now decides after the previously registered plugins have loaded.
+- **Fastify with `@fastify/oauth2` starts again:** `connect()` registered `@fastify/cookie` whenever it was not registered _yet_, but plugins registered earlier (like `@fastify/oauth2`) only load on `ready` and bring their own cookie plugin, so Fastify refused to start (`The decorator 'serializeCookie' has already been added!`). `connect()` now decides after the previously registered plugins have loaded.
 - **OIDC keys via discovery:** without an explicit `jwksUri`, OIDC providers were verified against `${issuer}/.well-known/jwks.json`, which Keycloak and Zitadel don't serve, so their bearer tokens and back-channel logout tokens never verified. The engine now uses the `jwks_uri` from the issuer's OIDC discovery document (falling back to the old location). Valid OIDC bearer tokens also no longer log `Token verification error` at error level on every request.
 - **ERC metadata for unknown tokens:** answers 404 instead of a 503 from a `TypeError`.
 - **OIDC example:** the first login of a new SSO user failed, because `createUser` returns the new user id and the example passed that id to `login()`. The Keycloak integration now reads client roles from the verified access token (Keycloak doesn't put them into the ID token by default, so SSO users had no permissions), checks the issuer of MCP bearer tokens, and relies on OIDC discovery. `test-mcp-oauth` registers clients without the `openid` scope Keycloak rejects and sends the `Accept` header MCP requires. The README documents the Keycloak and Zitadel setup (roles, back-channel logout, audience, MCP client registration).
@@ -93,6 +93,7 @@ alpha.6 skipped to re-align engine version with admin-ui.
 ## Major Breaking Changes
 
 ### Plugin System Modernization
+
 - **REMOVED**: All legacy adapter exports from plugin files. Use new `*Plugin` exports instead:
   - `Invoice` → `InvoicePlugin`
   - `InvoicePrepaid` → `InvoicePrepaidPlugin`
@@ -111,6 +112,7 @@ alpha.6 skipped to re-align engine version with admin-ui.
 - **REMOVED**: `PluginRegistry.registerAdapters()` method (was deprecated and non-functional).
 
 ### GraphQL API Changes
+
 - **REMOVED**: Deprecated mutations (replaced by cart-based mutations in v4):
   - `setOrderDeliveryProvider` → use `updateCart`
   - `setOrderPaymentProvider` → use `updateCart`
@@ -126,6 +128,7 @@ alpha.6 skipped to re-align engine version with admin-ui.
   - `fastifyRouter` → use `adminUIRouter` from `@unchainedshop/api/fastify`
 
 ### Authentication (Stateless JWT)
+
 - **CHANGED**: Authentication moved from stateful Express/Passport sessions to stateless JWTs (HS256, signed/verified with `jose`). Server-side session storage — `express-session`, `@fastify/session`, `passport`, and the bundled MongoDB session store — has been removed. **All existing sessions are invalidated on upgrade; clients must re-authenticate.**
 - **REMOVED**: `express-session`, `@fastify/session`, `passport`, and `jsonwebtoken` dependencies. `cookie-parser` is now a required peer dependency. The `sessions` collection is no longer used.
 - **NEW (required)**: `UNCHAINED_TOKEN_SECRET` must be set and be at least 32 characters (256 bits) or token signing/verification throws. Optional `UNCHAINED_TOKEN_EXPIRY_SECONDS` (default `3600`, previously effectively 7 days) and `UNCHAINED_TOKEN_ISSUER` (default `unchained-engine`).
@@ -136,30 +139,37 @@ alpha.6 skipped to re-align engine version with admin-ui.
 - **CHANGED**: `changePassword` is no longer self-permitted by the default ACL — review custom roles if you relied on this.
 
 ### Roles
+
 - **CHANGED**: The global `Roles` singleton is replaced by a `createRoles()` factory that returns an isolated instance per `configureRoles()` call (a default `Roles` instance is still exported). The action map and the `allRoles` lookup in `@unchainedshop/api` remain module-level, so several engines in one process still share their actions and custom roles. The `Role` constructor no longer auto-registers into a global registry and no longer throws on duplicate names; register explicitly via `addRole()` / `configureRoles()`. Default `admin` / `__loggedIn__` / `__all__` roles are no longer created at module import. `UnchainedServerOptions.roles` and `Context.roles` are now typed `RolesInterface` (was `any`).
 
 ### Admin UI
+
 - **CHANGED**: Permissions moved from a build-time generated artifact (`generate-permissions.js`, `window.AdminUiPermissions`) to a typed runtime model in `src/modules/Auth/permissionConfig.ts`. The build no longer runs `generate-permissions.js` or emits `public/admin-ui-permissions.js`.
 - **CHANGED**: Access control is now **deny-by-default** — routes absent from `ROUTE_ROLES` are denied. Custom pages must be added to `ROUTE_ROLES` or `UNRESTRICTED_PAGES`. Dashboard widgets, mutating controls, and form fields gate on `hasRole()` / `isAdmin()`, and data hooks skip GraphQL queries the user is not authorized for.
 - **CHANGED**: 54 UI primitives consolidated into a canonical `src/components/ui/` kit (with `@/components/ui` and `@/components/ui/form` barrels). Importing them from the old `**/common/components/*` / `**/forms/components/*` paths is now an ESLint error. `DeleteButton`, `HeaderDeleteButton`, and `EditIcon` were removed (use `<Button>` variants). The per-domain `use*StatusTypes` hooks were replaced by a generic `useStatusTypes(enumName)`. `classnames` was replaced by `clsx`.
 
 ### Server Adapters (Express & Fastify)
+
 - **CHANGED**: `connect()` is now async; its `db` argument and `initPluginMiddlewares` callback were removed in favor of `authConfig` (JWT/OIDC) and `trustProxy` options. Proxy header trust (`x-forwarded-for` / `x-real-ip`) is now opt-in via `trustProxy`. Plugin HTTP routes mount automatically from the plugin registry (`pluginRegistry.getRoutes()`) via WHATWG-Fetch handlers, replacing the per-framework `handler-express.ts` / `handler-fastify.ts` files.
 - **REMOVED**: `GRAPHQL_API_PATH` environment variable is no longer read. Configure the GraphQL endpoint path through Yoga options (`graphqlHandler.graphqlEndpoint`). `MCP_API_PATH` is retained.
 
 ### Plugins
+
 - **REMOVED**: PayPal Checkout plugin entirely (due to deprecated `@paypal/checkout-server-sdk`). Implement a custom PayPal integration using `@paypal/paypal-server-sdk`.
 - **REMOVED**: Braintree payment plugin.
 
 ### Leveled Pricing
+
 - **CHANGED**: Product catalog price tiers are now keyed by **`minQuantity`** (inclusive lower bound; base tier `= 0`; the highest tier is open-ended) instead of v4's `maxQuantity` (inclusive upper bound). GraphQL: `UpdateProductCommercePricingInput.maxQuantity` **removed** (use `minQuantity`); `PriceLevel.minQuantity` added and `PriceLevel.maxQuantity` is now derived/nullable for display; `ProductCatalogPrice.minQuantity` replaces `maxQuantity`. Bulk-import/export product price columns use `minQuantity`.
 - **AUTOMATIC MIGRATION**: an idempotent startup migration (`20260611120000-pricing-maxquantity-to-minquantity`) converts existing `commerce.pricing` per `(countryCode, currencyCode)` — no operator action required; safe to re-run. **Update any storefront/client/import code that wrote `maxQuantity` to write `minQuantity`.**
 
 ### Event System
+
 - **CHANGED**: the Redis and AWS EventBridge emit adapters no longer self-register on import. Register the transport explicitly before `startPlatform`: `import { setEmitAdapter } from '@unchainedshop/events'; import { RedisEventEmitter } from '@unchainedshop/plugins/events/redis'; setEmitAdapter(RedisEventEmitter());`
 - **NEW**: optional `EmitAdapter.shutdown()` — implemented by the redis/eventbridge adapters to close long-lived connections; called by `startPlatform` on graceful shutdown.
 
 ### Dependencies & Integrations
+
 - **CHANGED**: Upgraded to `graphql` ^17 across the workspace, executed through the graphql-js reference engine (`useEngine` inserted as the first Yoga plugin). `@unchainedshop/api` declares a non-optional `graphql` peer `>=16.14 <18`.
 - **CHANGED**: MCP integration migrated to the split `@modelcontextprotocol/server` v2 (optional peer `>=2 <3`, replacing the monolithic v1 SDK). The `/mcp` endpoint is now stateless — a fresh `McpServer` is built per request from the authenticated context.
 - **CHANGED**: `@parse/node-apn` (Apple Wallet push in `@unchainedshop/ticketing`) is now an **optional** peer dependency, loaded via guarded dynamic import. Install it only if you send pass push notifications.
@@ -168,12 +178,14 @@ alpha.6 skipped to re-align engine version with admin-ui.
 ## New Features & Improvements
 
 ### Authentication & Security
+
 - **NEW**: `Mutation.logoutAllSessions` invalidates all of a user's JWTs by bumping the token version.
 - **NEW**: OIDC inbound token verification (remote JWKS) and an OpenID Connect Back-Channel Logout 1.0 endpoint (`POST /backchannel-logout`) with full `logout_token` signature verification.
 - **NEW**: Security audit events `ACL_DENIED` and `ACL_GRANTED_SENSITIVE` for monitoring denied and sensitive permission grants.
 - **CHANGED**: Admin impersonation now travels inside the JWT (`imp` claim) instead of session state.
 
 ### Developer Experience
+
 - **NEW**: Restored the `unchained download-llm-docs` CLI from v4.8.x. Downloads versioned docs and maintains an index in `CLAUDE.md` / `AGENTS.md` (including legacy lowercase `agents.md`).
 - **NEW**: `registerX(...)` plugin authoring factories (re-exported from `@unchainedshop/core`) — author a custom adapter of any director type in one typed call (`registerPaymentProvider`, `registerDeliveryProvider`, `registerProductPricing`, `registerOrderDiscount`, `registerWorker`, `registerFileAdapter`, `registerQuotation`, `registerEnrollment`, …). They build and register the `IPlugin` for you; `pluginRegistry.register()` remains the low-level primitive. See the [Plugin Factories](https://docs.unchained.shop/extend/plugin-factories) docs.
 - **NEW**: `@unchainedshop/client` package — installable React/Apollo GraphQL hooks with per-module subpath imports (e.g. `@unchainedshop/client/product`), generated from the admin-ui hooks, for building custom storefronts and admin tools. Peer dependencies: `@apollo/client` ^4, `graphql` ^16, `react` >=18.
@@ -181,26 +193,32 @@ alpha.6 skipped to re-align engine version with admin-ui.
 - **NEW**: `Query.registeredEventTypes: [String!]!` lists all registered event type names (gated by `viewEvents`).
 
 ### Tax
+
 - **NEW**: EU, UK, and US tax plugins with bundled, era-based rate tables and country presets (`registerEuTaxPlugins`, `registerUkTaxPlugins`, `registerUsSalesTaxPlugins`). EU covers destination-based VAT for all 27 member states with per-category rates; categories are selected via a `eu-tax-category:<name>` product tag or delivery provider.
 - **CHANGED**: Swiss VAT rates moved out of code into a bundled `ch-tax-rates.json` table (ESTV source metadata, era history back to 2001), sharing the new era-based tax helpers. See the `update-tax-rates` maintenance workflow.
 
 ### Admin UI
+
 - Added Cypress e2e suites for enrollments, quotations, and tokens, and reduced flakiness (lower retries, real support entrypoint, `cy.selectLocale()` command).
 
 ### Documentation
+
 - **NEW**: AI Integration docs section (MCP server reference with 9 tool categories, Admin Copilot setup, AI FAQ) and auto-generated `/llms.txt` + `/llms-full.txt` for LLM/crawler consumption.
 - Added a comprehensive GraphQL API reference and an RBAC permissions reference (126 actions documented), plus server-setup, testing, seed-data, and contributing guides.
 
 ### Performance & Dependencies
+
 - **CHANGED**: Order items, discounts, payment, delivery, and enrollment GraphQL fields now use batch loaders. Item and discount ordering retains the stable `created` / `_id` sort. Permission enumeration skips further rules for actions already granted.
 - **CHANGED**: `@unchainedshop/utils` now uses `awesome-phonenumber` instead of `libphonenumber-js` for phone-number normalization and country-code/subscriber splitting — the same Google-metadata validation at ~0.74 MB installed versus ~12 MB (a ~94% cut in the single largest production dependency of a minimal install). The public helpers `normalizePhoneNumber` and `phoneNumberToParts` are unchanged and remain synchronous.
 
 ### Reliability
+
 - **FIXED**: Ported ticket cancellation's product metadata update and GridFS upload preflight support for tracing headers from v4.8.x.
 - **FIXED**: Bulk-import tests await worker completion; memoization tests explicitly control in-flight completion; timing-equality tests compare alternating measurement rounds. Forgejo jobs use Node 26.8.2, MongoDB 8.2.12, and checksum-verified Trivy 0.74.0, with plain Docker docs publishing and blocking engine tests.
 - **FIXED**: Deterministic-selection queries now carry a stable `_id` secondary sort key (its direction mirroring the primary key), so results no longer fall back to MongoDB's undefined tie-break order when the primary key ties. This covers current-cart selection, localized-text resolution (backing every product/assortment/filter/media/variation text loader), default delivery/payment/warehousing provider selection, product currency-rate and SKU lookups, stored payment-credential selection, and assortment/product-media display ordering — removing a class of order-dependent nondeterminism (e.g. the default-provider inheritance and Datatrans checkout flakes).
 
 ## Migration Guide
+
 See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migration instructions.
 
 ---
@@ -208,6 +226,7 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 # Unchained Engine v4.8
 
 ## Minor
+
 - **Breaking (MCP deployments): MCP migrated to the MCP TypeScript SDK v2 — the optional peer dependency is renamed from `@modelcontextprotocol/sdk` to `@modelcontextprotocol/server`, shrinking the installed MCP footprint from 94 packages to 3** (`@unchainedshop/api`). The `/mcp` endpoint is now **stateless**: every request is served by a fresh per-request MCP server built from that request's authenticated context, so no `Mcp-Session-Id` is issued or required, `GET`/`DELETE /mcp` return `405`, the abandoned-session memory growth of the old in-process session map is gone, and the endpoint works multi-replica. Cross-user session reuse is now impossible by construction (there are no sessions), while the per-request 401/403 admin wall — including the `WWW-Authenticate`/`.well-known/oauth-protected-resource` metadata — is unchanged. Clients speaking the modern MCP protocol era (2026-07-28, `server/discover`) are now supported alongside the legacy `initialize` era; tool schemas in `tools/list` are otherwise content-identical but declare JSON Schema draft 2020-12 instead of draft-07. Chat no longer needs any `@modelcontextprotocol/*` client package: the shop-configuration resources are read in-process (admin-gated), and tools continue to flow through `@ai-sdk/mcp` (chat deployments still install `@modelcontextprotocol/server`, since the tools are served by the engine's own `/mcp` endpoint). If the new peer is missing, the engine boots with a warning and `/mcp` answers `503` instead of crashing. The express chat handler was aligned with fastify (`stepCountIs(500)`, no hardcoded `temperature`, MCP client closed on all paths). The `/mcp` endpoint is now covered by an integration test suite (raw JSON-RPC + `@ai-sdk/mcp` interop); `zod` ranges in `@unchainedshop/api` and `@unchainedshop/core` narrowed to `^4.2.0`. See `MIGRATION.md`.
 - **Filter product-id cache overhauled** (`@unchainedshop/core-filters`, `@unchainedshop/core`, `@unchainedshop/api`): cache rows of removed filter options are pruned; rows carry a generation derived from the filter's `updated` stamp so an overtaken rebuild can neither publish nor retire rows a newer generation already claimed; partial writes never retire rows the live fallback still needs; the mongo cache backend now owns its `filter_productId_cache` collection and indexes (nothing provisions them unless the backend is in use) and evicts its per-process memo on every write/purge. `buildProductIdMap` no longer respreads its accumulator per option (quadratic on large filters) and uses a null-prototyped map, and `filterProductIds` only reads own properties — a `filterQuery` asking for `constructor`/`toString` no longer crashes the search. Filter mutations (`createFilter`, `updateFilter`, `createFilterOption`, `removeFilterOption`) moved into core services that pair the write with cache invalidation — the MCP `updateFilter` tool previously updated without invalidating at all. `LoadedFilterOption.isSelected` is non-nullable again.
 - **Era-based regional tax plugins with bundled rate tables** (`@unchainedshop/plugins`): Swiss VAT rates move out of code into `ch-tax-rates.json` (ESTV metadata, era history back to 2001) — also a behavior fix: 2011–2017 orders were previously priced with 2018–2023 rates. New destination-based EU VAT (all 27 member states, per-country era tables with `standard`/`reduced`/`reduced2`/`super_reduced`/`parking` categories), UK VAT (GB/IM/XI) and US statewide sales-tax (50 states + DC) adapters, registered via new opt-in presets `presets/countries/{eu,uk,us}` (`registerEuTaxPlugins()` etc. — deliberately not part of the all-preset, since stacking regional taxers would double-tax). Rate tables are emitted to `lib/` and never fetched at runtime; the repository's `update-tax-rates` skill maintains them against the official sources.
@@ -230,6 +249,7 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 - ESLint upgraded to v10 across the workspace; Stripe SDK updated alongside.
 
 ## Patch
+
 - **`SimpleProduct.simulatedDispatches` and `simulatedStocks` return every provider pair once and honour `deliveryProviderType`** (`@unchainedshop/core`, `@unchainedshop/api`): the services appended the accumulated result to itself for every delivery provider, so n delivery providers produced 2ⁿ−1 rows, and the resolvers never passed `deliveryProviderType` on. The result now has one row per delivery and warehousing provider pair, restricted to the requested delivery provider type: `SHIPPING` by default, as the schema declares, or every type with an explicit `deliveryProviderType: null`. Clients that relied on the default also returning pickup providers need to pass `PICKUP` or `null`. `TokenizedProduct.simulatedStocks`, which has no type argument, keeps covering every delivery provider.
 - **Order mails show the shipping address as delivery address** (`@unchainedshop/platform`): the default order confirmation, order rejection and delivery forwarding templates read the delivery address from `context.deliveryAddress`, a key nothing writes (`updateCartDeliveryShipping` stores `context.address`), so they always printed the billing address. That includes the `DELIVERY` mail with which `shop.unchained.delivery.send-message` forwards shipping orders to the fulfilment address. `getOrderSummaryData` now reads `context.address` and keeps `context.deliveryAddress` as a fallback.
 - **A provider whose plugin is not registered no longer breaks every cart** (`@unchainedshop/core`): the supported-provider lookups asked the delivery, payment and warehousing directors about every provider, and they throw when no adapter is registered for a provider's `adapterKey`. A single stale provider (plugin removed or renamed, or provider created before its plugin was deployed) made `createCart`, `addCartProduct` and every other cart recalculation fail with `Unexpected error.`, and broke `Order.supportedDeliveryProviders` and `Order.supportedPaymentProviders`. Such providers now count as inactive and are logged with a warning; operations that address that one provider still fail with the adapter error.
@@ -243,11 +263,13 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 # Unchained Engine v4.7
 
 ## Minor
+
 - **Server-side bulk export system.** A new `BULK_EXPORT` worker (`@unchainedshop/plugins`) moves product, assortment and filter exports off the client and onto the server, generating CSV files through a configurable exporter factory. Exports can opt individual data in or out, are grouped by type, expose a recent-exports view with a count in the admin-ui side navigation, and produce download links that expire after one hour. Meta export/import is supported for products, filters and assortments.
 - **User data export.** A default user-export handler exports a user's orders, quotations, reviews and enrollments; the admin-ui gains a user-export flow with configurable fields.
 - **Batch user lookup.** `@unchainedshop/core-users` can now find users in batches by usernames and by emails, backing DataLoader-style resolution instead of per-user queries.
 
 ## Patch
+
 - Bulk import now batches its payload to avoid large-payload errors, with adjusted product/assortment/filter import normalizers.
 - Fixed Stripe attempting to initialize without a configured `apiToken`.
 - Fixed a product-export schema issue and a price-export typo.
@@ -257,6 +279,7 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 # Unchained Engine v4.6
 
 ## Minor
+
 - Added OCSF-compliant audit trail system in `@unchainedshop/events` for security monitoring and compliance (SOC 2, GDPR, HIPAA). Enable with `UNCHAINED_AUDIT_ENABLED=true`.
 - Added new demo data CLI tool (`tools/demo-data-cli`) for seeding development environments with realistic e-commerce data.
 - Typo fix: `FULLFILLED` → `FULFILLED` in `OrderStatus` and `QuotationStatus` enums. Update any code referencing these status values.
@@ -266,6 +289,7 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 - Added timing-safe string comparison utility in `@unchainedshop/utils` for secure token validation.
 
 ## Patch
+
 - Fix `initDb` in `@unchainedshop/mongodb` incorrectly removing database on exit (now only in test mode).
 - Fix WebAuthn not using `generateDbObjectId` for credential creation requests.
 - Improved security documentation with SECURITY.md and deployment security guide.
@@ -282,10 +306,10 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 - Provider module query APIs changed: `findProviders()` and `count()` in delivery, payment, and warehousing modules now accept structured query objects (`DeliveryProviderQuery`, `PaymentProviderQuery`, `WarehousingProviderQuery`) instead of raw MongoDB filters.
 - Multiple functions moved from GraphQL resolvers to core services layer. New services available: `services.files.createFileDownloadURL()`, `services.orders.resolveOrderItemDispatches()`, `services.orders.removeCartDiscount()`, `services.products.findProductSiblings()`, `services.products.simulateConfigurablePriceRange()`, `services.warehousing.resolveTokenStatus()`, `services.warehousing.isTokenInvalidateable()`, `services.filters.removeFilter()`, `services.delivery.simulateDeliveryPricing()`, `services.payment.simulatePaymentPricing()`.
 
-
 # Unchained Engine v4.4
 
 ## Minor
+
 - Small breaking change for `Mutation.createProduct` and BulkImport Product payloads: type is now an enum of uppercase types. This is needed so users understand how to pass the types. Admin UI changes needed.
 - Improve performance of facet filtering by 2x
 - Upgrade to Zod 4
@@ -296,6 +320,7 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 - Adds Node.js 25 support
 
 ## Patch
+
 - Fix Admin UI Date Formats to use browser default
 - Fix GridFS plugin crashing when an already existing asset _id is used to write files. Now removes the existing binary first.
 - Fix types for updateTexts in core modules assortments, products and filters
@@ -308,6 +333,7 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 # Unchained Engine v4.3
 
 ## Minor
+
 - Delivery Providers now expose the pick-up locations too #656
 - Permissions have been updated with a new enrollUser permission
 - Admin UI: Now shows menu items and actions dynamically according to permissions of a user
@@ -315,6 +341,7 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 - Node.js 25 by default in Dockerfiles
 
 ## Patch
+
 - Fix OrderStatisticsRecord (add missing field count)
 - Improved performance of cold boots and price fields
 - Fixed issue with bulk importing media and files not beeing found after
@@ -323,6 +350,7 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 # Unchained Engine v4.2
 
 ## Minor
+
 - Removed obsolete PickMUp delivery provider because it's not compatible anymore with the API of Migros
 - Stores Plugin now allows to set the stores without JSON.stringifying the value
 - Added various factory methods to simplify plugin development
@@ -333,6 +361,7 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 - Various improvements for the Admin UI
 
 ## Patch
+
 - Fix tokensCount crashing
 - Fix a case where delivery/payment/warehousing providers returned as empty array when using explicit null in queries
 - Fix a problem where adding a product to the cart twice led to two order positions when it should just increase the quantity
@@ -342,13 +371,14 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 - Improved findSiblings performance
 - Improved searchProducts in assortments performance by using the assortment loader
 
-
 # Unchained Engine v4.1
 
 ## Minor
+
 - Add warehousing provider loader and slightly improve performance when warehousing is involved (for ex. delivery estimations on many products)
 
 ## Patch
+
 - Fix a case where the expiry of the enrollment was calculated wrongly
 - Fix catalog price calculation bug with leveled prices #670
 - Fix unchained supporting ai@5.0.80+ (breaking change with experimental feature)
@@ -359,6 +389,7 @@ This release brings you FerretDB and cloud-hosted MongoDB support (AWS / Azure) 
 
 We also added experimental MCP support 🤖, so any AI app can now read and manage data in Unchained. We've also added an AI chat feature to the Admin UI.
 Known limitations:
+
 - Only users with admin role can access the MCP server.
 - If you want to use the MCP server in clients like Claude Code, Visual Studio, etc., you need to either set an Access Token or enable OAuth 2.1. Check out our OIDC example to see how this can be achieved.
 - We will bring more tools to the table with upcoming minor releases, currently only basic product management is enabled
@@ -381,8 +412,8 @@ connectChat(expressApp, {
       ...
     });
 ```
-You can also extend this by adding additional custom tools 
 
+You can also extend this by adding additional custom tools
 
 ```
 connectChat(expressApp, {
@@ -394,6 +425,7 @@ connectChat(expressApp, {
 **Attention: If you upgrade to this version from <3, first upgrade to the latest v3 to not miss any migrations.**
 
 ## Major
+
 - Bulk Import now validates data against Zod schemas, returning early with an error when the structure is invalid. This allows developer to see errors while streaming, resolving certain import errors later on in the work queue due to wrong data formats.
 - Bulk Import: `BulkImportOperation` type moved from `@unchainedshop/platform` to `@unchainedshop/core` and now requires a generic type parameter.
 - Added `Mutation.updateCartPaymentInvoice`, `Mutation.updateCartPaymentGeneric`, `Mutation.updateCartDeliveryPickUp`, `Mutation.updateCartDeliveryShipping`. Those mutations do not only change the provider's configuration but also set the provider as current provider on the cart/orderId provided. As this new flow is superior to the old one involving calling multiple mutations and holding a deliveryId/paymentId in memory for clients, we deprecated the following mutations: `Mutation.updateOrderDeliveryShipping`, `Mutation.updateOrderDeliveryPickUp`, `Mutation.updateOrderPaymentInvoice`, `Mutation.updateOrderPaymentGeneric`, `Mutation.setOrderPaymentProvider`, `Mutation.setOrderDeliveryProvider`
@@ -407,6 +439,7 @@ connectChat(expressApp, {
 - Payment plugins: `paymentProviderId` removed from adapter context. Access it through the provider object instead.
 
 ## Minor
+
 - Add Node.js v24 support
 - Bundle Products now support pricing on their own, resulting in an actually usable bundle implementation. By default, the catalog pricing plugin falls back to summing bundled product prices.
 - Add various loaders to optimize db requests and improve the overall performance of the system
@@ -422,6 +455,7 @@ connectChat(expressApp, {
 - MCP and AI server packages (`@modelcontextprotocol/sdk`, `ai`) are now optional peer dependencies
 
 ## Patch
+
 - Update to ESlint 9
 - Use @scure packages to reduce dependency hell around cryptography
 - Remove the 'twilio' dependency (> 5mb) with a single native fetch call to the Twilio API 🤪
@@ -433,6 +467,7 @@ connectChat(expressApp, {
 # Unchained Engine v3.1
 
 ## Minor
+
 - Platform: Add OIDC Connect Support to Admin UI with `singleSignOnURL` configurability
 - Platform: Improve Typing for Boot Code
 - API: Expose `externalLinks` and `singleSignOnURL` in `ShopInfo`
@@ -441,6 +476,7 @@ connectChat(expressApp, {
 - Examples: Add unified OIDC example with working Keycloak and Zitadel configs
 
 ## Patch
+
 - Fix Cart Migration Regression
 - Fix Bulk Import Regression
 - Fix `ProductCatalogPrice` still had an _id
@@ -449,6 +485,7 @@ connectChat(expressApp, {
 # Unchained Engine v3.0 ("Odi")
 
 We are thrilled to announce Unchained Engine v3.0, 5 years after the first version. We started with an overloaded framework approach using Meteor and gradually removed dependency by dependency, getting closer to the metal and in-line with today's standards. Unchained Engine...
+
 - ...is 100% ESM and self-hosted
 - ...loves WebCrypto, Fetch API, WebPush, URL, WebAuthn, oAuth
 - ...runs on Bun, Node.js and Serverless frameworks.
@@ -459,30 +496,36 @@ We are thrilled to announce Unchained Engine v3.0, 5 years after the first versi
 Besides the ideology about the technical stuff, it basically provides all the GraphQL API's you need to build a modern Web-Shop, Ticketing System.
 
 ## Ticketing
+
 I don't know if you have heard it but there is a new package "ticketing". It allows self-hosted ticketing with Apple Wallet and PDF Printing...
 
 ## Removing the Auth Fat
+
 We experienced feature creep in the authentication part of Unchained and suddenly woke up to homemade implementations of Two-Factor Auth via TOTP, WebAuthn, oAuth, Impersonator features etc. Many solutions like Zitadel, Keycloak, Auth0 etc. solve that just perfect and keep up with the ever increasing complexity of auth mechanisms. At the same time, core-accountsjs depends on a package called accountsjs which is unmaintained and uses a conflicting old mongodb driver.
 
 That's why we have decided to remove various auth features that are better solved through Identity Management systems and migrate to passport.js which is also ESM now. That opens the door to complex login methods like OpenID Connect through the community of passport.js.
 
 We will keep supporting the following auth-strategies out of the box that we consider widely known web standards:
+
 - E-Mail/Username & Password
 - WebAuthn (Passkeys)
 - Access Tokens
 
 ## Service Layer Refactoring
+
 When we first started with the module approach, cross-module functions like the checkout were using functions of each other, creating bi-directional dependencies that were hard to manage. With the newest release, we have moved out all bi-directional function calls into the `core` umbrella package.
 
 We got rid of about 1'000 lines of code doing that and dramatically reduced complexity across the platform. `context.services` now houses all those methods and the core modules are cleanly separated mainly doing DB abstraction work.
 
 ## Bye bye Apollo Server
+
 We switched over from Apollo Server to GraphQL Yoga. It's just better in all ways possible. Okay, thanks, bye. Checkout the kitchensink or example projects to see how you can switch over or consult the [Migration Guide](./MIGRATION.md).
 
 ## Better Typescript Support
 Removed `@unchainedshop/types`. All types needed are now coming directly from the corresponding packages which leads to clearer intents and types beeing more strict and in sync with the actual code. This has a massive impact on custom backend code. Please check the [Migration Guide](./MIGRATION.md) for further instructions besides that.
 
 ## Massive Performance Improvements & Experimental Fastify Support
+
 Queries involving catalog and products are now approximately **3 times faster** due to improved usage of caching, dataloader techniques and less db roundtrips in general.
 
 Checkouts are about **2 times faster**, too.
@@ -492,6 +535,7 @@ With the new (still experimental) Fastify and Bun support, we further increased 
 Along the way we thought it would be nice to remove about 100 NPM module dependencies, so we did that, too. Oh my god yes.
 
 ## BREAKING API CHANGES
+
 Behavioral Change: Cart total are now null if there is no item in the cart and needs to be defaulted to an amount of 0 by the frontend. The reason for this change is that a free position could still have delivery or payment fees based on the article. So in order to communicate that to the frontend, we can't price an order when we don't know what is beeing ordered. As orders without a price can't be checked out it makes that clear to the client, too.
 
 - `Price._id` **removed** (this only caused problems with caching behavior and added weight to the code)
@@ -535,7 +579,7 @@ Behavioral Change: Cart total are now null if there is no item in the cart and n
 - `Mutation.createWebAuthnCredentialRequestOptions` return type changed from `JSON!` to `JSON` (nullable)
 - `Query.impersonator` description changed (returns impersonator of currently logged in user)
 - `LoginMethodResponse.token` **removed, use server-side cookies or access-keys**
-- `LoginMethodResponse.id` **removed, uses _id now like all other entities**
+- `LoginMethodResponse.id` **removed, uses \_id now like all other entities**
 - `Shop.oAuthProviders` removed
 - `User.isTwoFactorEnabled` removed
 - `User.oAuthAccounts` removed
@@ -559,6 +603,7 @@ Behavioral Change: Cart total are now null if there is no item in the cart and n
 - `@cacheControl` directive simplified, removed `inheritMaxAge` option
 
 ## Major
+
 - Drop support for Node.js <22.x
 - Drop Amazon Document DB compatibility mode because it's not needed anymore with 5.0
 - Auth: Removed `core-accounts`, migrated some settings partially to user settings (removed sendVerificationEmailAfterSignup, introduced new validation functions)
@@ -581,23 +626,23 @@ Behavioral Change: Cart total are now null if there is no item in the cart and n
 - Platform: Removed sugar connectPlatformToExpress4 to save dependencies when running in no-express env, use `import { connect } from '@unchainedshop/api/express/index.js'` now.
 - Plugins: Plugin presets restructured - use `@unchainedshop/plugins/presets/all.js` for modules and `@unchainedshop/plugins/presets/all-express.js` or `all-fastify.js` for HTTP handlers
 
-
 ## Minor
+
 - Improved cookie handling
 - API: Extend `Query.users` to accept additional filter options `emailVerified` & `lastLogin`
 - Plugins: Add AWS Event Bridge Plugin for Serverless Mode
 - Update Stripe
 
-
 # Unchained Engine v2.14
 
 ## Minor
+
 - API: Extend `Mutation.confirmOrder` and `Mutation.rejectOrder` with a comment field. Allows to provide arbitrary data like a rejection reason that you can use in messaging.
 - API: Change argument format of `Query.workStatistics`, `Query.eventStatistics` & `Query.orderStatistics` from `from`/`to` to `dateRange` of type `DateFilterInput`
 - API: `Product.simulatedPrice` now accepts an optional configuration so you can also provide arbitrary configs to simulate prices
 - API: New Queries have been added to gather basic statistical data: `Query.eventStatistics`, `Query.orderStatistics`, `Query.workStatistics`.
 - API: Add `Mutation.invalidateToken` to manually mark a token as invalidated
-- API: Add `Query.tokens`, `TokenizedProduct.tokens` and `Order.tokens` to get all tokens or tokens related to entitites based on permission. 
+- API: Add `Query.tokens`, `TokenizedProduct.tokens` and `Order.tokens` to get all tokens or tokens related to entitites based on permission.
 - API: Extend `Token` with new fields: `isInvalidateable`, `accessKey`, `invalidatedDate`, `expiryDate`.
 - API: `Query.orders` and `User.orders` now accept a parameter `status` to filter by order status
 - `setLoginToken` has been changed slightly and needs to have `res` supplied as first param
@@ -609,6 +654,7 @@ Behavioral Change: Cart total are now null if there is no item in the cart and n
 - Add new `ticketing` package that allows to extend an Unchained project with Event Ticketing
 
 ## Patch
+
 - Unchained now clears an invalid cookie automatically by setting set-cookie with empty value
 - Fix `confirmed` & `rejected` Date beeing set when an order has been rejected, now we only set `rejected` in the rejection case :S. Although the bug seems critical, it only had effects on aggregations and custom code.
 - Fix `externalLinks` crashing
@@ -617,12 +663,12 @@ Behavioral Change: Cart total are now null if there is no item in the cart and n
 - Generally improve performance for queries and mutations across the whole API
 - Improve various Typescript annotations
 
-
 What's next? Checkout Milestone 3.1 on Github. https://github.com/unchainedshop/unchained/milestone/6
 
 # Unchained Engine v2.13
 
 ## Minor
+
 - Add `Query.validateVerifyEmailToken` that can be used to verify if a token is valid for use when verifying email
 - Add `Query.validateResetPasswordToken` that can be used to verify if a token is valid for use on password reset request
 - Re-Scheduling Bahvior of auto-scheduled work has been refined (https://github.com/unchainedshop/unchained/issues/565) and the GraphQL API now contains "Work.autoscheduled" in order for the Admin UI to display auto-scheduled work.
@@ -632,22 +678,26 @@ What's next? Checkout Milestone 3.1 on Github. https://github.com/unchainedshop/
 - Changed the way order events work to fix a longstanding bug with double-messaging due to webhooks getting called in-flight. This affects ORDER_CHECKOUT, ORDER_CONFIRMED, ORDER_REJECTED & ORDER_FULLFILLED: Now the updated order is beeing emitted together with a new property "oldStatus" containing the previous order status. Also, order messaging module functions have been removed from `core-orders` and are now privately setup in `setupTemplates` @ platform.
 
 ## Patch
+
 - Allow CORS for upload handling
 - Fix avatar upload in PUT mode
 
 # Unchained Engine v2.7
 
 ## Minor
+
 - Mutation `signPaymentProviderForCheckout` does not require an orderPaymentId anymore, it will try to sign the currently selected paymentProvider of the cart if left undefined. This will allow doing 1 request (multi mutation) checkouts in certain configurations.
 - Improve discount types
 - Extend the functionality of the default `product-discount` plugin so it's universally usable for different kind of product discounts
 
 ## Patch
+
 - Fix a case with `order-discount` and `order-items-discount` plugins not appropriately applying a rate to payment and delivery fees
 
 # Unchained Engine v2.6
 
 ## Minor
+
 - Add `shop.unchained.pricing.order-round` order price rounding plugin
 - Remove obsolete internal `addRoles` from users
 - Utility functions have been moved `generateDbFilterById`, `buildSortOptions` and `generateDbObjectId` from `@unchainedshop/utils` to `@unchainedshop/mongodb`;
@@ -660,6 +710,7 @@ What's next? Checkout Milestone 3.1 on Github. https://github.com/unchainedshop/
 - An undocumented worker internal event queue has been removed and new `events` have been added to support subscribing to `core-worker` events: `WORK_ADDED`, `WORK_ALLOCATED`, `WORK_FINISHED`, `WORK_DELETED`, `WORK_RESCHEDULED`
 
 ## Patch
+
 - Fix payment credential signing procedures that depend on a userId
 - Fix worker not cleaning regression
 - Fix local-search plugin
@@ -673,6 +724,7 @@ What's next? Checkout Milestone 3.1 on Github. https://github.com/unchainedshop/
 This small release improves impersonation and pricing, allowing for better support of e-commerce platforms that want to show net prices all along until the end.
 
 ## Minor
+
 - Allow to configure an "environment" for stripe which allows to drop events coming to the the engine that are intended to land on another engine not causing false negatives in webhooks.
 - Add Error Report job that sends failed work items to an E-Mail Address of choice defined by `EMAIL_ERROR_REPORT_RECIPIENT`
 - Remove `mjml` templates because of excessive size of mjml dependencies. Here are the old ones: https://github.com/unchainedshop/unchained/tree/3fabb6cbe55682aa2ee69a246758a09db908fe26/packages/platform/src/templates
@@ -685,6 +737,7 @@ This small release improves impersonation and pricing, allowing for better suppo
 - Debounce EventListenerWorker triggered process of the queue to reduce load of Unchained when many items are rolled up
 
 ## Patch
+
 - Bump various dependencies and remove more
 - Fix landing page
 - Fix heartbeat not logging the country context
@@ -694,6 +747,7 @@ This small release improves impersonation and pricing, allowing for better suppo
 We have been working on reducing the bundle size lately and got rid of many third party dependencies. We will not stop here and continue that work. The ultimate goal is to make Unchained run on Deno natively. To achieve, we first have to make the core (`core-` packages) free of third party dependencies and free of Node package dependence and `api` basically only depend on Apollo.
 
 ## Minor
+
 - Remove `renderMjmlToHtml` convenience method and pre-defined html templates because mjml is too heavy weight as a dependency and html e-mails cause more issues than they solve.
 - Support `MINIO_UPLOAD_PREFIX` to specifiy subdirectory in bucket in front of all uploads
 - Remove various dependencies from core packages.
@@ -701,37 +755,40 @@ We have been working on reducing the bundle size lately and got rid of many thir
 - Improve pricing types
 - Support attachment preview in mail debug mode when using absolute file paths
 - Update `mutation.impersonate` behavior to enable switching a session to an **impersonated** account and return to the **impersonator** account without the need to logout from the impersonated user account and login again to the initial user (**impersonator**).
-Note: By default impersonation is only allowed to **ADMIN** user.
+  Note: By default impersonation is only allowed to **ADMIN** user.
+
 ## Patch
+
 - Fix an issue with order pricing
 - Fix oder position removal issue #571
 - Fix bookmark edge cases #564
 - Fix an issue with filters not returned that are selected when they return 0 items
 - Fix countryCode not returned in lastLogin field of User
 
-
 # Unchained Engine v2.2
 
 This release contains various bugfixes and improvements and it breaks various type imports because we are currently in the process of moving types to their respective npm modules.
 
 ## Minor
+
 - Extended the input fn option of auto-scheduling `input` to expect a promise and also take the pre-calculated workData as input extending the possibilities to alter auto-scheduling behavior. #588
 - Remove `autoSchedulingInput` because there is no obvious way this is helpful and it has never been used in known projects
 - Move some platform types to platform package
 - The platform option `workQueueOptions` has been extended to take a retryInput. The retryInput fn can be used to alter input into work when the work is beeing retried. This allows stopping retries. #588
 
 ## Patch
+
 - Fix timeout field in worker's and types
 - Fix mime-type resolves now based on http response in GridFS when downloading from an URL (fallback scenario #559).
 - Fix worker not set automatically to the hostname, that was leading to stale external work jobs #561
 - Fix reschedule did not cancel old schedules #562
-
 
 # Unchained Engine v2.1
 
 This release contains various bugfixes and improvements
 
 ## Minor
+
 - Add `Mutation.processNextWork` to help trigger work from outside and removed `Mutation.doWork` (was not functional)
 - Customize the Cookie Path with `UNCHAINED_COOKIE_PATH`
 - Better Order Numbers with Hashid's that don't contain competitive 1,l,0 (O was already removed before)
@@ -739,6 +796,7 @@ This release contains various bugfixes and improvements
 - Re-introducded corsOrigins adjustable through `connectPlatformToExpress4`
 
 ## Patch
+
 - Fixed various typing bugs
 - We found out that a later version of Node.js 16 also supports WHATWG fetch. So the Kitchensink has been made compatible with Node.js 16 again. https://nodejs.org/en/blog/release/v16.15.0/
 - Mail Interceptor can now show some attachments
@@ -754,25 +812,28 @@ This is a major feature release bringing Web Authentication API, Web3 Login, Web
 We are jumping on the ESM train and Unchained Engine 2.0 now requires Node 18+ and uses native fetch. This also breaks Meteor compatibility for the moment. The legacy example will be pinned to v1 for the moment. We will continue to push maintenance and small fixes to both release lines v1.x and v2.x.
 
 ## GRAPHQL API BREAKING CHANGES
+
 - Tags are now always LowerCase and use an own scalar
 - Order.documents has been removed because it was not used since 3 years
 - The fields createdBy, updatedBy, deletedBy and authorId got removed completely from the database and the whole API surface, reasoning behind is that the value most of the time did not represent who actually did what and kept us back using the inner UnchainedCore as type. It just did not deliver on what it promised, it just added bloat. The only place where authorId is still used is in product reviews where users can add reviews and are actual authors of text.
 
 ## Major
+
 - New built-in support for two standard W3C API's: Web Authentication API, Push API
 - New Web3 Experimantal Features: NFT/Token Minting Plugins, Web3 Login through Metamask
 - Unchained now uses Apollo Server 4.
 - We have dropped `expressApp` and instead now export a new function `connectPlatformToExpress4`. That Express implementation can be looked up here and is still the default: https://github.com/unchainedshop/unchained/tree/master/packages/api/src/express. The new structure and internals allows somebody to wire the engine with a serverless/lambda environment or any other Node.js based framework.
-- `@unchainedshop/plugins` now has a default export and an Express middleware setup function. Using those functions is dramatically simplifying batteries-included setups.  Checkout the kitchensink example's boot.ts which is now less than 60 lines of code. 
+- `@unchainedshop/plugins` now has a default export and an Express middleware setup function. Using those functions is dramatically simplifying batteries-included setups. Checkout the kitchensink example's boot.ts which is now less than 60 lines of code.
 - Support out of the box server-side cookies for login and logout tokens when env `UNCHAINED_COOKIE_DOMAIN` is set. The cookie's name which by default is `unchained_token` can be overwritten by using env `UNCHAINED_COOKIE_NAME`. Unchained will still look for cookies even if the domain is not set but in that case the client has to take care of storing and sending the token.
 - Extended users and accounts for WebAuthn standard.
 - Added API mutations for the WebAuthn module: `Mutation.createWebAuthnCredentialCreationOptions`, `Mutation.createWebAuthnCredentialRequestOptions`,`Mutation.loginWithWebAuthn`,`Mutation.addWebAuthnCredentials`,`User.webAuthnCredentials`.
-- A new product type `TokenizedProduct` has been added added that supports NFT's and other virtual products that have no physical representation. They are converted to tokens through a virtual warehouse once checked-out. 
+- A new product type `TokenizedProduct` has been added added that supports NFT's and other virtual products that have no physical representation. They are converted to tokens through a virtual warehouse once checked-out.
 - A new warehousing provider type `VIRTUAL` has been added that allows to define warehouses for virtual products. In the plugin implementation one can define what happens when a user buys a tokenized product thus what kind of tokens get emitted. Further, tokens support a concept we call "exportability" which allows to bridge an Off-chain token to an On-chain token.
 - API has been extended to support the new tokenization concept: `User.tokens`, `Mutation.exportToken`, `Query.token`, `Mutation.updateProductTokenization`
 - A new ERC Metadata Server is built into Unchained allowing to generate Ethereum compatible ERC-1155 and ERC-721 metadata JSON files for tokenized products.
 
 ## Minor
+
 - Currencies now have a field `decimals` to define how many decimals are there. This is needed for general currency conversion between cryptocurrencies and Fiat and also helps to display the amount of arbitrary currencies better on frontends.
 - The currency conversion plugin now depends on decimals and works across any currency pairs when there is conversion rates stored.
 - Conversion rates are now fetched based on a regular job and not live when needed, this improves performance and stability
@@ -780,6 +841,7 @@ We are jumping on the ESM train and Unchained Engine 2.0 now requires Node 18+ a
 - The Cryptopay Plugin has been refactored from the ground up and various issues have been fixed
 
 ## Patch
+
 - Further limited exposure of data and stacktrace in exceptions
 - Fix file upload tests
 
@@ -788,18 +850,21 @@ We are jumping on the ESM train and Unchained Engine 2.0 now requires Node 18+ a
 You can even register with WebAuthn, login with e registered device or add WebAuthn to an existing user. So get to know the concept, checkout https://webauthn.io
 
 Registration Flow:
+
 ```
 Added Mutation.createWebAuthnCredentialCreationOptions(username: String!, extensionOptions: JSON): JSON!
 Mutation.createUser: added new input field webAuthnPublicKeyCredentials
 ```
 
 Login Flow:
+
 ```
 Added Mutation.createWebAuthnCredentialRequestOptions(username: String, extensionOptions: JSON): JSON!
 Added Mutation.loginWithWebAuthn(webAuthnPublicKeyCredentials: JSON!): LoginMethodResponse
 ```
 
 Device Management:
+
 ```
 Added Mutation.addWebAuthnCredentials(credentials: JSON!): User!
 Added Mutation.removeWebAuthnCredentials(credentialsId: ID!): User!
@@ -838,16 +903,17 @@ app in ESM mode.
 - Controlpanel has been removed because Admin UI is not on-par and can be used by anyone through the new Sandbox App https://sandbox-v3.unchained.shop
 
 ## Minor
+
 - [api] Add sort params to Query.orders, Query.quotations, User.orders, User.enrollments, User.quotations
 - [docs] Add typedocs and fix controlpanel references
 - [core] Improved types
 
 ## Patch
+
 - [core] Fix TOTP high severity bug
 - [core] Fix SSO with Unchained Cloud
 - [core] Fix discount pricing calculation issues
 - [core] Fix crash of findProductIds with assortmentId of non-existing assortment
-
 
 # Unchained Engine v1.1
 
