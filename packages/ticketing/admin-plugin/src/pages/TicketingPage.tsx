@@ -1,6 +1,8 @@
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
+import useViewerActions from '../hooks/useViewerActions.ts';
 import {
+  BreadCrumbs,
   Loading,
   NoData,
   PageHeader,
@@ -9,10 +11,8 @@ import {
   SearchField,
   Pagination,
 } from '@unchainedshop/admin-ui/ui';
-import Link from 'next/link';
 import TicketEventList from '../components/TicketEventList.tsx';
 import TicketProductionList from '../components/production/TicketProductionList.tsx';
-import { primaryButtonClassName } from '../components/production/fields.tsx';
 import useEventProducts from '../hooks/useEventProducts.ts';
 import useTicketProductions from '../hooks/useTicketProductions.ts';
 import { EVENT_LIST_PERIODS, getEventListFilter, type EventListPeriod } from '../utils/dates.ts';
@@ -25,6 +25,7 @@ type View = (typeof VIEWS)[number];
 const TicketingPage = () => {
   const { formatMessage } = useIntl();
   const { query, push } = useRouter();
+  const { hasAction: hasRole } = useViewerActions();
 
   const { queryString, ...rest } = query;
   const view = (VIEWS.includes(query.view as View) ? query.view : 'productions') as View;
@@ -99,8 +100,15 @@ const TicketingPage = () => {
     all: formatMessage({ id: 'events_all', defaultMessage: 'All' }),
   };
 
-  const headerText =
-    productsCount === 1
+  const headerText = showProductions
+    ? formatMessage(
+        {
+          id: 'production_count_header',
+          defaultMessage: '{count, plural, one {# Production} other {# Productions}}',
+        },
+        { count: productsCount },
+      )
+    : productsCount === 1
       ? formatMessage({
           id: 'event_header',
           defaultMessage: '1 Event',
@@ -115,14 +123,11 @@ const TicketingPage = () => {
 
   return (
     <>
+      <BreadCrumbs depth={3} />
       <PageHeader
-        title={formatMessage(
-          {
-            id: 'ticketing_page_title',
-            defaultMessage: '{count, plural, one {# Event} other {# Events}}',
-          },
-          { count: productsCount },
-        )}
+        addPath={hasRole('manageProducts') && '/ext/ticketing/new'}
+        addButtonText={formatMessage({ id: 'production_add', defaultMessage: 'Add production' })}
+        title={formatMessage({ id: 'ticketing', defaultMessage: 'Ticketing' })}
         headerText={headerText}
       />
       <div className="mt-5 inline-block min-w-full overflow-x-auto px-1 pb-5">
@@ -148,9 +153,6 @@ const TicketingPage = () => {
               </button>
             ))}
           </div>
-          <Link href="/ext/ticketing/new" className={primaryButtonClassName}>
-            {formatMessage({ id: 'production_new', defaultMessage: 'New production' })}
-          </Link>
         </div>
         <div className="my-3 flex flex-wrap items-center gap-3">
           {!showProductions && (

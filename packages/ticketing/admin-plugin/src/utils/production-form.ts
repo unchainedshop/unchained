@@ -1,5 +1,6 @@
 // Values of the production forms and the ticketing inputs built from them. Pure, so it runs in
 // node --test. Prices are entered as decimals and sent in cents; dates are local datetime values.
+// The admin-ui useForm turns blank top-level fields into null, so every text may be null.
 import { fromDateTimeLocalValue, toDateTimeLocalValue } from './dates.ts';
 
 export interface ShopDefaults {
@@ -8,39 +9,15 @@ export interface ShopDefaults {
   countryCode: string;
 }
 
+type FormText = string | null | undefined;
+
 export type OnSaleValue = 'inherit' | 'open' | 'closed';
 
 export interface SaleRulesFormValues {
-  onSale: OnSaleValue;
-  salesStart: string;
-  salesEnd: string;
-  maxPerOrder: string;
-}
-
-export interface CategoryFormValues {
-  code: string;
-  name: string;
-  capacity: string;
-  price: string;
-}
-
-export interface PerformanceFormValues {
-  startsAt: string;
-  /** Only used without categories: the supply and price of the date. */
-  supply: string;
-  price: string;
-}
-
-export interface ProductionFormValues {
-  title: string;
-  subtitle: string;
-  tags: string;
-  location: string;
-  durationMinutes: string;
-  doorsOpenMinutesBefore: string;
-  saleRules: SaleRulesFormValues;
-  categories: CategoryFormValues[];
-  performances: PerformanceFormValues[];
+  onSale: OnSaleValue | null;
+  salesStart: FormText;
+  salesEnd: FormText;
+  maxPerOrder: FormText;
 }
 
 export interface TicketSaleRules {
@@ -54,9 +31,11 @@ const CATEGORY_CODE = /^[a-z0-9][a-z0-9_-]*$/;
 const DECIMAL = /^\d+(\.\d{1,2})?$/;
 const WHOLE = /^\d+$/;
 
+const str = (value: unknown) => (value === null || value === undefined ? '' : String(value)).trim();
+
 /** Cents of a decimal price; null when blank, NaN when it is not a price. */
-export function toCents(value: string): number {
-  const text = value?.trim();
+export function toCents(value: FormText): number {
+  const text = str(value);
   if (!text) return null;
   if (!DECIMAL.test(text)) return NaN;
   return Math.round(Number(text) * 100);
@@ -65,32 +44,18 @@ export function toCents(value: string): number {
 export const centsToDecimal = (amount: number | null | undefined) =>
   amount === null || amount === undefined ? '' : (amount / 100).toFixed(2);
 
-const count = (value: string) => {
-  const text = value?.trim();
+/** A whole number of 0 or more; null when blank, NaN otherwise. */
+export const toCount = (value: FormText): number => {
+  const text = str(value);
   if (!text) return null;
   return WHOLE.test(text) ? Number(text) : NaN;
 };
 
+export const isCategoryCode = (value: FormText) => CATEGORY_CODE.test(str(value));
+
 const isInvalid = (value: number) => Number.isNaN(value);
 
-export const emptySaleRules = (): SaleRulesFormValues => ({
-  onSale: 'inherit',
-  salesStart: '',
-  salesEnd: '',
-  maxPerOrder: '',
-});
-
-export const emptyProductionFormValues = (): ProductionFormValues => ({
-  title: '',
-  subtitle: '',
-  tags: '',
-  location: '',
-  durationMinutes: '',
-  doorsOpenMinutesBefore: '',
-  saleRules: emptySaleRules(),
-  categories: [],
-  performances: [{ startsAt: '', supply: '', price: '' }],
-});
+const text = (value: unknown) => (value === null || value === undefined ? '' : String(value));
 
 export function fromTicketSaleRules(rules?: TicketSaleRules | null): SaleRulesFormValues {
   const onSale: OnSaleValue =
@@ -99,32 +64,32 @@ export function fromTicketSaleRules(rules?: TicketSaleRules | null): SaleRulesFo
     onSale,
     salesStart: toDateTimeLocalValue(rules?.salesStart),
     salesEnd: toDateTimeLocalValue(rules?.salesEnd),
-    maxPerOrder:
-      rules?.maxPerOrder === null || rules?.maxPerOrder === undefined ? '' : String(rules.maxPerOrder),
+    maxPerOrder: text(rules?.maxPerOrder),
   };
 }
 
 /** Every rule of the form: a blank rule or "inherit" clears it (null). */
 export function toTicketSaleRulesInput(
-  values: SaleRulesFormValues,
+  values: Partial<SaleRulesFormValues>,
 ): { input: Required<TicketSaleRules> } | { errors: string[] } {
   const errors: string[] = [];
   const date = (key: 'salesStart' | 'salesEnd') => {
-    const parsed = fromDateTimeLocalValue(values[key]);
+    const parsed = fromDateTimeLocalValue(str(values[key]));
     if (parsed && Number.isNaN(parsed.getTime())) {
-      errors.push(`saleRules.${key}`);
+      errors.push(key);
       return null;
     }
     return parsed ? parsed.toISOString() : null;
   };
   const salesStart = date('salesStart');
   const salesEnd = date('salesEnd');
-  const maxPerOrder = count(values.maxPerOrder);
-  if (isInvalid(maxPerOrder)) errors.push('saleRules.maxPerOrder');
+  const maxPerOrder = toCount(values.maxPerOrder);
+  if (isInvalid(maxPerOrder)) errors.push('maxPerOrder');
   if (errors.length) return { errors };
+  const onSale = values.onSale || 'inherit';
   return {
     input: {
-      onSale: values.onSale === 'inherit' ? null : values.onSale === 'open',
+      onSale: onSale === 'inherit' ? null : onSale === 'open',
       salesStart,
       salesEnd,
       maxPerOrder,
@@ -132,144 +97,64 @@ export function toTicketSaleRulesInput(
   };
 }
 
-const withoutNull = <T extends Record<string, unknown>>(value: T) =>
-  Object.fromEntries(Object.entries(value).filter(([, entry]) => entry !== null)) as Partial<T>;
-
-const tagsOf = (value: string) => [
-  ...new Set(
-    value
-      .split(',')
-      .map((tag) => tag.trim().toLowerCase())
-      .filter(Boolean),
-  ),
-];
-
 /** The createTicketProduction input of the new production form, or the invalid fields. */
 export function toCreateTicketProductionInput(
-  values: ProductionFormValues,
-  { locale, currencyCode, countryCode }: ShopDefaults,
+  values: { title?: FormText; subtitle?: FormText; tags?: string[] | null; location?: FormText },
+  { locale }: Pick<ShopDefaults, 'locale'>,
 ): { input: Record<string, any> } | { errors: string[] } {
-  const errors: string[] = [];
-  const title = values.title.trim();
-  if (!title) errors.push('title');
-  const durationMinutes = count(values.durationMinutes);
-  if (isInvalid(durationMinutes)) errors.push('durationMinutes');
-  const doorsOpenMinutesBefore = count(values.doorsOpenMinutesBefore);
-  if (isInvalid(doorsOpenMinutesBefore)) errors.push('doorsOpenMinutesBefore');
-  const saleRules = toTicketSaleRulesInput(values.saleRules);
-  if ('errors' in saleRules) errors.push(...saleRules.errors);
-  const pricing = (amount: number) =>
-    amount === null ? undefined : [{ amount, currencyCode, countryCode }];
-
-  const codes = new Set<string>();
-  const categories = values.categories.map((category, index) => {
-    const code = category.code.trim();
-    if (!CATEGORY_CODE.test(code) || codes.has(code)) errors.push(`categories.${index}.code`);
-    codes.add(code);
-    const capacity = count(category.capacity);
-    if (isInvalid(capacity)) errors.push(`categories.${index}.capacity`);
-    const amount = toCents(category.price);
-    if (isInvalid(amount)) errors.push(`categories.${index}.price`);
-    return withoutNull({
-      code,
-      texts: category.name.trim() ? [{ locale, title: category.name.trim() }] : null,
-      capacity,
-      pricing: pricing(amount) ?? null,
-    });
-  });
-
-  const performances = values.performances.map((performance, index) => {
-    const startsAt = fromDateTimeLocalValue(performance.startsAt);
-    if (!startsAt || Number.isNaN(startsAt.getTime())) errors.push(`performances.${index}.startsAt`);
-    if (categories.length) return { startsAt: startsAt?.toISOString() };
-    const supply = count(performance.supply);
-    if (isInvalid(supply)) errors.push(`performances.${index}.supply`);
-    const amount = toCents(performance.price);
-    if (isInvalid(amount)) errors.push(`performances.${index}.price`);
-    const ticket = withoutNull({ supply, pricing: pricing(amount) ?? null });
-    return {
-      startsAt: startsAt?.toISOString(),
-      ...(Object.keys(ticket).length && { tickets: [ticket] }),
-    };
-  });
-
-  if (errors.length) return { errors };
+  const title = str(values.title);
+  if (!title) return { errors: ['title'] };
+  const subtitle = str(values.subtitle);
+  const location = str(values.location);
   return {
     input: {
-      texts: [withoutNull({ locale, title, subtitle: values.subtitle.trim() || null })],
-      ...(tagsOf(values.tags).length && { tags: tagsOf(values.tags) }),
-      ...withoutNull({
-        location: values.location.trim() || null,
-        durationMinutes,
-        doorsOpenMinutesBefore,
-      }),
-      saleRules: 'input' in saleRules ? withoutNull(saleRules.input) : {},
-      ...(categories.length && { categories }),
-      performances,
+      texts: [{ locale, title, ...(subtitle && { subtitle }) }],
+      ...(values.tags?.length && { tags: values.tags }),
+      ...(location && { location }),
     },
   };
 }
 
-export interface ProductionEditFormValues {
-  title: string;
-  subtitle: string;
-  description: string;
-  tags: string;
-  location: string;
-  durationMinutes: string;
-  doorsOpenMinutesBefore: string;
-  saleRules: SaleRulesFormValues;
+export interface ProductionEventFormValues extends SaleRulesFormValues {
+  location: FormText;
+  durationMinutes: FormText;
+  doorsOpenMinutesBefore: FormText;
 }
 
-const text = (value: unknown) => (value === null || value === undefined ? '' : String(value));
-
-export function productionEditFormValues(production: any): ProductionEditFormValues {
+export function productionEventFormValues(production: any): ProductionEventFormValues {
   const details = production?.ticketProduction;
   return {
-    title: text(production?.texts?.title),
-    subtitle: text(production?.texts?.subtitle),
-    description: text(production?.texts?.description),
-    tags: (production?.tags ?? []).filter((tag) => tag !== 'ticket-production').join(', '),
     location: text(details?.location),
     durationMinutes: text(details?.durationMinutes),
     doorsOpenMinutesBefore: text(details?.doorsOpenMinutesBefore),
-    saleRules: fromTicketSaleRules(details?.saleRules),
+    ...fromTicketSaleRules(details?.saleRules),
   };
 }
 
-/** The updateTicketProduction input of the edit form: every field, a blank one clears it. */
+/** The updateTicketProduction input of the event form: every detail and rule, blanks clear them. */
 export function toUpdateTicketProductionInput(
-  values: ProductionEditFormValues,
-  { locale }: Pick<ShopDefaults, 'locale'>,
+  values: Partial<ProductionEventFormValues>,
 ): { input: Record<string, any> } | { errors: string[] } {
   const errors: string[] = [];
-  const title = values.title.trim();
-  if (!title) errors.push('title');
-  const durationMinutes = count(values.durationMinutes);
+  const durationMinutes = toCount(values.durationMinutes);
   if (isInvalid(durationMinutes)) errors.push('durationMinutes');
-  const doorsOpenMinutesBefore = count(values.doorsOpenMinutesBefore);
+  const doorsOpenMinutesBefore = toCount(values.doorsOpenMinutesBefore);
   if (isInvalid(doorsOpenMinutesBefore)) errors.push('doorsOpenMinutesBefore');
-  const saleRules = toTicketSaleRulesInput(values.saleRules);
+  const saleRules = toTicketSaleRulesInput(values);
   if ('errors' in saleRules) errors.push(...saleRules.errors);
   if (errors.length || !('input' in saleRules)) return { errors };
   return {
     input: {
-      texts: [
-        {
-          locale,
-          title,
-          subtitle: values.subtitle.trim() || null,
-          description: values.description.trim() || null,
-        },
-      ],
-      tags: tagsOf(values.tags),
-      location: values.location.trim() || null,
+      location: str(values.location) || null,
       durationMinutes,
       doorsOpenMinutesBefore,
       saleRules: saleRules.input,
     },
   };
 }
+
+const withoutNull = <T extends Record<string, unknown>>(value: T) =>
+  Object.fromEntries(Object.entries(value).filter(([, entry]) => entry !== null)) as Partial<T>;
 
 export interface PerformanceEditFormValues {
   startsAt: string;
@@ -327,17 +212,17 @@ export function toTicketPerformanceInput(
 ): { input: Record<string, any> } | { errors: string[] } {
   const errors: string[] = [];
   const input: Record<string, any> = {};
-  const startsAt = fromDateTimeLocalValue(values.startsAt);
+  const startsAt = fromDateTimeLocalValue(str(values.startsAt));
   if (!startsAt || Number.isNaN(startsAt.getTime())) errors.push('startsAt');
   else if (!initial || values.startsAt !== initial.startsAt) input.startsAt = startsAt.toISOString();
 
   for (const key of PERFORMANCE_DETAILS) {
     if (initial && values[key] === initial[key]) continue;
     if (key === 'location') {
-      if (values.location.trim() || initial) input.location = values.location.trim() || null;
+      if (str(values.location) || initial) input.location = str(values.location) || null;
       continue;
     }
-    const value = count(values[key]);
+    const value = toCount(values[key]);
     if (isInvalid(value)) errors.push(key);
     else if (value !== null || initial) input[key] = value;
   }
@@ -348,7 +233,7 @@ export function toTicketPerformanceInput(
 
   const tickets = Object.entries(values.tickets).flatMap(([code, ticket]) => {
     const before = initial?.tickets[code];
-    const supply = count(ticket.supply);
+    const supply = toCount(ticket.supply);
     const amount = toCents(ticket.price);
     if (isInvalid(supply)) errors.push(`tickets.${code}.supply`);
     if (isInvalid(amount)) errors.push(`tickets.${code}.price`);

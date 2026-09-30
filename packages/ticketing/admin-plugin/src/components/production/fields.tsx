@@ -1,131 +1,102 @@
 import { useIntl } from 'react-intl';
-import type { OnSaleValue, SaleRulesFormValues } from '../../utils/production-form.ts';
-
-export const inputClassName =
-  'mt-1 block w-full rounded-md border border-border-default bg-surface-input px-3 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:opacity-50';
-
-export const primaryButtonClassName =
-  'inline-flex items-center rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-900 disabled:opacity-50';
-
-export const secondaryButtonClassName =
-  'inline-flex items-center rounded-md border border-border-default px-4 py-2 text-sm font-medium text-text-secondary hover:bg-surface-raised disabled:opacity-50';
-
-export const dangerButtonClassName =
-  'inline-flex items-center rounded-md border border-rose-300 px-3 py-1.5 text-sm font-medium text-rose-700 hover:bg-rose-50 disabled:opacity-50';
+import { FieldWrapper, SelectField, TextField } from '@unchainedshop/admin-ui/form';
+import { useField } from '@unchainedshop/admin-ui/hooks';
+import type { SaleRulesFormValues } from '../../utils/production-form.ts';
 
 /** The message of a failed mutation: the GraphQL error when there is one. */
 export const errorMessage = (error) =>
   error?.errors?.[0]?.message ?? error?.graphQLErrors?.[0]?.message ?? error?.message;
 
-export const Field = ({
-  label,
-  invalid = false,
-  className = '',
-  ...props
-}: { label: string; invalid?: boolean; className?: string } & Record<string, any>) => (
-  <label className={`block text-sm font-medium text-text-secondary ${className}`}>
-    {label}
-    <input
-      {...props}
-      aria-invalid={invalid}
-      className={`${inputClassName}${invalid ? ' border-rose-500' : ''}`}
-    />
-  </label>
+/** The footer of an admin-ui form card, holding its buttons. */
+export const FormFooter = ({ children }) => (
+  <div className="flex justify-end gap-3 border-t border-t-border-subtle bg-surface-subtle p-5">
+    {children}
+  </div>
 );
 
-export const SectionTitle = ({ children }) => (
-  <h3 className="mb-3 text-base font-semibold text-text-primary">{children}</h3>
-);
+/** A date and time in the browser's time zone, styled like the admin-ui date field. */
+export const DateTimeField = ({ className = '', ...props }: Record<string, any>) => {
+  const field = useField(props);
+  return (
+    <FieldWrapper {...field} className={props.containerClassName}>
+      <input
+        type="datetime-local"
+        id={field.name}
+        name={field.name}
+        disabled={field.disabled}
+        className={[
+          'relative mt-0 block w-full appearance-none rounded-md border-1 border-border-default px-4 py-2.5 text-sm text-text-primary shadow-xs placeholder-slate-400 focus:z-10 focus:outline-hidden focus:ring-2 focus:ring-focus-ring dark:bg-slate-900',
+          className,
+          field.error ? 'border-rose-700 placeholder:text-rose-300' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        onChange={field.onChange}
+        onBlur={field.onBlur}
+        value={field.value || ''}
+        autoComplete="off"
+      />
+    </FieldWrapper>
+  );
+};
 
 /**
- * The four sale rules. With `inherited` (a performance), unset rules show the rule of the
- * production and "inherit" takes it over again.
+ * The four sale rules as form fields (onSale, maxPerOrder, salesStart, salesEnd). With
+ * `inherited` (a date of a production) the production's rules are shown as help.
  */
-export const SaleRulesFields = ({
-  values,
-  onChange,
-  invalid = [],
-  inherited = null,
-}: {
-  values: SaleRulesFormValues;
-  onChange: (values: SaleRulesFormValues) => void;
-  invalid?: string[];
-  inherited?: SaleRulesFormValues | null;
-}) => {
+export const SaleRulesFields = ({ inherited = null }: { inherited?: SaleRulesFormValues | null }) => {
   const { formatMessage } = useIntl();
-  const set = (key: keyof SaleRulesFormValues) => (e) => onChange({ ...values, [key]: e.target.value });
-  const onSaleLabels: Record<OnSaleValue, string> = {
+  const onSaleOptions = {
     inherit: inherited
       ? formatMessage({ id: 'sale_rules_inherit', defaultMessage: 'As the production' })
-      : formatMessage({ id: 'sale_rules_unset', defaultMessage: 'Not set (on sale)' }),
+      : formatMessage({ id: 'sale_rules_unset', defaultMessage: 'Not restricted' }),
     open: formatMessage({ id: 'sale_rules_open', defaultMessage: 'On sale' }),
     closed: formatMessage({ id: 'sale_rules_closed', defaultMessage: 'Not on sale' }),
   };
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      <label className="block text-sm font-medium text-text-secondary">
-        {formatMessage({ id: 'sale_rules_on_sale', defaultMessage: 'Sale' })}
-        <select value={values.onSale} onChange={set('onSale')} className={inputClassName}>
-          {(['inherit', 'open', 'closed'] as OnSaleValue[]).map((option) => (
-            <option key={option} value={option}>
-              {onSaleLabels[option]}
-            </option>
-          ))}
-        </select>
-      </label>
-      <Field
+      <SelectField
+        name="onSale"
+        label={formatMessage({ id: 'sale_rules_on_sale', defaultMessage: 'Sale' })}
+        options={onSaleOptions}
+      />
+      <TextField
+        name="maxPerOrder"
+        type="number"
         label={formatMessage({
           id: 'sale_rules_max_per_order',
           defaultMessage: 'Tickets per order (max.)',
         })}
-        type="number"
-        min={0}
-        step={1}
-        inputMode="numeric"
-        value={values.maxPerOrder}
         placeholder={inherited?.maxPerOrder || ''}
-        onChange={set('maxPerOrder')}
-        invalid={invalid.includes('saleRules.maxPerOrder')}
       />
-      <Field
+      <DateTimeField
+        name="salesStart"
         label={formatMessage({ id: 'sale_rules_sales_start', defaultMessage: 'Sale starts' })}
-        type="datetime-local"
-        value={values.salesStart}
-        onChange={set('salesStart')}
-        invalid={invalid.includes('saleRules.salesStart')}
       />
-      <Field
+      <DateTimeField
+        name="salesEnd"
         label={formatMessage({ id: 'sale_rules_sales_end', defaultMessage: 'Sale ends' })}
-        type="datetime-local"
-        value={values.salesEnd}
-        onChange={set('salesEnd')}
-        invalid={invalid.includes('saleRules.salesEnd')}
       />
       {inherited && (
         <p className="text-xs text-text-muted sm:col-span-2">
-          {formatMessage({
-            id: 'sale_rules_inherited_hint',
-            defaultMessage: 'Empty rules are taken from the production.',
-          })}
+          {formatMessage(
+            {
+              id: 'sale_rules_inherited_summary',
+              defaultMessage:
+                'Empty rules are taken from the production: {onSale}{maxPerOrder, select, none {} other {, at most {maxPerOrder} per order}}{salesStart, select, none {} other {, from {salesStart}}}{salesEnd, select, none {} other {, until {salesEnd}}}.',
+            },
+            {
+              onSale:
+                !inherited.onSale || inherited.onSale === 'inherit'
+                  ? formatMessage({ id: 'sale_rules_unset', defaultMessage: 'Not restricted' })
+                  : onSaleOptions[inherited.onSale],
+              maxPerOrder: inherited.maxPerOrder || 'none',
+              salesStart: inherited.salesStart?.replace('T', ' ') || 'none',
+              salesEnd: inherited.salesEnd?.replace('T', ' ') || 'none',
+            },
+          )}
         </p>
       )}
     </div>
-  );
-};
-
-export const InvalidFieldsAlert = ({ fields }: { fields: string[] }) => {
-  const { formatMessage } = useIntl();
-  if (!fields.length) return null;
-  return (
-    <p role="alert" className="text-sm text-rose-600">
-      {formatMessage(
-        {
-          id: 'production_form_invalid',
-          defaultMessage:
-            'Check the marked fields. Codes use lowercase letters, digits, - and _; numbers are whole numbers of 0 or more, prices like 45.50.',
-        },
-        { count: fields.length },
-      )}
-    </p>
   );
 };
