@@ -350,7 +350,7 @@ query GateLookup {
 
 - `ticketStatus` is `VALID`, `REDEEMED` or `CANCELLED` (cancelled wins: a cancelled ticket also carries an `invalidatedDate`).
 - `attendeeName` is what your `ticketMeta` hook stored, nothing else.
-- `user` is the buyer, of which ticketing shows only the public profile (name, avatar): it grants no `viewUserPrivateInfos`, so e-mail addresses and phone numbers stay hidden from gate staff.
+- `user` is the buyer. Gate staff see the public profile (name, avatar) and, through the `viewUserContactInfos` action of the `ticketing` role, the buyer's contact: `primaryEmail` and `lastContact { emailAddress telNumber }` (the e-mail and phone of the last checkout). The contact is only shown for holders of a ticket of an event the staff member may work with (organizer scope) that starts at most 24 hours ahead or started at most 12 hours ago (`GATE_CONTACT_HOURS_BEFORE_START`, `GATE_CONTACT_HOURS_AFTER_START`). Gate staff get no `viewUserPrivateInfos`, so other e-mail addresses, addresses and profile data stay hidden. Gate Control shows the contact next to the buyer and adds e-mail and phone columns to the CSV export; to hide it, give gate staff a custom role with `scanTicket` only.
 
 **Login lifetime.** Sessions are JWTs that expire after `UNCHAINED_TOKEN_EXPIRY_SECONDS` (default `3600`, one hour) and are not renewed while in use. For gate shifts, raise it (for example `43200` for 12 hours) or let staff sign in again. It applies to every user, and a signed-in session can only be revoked early by logging the user out of all sessions, so weigh the longer lifetime against that.
 

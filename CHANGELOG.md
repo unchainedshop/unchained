@@ -41,6 +41,7 @@
 
 ### Fixed
 
+- **Buyer contact at the gate:** the new `viewUserContactInfos` action lets a user read `User.primaryEmail` and `User.lastContact` without `viewUserPrivateInfos`. The `ticketing` role grants it for holders of tickets of events in scope that start within the next 24 hours or started in the last 12 hours, and Gate Control shows the buyer's e-mail and phone on the ticket, in the attendee list and in the CSV export.
 - **Admin UI plugins share the host contexts:** SDK components and hooks in plugins read their own copies of the admin-ui contexts, so `useModal`, `useApp` and `useAuth` returned defaults (the ticketing Cancel Event dialog failed with "No ModalContext/ModalWrapper ancestor found"). The contexts with host providers are now shared, and the SDK exports `FormWrapper`, `LocaleWrapper`, `SelectOptions`, `useApp`, `useAuth`, `useFormatDateTime`, `ProductTextsForm` and `ProductMediaForm` so plugin pages can look like the rest of the Admin UI.
 - **ERC metadata leaked token data:** the public ERC metadata route served `token.meta` (for example the order id) and, for ERC-721, looked tokens up by contract address, so it could serve another product's token. See the breaking change above.
 - **Bulk import of tokenized products:** product `CREATE` / `UPDATE` payloads declare `specification.tokenization` and accept `published` as a date or a date string.

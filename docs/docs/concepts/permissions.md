@@ -31,6 +31,7 @@ Roles `__all__`, `__loggedIn__`, `__notLoggedIn__`, and `__notAdmin__` are **spe
 | `viewOrder`, `viewOrders` | View orders (loggedIn: own only) |
 | `viewUser`, `viewUsers`, `viewUserCount` | View user data |
 | `viewUserRoles`, `viewUserPublicInfos`, `viewUserPrivateInfos` | View user details |
+| `viewUserContactInfos` | View a user's primary e-mail and last checkout contact (`primaryEmail`, `lastContact`) without the other private data |
 | `viewUserOrders`, `viewUserQuotations`, `viewUserEnrollments`, `viewUserTokens` | View user relations |
 | `viewUserProductReviews` | View user's reviews |
 | `viewAssortment`, `viewAssortments` | View assortments (public: active only) |
