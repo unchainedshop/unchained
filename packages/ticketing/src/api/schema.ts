@@ -2,6 +2,26 @@ export default [
   /* GraphQL */ `
     extend type Query {
       """
+      List ticket productions (configurable products tagged ticket-production). Requires
+      manageProducts; an organizer scope narrows the list for everyone but administrators.
+      """
+      ticketProductions(
+        queryString: String
+        limit: Int = 50
+        offset: Int = 0
+        includeDrafts: Boolean = true
+        sort: [SortOptionInput!]
+        tags: [LowerCaseString!]
+      ): [Product!]!
+
+      "Returns total number of ticket productions, with the filters of ticketProductions"
+      ticketProductionsCount(
+        queryString: String
+        includeDrafts: Boolean = true
+        tags: [LowerCaseString!]
+      ): Int!
+
+      """
       List ticket events (tokenized products). Product managers may include drafts;
       authenticated gate operators only see active events. An organizer scope narrows the list for
       everyone but administrators. slotFrom and slotTo filter by the event start (inclusive, events
@@ -19,6 +39,10 @@ export default [
         slotFrom: DateTime
         slotTo: DateTime
         tags: [LowerCaseString!]
+        "Only the performances of this production"
+        productionId: ID
+        "true: only events that are not a performance of a production"
+        standalone: Boolean
       ): [Product!]!
 
       """
@@ -31,6 +55,8 @@ export default [
         slotFrom: DateTime
         slotTo: DateTime
         tags: [LowerCaseString!]
+        productionId: ID
+        standalone: Boolean
       ): Int!
 
       """
@@ -72,6 +98,44 @@ export default [
       Requires the manageProducts action.
       """
       updateTicketEvent(productId: ID!, event: UpdateTicketEventInput!): Product!
+
+      """
+      Create a ticket production: a draft CONFIGURABLE_PRODUCT tagged ticket-production with a
+      TOKENIZED_PRODUCT per performance and ticket category. Requires manageProducts.
+      """
+      createTicketProduction(production: CreateTicketProductionInput!): Product!
+
+      "Add a performance (one product per ticket category) to a production"
+      addTicketPerformance(productionId: ID!, performance: TicketPerformanceInput!): Product!
+
+      """
+      Change the performance starting at startsAt: its start (reschedule), details and sale rules
+      (null takes the production value back) and the supply and price per ticket category
+      """
+      updateTicketPerformance(
+        productionId: ID!
+        startsAt: DateTime!
+        performance: UpdateTicketPerformanceInput!
+      ): Product!
+
+      "Remove a performance without tickets from its production; cancel it otherwise"
+      removeTicketPerformance(productionId: ID!, startsAt: DateTime!): Product!
+
+      "Publish a production with all its performances"
+      publishTicketProduction(productionId: ID!): Product!
+
+      "Take a production with all its performances back to draft"
+      unpublishTicketProduction(productionId: ID!): Product!
+    }
+
+    """
+    Omitted rules stay, null clears one (a performance then inherits it from its production)
+    """
+    input TicketSaleRulesInput {
+      onSale: Boolean
+      salesStart: DateTime
+      salesEnd: DateTime
+      maxPerOrder: Int
     }
 
     input UpdateTicketEventInput {
@@ -80,6 +144,7 @@ export default [
       durationMinutes: Int
       doorsOpenMinutesBefore: Int
       category: String
+      saleRules: TicketSaleRulesInput
     }
 
     enum TicketStatus {
@@ -105,6 +170,119 @@ export default [
       "Set by cancelEvent; the tickets are cancelled as well"
       isCanceled: Boolean!
       cancelledDate: DateTime
+      "The sale rules that apply: the rules of this product completed by those of its production"
+      saleRules: TicketSaleRules!
+      "The sale rules stored on this product"
+      ownSaleRules: TicketSaleRules!
+      "Details of a performance that are not taken over from its production"
+      overridden: [String!]!
+    }
+
+    "Unset rules do not restrict the sale"
+    type TicketSaleRules {
+      "false closes the sale"
+      onSale: Boolean
+      salesStart: DateTime
+      salesEnd: DateTime
+      "The most tickets of this product one order may contain"
+      maxPerOrder: Int
+    }
+
+    input TicketPriceInput {
+      "In the smallest unit of the currency"
+      amount: Int!
+      currencyCode: String!
+      countryCode: String!
+      isTaxable: Boolean
+      isNetPrice: Boolean
+    }
+
+    input TicketCategoryTextInput {
+      locale: Locale!
+      title: String
+    }
+
+    input TicketCategoryInput {
+      "Lowercase letters, digits, - and _; the value of the category variation option"
+      code: String!
+      texts: [TicketCategoryTextInput!]
+      "The supply of the category in a new performance"
+      capacity: Int
+      "The price of the category in a new performance"
+      pricing: [TicketPriceInput!]
+    }
+
+    "The tickets of one category in one performance, unset values come from the category"
+    input TicketPerformanceTicketInput {
+      "Omit for productions without categories"
+      category: String
+      supply: Int
+      pricing: [TicketPriceInput!]
+    }
+
+    input TicketPerformanceInput {
+      startsAt: DateTime!
+      location: String
+      durationMinutes: Int
+      doorsOpenMinutesBefore: Int
+      saleRules: TicketSaleRulesInput
+      tickets: [TicketPerformanceTicketInput!]
+    }
+
+    input UpdateTicketPerformanceInput {
+      "A new start reschedules the performance"
+      startsAt: DateTime
+      location: String
+      durationMinutes: Int
+      doorsOpenMinutesBefore: Int
+      saleRules: TicketSaleRulesInput
+      tickets: [TicketPerformanceTicketInput!]
+    }
+
+    input CreateTicketProductionInput {
+      texts: [ProductTextInput!]!
+      tags: [LowerCaseString!]
+      location: String
+      durationMinutes: Int
+      doorsOpenMinutesBefore: Int
+      saleRules: TicketSaleRulesInput
+      categories: [TicketCategoryInput!]
+      performances: [TicketPerformanceInput!]
+    }
+
+    type TicketCategoryPrice {
+      amount: Int!
+      currencyCode: String!
+      countryCode: String!
+      isTaxable: Boolean
+      isNetPrice: Boolean
+    }
+
+    type TicketCategory {
+      code: String!
+      "The category variation option, its texts name the category"
+      option: ProductVariationOption
+      capacity: Int
+      pricing: [TicketCategoryPrice!]!
+    }
+
+    """
+    The ticketing values of a production. Its performances are the assignments of the configurable
+    product, their supply, sales and prices are on the performance products.
+    """
+    type TicketProduction {
+      location: String
+      durationMinutes: Int
+      doorsOpenMinutesBefore: Int
+      "The sale rules of the performances unless they set their own"
+      saleRules: TicketSaleRules!
+      "In the order of the category variation options"
+      categories: [TicketCategory!]!
+    }
+
+    extend type ConfigurableProduct {
+      "null unless the product is a ticket production"
+      ticketProduction: TicketProduction
     }
 
     extend type TokenizedProduct {

@@ -3,17 +3,18 @@ import type { Bound, UnchainedCore } from '@unchainedshop/core';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { TicketingMessageTypes } from './templates/index.ts';
 import { TicketingEventTypes, emitTicketingEvent } from './events.ts';
+import productionServices, { type TicketProductionServices } from './production-services.ts';
 
 type Modules = UnchainedCore['modules'];
 type TicketingModules = Modules & TicketingModule;
 
-interface DiscountOptions {
+export interface DiscountOptions {
   generateDiscount?: boolean;
   countryCode?: string;
   currencyCode?: string;
 }
 
-interface CancelTicketOptions extends DiscountOptions {
+export interface CancelTicketOptions extends DiscountOptions {
   /**
    * Refuse a redeemed ticket instead of cancelling it, also when a scan redeems it while the
    * cancellation runs: throws an Error with cause `TICKET_ALREADY_REDEEMED`.
@@ -184,11 +185,12 @@ export default {
   ticketing: {
     cancelTicketsForProduct,
     cancelTicketWithDiscount,
+    ...productionServices.ticketing,
   },
 };
 
 export interface TicketingServices {
-  ticketing: {
+  ticketing: TicketProductionServices['ticketing'] & {
     cancelTicketsForProduct: Bound<typeof cancelTicketsForProduct>;
     cancelTicketWithDiscount: Bound<typeof cancelTicketWithDiscount>;
   };

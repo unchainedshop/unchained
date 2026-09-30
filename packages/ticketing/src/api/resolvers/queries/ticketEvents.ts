@@ -4,6 +4,7 @@ import type { Context } from '@unchainedshop/api';
 import { ProductType, type Product } from '@unchainedshop/core-products';
 import { hasTicketEventScope, isTicketEventInScope, resolveTicketingAccess } from '../../roles.ts';
 import { TicketEventProperty } from '../../../event-details.ts';
+import { TICKET_PRODUCTION_TAG, isTicketProduction } from '../../../production.ts';
 
 export interface TicketEventQuery {
   queryString?: string;
@@ -15,6 +16,10 @@ export interface TicketEventQuery {
   slotTo?: Date | string | null;
   /** Only events carrying all of these tags. */
   tags?: string[] | null;
+  /** Only the performances of this production. */
+  productionId?: string | null;
+  /** true: only events that are not a performance of a production. */
+  standalone?: boolean | null;
 }
 
 const SLOT_PATH = `meta.${TicketEventProperty.START}`;
@@ -40,12 +45,37 @@ function buildSlotRangeSelector(slotFrom?: Date | string | null, slotTo?: Date |
   };
 }
 
+// The performances of all productions, drafts included.
+async function findPerformanceIds(context: Context, productionId?: string | null) {
+  const productions = productionId
+    ? [await context.modules.products.findProduct({ productId: productionId })]
+    : await context.modules.products.findProducts({
+        type: ProductType.CONFIGURABLE_PRODUCT,
+        tags: [TICKET_PRODUCTION_TAG],
+        includeDrafts: true,
+      });
+  return productions
+    .filter(isTicketProduction)
+    .flatMap((production) => (production!.proxy?.assignments ?? []).map(({ productId }) => productId));
+}
+
 export async function buildTicketEventQuery(
-  { queryString, includeDrafts = true, onlyInvalidateable, slotFrom, slotTo, tags }: TicketEventQuery,
+  {
+    queryString,
+    includeDrafts = true,
+    onlyInvalidateable,
+    slotFrom,
+    slotTo,
+    tags,
+    productionId,
+    standalone,
+  }: TicketEventQuery,
   context: Context,
 ) {
   const access = await resolveTicketingAccess(context);
   const selectors: Record<string, unknown>[] = [];
+  if (productionId) selectors.push({ _id: { $in: await findPerformanceIds(context, productionId) } });
+  if (standalone) selectors.push({ _id: { $nin: await findPerformanceIds(context) } });
   const slotRange = buildSlotRangeSelector(slotFrom, slotTo);
   if (slotRange) selectors.push(slotRange);
   // Tickets of a cancelled event are cancelled as well, so these events are never redeemable.
@@ -97,8 +127,9 @@ export async function findCheckedTicketEvents(
   { onlyInvalidateable = false, ...params }: TicketEventQuery,
   { limit = 0, offset = 0, sort }: { limit?: number; offset?: number; sort?: SortOption[] },
   context: Context,
+  buildQuery: typeof buildTicketEventQuery = buildTicketEventQuery,
 ): Promise<Product[]> {
-  const query = await buildTicketEventQuery({ ...params, onlyInvalidateable }, context);
+  const query = await buildQuery({ ...params, onlyInvalidateable }, context);
   const scoped = hasTicketEventScope(context);
   const isWanted = async (product: Product) =>
     (!scoped || (await isTicketEventInScope(product, context))) &&

@@ -75,6 +75,14 @@ export {
   type TicketOrderPositionValidatorOptions,
   type TicketValidationAPI,
 } from './validate-order-position.ts';
+export {
+  getDefaultTicketSaleRules,
+  mergeTicketSaleRules,
+  readTicketSaleRules,
+  TICKET_SALE_RULE_KEYS,
+  type UpdateTicketSaleRulesInput,
+} from './sale-rules.ts';
+export { TICKET_PRODUCTION_TAG, isTicketProduction } from './production.ts';
 
 export {
   ticketingServices,

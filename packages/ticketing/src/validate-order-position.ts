@@ -8,6 +8,7 @@ import { ProductType, type Product } from '@unchainedshop/core-products';
 import { createLogger } from '@unchainedshop/logger';
 import type { TicketingModule } from './module.ts';
 import { isTicketEventCancelled } from './event-details.ts';
+import { getDefaultTicketSaleRules, type TicketSaleRules } from './sale-rules.ts';
 import {
   TicketEventCancelledError,
   TicketNotOnSaleError,
@@ -19,18 +20,6 @@ import {
 } from './api/errors.ts';
 
 const logger = createLogger('unchained:ticketing');
-
-/** When and how many tickets of an event may be bought. Unset rules do not restrict the sale. */
-export interface TicketSaleRules {
-  /** false closes the sale, e.g. while the presale date is not known yet. */
-  onSale?: boolean;
-  /** Tickets can be bought from this moment on. */
-  salesStart?: Date | string | null;
-  /** Tickets can be bought until this moment. */
-  salesEnd?: Date | string | null;
-  /** The most tickets of this product one order may contain. */
-  maxPerOrder?: number | null;
-}
 
 export interface TicketSaleRulesInput {
   /** The ticket product being added or checked out (the variant, not the proxy). */
@@ -50,11 +39,19 @@ export interface TicketValidationAPI {
   modules: UnchainedCore['modules'] & TicketingModule;
 }
 
+export type { TicketSaleRules };
+
 export interface TicketOrderPositionValidatorOptions {
-  getSaleRules?: (
-    input: TicketSaleRulesInput,
-    unchainedAPI: TicketValidationAPI,
-  ) => TicketSaleRules | null | undefined | Promise<TicketSaleRules | null | undefined>;
+  /**
+   * The sale rules of a ticket. Defaults to getDefaultTicketSaleRules (`meta.saleRules` of the
+   * ticket and of its production); null switches the sale rules off.
+   */
+  getSaleRules?:
+    | null
+    | ((
+        input: TicketSaleRulesInput,
+        unchainedAPI: TicketValidationAPI,
+      ) => TicketSaleRules | null | undefined | Promise<TicketSaleRules | null | undefined>);
 }
 
 const toDate = (value: Date | string) => (value instanceof Date ? value : new Date(value));
@@ -105,7 +102,7 @@ async function checkSaleRules(
 export function createTicketOrderPositionValidator(
   options: TicketOrderPositionValidatorOptions = {},
 ): OrdersSettings['validateOrderPosition'] {
-  const { getSaleRules } = options;
+  const { getSaleRules = getDefaultTicketSaleRules } = options;
 
   return async (params, unchainedAPI) => {
     await defaultValidateOrderPosition(params, unchainedAPI);
@@ -166,5 +163,5 @@ export function createTicketOrderPositionValidator(
   };
 }
 
-/** The ticket validator without sale rules. */
+/** The ticket validator with the built-in sale rules (getDefaultTicketSaleRules). */
 export const validateTicketOrderPosition = createTicketOrderPositionValidator();
