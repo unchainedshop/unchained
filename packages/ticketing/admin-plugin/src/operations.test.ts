@@ -126,7 +126,8 @@ test('a gate for several events loads them and their tickets in one request', ()
     ],
   );
   const tokens = findField(batched, 'tokens');
-  for (const field of ['ticketStatus', 'attendeeName', 'invalidatedDate']) {
+  // cancelledDate: the CSV export of the gate
+  for (const field of ['ticketStatus', 'attendeeName', 'invalidatedDate', 'cancelledDate']) {
     assert.ok(selects(tokens, field), field);
   }
 });
