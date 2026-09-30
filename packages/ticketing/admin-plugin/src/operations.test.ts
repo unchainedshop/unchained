@@ -130,3 +130,34 @@ test('a gate for several events loads them and their tickets in one request', ()
     assert.ok(selects(tokens, field), field);
   }
 });
+
+test('productions are listed and shown without loading tickets', () => {
+  for (const name of ['TicketProductions', 'TicketProductionDetail']) {
+    const operation = operations.get(name)!;
+    assert.ok(operation, name);
+    assert.equal(selects(findField(operation, 'ticketProduction'), 'tokens'), false, name);
+    let loadsTokens = false;
+    visit(operation, {
+      Field(node) {
+        if (node.name.value === 'tokens') loadsTokens = true;
+      },
+    });
+    assert.equal(loadsTokens, false, `${name} tokens`);
+  }
+  for (const name of [
+    'CreateTicketProduction',
+    'UpdateTicketProduction',
+    'PublishTicketProduction',
+    'UnpublishTicketProduction',
+    'RemoveTicketProduction',
+    'AddTicketPerformance',
+    'UpdateTicketPerformance',
+    'RemoveTicketPerformance',
+    'CancelTicketPerformance',
+    'AddTicketCategory',
+    'UpdateTicketCategory',
+    'RemoveTicketCategory',
+  ]) {
+    assert.ok(operations.get(name), name);
+  }
+});
