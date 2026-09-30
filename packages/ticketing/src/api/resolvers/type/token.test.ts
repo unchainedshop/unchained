@@ -1,7 +1,25 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { Token } from './token.ts';
-import { TokenizedProduct } from './tokenized-product.ts';
+import { TicketEvent, TokenizedProduct } from './tokenized-product.ts';
+
+const EVENT_FIELDS = [
+  'startsAt',
+  'endsAt',
+  'doorsOpenAt',
+  'location',
+  'durationMinutes',
+  'doorsOpenMinutesBefore',
+  'category',
+  'isCanceled',
+  'cancelledDate',
+] as const;
+
+// Resolves the plain fields of TokenizedProduct.event like the GraphQL executor does
+const resolveEvent = (product: any) => {
+  const event = TokenizedProduct.event(product);
+  return Object.fromEntries(EVENT_FIELDS.map((field) => [field, TicketEvent[field](event)]));
+};
 
 test('the ticket status tells cancelled tickets apart from redeemed ones', () => {
   const invalidatedDate = new Date('2026-10-01T19:05:00Z');
@@ -62,7 +80,7 @@ test('ticket events expose every value from the product meta as TokenizedProduct
       cancelledDate: '2026-09-30T08:00:00.000Z',
     },
   } as any;
-  assert.deepEqual(TokenizedProduct.event(product), {
+  assert.deepEqual(resolveEvent(product), {
     startsAt: new Date('2026-10-01T19:00:00Z'),
     endsAt: new Date('2026-10-01T20:30:00Z'),
     doorsOpenAt: new Date('2026-10-01T18:30:00Z'),
@@ -76,7 +94,7 @@ test('ticket events expose every value from the product meta as TokenizedProduct
 
   // Unset or unparsable values are null; the cancellation date only counts for a cancelled event.
   const unscheduled = { _id: 'nft', meta: { slot: 'soon', cancelledDate: new Date() } } as any;
-  assert.deepEqual(TokenizedProduct.event(unscheduled), {
+  assert.deepEqual(resolveEvent(unscheduled), {
     startsAt: null,
     endsAt: null,
     doorsOpenAt: null,
@@ -87,5 +105,47 @@ test('ticket events expose every value from the product meta as TokenizedProduct
     isCanceled: false,
     cancelledDate: null,
   });
-  assert.equal(TokenizedProduct.event({ _id: 'bare' } as any).isCanceled, false);
+  assert.equal(resolveEvent({ _id: 'bare' }).isCanceled, false);
+});
+
+test('ticket events expose their own and their effective sale rules and the overridden details', async () => {
+  const production = {
+    _id: 'show',
+    tags: ['ticket-production'],
+    meta: { saleRules: { onSale: true, salesStart: '2026-10-01T08:00:00.000Z', maxPerOrder: 6 } },
+  };
+  let lookups = 0;
+  const context = {
+    modules: {
+      products: {
+        firstActiveProductProxy: async (productId: string) => {
+          lookups += 1;
+          assert.equal(productId, 'performance');
+          return production;
+        },
+      },
+    },
+  } as any;
+  const performance = {
+    _id: 'performance',
+    meta: { saleRules: { maxPerOrder: 2, salesEnd: 'not a date' }, overridden: ['location'] },
+  } as any;
+  const event = TokenizedProduct.event(performance);
+  assert.deepEqual(TicketEvent.ownSaleRules(event), {
+    onSale: null,
+    salesStart: null,
+    salesEnd: null,
+    maxPerOrder: 2,
+  });
+  assert.deepEqual(await TicketEvent.saleRules(event, {}, context), {
+    onSale: true,
+    salesStart: new Date('2026-10-01T08:00:00.000Z'),
+    salesEnd: null,
+    maxPerOrder: 2,
+  });
+  // The production is looked up once per request
+  await TicketEvent.saleRules(event, {}, context);
+  assert.equal(lookups, 1);
+  assert.deepEqual(TicketEvent.overridden(event), ['location']);
+  assert.deepEqual(TicketEvent.overridden(TokenizedProduct.event({ _id: 'bare' } as any)), []);
 });

@@ -175,7 +175,7 @@ test.describe('Ticketing: checkout', () => {
     }
   });
 
-  test('the sale rules of the project (tests/setup.js reads product.meta.saleRules)', async () => {
+  test('the built-in sale rules (product.meta.saleRules)', async () => {
     const cartId = await createCart('tickets-sale-rules');
     const setSaleRules = (saleRules) =>
       db

@@ -17,7 +17,14 @@ import {
 test('ticketing schema is optional and every plugin operation validates when installed', () => {
   const coreTypes = buildDefaultTypeDefs({ actions: Object.keys(roles.actions) });
   const core = makeExecutableSchema({ typeDefs: coreTypes });
-  for (const field of ['ticketEvents', 'ticketEventsCount', 'ticketLookup', 'isPassCodeValid']) {
+  for (const field of [
+    'ticketEvents',
+    'ticketEventsCount',
+    'ticketLookup',
+    'isPassCodeValid',
+    'ticketProductions',
+    'ticketProductionsCount',
+  ]) {
     assert.equal(core.getQueryType()!.getFields()[field], undefined);
   }
   for (const field of [
@@ -25,6 +32,12 @@ test('ticketing schema is optional and every plugin operation validates when ins
     'cancelTicket',
     'cancelEvent',
     'updateTicketEvent',
+    'createTicketProduction',
+    'addTicketPerformance',
+    'updateTicketPerformance',
+    'removeTicketPerformance',
+    'publishTicketProduction',
+    'unpublishTicketProduction',
     'authenticateGate',
     'deauthenticateGate',
     'setEventScannerPassCode',
@@ -34,6 +47,7 @@ test('ticketing schema is optional and every plugin operation validates when ins
   const ticketingFields = {
     Token: ['isCanceled', 'cancelledDate', 'ticketStatus', 'attendeeName'],
     TokenizedProduct: ['event'],
+    ConfigurableProduct: ['ticketProduction'],
     Order: ['magicKey', 'ticketsPdfUrl'],
   };
   for (const [name, fields] of Object.entries(ticketingFields)) {
@@ -61,7 +75,20 @@ test('ticketing schema is optional and every plugin operation validates when ins
     'category',
     'isCanceled',
     'cancelledDate',
+    'saleRules',
+    'ownSaleRules',
+    'overridden',
   ]);
+  assert.deepEqual(Object.keys((extended.getType('TicketSaleRules') as GraphQLObjectType).getFields()), [
+    'onSale',
+    'salesStart',
+    'salesEnd',
+    'maxPerOrder',
+  ]);
+  assert.ok(
+    (extended.getType('UpdateTicketEventInput') as any).getFields().saleRules,
+    'UpdateTicketEventInput.saleRules',
+  );
   assert.deepEqual(
     extended
       .getMutationType()!
@@ -69,7 +96,7 @@ test('ticketing schema is optional and every plugin operation validates when ins
       .scanTicket.args.map(({ name }) => name),
     ['tokenId', 'productId', 'accessKey'],
   );
-  for (const field of ['slotFrom', 'slotTo', 'tags']) {
+  for (const field of ['slotFrom', 'slotTo', 'tags', 'productionId', 'standalone']) {
     assert.ok(
       extended
         .getQueryType()!

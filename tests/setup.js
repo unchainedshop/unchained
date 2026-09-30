@@ -13,7 +13,7 @@ import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-of
 import { pluginRegistry } from '@unchainedshop/core';
 import {
   createTicketingPlugin,
-  createTicketOrderPositionValidator,
+  validateTicketOrderPosition,
   withTicketing,
 } from '@unchainedshop/ticketing';
 import { createTicketWarehousingPlugin } from '@unchainedshop/ticketing/warehousing/ticket';
@@ -157,11 +157,9 @@ export async function initializeTestPlatform() {
   const platformOptions = {
     options: {
       orders: {
-        // Ticket supply, cancelled events and the sale rules the ticketing tests put into
-        // product.meta.saleRules; other products only get core's default validation
-        validateOrderPosition: createTicketOrderPositionValidator({
-          getSaleRules: ({ product }) => product.meta?.saleRules,
-        }),
+        // Ticket supply, cancelled events and the built-in sale rules (product.meta.saleRules);
+        // other products only get core's default validation
+        validateOrderPosition: validateTicketOrderPosition,
       },
     },
     rolesOptions: {
@@ -185,6 +183,11 @@ export async function initializeTestPlatform() {
         // Cancels tickets without other ticketing access; the organizer scope still applies
         eventManager: (role, actions) => {
           role.allow(actions.cancelTicket, () => true);
+        },
+        // Manages products and ticket productions; the organizer scope still applies
+        productionManager: (role, actions) => {
+          role.allow(actions.manageProducts, () => true);
+          role.allow(actions.viewProducts, () => true);
         },
       },
     },

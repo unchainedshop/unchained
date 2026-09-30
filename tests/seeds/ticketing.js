@@ -59,6 +59,18 @@ export const OrganizerAEventManager = {
   services: { token: { secret: sha256('event-manager-a-secret') } },
 };
 
+// Manages products (productionManager role of tests/setup.js), limited to organizer-b events
+export const PRODUCER_B_TOKEN = 'Bearer producer-b-secret';
+export const OrganizerBProducer = {
+  ...GateStaff,
+  _id: 'producer-b',
+  username: 'producer-b',
+  emails: [{ address: 'producer-b@unchained.local', verified: true }],
+  roles: ['productionManager'],
+  tags: ['organizer-b'],
+  services: { token: { secret: sha256('producer-b-secret') } },
+};
+
 const MINUTE = 60 * 1000;
 
 const ticketEvent = ({ _id, tags, supply, slot }) => ({
@@ -107,7 +119,12 @@ export default async function seedTicketing(db) {
   await db.collection('warehousing-providers').insertOne({ ...TicketIssuerProvider });
   await db
     .collection('users')
-    .insertMany([{ ...GateStaff }, { ...OrganizerAGateStaff }, { ...OrganizerAEventManager }]);
+    .insertMany([
+      { ...GateStaff },
+      { ...OrganizerAGateStaff },
+      { ...OrganizerAEventManager },
+      { ...OrganizerBProducer },
+    ]);
   await db.collection('products').insertMany([
     ticketEvent({
       _id: ConcertEventId,

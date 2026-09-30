@@ -199,3 +199,40 @@ test('sale rules receive the order, the quantity change and a lazy proxy lookup'
   await validate({ order, product: { _id: 'shirt', type: 'SIMPLE_PRODUCT', status: 'ACTIVE' } }, api);
   assert.equal(received.length, 2);
 });
+
+test('validateTicketOrderPosition applies the stored sale rules of the performance and its production', async () => {
+  const production = {
+    _id: 'show',
+    type: 'CONFIGURABLE_PRODUCT',
+    tags: ['ticket-production'],
+    meta: { saleRules: { onSale: false } },
+  };
+  const { api } = createAPI({ proxy: production });
+  await assert.rejects(
+    validateTicketOrderPosition({ order, product: ticketProduct(), quantityDiff: 1 }, api),
+    errorCode('TicketNotOnSaleError'),
+  );
+  // The performance opens its own sale
+  await validateTicketOrderPosition(
+    { order, product: ticketProduct({ meta: { saleRules: { onSale: true } } }), quantityDiff: 1 },
+    api,
+  );
+  // A standalone event reads its own rules
+  const { api: standalone } = createAPI();
+  await assert.rejects(
+    validateTicketOrderPosition(
+      { order, product: ticketProduct({ meta: { saleRules: { maxPerOrder: 0 } } }), quantityDiff: 1 },
+      standalone,
+    ),
+    errorCode('TicketOrderLimitExceededError'),
+  );
+});
+
+test('getSaleRules: null switches the sale rules off', async () => {
+  const validate = createTicketOrderPositionValidator({ getSaleRules: null });
+  const { api } = createAPI();
+  await validate(
+    { order, product: ticketProduct({ meta: { saleRules: { onSale: false } } }), quantityDiff: 1 },
+    api,
+  );
+});
