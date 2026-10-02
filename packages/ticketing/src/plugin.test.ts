@@ -30,7 +30,16 @@ describe('ticketing plugin', () => {
   let registeredRenderers: Map<string, any>;
   let registeredTemplates: Record<string, any>;
   let unchainedSecret: string | undefined;
+  // onRegister subscribes to events; a throwaway emitter keeps the fake modules from reacting to
+  // the events of later suites in the same process
+  let previousAdapter: ReturnType<typeof getEmitAdapter>;
   beforeEach(() => {
+    previousAdapter = getEmitAdapter();
+    const emitter = new EventEmitter();
+    setEmitAdapter({
+      publish: (eventName, data) => emitter.emit(eventName, data),
+      subscribe: (eventName, callback) => emitter.on(eventName, callback),
+    });
     registeredRenderers = new Map(renderers);
     registeredTemplates = Object.fromEntries(
       Object.keys(defaultTemplates).map((name) => [name, MessagingDirector.getTemplate(name)]),
@@ -45,6 +54,7 @@ describe('ticketing plugin', () => {
     }
     if (unchainedSecret === undefined) delete process.env.UNCHAINED_SECRET;
     else process.env.UNCHAINED_SECRET = unchainedSecret;
+    setEmitAdapter(previousAdapter);
   });
 
   const unchainedAPI = { modules: {}, services: {} } as any;
@@ -178,39 +188,29 @@ describe('ticketing plugin', () => {
 
   test('an Apple renderer refreshes the pass of the invalidated or exported ticket only', async () => {
     registerEvents(['TOKEN_INVALIDATED', WorkerEventTypes.FINISHED]);
-    const emitter = new EventEmitter();
-    const previousAdapter = getEmitAdapter();
-    setEmitAdapter({
-      publish: (eventName, data) => emitter.emit(eventName, data),
-      subscribe: (eventName, callback) => emitter.on(eventName, callback),
-    });
-    try {
-      const refreshed: (string | null)[] = [];
-      const api = {
-        modules: {
-          passes: {
-            invalidateAppleWalletPasses: async (_api: unknown, token?: { _id: string } | null) => {
-              refreshed.push(token?._id ?? null);
-            },
+    const refreshed: (string | null)[] = [];
+    const api = {
+      modules: {
+        passes: {
+          invalidateAppleWalletPasses: async (_api: unknown, token?: { _id: string } | null) => {
+            refreshed.push(token?._id ?? null);
           },
         },
-      } as any;
-      await createTicketingPlugin({ createAppleWalletPass: async () => ({}) as any }).onRegister!(api);
+      },
+    } as any;
+    await createTicketingPlugin({ createAppleWalletPass: async () => ({}) as any }).onRegister!(api);
 
-      await emit('TOKEN_INVALIDATED', { token: { _id: 'redeemed' } });
-      await emit(WorkerEventTypes.FINISHED, {
-        type: 'EXPORT_TOKEN',
-        success: true,
-        input: { token: { _id: 'exported' } },
-      });
-      // A changed owner concerns many tickets, so all passes are reconciled.
-      await emit(WorkerEventTypes.FINISHED, { type: 'UPDATE_TOKEN_OWNERSHIP', success: true });
-      await emit(WorkerEventTypes.FINISHED, { type: 'EXPORT_TOKEN', success: false });
-      await new Promise((resolve) => setImmediate(resolve));
+    await emit('TOKEN_INVALIDATED', { token: { _id: 'redeemed' } });
+    await emit(WorkerEventTypes.FINISHED, {
+      type: 'EXPORT_TOKEN',
+      success: true,
+      input: { token: { _id: 'exported' } },
+    });
+    // A changed owner concerns many tickets, so all passes are reconciled.
+    await emit(WorkerEventTypes.FINISHED, { type: 'UPDATE_TOKEN_OWNERSHIP', success: true });
+    await emit(WorkerEventTypes.FINISHED, { type: 'EXPORT_TOKEN', success: false });
+    await new Promise((resolve) => setImmediate(resolve));
 
-      assert.deepEqual(refreshed, ['redeemed', 'exported', null]);
-    } finally {
-      setEmitAdapter(previousAdapter);
-    }
+    assert.deepEqual(refreshed, ['redeemed', 'exported', null]);
   });
 });
