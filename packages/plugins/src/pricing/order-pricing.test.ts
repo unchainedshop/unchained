@@ -201,7 +201,7 @@ describe('order pricing contracts', () => {
       currencyCode,
     });
     assert.deepEqual(order.discountPrices('fixed-10'), [
-      { amount: -1_000, currencyCode, discountId: 'fixed-10' },
+      { amount: -1_000, currencyCode, discountId: 'fixed-10', isTaxable: true, isNetPrice: false },
     ]);
   });
 
@@ -213,11 +213,23 @@ describe('order pricing contracts', () => {
     sheet.addDiscount({ amount: 10, taxAmount: 1, discountId: 'cancelled' });
 
     assert.deepEqual(sheet.discountPrices(), [
-      { discountId: 'fractional-discount', amount: -0, currencyCode },
-      { discountId: 'fractional-reversal', amount: 0, currencyCode },
+      {
+        discountId: 'fractional-discount',
+        amount: -0,
+        currencyCode,
+        isTaxable: true,
+        isNetPrice: false,
+      },
+      { discountId: 'fractional-reversal', amount: 0, currencyCode, isTaxable: true, isNetPrice: false },
     ]);
     assert.deepEqual(sheet.discountPrices('fractional-discount'), [
-      { discountId: 'fractional-discount', amount: -0, currencyCode },
+      {
+        discountId: 'fractional-discount',
+        amount: -0,
+        currencyCode,
+        isTaxable: true,
+        isNetPrice: false,
+      },
     ]);
     assert.equal(sheet.total({ discountId: 'fractional-discount' }).amount, -0);
     assert.deepEqual(sheet.discountPrices('cancelled'), []);
