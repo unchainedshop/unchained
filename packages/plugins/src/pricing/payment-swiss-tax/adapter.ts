@@ -2,6 +2,7 @@ import { type IPaymentPricingAdapter, PaymentPricingAdapter } from '@unchainedsh
 
 import { resolveTaxCategoryFromPaymentProvider, SwissTaxCategories } from '../tax/ch.ts';
 import isDeliveryAddressInCountry from '../utils/isDeliveryAddressInCountry.ts';
+import resolveOrderDelivery from '../utils/resolveOrderDelivery.ts';
 import { applyTaxRateToTaxableRows } from '../tax/applyTaxRateToTaxableRows.ts';
 
 // A payment fee charged to the buyer is part of the consideration for the supply
@@ -30,11 +31,7 @@ export const PaymentSwissTax: IPaymentPricingAdapter = {
       calculate: async () => {
         // Same location as the goods: the delivery address, else the billing address,
         // else the country of the order or request (simulated payment prices)
-        const orderDelivery = context.order?.deliveryId
-          ? await context.modules.orders.deliveries.findDelivery({
-              orderDeliveryId: context.order.deliveryId,
-            })
-          : null;
+        const orderDelivery = await resolveOrderDelivery(context);
         if (
           !isDeliveryAddressInCountry(
             {

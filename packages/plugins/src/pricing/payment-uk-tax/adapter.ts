@@ -6,6 +6,7 @@ import {
   UK_VAT_COUNTRY_CODES,
 } from '../tax/uk.ts';
 import isDeliveryAddressInCountry from '../utils/isDeliveryAddressInCountry.ts';
+import resolveOrderDelivery from '../utils/resolveOrderDelivery.ts';
 import { applyTaxRateToTaxableRows } from '../tax/applyTaxRateToTaxableRows.ts';
 
 // A payment fee charged to the buyer is further consideration for the goods, not a
@@ -34,11 +35,7 @@ export const PaymentUkTax: IPaymentPricingAdapter = {
       calculate: async () => {
         // Same location as the goods: the delivery address, else the billing address,
         // else the country of the order or request (simulated payment prices)
-        const orderDelivery = context.order?.deliveryId
-          ? await context.modules.orders.deliveries.findDelivery({
-              orderDeliveryId: context.order.deliveryId,
-            })
-          : null;
+        const orderDelivery = await resolveOrderDelivery(context);
         if (
           !isDeliveryAddressInCountry(
             {

@@ -2,6 +2,7 @@ import { type IDeliveryPricingAdapter, DeliveryPricingAdapter } from '@unchained
 
 import { US_COUNTRY_CODE, isDeliveryExemptFromUsSalesTax, resolveUsSalesTaxRate } from '../tax/us.ts';
 import resolveDeliveryLocation from '../utils/resolveDeliveryLocation.ts';
+import resolveOrderDelivery from '../utils/resolveOrderDelivery.ts';
 import { applyTaxRateToTaxableRows } from '../tax/applyTaxRateToTaxableRows.ts';
 
 export const DeliveryUsSalesTax: IDeliveryPricingAdapter = {
@@ -12,15 +13,8 @@ export const DeliveryUsSalesTax: IDeliveryPricingAdapter = {
   label: 'Apply US State Sales Tax on Delivery Fees',
   orderIndex: 80,
 
-  // No order delivery when a delivery price is simulated: the location falls back to the
-  // billing address or the country of the order or request
-  isActivatedFor: (context) => {
-    const { countryCode } = resolveDeliveryLocation({
-      order: context.order,
-      orderDelivery: context.orderDelivery,
-      countryCode: context.countryCode,
-    });
-    return countryCode === US_COUNTRY_CODE;
+  isActivatedFor: () => {
+    return true;
   },
 
   actions: (params) => {
@@ -31,16 +25,20 @@ export const DeliveryUsSalesTax: IDeliveryPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
+        // A simulated delivery price has no order delivery: the location is the delivery
+        // address of the order, else the billing address or the country of the order or request
+        const { countryCode, regionCode } = resolveDeliveryLocation({
+          order: context.order,
+          orderDelivery: await resolveOrderDelivery(context),
+          countryCode: context.countryCode,
+        });
+        if (countryCode !== US_COUNTRY_CODE) return pricingAdapter.calculate();
+
         // shipping taxability varies by state; providers opt out explicitly
         if (isDeliveryExemptFromUsSalesTax(context.provider)) {
           return pricingAdapter.calculate();
         }
 
-        const { regionCode } = resolveDeliveryLocation({
-          order: context.order,
-          orderDelivery: context.orderDelivery,
-          countryCode: context.countryCode,
-        });
         const taxRate = resolveUsSalesTaxRate({
           regionCode,
           referenceDate: context.order?.ordered,
