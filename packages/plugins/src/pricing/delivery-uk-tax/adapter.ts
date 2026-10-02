@@ -6,6 +6,7 @@ import {
   UK_VAT_COUNTRY_CODES,
 } from '../tax/uk.ts';
 import isDeliveryAddressInCountry from '../utils/isDeliveryAddressInCountry.ts';
+import resolveOrderDelivery from '../utils/resolveOrderDelivery.ts';
 import { applyTaxRateToTaxableRows } from '../tax/applyTaxRateToTaxableRows.ts';
 
 export const DeliveryUkTax: IDeliveryPricingAdapter = {
@@ -16,17 +17,8 @@ export const DeliveryUkTax: IDeliveryPricingAdapter = {
   label: 'Apply UK VAT on Delivery Fees',
   orderIndex: 80,
 
-  // No order delivery when a delivery price is simulated: the location falls back to the
-  // billing address or the country of the order or request
-  isActivatedFor: (context) => {
-    return isDeliveryAddressInCountry(
-      {
-        order: context.order,
-        orderDelivery: context.orderDelivery,
-        countryCode: context.countryCode,
-      },
-      UK_VAT_COUNTRY_CODES,
-    );
+  isActivatedFor: () => {
+    return true;
   },
 
   actions: (params) => {
@@ -37,6 +29,21 @@ export const DeliveryUkTax: IDeliveryPricingAdapter = {
       ...pricingAdapter,
 
       calculate: async () => {
+        // A simulated delivery price has no order delivery: the location is the delivery
+        // address of the order, else the billing address or the country of the order or request
+        if (
+          !isDeliveryAddressInCountry(
+            {
+              order: context.order,
+              orderDelivery: await resolveOrderDelivery(context),
+              countryCode: context.countryCode,
+            },
+            UK_VAT_COUNTRY_CODES,
+          )
+        ) {
+          return pricingAdapter.calculate();
+        }
+
         const taxCategory =
           resolveUkTaxCategoryFromDeliveryProvider(context.provider) || UkTaxCategories.STANDARD;
         const taxRate = taxCategory.rate(context.order?.ordered);

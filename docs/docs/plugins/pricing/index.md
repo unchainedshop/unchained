@@ -43,6 +43,8 @@ Calculate payment processing fees.
 |-------------|-------|-------------|-------------|
 | [`shop.unchained.pricing.payment-free`](./pricing-payment-free.md) | 0 | Zero-cost payment | Default — sets payment fee to zero, replace with custom adapter for surcharges |
 | [`shop.unchained.pricing.payment-swiss-tax`](./pricing-payment-swiss-tax.md) | 80 | Swiss VAT on payment fees | Swiss shops charging payment surcharges |
+| [`shop.unchained.pricing.payment-eu-tax`](./pricing-payment-eu-tax.md) | 80 | EU VAT on payment fees | EU shops charging payment surcharges |
+| [`shop.unchained.pricing.payment-uk-tax`](./pricing-payment-uk-tax.md) | 80 | UK VAT on payment fees | UK shops charging payment surcharges |
 
 ## Order Pricing
 

@@ -1,4 +1,5 @@
 import type { DeliveryProvider } from '@unchainedshop/core-delivery';
+import type { PaymentProvider } from '@unchainedshop/core-payment';
 import type { Product } from '@unchainedshop/core-products';
 import euTaxRates from './eu-tax-rates.json' with { type: 'json' };
 import { compileEraRates, rateForDate } from './eraRates.ts';
@@ -13,7 +14,7 @@ import { compileEraRates, rateForDate } from './eraRates.ts';
 // Category names are the EU VAT Directive's: `standard` (every country),
 // `reduced` / `reduced2` / `super_reduced` / `parking` (where a country has
 // them). Products select a category via a `eu-tax-category:<name>` tag,
-// delivery providers via a `eu-tax-category` configuration entry; requesting
+// delivery and payment providers via a `eu-tax-category` configuration entry; requesting
 // a category a country doesn't have falls back to its standard rate — never
 // silently to zero.
 
@@ -75,7 +76,16 @@ export const resolveEuTaxCategoryFromProduct = (product: Product): string | null
   return categoryTag.trim().toLowerCase().slice(EU_TAX_CATEGORY_TAG_PREFIX.length) || null;
 };
 
-export const resolveEuTaxCategoryFromDeliveryProvider = (provider: DeliveryProvider): string | null => {
+// The `eu-tax-category` configuration of a delivery or payment provider
+const resolveEuTaxCategoryFromProvider = (
+  provider: Pick<DeliveryProvider | PaymentProvider, 'configuration'>,
+): string | null => {
   const value = provider?.configuration?.find(({ key }) => key === PROVIDER_CONFIGURATION_KEY)?.value;
   return value?.trim().toLowerCase() || null;
 };
+
+export const resolveEuTaxCategoryFromDeliveryProvider = (provider: DeliveryProvider): string | null =>
+  resolveEuTaxCategoryFromProvider(provider);
+
+export const resolveEuTaxCategoryFromPaymentProvider = (provider: PaymentProvider): string | null =>
+  resolveEuTaxCategoryFromProvider(provider);

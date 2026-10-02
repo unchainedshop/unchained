@@ -18,7 +18,7 @@ import { DeliveryEuTaxPlugin } from '@unchainedshop/plugins/pricing/delivery-eu-
 pluginRegistry.register(DeliveryEuTaxPlugin);
 ```
 
-Or register both EU tax adapters (product + delivery) via the country preset:
+Or register all EU tax adapters (product, delivery and payment) via the country preset:
 
 ```typescript
 import { registerEuTaxPlugins } from '@unchainedshop/plugins/presets/countries/eu';
@@ -28,7 +28,7 @@ registerEuTaxPlugins();
 
 ## How It Works
 
-1. Resolves the destination country (delivery address → billing address → order country)
+1. Resolves the destination country (delivery address → billing address → order or request country; a price simulated for an order uses the delivery address of the order)
 2. Determines the tax category from the delivery provider's `eu-tax-category` configuration entry, falling back to the destination country's **standard** rate
 3. Resolves the rate valid at order time from the bundled per-country era tables and applies it to the taxable delivery fee rows
 
@@ -62,5 +62,6 @@ mutation ConfigureDeliveryProvider {
 
 ## Related
 
+- [Payment EU VAT](./pricing-payment-eu-tax.md) - EU VAT for payment fees
 - [Product EU VAT](./pricing-product-eu-tax.md) - EU VAT for products
 - [Delivery Swiss Tax](./pricing-delivery-swiss-tax.md) - Swiss VAT for delivery fees

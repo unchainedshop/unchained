@@ -18,7 +18,7 @@ import { ProductEuTaxPlugin } from '@unchainedshop/plugins/pricing/product-eu-ta
 pluginRegistry.register(ProductEuTaxPlugin);
 ```
 
-Or register both EU tax adapters (product + delivery) via the country preset:
+Or register all EU tax adapters (product, delivery and payment) via the country preset:
 
 ```typescript
 import { registerEuTaxPlugins } from '@unchainedshop/plugins/presets/countries/eu';
@@ -102,6 +102,7 @@ Cross-border regimes are intentionally out of scope: OSS registration thresholds
 
 ## Related
 
+- [Payment EU VAT](./pricing-payment-eu-tax.md) - EU VAT for payment fees
 - [Delivery EU VAT](./pricing-delivery-eu-tax.md) - EU VAT for delivery fees
 - [Product Swiss Tax](./pricing-product-swiss-tax.md) - Swiss VAT for products
 - [Product Pricing](../../extend/pricing/product-pricing.md) - Custom product pricing

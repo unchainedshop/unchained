@@ -1,20 +1,24 @@
 import { type IPaymentPricingAdapter, PaymentPricingAdapter } from '@unchainedshop/core';
 
-import { resolveTaxCategoryFromPaymentProvider, SwissTaxCategories } from '../tax/ch.ts';
+import {
+  resolveUkTaxCategoryFromPaymentProvider,
+  UkTaxCategories,
+  UK_VAT_COUNTRY_CODES,
+} from '../tax/uk.ts';
 import isDeliveryAddressInCountry from '../utils/isDeliveryAddressInCountry.ts';
 import resolveOrderDelivery from '../utils/resolveOrderDelivery.ts';
 import { applyTaxRateToTaxableRows } from '../tax/applyTaxRateToTaxableRows.ts';
 
-// A payment fee charged to the buyer is part of the consideration for the supply
-// (Art. 24 para. 1 MWSTG) and, as an ancillary supply, shares the tax treatment of the
-// goods (Art. 19 para. 4 MWSTG): it is taxed where the goods are, at the rate of the
-// main supply (the provider's `swiss-tax-category`, DEFAULT if not set).
-export const PaymentSwissTax: IPaymentPricingAdapter = {
+// A payment fee charged to the buyer is further consideration for the goods, not a
+// separate exempt payment service (SilverDoor v HMRC [2024] UKUT 147, following CJEU
+// C-276/09): it is taxed where the goods are, at the rate of the main supply (the
+// provider's `uk-tax-category`, STANDARD if not set).
+export const PaymentUkTax: IPaymentPricingAdapter = {
   ...PaymentPricingAdapter,
 
-  key: 'shop.unchained.pricing.payment-swiss-tax',
+  key: 'shop.unchained.pricing.payment-uk-tax',
   version: '1.0.0',
-  label: 'Apply Swiss Tax on Payment Fees',
+  label: 'Apply UK VAT on Payment Fees',
   orderIndex: 80,
 
   isActivatedFor: () => {
@@ -39,22 +43,22 @@ export const PaymentSwissTax: IPaymentPricingAdapter = {
               orderDelivery,
               countryCode: context.countryCode,
             },
-            ['CH', 'LI'],
+            UK_VAT_COUNTRY_CODES,
           )
         ) {
           return pricingAdapter.calculate();
         }
 
         const taxCategory =
-          resolveTaxCategoryFromPaymentProvider(context.provider) || SwissTaxCategories.DEFAULT;
+          resolveUkTaxCategoryFromPaymentProvider(context.provider) || UkTaxCategories.STANDARD;
         const taxRate = taxCategory.rate(context.order?.ordered);
 
-        PaymentPricingAdapter.log(`PaymentSwissTax -> Tax Multiplicator: ${taxRate}`);
+        PaymentPricingAdapter.log(`PaymentUkTax -> Tax Multiplicator: ${taxRate}`);
         applyTaxRateToTaxableRows({
           calculationSheet: params.calculationSheet,
           resultSheet: pricingAdapter.resultSheet(),
           taxRate,
-          adapterKey: PaymentSwissTax.key,
+          adapterKey: PaymentUkTax.key,
         });
 
         return pricingAdapter.calculate();
@@ -63,4 +67,4 @@ export const PaymentSwissTax: IPaymentPricingAdapter = {
   },
 };
 
-export default PaymentSwissTax;
+export default PaymentUkTax;
