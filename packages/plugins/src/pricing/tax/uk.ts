@@ -1,4 +1,5 @@
 import type { DeliveryProvider } from '@unchainedshop/core-delivery';
+import type { PaymentProvider } from '@unchainedshop/core-payment';
 import type { Product } from '@unchainedshop/core-products';
 import ukTaxRates from './uk-tax-rates.json' with { type: 'json' };
 import { compileEraRates, rateForDate } from './eraRates.ts';
@@ -12,8 +13,8 @@ import { compileEraRates, rateForDate } from './eraRates.ts';
 // The UK VAT area is Great Britain, Northern Ireland and the Isle of Man.
 // Categories: standard, reduced (domestic fuel & power etc.), zero
 // (most food, books, children's clothing). Products select a category via a
-// `uk-tax-category:<name>` tag, delivery providers via a `uk-tax-category`
-// configuration entry.
+// `uk-tax-category:<name>` tag, delivery and payment providers via a
+// `uk-tax-category` configuration entry.
 
 export const UK_VAT_COUNTRY_CODES = ['GB', 'IM'];
 
@@ -29,8 +30,9 @@ export const UkTaxCategories: Record<string, UkTaxCategoryResolver> = Object.fro
   ]),
 );
 
-export const resolveUkTaxCategoryFromDeliveryProvider = (
-  provider: DeliveryProvider,
+// The `uk-tax-category` configuration of a delivery or payment provider
+const resolveUkTaxCategoryFromProvider = (
+  provider: Pick<DeliveryProvider | PaymentProvider, 'configuration'>,
 ): UkTaxCategoryResolver | null => {
   const taxCategoryFromProvider = provider?.configuration
     ?.find(({ key }) => {
@@ -42,6 +44,14 @@ export const resolveUkTaxCategoryFromDeliveryProvider = (
   const taxCategory = taxCategoryFromProvider ? UkTaxCategories[taxCategoryFromProvider] : null;
   return taxCategory;
 };
+
+export const resolveUkTaxCategoryFromDeliveryProvider = (
+  provider: DeliveryProvider,
+): UkTaxCategoryResolver | null => resolveUkTaxCategoryFromProvider(provider);
+
+export const resolveUkTaxCategoryFromPaymentProvider = (
+  provider: PaymentProvider,
+): UkTaxCategoryResolver | null => resolveUkTaxCategoryFromProvider(provider);
 
 export const resolveUkTaxCategoryFromProduct = (product: Product): UkTaxCategoryResolver | null => {
   const productSpecialTaxTag = product?.tags?.find((tag) =>
