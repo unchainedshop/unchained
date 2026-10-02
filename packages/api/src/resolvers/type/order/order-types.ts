@@ -11,7 +11,7 @@ import type {
   OrderDelivery,
 } from '@unchainedshop/core-orders';
 import type { User } from '@unchainedshop/core-users';
-import type { Price } from '@unchainedshop/utils';
+import type { PriceType } from '../price-types.ts';
 import { OrderPricingSheet } from '@unchainedshop/core';
 
 export const Order = {
@@ -64,14 +64,18 @@ export const Order = {
     return order.status;
   },
 
-  total(order: OrderType, params: { category: string; useNetPrice: boolean }): Price | null {
+  total(order: OrderType, params: { category: string; useNetPrice: boolean }): PriceType | null {
     const pricing = OrderPricingSheet({
       calculation: order.calculation,
       currencyCode: order.currencyCode,
     });
 
     if (pricing.isValid()) {
-      return pricing.total(params);
+      return {
+        ...pricing.total(params),
+        isNetPrice: params.useNetPrice || false,
+        isTaxable: pricing.taxSum({ baseCategory: params.category }) > 0,
+      };
     }
     return null;
   },
