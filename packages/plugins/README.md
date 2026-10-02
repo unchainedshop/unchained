@@ -53,8 +53,10 @@ npm install @unchainedshop/plugins
 | Payment Swiss Tax | `pricing/payment-swiss-tax` | Swiss VAT on payment fees |
 | Product EU Tax | `pricing/product-eu-tax` | EU destination VAT on products (opt-in `registerEuTaxPlugins`) |
 | Delivery EU Tax | `pricing/delivery-eu-tax` | EU destination VAT on delivery |
+| Payment EU Tax | `pricing/payment-eu-tax` | EU destination VAT on payment fees |
 | Product UK Tax | `pricing/product-uk-tax` | UK VAT on products (opt-in `registerUkTaxPlugins`) |
 | Delivery UK Tax | `pricing/delivery-uk-tax` | UK VAT on delivery |
+| Payment UK Tax | `pricing/payment-uk-tax` | UK VAT on payment fees |
 | Product US Sales Tax | `pricing/product-us-sales-tax` | US sales tax on products (opt-in `registerUsSalesTaxPlugins`) |
 | Delivery US Sales Tax | `pricing/delivery-us-sales-tax` | US sales tax on delivery |
 | 100 Off Discount | `pricing/discount-100-off` | Example order discount (not in any preset) |

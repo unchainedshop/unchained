@@ -18,7 +18,7 @@ import { DeliveryUkTaxPlugin } from '@unchainedshop/plugins/pricing/delivery-uk-
 pluginRegistry.register(DeliveryUkTaxPlugin);
 ```
 
-Or register both UK tax adapters (product + delivery) via the country preset:
+Or register all UK tax adapters (product, delivery and payment) via the country preset:
 
 ```typescript
 import { registerUkTaxPlugins } from '@unchainedshop/plugins/presets/countries/uk';
@@ -28,7 +28,7 @@ registerUkTaxPlugins();
 
 ## How It Works
 
-1. Checks if the order has a delivery address in the UK VAT area
+1. Checks if the delivery location is in the UK VAT area (delivery address → billing address → order or request country; a price simulated for an order uses the delivery address of the order)
 2. Determines the tax category from the delivery provider's `uk-tax-category` configuration entry, falling back to STANDARD (20%)
 3. Resolves the rate valid at order time from the bundled era table and applies it to the taxable delivery fee rows
 
@@ -62,5 +62,6 @@ mutation ConfigureDeliveryProvider {
 
 ## Related
 
+- [Payment UK VAT](./pricing-payment-uk-tax.md) - UK VAT for payment fees
 - [Product UK VAT](./pricing-product-uk-tax.md) - UK VAT for products
 - [Delivery EU VAT](./pricing-delivery-eu-tax.md) - EU VAT for delivery fees

@@ -71,7 +71,7 @@ mutation ConfigureDeliveryProvider {
 
 ## Activation Conditions
 
-The adapter activates when the delivery location is in Switzerland or Liechtenstein. The location is the delivery address, else the billing address, else the country of the order or request, so simulated delivery prices (`DeliveryProvider.simulatedPrice`) are taxed too, with or without a cart.
+The adapter activates when the delivery location is in Switzerland or Liechtenstein. The location is the delivery address, else the billing address, else the country of the order or request, so simulated delivery prices (`DeliveryProvider.simulatedPrice`) are taxed too, with or without a cart; a price simulated for an order uses the delivery address of the order.
 
 ## Adapter Details
 

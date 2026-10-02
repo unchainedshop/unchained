@@ -18,7 +18,7 @@ import { ProductUkTaxPlugin } from '@unchainedshop/plugins/pricing/product-uk-ta
 pluginRegistry.register(ProductUkTaxPlugin);
 ```
 
-Or register both UK tax adapters (product + delivery) via the country preset:
+Or register all UK tax adapters (product, delivery and payment) via the country preset:
 
 ```typescript
 import { registerUkTaxPlugins } from '@unchainedshop/plugins/presets/countries/uk';
@@ -91,6 +91,7 @@ The adapter handles both net and gross prices:
 
 ## Related
 
+- [Payment UK VAT](./pricing-payment-uk-tax.md) - UK VAT for payment fees
 - [Delivery UK VAT](./pricing-delivery-uk-tax.md) - UK VAT for delivery fees
 - [Product EU VAT](./pricing-product-eu-tax.md) - Destination-based EU VAT
 - [Product Pricing](../../extend/pricing/product-pricing.md) - Custom product pricing
