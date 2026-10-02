@@ -57,7 +57,7 @@ export async function simulateConfigurablePriceRangeService(
         return {
           ...unitPrice,
           isNetPrice: useNetPrice,
-          isTaxable: pricing.taxSum() > 0,
+          isTaxable: pricing.taxSum() !== 0,
           currencyCode: pricing.currencyCode,
         };
       }),

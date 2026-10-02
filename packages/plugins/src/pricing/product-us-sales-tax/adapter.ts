@@ -1,8 +1,4 @@
-import {
-  ProductPricingAdapter,
-  type IProductPricingAdapter,
-  ProductPricingRowCategory,
-} from '@unchainedshop/core';
+import { ProductPricingAdapter, type IProductPricingAdapter } from '@unchainedshop/core';
 import { US_COUNTRY_CODE, isProductExemptFromUsSalesTax, resolveUsSalesTaxRate } from '../tax/us.ts';
 import resolveDeliveryLocation from '../utils/resolveDeliveryLocation.ts';
 import { applyTaxRateToTaxableRows } from '../tax/applyTaxRateToTaxableRows.ts';
@@ -56,7 +52,6 @@ export const ProductUsSalesTax: IProductPricingAdapter = {
           calculationSheet: params.calculationSheet,
           resultSheet: pricingAdapter.resultSheet(),
           taxRate,
-          baseCategory: ProductPricingRowCategory.Item,
           adapterKey: ProductUsSalesTax.key,
         });
         return pricingAdapter.calculate();

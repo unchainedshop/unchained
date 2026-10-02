@@ -3,6 +3,8 @@ export interface PricingDiscount {
   discountId: string;
   amount: number;
   currencyCode: string;
+  isTaxable: boolean;
+  isNetPrice: boolean;
 }
 
 export interface IPricingSheet<

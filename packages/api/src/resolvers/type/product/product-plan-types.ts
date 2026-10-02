@@ -58,7 +58,7 @@ export const PlanProduct = {
     return {
       ...unitPrice,
       isNetPrice: useNetPrice,
-      isTaxable: pricing.taxSum() > 0,
+      isTaxable: pricing.taxSum() !== 0,
       currencyCode: pricing.currencyCode || requestContext.currencyCode,
       countryCode: requestContext.countryCode,
     };

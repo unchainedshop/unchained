@@ -7,26 +7,31 @@ export interface TaxableCalculation extends PricingCalculation {
 
 export interface TaxResultSheet {
   calculation: PricingCalculation[];
-  addTax: (row: { amount: number; rate: number; baseCategory: string; meta?: unknown }) => void;
+  addTax: (row: {
+    amount: number;
+    rate: number;
+    baseCategory: string;
+    discountId?: string;
+    meta?: unknown;
+  }) => void;
 }
 
 /**
  * Apply a tax rate to every `isTaxable` row of a calculation sheet — the
  * shared math of all regional tax adapters: gross rows get the tax extracted
  * (negative offset row + tax row), net rows get it added on top (tax row
- * only).
+ * only). Each tax row is attributed to the category and discount of its source
+ * row, so discounts carry their own tax.
  */
 export const applyTaxRateToTaxableRows = <Calculation extends TaxableCalculation>({
   calculationSheet,
   resultSheet,
   taxRate,
-  baseCategory,
   adapterKey,
 }: {
   calculationSheet: { filterBy: (filter?: Partial<Calculation>) => Calculation[] };
   resultSheet: TaxResultSheet;
   taxRate: number;
-  baseCategory: string;
   adapterKey: string;
 }): void => {
   calculationSheet
@@ -44,14 +49,16 @@ export const applyTaxRateToTaxableRows = <Calculation extends TaxableCalculation
         resultSheet.addTax({
           amount: taxAmount,
           rate: taxRate,
-          baseCategory,
+          baseCategory: row.category,
+          discountId: row.discountId,
           meta: { adapter: adapterKey },
         });
       } else {
         resultSheet.addTax({
           amount: row.amount * taxRate,
           rate: taxRate,
-          baseCategory,
+          baseCategory: row.category,
+          discountId: row.discountId,
           meta: { adapter: adapterKey },
         });
       }

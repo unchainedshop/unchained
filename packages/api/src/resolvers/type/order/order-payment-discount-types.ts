@@ -1,13 +1,13 @@
 import type { Context } from '../../../context.ts';
 import type { OrderPayment } from '@unchainedshop/core-orders';
-import type { Price } from '@unchainedshop/utils';
+import type { PriceType } from '../price-types.ts';
 
 export const OrderPaymentDiscount = {
-  _id: (orderDelivery: Price & { discountId: string; item: OrderPayment }) =>
+  _id: (orderDelivery: PriceType & { discountId: string; item: OrderPayment }) =>
     `${orderDelivery.item._id}:${orderDelivery.discountId}`,
 
   orderDiscount: (
-    orderDelivery: Price & { discountId: string; item: OrderPayment },
+    orderDelivery: PriceType & { discountId: string; item: OrderPayment },
     _,
     { modules }: Context,
   ) =>
@@ -15,10 +15,12 @@ export const OrderPaymentDiscount = {
       discountId: orderDelivery.discountId,
     }),
 
-  total(orderDelivery: Price & { discountId: string; item: OrderPayment }) {
+  total(orderDelivery: PriceType & { discountId: string; item: OrderPayment }) {
     return {
       amount: orderDelivery.amount,
       currencyCode: orderDelivery.currencyCode,
+      isTaxable: orderDelivery.isTaxable,
+      isNetPrice: orderDelivery.isNetPrice,
     };
   },
 };

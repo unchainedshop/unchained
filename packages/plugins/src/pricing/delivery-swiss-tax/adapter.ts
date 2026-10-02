@@ -1,8 +1,4 @@
-import {
-  DeliveryPricingRowCategory,
-  type IDeliveryPricingAdapter,
-  DeliveryPricingAdapter,
-} from '@unchainedshop/core';
+import { type IDeliveryPricingAdapter, DeliveryPricingAdapter } from '@unchainedshop/core';
 
 import { resolveTaxCategoryFromDeliveryProvider, SwissTaxCategories } from '../tax/ch.ts';
 import isDeliveryAddressInCountry from '../utils/isDeliveryAddressInCountry.ts';
@@ -46,7 +42,6 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
           calculationSheet: params.calculationSheet,
           resultSheet: pricingAdapter.resultSheet(),
           taxRate,
-          baseCategory: DeliveryPricingRowCategory.Delivery,
           adapterKey: DeliverySwissTax.key,
         });
 

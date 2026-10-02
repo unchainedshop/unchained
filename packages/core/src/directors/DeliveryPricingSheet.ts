@@ -1,6 +1,7 @@
 import {
   BasePricingSheet,
   type IBasePricingSheet,
+  type PricingDiscount,
   type PricingSheetParams,
 } from './BasePricingSheet.ts';
 import type { DeliveryPricingCalculation, IDeliveryPricingSheet } from './DeliveryPricingAdapter.ts';
@@ -44,10 +45,12 @@ export const DeliveryPricingSheet = (
       });
     },
 
-    addTax({ amount, rate, meta }) {
+    addTax({ amount, rate, baseCategory, discountId, meta }) {
       basePricingSheet.calculation.push({
         amount,
         category: DeliveryPricingRowCategory.Tax,
+        baseCategory,
+        discountId,
         isNetPrice: false,
         isTaxable: false,
         meta,
@@ -73,20 +76,25 @@ export const DeliveryPricingSheet = (
 
       return [...new Set(discountIds)]
         .map((discountId) => {
-          const { currencyCode, amount } = basePricingSheet.total({
-            category: DeliveryPricingRowCategory.Discount,
+          // gross: the discount rows plus the tax attributed to the discount
+          const taxAmount = pricingSheet.taxSum({
+            baseCategory: DeliveryPricingRowCategory.Discount,
             discountId,
           });
+          const amount =
+            pricingSheet.sum({ category: DeliveryPricingRowCategory.Discount, discountId }) + taxAmount;
           if (!amount) {
             return null;
           }
           return {
             discountId,
             amount: Math.round(amount),
-            currencyCode,
+            currencyCode: pricingSheet.currencyCode,
+            isTaxable: taxAmount !== 0,
+            isNetPrice: false,
           };
         })
-        .filter(Boolean) as { discountId: string; amount: number; currencyCode: string }[];
+        .filter(Boolean) as PricingDiscount[];
     },
   };
 

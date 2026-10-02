@@ -17,6 +17,8 @@ export type OrderPosition = {
 export type OrderPositionDiscount = Omit<Price, '_id'> & {
   discountId: string;
   item: OrderPosition;
+  isTaxable?: boolean;
+  isNetPrice?: boolean;
 };
 
 export const OrderPositionsCollection = async (db: mongodb.Db) => {

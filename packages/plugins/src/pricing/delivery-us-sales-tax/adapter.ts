@@ -1,8 +1,4 @@
-import {
-  DeliveryPricingRowCategory,
-  type IDeliveryPricingAdapter,
-  DeliveryPricingAdapter,
-} from '@unchainedshop/core';
+import { type IDeliveryPricingAdapter, DeliveryPricingAdapter } from '@unchainedshop/core';
 
 import { US_COUNTRY_CODE, isDeliveryExemptFromUsSalesTax, resolveUsSalesTaxRate } from '../tax/us.ts';
 import resolveDeliveryLocation from '../utils/resolveDeliveryLocation.ts';
@@ -61,7 +57,6 @@ export const DeliveryUsSalesTax: IDeliveryPricingAdapter = {
           calculationSheet: params.calculationSheet,
           resultSheet: pricingAdapter.resultSheet(),
           taxRate,
-          baseCategory: DeliveryPricingRowCategory.Delivery,
           adapterKey: DeliveryUsSalesTax.key,
         });
 

@@ -46,7 +46,7 @@ export async function simulatePaymentPricingService(
     amount: orderPrice.amount,
     currencyCode: orderPrice.currencyCode,
     countryCode: pricingContext.countryCode,
-    isTaxable: pricing.taxSum() > 0,
+    isTaxable: pricing.taxSum() !== 0,
     isNetPrice: options.useNetPrice || false,
   };
 }

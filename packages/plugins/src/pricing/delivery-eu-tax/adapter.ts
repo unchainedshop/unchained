@@ -1,8 +1,4 @@
-import {
-  DeliveryPricingRowCategory,
-  type IDeliveryPricingAdapter,
-  DeliveryPricingAdapter,
-} from '@unchainedshop/core';
+import { type IDeliveryPricingAdapter, DeliveryPricingAdapter } from '@unchainedshop/core';
 
 import {
   isEuMemberCountry,
@@ -57,7 +53,6 @@ export const DeliveryEuTax: IDeliveryPricingAdapter = {
           calculationSheet: params.calculationSheet,
           resultSheet: pricingAdapter.resultSheet(),
           taxRate,
-          baseCategory: DeliveryPricingRowCategory.Delivery,
           adapterKey: DeliveryEuTax.key,
         });
 

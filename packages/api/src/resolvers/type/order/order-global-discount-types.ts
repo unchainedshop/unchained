@@ -1,10 +1,10 @@
 import type { Order } from '@unchainedshop/core-orders';
 import type { Context } from '../../../context.ts';
-import type { Price } from '@unchainedshop/utils';
+import type { PriceType } from '../price-types.ts';
 
 export const OrderGlobalDiscount = {
   _id(
-    obj: Price & {
+    obj: PriceType & {
       order: Order;
       discountId: string;
     },
@@ -13,7 +13,7 @@ export const OrderGlobalDiscount = {
   },
 
   orderDiscount: async (
-    obj: Price & {
+    obj: PriceType & {
       order: Order;
       discountId: string;
     },
@@ -26,7 +26,7 @@ export const OrderGlobalDiscount = {
   },
 
   total(
-    obj: Price & {
+    obj: PriceType & {
       order: Order;
       discountId: string;
     },
@@ -34,6 +34,8 @@ export const OrderGlobalDiscount = {
     return {
       amount: obj.amount,
       currencyCode: obj.currencyCode,
+      isTaxable: obj.isTaxable,
+      isNetPrice: obj.isNetPrice,
     };
   },
 };

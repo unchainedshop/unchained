@@ -74,7 +74,7 @@ export const Order = {
       return {
         ...pricing.total(params),
         isNetPrice: params.useNetPrice || false,
-        isTaxable: pricing.taxSum({ baseCategory: params.category }) > 0,
+        isTaxable: pricing.taxSum({ baseCategory: params.category }) !== 0,
       };
     }
     return null;
