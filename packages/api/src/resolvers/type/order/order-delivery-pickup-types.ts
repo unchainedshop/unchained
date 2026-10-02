@@ -1,10 +1,17 @@
 import { DeliveryDirector, DeliveryPricingSheet } from '@unchainedshop/core';
 import type { Context } from '../../../context.ts';
 import type { OrderDelivery } from '@unchainedshop/core-orders';
-import { orderDeliveryFee } from './order-delivery-types.ts';
 
 export const OrderDeliveryPickUp = {
-  fee: orderDeliveryFee,
+  async fee(obj: OrderDelivery, _: never, { loaders }: Context) {
+    const order = await loaders.orderLoader.load({ orderId: obj.orderId });
+    const pricing = DeliveryPricingSheet({
+      calculation: obj.calculation,
+      currencyCode: order.currencyCode,
+    });
+    if (!pricing.isValid()) return null;
+    return { ...pricing.total(), isTaxable: pricing.taxSum() > 0, isNetPrice: false };
+  },
 
   async activePickUpLocation(orderDelivery: OrderDelivery, _: never, requestContext: Context) {
     const { orderPickUpLocationId } = orderDelivery.context || {};
