@@ -26,7 +26,9 @@ pluginRegistry.register(EnrollmentOrderGeneratorPlugin);
 
 This worker processes enrollments (subscriptions) and:
 
-- Checks all `ACTIVE` and `PAUSED` enrollments
+- Checks all `ACTIVE`, `PAUSED` and `SUSPENDED` enrollments
+- Applies scheduled terminations, expiries and resumes first
+- Emits `ENROLLMENT_TRIAL_ENDING` once per trial that ends soon
 - Determines if a new period should begin using the Enrollment Director
 - Creates trial periods without orders
 - Generates orders for billable periods
@@ -51,14 +53,16 @@ mutation GenerateEnrollmentOrders {
 
 ## How It Works
 
-1. **Find Enrollments**: Queries all enrollments with status `ACTIVE` or `PAUSED`
-2. **Check Period**: Uses the Enrollment Director to determine if a new period should start
-3. **Trial Periods**: If the period is a trial, adds the period without creating an order
-4. **Order Generation**: For billable periods:
+1. **Find Enrollments**: Queries all enrollments with status `ACTIVE`, `PAUSED` or `SUSPENDED`
+2. **Process Status**: Runs `processEnrollment`, which terminates enrollments past their `expires` and resumes suspended ones past their `resumeAt`. Enrollments that are `TERMINATED` or `SUSPENDED` afterwards are skipped
+3. **Trial Ending**: Emits `ENROLLMENT_TRIAL_ENDING` once when a trial period ends within `trialEndingNoticeDays` (default 3)
+4. **Check Period**: Uses the Enrollment Director to determine if a new period should start
+5. **Trial Periods**: If the period is a trial, adds the period without creating an order
+6. **Order Generation**: For billable periods:
    - Gets configuration from the director
    - Creates an order using the enrollment service
    - Links the order to the enrollment period
-5. **Error Handling**: Collects errors for all enrollments and reports them in the result
+7. **Error Handling**: Collects errors for all enrollments and reports them in the result
 
 ## Result
 

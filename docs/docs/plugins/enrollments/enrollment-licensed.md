@@ -61,11 +61,50 @@ mutation UpdatePlanData {
 }
 ```
 
+### Minimum Commitment
+
+To enforce a minimum contract term, set `minimumCommitmentPeriods` on the plan. For example, a 12-month commitment on a monthly plan:
+
+```graphql
+mutation SetMinimumCommitment {
+  updateProductPlan(
+    productId: "product-id"
+    plan: {
+      usageCalculationType: LICENSED
+      billingInterval: MONTHS
+      billingIntervalCount: 1
+      minimumCommitmentPeriods: 12
+    }
+  ) {
+    _id
+    ... on PlanProduct {
+      plan {
+        minimumCommitmentPeriods
+      }
+    }
+  }
+}
+```
+
+When an enrollment is created for this product, `contractStartDate` and `minimumCommitmentEnd` are computed and stored. If a customer tries to terminate before the commitment ends, the termination is deferred to `minimumCommitmentEnd`. The enrollment fields are queryable:
+
+```graphql
+query CheckCommitment {
+  enrollment(enrollmentId: "enrollment-id") {
+    _id
+    contractStartDate
+    minimumCommitmentEnd
+  }
+}
+```
+
 ## Behavior
 
 - `isValidForActivation()`: `true` while the current date falls within any enrollment period
 - `configurationForOrder()`: once a period has started, returns one order position template with `quantity: 1` for the enrolled product; before the period starts, returns `null` (no order generated)
 - `isOverdue()`: always `false`
+- `terminationDate()`: notice period of one billing interval, so a termination takes effect at the end of the period after the current one
+- `transformPlanToNewPlan()`: accepts every plan change; the next period follows the new plan
 
 ## Usage
 
@@ -113,13 +152,107 @@ query MyEnrollments {
 }
 ```
 
+### Suspend Enrollment
+
+Suspending an enrollment prevents new orders from being generated. The enrollment remains in `SUSPENDED` status until it is explicitly resumed or until the `resumeAt` date passes. Suspending and resuming require the `manageEnrollments` permission.
+
+```graphql
+mutation SuspendSubscription {
+  suspendEnrollment(enrollmentId: "enrollment-id") {
+    _id
+    status
+  }
+}
+```
+
+### Suspend with Scheduled Resume
+
+Pass a `resumeAt` date to automatically resume the enrollment after the specified date:
+
+```graphql
+mutation SuspendWithResume {
+  suspendEnrollment(
+    enrollmentId: "enrollment-id"
+    resumeAt: "2026-08-01T00:00:00.000Z"
+  ) {
+    _id
+    status
+    resumeAt
+  }
+}
+```
+
+### Resume Enrollment
+
+Resume a suspended enrollment by calling `activateEnrollment`. This clears the `resumeAt` date and returns the enrollment to `ACTIVE` status; a scheduled termination stays.
+
+```graphql
+mutation ResumeSubscription {
+  activateEnrollment(enrollmentId: "enrollment-id") {
+    _id
+    status
+    resumeAt
+  }
+}
+```
+
 ### Terminate Enrollment
+
+With the licensed adapter, termination includes a notice period: the enrollment stays active until the end of the billing period after the current one (or until `minimumCommitmentEnd`, if later). `expires` shows when the termination takes effect.
+
+Optionally provide a cancellation `reason` and `comment` for churn tracking:
 
 ```graphql
 mutation TerminateSubscription {
-  terminateEnrollment(enrollmentId: "enrollment-id") {
+  terminateEnrollment(
+    enrollmentId: "enrollment-id"
+    reason: USER_REQUESTED
+    comment: "Switching to a competitor"
+  ) {
     _id
     status
+    expires
+    cancellationReason
+    cancellationComment
+  }
+}
+```
+
+### Change Plan
+
+Change the subscription plan on an active enrollment. Billed periods stay as they are; the next period follows the new plan.
+
+```graphql
+mutation ChangeSubscriptionPlan {
+  updateEnrollment(
+    enrollmentId: "enrollment-id"
+    plan: {
+      productId: "new-plan-product-id"
+      quantity: 1
+    }
+  ) {
+    _id
+    status
+    plan {
+      product { _id }
+      quantity
+    }
+  }
+}
+```
+
+### Set or Clear the End Date
+
+Admins (`manageEnrollments`) set the end date directly, without the notice period or the minimum commitment. The enrollment is terminated when processed after that date (right away for a date that has passed); `expires: null` undoes a scheduled termination.
+
+```graphql
+mutation SetEnrollmentExpiry {
+  updateEnrollment(
+    enrollmentId: "enrollment-id"
+    expires: "2026-12-31T00:00:00.000Z"
+  ) {
+    _id
+    expires
   }
 }
 ```

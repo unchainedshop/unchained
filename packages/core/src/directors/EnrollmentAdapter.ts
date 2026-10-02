@@ -8,6 +8,7 @@ import {
 } from '@unchainedshop/core-enrollments';
 import type { Product, ProductPlan } from '@unchainedshop/core-products';
 import type { OrderPosition } from '@unchainedshop/core-orders';
+import type { Modules } from '../modules.ts';
 
 export interface EnrollmentContext {
   enrollment: Enrollment;
@@ -22,6 +23,8 @@ export interface EnrollmentAdapterActions {
   isOverdue: () => Promise<boolean>;
   isValidForActivation: () => Promise<boolean>;
   nextPeriod: () => Promise<EnrollmentPeriod | null>;
+  terminationDate: (params: { referenceDate: Date }) => Promise<Date | null>;
+  transformPlanToNewPlan: (params: { plan: EnrollmentPlan }) => Promise<EnrollmentPlan | null>;
 }
 
 export type IEnrollmentAdapter = IBaseAdapter & {
@@ -32,7 +35,7 @@ export type IEnrollmentAdapter = IBaseAdapter & {
     unchainedAPI,
   ) => Promise<EnrollmentPlan>;
 
-  actions: (params: EnrollmentContext) => EnrollmentAdapterActions;
+  actions: (params: EnrollmentContext & { modules: Modules }) => EnrollmentAdapterActions;
 };
 export const periodForReferenceDate = (referenceDate: Date, intervalCount = 1, interval = 'WEEKS') => {
   const lowerCaseInterval = interval.toLowerCase();
@@ -98,11 +101,24 @@ export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'vers
           return acc;
         }, referenceDate);
 
-        return {
+        const period = {
           ...periodForReferenceDate(lastEnd, plan.billingIntervalCount, plan.billingInterval),
           isTrial: false,
         };
+
+        // No period may start once the enrollment has expired
+        if (enrollment?.expires && period.start.getTime() >= new Date(enrollment.expires).getTime()) {
+          return null;
+        }
+
+        return period;
       },
+
+      // Terminate immediately
+      terminationDate: async ({ referenceDate }) => referenceDate,
+
+      // Reject plan changes
+      transformPlanToNewPlan: async () => null,
     };
   },
 };

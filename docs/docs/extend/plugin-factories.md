@@ -331,6 +331,8 @@ Recurring/subscription plans. `configurationForOrder` is required.
 | `transformOrderItem` | `(orderPosition, api) => Promise<EnrollmentPlan>` | |
 | `nextPeriod` | `(context) => Promise<EnrollmentPeriod \| null>` | next billing window |
 | `isOverdue` / `isValidForActivation` | `(context) => Promise<boolean>` | default `false`; supply `isValidForActivation` to grant access |
+| `terminationDate` | `(context, { referenceDate }) => Promise<Date \| null>` | when a termination takes effect; default immediately, `null` rejects it |
+| `transformPlanToNewPlan` | `(context, { plan }) => Promise<EnrollmentPlan \| null>` | accept a plan change (applies from the next period on); default reject |
 
 > See also: [Enrollment](./enrollment.md)
 

@@ -21,6 +21,8 @@ export default function registerEnrollment({
   isOverdue,
   isValidForActivation,
   nextPeriod,
+  terminationDate,
+  transformPlanToNewPlan,
 }: {
   adapterId: string;
   isActivatedFor?: (productPlan?: ProductPlan) => boolean;
@@ -35,6 +37,14 @@ export default function registerEnrollment({
   isOverdue?: (context: EnrollmentContext) => Promise<boolean>;
   isValidForActivation?: (context: EnrollmentContext) => Promise<boolean>;
   nextPeriod?: (context: EnrollmentContext) => Promise<EnrollmentPeriod | null>;
+  terminationDate?: (
+    context: EnrollmentContext,
+    params: { referenceDate: Date },
+  ) => Promise<Date | null>;
+  transformPlanToNewPlan?: (
+    context: EnrollmentContext,
+    params: { plan: EnrollmentPlan },
+  ) => Promise<EnrollmentPlan | null>;
 }): IPlugin {
   const adapter: IEnrollmentAdapter = {
     ...EnrollmentAdapter,
@@ -54,24 +64,20 @@ export default function registerEnrollment({
     },
 
     actions: (context) => {
+      const base = EnrollmentAdapter.actions(context);
       return {
-        ...EnrollmentAdapter.actions(context),
-
-        configurationForOrder: async (params) => {
-          return configurationForOrder(params, context);
-        },
-
-        isOverdue: async () => {
-          return isOverdue ? isOverdue(context) : false;
-        },
-
-        isValidForActivation: async () => {
-          return isValidForActivation ? isValidForActivation(context) : false;
-        },
-
-        nextPeriod: async () => {
-          return nextPeriod ? nextPeriod(context) : EnrollmentAdapter.actions(context).nextPeriod();
-        },
+        ...base,
+        configurationForOrder: (params) => configurationForOrder(params, context),
+        isOverdue: () => (isOverdue ? isOverdue(context) : base.isOverdue()),
+        isValidForActivation: () =>
+          isValidForActivation ? isValidForActivation(context) : base.isValidForActivation(),
+        nextPeriod: () => (nextPeriod ? nextPeriod(context) : base.nextPeriod()),
+        terminationDate: (params) =>
+          terminationDate ? terminationDate(context, params) : base.terminationDate(params),
+        transformPlanToNewPlan: (params) =>
+          transformPlanToNewPlan
+            ? transformPlanToNewPlan(context, params)
+            : base.transformPlanToNewPlan(params),
       };
     },
   };

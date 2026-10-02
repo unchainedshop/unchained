@@ -12,6 +12,8 @@ const EnrollmentDetailFragment = gql`
     status
     created
     expires
+    contractStartDate
+    minimumCommitmentEnd
     billingAddress {
       addressLine
       addressLine2
@@ -70,20 +72,15 @@ const EnrollmentDetailFragment = gql`
       }
     }
     periods {
+      start
       end
       isTrial
-      start
       order {
         _id
       }
     }
 
     isExpired
-    periods {
-      start
-      end
-      isTrial
-    }
     plan {
       configuration {
         key

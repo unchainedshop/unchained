@@ -1,4 +1,5 @@
 import { log } from '@unchainedshop/logger';
+import { EnrollmentDirector } from '@unchainedshop/core';
 import type { Context } from '../../../context.ts';
 import { ProductStatus, ProductType } from '@unchainedshop/core-products';
 import {
@@ -6,6 +7,7 @@ import {
   ProductWrongStatusError,
   InvalidIdError,
   ProductWrongTypeError,
+  EnrollmentPlanNotSupportedError,
 } from '../../../errors.ts';
 
 export default async function createEnrollment(
@@ -33,6 +35,11 @@ export default async function createEnrollment(
   }
 
   if (product.type !== ProductType.PLAN_PRODUCT) throw new ProductWrongTypeError({ type: product.type });
+
+  // Checked before the enrollment is persisted, so an unsupported plan leaves no orphan behind
+  if (!EnrollmentDirector.findSupportedAdapter(product.plan)) {
+    throw new EnrollmentPlanNotSupportedError({ productId });
+  }
 
   const enrollment = await modules.enrollments.create({
     billingAddress,

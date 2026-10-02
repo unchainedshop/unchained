@@ -1,11 +1,20 @@
 import type { Context } from '../../../context.ts';
-import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
+import { EnrollmentStatus, type EnrollmentTerminationReason } from '@unchainedshop/core-enrollments';
 import { log } from '@unchainedshop/logger';
-import { EnrollmentNotFoundError, EnrollmentWrongStatusError, InvalidIdError } from '../../../errors.ts';
+import {
+  EnrollmentNotFoundError,
+  EnrollmentTerminationNotAllowedError,
+  EnrollmentWrongStatusError,
+  InvalidIdError,
+} from '../../../errors.ts';
 
 export default async function terminateEnrollment(
   root: never,
-  { enrollmentId }: { enrollmentId: string },
+  {
+    enrollmentId,
+    reason,
+    comment,
+  }: { enrollmentId: string; reason?: EnrollmentTerminationReason; comment?: string },
   context: Context,
 ) {
   const { modules, services, userId } = context;
@@ -25,5 +34,12 @@ export default async function terminateEnrollment(
     throw new EnrollmentWrongStatusError({ status: enrollment.status });
   }
 
-  return services.enrollments.terminateEnrollment(enrollment);
+  try {
+    return await services.enrollments.terminateEnrollment(enrollment, { reason, comment });
+  } catch (e) {
+    if (e.name === 'EnrollmentTerminationNotAllowedError') {
+      throw new EnrollmentTerminationNotAllowedError({ enrollmentId });
+    }
+    throw e;
+  }
 }

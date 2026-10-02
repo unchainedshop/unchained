@@ -54,6 +54,17 @@ registerEnrollment({
       ],
     };
   },
+
+  // Notice period: terminate at the end of the current period instead of immediately
+  terminationDate: async (context, { referenceDate }) => {
+    const current = context.enrollment.periods.find(
+      (p) => new Date(p.start) <= referenceDate && new Date(p.end) >= referenceDate,
+    );
+    return current ? new Date(current.end) : referenceDate;
+  },
+
+  // Allow plan changes
+  transformPlanToNewPlan: async (context, { plan }) => plan,
 });
 ```
 
@@ -67,6 +78,8 @@ registerEnrollment({
 | `nextPeriod(context)` | the next billing window; `null` ends the subscription |
 | `isValidForActivation(context)` | should the subscription currently grant access? |
 | `isOverdue(context)` | is payment overdue? (drives dunning/suspension) |
+| `terminationDate(context, { referenceDate })` | when a termination request takes effect: `referenceDate` for immediately (default), a later date for a notice period, `null` to reject it. The engine never terminates before the enrollment's `minimumCommitmentEnd` |
+| `transformPlanToNewPlan(context, { plan })` | accept a plan change by returning the (optionally adjusted) plan, or reject it with `null` (default). Billed periods stay; the next period follows the new plan |
 
 Plans expose a `usageCalculationType` of `LICENSED` (period-based access) or `METERED` (usage-based billing).
 

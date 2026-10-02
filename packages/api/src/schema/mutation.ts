@@ -206,7 +206,8 @@ export default [
       ): Enrollment!
 
       """
-      Update a enrollment
+      Update a enrollment. Setting or clearing expires sets the end date as given, without the
+      termination policy of terminateEnrollment, and requires manageEnrollments
       """
       updateEnrollment(
         enrollmentId: ID
@@ -216,6 +217,7 @@ export default [
         payment: EnrollmentPaymentInput
         delivery: EnrollmentDeliveryInput
         meta: JSON
+        expires: DateTime
       ): Enrollment!
 
       """
@@ -224,9 +226,20 @@ export default [
       activateEnrollment(enrollmentId: ID!): Enrollment!
 
       """
-      Terminate an actively running enrollment by changing it's status to TERMINATED
+      Suspend an actively running enrollment. Optionally schedule automatic resume.
       """
-      terminateEnrollment(enrollmentId: ID!): Enrollment!
+      suspendEnrollment(enrollmentId: ID!, resumeAt: DateTime): Enrollment!
+
+      """
+      Terminate an enrollment. The enrollment adapter decides when the termination takes effect (e.g. after
+      a notice period), never before the minimum commitment ends; a later date is stored as expires and the
+      enrollment runs until then. Optionally provide a cancellation reason and comment for churn analysis.
+      """
+      terminateEnrollment(
+        enrollmentId: ID!
+        reason: EnrollmentTerminationReason
+        comment: String
+      ): Enrollment!
 
       """
       Update the cart by changing the delivery provider and using a shipping specific configuration

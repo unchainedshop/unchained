@@ -35,6 +35,7 @@ const SubscriptionForm = ({ productId, disabled = false }) => {
     billingInterval,
     billingIntervalCount,
     usageCalculationType,
+    minimumCommitmentPeriods,
   }) => {
     await updateProductPlan({
       productId,
@@ -44,6 +45,9 @@ const SubscriptionForm = ({ productId, disabled = false }) => {
         billingIntervalCount,
         trialInterval,
         trialIntervalCount,
+        minimumCommitmentPeriods: minimumCommitmentPeriods
+          ? parseInt(minimumCommitmentPeriods, 10)
+          : null,
       },
     });
     return { success: true };
@@ -59,6 +63,7 @@ const SubscriptionForm = ({ productId, disabled = false }) => {
       billingInterval: '',
       billingIntervalCount: '',
       usageCalculationType: '',
+      minimumCommitmentPeriods: '',
     },
     getSubmitErrorMessage: (error) => {
       if (
@@ -190,6 +195,21 @@ const SubscriptionForm = ({ productId, disabled = false }) => {
                 className="mt-1  w-full text-sm   font-medium text-slate-500 sm:ml-1"
               />
             </div>
+
+            <TextField
+              type="number"
+              name="minimumCommitmentPeriods"
+              id="minimumCommitmentPeriods"
+              label={formatMessage({
+                id: 'minimum_commitment_periods',
+                defaultMessage: 'Minimum commitment periods',
+              })}
+              placeholder={formatMessage({
+                id: 'minimum_commitment_periods_placeholder',
+                defaultMessage: 'e.g. 12 for a 12-period contract',
+              })}
+              className="mt-1 w-full text-sm font-medium text-slate-500"
+            />
 
             {hasRole(IRoleAction.CreateEnrollment) && (
               <div className="-mx-6 -mb-6 mt-6 border-t-slate-100 border-t space-y-6 bg-slate-50 dark:bg-slate-500 text-right sm:p-6">

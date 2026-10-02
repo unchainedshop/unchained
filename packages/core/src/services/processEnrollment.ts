@@ -8,6 +8,14 @@ const findNextStatus = async (
   modules: Modules,
 ): Promise<EnrollmentStatus | null> => {
   let status = enrollment.status;
+
+  if (modules.enrollments.isExpired(enrollment, {})) return EnrollmentStatus.TERMINATED;
+
+  if (status === EnrollmentStatus.SUSPENDED) {
+    const resumeDue = enrollment.resumeAt && new Date(enrollment.resumeAt).getTime() <= Date.now();
+    return resumeDue ? EnrollmentStatus.ACTIVE : status;
+  }
+
   const product = await modules.products.findProduct({
     productId: enrollment.productId,
   });
@@ -24,8 +32,6 @@ const findNextStatus = async (
     if (await director.isOverdue()) {
       status = EnrollmentStatus.PAUSED;
     }
-  } else if (modules.enrollments.isExpired(enrollment, {})) {
-    status = EnrollmentStatus.TERMINATED;
   }
 
   return status;

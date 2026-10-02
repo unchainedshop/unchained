@@ -21,6 +21,7 @@ const ProductsQuery = gql`
     $includeDrafts: Boolean
     $sort: [SortOptionInput!]
     $forceLocale: Locale
+    $type: ProductType
   ) {
     products(
       queryString: $queryString
@@ -30,6 +31,7 @@ const ProductsQuery = gql`
       offset: $offset
       includeDrafts: $includeDrafts
       sort: $sort
+      type: $type
     ) {
       ...ProductBriefFragment
       ... on SimpleProduct {
@@ -45,6 +47,7 @@ const ProductsQuery = gql`
       slugs: $slugs
       includeDrafts: $includeDrafts
       queryString: $queryString
+      type: $type
     )
   }
   ${ProductDimensionFragment}
@@ -60,6 +63,7 @@ const useProducts = ({
   slugs = null,
   sort: sortOptions = [],
   forceLocale = '',
+  type = null,
 }: IProductsQueryVariables & { forceLocale?: string } = {}) => {
   const { data, loading, error, fetchMore, client } = useQuery<
     IProductsQuery,
@@ -77,6 +81,7 @@ const useProducts = ({
       includeDrafts,
       tags,
       slugs,
+      type,
       sort: sortOptions.length
         ? sortOptions
         : ([{ key: 'sequence', value: 'ASC' }] as ISortOptionInput[]),

@@ -1,4 +1,5 @@
 import { type IEnrollmentAdapter, EnrollmentAdapter } from '@unchainedshop/core';
+import { addToDate } from '@unchainedshop/core-enrollments';
 
 export const rangeMatcher = (date = new Date()) => {
   const timestamp = date.getTime();
@@ -21,7 +22,7 @@ export const LicensedEnrollments: IEnrollmentAdapter = {
   },
 
   actions: (params) => {
-    const { enrollment } = params;
+    const { enrollment, product } = params;
     return {
       ...EnrollmentAdapter.actions(params),
 
@@ -54,6 +55,20 @@ export const LicensedEnrollments: IEnrollmentAdapter = {
         }
         return null;
       },
+
+      // Notice period: a termination takes effect one billing interval after the current period ends
+      terminationDate: async ({ referenceDate }) => {
+        const { billingInterval, billingIntervalCount } = product?.plan || {};
+        if (!enrollment?.periods?.length || !billingInterval) return referenceDate;
+
+        const currentPeriod = enrollment.periods.find(rangeMatcher(referenceDate));
+        return addToDate(currentPeriod ? new Date(currentPeriod.end) : referenceDate, {
+          [billingInterval.toLowerCase()]: billingIntervalCount || 1,
+        });
+      },
+
+      // Plan changes apply from the next period on
+      transformPlanToNewPlan: async ({ plan }) => plan,
     };
   },
 };

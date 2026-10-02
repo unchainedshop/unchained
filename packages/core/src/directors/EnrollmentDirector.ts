@@ -11,6 +11,7 @@ import type { Enrollment } from '@unchainedshop/core-enrollments';
 import { createLogger } from '@unchainedshop/logger';
 import type { Modules } from '../modules.ts';
 import { registryDirector } from './registryDirector.ts';
+import { createServiceError } from '../errors.ts';
 
 const logger = createLogger('unchained:core');
 
@@ -26,6 +27,8 @@ export type IEnrollmentDirector = IBaseDirector<IEnrollmentAdapter> & {
     Omit<Enrollment, 'status' | 'periods' | 'log' | '_id' | 'created'> &
       Pick<Partial<Enrollment>, '_id' | 'created'>
   >;
+
+  findSupportedAdapter: (productPlan?: ProductPlan) => IEnrollmentAdapter | null;
 
   actions: (
     enrollmentContext: EnrollmentContext,
@@ -47,10 +50,16 @@ const findAppropriateAdapters = (productPlan?: ProductPlan) =>
 export const EnrollmentDirector: IEnrollmentDirector = {
   ...registryDirector<IEnrollmentAdapter>(EnrollmentAdapter.adapterType!),
 
+  // Returns the highest-priority adapter that supports the given plan configuration, or null.
+  findSupportedAdapter: (productPlan?: ProductPlan) => findAppropriateAdapters(productPlan)?.[0] || null,
+
   transformOrderItemToEnrollment: async ({ orderPosition, product }, doc, unchainedAPI) => {
-    const Adapter = findAppropriateAdapters(product.plan)?.[0];
+    const Adapter = EnrollmentDirector.findSupportedAdapter(product.plan);
     if (!Adapter) {
-      throw new Error('No suitable enrollment plugin available for this item');
+      throw createServiceError(
+        'EnrollmentPlanNotSupportedError',
+        'No suitable enrollment plugin available for this item',
+      );
     }
 
     const enrollmentPlan = await Adapter.transformOrderItemToEnrollmentPlan(orderPosition, unchainedAPI);
@@ -65,10 +74,13 @@ export const EnrollmentDirector: IEnrollmentDirector = {
   actions: async (enrollmentContext, unchainedAPI) => {
     const context = { ...enrollmentContext, ...unchainedAPI };
 
-    const Adapter = findAppropriateAdapters(enrollmentContext.product.plan)?.[0];
+    const Adapter = EnrollmentDirector.findSupportedAdapter(enrollmentContext.product.plan);
 
     if (!Adapter) {
-      throw new Error('No suitable enrollment plugin available for this plan configuration');
+      throw createServiceError(
+        'EnrollmentPlanNotSupportedError',
+        'No suitable enrollment plugin available for this plan configuration',
+      );
     }
     const adapter = Adapter.actions(context);
 

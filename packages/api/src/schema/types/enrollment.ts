@@ -17,9 +17,22 @@ export default [
       PAUSED
 
       """
+      Manually suspended by admin
+      """
+      SUSPENDED
+
+      """
       Terminated / Ended enrollment
       """
       TERMINATED
+    }
+
+    enum EnrollmentTerminationReason {
+      USER_REQUESTED
+      PAYMENT_FAILED
+      EXPIRED
+      ADMIN_ACTION
+      OTHER
     }
 
     type EnrollmentPlan {
@@ -55,7 +68,15 @@ export default [
       currency: Currency
       delivery: EnrollmentDelivery
       enrollmentNumber: String
+      """
+      When the enrollment ends (scheduled or past), null while it renews
+      """
       expires: DateTime
+      resumeAt: DateTime
+      contractStartDate: DateTime
+      minimumCommitmentEnd: DateTime
+      cancellationReason: EnrollmentTerminationReason
+      cancellationComment: String
       isExpired(referenceDate: Timestamp): Boolean
       payment: EnrollmentPayment
       periods: [EnrollmentPeriod!]!

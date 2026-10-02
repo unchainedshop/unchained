@@ -1,4 +1,4 @@
-import type { Enrollment } from '@unchainedshop/core-enrollments';
+import { type Enrollment, addToDate } from '@unchainedshop/core-enrollments';
 import { EnrollmentDirector } from '../core-index.ts';
 import { processEnrollmentService } from './processEnrollment.ts';
 import type { Modules } from '../modules.ts';
@@ -24,6 +24,19 @@ export async function initializeEnrollmentService(
     updatedEnrollment = (await this.enrollments.addEnrollmentPeriod(enrollment._id, {
       ...period,
       orderId: params.orderIdForFirstPeriod,
+    })) as Enrollment;
+  }
+
+  // The contract starts with the first paid period, or now if there is none yet
+  const { minimumCommitmentPeriods, billingInterval, billingIntervalCount } = product?.plan || {};
+  if (minimumCommitmentPeriods && billingInterval) {
+    const contractStartDate =
+      updatedEnrollment.periods.find(({ isTrial }) => !isTrial)?.start || new Date();
+    updatedEnrollment = (await this.enrollments.updateCommitment(enrollment._id, {
+      contractStartDate,
+      minimumCommitmentEnd: addToDate(contractStartDate, {
+        [billingInterval.toLowerCase()]: (billingIntervalCount || 1) * minimumCommitmentPeriods,
+      }),
     })) as Enrollment;
   }
 

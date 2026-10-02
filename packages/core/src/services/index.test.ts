@@ -19,7 +19,7 @@ it('processes enrollments through the enrollment adapter and module', async (t) 
   });
   const modules = {
     products: { findProduct },
-    enrollments: { updateStatus: updateEnrollment },
+    enrollments: { updateStatus: updateEnrollment, isExpired: () => false },
     orders: { updateStatus: updateOrder },
   } as unknown as Modules;
   const adapterActions = t.mock.method(EnrollmentDirector, 'actions', async () => ({
