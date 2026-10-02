@@ -21,6 +21,9 @@ export default [
       _id: ID!
       provider: PaymentProvider
       status: OrderPaymentStatus
+      """
+      Gross amount the order charges for the payment (fees, discounts and taxes), null while not priced
+      """
       fee: Price
       paid: DateTime
       discounts: [OrderPaymentDiscount!]

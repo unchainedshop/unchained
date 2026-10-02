@@ -1,8 +1,11 @@
 import { DeliveryDirector, DeliveryPricingSheet } from '@unchainedshop/core';
 import type { Context } from '../../../context.ts';
 import type { OrderDelivery } from '@unchainedshop/core-orders';
+import { orderDeliveryFee } from './order-delivery-types.ts';
 
 export const OrderDeliveryPickUp = {
+  fee: orderDeliveryFee,
+
   async activePickUpLocation(orderDelivery: OrderDelivery, _: never, requestContext: Context) {
     const { orderPickUpLocationId } = orderDelivery.context || {};
 

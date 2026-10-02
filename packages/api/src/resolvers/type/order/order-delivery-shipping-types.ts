@@ -1,8 +1,11 @@
 import { DeliveryPricingSheet } from '@unchainedshop/core';
 import type { Context } from '../../../context.ts';
 import type { OrderDelivery } from '@unchainedshop/core-orders';
+import { orderDeliveryFee } from './order-delivery-types.ts';
 
 export const OrderDeliveryShipping = {
+  fee: orderDeliveryFee,
+
   address(obj: OrderDelivery) {
     return obj.context?.address;
   },

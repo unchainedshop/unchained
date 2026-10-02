@@ -1,8 +1,11 @@
 import { PaymentPricingSheet } from '@unchainedshop/core';
 import type { Context } from '../../../context.ts';
 import type { OrderPayment } from '@unchainedshop/core-orders';
+import { orderPaymentFee } from './order-payment-types.ts';
 
 export const OrderPaymentCard = {
+  fee: orderPaymentFee,
+
   status(obj: OrderPayment, _: never, { modules }: Context) {
     return modules.orders.payments.normalizedStatus(obj);
   },
