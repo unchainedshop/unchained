@@ -38,6 +38,7 @@ export const TicketEventDetailQuery = gql`
           doorsOpenAt
           location
           category
+          categoryTitle
           durationMinutes
           doorsOpenMinutesBefore
           overridden

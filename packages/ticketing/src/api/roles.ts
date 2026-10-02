@@ -3,7 +3,13 @@ import { NoPermissionError, roles } from '@unchainedshop/api';
 import { ProductStatus, ProductType, type Product } from '@unchainedshop/core-products';
 import { getTicketEventStart } from '../event-details.ts';
 
-export const ticketingActions = ['scanTicket', 'gateControl', 'cancelTicket'];
+export const ticketingActions = [
+  'scanTicket',
+  'gateControl',
+  'cancelTicket',
+  'sellAtBoxOffice',
+  'viewTicketSalesReport',
+];
 
 /**
  * Narrows the ticket events a non-admin with ticketing access may work with (organizer scope).
@@ -203,6 +209,13 @@ export function createTicketingRoles({ canAccessEvent }: TicketingRolesOptions =
     // User.allowedActions evaluates role rules with a null context to enumerate capabilities.
     role.allow(
       actions.scanTicket,
+      (_root: never, _params: never, context: Context | null) =>
+        context === null || isAuthenticated(context),
+    );
+    // Box office staff sell tickets on their own account, paid at the counter (box office payment
+    // provider). The sales report stays with administrators unless a project role grants it.
+    role.allow(
+      actions.sellAtBoxOffice,
       (_root: never, _params: never, context: Context | null) =>
         context === null || isAuthenticated(context),
     );

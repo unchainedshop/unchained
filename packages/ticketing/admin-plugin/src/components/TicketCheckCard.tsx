@@ -76,7 +76,7 @@ export const useVerdictText = () => {
                   defaultMessage: 'This ticket is for {title} {date}.',
                 },
                 {
-                  title: [product.texts.title, product.event?.category].filter(Boolean).join(' · '),
+                  title: [product.texts.title, product.event?.categoryTitle].filter(Boolean).join(' · '),
                   date: time(product.event?.startsAt) || '',
                 },
               )
@@ -244,8 +244,10 @@ const TicketCheckCard = ({
           </Fact>
           <Fact label={formatMessage({ id: 'gate_ticket_event', defaultMessage: 'Event' })}>
             {ticket.product?.texts?.title || '-'}
-            {ticket.product?.event?.category && (
-              <span className="block text-sm text-text-muted">{ticket.product.event?.category}</span>
+            {ticket.product?.event?.categoryTitle && (
+              <span className="block text-sm text-text-muted">
+                {ticket.product.event?.categoryTitle}
+              </span>
             )}
             {ticket.product?.event?.startsAt && (
               <span className="block text-sm text-text-muted">

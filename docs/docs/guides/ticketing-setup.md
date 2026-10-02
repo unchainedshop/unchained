@@ -55,6 +55,7 @@ import {
   withTicketing,
 } from '@unchainedshop/ticketing';
 import { createTicketWarehousingPlugin } from '@unchainedshop/ticketing/warehousing/ticket';
+import { BoxOfficePlugin } from '@unchainedshop/ticketing/payment/box-office';
 import { ticketingAdminPlugin } from '@unchainedshop/ticketing/admin-plugin';
 
 const fastify = Fastify({ loggerInstance: unchainedLogger('fastify'), trustProxy: true });
@@ -70,16 +71,11 @@ pluginRegistry.register(
   }),
 );
 
-// The ticket issuer, with the attendee name each ticket carries
-pluginRegistry.register(
-  createTicketWarehousingPlugin({
-    ticketMeta: ({ orderPosition, index }) => {
-      const attendees = orderPosition.configuration?.find(({ key }) => key === 'attendees')?.value?.split(',');
-      const attendeeName = attendees?.[index]?.trim();
-      return attendeeName ? { attendeeName } : undefined;
-    },
-  }),
-);
+// The ticket issuer; tickets carry the attendee names of the order position configuration `attendees`
+pluginRegistry.register(createTicketWarehousingPlugin());
+
+// Door sales in the Admin UI, paid at the counter (optional)
+pluginRegistry.register(BoxOfficePlugin);
 
 const platform = await startPlatform(
   // GraphQL schema, services, actions and the `ticketing` role
@@ -102,11 +98,12 @@ What each piece does:
 
 | Piece | From | Does |
 |-------|------|------|
-| `createTicketingPlugin(options)` | `@unchainedshop/ticketing` | Adds the `passes` module (magic keys, ticket serials and counts, Apple pass files, reimbursement codes), the [routes](#rest-routes), the magic-key permission rules, the `EVENT_CANCELLED` / `TICKET_CANCELLED` e-mail templates (only if you did not register your own) and, with an Apple renderer, the re-rendering of passes of redeemed and cancelled tickets. Options: `renderOrderPDF`, `createAppleWalletPass`, `createGoogleWalletPass`, `discountCode`. |
+| `createTicketingPlugin(options)` | `@unchainedshop/ticketing` | Adds the `passes` module (magic keys, ticket serials and counts, Apple pass files, reimbursement codes), the [routes](#rest-routes), the magic-key permission rules, the `EVENT_CANCELLED` / `TICKET_CANCELLED` e-mail templates (only if you did not register your own) and, with an Apple renderer, the re-rendering of passes of redeemed and cancelled tickets. Options: `renderOrderPDF`, `createAppleWalletPass`, `createGoogleWalletPass`, `discountCode`, `salesReport` (see [Sales report](#sales-report)). Also registers the `TICKET_SALES_REPORT` worker and e-mail template. |
 | `TicketWarehousingPlugin` / `createTicketWarehousingPlugin({ ticketMeta })` | `@unchainedshop/ticketing/warehousing/ticket` | The ticket issuer (adapter key `shop.unchained.warehousing.ticket`), see [below](#the-ticket-issuer). |
-| `withTicketing(platformOptions, { canAccessEvent })` | `@unchainedshop/ticketing` | Merges the ticketing GraphQL type definitions, resolvers, services, the actions `scanTicket`, `gateControl`, `cancelTicket` and the `ticketing` role into your `startPlatform` options. Your own entries win. `canAccessEvent` sets an [organizer scope](#organizer-scope). |
+| `BoxOfficePlugin` | `@unchainedshop/ticketing/payment/box-office` | The box office payment provider (adapter key `shop.unchained.payment.box-office`) for door sales, see [Box office](#box-office). |
+| `withTicketing(platformOptions, { canAccessEvent })` | `@unchainedshop/ticketing` | Merges the ticketing GraphQL type definitions, resolvers, services, the actions `scanTicket`, `gateControl`, `cancelTicket`, `sellAtBoxOffice`, `viewTicketSalesReport` and the `ticketing` role into your `startPlatform` options, and wraps `options.payment.filterSupportedProviders` so only box office staff get the box office provider. Your own entries win. `canAccessEvent` sets an [organizer scope](#organizer-scope). |
 | `validateTicketOrderPosition` / `createTicketOrderPositionValidator({ getSaleRules })` | `@unchainedshop/ticketing` | Keeps ticket sales within the supply and your sale rules, see [Selling tickets](#selling-tickets). |
-| `ticketingAdminPlugin()` | `@unchainedshop/ticketing/admin-plugin` | Adds the **Ticketing** menu (Events, Gate Control) to the Admin UI. |
+| `ticketingAdminPlugin()` | `@unchainedshop/ticketing/admin-plugin` | Adds the **Ticketing** menu (Events, Gate Control, Box Office, Sales Report) to the Admin UI. Your own plugins join the menu with `navigation: ticketingNavigation`, see [Admin UI pages of your own](#admin-ui-pages-of-your-own). |
 
 Register the plugins before `startPlatform`. Do not also pass `modules: ticketingModules`: the plugin already provides the `passes` module.
 
@@ -141,7 +138,7 @@ await modules.warehousing.create({
 What the issuer does:
 
 - **One ticket per seat.** An order position of 3 tickets becomes 3 tokens with quantity 1, each with its own serial number. Serials come from an atomic counter per event: they are unique and increasing even with concurrent checkouts, but not necessarily without gaps. The counter continues after the highest serial an event already has.
-- **Ticket metadata.** `token.meta` holds the `orderId` and whatever your `ticketMeta` hook returns. `ticketMeta({ order, orderPosition, product, index }, { modules })` runs once per seat (`index` counts from 0). Return `{ attendeeName }` to show gate staff a name (`Token.attendeeName`); where the name comes from is up to you (order position configuration as above, the order context, …). The keys `orderId`, `cancelled` and `cancelledDate` are reserved, and a hook that throws is logged and the ticket is issued without its data. Ticket metadata is never part of the public ERC metadata.
+- **Ticket metadata.** `token.meta` holds the `orderId` and whatever your `ticketMeta` hook returns. `ticketMeta({ order, orderPosition, product, index }, { modules })` runs once per seat (`index` counts from 0). Return `{ attendeeName }` to show gate staff a name (`Token.attendeeName`); where the name comes from is up to you (the order context, a form of your storefront, …). Without a hook the issuer stores the names of the order position configuration `attendees`, one per seat separated by commas (`"Ada Lovelace, , Alan Turing"` leaves the second seat without a name); the Box Office writes them there. `readAttendeeName({ orderPosition, index })` from `@unchainedshop/ticketing/warehousing/ticket` reads that value in a hook of your own. The keys `orderId`, `cancelled` and `cancelledDate` are reserved, and a hook that throws is logged and the ticket is issued without its data. Ticket metadata is never part of the public ERC metadata.
 - **Stock** is `supply` minus the tickets that are not cancelled, and `0` for cancelled events and events without a supply. It is shown to customers but does not stop a sale; the validator does.
 - **Redeemable** are tickets that are neither redeemed nor cancelled, of an event that is not cancelled, within the entry window.
 - **Public metadata** (`/erc-metadata/...`, `Token.ercMetadata`): name, description, image and the product's `tokenization.ercMetadataProperties` (not the event details).
@@ -156,7 +153,7 @@ An event is a product of type `TOKENIZED_PRODUCT`. `tokenization.supply` caps th
 | `location` | `location` |
 | `durationMinutes` | `durationMinutes`, `endsAt` (start + duration) |
 | `doorsOpenMinutesBefore` | `doorsOpenMinutesBefore`, `doorsOpenAt` (start − minutes) |
-| `category` | `category` |
+| `category` | `category`; `categoryTitle(forceLocale)` is its name: the text of the production's category option, else `category` |
 | `cancelled`, `cancelledDate` (set by `cancelEvent`) | `isCanceled`, `cancelledDate` |
 
 `TokenizedProduct.event` (type `TicketEvent`) holds every ticketing value of an event; the supply and the tickets come from the product itself (`contractConfiguration`, `tokens`, `tokensCount`). `product.meta` is not part of the GraphQL `Product` type or of the public ERC metadata; read the details through `event` or `getTicketEventDetails(product)`.
@@ -349,7 +346,7 @@ query GateLookup {
 ```
 
 - `ticketStatus` is `VALID`, `REDEEMED` or `CANCELLED` (cancelled wins: a cancelled ticket also carries an `invalidatedDate`).
-- `attendeeName` is what your `ticketMeta` hook stored, nothing else.
+- `attendeeName` is what the ticket issuer stored at checkout (your `ticketMeta` hook, or the order position configuration `attendees`), nothing else.
 - `user` is the buyer. Gate staff see the public profile (name, avatar) and, through the `viewUserContactInfos` action of the `ticketing` role, the buyer's contact: `primaryEmail` and `lastContact { emailAddress telNumber }` (the e-mail and phone of the last checkout). The contact is only shown for holders of a ticket of an event the staff member may work with (organizer scope) that starts at most 24 hours ahead or started at most 12 hours ago (`GATE_CONTACT_HOURS_BEFORE_START`, `GATE_CONTACT_HOURS_AFTER_START`). Gate staff get no `viewUserPrivateInfos`, so other e-mail addresses, addresses and profile data stay hidden. Gate Control shows the contact next to the buyer and adds e-mail and phone columns to the CSV export; to hide it, give gate staff a custom role with `scanTicket` only.
 
 **Login lifetime.** Sessions are JWTs that expire after `UNCHAINED_TOKEN_EXPIRY_SECONDS` (default `3600`, one hour) and are not renewed while in use. For gate shifts, raise it (for example `43200` for 12 hours) or let staff sign in again. It applies to every user, and a signed-in session can only be revoked early by logging the user out of all sessions, so weigh the longer lifetime against that.
@@ -372,6 +369,101 @@ const platform = await startPlatform(
 The scope can only take access away. It is never asked for administrators, and users without ticketing access get nothing through it. It applies to `ticketEvents`, `ticketEventsCount`, `ticketLookup`, `scanTicket`, `cancelTicket`, `cancelEvent`, `updateTicketEvent`, Gate Control and the event's ticket list (`viewTokens`). A role you grant `cancelTicket` is limited to its scope as well.
 
 If you define the `ticketing` role yourself, build it with `createTicketingRoles({ canAccessEvent })` and pass nothing to `withTicketing`; passing a scope next to a different project `ticketing` role throws `TICKETING_SCOPE_CONFLICT`. The scope does not narrow project roles that grant `viewTokens`, `viewToken` or `updateToken` themselves, `Query.tokens`, or the core `invalidateToken` mutation. Scoped users' event lists are checked event by event instead of being paginated in the database, so give them a date range.
+
+## Box office
+
+Staff sell tickets at the door in **Ticketing → Box Office**: pick an upcoming performance, the number of tickets per category (with price and remaining tickets), optional attendee names per seat and optional buyer details (name, e-mail, phone), and sell. The page then lists the tickets with **Admit now** (redeems them like the gate) and, with a PDF renderer, a link to print them.
+
+1. Register `BoxOfficePlugin` from `@unchainedshop/ticketing/payment/box-office`.
+2. Create one payment provider with the adapter key `shop.unchained.payment.box-office` and type `GENERIC` (Admin UI → Payment providers, or `modules.payment.paymentProviders.create` in your seed).
+3. Give door staff the `ticketing` role, which grants `sellAtBoxOffice`, or grant that action to a role of your own.
+
+How it works:
+
+- **The order is the staff member's own.** The page uses the regular cart mutations with the signed-in account: it empties that account's cart, adds the tickets (attendee names as the order position configuration `attendees`), sets the buyer contact and billing name (both cleared when not given, so a sale never keeps the buyer of the previous one) and checks out. Tickets belong to the staff account; the buyer e-mail gets the order confirmation of your delivery provider.
+- **Paid at the counter.** The adapter marks the payment as paid at checkout. `withTicketing` wraps `options.payment.filterSupportedProviders`: users whose roles grant `sellAtBoxOffice` get the box office providers first (the default of their carts) and keep the other providers; everyone else never gets them. Your own filter then runs on that result, for example to leave the online providers out for staff. Because checkout does not filter providers again, the adapter itself refuses to charge an order whose user lacks `sellAtBoxOffice`.
+- **Permissions, not role names.** Both checks run through the roles engine (`userHasPermission`) with the order's user, outside of a GraphQL request; allow rules of `sellAtBoxOffice` get `{ userId, user, modules }` as context. Administrators have every action, so their carts offer the box office too.
+- **Sale rules apply.** Supply, `maxPerOrder`, sale start and end and cancelled events are checked like any order (`TicketSoldOutError`, …).
+
+## Sales report
+
+**Ticketing → Sales Report** shows the ticket sales of a period (today, yesterday, this or last month, this year or custom days): totals per currency, tickets and ticket revenue per performance and category, orders and revenue per payment provider, and the orders, each with a CSV download. It requires the `viewTicketSalesReport` action, which only administrators have unless you grant it; the report is shop-wide and not narrowed by an [organizer scope](#organizer-scope).
+
+```graphql schema=page
+query SalesReport {
+  ticketSalesReport(from: "2026-10-01T00:00:00Z", to: "2026-11-01T00:00:00Z") {
+    totals {
+      currencyCode
+      orders
+      tickets
+      total
+    }
+    performances {
+      title
+      startsAt
+      categoryTitle
+      tickets
+      items
+      discounts
+    }
+    paymentProviders {
+      adapterKey
+      orders
+      total
+    }
+  }
+}
+```
+
+- Orders are the confirmed and fulfilled orders placed (`ordered`) from `from` on and before `to`. Tickets are the order positions of ticket events; other products count in the order totals only.
+- Amounts are gross, in the smallest unit of the currency (cents), and never summed across currencies. `discounts` are negative: on performances the discounts of the tickets themselves, on orders all order discounts.
+- `buildTicketSalesReport(unchainedAPI, { from, to, locale })` and `buildSalesReportCsv(report)` from `@unchainedshop/ticketing` build the same report and CSV files in your own code.
+
+**By e-mail.** The `TICKET_SALES_REPORT` worker builds the report of a period (`{ from, to, recipients, locale }`, default yesterday) and, if it has orders, sends it with its three CSV files to the recipients (message template `TICKET_SALES_REPORT`; register your own to change the e-mail). To send the previous day's report every morning:
+
+```ts
+pluginRegistry.register(
+  createTicketingPlugin({
+    salesReport: { schedule: '0 6 * * *', recipients: ['office@example.com'] },
+  }),
+);
+```
+
+## Admin UI pages of your own
+
+Admin UI plugins with the same navigation label share one submenu, so your own pages (vouchers, reports, …) join the **Ticketing** menu from your own bundle:
+
+```ts
+import { definePlugin } from '@unchainedshop/admin-ui/plugins';
+import { ticketingAdminPlugin, ticketingNavigation } from '@unchainedshop/ticketing/admin-plugin';
+
+await connect(fastify, platform, {
+  adminUI: {
+    plugins: [
+      ticketingAdminPlugin(),
+      definePlugin({
+        name: 'my-shop',
+        bundlePath: resolve(import.meta.dirname, '../admin-plugin/dist/index.js'),
+        navigation: ticketingNavigation,
+        slots: {
+          entities: [
+            {
+              path: '/vouchers',
+              label: 'Vouchers',
+              icon: 'tag',
+              sortOrder: 94,
+              requiredRole: 'viewVouchers',
+              components: { list: 'VoucherList', detail: 'VoucherDetail' },
+            },
+          ],
+        },
+      }),
+    ],
+  },
+});
+```
+
+The entries are ordered by `sortOrder` within the menu (Events 90, Gate Control 92, Box Office 93, Sales Report 96). Each page loads from the bundle of the plugin that declares it; do not re-export the ticketing bundle.
 
 ## Cancellations and reimbursement codes
 
@@ -533,6 +625,7 @@ export default [
         standalone: Boolean
       ): Int!
       ticketLookup(code: String!, productId: ID, limit: Int = 10): [Token!]!
+      ticketSalesReport(from: DateTime!, to: DateTime!, forceLocale: Locale): TicketSalesReport!
       ticketProductions(
         queryString: String
         limit: Int = 50
@@ -673,6 +766,7 @@ export default [
       durationMinutes: Int
       doorsOpenMinutesBefore: Int
       category: String
+      categoryTitle(forceLocale: Locale): String
       isCanceled: Boolean!
       cancelledDate: DateTime
       saleRules: TicketSaleRules!
@@ -685,6 +779,62 @@ export default [
       salesStart: DateTime
       salesEnd: DateTime
       maxPerOrder: Int
+    }
+
+    type TicketSalesReport {
+      from: DateTime!
+      to: DateTime!
+      orders: [TicketSalesReportOrder!]!
+      performances: [TicketSalesReportPerformance!]!
+      paymentProviders: [TicketSalesReportPaymentProvider!]!
+      totals: [TicketSalesReportTotal!]!
+    }
+
+    type TicketSalesReportOrder {
+      orderId: ID!
+      orderNumber: String
+      ordered: DateTime!
+      emailAddress: String
+      telNumber: String
+      billingName: String
+      paymentProviderId: ID
+      paymentAdapterKey: String
+      currencyCode: String!
+      tickets: Int!
+      items: Int!
+      discounts: Int!
+      delivery: Int!
+      payment: Int!
+      total: Int!
+    }
+
+    type TicketSalesReportPerformance {
+      productId: ID!
+      title: String
+      startsAt: DateTime
+      categoryTitle: String
+      currencyCode: String!
+      tickets: Int!
+      items: Int!
+      discounts: Int!
+    }
+
+    type TicketSalesReportPaymentProvider {
+      paymentProviderId: ID
+      adapterKey: String
+      currencyCode: String!
+      orders: Int!
+      tickets: Int!
+      total: Int!
+    }
+
+    type TicketSalesReportTotal {
+      currencyCode: String!
+      orders: Int!
+      tickets: Int!
+      items: Int!
+      discounts: Int!
+      total: Int!
     }
 
     extend type TokenizedProduct {

@@ -51,7 +51,12 @@ export interface GateTicket {
   product?: {
     _id: string;
     status?: string | null;
-    event?: { isCanceled?: boolean | null; startsAt?: string | null; category?: string | null } | null;
+    event?: {
+      isCanceled?: boolean | null;
+      startsAt?: string | null;
+      category?: string | null;
+      categoryTitle?: string | null;
+    } | null;
     texts?: { title?: string | null } | null;
   } | null;
 }

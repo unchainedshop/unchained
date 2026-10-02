@@ -190,7 +190,7 @@ const TicketEventDetail = ({ product }) => {
   const facts = [
     formatDate(product.event?.startsAt),
     product.event?.location,
-    product.event?.category,
+    product.event?.categoryTitle,
     product.event?.doorsOpenAt &&
       formatMessage(
         { id: 'event_doors_open_at', defaultMessage: 'Doors {time}' },

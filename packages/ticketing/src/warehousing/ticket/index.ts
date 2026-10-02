@@ -28,6 +28,8 @@ export default TicketWarehousingPlugin;
 export {
   TICKET_WAREHOUSING_ADAPTER_KEY,
   createTicketWarehousingAdapter,
+  ATTENDEES_CONFIGURATION_KEY,
+  readAttendeeName,
   type TicketWarehousingOptions,
   type TicketMetaInput,
   type TicketIssuerAPI,

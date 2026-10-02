@@ -37,6 +37,7 @@ const ScanTicketMutation = gql`
           isCanceled
           startsAt
           category
+          categoryTitle
         }
         texts {
           _id

@@ -9,6 +9,7 @@ import {
   type CanAccessTicketEvent,
 } from './api/index.ts';
 import { isTicketingRolesWithScope } from './api/roles.ts';
+import { withBoxOfficePaymentProviders } from './box-office.ts';
 
 const logger = createLogger('unchained:ticketing');
 
@@ -26,6 +27,7 @@ export interface WithTicketingOptions {
 // does not depend on @unchainedshop/platform.
 interface TicketingPlatformOptions {
   services?: Record<string, any>;
+  options?: { payment?: { filterSupportedProviders?: any; [key: string]: any }; [key: string]: any };
   typeDefs?: string[];
   resolvers?: Record<string, any>[];
   rolesOptions?: {
@@ -47,6 +49,7 @@ export function withTicketing<T extends object>(
 ): T {
   const {
     services,
+    options,
     typeDefs = [],
     resolvers = [],
     rolesOptions,
@@ -74,6 +77,16 @@ export function withTicketing<T extends object>(
   return {
     ...platformOptions,
     services: { ...ticketingServices, ...services },
+    // Box office payment providers only for staff with sellAtBoxOffice, before the project filter
+    options: {
+      ...options,
+      payment: {
+        ...options?.payment,
+        filterSupportedProviders: withBoxOfficePaymentProviders(
+          options?.payment?.filterSupportedProviders,
+        ),
+      },
+    },
     typeDefs: [...ticketingTypeDefs.filter((typeDef) => !typeDefs.includes(typeDef)), ...typeDefs],
     resolvers: resolvers.includes(ticketingResolvers) ? resolvers : [ticketingResolvers, ...resolvers],
     rolesOptions: {

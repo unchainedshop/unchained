@@ -11,6 +11,7 @@ import {
 } from '@unchainedshop/ticketing';
 import { createTicketWarehousingPlugin } from '@unchainedshop/ticketing/warehousing/ticket';
 import { ReimbursementCodePlugin } from '@unchainedshop/ticketing/pricing/discount-reimbursement-code';
+import { BoxOfficePlugin } from '@unchainedshop/ticketing/payment/box-office';
 import { ticketingAdminPlugin } from '@unchainedshop/ticketing/admin-plugin';
 import seed from './seed.ts';
 
@@ -32,20 +33,14 @@ try {
   // createGoogleWalletPass.
   pluginRegistry.register(createTicketingPlugin());
 
-  // The ticket issuer; seed.ts creates the one VIRTUAL warehousing provider that uses it.
-  pluginRegistry.register(
-    createTicketWarehousingPlugin({
-      // Attendee names for gate staff, one per seat: the storefront sends them as the order
-      // position configuration `attendees`, e.g. [{ key: "attendees", value: "Ada, Alan" }].
-      ticketMeta: ({ orderPosition, index }) => {
-        const attendees = orderPosition.configuration
-          ?.find(({ key }) => key === 'attendees')
-          ?.value?.split(',');
-        const attendeeName = attendees?.[index]?.trim();
-        return attendeeName ? { attendeeName } : undefined;
-      },
-    }),
-  );
+  // The ticket issuer; seed.ts creates the one VIRTUAL warehousing provider that uses it. Without a
+  // ticketMeta hook it stores the attendee names of the order position configuration `attendees`
+  // (one per seat, e.g. [{ key: "attendees", value: "Ada, Alan" }]) for gate staff.
+  pluginRegistry.register(createTicketWarehousingPlugin());
+
+  // Door sales in the Admin UI (Ticketing → Box Office), paid at the counter: only staff with
+  // sellAtBoxOffice (the `ticketing` role) get this payment provider, seed.ts creates it.
+  pluginRegistry.register(BoxOfficePlugin);
 
   // Redeems the reimbursement codes cancelTicket / cancelEvent issue with generateDiscount
   // (signed with DISCOUNT_CODE_SECRET)

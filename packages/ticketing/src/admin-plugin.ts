@@ -1,6 +1,6 @@
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { definePlugin, type PluginSlots } from '@unchainedshop/admin-ui/plugins';
+import { definePlugin } from '@unchainedshop/admin-ui/plugins';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -30,24 +30,43 @@ export const ticketingPages = [
     component: 'GateControlPage',
     requiredRole: 'scanTicket',
   },
+  {
+    path: '/box-office',
+    label: 'Box Office',
+    icon: 'banknotes',
+    sortOrder: 93,
+    component: 'BoxOfficePage',
+    requiredRole: 'sellAtBoxOffice',
+  },
+  {
+    path: '/ticket-sales-report',
+    label: 'Sales Report',
+    icon: 'document-chart-bar',
+    sortOrder: 96,
+    component: 'SalesReportPage',
+    requiredRole: 'viewTicketSalesReport',
+  },
 ];
 
+/**
+ * The "Ticketing" submenu. Admin UI plugins with the same navigation label share the submenu, so a
+ * project adds its own pages with `navigation: ticketingNavigation` in its own plugin.
+ */
 export const ticketingNavigation = {
   label: 'Ticketing',
   icon: 'ticket',
   sortOrder: 90,
 };
 
-export function ticketingAdminPlugin(additionalSlots?: PluginSlots) {
+export function ticketingAdminPlugin() {
   return definePlugin({
     name: 'ticketing',
     version: '1.0.0',
     bundlePath: ticketingBundlePath,
     navigation: ticketingNavigation,
     slots: {
-      ...additionalSlots,
-      entities: [...ticketingEntities, ...(additionalSlots?.entities || [])],
-      pages: [...ticketingPages, ...(additionalSlots?.pages || [])],
+      entities: ticketingEntities,
+      pages: ticketingPages,
     },
   });
 }

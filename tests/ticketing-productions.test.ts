@@ -54,6 +54,7 @@ const PRODUCTION_FIELDS = /* GraphQL */ `
               startsAt
               location
               category
+              categoryTitle(forceLocale: "de")
               overridden
               saleRules {
                 salesStart
@@ -161,6 +162,8 @@ test.describe('Ticketing: productions', () => {
     assert.equal(new Date(adultFirst.event.startsAt).getTime(), first.getTime());
     assert.equal(adultFirst.event.location, 'Grosse Bühne');
     assert.equal(adultFirst.event.category, 'adult');
+    // The name of the category is the text of the production's category option
+    assert.equal(adultFirst.event.categoryTitle, 'Erwachsene');
     // The sale rules of the production apply to its performances
     assert.deepEqual(adultFirst.event.saleRules, { salesStart: null, maxPerOrder: 6 });
     assert.equal(adultFirst.contractConfiguration.supply, 100);

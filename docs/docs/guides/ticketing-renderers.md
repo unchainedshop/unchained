@@ -57,60 +57,36 @@ Every ticket carries the same QR code, whether it is printed, in Apple Wallet or
 
 Projects that used a different payload per renderer (`unchained-scanner://…` in one wallet, `unchained://ticket/…` in another, a storefront URL on the PDF) ended up with scanners that could not read all of their own tickets. Use the helper everywhere.
 
-The three renderers share one data loader:
+The three renderers share one data loader. `getTicketDetails(token, unchainedAPI, { locale, scanBaseUrl })` from `@unchainedshop/ticketing` collects what a ticket shows; wrap it once with your settings:
 
 ```ts title="src/tickets/ticket-data.ts"
 import type { UnchainedCore } from '@unchainedshop/core';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
-import {
-  TicketStatus,
-  buildTicketScanPayload,
-  getTicketEventDetails,
-  getTicketStatus,
-  isTicketEventCancelled,
-} from '@unchainedshop/ticketing';
+import { getTicketDetails, type TicketDetails, type TicketDetailsOptions } from '@unchainedshop/ticketing';
 
-export interface TicketDataOptions {
-  /** Where the QR code points to, e.g. the ticket page of your storefront: https://shop.example.com/tickets */
-  scanBaseUrl: string;
-  /** Language of the product texts, e.g. 'de' */
-  locale: string;
-}
+// locale: language of the texts, e.g. 'de'; scanBaseUrl: where the QR code points to, e.g. the
+// ticket page of your storefront: https://shop.example.com/tickets
+export type TicketDataOptions = TicketDetailsOptions;
+export type TicketData = TicketDetails;
 
 /** Everything the three renderers print about one ticket. */
-export async function loadTicketData(
+export const loadTicketData = (
   token: TokenSurrogate,
-  { modules }: UnchainedCore,
-  { scanBaseUrl, locale }: TicketDataOptions,
-) {
-  const product = await modules.products.findProduct({ productId: token.productId });
-  if (!product) throw new Error(`Event ${token.productId} of ticket ${token._id} not found`);
-  const texts = await modules.products.texts.findLocalizedText({
-    productId: product._id,
-    locale: new Intl.Locale(locale),
-  });
-  // The one QR payload every renderer uses, so one scanner reads PDF and wallet tickets alike.
-  const accessKey = await modules.warehousing.buildAccessKeyFromToken(token);
-  const attendeeName = token.meta?.attendeeName;
-
-  return {
-    token,
-    product,
-    title: texts?.title || product._id,
-    subtitle: texts?.subtitle || undefined,
-    // startsAt, endsAt, doorsOpenAt, location, category (only valid values)
-    event: getTicketEventDetails(product),
-    // VALID, REDEEMED or CANCELLED; a cancelled event cancels all its tickets
-    status: isTicketEventCancelled(product) ? TicketStatus.CANCELLED : getTicketStatus(token),
-    attendeeName: typeof attendeeName === 'string' && attendeeName.trim() ? attendeeName.trim() : undefined,
-    scanPayload: buildTicketScanPayload({ tokenId: token._id, accessKey }, { baseUrl: scanBaseUrl }),
-  };
-}
-
-export type TicketData = Awaited<ReturnType<typeof loadTicketData>>;
+  unchainedAPI: UnchainedCore,
+  options: TicketDataOptions,
+): Promise<TicketData> => getTicketDetails(token, unchainedAPI, options);
 ```
 
-`getTicketEventDetails(product)` reads the event facts from `product.meta` (`slot`, `location`, `durationMinutes`, `doorsOpenMinutesBefore`, `category`). `attendeeName` is only there if your ticket issuer's `ticketMeta` hook stored one.
+What it returns:
+
+- `title`, `subtitle`, `description`: the product texts in `locale`.
+- `event`: `startsAt`, `endsAt`, `doorsOpenAt`, `location`, `category` from `product.meta` (only valid values, see `getTicketEventDetails(product)`).
+- `categoryTitle`: the name of the ticket category, the text of the production's category option in `locale`, else the stored `category`.
+- `price`: `{ amount, currencyCode }` of one ticket as ordered, before order discounts; `null` without its order.
+- `status`: `VALID`, `REDEEMED` or `CANCELLED` (a cancelled event cancels all its tickets).
+- `attendeeName`: only there if the ticket issuer stored one (your `ticketMeta` hook, or the order position configuration `attendees`).
+- `serialNumber`, `accessKey` and `scanPayload`, the QR code content built with `buildTicketScanPayload`.
+- `token` and `product` for anything else.
 
 ## Tickets PDF
 
@@ -413,7 +389,8 @@ export function createAppleWalletPassRenderer(options: AppleWalletPassOptions): 
 
   return async (token, context) => {
     const ticket = await loadTicketData(token, context, options);
-    const { startsAt, endsAt, doorsOpenAt, location, category } = ticket.event;
+    const { startsAt, endsAt, doorsOpenAt, location } = ticket.event;
+    const category = ticket.categoryTitle;
 
     certificates ??= loadCertificates();
     const pass = await PKPass.from(

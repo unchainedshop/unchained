@@ -8,6 +8,11 @@ import type { DiscountCodeHandlers } from './discount-codes.ts';
 import setupMagicKey from './magic-key.ts';
 import { subscribeTicketProductionSync } from './production-services.ts';
 import { createTicketingRoutes } from './routes.ts';
+import {
+  TicketSalesReportWorker,
+  configureTicketSalesReportAutoscheduling,
+  type TicketSalesReportScheduleOptions,
+} from './sales-report-worker.ts';
 import { registerTicketingTemplates } from './templates/index.ts';
 import {
   RendererTypes,
@@ -29,6 +34,11 @@ export interface TicketingPluginOptions {
   createGoogleWalletPass?: GoogleWalletPassRenderer;
   /** Reimbursement code handlers, passed to the passes module unchanged. */
   discountCode?: DiscountCodeHandlers;
+  /**
+   * E-mails the ticket sales report of the previous day with its CSV files on a schedule. Without it
+   * the TICKET_SALES_REPORT worker only runs when work is added.
+   */
+  salesReport?: TicketSalesReportScheduleOptions;
 }
 
 // Voids the Apple passes of redeemed, exported or transferred tickets and pushes the update to devices.
@@ -60,7 +70,8 @@ const subscribeAppleWalletPassInvalidation = (unchainedAPI: TicketingAPI) => {
  * renderers that are not given. Route paths are read from the environment when this is called.
  */
 export function createTicketingPlugin(options: TicketingPluginOptions = {}): IPlugin {
-  const { renderOrderPDF, createAppleWalletPass, createGoogleWalletPass, discountCode } = options;
+  const { renderOrderPDF, createAppleWalletPass, createGoogleWalletPass, discountCode, salesReport } =
+    options;
 
   return {
     key: 'shop.unchained.ticketing',
@@ -86,6 +97,8 @@ export function createTicketingPlugin(options: TicketingPluginOptions = {}): IPl
 
     routes: createTicketingRoutes(),
 
+    adapters: [TicketSalesReportWorker],
+
     onRegister: (unchainedAPI) => {
       if (renderOrderPDF) registerRenderer(RendererTypes.ORDER_PDF, renderOrderPDF);
       if (createAppleWalletPass) registerRenderer(RendererTypes.APPLE_WALLET, createAppleWalletPass);
@@ -93,6 +106,7 @@ export function createTicketingPlugin(options: TicketingPluginOptions = {}): IPl
 
       registerTicketingTemplates();
       setupMagicKey();
+      if (salesReport) configureTicketSalesReportAutoscheduling(salesReport);
       subscribeTicketProductionSync(unchainedAPI as TicketingAPI);
 
       // Without an Apple renderer there are no passes to refresh.

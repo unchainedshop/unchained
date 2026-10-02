@@ -4,6 +4,7 @@ import ticketEventsCount from './resolvers/queries/ticketEventsCount.ts';
 import ticketLookup from './resolvers/queries/ticketLookup.ts';
 import ticketProductions from './resolvers/queries/ticketProductions.ts';
 import ticketProductionsCount from './resolvers/queries/ticketProductionsCount.ts';
+import ticketSalesReport from './resolvers/queries/ticketSalesReport.ts';
 import cancelTicket from './resolvers/mutations/cancelTicket.ts';
 import cancelEvent from './resolvers/mutations/cancelEvent.ts';
 import scanTicket from './resolvers/mutations/scanTicket.ts';
@@ -46,6 +47,7 @@ const ticketingResolvers = {
     ticketLookup: checkResolver('gateControl')(ticketLookup),
     ticketProductions: checkResolver('manageProducts')(ticketProductions),
     ticketProductionsCount: checkResolver('manageProducts')(ticketProductionsCount),
+    ticketSalesReport: checkResolver('viewTicketSalesReport')(ticketSalesReport),
   },
   Mutation: {
     scanTicket: checkResolver('scanTicket')(scanTicket),

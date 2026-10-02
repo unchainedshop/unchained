@@ -3,7 +3,7 @@ import { PaymentProviderType } from '@unchainedshop/core-payment';
 import { ProductContractStandard, ProductType } from '@unchainedshop/core-products';
 import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import type { UnchainedCore } from '@unchainedshop/core';
-import { TicketEventProperty } from '@unchainedshop/ticketing';
+import { BOX_OFFICE_PAYMENT_ADAPTER_KEY, TicketEventProperty } from '@unchainedshop/ticketing';
 import { TICKET_WAREHOUSING_ADAPTER_KEY } from '@unchainedshop/ticketing/warehousing/ticket';
 
 const logger = console;
@@ -109,6 +109,13 @@ export default async (unchainedAPI: UnchainedCore) => {
       configuration: [],
     });
 
+    // Door sales, paid at the counter; only offered to staff with sellAtBoxOffice
+    const boxOfficeProvider = await modules.payment.paymentProviders.create({
+      adapterKey: BOX_OFFICE_PAYMENT_ADAPTER_KEY,
+      type: PaymentProviderType.GENERIC,
+      configuration: [],
+    });
+
     // The ticket issuer: the only VIRTUAL provider, a second one (e.g. the ETH minter) would
     // issue every ticket twice. initialConfiguration only applies to providers created through
     // GraphQL or the Admin UI, so a seed sets the configuration itself. Gates open 2 hours before
@@ -171,6 +178,7 @@ currencies: ${currencies.join(',')}
 languages: ${languages.join(',')}
 deliveryProvider: ${deliveryProvider._id} (${deliveryProvider.adapterKey})
 paymentProvider: ${paymentProvider._id} (${paymentProvider.adapterKey})
+boxOfficeProvider: ${boxOfficeProvider._id} (${boxOfficeProvider.adapterKey})
 warehousingProvider: ${warehousingProvider._id} (${warehousingProvider.adapterKey})
 event: ${event._id} (starts ${startsAt.toISOString()})
 users: admin@unchained.local, gate@unchained.local / ${seedPassword}`);

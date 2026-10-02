@@ -65,6 +65,14 @@ export default [
       Cancelled and redeemed tickets are included. Requires the gateControl action.
       """
       ticketLookup(code: String!, productId: ID, limit: Int = 10): [Token!]!
+
+      """
+      The ticket sales of a period: confirmed and fulfilled orders placed from "from" (inclusive) to
+      "to" (exclusive), with the tickets and revenue per performance and the totals per payment
+      provider and currency. Shop-wide, not narrowed by an organizer scope. Requires
+      viewTicketSalesReport.
+      """
+      ticketSalesReport(from: DateTime!, to: DateTime!, forceLocale: Locale): TicketSalesReport!
     }
 
     extend type Mutation {
@@ -208,6 +216,8 @@ export default [
       durationMinutes: Int
       doorsOpenMinutesBefore: Int
       category: String
+      "The name of the category in the language of the request: the option text of the production's category variation, else category"
+      categoryTitle(forceLocale: Locale): String
       "Set by cancelEvent; the tickets are cancelled as well"
       isCanceled: Boolean!
       cancelledDate: DateTime
@@ -217,6 +227,67 @@ export default [
       ownSaleRules: TicketSaleRules!
       "Details of a performance that are not taken over from its production"
       overridden: [String!]!
+    }
+
+    "Amounts are gross in the smallest unit of currencyCode (e.g. cents); discounts are negative."
+    type TicketSalesReport {
+      from: DateTime!
+      to: DateTime!
+      orders: [TicketSalesReportOrder!]!
+      performances: [TicketSalesReportPerformance!]!
+      paymentProviders: [TicketSalesReportPaymentProvider!]!
+      "One row per currency"
+      totals: [TicketSalesReportTotal!]!
+    }
+
+    type TicketSalesReportOrder {
+      orderId: ID!
+      orderNumber: String
+      ordered: DateTime!
+      emailAddress: String
+      telNumber: String
+      billingName: String
+      paymentProviderId: ID
+      paymentAdapterKey: String
+      currencyCode: String!
+      tickets: Int!
+      items: Int!
+      discounts: Int!
+      delivery: Int!
+      payment: Int!
+      total: Int!
+    }
+
+    "The tickets of one performance and category in one currency"
+    type TicketSalesReportPerformance {
+      productId: ID!
+      title: String
+      startsAt: DateTime
+      categoryTitle: String
+      currencyCode: String!
+      tickets: Int!
+      "Ticket prices before discounts"
+      items: Int!
+      "Discounts on the tickets; order discounts are in the order totals"
+      discounts: Int!
+    }
+
+    type TicketSalesReportPaymentProvider {
+      paymentProviderId: ID
+      adapterKey: String
+      currencyCode: String!
+      orders: Int!
+      tickets: Int!
+      total: Int!
+    }
+
+    type TicketSalesReportTotal {
+      currencyCode: String!
+      orders: Int!
+      tickets: Int!
+      items: Int!
+      discounts: Int!
+      total: Int!
     }
 
     "Unset rules do not restrict the sale"

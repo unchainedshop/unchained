@@ -41,12 +41,37 @@ export interface TicketWarehousingOptions {
    * from the order context: return `{ attendeeName }` to show the name to gate staff
    * (`Token.attendeeName`). The data is never part of the public ERC metadata. `orderId`,
    * `cancelled` and `cancelledDate` are reserved; a failing hook is logged and ignored.
+   * Without a hook, tickets carry the attendee names of the order position configuration
+   * `attendees` (readAttendeeName), which the Box Office of the Admin UI writes.
    */
   ticketMeta?: (
     input: TicketMetaInput,
     unchainedAPI: TicketIssuerAPI,
   ) => Record<string, unknown> | undefined | Promise<Record<string, unknown> | undefined>;
 }
+
+/** The order position configuration key with the attendee names, one per seat, comma-separated. */
+export const ATTENDEES_CONFIGURATION_KEY = 'attendees';
+
+/**
+ * The attendee name of one seat of an order position, from its configuration `attendees`
+ * (e.g. `Ada Lovelace, , Alan Turing`: seats without a name stay empty).
+ */
+export function readAttendeeName({
+  orderPosition,
+  index,
+}: Pick<TicketMetaInput, 'orderPosition' | 'index'>): string | undefined {
+  const attendees = orderPosition.configuration?.find(
+    ({ key }) => key === ATTENDEES_CONFIGURATION_KEY,
+  )?.value;
+  if (typeof attendees !== 'string') return undefined;
+  return attendees.split(',')[index]?.trim() || undefined;
+}
+
+const defaultTicketMeta: TicketWarehousingOptions['ticketMeta'] = (input) => {
+  const attendeeName = readAttendeeName(input);
+  return attendeeName ? { attendeeName } : undefined;
+};
 
 const RESERVED_TICKET_META_KEYS = ['orderId', 'cancelled', 'cancelledDate'];
 
@@ -97,7 +122,7 @@ const generateTicketId = () =>
 export function createTicketWarehousingAdapter(
   options: TicketWarehousingOptions = {},
 ): IWarehousingAdapter {
-  const { ticketMeta } = options;
+  const { ticketMeta = defaultTicketMeta } = options;
 
   return {
     ...WarehousingAdapter,

@@ -8,7 +8,7 @@ import TicketWarehousingPluginDefault, {
   TicketWarehousingPlugin,
   createTicketWarehousingPlugin,
 } from './index.ts';
-import { createTicketWarehousingAdapter } from './adapter.ts';
+import { createTicketWarehousingAdapter, readAttendeeName } from './adapter.ts';
 
 const HOUR = 3_600_000;
 const now = new Date('2026-10-01T12:00:00.000Z');
@@ -320,4 +320,30 @@ test('concurrent checkouts get distinct serials from the passes module and reduc
     await client.close();
     await server.stop();
   }
+});
+
+test('without a hook, tickets carry the attendee names of the position configuration', async () => {
+  const { modules } = createModules();
+  const orderPosition = {
+    _id: 'position',
+    orderId: 'order',
+    productId: 'event',
+    quantity: 3,
+    configuration: [{ key: 'attendees', value: 'Ada Lovelace, , Alan Turing' }],
+  };
+  const tokens = await actionsFor({
+    modules,
+    order: { _id: 'order' },
+    orderPosition,
+    product: event(),
+  }).tokenize();
+  assert.deepEqual(
+    tokens.map(({ meta }) => meta),
+    [
+      { attendeeName: 'Ada Lovelace', orderId: 'order' },
+      { orderId: 'order' },
+      { attendeeName: 'Alan Turing', orderId: 'order' },
+    ],
+  );
+  assert.equal(readAttendeeName({ orderPosition: { configuration: null } as any, index: 0 }), undefined);
 });

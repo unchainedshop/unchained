@@ -78,7 +78,7 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
                 .filter((f) => !f?.requiredRole || hasRole(f.requiredRole))
                 .map((subItem) => (
                   <Link
-                    key={subItem.name}
+                    key={subItem.href || subItem.name}
                     href={subItem.href}
                     className={clsx(
                       'block px-4 py-2 text-sm text-text-secondary hover:bg-surface-raised focus:outline-hidden focus:ring-2 focus:ring-focus-ring',
@@ -137,7 +137,7 @@ const ChildrenNav = ({ item, hasRole, onSelected, narrowView }) => {
               .filter((f) => !f?.requiredRole || hasRole(f.requiredRole))
               .map((subItem) => (
                 <Link
-                  key={subItem.name}
+                  key={subItem.href || subItem.name}
                   href={subItem.href}
                   className={clsx(
                     'group flex w-full items-center rounded-md py-2 pl-5 pr-2 text-sm font-medium text-text-secondary hover:bg-surface-raised hover:text-text-primary focus:outline-hidden focus:ring-2 focus:ring-focus-ring',

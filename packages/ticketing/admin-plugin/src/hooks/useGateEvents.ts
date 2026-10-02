@@ -33,6 +33,7 @@ const GateEventsQuery = gql`
           startsAt
           location
           category
+          categoryTitle
           isCanceled
         }
         tokensCount

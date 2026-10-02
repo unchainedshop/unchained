@@ -22,6 +22,10 @@
       "import": "./lib/pricing/*/index.js",
       "types": "./lib/pricing/*/index.d.ts"
     },
+    "./payment/*": {
+      "import": "./lib/payment/*/index.js",
+      "types": "./lib/payment/*/index.d.ts"
+    },
     "./warehousing/*": {
       "import": "./lib/warehousing/*/index.js",
       "types": "./lib/warehousing/*/index.d.ts"
@@ -71,6 +75,7 @@
     "@unchainedshop/core-products": "^5.0.0-alpha.10",
     "@unchainedshop/utils": "^5.0.0-alpha.10",
     "@unchainedshop/core-orders": "^5.0.0-alpha.10",
+    "@unchainedshop/core-payment": "^5.0.0-alpha.10",
     "@unchainedshop/core-warehousing": "^5.0.0-alpha.10",
     "@unchainedshop/core-worker": "^5.0.0-alpha.10",
     "@unchainedshop/events": "^5.0.0-alpha.10",

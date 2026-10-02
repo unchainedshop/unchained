@@ -167,7 +167,16 @@ Slot types: `entities` (list/detail/create pages under `/ext/<path>`),
   hidden without it.
 - `sortOrder` — position in the sidebar. Built-in items use 0–130 in steps of
   10 (Orders 30, Products 40, Users 70, System settings 110, ...). Items
-  without a `sortOrder` keep their relative order after ordered ones.
+  without a `sortOrder` keep their relative order after ordered ones. Inside a
+  navigation group, the `sortOrder` of the entities and pages orders the
+  submenu.
+
+Plugins with the same `navigation.label` share one submenu: the first plugin's
+icon is used, the group takes the lowest `sortOrder`, and a group
+`requiredRole` only applies if every plugin of the group sets the same one.
+Each page still comes from the bundle of the plugin that declares it, so a
+project can add its own pages to the submenu of a package plugin, for example
+`navigation: ticketingNavigation` from `@unchainedshop/ticketing/admin-plugin`.
 
 At startup the engine validates the manifest against the bundle and logs a
 warning if a referenced component is not exported, if two plugins share a

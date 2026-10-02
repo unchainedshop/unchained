@@ -86,6 +86,39 @@ export {
   type UpdateTicketSaleRulesInput,
 } from './sale-rules.ts';
 export { TICKET_PRODUCTION_TAG, isTicketProduction } from './production.ts';
+export {
+  findTicketCategoryTitle,
+  findTicketPrice,
+  getTicketDetails,
+  type TicketDetails,
+  type TicketDetailsOptions,
+} from './ticket-details.ts';
+export {
+  buildTicketSalesReport,
+  type TicketSalesReport,
+  type TicketSalesReportInput,
+  type TicketSalesReportOrder,
+  type TicketSalesReportPerformance,
+  type TicketSalesReportPaymentProvider,
+  type TicketSalesReportTotal,
+} from './sales-report.ts';
+export { buildSalesReportCsv, toDecimalAmount } from './sales-report-csv.ts';
+export {
+  TICKET_SALES_REPORT_WORK_TYPE,
+  TicketSalesReportWorker,
+  configureTicketSalesReportAutoscheduling,
+  type TicketSalesReportWorkInput,
+  type TicketSalesReportMessagePayload,
+  type TicketSalesReportScheduleOptions,
+} from './sales-report-worker.ts';
+export {
+  BOX_OFFICE_PAYMENT_ADAPTER_KEY,
+  SELL_AT_BOX_OFFICE_ACTION,
+  canSellAtBoxOffice,
+  canUserSellAtBoxOffice,
+  isBoxOfficeProvider,
+  withBoxOfficePaymentProviders,
+} from './box-office.ts';
 
 export {
   ticketingServices,

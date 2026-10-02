@@ -16,7 +16,11 @@ import {
   validateTicketOrderPosition,
   withTicketing,
 } from '@unchainedshop/ticketing';
-import { createTicketWarehousingPlugin } from '@unchainedshop/ticketing/warehousing/ticket';
+import {
+  createTicketWarehousingPlugin,
+  readAttendeeName,
+} from '@unchainedshop/ticketing/warehousing/ticket';
+import { BoxOfficePlugin } from '@unchainedshop/ticketing/payment/box-office';
 
 let fastify = null;
 let platform = null;
@@ -141,11 +145,14 @@ export async function initializeTestPlatform() {
   // Ticketing without renderers (the ticketing tests register stub renderers themselves). The
   // ticket issuer only issues tickets where a test seeds its VIRTUAL provider (tests/seeds/ticketing.js).
   pluginRegistry.register(createTicketingPlugin());
+  pluginRegistry.register(BoxOfficePlugin);
   pluginRegistry.register(
     createTicketWarehousingPlugin({
-      // Attendee names per seat, as a storefront would pass them with updateCart(meta)
-      ticketMeta: ({ order, index }) => {
-        const attendeeName = order.context?.attendees?.[index];
+      // Attendee names per seat, as a storefront would pass them with updateCart(meta), else the
+      // order position configuration `attendees` (Box Office)
+      ticketMeta: ({ order, orderPosition, index }) => {
+        const attendeeName =
+          order.context?.attendees?.[index] || readAttendeeName({ orderPosition, index });
         return attendeeName ? { attendeeName } : undefined;
       },
     }),

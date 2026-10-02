@@ -2,7 +2,12 @@
 
 export interface GateEvent {
   _id: string;
-  event?: { startsAt?: string | null; location?: string | null; category?: string | null } | null;
+  event?: {
+    startsAt?: string | null;
+    location?: string | null;
+    category?: string | null;
+    categoryTitle?: string | null;
+  } | null;
   texts?: { title?: string | null } | null;
 }
 
@@ -39,6 +44,6 @@ export function summarizeGateEvents(events: GateEvent[]) {
     titles: distinct(events.map((event) => event.texts?.title)),
     startsAt: distinct(events.map((event) => event.event?.startsAt)),
     locations: distinct(events.map((event) => event.event?.location)),
-    categories: distinct(events.map((event) => event.event?.category)),
+    categories: distinct(events.map((event) => event.event?.categoryTitle || event.event?.category)),
   };
 }

@@ -127,8 +127,8 @@ const GateEventList = ({
                       <span className="text-sm text-text-muted">{event.texts.subtitle}</span>
                     )}
                     <div className="mt-1 flex flex-wrap gap-1">
-                      {event.event?.category && (
-                        <Badge text={event.event.category} color="slate" square />
+                      {event.event?.categoryTitle && (
+                        <Badge text={event.event.categoryTitle} color="slate" square />
                       )}
                       {event.event?.isCanceled && (
                         <Badge

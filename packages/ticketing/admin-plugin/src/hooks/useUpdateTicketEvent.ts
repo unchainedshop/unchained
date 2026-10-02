@@ -14,6 +14,7 @@ const UpdateTicketEventMutation = gql`
           doorsOpenAt
           location
           category
+          categoryTitle
           durationMinutes
           doorsOpenMinutesBefore
           overridden

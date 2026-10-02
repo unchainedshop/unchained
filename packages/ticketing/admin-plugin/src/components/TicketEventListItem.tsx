@@ -42,9 +42,9 @@ const TicketEventListItem = ({ product }) => {
             <span className="ml-2 text-sm text-text-muted">{product.texts.subtitle}</span>
           )}
         </Link>
-        {product?.event?.category && (
+        {product?.event?.categoryTitle && (
           <div className="mt-1">
-            <Badge text={product.event?.category} color="slate" square />
+            <Badge text={product.event?.categoryTitle} color="slate" square />
           </div>
         )}
       </Table.Cell>

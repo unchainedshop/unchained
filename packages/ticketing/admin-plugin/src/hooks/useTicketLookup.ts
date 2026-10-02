@@ -32,6 +32,7 @@ const TicketLookupQuery = gql`
           isCanceled
           startsAt
           category
+          categoryTitle
         }
         texts {
           _id

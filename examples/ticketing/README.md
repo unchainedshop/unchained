@@ -7,10 +7,11 @@ Example demonstrating event ticketing with `@unchainedshop/ticketing`: selling t
 - **Fastify** HTTP server with the Unchained logger
 - **Base plugins** via `@unchainedshop/plugins/presets/base`
 - **Ticketing plugin** (`createTicketingPlugin`): passes module, ticket PDF and wallet routes, magic-key order access, cancellation e-mails
-- **Ticket issuer** (`createTicketWarehousingPlugin`) with attendee names per seat (`ticketMeta`)
+- **Ticket issuer** (`createTicketWarehousingPlugin`) with attendee names per seat (order position configuration `attendees`)
+- **Box office** (`BoxOfficePlugin`): door sales by gate staff, paid at the counter
 - **Sales within supply** (`validateTicketOrderPosition`)
 - **Reimbursement codes** (`ReimbursementCodePlugin`)
-- **Admin UI** with **Ticketing → Events** and **Ticketing → Gate Control**
+- **Admin UI** with **Ticketing → Events**, **Gate Control**, **Box Office** and **Sales Report**
 - **Seed data**: admin and gate staff accounts, providers, the ticket issuer and a demo event
 - **Integration tests** for buying, looking up, redeeming and cancelling tickets and for the ticket routes
 
@@ -80,7 +81,8 @@ Server starts at http://localhost:4010 with:
 
 ```typescript
 pluginRegistry.register(createTicketingPlugin());
-pluginRegistry.register(createTicketWarehousingPlugin({ ticketMeta }));
+pluginRegistry.register(createTicketWarehousingPlugin());
+pluginRegistry.register(BoxOfficePlugin);
 pluginRegistry.register(ReimbursementCodePlugin);
 
 const platform = await startPlatform(
@@ -96,7 +98,7 @@ await connect(fastify, platform, { adminUI: { plugins: [ticketingAdminPlugin()] 
 
 `seed.ts` creates the one `VIRTUAL` warehousing provider with the ticket issuer (`shop.unchained.warehousing.ticket`; gates open 120 minutes before the start and close 60 minutes after it) and the demo event "Unchained Live": a tokenized product with a supply of 500 tickets whose start, location, duration, doors and category are stored in `product.meta`. The event starts one hour after the first boot; move it in **Ticketing → Events** or with `updateTicketEvent`.
 
-Each seat becomes one ticket with its own serial number. The storefront passes attendee names as the order position configuration `attendees`, and `ticketMeta` in `boot.ts` stores one per ticket (`Token.attendeeName`):
+Each seat becomes one ticket with its own serial number. The storefront passes attendee names as the order position configuration `attendees`, and the ticket issuer stores one per ticket (`Token.attendeeName`; a `ticketMeta` hook replaces this, `readAttendeeName` reads the configuration in your own hook):
 
 ```graphql
 mutation AddTickets {
@@ -115,6 +117,12 @@ mutation AddTickets {
 ### Gate access
 
 Gate staff sign in with a regular account that has the `ticketing` role (`gate@unchained.local`), or a custom role with the `scanTicket` action. **Ticketing → Gate Control** then lists the events and scans or looks up tickets; `scanTicket(tokenId, productId)` redeems them. The ticket list shows the attendee name and the buyer's public profile; private user data stays behind `viewUserPrivateInfos`. Pass codes and gate cookies are not supported.
+
+### Box office and sales report
+
+Gate staff (`ticketing` role, action `sellAtBoxOffice`) sell tickets at the door in **Ticketing → Box Office**: pick a performance, the number of tickets per category, optional attendee names per seat and buyer details, and sell. The order is placed on the staff member's account and paid with the box office payment provider that `seed.ts` creates; customers never get that provider. Tickets can be admitted right away.
+
+**Ticketing → Sales Report** (action `viewTicketSalesReport`, administrators by default) shows the orders, tickets and revenue per performance and per payment provider of a period, with CSV downloads.
 
 Users with `manageProducts` see **Ticketing → Events**, including drafts, and edit the event details. Cancelling a ticket or an event, with or without a reimbursement code, requires the `cancelTicket` action (administrators by default).
 

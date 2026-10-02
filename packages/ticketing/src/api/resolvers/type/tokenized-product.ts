@@ -1,6 +1,7 @@
 import type { Context } from '@unchainedshop/api';
 import type { Product } from '@unchainedshop/core-products';
 import { getTicketEventDetails, isTicketEventCancelled } from '../../../event-details.ts';
+import { findTicketCategoryTitle } from '../../../ticket-details.ts';
 import {
   getDefaultTicketSaleRules,
   readTicketSaleRules,
@@ -50,6 +51,13 @@ export const TicketEvent = {
   doorsOpenMinutesBefore: (product: Product) =>
     getTicketEventDetails(product).doorsOpenMinutesBefore ?? null,
   category: (product: Product) => getTicketEventDetails(product).category ?? null,
+  async categoryTitle(product: Product, { forceLocale }: { forceLocale?: string }, context: Context) {
+    const title = await findTicketCategoryTitle(product, context, {
+      locale: forceLocale ? new Intl.Locale(forceLocale) : context.locale,
+      getProxy: () => getProxyOnce(product, context),
+    });
+    return title ?? null;
+  },
   isCanceled: (product: Product) => isTicketEventCancelled(product),
   cancelledDate: (product: Product) =>
     isTicketEventCancelled(product) ? toDate(product.meta?.cancelledDate) : null,

@@ -64,7 +64,7 @@ Then create one `VIRTUAL` warehousing provider with the adapter key `shop.unchai
 
 | Export | Description |
 | ------ | ----------- |
-| `createTicketingPlugin(options)` | The plugin: `passes` module, PDF and wallet routes, magic-key rules, cancellation e-mail templates, Apple pass refresh. Options: `renderOrderPDF`, `createAppleWalletPass`, `createGoogleWalletPass`, `discountCode` |
+| `createTicketingPlugin(options)` | The plugin: `passes` module, PDF and wallet routes, magic-key rules, cancellation e-mail templates, Apple pass refresh. Options: `renderOrderPDF`, `createAppleWalletPass`, `createGoogleWalletPass`, `discountCode`, `salesReport` (scheduled sales report e-mail) |
 | `withTicketing(platformOptions, { canAccessEvent })` | Adds the GraphQL schema, services, actions and the `ticketing` role to `startPlatform` options; `canAccessEvent` limits non-admins to their events |
 | `validateTicketOrderPosition`, `createTicketOrderPositionValidator({ getSaleRules })` | `orders.validateOrderPosition` that enforces supply, cancelled events and sale rules |
 | `createTicketingRoles({ canAccessEvent })`, `configureTicketingRoles` | The `ticketing` role, for projects that build their roles themselves |
@@ -72,18 +72,22 @@ Then create one `VIRTUAL` warehousing provider with the adapter key `shop.unchai
 | `buildTicketsPdfUrl`, `buildWalletPassUrls`, `getTicketAttachments` | Ticket links and e-mail attachments |
 | `buildTicketScanPayload`, `parseTicketScanPayload` | The QR code content of a ticket, and its parser |
 | `getTicketEventDetails`, `TicketEventProperty`, `isTicketEventCancelled`, `isTicketCancelled`, `getTicketStatus`, `TicketStatus` | Event facts and ticket state |
+| `getTicketDetails`, `findTicketCategoryTitle`, `findTicketPrice` | What a ticket shows (texts, event, category name, price, status, attendee, QR payload), for your renderers |
+| `buildTicketSalesReport`, `buildSalesReportCsv`, `TicketSalesReportWorker`, `configureTicketSalesReportAutoscheduling` | The ticket sales report of a period, its CSV files and the e-mail worker |
+| `canSellAtBoxOffice`, `withBoxOfficePaymentProviders`, `BOX_OFFICE_PAYMENT_ADAPTER_KEY` | Box office permission check and payment provider filter |
 | `TicketingEventTypes`, `registerTicketingEvents` | `TICKET_REDEEMED`, `TICKET_CANCELLED`, `TICKET_EVENT_CANCELLED` |
 | `getTicketingPaths()` | The route base paths (for the Apple `webServiceURL`) |
-| `registerTicketingTemplates`, `TicketingMessageTypes` | The `EVENT_CANCELLED` / `TICKET_CANCELLED` templates |
+| `registerTicketingTemplates`, `TicketingMessageTypes` | The `EVENT_CANCELLED` / `TICKET_CANCELLED` / `TICKET_SALES_REPORT` templates |
 | Types | `TicketingAPI`, `TicketingModule`, `TicketingServices`, `PDFRenderer`, `PassRenderer`, `GoogleWalletPassRenderer`, `TicketSaleRules`, `CanAccessTicketEvent`, … |
 
 ### Subpaths
 
 | Import | Description |
 | ------ | ----------- |
-| `@unchainedshop/ticketing/warehousing/ticket` | `TicketWarehousingPlugin`, `createTicketWarehousingPlugin({ ticketMeta })`: the ticket issuer |
+| `@unchainedshop/ticketing/warehousing/ticket` | `TicketWarehousingPlugin`, `createTicketWarehousingPlugin({ ticketMeta })`: the ticket issuer; `readAttendeeName` |
 | `@unchainedshop/ticketing/pricing/discount-reimbursement-code` | `ReimbursementCodePlugin`: accepts reimbursement codes at checkout |
-| `@unchainedshop/ticketing/admin-plugin` | `ticketingAdminPlugin()`: the **Ticketing** menu of the Admin UI |
+| `@unchainedshop/ticketing/payment/box-office` | `BoxOfficePlugin`: door sales paid at the counter, only for staff with `sellAtBoxOffice` |
+| `@unchainedshop/ticketing/admin-plugin` | `ticketingAdminPlugin()`: the **Ticketing** menu of the Admin UI (Events, Gate Control, Box Office, Sales Report); `ticketingNavigation` for your own pages in that menu |
 
 ## Environment Variables
 

@@ -1,4 +1,5 @@
 // Attendee list helpers shared by the event detail and the gate. Pure, so they run in node --test.
+import { csvCell, toCsv } from '../../../src/csv.ts';
 
 interface TicketUser {
   _id: string;
@@ -48,16 +49,7 @@ export const matchesTicketFilter = (ticket: AttendeeTicket, text: string) => {
   ].some((value) => value?.toLowerCase().includes(needle));
 };
 
-// Spreadsheets run cells starting with these as formulas; attendee names are customer input.
-const FORMULA_START = /^[=+\-@\t\r]/;
-const NEEDS_QUOTES = /[",;\r\n]/;
-
-export const csvCell = (value: unknown) => {
-  if (value === null || value === undefined) return '';
-  let text = String(value);
-  if (FORMULA_START.test(text)) text = `'${text}`;
-  return NEEDS_QUOTES.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
-};
+export { csvCell };
 
 export interface AttendeeCsvLabels {
   ticketId: string;
@@ -107,5 +99,5 @@ export const buildAttendeeCsv = (tickets: AttendeeTicket[], labels: AttendeeCsvL
       ticket.ticketStatus === 'CANCELLED' ? ticket.cancelledDate : null,
     ]),
   ];
-  return rows.map((row) => `${row.map(csvCell).join(',')}\r\n`).join('');
+  return toCsv(rows);
 };

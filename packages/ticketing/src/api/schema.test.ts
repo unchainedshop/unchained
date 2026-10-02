@@ -24,6 +24,7 @@ test('ticketing schema is optional and every plugin operation validates when ins
     'isPassCodeValid',
     'ticketProductions',
     'ticketProductionsCount',
+    'ticketSalesReport',
   ]) {
     assert.equal(core.getQueryType()!.getFields()[field], undefined);
   }
@@ -80,6 +81,7 @@ test('ticketing schema is optional and every plugin operation validates when ins
     'durationMinutes',
     'doorsOpenMinutesBefore',
     'category',
+    'categoryTitle',
     'isCanceled',
     'cancelledDate',
     'saleRules',

@@ -54,6 +54,7 @@ const TicketEventsQuery = gql`
           startsAt
           location
           category
+          categoryTitle
         }
       }
     }

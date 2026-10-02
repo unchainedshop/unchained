@@ -41,6 +41,10 @@ import useShopConfiguration from '../hooks/useShopConfiguration';
 import useRecentExports from '../../work/hooks/useRecentExports';
 import useFormatDateTime from '../utils/useFormatDateTime';
 import { usePlugins } from '../../plugins/PluginContext';
+import {
+  buildPluginNavigation,
+  compareSortOrder,
+} from '../../plugins/pluginNavigation';
 import * as HeroIcons from '@heroicons/react/24/outline';
 import CommandPalette from '../../search/components/CommandPalette';
 import { SearchProvider, useSearch } from '../../search/SearchContext';
@@ -144,44 +148,7 @@ const LayoutContent = ({ children, pageHeader = '', componentName }) => {
 
   const { manifests } = usePlugins();
 
-  const pluginNavItems = manifests.flatMap((manifest) => {
-    const children = [];
-    manifest.slots.entities?.forEach((entity) => {
-      children.push({
-        name: entity.label,
-        icon: resolveIcon(entity.icon),
-        href: `/ext/${entity.path.replace(/^\//, '')}`,
-        requiredRole: entity.requiredRole,
-        _sortOrder: entity.sortOrder as number | undefined,
-      });
-    });
-    manifest.slots.pages?.forEach((page) => {
-      children.push({
-        name: page.label,
-        icon: resolveIcon(page.icon),
-        href: `/ext/${page.path.replace(/^\//, '')}`,
-        requiredRole: page.requiredRole,
-        _sortOrder: page.sortOrder as number | undefined,
-      });
-    });
-
-    if (children.length === 0) return [];
-
-    const nav = manifest.navigation;
-    if (nav) {
-      return [
-        {
-          name: nav.label,
-          icon: resolveIcon(nav.icon),
-          requiredRole: nav.requiredRole,
-          _sortOrder: nav.sortOrder,
-          children,
-        },
-      ];
-    }
-
-    return children;
-  });
+  const pluginNavItems = buildPluginNavigation(manifests, resolveIcon);
 
   const defaultNavigation = [
     {
@@ -369,14 +336,7 @@ const LayoutContent = ({ children, pageHeader = '', componentName }) => {
     ...pluginNavItems,
   ]
     .filter(Boolean)
-    .sort((a, b) => {
-      const aOrder = a?._sortOrder;
-      const bOrder = b?._sortOrder;
-      if (aOrder != null && bOrder != null) return aOrder - bOrder;
-      if (aOrder != null) return -1;
-      if (bOrder != null) return 1;
-      return 0;
-    });
+    .sort(compareSortOrder);
 
   return (
     <AuthWrapper>

@@ -14,7 +14,7 @@ import GateStation from './GateStation.tsx';
 const canUseFullscreen = () => typeof document !== 'undefined' && Boolean(document.fullscreenEnabled);
 
 const eventLabel = (event) =>
-  [event.texts?.title, event.event?.category].filter(Boolean).join(' · ') || event._id;
+  [event.texts?.title, event.event?.categoryTitle].filter(Boolean).join(' · ') || event._id;
 
 /**
  * Gate Control: pick today's events a gate admits (one, all products of one performance, or any

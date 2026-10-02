@@ -30,7 +30,7 @@ const productOf = (event) => ({
   texts: event.texts,
 });
 
-const eventLabel = (product) => product?.event?.category || product?.texts?.title || '-';
+const eventLabel = (product) => product?.event?.categoryTitle || product?.texts?.title || '-';
 
 /**
  * Tickets of the gate's events with a local filter (serial, attendee, buyer) and how many have

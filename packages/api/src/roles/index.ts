@@ -138,6 +138,11 @@ const actions: Record<string, string> = [
 }, {});
 
 let allRoles: Record<string, any> = {};
+let configuredRoles: RolesInterface | undefined;
+
+// The roles instance of the platform, for permission checks outside of a GraphQL request (payment
+// adapters, workers, provider filters). Rules then receive { userId, user, modules } as context.
+const getConfiguredRoles = (): RolesInterface | undefined => configuredRoles;
 
 const configureRoles = ({
   additionalRoles,
@@ -171,6 +176,8 @@ const configureRoles = ({
   loggedIn(allRoles.LOGGEDIN, actions);
   admin(allRoles.ADMIN, actions);
 
+  configuredRoles = roles;
+
   return roles;
 };
 
@@ -181,4 +188,4 @@ const getPublicRoles = (roles: RolesInterface): string[] => {
     .filter((name: string) => !name.startsWith('__')) as string[];
 };
 
-export { allRoles, actions, configureRoles, getPublicRoles };
+export { allRoles, actions, configureRoles, getConfiguredRoles, getPublicRoles };
