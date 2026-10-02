@@ -3,6 +3,16 @@ import type { Context } from '../../../context.ts';
 import type { OrderDelivery } from '@unchainedshop/core-orders';
 
 export const OrderDeliveryShipping = {
+  async fee(obj: OrderDelivery, _: never, { loaders }: Context) {
+    const order = await loaders.orderLoader.load({ orderId: obj.orderId });
+    const pricing = DeliveryPricingSheet({
+      calculation: obj.calculation,
+      currencyCode: order.currencyCode,
+    });
+    if (!pricing.isValid()) return null;
+    return { ...pricing.total(), isTaxable: pricing.taxSum() !== 0, isNetPrice: false };
+  },
+
   address(obj: OrderDelivery) {
     return obj.context?.address;
   },

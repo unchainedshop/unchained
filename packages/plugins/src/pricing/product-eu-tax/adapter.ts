@@ -1,8 +1,4 @@
-import {
-  ProductPricingAdapter,
-  type IProductPricingAdapter,
-  ProductPricingRowCategory,
-} from '@unchainedshop/core';
+import { ProductPricingAdapter, type IProductPricingAdapter } from '@unchainedshop/core';
 import {
   resolveEuTaxCategoryFromDeliveryProvider,
   resolveEuTaxCategoryFromProduct,
@@ -68,7 +64,6 @@ export const ProductEuTax: IProductPricingAdapter = {
           calculationSheet: params.calculationSheet,
           resultSheet: pricingAdapter.resultSheet(),
           taxRate,
-          baseCategory: ProductPricingRowCategory.Item,
           adapterKey: ProductEuTax.key,
         });
         return pricingAdapter.calculate();

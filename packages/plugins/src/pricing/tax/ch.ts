@@ -1,4 +1,5 @@
 import type { DeliveryProvider } from '@unchainedshop/core-delivery';
+import type { PaymentProvider } from '@unchainedshop/core-payment';
 import type { Product } from '@unchainedshop/core-products';
 import swissTaxRates from './ch-tax-rates.json' with { type: 'json' };
 import { compileEraRates, rateForDate } from './eraRates.ts';
@@ -21,8 +22,9 @@ export const SwissTaxCategories: Record<string, SwissTaxCategoryResolver> = Obje
   ]),
 );
 
-export const resolveTaxCategoryFromDeliveryProvider = (
-  provider: DeliveryProvider,
+// The `swiss-tax-category` configuration of a delivery or payment provider
+const resolveTaxCategoryFromProvider = (
+  provider: Pick<DeliveryProvider | PaymentProvider, 'configuration'>,
 ): SwissTaxCategoryResolver | null => {
   const taxCategoryFromProvider = provider?.configuration
     ?.find(({ key }) => {
@@ -34,6 +36,14 @@ export const resolveTaxCategoryFromDeliveryProvider = (
   const taxCategory = taxCategoryFromProvider ? SwissTaxCategories[taxCategoryFromProvider] : null;
   return taxCategory;
 };
+
+export const resolveTaxCategoryFromDeliveryProvider = (
+  provider: DeliveryProvider,
+): SwissTaxCategoryResolver | null => resolveTaxCategoryFromProvider(provider);
+
+export const resolveTaxCategoryFromPaymentProvider = (
+  provider: PaymentProvider,
+): SwissTaxCategoryResolver | null => resolveTaxCategoryFromProvider(provider);
 
 export const resolveTaxCategoryFromProduct = (product: Product): SwissTaxCategoryResolver | null => {
   const productSpecialTaxTag = product.tags?.find((tag) =>

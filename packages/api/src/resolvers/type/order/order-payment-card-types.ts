@@ -3,6 +3,16 @@ import type { Context } from '../../../context.ts';
 import type { OrderPayment } from '@unchainedshop/core-orders';
 
 export const OrderPaymentCard = {
+  async fee(obj: OrderPayment, _: never, { loaders }: Context) {
+    const order = await loaders.orderLoader.load({ orderId: obj.orderId });
+    const pricing = PaymentPricingSheet({
+      calculation: obj.calculation,
+      currencyCode: order.currencyCode,
+    });
+    if (!pricing.isValid()) return null;
+    return { ...pricing.total(), isTaxable: pricing.taxSum() !== 0, isNetPrice: false };
+  },
+
   status(obj: OrderPayment, _: never, { modules }: Context) {
     return modules.orders.payments.normalizedStatus(obj);
   },

@@ -4,6 +4,7 @@ import {
   BasePricingSheet,
   type IPricingSheet,
   type IBasePricingSheet,
+  type PricingDiscount,
   type PricingSheetParams,
 } from './BasePricingSheet.ts';
 
@@ -121,15 +122,13 @@ export const OrderPricingSheet = (
 
       return [...new Set(discountIds)]
         .map((discountId) => {
+          // gross: the discount rows plus the tax attributed to the discount
+          const taxAmount = pricingSheet.taxSum({
+            baseCategory: OrderPricingRowCategory.Discounts,
+            discountId,
+          });
           const amount =
-            pricingSheet.sum({
-              category: OrderPricingRowCategory.Discounts,
-              discountId,
-            }) +
-            pricingSheet.taxSum({
-              baseCategory: OrderPricingRowCategory.Discounts,
-              discountId,
-            });
+            pricingSheet.sum({ category: OrderPricingRowCategory.Discounts, discountId }) + taxAmount;
           if (!amount) {
             return null;
           }
@@ -137,9 +136,11 @@ export const OrderPricingSheet = (
             discountId,
             amount: Math.round(amount),
             currencyCode: pricingSheet.currencyCode,
+            isTaxable: taxAmount !== 0,
+            isNetPrice: false,
           };
         })
-        .filter(Boolean) as { discountId: string; amount: number; currencyCode: string }[];
+        .filter(Boolean) as PricingDiscount[];
     },
   };
 

@@ -1,8 +1,4 @@
-import {
-  DeliveryPricingRowCategory,
-  type IDeliveryPricingAdapter,
-  DeliveryPricingAdapter,
-} from '@unchainedshop/core';
+import { type IDeliveryPricingAdapter, DeliveryPricingAdapter } from '@unchainedshop/core';
 
 import {
   resolveUkTaxCategoryFromDeliveryProvider,
@@ -20,9 +16,9 @@ export const DeliveryUkTax: IDeliveryPricingAdapter = {
   label: 'Apply UK VAT on Delivery Fees',
   orderIndex: 80,
 
+  // No order delivery when a delivery price is simulated: the location falls back to the
+  // billing address or the country of the order or request
   isActivatedFor: (context) => {
-    if (!context.order) return false;
-    if (!context.orderDelivery) return false;
     return isDeliveryAddressInCountry(
       {
         order: context.order,
@@ -50,7 +46,6 @@ export const DeliveryUkTax: IDeliveryPricingAdapter = {
           calculationSheet: params.calculationSheet,
           resultSheet: pricingAdapter.resultSheet(),
           taxRate,
-          baseCategory: DeliveryPricingRowCategory.Delivery,
           adapterKey: DeliveryUkTax.key,
         });
 

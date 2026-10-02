@@ -16,6 +16,8 @@ export const OrderDeliveryDiscount = {
     return {
       amount: obj.amount,
       currencyCode: obj.currencyCode,
+      isTaxable: obj.isTaxable,
+      isNetPrice: obj.isNetPrice,
     };
   },
 };

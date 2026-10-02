@@ -27,7 +27,7 @@ export default async function simulatePrice(context: Context, params: Params<'SI
   const price = {
     ...unitPrice,
     isNetPrice: useNetPrice,
-    isTaxable: pricing?.taxSum() > 0,
+    isTaxable: pricing?.taxSum() !== 0,
     currencyCode: pricing?.currencyCode,
   };
   return { price };

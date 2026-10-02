@@ -1,6 +1,11 @@
 import type { Price, PricingCalculation } from '@unchainedshop/utils';
 
-import { BasePricingSheet, type IPricingSheet, type PricingSheetParams } from './BasePricingSheet.ts';
+import {
+  BasePricingSheet,
+  type IPricingSheet,
+  type PricingDiscount,
+  type PricingSheetParams,
+} from './BasePricingSheet.ts';
 
 export interface ProductPricingCalculation extends PricingCalculation {
   discountId?: string;
@@ -108,20 +113,25 @@ export const ProductPricingSheet = (
 
       return [...new Set(discountIds)]
         .map((discountId) => {
-          const amount = basePricingSheet.sum({
-            category: ProductPricingRowCategory.Discount,
+          // gross: the discount rows plus the tax attributed to the discount
+          const taxAmount = pricingSheet.taxSum({
+            baseCategory: ProductPricingRowCategory.Discount,
             discountId,
           });
+          const amount =
+            pricingSheet.sum({ category: ProductPricingRowCategory.Discount, discountId }) + taxAmount;
           if (!amount) {
             return null;
           }
           return {
             discountId,
             amount: Math.round(amount),
-            currencyCode: basePricingSheet.currencyCode,
+            currencyCode: pricingSheet.currencyCode,
+            isTaxable: taxAmount !== 0,
+            isNetPrice: false,
           };
         })
-        .filter(Boolean) as { discountId: string; amount: number; currencyCode: string }[];
+        .filter(Boolean) as PricingDiscount[];
     },
   };
 

@@ -22,6 +22,9 @@ export default [
       provider: DeliveryProvider
       status: OrderDeliveryStatus
       delivered: DateTime
+      """
+      Gross amount the order charges for the delivery (fees, discounts and taxes), null while not priced
+      """
       fee: Price
       discounts: [OrderDeliveryDiscount!]
     }

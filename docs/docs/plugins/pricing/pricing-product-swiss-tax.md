@@ -105,6 +105,7 @@ The adapter handles both net and gross prices:
 ## Related
 
 - [Delivery Swiss Tax](./pricing-delivery-swiss-tax.md) - Swiss VAT for delivery fees
+- [Payment Swiss Tax](./pricing-payment-swiss-tax.md) - Swiss VAT for payment fees
 - [Product EU VAT](./pricing-product-eu-tax.md) - Destination-based EU VAT
 - [Product UK VAT](./pricing-product-uk-tax.md) - UK VAT
 - [Product US Sales Tax](./pricing-product-us-sales-tax.md) - US statewide sales tax

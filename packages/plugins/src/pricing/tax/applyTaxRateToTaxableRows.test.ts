@@ -28,7 +28,6 @@ describe('applyTaxRateToTaxableRows', () => {
       calculationSheet,
       resultSheet,
       taxRate: 0.081,
-      baseCategory: 'ITEM',
       adapterKey: 'test-adapter',
     } as any);
 
@@ -56,7 +55,6 @@ describe('applyTaxRateToTaxableRows', () => {
       calculationSheet,
       resultSheet,
       taxRate: 0.081,
-      baseCategory: 'ITEM',
       adapterKey: 'test-adapter',
     } as any);
 
@@ -74,7 +72,6 @@ describe('applyTaxRateToTaxableRows', () => {
       calculationSheet,
       resultSheet,
       taxRate: 0.081,
-      baseCategory: 'ITEM',
       adapterKey: 'test-adapter',
     } as any);
 
@@ -90,11 +87,33 @@ describe('applyTaxRateToTaxableRows', () => {
       calculationSheet,
       resultSheet,
       taxRate: 0.081,
-      baseCategory: 'DISCOUNT',
       adapterKey: 'test-adapter',
     } as any);
 
     assert.strictEqual(Math.round((pushed[0] as any).amount * 1000) / 1000, 81);
     assert.strictEqual(Math.round((taxes[0] as any).amount * 1000) / 1000, -81);
+  });
+
+  it('attributes each tax row to the category and discount of its source row', () => {
+    const { calculationSheet, resultSheet, taxes } = makeSheets([
+      { category: 'ITEM', amount: 20000, isTaxable: true, isNetPrice: false },
+      { category: 'DISCOUNT', amount: -10000, isTaxable: true, isNetPrice: false, discountId: 'half' },
+      { category: 'DISCOUNT', amount: -1000, isTaxable: true, isNetPrice: true, discountId: 'net' },
+    ]);
+    applyTaxRateToTaxableRows({
+      calculationSheet,
+      resultSheet,
+      taxRate: 0.081,
+      adapterKey: 'test-adapter',
+    } as any);
+
+    assert.deepStrictEqual(
+      taxes.map(({ baseCategory, discountId }: any) => ({ baseCategory, discountId })),
+      [
+        { baseCategory: 'ITEM', discountId: undefined },
+        { baseCategory: 'DISCOUNT', discountId: 'half' },
+        { baseCategory: 'DISCOUNT', discountId: 'net' },
+      ],
+    );
   });
 });

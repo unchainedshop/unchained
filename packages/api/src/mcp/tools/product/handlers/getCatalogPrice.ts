@@ -26,7 +26,7 @@ export default async function getCatalogPrice(context: Context, params: Params<'
 
   const price = {
     ...unitPrice,
-    isTaxable: pricing?.taxSum() > 0,
+    isTaxable: pricing?.taxSum() !== 0,
     currencyCode: pricing?.currencyCode,
   };
   return { price };

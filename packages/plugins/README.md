@@ -50,6 +50,7 @@ npm install @unchainedshop/plugins
 | Free Payment | `pricing/free-payment` | Free payment processing |
 | Product Swiss Tax | `pricing/product-swiss-tax` | Swiss VAT on products |
 | Delivery Swiss Tax | `pricing/delivery-swiss-tax` | Swiss VAT on delivery |
+| Payment Swiss Tax | `pricing/payment-swiss-tax` | Swiss VAT on payment fees |
 | Product EU Tax | `pricing/product-eu-tax` | EU destination VAT on products (opt-in `registerEuTaxPlugins`) |
 | Delivery EU Tax | `pricing/delivery-eu-tax` | EU destination VAT on delivery |
 | Product UK Tax | `pricing/product-uk-tax` | UK VAT on products (opt-in `registerUkTaxPlugins`) |

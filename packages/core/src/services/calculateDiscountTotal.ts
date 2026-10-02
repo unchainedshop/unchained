@@ -15,57 +15,66 @@ export async function calculateDiscountTotalService(
   this: Modules,
   order: Order,
   orderDiscount: OrderDiscount,
+  { useNetPrice = false }: { useNetPrice?: boolean } = {},
 ) {
-  const orderDiscountId = orderDiscount._id;
+  const discountId = orderDiscount._id;
 
-  // Delivery discounts
   const orderDelivery = await this.orders.deliveries.findDelivery({
     orderDeliveryId: order.deliveryId!,
   });
-  const orderDeliveryDiscountSum = DeliveryPricingSheet({
-    calculation: orderDelivery?.calculation || [],
-    currencyCode: order.currencyCode,
-  }).total({ category: DeliveryPricingRowCategory.Discount, discountId: orderDiscountId });
-
-  // Payment discounts
   const orderPayment = await this.orders.payments.findOrderPayment({
     orderPaymentId: order.paymentId!,
   });
-  const orderPaymentDiscountSum = PaymentPricingSheet({
-    calculation: orderPayment?.calculation || [],
-    currencyCode: order.currencyCode,
-  }).total({ category: PaymentPricingRowCategory.Discount, discountId: orderDiscountId });
-
-  // Position discounts
   const orderPositions = await this.orders.positions.findOrderPositions({
     orderId: order._id,
   });
-  const orderPositionDiscounts = orderPositions.map((orderPosition) =>
-    ProductPricingSheet({
-      calculation: orderPosition.calculation || [],
-      currencyCode: order.currencyCode,
-      quantity: orderPosition.quantity,
-    }).total({
+
+  // The discount is spread over the delivery, payment, position and order pricing sheets
+  const discountedSheets = [
+    {
+      category: DeliveryPricingRowCategory.Discount,
+      sheet: DeliveryPricingSheet({
+        calculation: orderDelivery?.calculation || [],
+        currencyCode: order.currencyCode,
+      }),
+    },
+    {
+      category: PaymentPricingRowCategory.Discount,
+      sheet: PaymentPricingSheet({
+        calculation: orderPayment?.calculation || [],
+        currencyCode: order.currencyCode,
+      }),
+    },
+    ...orderPositions.map((orderPosition) => ({
       category: ProductPricingRowCategory.Discount,
-      discountId: orderDiscountId,
-    }),
+      sheet: ProductPricingSheet({
+        calculation: orderPosition.calculation || [],
+        currencyCode: order.currencyCode,
+        quantity: orderPosition.quantity,
+      }),
+    })),
+    {
+      category: OrderPricingRowCategory.Discounts,
+      sheet: OrderPricingSheet({
+        calculation: order.calculation,
+        currencyCode: order.currencyCode,
+      }),
+    },
+  ];
+
+  const amount = discountedSheets.reduce(
+    (sum, { category, sheet }) => sum + (sheet.total({ category, discountId, useNetPrice }).amount || 0),
+    0,
+  );
+  const taxAmount = discountedSheets.reduce(
+    (sum, { category, sheet }) => sum + sheet.taxSum({ baseCategory: category, discountId }),
+    0,
   );
 
-  // order discounts
-  const orderDiscountSum = OrderPricingSheet({
-    calculation: order.calculation,
-    currencyCode: order.currencyCode,
-  }).total({ category: OrderPricingRowCategory.Discounts, discountId: orderDiscountId });
-
-  const prices = [
-    orderDeliveryDiscountSum.amount,
-    orderPaymentDiscountSum.amount,
-    ...orderPositionDiscounts.map((positionDiscount) => positionDiscount.amount),
-    orderDiscountSum.amount,
-  ];
-  const amount = prices.reduce((oldValue, price) => oldValue + (price || 0), 0);
   return {
     amount,
     currencyCode: order.currencyCode,
+    isTaxable: taxAmount !== 0,
+    isNetPrice: useNetPrice,
   };
 }

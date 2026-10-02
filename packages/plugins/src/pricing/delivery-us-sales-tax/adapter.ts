@@ -1,8 +1,4 @@
-import {
-  DeliveryPricingRowCategory,
-  type IDeliveryPricingAdapter,
-  DeliveryPricingAdapter,
-} from '@unchainedshop/core';
+import { type IDeliveryPricingAdapter, DeliveryPricingAdapter } from '@unchainedshop/core';
 
 import { US_COUNTRY_CODE, isDeliveryExemptFromUsSalesTax, resolveUsSalesTaxRate } from '../tax/us.ts';
 import resolveDeliveryLocation from '../utils/resolveDeliveryLocation.ts';
@@ -16,9 +12,9 @@ export const DeliveryUsSalesTax: IDeliveryPricingAdapter = {
   label: 'Apply US State Sales Tax on Delivery Fees',
   orderIndex: 80,
 
+  // No order delivery when a delivery price is simulated: the location falls back to the
+  // billing address or the country of the order or request
   isActivatedFor: (context) => {
-    if (!context.order) return false;
-    if (!context.orderDelivery) return false;
     const { countryCode } = resolveDeliveryLocation({
       order: context.order,
       orderDelivery: context.orderDelivery,
@@ -61,7 +57,6 @@ export const DeliveryUsSalesTax: IDeliveryPricingAdapter = {
           calculationSheet: params.calculationSheet,
           resultSheet: pricingAdapter.resultSheet(),
           taxRate,
-          baseCategory: DeliveryPricingRowCategory.Delivery,
           adapterKey: DeliveryUsSalesTax.key,
         });
 

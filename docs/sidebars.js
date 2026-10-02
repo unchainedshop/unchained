@@ -198,6 +198,7 @@ const sidebars = {
                 'plugins/pricing/pricing-delivery-uk-tax',
                 'plugins/pricing/pricing-delivery-us-sales-tax',
                 'plugins/pricing/pricing-payment-free',
+                'plugins/pricing/pricing-payment-swiss-tax',
                 'plugins/pricing/pricing-order-items',
                 'plugins/pricing/pricing-order-delivery',
                 'plugins/pricing/pricing-order-payment',

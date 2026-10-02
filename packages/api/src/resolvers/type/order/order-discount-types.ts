@@ -20,9 +20,13 @@ export const OrderDiscount = {
     return loaders.orderLoader.load({ orderId: obj.orderId });
   },
 
-  async total(obj: OrderDiscountType, _: never, { loaders, services }: Context) {
+  async total(
+    obj: OrderDiscountType,
+    { useNetPrice }: { useNetPrice?: boolean },
+    { loaders, services }: Context,
+  ) {
     const order = await loaders.orderLoader.load({ orderId: obj.orderId });
-    return services.orders.calculateDiscountTotal(order, obj);
+    return services.orders.calculateDiscountTotal(order, obj, { useNetPrice });
   },
 
   async discounted(obj: OrderDiscountType, _: never, { loaders, services }: Context) {

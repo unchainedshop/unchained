@@ -24,6 +24,8 @@ export type OrderDeliveryDiscount = Omit<Price, '_id'> & {
   _id: string;
   discountId: string;
   item: OrderDelivery;
+  isTaxable?: boolean;
+  isNetPrice?: boolean;
 };
 
 export const OrderDeliveriesCollection = async (db: mongodb.Db) => {

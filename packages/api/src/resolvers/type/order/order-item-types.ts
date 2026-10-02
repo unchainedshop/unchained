@@ -4,7 +4,7 @@ import type { OrderPosition, OrderPositionDiscount } from '@unchainedshop/core-o
 import type { Product } from '@unchainedshop/core-products';
 import type { Quotation } from '@unchainedshop/core-quotations';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
-import type { Price } from '@unchainedshop/utils';
+import type { PriceType } from '../price-types.ts';
 import { ProductPricingSheet } from '@unchainedshop/core';
 
 const getPricingSheet = async (orderPosition: OrderPosition, { loaders }: Context) => {
@@ -65,11 +65,15 @@ export const OrderItem = {
     orderPosition: OrderPosition,
     params: { category: string; useNetPrice: boolean },
     context: Context,
-  ): Promise<Price | null> {
+  ): Promise<PriceType | null> {
     const pricing = await getPricingSheet(orderPosition, context);
 
     if (pricing.isValid()) {
-      return pricing.total(params);
+      return {
+        ...pricing.total(params),
+        isNetPrice: params.useNetPrice || false,
+        isTaxable: pricing.taxSum({ baseCategory: params.category }) !== 0,
+      };
     }
     return null;
   },
@@ -78,11 +82,15 @@ export const OrderItem = {
     orderPosition: OrderPosition,
     params: { useNetPrice: boolean },
     context: Context,
-  ): Promise<Price | null> {
+  ): Promise<PriceType | null> {
     const pricing = await getPricingSheet(orderPosition, context);
 
     if (pricing.isValid()) {
-      return pricing.unitPrice(params);
+      return {
+        ...pricing.unitPrice(params),
+        isNetPrice: params.useNetPrice || false,
+        isTaxable: pricing.taxSum() !== 0,
+      };
     }
     return null;
   },

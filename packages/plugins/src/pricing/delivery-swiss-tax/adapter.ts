@@ -1,8 +1,4 @@
-import {
-  DeliveryPricingRowCategory,
-  type IDeliveryPricingAdapter,
-  DeliveryPricingAdapter,
-} from '@unchainedshop/core';
+import { type IDeliveryPricingAdapter, DeliveryPricingAdapter } from '@unchainedshop/core';
 
 import { resolveTaxCategoryFromDeliveryProvider, SwissTaxCategories } from '../tax/ch.ts';
 import isDeliveryAddressInCountry from '../utils/isDeliveryAddressInCountry.ts';
@@ -16,9 +12,9 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
   label: 'Apply Swiss Tax on Delivery Fees',
   orderIndex: 80,
 
+  // No order delivery when a delivery price is simulated: the location falls back to the
+  // billing address or the country of the order or request
   isActivatedFor: (context) => {
-    if (!context.order) return false;
-    if (!context.orderDelivery) return false;
     return isDeliveryAddressInCountry(
       {
         order: context.order,
@@ -46,7 +42,6 @@ export const DeliverySwissTax: IDeliveryPricingAdapter = {
           calculationSheet: params.calculationSheet,
           resultSheet: pricingAdapter.resultSheet(),
           taxRate,
-          baseCategory: DeliveryPricingRowCategory.Delivery,
           adapterKey: DeliverySwissTax.key,
         });
 

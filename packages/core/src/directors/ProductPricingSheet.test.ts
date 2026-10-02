@@ -126,10 +126,10 @@ describe('ProductPricingSheet', () => {
   describe('discountPrices', () => {
     it('should return the sum of all discounts registered on the price sheet based on discountId', () => {
       assert.deepEqual(pricingSheet.discountPrices('for-all'), [
-        { amount: 40, currencyCode: 'CHF', discountId: 'for-all' },
+        { amount: 40, currencyCode: 'CHF', discountId: 'for-all', isTaxable: false, isNetPrice: false },
       ]);
       assert.deepEqual(pricingSheet.discountPrices('special'), [
-        { amount: 20, currencyCode: 'CHF', discountId: 'special' },
+        { amount: 20, currencyCode: 'CHF', discountId: 'special', isTaxable: false, isNetPrice: false },
       ]);
     });
 
