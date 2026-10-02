@@ -20,14 +20,13 @@ export default async function getCatalogPrice(context: Context, params: Params<'
   };
 
   const pricing = await services.products.simulateProductPricing(pricingContext as any);
-  const unitPrice = pricing?.unitPrice({});
-
   if (!pricing) return { price: null };
 
   const price = {
-    ...unitPrice,
-    isTaxable: pricing?.taxSum() !== 0,
-    currencyCode: pricing?.currencyCode,
+    ...pricing.unitPrice({}),
+    isNetPrice: false,
+    isTaxable: pricing.taxSum() !== 0,
+    currencyCode: pricing.currencyCode,
   };
   return { price };
 }
