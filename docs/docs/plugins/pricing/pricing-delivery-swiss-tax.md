@@ -85,5 +85,6 @@ The adapter activates when the delivery location is in Switzerland or Liechtenst
 ## Related
 
 - [Product Swiss Tax](./pricing-product-swiss-tax.md) - Swiss VAT for products
+- [Payment Swiss Tax](./pricing-payment-swiss-tax.md) - Swiss VAT for payment fees
 - [Free Delivery](./pricing-delivery-free.md) - Zero-cost delivery
 - [Delivery Pricing](../../extend/pricing/delivery-pricing.md) - Custom delivery pricing

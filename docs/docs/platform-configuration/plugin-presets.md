@@ -78,7 +78,7 @@ Plugins that fail their `onRegister` configuration checks log a warning and skip
 
 ### Country Presets
 
-Each country preset registers product and delivery tax pricing plugins for its jurisdiction (`ch`: Swiss VAT, `eu`: EU VAT, `uk`: UK VAT, `us`: US sales tax). They contain only pricing plugins, so combine them with `base`:
+Each country preset registers product and delivery tax pricing plugins for its jurisdiction (`ch`: Swiss VAT, also on payment fees; `eu`: EU VAT; `uk`: UK VAT; `us`: US sales tax). They contain only pricing plugins, so combine them with `base`:
 
 ```ts
 import { registerBasePlugins } from '@unchainedshop/plugins/presets/base';

@@ -42,6 +42,7 @@ Calculate payment processing fees.
 | Adapter Key | Order | Description | When to Use |
 |-------------|-------|-------------|-------------|
 | [`shop.unchained.pricing.payment-free`](./pricing-payment-free.md) | 0 | Zero-cost payment | Default — sets payment fee to zero, replace with custom adapter for surcharges |
+| [`shop.unchained.pricing.payment-swiss-tax`](./pricing-payment-swiss-tax.md) | 80 | Swiss VAT on payment fees | Swiss shops charging payment surcharges |
 
 ## Order Pricing
 
