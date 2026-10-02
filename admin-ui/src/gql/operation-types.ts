@@ -1999,7 +1999,12 @@ export type ICreateAssortmentMutationVariables = Exact<{
   texts?: Array<Types.IAssortmentTextInput> | null | undefined;
 }>;
 
-export type ICreateAssortmentMutation = { createAssortment: { _id: string } };
+export type ICreateAssortmentMutation = {
+  createAssortment: {
+    _id: string;
+    texts: { _id: string; slug: string | null } | null;
+  };
+};
 
 export type IRemoveAssortmentMutationVariables = Exact<{
   assortmentId: string | number;
@@ -3252,7 +3257,6 @@ export type IEnrollmentDetailFragment = {
   status: Types.IEnrollmentStatus;
   created: unknown;
   expires: unknown;
-  requestedTerminationDate: unknown;
   contractStartDate: unknown;
   minimumCommitmentEnd: unknown;
   isExpired: boolean | null;
@@ -3363,7 +3367,6 @@ export type IEnrollmentFragment = {
   status: Types.IEnrollmentStatus;
   created: unknown;
   expires: unknown;
-  requestedTerminationDate: unknown;
   contractStartDate: unknown;
   minimumCommitmentEnd: unknown;
   isExpired: boolean | null;
@@ -3413,7 +3416,6 @@ export type IEnrollmentQuery = {
     status: Types.IEnrollmentStatus;
     created: unknown;
     expires: unknown;
-    requestedTerminationDate: unknown;
     contractStartDate: unknown;
     minimumCommitmentEnd: unknown;
     isExpired: boolean | null;
@@ -3531,7 +3533,6 @@ export type IEnrollmentsQuery = {
     status: Types.IEnrollmentStatus;
     created: unknown;
     expires: unknown;
-    requestedTerminationDate: unknown;
     contractStartDate: unknown;
     minimumCommitmentEnd: unknown;
     isExpired: boolean | null;
@@ -7017,9 +7018,9 @@ export type ITokenFragment = {
   invalidatedDate: unknown;
   expiryDate: unknown;
   ercMetadata: unknown;
-  order: { _id: string; orderNumber: string | null } | null;
   accessKey: string;
   isInvalidateable: boolean;
+  order: { _id: string; orderNumber: string | null } | null;
 };
 
 export type ITokenFragmentVariables = Exact<{ [key: string]: never }>;
@@ -7536,9 +7537,9 @@ export type IExportTokenMutation = {
     invalidatedDate: unknown;
     expiryDate: unknown;
     ercMetadata: unknown;
-    order: { _id: string; orderNumber: string | null } | null;
     accessKey: string;
     isInvalidateable: boolean;
+    order: { _id: string; orderNumber: string | null } | null;
   };
 };
 
@@ -8555,7 +8556,10 @@ export type IProductTokenizationQuery = {
         contractStandard: Types.ISmartContractStandard | null;
         contractAddress: string | null;
         _id: string;
-        contractConfiguration: { tokenId: string; supply: number } | null;
+        contractConfiguration: {
+          tokenId: string | null;
+          supply: number;
+        } | null;
       }
     | null;
 };
@@ -8633,7 +8637,7 @@ export type IProductsQueryVariables = Exact<{
   includeDrafts?: boolean | null | undefined;
   sort?: Array<Types.ISortOptionInput> | null | undefined;
   forceLocale?: unknown;
-  types?: Array<Types.IProductType> | null | undefined;
+  type?: Types.IProductType | null | undefined;
 }>;
 
 export type IProductsQuery = {
@@ -11339,9 +11343,9 @@ export type IInvalidateTokenMutation = {
     invalidatedDate: unknown;
     expiryDate: unknown;
     ercMetadata: unknown;
-    order: { _id: string; orderNumber: string | null } | null;
     accessKey: string;
     isInvalidateable: boolean;
+    order: { _id: string; orderNumber: string | null } | null;
   };
 };
 
@@ -11362,7 +11366,6 @@ export type ITokenQuery = {
     invalidatedDate: unknown;
     expiryDate: unknown;
     ercMetadata: unknown;
-    order: { _id: string; orderNumber: string | null } | null;
     accessKey: string;
     isInvalidateable: boolean;
     product: {
@@ -11406,6 +11409,7 @@ export type ITokenQuery = {
         address: { firstName: string | null; lastName: string | null } | null;
       } | null;
     } | null;
+    order: { _id: string; orderNumber: string | null } | null;
   } | null;
 };
 
@@ -11429,7 +11433,6 @@ export type ITokensQuery = {
     invalidatedDate: unknown;
     expiryDate: unknown;
     ercMetadata: unknown;
-    order: { _id: string; orderNumber: string | null } | null;
     accessKey: string;
     isInvalidateable: boolean;
     product: {
@@ -11468,6 +11471,7 @@ export type ITokensQuery = {
         address: { firstName: string | null; lastName: string | null } | null;
       } | null;
     } | null;
+    order: { _id: string; orderNumber: string | null } | null;
   }>;
 };
 

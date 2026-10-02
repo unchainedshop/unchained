@@ -35,8 +35,6 @@ flowchart LR
     G -->|Terminate| H[Terminated]
     F -->|Suspend| I[Suspended]
     I -->|Resume| F
-    F -->|Change Plan| J[New Periods Generated]
-    J --> C
 ```
 
 ## Key Concepts
@@ -69,9 +67,9 @@ stateDiagram-v2
 
 ### Scheduled Termination
 
-When `terminateEnrollment` is called, the enrollment adapter's `terminationDate()` method determines when termination takes effect. If the returned date is in the future, the enrollment stays in its current status and a `requestedTerminationDate` is set. The enrollment will be terminated automatically when processed after that date.
+An enrollment ends at its `expires` date; while `expires` is `null`, it renews period after period. When `terminateEnrollment` is called, the enrollment adapter's `terminationDate()` method determines when the termination takes effect. If that date is in the future, it is stored as `expires` and the enrollment keeps its current status until then; it is terminated automatically when processed after that date, also while it is suspended. A repeated `terminateEnrollment` never postpones an end that is already set.
 
-Resuming a suspended enrollment via `activateEnrollment` clears any pending `requestedTerminationDate`.
+Admins (`manageEnrollments`) set or clear the end date directly with `updateEnrollment(expires)`, without the adapter's termination policy: `null` undoes a scheduled termination, a date that has passed terminates the enrollment right away.
 
 ### Cancellation Reason and Feedback
 
@@ -87,21 +85,17 @@ The `terminateEnrollment` mutation accepts optional `reason` and `comment` param
 
 The `cancellationReason` and `cancellationComment` fields are stored on the enrollment and accessible via the GraphQL API.
 
-### Cancel at Period End
-
-Set `cancelAtPeriodEnd: true` on the `updateEnrollment` mutation to request cancellation at the end of the current billing period. The adapter's termination policy still applies, so a notice period or minimum commitment can move `requestedTerminationDate` later. An already scheduled termination is never postponed by a later request. Setting `cancelAtPeriodEnd: false` undoes the scheduled termination; like clearing `expires`, this requires the `manageEnrollments` permission.
-
 ### Suspend with Scheduled Resume
 
 The `suspendEnrollment` mutation accepts an optional `resumeAt` date (which must lie in the future). When set, the enrollment will automatically resume to `ACTIVE` status when processed after that date. This enables time-limited pauses (e.g., "pause my subscription for 2 months").
 
-Suspending and resuming (`activateEnrollment`) require the `manageEnrollments` permission. Manually resuming clears the `resumeAt` date.
+Suspending and resuming (`activateEnrollment`) require the `manageEnrollments` permission. Leaving `SUSPENDED`, manually or automatically, clears the `resumeAt` date.
 
 ### Contract Terms / Minimum Commitments
 
-Plan products can define a `minimumCommitmentPeriods` value (e.g., 12 for a 12-month contract). When an enrollment is initialized for such a product, the adapter computes a `minimumCommitmentEnd` date and stores it alongside a `contractStartDate` on the enrollment.
+Plan products can define a `minimumCommitmentPeriods` value (e.g., 12 for a 12-month contract). When an enrollment is initialized for such a product, it stores the start of its first paid period as `contractStartDate` and `minimumCommitmentPeriods` billing intervals later as `minimumCommitmentEnd`.
 
-During termination, the licensed adapter enforces the commitment: if the normal termination date would fall before `minimumCommitmentEnd`, the termination is pushed out to the commitment end date. This means early cancellation is allowed but the subscription stays active until the contract term completes.
+`terminateEnrollment` never ends an enrollment before `minimumCommitmentEnd`, whatever the adapter's `terminationDate()` returns. Early cancellation is allowed, but the subscription stays active until the contract term completes; only an admin can set an earlier end with `updateEnrollment(expires)`.
 
 Both `contractStartDate` and `minimumCommitmentEnd` are exposed in the GraphQL API and visible in the admin UI.
 
@@ -111,7 +105,7 @@ The enrollment order generator worker emits one `ENROLLMENT_TRIAL_ENDING` event 
 
 ### Plan Changes
 
-Active enrollments can change their subscription plan via `updateEnrollment` with a new `plan` parameter. The adapter's `transformPlanToNewPlan()` method controls whether the change is allowed and when it takes effect. Future periods without linked orders are removed and new periods are generated based on the new plan.
+Active enrollments can change their subscription plan via `updateEnrollment` with a new `plan` parameter. The adapter's `transformPlanToNewPlan()` method accepts the change (the licensed adapter does) or rejects it (the default). Billed periods stay as they are; the next period is generated from the new plan.
 
 ### Periods
 

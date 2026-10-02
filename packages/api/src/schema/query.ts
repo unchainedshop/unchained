@@ -50,7 +50,6 @@ export default [
         includeDrafts: Boolean = false
         queryString: String
         type: ProductType
-        types: [ProductType!]
       ): Int! @cacheControl(maxAge: 180)
 
       """
@@ -67,7 +66,6 @@ export default [
         includeDrafts: Boolean = false
         sort: [SortOptionInput!]
         type: ProductType
-        types: [ProductType!]
       ): [Product!]!
 
       """

@@ -65,7 +65,6 @@ export type Enrollment = {
   enrollmentNumber?: string;
   orderIdForFirstPeriod?: string;
   expires?: Date;
-  requestedTerminationDate?: Date;
   resumeAt?: Date;
   contractStartDate?: Date;
   minimumCommitmentEnd?: Date;

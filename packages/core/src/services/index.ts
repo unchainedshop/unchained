@@ -34,10 +34,7 @@ import { initializeEnrollmentService } from './initializeEnrollment.ts';
 import { suspendEnrollmentService } from './suspendEnrollment.ts';
 import { updateEnrollmentPlanService } from './updateEnrollmentPlan.ts';
 import { activateEnrollmentService } from './activateEnrollment.ts';
-import {
-  resolveEnrollmentTerminationDateService,
-  terminateEnrollmentService,
-} from './terminateEnrollment.ts';
+import { terminateEnrollmentService } from './terminateEnrollment.ts';
 import { invalidateFilterCacheService } from './invalidateFilterCache.ts';
 import { fulfillQuotationService } from './fulfillQuotation.ts';
 import { processQuotationService } from './processQuotation.ts';
@@ -190,9 +187,6 @@ export default function initServices(modules: Modules, customServices: CustomSer
       initializeEnrollment: initializeEnrollmentService as Bound<typeof initializeEnrollmentService>,
       activateEnrollment: activateEnrollmentService as Bound<typeof activateEnrollmentService>,
       terminateEnrollment: terminateEnrollmentService as Bound<typeof terminateEnrollmentService>,
-      resolveEnrollmentTerminationDate: resolveEnrollmentTerminationDateService as Bound<
-        typeof resolveEnrollmentTerminationDateService
-      >,
       suspendEnrollment: suspendEnrollmentService as Bound<typeof suspendEnrollmentService>,
       updateEnrollmentPlan: updateEnrollmentPlanService as Bound<typeof updateEnrollmentPlanService>,
     },

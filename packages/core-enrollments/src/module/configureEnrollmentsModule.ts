@@ -83,16 +83,6 @@ export const configureEnrollmentsModule = async ({
     return relevantDate.getTime() > expiryDate.getTime();
   };
 
-  const currentPeriod = (enrollment: Enrollment, { referenceDate }: { referenceDate?: Date }) => {
-    const relevantTime = (referenceDate ? new Date(referenceDate) : new Date()).getTime();
-    return (
-      enrollment.periods?.find(
-        ({ start, end }) =>
-          new Date(start).getTime() <= relevantTime && new Date(end).getTime() >= relevantTime,
-      ) || null
-    );
-  };
-
   const findNewEnrollmentNumber = async (enrollment: Enrollment, index = 0): Promise<string> => {
     const newHashID = enrollmentsSettings.enrollmentNumberHashFn(enrollment, index);
     if ((await Enrollments.countDocuments({ enrollmentNumber: newHashID }, { limit: 1 })) === 0) {
@@ -109,12 +99,12 @@ export const configureEnrollmentsModule = async ({
     const enrollment = await Enrollments.findOne(selector, {});
 
     if (!enrollment) return null;
-
-    const statusChanged = enrollment.status !== status;
+    if (enrollment.status === status) return enrollment;
 
     const date = new Date();
     const modifier: {
       $set: Partial<Enrollment>;
+      $unset?: { resumeAt: 1 };
       $push: { log: Enrollment['log'][0] };
     } = {
       $set: { status, updated: new Date() },
@@ -127,35 +117,35 @@ export const configureEnrollmentsModule = async ({
       },
     };
 
-    if (statusChanged) {
-      switch (status) {
-        case EnrollmentStatus.ACTIVE:
-          if (!enrollment.enrollmentNumber) {
-            modifier.$set.enrollmentNumber = await findNewEnrollmentNumber(enrollment);
-          }
-          break;
-        case EnrollmentStatus.SUSPENDED:
-          break;
-        case EnrollmentStatus.TERMINATED: {
-          if (!enrollment.expires) {
-            const latestEnd = enrollment.periods?.reduce<Date | null>((acc, p) => {
-              const end = new Date(p.end);
-              return !acc || end.getTime() > acc.getTime() ? end : acc;
-            }, null);
-            modifier.$set.expires = latestEnd || new Date();
-          }
-          break;
-        }
-        default:
-          break;
+    switch (status) {
+      case EnrollmentStatus.ACTIVE:
+        // A resumed enrollment keeps its number
+        modifier.$set.enrollmentNumber =
+          enrollment.enrollmentNumber || (await findNewEnrollmentNumber(enrollment));
+        break;
+      case EnrollmentStatus.TERMINATED: {
+        const periodEnds = (enrollment.periods || []).map(({ end }) => new Date(end).getTime());
+        modifier.$set.expires =
+          enrollment.expires || (periodEnds.length ? new Date(Math.max(...periodEnds)) : date);
+        break;
       }
+      default:
+        break;
     }
+
+    // A scheduled resume only applies while the enrollment is suspended
+    if (enrollment.status === EnrollmentStatus.SUSPENDED) modifier.$unset = { resumeAt: 1 };
 
     const updatedEnrollment = await Enrollments.findOneAndUpdate(selector, modifier, {
       returnDocument: 'after',
     });
 
     await emit('ENROLLMENT_UPDATE', { enrollment, field: 'status' });
+    if (status === EnrollmentStatus.SUSPENDED) {
+      await emit('ENROLLMENT_SUSPEND', { enrollment: updatedEnrollment });
+    } else if (enrollment.status === EnrollmentStatus.SUSPENDED && status === EnrollmentStatus.ACTIVE) {
+      await emit('ENROLLMENT_RESUME', { enrollment: updatedEnrollment });
+    }
 
     return updatedEnrollment;
   };
@@ -176,53 +166,6 @@ export const configureEnrollmentsModule = async ({
       await emit('ENROLLMENT_UPDATE', { enrollment, field: fieldKey });
       return enrollment;
     };
-
-  // Sets a period field only while it is still unset, so concurrent workers cannot claim it twice.
-  const claimPeriodField = async (
-    enrollmentId: string,
-    { start, end }: EnrollmentPeriod,
-    field: 'orderId' | 'trialEndingNotifiedAt',
-    value: string | Date,
-  ) => {
-    const enrollment = await Enrollments.findOneAndUpdate(
-      {
-        ...generateDbFilterById(enrollmentId),
-        periods: { $elemMatch: { start, end, [field]: { $in: [null] } } },
-      } as mongodb.Filter<Enrollment>,
-      {
-        $set: { [`periods.$.${field}`]: value, updated: new Date() },
-      } as mongodb.UpdateFilter<Enrollment>,
-      { returnDocument: 'after' },
-    );
-    if (!enrollment) return null;
-    await emit('ENROLLMENT_UPDATE', { enrollment, field: 'periods' });
-    return enrollment;
-  };
-
-  const addEnrollmentPeriods = async (enrollmentId: string, periods: EnrollmentPeriod[]) => {
-    if (!periods.length) return null;
-    const enrollment = await Enrollments.findOneAndUpdate(
-      generateDbFilterById(enrollmentId),
-      {
-        $push: {
-          periods: {
-            $each: periods.map(({ start, end, orderId, isTrial, trialEndingNotifiedAt }) => ({
-              start,
-              end,
-              orderId,
-              isTrial,
-              trialEndingNotifiedAt,
-            })),
-          },
-        },
-        $set: { updated: new Date() },
-      },
-      { returnDocument: 'after' },
-    );
-    if (!enrollment) return null;
-    await emit('ENROLLMENT_ADD_PERIOD', { enrollment });
-    return enrollment;
-  };
 
   return {
     // Queries
@@ -287,18 +230,53 @@ export const configureEnrollmentsModule = async ({
     },
 
     isExpired,
-    currentPeriod,
 
     // Mutations
-    addEnrollmentPeriod: (enrollmentId: string, period: EnrollmentPeriod) =>
-      addEnrollmentPeriods(enrollmentId, [period]),
-    addEnrollmentPeriods,
+    addEnrollmentPeriod: async (enrollmentId: string, period: EnrollmentPeriod) => {
+      const { start, end, orderId, isTrial } = period;
+      const selector = generateDbFilterById(enrollmentId);
+      const enrollment = await Enrollments.findOneAndUpdate(
+        selector,
+        {
+          $push: {
+            periods: {
+              start,
+              end,
+              orderId,
+              isTrial,
+            },
+          },
+          $set: {
+            updated: new Date(),
+          },
+        },
+        {
+          returnDocument: 'after',
+        },
+      );
 
-    linkEnrollmentPeriodOrder: (enrollmentId: string, period: EnrollmentPeriod, orderId: string) =>
-      claimPeriodField(enrollmentId, period, 'orderId', orderId),
+      if (!enrollment) return null;
+      await emit('ENROLLMENT_ADD_PERIOD', { enrollment });
+      return enrollment;
+    },
 
-    markEnrollmentTrialEndingNotified: (enrollmentId: string, period: EnrollmentPeriod) =>
-      claimPeriodField(enrollmentId, period, 'trialEndingNotifiedAt', new Date()),
+    // Returns null when the period was already marked, so concurrent workers notify only once
+    markEnrollmentTrialEndingNotified: async (
+      enrollmentId: string,
+      { start, end }: EnrollmentPeriod,
+    ) => {
+      const enrollment = await Enrollments.findOneAndUpdate(
+        {
+          ...generateDbFilterById(enrollmentId),
+          periods: { $elemMatch: { start, end, trialEndingNotifiedAt: null } },
+        },
+        { $set: { 'periods.$.trialEndingNotifiedAt': new Date(), updated: new Date() } },
+        { returnDocument: 'after' },
+      );
+      if (!enrollment) return null;
+      await emit('ENROLLMENT_UPDATE', { enrollment, field: 'periods' });
+      return enrollment;
+    },
 
     create: async ({
       countryCode,
@@ -373,10 +351,23 @@ export const configureEnrollmentsModule = async ({
     updateDelivery: updateEnrollmentField<Enrollment['delivery']>('delivery'),
     updatePayment: updateEnrollmentField<Enrollment['payment']>('payment'),
     updateExpiry: updateEnrollmentField<Date | null>('expires'),
-    updateRequestedTerminationDate: updateEnrollmentField<Date | null>('requestedTerminationDate'),
-    updateResumeAt: updateEnrollmentField<Date | null>('resumeAt'),
-    updateContractStartDate: updateEnrollmentField<Date | null>('contractStartDate'),
-    updateMinimumCommitmentEnd: updateEnrollmentField<Date | null>('minimumCommitmentEnd'),
+    updateResumeAt: updateEnrollmentField<Date>('resumeAt'),
+
+    updateCommitment: async (
+      enrollmentId: string,
+      {
+        contractStartDate,
+        minimumCommitmentEnd,
+      }: { contractStartDate: Date; minimumCommitmentEnd: Date },
+    ) => {
+      const enrollment = await Enrollments.findOneAndUpdate(
+        generateDbFilterById(enrollmentId),
+        { $set: { updated: new Date(), contractStartDate, minimumCommitmentEnd } },
+        { returnDocument: 'after' },
+      );
+      await emit('ENROLLMENT_UPDATE', { enrollment, field: 'commitment' });
+      return enrollment;
+    },
 
     updateCancellation: async (
       enrollmentId: string,
@@ -406,29 +397,6 @@ export const configureEnrollmentsModule = async ({
             productId: plan.productId,
             quantity: plan.quantity,
             configuration: plan.configuration,
-          },
-        },
-        { returnDocument: 'after' },
-      );
-      if (!enrollment) return null;
-      await emit('ENROLLMENT_UPDATE', { enrollment, field: 'plan' });
-      return enrollment;
-    },
-
-    updatePlanAndPeriods: async (
-      enrollmentId: string,
-      plan: EnrollmentPlan,
-      periods: EnrollmentPeriod[],
-    ) => {
-      const enrollment = await Enrollments.findOneAndUpdate(
-        generateDbFilterById(enrollmentId),
-        {
-          $set: {
-            updated: new Date(),
-            productId: plan.productId,
-            quantity: plan.quantity,
-            configuration: plan.configuration,
-            periods,
           },
         },
         { returnDocument: 'after' },

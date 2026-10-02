@@ -2,7 +2,6 @@ import { type Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollmen
 import type { Modules } from '../modules.ts';
 import { EnrollmentDirector } from '../core-index.ts';
 import { createServiceError } from '../errors.ts';
-import { emit } from '@unchainedshop/events';
 
 const findNextStatus = async (
   enrollment: Enrollment,
@@ -10,16 +9,11 @@ const findNextStatus = async (
 ): Promise<EnrollmentStatus | null> => {
   let status = enrollment.status;
 
-  if (
-    enrollment.requestedTerminationDate &&
-    new Date().getTime() >= new Date(enrollment.requestedTerminationDate).getTime() &&
-    status !== EnrollmentStatus.TERMINATED
-  ) {
-    return EnrollmentStatus.TERMINATED;
-  }
+  if (modules.enrollments.isExpired(enrollment, {})) return EnrollmentStatus.TERMINATED;
 
-  if (modules.enrollments.isExpired(enrollment, {})) {
-    return EnrollmentStatus.TERMINATED;
+  if (status === EnrollmentStatus.SUSPENDED) {
+    const resumeDue = enrollment.resumeAt && new Date(enrollment.resumeAt).getTime() <= Date.now();
+    return resumeDue ? EnrollmentStatus.ACTIVE : status;
   }
 
   const product = await modules.products.findProduct({
@@ -29,13 +23,6 @@ const findNextStatus = async (
   if (!product) throw createServiceError('ProductNotFoundError', 'Product not found for enrollment');
 
   const director = await EnrollmentDirector.actions({ enrollment, product }, { modules });
-
-  if (status === EnrollmentStatus.SUSPENDED) {
-    if (enrollment.resumeAt && new Date().getTime() >= new Date(enrollment.resumeAt).getTime()) {
-      return EnrollmentStatus.ACTIVE;
-    }
-    return status;
-  }
 
   if (status === EnrollmentStatus.INITIAL || status === EnrollmentStatus.PAUSED) {
     if (await director.isValidForActivation()) {
@@ -57,22 +44,11 @@ export async function processEnrollmentService(this: Modules, enrollment: Enroll
     // TODO: Reactivate!
   }
 
-  if (status && status !== enrollment.status) {
-    let updatedEnrollment = (await this.enrollments.updateStatus(enrollment._id, {
+  if (status) {
+    return this.enrollments.updateStatus(enrollment._id, {
       status,
       info: 'enrollment processed',
-    })) as Enrollment;
-
-    if (
-      enrollment.status === EnrollmentStatus.SUSPENDED &&
-      status === EnrollmentStatus.ACTIVE &&
-      enrollment.resumeAt
-    ) {
-      updatedEnrollment = (await this.enrollments.updateResumeAt(enrollment._id, null)) as Enrollment;
-      await emit('ENROLLMENT_RESUME', { enrollment: updatedEnrollment });
-    }
-
-    return updatedEnrollment;
+    }) as Promise<Enrollment>;
   }
   return enrollment;
 }

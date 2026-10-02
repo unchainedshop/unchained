@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import test from 'node:test';
 import { setTimeout } from 'node:timers/promises';
-import { GenerateOrderWorker } from '@unchainedshop/plugins/worker/enrollment-order-generator';
+import { WorkerDirector } from '@unchainedshop/core';
 import { setupDatabase, disconnect } from './helpers.js';
 import { getTestPlatform } from './setup.js';
 import { ActiveEnrollment, SuspendedWithResumeAtEnrollment } from './seeds/enrollments.js';
@@ -10,6 +10,24 @@ import { SimplePaymentProvider } from './seeds/payments.js';
 
 let db;
 let unchainedAPI;
+
+const DAY = 24 * 60 * 60 * 1000;
+
+const generateOrders = () =>
+  WorkerDirector.doWork({ type: 'ENROLLMENT_ORDER_GENERATOR', input: {} }, unchainedAPI);
+
+const countEvents = async (type, enrollmentId) => {
+  // Events are written asynchronously
+  let count = 0;
+  for (let attempt = 0; attempt < 20 && count === 0; attempt += 1) {
+    count = await db.collection('events').countDocuments({
+      type,
+      'payload.enrollment._id': enrollmentId,
+    });
+    if (count === 0) await setTimeout(10);
+  }
+  return count;
+};
 
 const workerEnrollment = (overrides) => ({
   ...ActiveEnrollment,
@@ -46,29 +64,34 @@ test.describe('Enrollment order generator', () => {
     await disconnect();
   });
 
-  test('links an order to an existing due unbilled period', async () => {
-    const period = {
-      start: new Date(Date.now() - 60 * 60 * 1000),
-      end: new Date(Date.now() + 24 * 60 * 60 * 1000),
-      isTrial: false,
-    };
-    const enrollment = workerEnrollment({ periods: [period] });
+  test('generates the order of the next period once the current one has ended', async () => {
+    const enrollment = workerEnrollment({
+      periods: [
+        {
+          start: new Date(Date.now() - 8 * DAY),
+          end: new Date(Date.now() - DAY),
+          orderId: 'worker-enrollment-previous-order',
+          isTrial: false,
+        },
+      ],
+    });
     await db.collection('enrollments').insertOne(enrollment);
 
-    const result = await GenerateOrderWorker.doWork({}, unchainedAPI);
+    const result = await generateOrders();
     const storedEnrollment = await db.collection('enrollments').findOne({
       _id: enrollment._id,
     });
 
     assert.strictEqual(result.success, true);
-    assert.strictEqual(storedEnrollment.periods.length, 1);
-    assert.ok(storedEnrollment.periods[0].orderId);
+    assert.strictEqual(storedEnrollment.periods.length, 2);
+    assert.ok(storedEnrollment.periods[1].orderId);
+    assert.ok(storedEnrollment.periods[1].start.getTime() <= Date.now());
   });
 
   test('emits the trial-ending event once for a stored trial', async () => {
     const trialPeriod = {
-      start: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      end: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+      start: new Date(Date.now() - DAY),
+      end: new Date(Date.now() + 2 * DAY),
       isTrial: true,
     };
     const enrollment = workerEnrollment({
@@ -78,17 +101,10 @@ test.describe('Enrollment order generator', () => {
     });
     await db.collection('enrollments').insertOne(enrollment);
 
-    await GenerateOrderWorker.doWork({}, unchainedAPI);
-    await GenerateOrderWorker.doWork({}, unchainedAPI);
+    await generateOrders();
+    await generateOrders();
 
-    let eventCount = 0;
-    for (let attempt = 0; attempt < 20 && eventCount === 0; attempt += 1) {
-      eventCount = await db.collection('events').countDocuments({
-        type: 'ENROLLMENT_TRIAL_ENDING',
-        'payload.enrollment._id': enrollment._id,
-      });
-      if (eventCount === 0) await setTimeout(10);
-    }
+    const eventCount = await countEvents('ENROLLMENT_TRIAL_ENDING', enrollment._id);
     const storedEnrollment = await db.collection('enrollments').findOne({
       _id: enrollment._id,
     });
@@ -98,13 +114,14 @@ test.describe('Enrollment order generator', () => {
   });
 
   test('resumes a suspended enrollment once its resumeAt date has passed', async () => {
-    await GenerateOrderWorker.doWork({}, unchainedAPI);
+    await generateOrders();
 
     const storedEnrollment = await db.collection('enrollments').findOne({
       _id: SuspendedWithResumeAtEnrollment._id,
     });
 
     assert.strictEqual(storedEnrollment.status, 'ACTIVE');
-    assert.strictEqual(storedEnrollment.resumeAt, null);
+    assert.strictEqual(storedEnrollment.resumeAt, undefined);
+    assert.strictEqual(await countEvents('ENROLLMENT_RESUME', SuspendedWithResumeAtEnrollment._id), 1);
   });
 });

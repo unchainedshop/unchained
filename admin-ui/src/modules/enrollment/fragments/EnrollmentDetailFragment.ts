@@ -12,7 +12,6 @@ const EnrollmentDetailFragment = gql`
     status
     created
     expires
-    requestedTerminationDate
     contractStartDate
     minimumCommitmentEnd
     billingAddress {

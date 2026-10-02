@@ -36,8 +36,7 @@ export default async function createEnrollment(
 
   if (product.type !== ProductType.PLAN_PRODUCT) throw new ProductWrongTypeError({ type: product.type });
 
-  // Ensure a registered enrollment plugin supports this plan before we persist anything,
-  // so an unsupported plan configuration fails cleanly instead of leaving an orphaned enrollment.
+  // Checked before the enrollment is persisted, so an unsupported plan leaves no orphan behind
   if (!EnrollmentDirector.findSupportedAdapter(product.plan)) {
     throw new EnrollmentPlanNotSupportedError({ productId });
   }
@@ -56,14 +55,8 @@ export default async function createEnrollment(
     userId: userId!,
   });
 
-  try {
-    return await services.enrollments.initializeEnrollment(enrollment, {
-      orderIdForFirstPeriod: enrollment.orderIdForFirstPeriod,
-      reason: 'new_enrollment',
-    });
-  } catch (e) {
-    // Roll back the just-created enrollment so a failed initialization can't leave an orphan behind.
-    await modules.enrollments.delete(enrollment._id);
-    throw e;
-  }
+  return await services.enrollments.initializeEnrollment(enrollment, {
+    orderIdForFirstPeriod: enrollment.orderIdForFirstPeriod,
+    reason: 'new_enrollment',
+  });
 }

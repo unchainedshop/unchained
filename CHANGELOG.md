@@ -22,6 +22,7 @@
 - **Several `VIRTUAL` warehousing providers:** the first active one (oldest) alone decides `isInvalidateable` and `tokenMetadata`; a later provider can no longer turn its `false` into `true`.
 - **Ticket event details live in `product.meta`:** against alpha.8 and alpha.9, the ticketing plugin reads and writes `slot`, `location`, `durationMinutes`, `doorsOpenMinutesBefore` and `category` in `product.meta` (next to `meta.cancelled`) instead of `tokenization.ercMetadataProperties`, so they are no longer part of the public ERC metadata and `updateProductTokenization` cannot wipe them. `updateTicketEvent` no longer needs a configured tokenization, sort `ticketEvents` by `meta.slot`. Every ticketing value of an event is read through `TokenizedProduct.event` (type `TicketEvent`: `startsAt`, `endsAt`, `doorsOpenAt`, `location`, `durationMinutes`, `doorsOpenMinutesBefore`, `category`, `isCanceled`, `cancelledDate`), which replaces `TokenizedProduct.isCanceled` and the `eventStartsAt`, `eventEndsAt`, `eventDoorsOpenAt`, `eventLocation` and `eventCategory` fields. Move the keys of events created with these alphas from `tokenization.ercMetadataProperties` to `meta`.
 - **Built-in sale rules:** `validateTicketOrderPosition` and `createTicketOrderPositionValidator()` without `getSaleRules` now apply the sale rules stored in `meta.saleRules` of a ticket (`onSale`, `salesStart`, `salesEnd`, `maxPerOrder`), completed by those of its production; pass `getSaleRules: null` to switch them off, or your own `getSaleRules` (spread `getDefaultTicketSaleRules` to keep them). Products that already carry a `meta.saleRules` of their own may now refuse sales.
+- **Enrollment lifecycle:** `EnrollmentStatus` gained `SUSPENDED`; clients with exhaustive status handling must add it. `activateEnrollment` and the new `suspendEnrollment` require the new `manageEnrollments` action (admin only by default) instead of `updateEnrollment`, as does the new `updateEnrollment(expires)`. `Enrollment.expires` is the date the enrollment ends and `null` while it renews; it no longer falls back to the end of the last period (use `periods` for that). `terminateEnrollment` of a licensed enrollment no longer terminates right away: the licensed adapter has a notice period of one billing interval, so the end is set (`expires`) to the end of the period after the current one.
 
 ### Improvements
 
@@ -38,6 +39,7 @@
 - **Checkout reservations for discounts:** discount adapters can implement `reserveForCheckout()`. `checkoutOrder` calls it before the payment starts and releases the reservation once the order status is saved, so concurrent checkouts cannot spend the same limited credit twice.
 - **Filter products by type:** `Query.products` and `Query.productsCount` accept an optional `type: ProductType` argument, and `ProductQuery` a `type` filter (e.g. to list tokenized products).
 - **`viewTokens` rules see the product:** `TokenizedProduct.tokens` and `tokensCount` pass the product to the `viewTokens` check, like the other type resolvers pass their root object, so custom roles can grant token visibility per product.
+- **Enrollment suspension, scheduled termination, plan changes and minimum commitments:** `suspendEnrollment(enrollmentId, resumeAt)` suspends an enrollment, optionally until `resumeAt`. `terminateEnrollment(enrollmentId, reason, comment)` stores a cancellation reason and, when the adapter's new `terminationDate()` returns a later date, sets `expires` instead of terminating right away; a repeated termination never postpones it. Admins set or clear `expires` directly with `updateEnrollment(expires)` (a date that has passed terminates right away). `updateEnrollment` also changes the plan of an active enrollment when the adapter's new `transformPlanToNewPlan()` accepts it (the licensed adapter does): billed periods stay, the next period follows the new plan. Plan products take `minimumCommitmentPeriods`; enrollments store `contractStartDate` and `minimumCommitmentEnd`, and `terminateEnrollment` never ends them earlier. The order generator applies due terminations, expiries and resumes before it bills. New events `ENROLLMENT_SUSPEND`, `ENROLLMENT_RESUME`, `ENROLLMENT_PLAN_CHANGE` and `ENROLLMENT_TRIAL_ENDING` (module option `trialEndingNoticeDays`, default 3); `registerEnrollment` takes `terminationDate` and `transformPlanToNewPlan`.
 
 ### Fixed
 
@@ -74,6 +76,9 @@
 - **ERC metadata localization:** the `localization.uri` of the ETH minter now contains the `{locale}` placeholder ERC-1155 wallets substitute, instead of the locale of the request.
 - **Invalidating an invalidated token** answers `TokenWrongStatusError` instead of an internal error, also when two requests race.
 - **Plan configuration is no longer copied from the cart item:** the default enrollment adapter used to forward `orderPosition.configuration` into the new enrollment's plan, so a cart item configuration leaked onto the enrollment even when no enrollment adapter asked for it. The default now returns no configuration; only an enrollment adapter's `transformOrderItem` can set it.
+- **Enrollments expire and keep their number:** `processEnrollment` never terminated an `ACTIVE` enrollment past its `expires`, and every transition to `ACTIVE` (also from `PAUSED`) assigned a new `enrollmentNumber`.
+- **Enrollments with an unsupported plan:** `createEnrollment` and `updateEnrollment(plan)` for a plan no enrollment adapter handles answered an internal error, and `createEnrollment` left an `INITIAL` enrollment behind. They now answer `EnrollmentPlanNotSupportedError` / `EnrollmentPlanChangeNotSupportedError` before anything is stored.
+- **`Enrollment.country`** was resolved through the currency loader.
 
 ## v5.0.0-alpha.10 (2026-09-23)
 
@@ -141,7 +146,6 @@ alpha.6 skipped to re-align engine version with admin-ui.
 - **CHANGED**: `changePassword` is no longer self-permitted by the default ACL — review custom roles if you relied on this.
 
 ### Roles
-- **NEW**: `manageEnrollments` role action (admin only by default). `activateEnrollment` and the new `suspendEnrollment` mutations now require it instead of `updateEnrollment`, as does undoing a scheduled termination (`updateEnrollment(cancelAtPeriodEnd: false)`) or clearing `expires`.
 - **CHANGED**: The global `Roles` singleton is replaced by a `createRoles()` factory that returns an isolated instance per `configureRoles()` call (a default `Roles` instance is still exported). The action map and the `allRoles` lookup in `@unchainedshop/api` remain module-level, so several engines in one process still share their actions and custom roles. The `Role` constructor no longer auto-registers into a global registry and no longer throws on duplicate names; register explicitly via `addRole()` / `configureRoles()`. Default `admin` / `__loggedIn__` / `__all__` roles are no longer created at module import. `UnchainedServerOptions.roles` and `Context.roles` are now typed `RolesInterface` (was `any`).
 
 ### Admin UI
@@ -172,11 +176,6 @@ alpha.6 skipped to re-align engine version with admin-ui.
 - **CHANGED**: Dependency cleanup — declared previously-phantom dependencies, and dropped `safe-stable-stringify` (logger now ships its own cycle/BigInt-safe `safeStringify`) and `@kontsedal/locco` (checkout now uses a MongoDB-backed order lock on the same `locco-locks` collection, no migration).
 
 ## New Features & Improvements
-
-### Enrollments
-- **NEW**: Subscription lifecycle controls — `suspendEnrollment(resumeAt)` with automatic resume, scheduled termination with an adapter-defined notice period (`requestedTerminationDate`), `terminateEnrollment(reason, comment)`, `updateEnrollment(expires, cancelAtPeriodEnd)`, plan changes on active enrollments, and `minimumCommitmentPeriods` on plan products (stored as `contractStartDate` / `minimumCommitmentEnd`). New events `ENROLLMENT_SUSPEND`, `ENROLLMENT_RESUME`, `ENROLLMENT_PLAN_CHANGE` and `ENROLLMENT_TRIAL_ENDING`; new module option `trialEndingNoticeDays`; `products(types:)` filter.
-- **CHANGED**: `EnrollmentStatus` gained `SUSPENDED` — clients with exhaustive status handling must add it. `EnrollmentAdapter.actions` now receives `modules` and gained the hooks `terminationDate`, `expiryDate`, `minimumCommitmentEnd`, `initialPeriods` and `transformPlanToNewPlan` (also available on `registerEnrollment`).
-- **FIXED**: `Enrollment.country` was resolved through the currency loader.
 
 ### Authentication & Security
 - **NEW**: `Mutation.logoutAllSessions` invalidates all of a user's JWTs by bumping the token version.

@@ -22,15 +22,9 @@ export interface EnrollmentAdapterActions {
   } | null>;
   isOverdue: () => Promise<boolean>;
   isValidForActivation: () => Promise<boolean>;
-  nextPeriod: (params?: { referenceDate?: Date }) => Promise<EnrollmentPeriod | null>;
+  nextPeriod: () => Promise<EnrollmentPeriod | null>;
   terminationDate: (params: { referenceDate: Date }) => Promise<Date | null>;
-  expiryDate: () => Promise<Date | null>;
-  minimumCommitmentEnd: (params: { referenceDate: Date }) => Promise<Date | null>;
-  initialPeriods: (params: { referenceDate: Date }) => Promise<EnrollmentPeriod[]>;
-  transformPlanToNewPlan: (params: {
-    plan: EnrollmentPlan;
-    referenceDate: Date;
-  }) => Promise<{ plan: EnrollmentPlan; effectiveDate: Date } | null>;
+  transformPlanToNewPlan: (params: { plan: EnrollmentPlan }) => Promise<EnrollmentPlan | null>;
 }
 
 export type IEnrollmentAdapter = IBaseAdapter & {
@@ -76,7 +70,7 @@ export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'vers
   },
 
   actions: (context) => {
-    const baseActions: EnrollmentAdapterActions = {
+    return {
       configurationForOrder: async () => {
         throw new Error(`Not implemented on EnrollmentAdapter`);
       },
@@ -84,11 +78,11 @@ export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'vers
       isOverdue: async () => false,
       isValidForActivation: async () => false,
 
-      nextPeriod: async (params?: { referenceDate?: Date }) => {
+      nextPeriod: async () => {
         const { enrollment, product } = context;
 
         const plan = product?.plan;
-        const referenceDate = params?.referenceDate || new Date();
+        const referenceDate = new Date();
         if (!plan) return null;
 
         if (plan.trialIntervalCount && !enrollment?.periods?.length) {
@@ -112,31 +106,19 @@ export const EnrollmentAdapter: Omit<IEnrollmentAdapter, 'key' | 'label' | 'vers
           isTrial: false,
         };
 
-        if (enrollment?.expires) {
-          if (period.start.getTime() >= new Date(enrollment.expires).getTime()) {
-            return null;
-          }
+        // No period may start once the enrollment has expired
+        if (enrollment?.expires && period.start.getTime() >= new Date(enrollment.expires).getTime()) {
+          return null;
         }
 
         return period;
       },
 
-      terminationDate: async ({ referenceDate }: { referenceDate: Date }) => referenceDate,
+      // Terminate immediately
+      terminationDate: async ({ referenceDate }) => referenceDate,
 
-      expiryDate: async () => null,
-
-      minimumCommitmentEnd: async () => null,
-
-      initialPeriods: async function (
-        this: EnrollmentAdapterActions,
-        { referenceDate }: { referenceDate: Date },
-      ) {
-        const period = await this.nextPeriod({ referenceDate });
-        return period ? [period] : [];
-      },
-
+      // Reject plan changes
       transformPlanToNewPlan: async () => null,
     };
-    return baseActions;
   },
 };

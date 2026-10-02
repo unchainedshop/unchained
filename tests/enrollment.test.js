@@ -15,7 +15,7 @@ import {
   ScheduledTerminationEnrollment,
   SuspendedEnrollment,
   PausedEnrollment,
-  ActiveEnrollmentForCancelAtPeriodEnd,
+  ActiveEnrollmentWithoutExpiry,
   CommitmentEnrollment,
   UserCommitmentEnrollment,
 } from './seeds/enrollments.js';
@@ -425,19 +425,23 @@ test.describe('Enrollments', () => {
             terminateEnrollment(enrollmentId: $enrollmentId) {
               _id
               status
-              requestedTerminationDate
+              expires
             }
           }
         `,
         variables: {
-          enrollmentId: ActiveEnrollment._id,
+          enrollmentId: ActiveEnrollmentWithoutExpiry._id,
         },
       });
+      // The licensed notice period is one billing interval (a week) after the current period
       assert.strictEqual(terminateEnrollment.status, 'ACTIVE');
-      assert.ok(terminateEnrollment.requestedTerminationDate);
+      assert.strictEqual(
+        new Date(terminateEnrollment.expires).getTime(),
+        new Date('2030/09/17').getTime(),
+      );
     });
 
-    test('keep an earlier scheduled termination date when terminating again', async () => {
+    test('keep an earlier end date when terminating again', async () => {
       const {
         data: { terminateEnrollment },
       } = await graphqlFetchAsAdminUser({
@@ -445,7 +449,7 @@ test.describe('Enrollments', () => {
           mutation terminateEnrollment($enrollmentId: ID!) {
             terminateEnrollment(enrollmentId: $enrollmentId) {
               _id
-              requestedTerminationDate
+              expires
             }
           }
         `,
@@ -454,8 +458,8 @@ test.describe('Enrollments', () => {
         },
       });
       assert.strictEqual(
-        new Date(terminateEnrollment.requestedTerminationDate).getTime(),
-        ScheduledTerminationEnrollment.requestedTerminationDate.getTime(),
+        new Date(terminateEnrollment.expires).getTime(),
+        ScheduledTerminationEnrollment.expires.getTime(),
       );
     });
 
@@ -978,7 +982,11 @@ test.describe('Enrollments', () => {
           queryString: 'initial',
         },
       });
-      assert.strictEqual(enrollments.length >= 1, true);
+      assert.ok(
+        enrollments.some(
+          ({ enrollmentNumber }) => enrollmentNumber === ActiveEnrollment.enrollmentNumber,
+        ),
+      );
     });
 
     test('return number of enrollments specified by limit starting from a given offset', async () => {
@@ -1332,46 +1340,48 @@ test.describe('Enrollments', () => {
     });
   });
 
-  test.describe('Enrollment expires via updateEnrollment', () => {
-    test('admin can set expires on enrollment', async () => {
-      const expiresDate = new Date('2035/01/01').toISOString();
-      const result = await graphqlFetchAsAdminUser({
+  test.describe('Mutation.updateEnrollment expires for admin user', () => {
+    const updateExpires = (enrollmentId, expires) =>
+      graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation updateEnrollment($enrollmentId: ID, $expires: DateTime) {
+          mutation updateEnrollment($enrollmentId: ID, $expires: DateTimeISO) {
             updateEnrollment(enrollmentId: $enrollmentId, expires: $expires) {
               _id
+              status
               expires
             }
           }
         `,
-        variables: {
-          enrollmentId: InitialEnrollment._id,
-          expires: expiresDate,
-        },
+        variables: { enrollmentId, expires },
       });
-      assert.ok(result.data?.updateEnrollment?.expires);
-    });
-  });
 
-  test.describe('Enrollment requestedTerminationDate query', () => {
-    test('requestedTerminationDate is visible on enrollment query', async () => {
+    test('set the end date as given', async () => {
+      const expires = new Date('2035/01/01');
+      const { data } = await updateExpires(InitialEnrollment._id, expires.toISOString());
+      assert.strictEqual(new Date(data.updateEnrollment.expires).getTime(), expires.getTime());
+    });
+
+    test('clear the end date', async () => {
+      const { data } = await updateExpires(InitialEnrollment._id, null);
+      assert.strictEqual(data.updateEnrollment.expires, null);
+    });
+
+    test('terminate right away when the end date has passed', async () => {
       const {
-        data: { enrollment },
+        data: { createEnrollment },
       } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          query enrollment($enrollmentId: ID!) {
-            enrollment(enrollmentId: $enrollmentId) {
+          mutation createEnrollment($plan: EnrollmentPlanInput!) {
+            createEnrollment(plan: $plan) {
               _id
-              requestedTerminationDate
-              status
             }
           }
         `,
-        variables: {
-          enrollmentId: ScheduledTerminationEnrollment._id,
-        },
+        variables: { plan: { productId: PlanProduct._id } },
       });
-      assert.ok(enrollment.requestedTerminationDate);
+
+      const { data } = await updateExpires(createEnrollment._id, new Date('2020/01/01').toISOString());
+      assert.strictEqual(data.updateEnrollment.status, 'TERMINATED');
     });
   });
 
@@ -1602,7 +1612,7 @@ test.describe('Enrollments', () => {
             terminateEnrollment(enrollmentId: $enrollmentId) {
               _id
               status
-              requestedTerminationDate
+              expires
             }
           }
         `,
@@ -1610,9 +1620,10 @@ test.describe('Enrollments', () => {
           enrollmentId: SuspendedEnrollment._id,
         },
       });
-      assert.ok(terminateEnrollment);
-      assert.ok(
-        terminateEnrollment.status === 'SUSPENDED' || terminateEnrollment.status === 'TERMINATED',
+      assert.strictEqual(terminateEnrollment.status, 'SUSPENDED');
+      assert.strictEqual(
+        new Date(terminateEnrollment.expires).getTime(),
+        SuspendedEnrollment.expires.getTime(),
       );
     });
   });
@@ -1680,8 +1691,8 @@ test.describe('Enrollments', () => {
     });
   });
 
-  test.describe('Resume clears requestedTerminationDate', () => {
-    test('activating a SUSPENDED enrollment with requestedTerminationDate clears it', async () => {
+  test.describe('Resume keeps the end date', () => {
+    test('activating a SUSPENDED enrollment keeps its scheduled termination', async () => {
       // First suspend the ScheduledTerminationEnrollment
       await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
@@ -1706,7 +1717,7 @@ test.describe('Enrollments', () => {
             activateEnrollment(enrollmentId: $enrollmentId) {
               _id
               status
-              requestedTerminationDate
+              expires
             }
           }
         `,
@@ -1715,7 +1726,10 @@ test.describe('Enrollments', () => {
         },
       });
       assert.strictEqual(activateEnrollment.status, 'ACTIVE');
-      assert.strictEqual(activateEnrollment.requestedTerminationDate, null);
+      assert.strictEqual(
+        new Date(activateEnrollment.expires).getTime(),
+        ScheduledTerminationEnrollment.expires.getTime(),
+      );
     });
   });
 
@@ -1753,12 +1767,12 @@ test.describe('Enrollments', () => {
               status
               cancellationReason
               cancellationComment
-              requestedTerminationDate
+              expires
             }
           }
         `,
         variables: {
-          enrollmentId: ActiveEnrollmentForCancelAtPeriodEnd._id,
+          enrollmentId: ActiveEnrollmentWithoutExpiry._id,
           reason: 'USER_REQUESTED',
           comment: 'Too expensive for my needs',
         },
@@ -1776,7 +1790,7 @@ test.describe('Enrollments', () => {
         data: { suspendEnrollment },
       } = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `
-          mutation suspendEnrollment($enrollmentId: ID!, $resumeAt: DateTime) {
+          mutation suspendEnrollment($enrollmentId: ID!, $resumeAt: DateTimeISO) {
             suspendEnrollment(enrollmentId: $enrollmentId, resumeAt: $resumeAt) {
               _id
               status
@@ -1815,48 +1829,6 @@ test.describe('Enrollments', () => {
     });
   });
 
-  test.describe('cancelAtPeriodEnd via updateEnrollment', () => {
-    test('setting cancelAtPeriodEnd schedules a policy-compliant termination', async () => {
-      const {
-        data: { updateEnrollment },
-      } = await graphqlFetchAsAdminUser({
-        query: /* GraphQL */ `
-          mutation updateEnrollment($enrollmentId: ID, $cancelAtPeriodEnd: Boolean) {
-            updateEnrollment(enrollmentId: $enrollmentId, cancelAtPeriodEnd: $cancelAtPeriodEnd) {
-              _id
-              requestedTerminationDate
-            }
-          }
-        `,
-        variables: {
-          enrollmentId: ActiveEnrollment._id,
-          cancelAtPeriodEnd: true,
-        },
-      });
-      assert.ok(updateEnrollment.requestedTerminationDate);
-    });
-
-    test('clearing cancelAtPeriodEnd removes requestedTerminationDate', async () => {
-      const {
-        data: { updateEnrollment },
-      } = await graphqlFetchAsAdminUser({
-        query: /* GraphQL */ `
-          mutation updateEnrollment($enrollmentId: ID, $cancelAtPeriodEnd: Boolean) {
-            updateEnrollment(enrollmentId: $enrollmentId, cancelAtPeriodEnd: $cancelAtPeriodEnd) {
-              _id
-              requestedTerminationDate
-            }
-          }
-        `,
-        variables: {
-          enrollmentId: ActiveEnrollment._id,
-          cancelAtPeriodEnd: false,
-        },
-      });
-      assert.strictEqual(updateEnrollment.requestedTerminationDate, null);
-    });
-  });
-
   test.describe('Query enrollment cancellation fields', () => {
     test('cancellationReason and cancellationComment visible on query', async () => {
       const {
@@ -1873,7 +1845,7 @@ test.describe('Enrollments', () => {
           }
         `,
         variables: {
-          enrollmentId: ActiveEnrollmentForCancelAtPeriodEnd._id,
+          enrollmentId: ActiveEnrollmentWithoutExpiry._id,
         },
       });
       assert.strictEqual(enrollment.cancellationReason, 'USER_REQUESTED');
@@ -1903,81 +1875,45 @@ test.describe('Enrollments', () => {
       assert.ok(enrollment.minimumCommitmentEnd);
     });
 
-    test('an owner cannot set expires before the minimum commitment ends', async () => {
-      const {
-        data: { updateEnrollment },
-      } = await graphqlFetchAsNormalUser({
-        query: /* GraphQL */ `
-          mutation updateEnrollment($enrollmentId: ID, $expires: DateTime) {
-            updateEnrollment(enrollmentId: $enrollmentId, expires: $expires) {
-              _id
-              expires
-              minimumCommitmentEnd
-            }
-          }
-        `,
-        variables: {
-          enrollmentId: UserCommitmentEnrollment._id,
-          expires: new Date().toISOString(),
-        },
-      });
-
-      assert.ok(
-        new Date(updateEnrollment.expires).getTime() >=
-          new Date(updateEnrollment.minimumCommitmentEnd).getTime(),
-      );
-    });
-
-    test('an owner cannot cancel before the minimum commitment ends', async () => {
-      const {
-        data: { updateEnrollment },
-      } = await graphqlFetchAsNormalUser({
-        query: /* GraphQL */ `
-          mutation updateEnrollment($enrollmentId: ID, $cancelAtPeriodEnd: Boolean) {
-            updateEnrollment(enrollmentId: $enrollmentId, cancelAtPeriodEnd: $cancelAtPeriodEnd) {
-              _id
-              requestedTerminationDate
-              minimumCommitmentEnd
-            }
-          }
-        `,
-        variables: {
-          enrollmentId: UserCommitmentEnrollment._id,
-          cancelAtPeriodEnd: true,
-        },
-      });
-
-      assert.ok(
-        new Date(updateEnrollment.requestedTerminationDate).getTime() >=
-          new Date(updateEnrollment.minimumCommitmentEnd).getTime(),
-      );
-    });
-
-    test('an owner cannot undo a scheduled termination or clear the expiry', async () => {
-      for (const variables of [
-        { enrollmentId: UserCommitmentEnrollment._id, cancelAtPeriodEnd: false },
-        { enrollmentId: UserCommitmentEnrollment._id, expires: null },
-      ]) {
+    test('an owner can neither set nor clear the end date', async () => {
+      for (const expires of [new Date('2040/01/01').toISOString(), null]) {
         const { errors } = await graphqlFetchAsNormalUser({
           query: /* GraphQL */ `
-            mutation updateEnrollment(
-              $enrollmentId: ID
-              $cancelAtPeriodEnd: Boolean
-              $expires: DateTime
-            ) {
-              updateEnrollment(
-                enrollmentId: $enrollmentId
-                cancelAtPeriodEnd: $cancelAtPeriodEnd
-                expires: $expires
-              ) {
+            mutation updateEnrollment($enrollmentId: ID, $expires: DateTimeISO) {
+              updateEnrollment(enrollmentId: $enrollmentId, expires: $expires) {
                 _id
               }
             }
           `,
-          variables,
+          variables: { enrollmentId: UserCommitmentEnrollment._id, expires },
         });
         assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
       }
+    });
+
+    test('an owner terminating before the minimum commitment ends keeps it until then', async () => {
+      const {
+        data: { terminateEnrollment },
+      } = await graphqlFetchAsNormalUser({
+        query: /* GraphQL */ `
+          mutation terminateEnrollment($enrollmentId: ID!) {
+            terminateEnrollment(enrollmentId: $enrollmentId) {
+              _id
+              status
+              expires
+            }
+          }
+        `,
+        variables: {
+          enrollmentId: UserCommitmentEnrollment._id,
+        },
+      });
+
+      assert.strictEqual(terminateEnrollment.status, 'ACTIVE');
+      assert.strictEqual(
+        new Date(terminateEnrollment.expires).getTime(),
+        UserCommitmentEnrollment.minimumCommitmentEnd.getTime(),
+      );
     });
 
     test('terminating commitment enrollment schedules termination at commitment end', async () => {
@@ -1988,9 +1924,7 @@ test.describe('Enrollments', () => {
           mutation terminateEnrollment($enrollmentId: ID!) {
             terminateEnrollment(enrollmentId: $enrollmentId) {
               _id
-              status
-              requestedTerminationDate
-              minimumCommitmentEnd
+              expires
             }
           }
         `,
@@ -1998,12 +1932,9 @@ test.describe('Enrollments', () => {
           enrollmentId: CommitmentEnrollment._id,
         },
       });
-      assert.ok(terminateEnrollment.requestedTerminationDate);
-      const terminationDate = new Date(terminateEnrollment.requestedTerminationDate);
-      const commitmentEnd = new Date(terminateEnrollment.minimumCommitmentEnd);
-      assert.ok(
-        terminationDate.getTime() >= commitmentEnd.getTime(),
-        'Termination date should be at or after the minimum commitment end',
+      assert.strictEqual(
+        new Date(terminateEnrollment.expires).getTime(),
+        CommitmentEnrollment.minimumCommitmentEnd.getTime(),
       );
     });
 

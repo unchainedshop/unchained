@@ -206,7 +206,8 @@ export default [
       ): Enrollment!
 
       """
-      Update a enrollment
+      Update a enrollment. Setting or clearing expires sets the end date as given, without the
+      termination policy of terminateEnrollment, and requires manageEnrollments
       """
       updateEnrollment(
         enrollmentId: ID
@@ -217,7 +218,6 @@ export default [
         delivery: EnrollmentDeliveryInput
         meta: JSON
         expires: DateTime
-        cancelAtPeriodEnd: Boolean
       ): Enrollment!
 
       """
@@ -231,7 +231,9 @@ export default [
       suspendEnrollment(enrollmentId: ID!, resumeAt: DateTime): Enrollment!
 
       """
-      Terminate an actively running enrollment. Optionally provide a cancellation reason and comment for churn analysis.
+      Terminate an enrollment. The enrollment adapter decides when the termination takes effect (e.g. after
+      a notice period), never before the minimum commitment ends; a later date is stored as expires and the
+      enrollment runs until then. Optionally provide a cancellation reason and comment for churn analysis.
       """
       terminateEnrollment(
         enrollmentId: ID!

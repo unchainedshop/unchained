@@ -68,8 +68,10 @@ export default [
       currency: Currency
       delivery: EnrollmentDelivery
       enrollmentNumber: String
+      """
+      When the enrollment ends (scheduled or past), null while it renews
+      """
       expires: DateTime
-      requestedTerminationDate: DateTime
       resumeAt: DateTime
       contractStartDate: DateTime
       minimumCommitmentEnd: DateTime

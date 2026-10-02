@@ -6,65 +6,25 @@ import { addMessageService } from './addMessage.ts';
 import { createServiceError } from '../errors.ts';
 import type { Modules } from '../modules.ts';
 
+// Billed periods stay as they are, the next period is generated from the new plan
 export async function updateEnrollmentPlanService(
   this: Modules,
   enrollment: Enrollment,
-  params: { plan: EnrollmentPlan },
+  { plan }: { plan: EnrollmentPlan },
 ) {
-  const currentProduct = await this.products.findProduct({
-    productId: enrollment.productId,
-  });
-  if (!currentProduct) throw createServiceError('ProductNotFoundError', 'Current product not found');
+  const product = await this.products.findProduct({ productId: enrollment.productId });
+  if (!product) throw createServiceError('ProductNotFoundError', 'Product not found for enrollment');
 
-  const currentDirector = await EnrollmentDirector.actions(
-    { enrollment, product: currentProduct },
-    { modules: this },
-  );
-
-  const result = await currentDirector.transformPlanToNewPlan({
-    plan: params.plan,
-    referenceDate: new Date(),
-  });
-
-  if (!result) {
+  const director = await EnrollmentDirector.actions({ enrollment, product }, { modules: this });
+  const newPlan = await director.transformPlanToNewPlan({ plan });
+  if (!newPlan) {
     throw createServiceError(
       'EnrollmentPlanChangeNotSupportedError',
       'Plan change is not supported for this enrollment',
     );
   }
 
-  const { plan: newPlan, effectiveDate } = result;
-
-  const newProduct = await this.products.findProduct({
-    productId: newPlan.productId,
-  });
-  if (!newProduct) throw createServiceError('ProductNotFoundError', 'New product not found');
-
-  const retainedPeriods = enrollment.periods.filter(
-    (period) => Boolean(period.orderId) || new Date(period.start).getTime() < effectiveDate.getTime(),
-  );
-  const candidateEnrollment: Enrollment = {
-    ...enrollment,
-    productId: newPlan.productId,
-    quantity: newPlan.quantity,
-    configuration: newPlan.configuration,
-    periods: retainedPeriods,
-  };
-
-  const newDirector = await EnrollmentDirector.actions(
-    { enrollment: candidateEnrollment, product: newProduct },
-    { modules: this },
-  );
-
-  const newPeriods = await newDirector.initialPeriods({
-    referenceDate: effectiveDate,
-  });
-
-  let updatedEnrollment = (await this.enrollments.updatePlanAndPeriods(enrollment._id, newPlan, [
-    ...retainedPeriods,
-    ...newPeriods,
-  ])) as Enrollment;
-
+  let updatedEnrollment = (await this.enrollments.updatePlan(enrollment._id, newPlan)) as Enrollment;
   updatedEnrollment = await processEnrollmentService.bind(this)(updatedEnrollment);
 
   await emit('ENROLLMENT_PLAN_CHANGE', { enrollment: updatedEnrollment });

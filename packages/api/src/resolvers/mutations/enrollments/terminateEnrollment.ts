@@ -3,27 +3,32 @@ import { EnrollmentStatus, type EnrollmentTerminationReason } from '@unchainedsh
 import { log } from '@unchainedshop/logger';
 import {
   EnrollmentNotFoundError,
-  EnrollmentWrongStatusError,
   EnrollmentTerminationNotAllowedError,
+  EnrollmentWrongStatusError,
   InvalidIdError,
 } from '../../../errors.ts';
 
 export default async function terminateEnrollment(
   root: never,
-  params: { enrollmentId: string; reason?: EnrollmentTerminationReason; comment?: string },
+  {
+    enrollmentId,
+    reason,
+    comment,
+  }: { enrollmentId: string; reason?: EnrollmentTerminationReason; comment?: string },
   context: Context,
 ) {
   const { modules, services, userId } = context;
-  const { enrollmentId, reason, comment } = params;
 
   log('mutation terminateEnrollment', { userId });
 
   if (!enrollmentId) throw new InvalidIdError({ enrollmentId });
 
-  const enrollment = await modules.enrollments.findEnrollment({
-    enrollmentId,
-  });
-  if (!enrollment) throw new EnrollmentNotFoundError({ enrollmentId });
+  const enrollment = await modules.enrollments.findEnrollment({ enrollmentId });
+  if (!enrollment) {
+    throw new EnrollmentNotFoundError({
+      enrollmentId,
+    });
+  }
 
   if (enrollment.status === EnrollmentStatus.TERMINATED) {
     throw new EnrollmentWrongStatusError({ status: enrollment.status });

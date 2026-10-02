@@ -243,6 +243,16 @@ OrderDeliveryPickUp.pickUpLocations
 DeliveryProvider.pickupLocations
 ```
 
+#### Enrollments
+
+`Enrollment.expires` is the date the enrollment ends and `null` while it renews; it no longer falls back to the end of the last period. Read the end of the current period from `periods`:
+
+```typescript
+const validUntil = enrollment.expires ?? enrollment.periods.at(-1)?.end;
+```
+
+`terminateEnrollment` applies the adapter's notice period and the minimum commitment: with the licensed adapter, it sets `expires` to the end of the period after the current one instead of terminating right away. Admins with `manageEnrollments` set or clear the end date directly with `updateEnrollment(expires)`. `activateEnrollment` also requires `manageEnrollments` now.
+
 ### API Router Export Changes
 
 Deprecated router aliases have been removed:

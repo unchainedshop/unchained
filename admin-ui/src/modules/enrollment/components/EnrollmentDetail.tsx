@@ -59,7 +59,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
     limit: 20,
     includeDrafts: false,
     sort: [{ key: 'created', value: ISortDirection.Desc }],
-    types: [IProductType.PlanProduct],
+    type: IProductType.PlanProduct,
   });
 
   const planProductOptions = useMemo(
@@ -227,7 +227,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
           {
             id: 'change_plan_confirmation',
             defaultMessage:
-              'Change the plan to "{plan}"? Future periods will be regenerated.',
+              'Change the plan to "{plan}"? It applies from the next billing period on.',
           },
           { plan: option.label },
         )}
@@ -351,7 +351,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
   return (
     <>
       <EnrollmentDetailHeader enrollment={enrollment} />
-      {enrollment?.requestedTerminationDate &&
+      {enrollment?.expires &&
         enrollment?.status !== IEnrollmentStatus.Terminated && (
           <div className="my-2 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
             {formatMessage(
@@ -360,7 +360,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
                 defaultMessage: 'Termination scheduled for {date}',
               },
               {
-                date: formatDateTime(enrollment.requestedTerminationDate, {
+                date: formatDateTime(enrollment.expires, {
                   dateStyle: 'full',
                   timeStyle: 'short',
                 }),
@@ -454,7 +454,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
                 </div>
               )}
 
-              <div className="flex-auto border-t border-slate-300 dark:border-slate-800 pt-4 lg:col-span-6 lg:border-0">
+              <div className="flex-auto border-t border-border-default pt-4 lg:col-span-6 lg:border-0">
                 <JSONView
                   disabled
                   className="bg-surface-input dark:text-slate-200 mt-1 block w-full max-w-full rounded-md border-1 resize-none border-border-default shadow-xs sm:text-sm"

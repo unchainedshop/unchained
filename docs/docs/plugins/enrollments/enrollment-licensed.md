@@ -30,23 +30,6 @@ pluginRegistry.register(LicensedEnrollmentsPlugin);
 | Activation | Plan products with `usageCalculationType: LICENSED` |
 | Source | [enrollments/licensed](https://github.com/unchainedshop/unchained/tree/master/packages/plugins/src/enrollments/licensed) |
 
-### Features
-
-- **Period-Based Access**: Access is granted when current date falls within an active period
-- **Automatic Order Generation**: Orders are created at the beginning of each period
-- **Simple Licensing Model**: One product per enrollment period
-- **Termination Notice Period**: Termination takes effect at the end of the next billing period after the current one
-- **Minimum Commitment Enforcement**: If the plan has `minimumCommitmentPeriods`, termination is deferred until the commitment period ends
-- **Plan Changes**: Supports changing plans on active enrollments, effective after the latest period ends
-- **No Overdue Handling**: Designed for prepaid subscriptions
-
-## How It Works
-
-1. Customer purchases a `PLAN_PRODUCT` with `usageCalculationType: LICENSED`
-2. Enrollment is created with defined periods
-3. At period start, an order is automatically generated
-4. Access is valid while current date is within an active period
-
 ## Product Configuration
 
 Create a plan product for licensed subscriptions:
@@ -120,6 +103,8 @@ query CheckCommitment {
 - `isValidForActivation()`: `true` while the current date falls within any enrollment period
 - `configurationForOrder()`: once a period has started, returns one order position template with `quantity: 1` for the enrolled product; before the period starts, returns `null` (no order generated)
 - `isOverdue()`: always `false`
+- `terminationDate()`: notice period of one billing interval, so a termination takes effect at the end of the period after the current one
+- `transformPlanToNewPlan()`: accepts every plan change; the next period follows the new plan
 
 ## Usage
 
@@ -167,18 +152,6 @@ query MyEnrollments {
 }
 ```
 
-### Check Access
-
-```graphql
-query CheckAccess {
-  enrollment(enrollmentId: "enrollment-id") {
-    _id
-    status
-    isExpired
-  }
-}
-```
-
 ### Suspend Enrollment
 
 Suspending an enrollment prevents new orders from being generated. The enrollment remains in `SUSPENDED` status until it is explicitly resumed or until the `resumeAt` date passes. Suspending and resuming require the `manageEnrollments` permission.
@@ -211,14 +184,13 @@ mutation SuspendWithResume {
 
 ### Resume Enrollment
 
-Resume a suspended enrollment by calling `activateEnrollment`. This clears any pending `requestedTerminationDate` and `resumeAt` date, returning the enrollment to `ACTIVE` status.
+Resume a suspended enrollment by calling `activateEnrollment`. This clears the `resumeAt` date and returns the enrollment to `ACTIVE` status; a scheduled termination stays.
 
 ```graphql
 mutation ResumeSubscription {
   activateEnrollment(enrollmentId: "enrollment-id") {
     _id
     status
-    requestedTerminationDate
     resumeAt
   }
 }
@@ -226,7 +198,7 @@ mutation ResumeSubscription {
 
 ### Terminate Enrollment
 
-With the licensed adapter, termination includes a notice period. The enrollment stays active until the end of the next billing period after the current one. The `requestedTerminationDate` field shows when termination will take effect.
+With the licensed adapter, termination includes a notice period: the enrollment stays active until the end of the billing period after the current one (or until `minimumCommitmentEnd`, if later). `expires` shows when the termination takes effect.
 
 Optionally provide a cancellation `reason` and `comment` for churn tracking:
 
@@ -239,46 +211,16 @@ mutation TerminateSubscription {
   ) {
     _id
     status
-    requestedTerminationDate
+    expires
     cancellationReason
     cancellationComment
   }
 }
 ```
 
-### Cancel at Period End
-
-Use `cancelAtPeriodEnd` to request cancellation at the end of the current billing period. The licensed adapter still enforces its notice period and any minimum commitment, so the returned `requestedTerminationDate` may be later:
-
-```graphql
-mutation CancelAtPeriodEnd {
-  updateEnrollment(
-    enrollmentId: "enrollment-id"
-    cancelAtPeriodEnd: true
-  ) {
-    _id
-    requestedTerminationDate
-  }
-}
-```
-
-To undo and continue the subscription:
-
-```graphql
-mutation UndoCancelAtPeriodEnd {
-  updateEnrollment(
-    enrollmentId: "enrollment-id"
-    cancelAtPeriodEnd: false
-  ) {
-    _id
-    requestedTerminationDate
-  }
-}
-```
-
 ### Change Plan
 
-Change the subscription plan on an active enrollment. The licensed adapter applies the change after the latest existing period ends.
+Change the subscription plan on an active enrollment. Billed periods stay as they are; the next period follows the new plan.
 
 ```graphql
 mutation ChangeSubscriptionPlan {
@@ -299,9 +241,9 @@ mutation ChangeSubscriptionPlan {
 }
 ```
 
-### Set Expiry
+### Set or Clear the End Date
 
-Set an explicit expiry date on an enrollment. If the requested date is earlier than the adapter's first allowed termination date, it is moved to that date. The enrollment will be terminated automatically when processed after the effective expiry.
+Admins (`manageEnrollments`) set the end date directly, without the notice period or the minimum commitment. The enrollment is terminated when processed after that date (right away for a date that has passed); `expires: null` undoes a scheduled termination.
 
 ```graphql
 mutation SetEnrollmentExpiry {

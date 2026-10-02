@@ -6,7 +6,6 @@ import type { Context } from '../../../context.ts';
 import type { EnrollmentPlan, Enrollment } from '@unchainedshop/core-enrollments';
 import {
   EnrollmentNotFoundError,
-  EnrollmentTerminationNotAllowedError,
   EnrollmentWrongStatusError,
   EnrollmentPlanChangeNotSupportedError,
   InvalidIdError,
@@ -27,7 +26,6 @@ interface UpdateEnrollmentParams {
   delivery?: Enrollment['delivery'];
   meta?: any;
   expires?: Date | null;
-  cancelAtPeriodEnd?: boolean;
 }
 export default async function updateEnrollment(
   root: never,
@@ -35,17 +33,7 @@ export default async function updateEnrollment(
   context: Context,
 ) {
   const { modules, services, userId } = context;
-  const {
-    billingAddress,
-    contact,
-    delivery,
-    enrollmentId,
-    meta,
-    payment,
-    plan,
-    expires,
-    cancelAtPeriodEnd,
-  } = params;
+  const { billingAddress, contact, delivery, enrollmentId, meta, payment, plan, expires } = params;
 
   log('mutation updateEnrollment', { userId });
 
@@ -66,8 +54,8 @@ export default async function updateEnrollment(
     throw new EnrollmentWrongStatusError({ status: enrollment.status });
   }
 
-  // Owners may schedule their own termination, but undoing one (or a set expiry) is an admin decision.
-  if (expires === null || cancelAtPeriodEnd === false) {
+  // Owners end their enrollment with terminateEnrollment, setting the end date directly is an admin decision
+  if (expires !== undefined) {
     await checkAction(context, actions.manageEnrollments, [root, params]);
   }
 
@@ -95,30 +83,10 @@ export default async function updateEnrollment(
   }
 
   if (expires !== undefined) {
-    const expiryDate =
-      expires &&
-      (await services.enrollments.resolveEnrollmentTerminationDate(enrollment, {
-        requestedDate: expires,
-      }));
-    if (expires && !expiryDate) {
-      throw new EnrollmentTerminationNotAllowedError({ enrollmentId });
-    }
-    enrollment = (await modules.enrollments.updateExpiry(enrollmentId, expiryDate)) as Enrollment;
-  }
-
-  if (cancelAtPeriodEnd === false) {
-    enrollment = (await modules.enrollments.updateRequestedTerminationDate(
-      enrollmentId,
-      null,
-    )) as Enrollment;
-  } else if (cancelAtPeriodEnd) {
-    try {
-      enrollment = await services.enrollments.terminateEnrollment(enrollment, { atPeriodEnd: true });
-    } catch (e) {
-      if (e.name === 'EnrollmentTerminationNotAllowedError') {
-        throw new EnrollmentTerminationNotAllowedError({ enrollmentId });
-      }
-      throw e;
+    enrollment = (await modules.enrollments.updateExpiry(enrollmentId, expires)) as Enrollment;
+    // An end date that has passed terminates the enrollment right away
+    if (modules.enrollments.isExpired(enrollment, {})) {
+      enrollment = await services.enrollments.processEnrollment(enrollment);
     }
   }
 

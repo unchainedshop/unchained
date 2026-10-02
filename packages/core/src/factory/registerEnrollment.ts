@@ -22,9 +22,6 @@ export default function registerEnrollment({
   isValidForActivation,
   nextPeriod,
   terminationDate,
-  expiryDate,
-  minimumCommitmentEnd,
-  initialPeriods,
   transformPlanToNewPlan,
 }: {
   adapterId: string;
@@ -39,27 +36,15 @@ export default function registerEnrollment({
   } | null>;
   isOverdue?: (context: EnrollmentContext) => Promise<boolean>;
   isValidForActivation?: (context: EnrollmentContext) => Promise<boolean>;
-  nextPeriod?: (
-    context: EnrollmentContext,
-    params?: { referenceDate?: Date },
-  ) => Promise<EnrollmentPeriod | null>;
+  nextPeriod?: (context: EnrollmentContext) => Promise<EnrollmentPeriod | null>;
   terminationDate?: (
     context: EnrollmentContext,
     params: { referenceDate: Date },
   ) => Promise<Date | null>;
-  expiryDate?: (context: EnrollmentContext) => Promise<Date | null>;
-  minimumCommitmentEnd?: (
-    context: EnrollmentContext,
-    params: { referenceDate: Date },
-  ) => Promise<Date | null>;
-  initialPeriods?: (
-    context: EnrollmentContext,
-    params: { referenceDate: Date },
-  ) => Promise<EnrollmentPeriod[]>;
   transformPlanToNewPlan?: (
     context: EnrollmentContext,
-    params: { plan: EnrollmentPlan; referenceDate: Date },
-  ) => Promise<{ plan: EnrollmentPlan; effectiveDate: Date } | null>;
+    params: { plan: EnrollmentPlan },
+  ) => Promise<EnrollmentPlan | null>;
 }): IPlugin {
   const adapter: IEnrollmentAdapter = {
     ...EnrollmentAdapter,
@@ -86,20 +71,13 @@ export default function registerEnrollment({
         isOverdue: () => (isOverdue ? isOverdue(context) : base.isOverdue()),
         isValidForActivation: () =>
           isValidForActivation ? isValidForActivation(context) : base.isValidForActivation(),
-        nextPeriod: (params) => (nextPeriod ? nextPeriod(context, params) : base.nextPeriod(params)),
+        nextPeriod: () => (nextPeriod ? nextPeriod(context) : base.nextPeriod()),
         terminationDate: (params) =>
           terminationDate ? terminationDate(context, params) : base.terminationDate(params),
-        expiryDate: () => (expiryDate ? expiryDate(context) : base.expiryDate()),
-        minimumCommitmentEnd: (params) =>
-          minimumCommitmentEnd
-            ? minimumCommitmentEnd(context, params)
-            : base.minimumCommitmentEnd(params),
         transformPlanToNewPlan: (params) =>
           transformPlanToNewPlan
             ? transformPlanToNewPlan(context, params)
             : base.transformPlanToNewPlan(params),
-        // The base initialPeriods delegates to this object's nextPeriod, so it is only replaced when provided.
-        ...(initialPeriods && { initialPeriods: (params) => initialPeriods(context, params) }),
       };
     },
   };
