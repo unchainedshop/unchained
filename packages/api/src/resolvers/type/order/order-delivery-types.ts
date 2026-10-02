@@ -27,5 +27,5 @@ export const orderDeliveryFee = async (obj: OrderDeliveryType, _: never, { loade
     currencyCode: order.currencyCode,
   });
   if (!pricing.isValid()) return null;
-  return { ...pricing.total(), isTaxable: pricing.taxSum() !== 0, isNetPrice: false };
+  return { ...pricing.total(), isTaxable: pricing.taxSum() > 0, isNetPrice: false };
 };

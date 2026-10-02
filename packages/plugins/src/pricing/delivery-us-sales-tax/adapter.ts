@@ -16,9 +16,9 @@ export const DeliveryUsSalesTax: IDeliveryPricingAdapter = {
   label: 'Apply US State Sales Tax on Delivery Fees',
   orderIndex: 80,
 
+  // No order delivery when a delivery price is simulated: the location falls back to the
+  // billing address or the country of the order or request
   isActivatedFor: (context) => {
-    if (!context.order) return false;
-    if (!context.orderDelivery) return false;
     const { countryCode } = resolveDeliveryLocation({
       order: context.order,
       orderDelivery: context.orderDelivery,
