@@ -31,8 +31,8 @@ const MobilePaginator = ({
         className={clsx(
           'relative inline-flex items-center rounded-md border border-border-default bg-surface px-4 py-2 text-sm font-medium hover:bg-surface-raised',
           {
-            'text-slate-200': !offset,
-            'text-slate-700': offset,
+            'text-text-muted opacity-50': !offset,
+            'text-text-secondary': offset,
           },
         )}
       >
@@ -49,7 +49,7 @@ const MobilePaginator = ({
             id="location"
             defaultValue={DefaultLimit}
             name="location"
-            className="block h-8 w-full rounded-md dark:bg-slate-400 border-border-default py-0 text-base  focus:outline-hidden focus:ring-focus-ring sm:text-sm"
+            className="block h-8 w-full rounded-md bg-surface-input border-border-default py-0 text-base  focus:outline-hidden focus:ring-focus-ring sm:text-sm"
           >
             {LimitSteps.map((l) => (
               <option key={l} value={l}>
@@ -70,8 +70,8 @@ const MobilePaginator = ({
         className={clsx(
           'relative ml-3 inline-flex items-center rounded-md border border-border-default bg-surface px-4 py-2 text-sm font-medium  hover:bg-surface-raised',
           {
-            'text-slate-200': offset + limit >= total,
-            'text-slate-700': offset + limit < total,
+            'text-text-muted opacity-50': offset + limit >= total,
+            'text-text-secondary': offset + limit < total,
           },
         )}
       >
@@ -89,11 +89,11 @@ const Step = ({ onClick, disabled = false, label }) => {
       aria-current="page"
       disabled={disabled}
       className={clsx(
-        'relative inline-flex items-center border border-border-default bg-surface px-4 py-2 text-sm font-medium  hover:bg-slate-50 ',
+        'relative inline-flex items-center border border-border-default bg-surface px-4 py-2 text-sm font-medium  hover:bg-surface-subtle ',
         {
-          'z-10 border-slate-900 bg-slate-50 text-slate-800 dark:bg-slate-600 dark:border-slate-400 dark:text-slate-200':
+          'z-10 border-border-default bg-accent text-text-on-accent':
             disabled,
-          'text-slate-500 dark:hover:bg-slate-600 dark:text-slate-400 dark:hover:text-slate-100':
+          'text-text-secondary hover:bg-surface-subtle':
             !disabled,
         },
       )}
@@ -240,7 +240,7 @@ const Pagination = ({
                   defaultMessage="<p> Showing <span>{from}</span> to <span>{to}</span> of <span>{total}</span> results </p>"
                   values={{
                     p: (chunks) => (
-                      <p className="text-sm text-slate-700 dark:text-slate-400">
+                      <p className="text-sm text-text-secondary">
                         {chunks}
                       </p>
                     ),
@@ -270,8 +270,8 @@ const Pagination = ({
                   className={clsx(
                     'relative inline-flex items-center rounded-l-md border border-border-default bg-surface px-2 py-2 text-sm font-medium  hover:bg-surface-raised',
                     {
-                      'text-slate-200': !offset,
-                      'text-slate-600': offset,
+                      'text-text-muted opacity-50': !offset,
+                      'text-text-secondary': offset,
                     },
                   )}
                 >
@@ -309,8 +309,8 @@ const Pagination = ({
                   className={clsx(
                     'relative inline-flex items-center rounded-r-md border border-border-default bg-surface px-2 py-2 text-sm font-medium  hover:bg-surface-raised',
                     {
-                      'text-slate-200': offset + limit >= total,
-                      'text-slate-500': offset + limit < total,
+                      'text-text-muted opacity-50': offset + limit >= total,
+                      'text-text-secondary': offset + limit < total,
                     },
                   )}
                 >
@@ -357,10 +357,10 @@ const Pagination = ({
             id="location"
             defaultValue={limit}
             name="location"
-            className="block h-8 w-full rounded-md text-text-muted dark:bg-slate-900 border-border-default py-0 text-base  focus:outline-hidden focus:ring-focus-ring sm:text-sm"
+            className="block h-8 w-full rounded-md text-text-muted bg-surface-input border-border-default py-0 text-base  focus:outline-hidden focus:ring-focus-ring sm:text-sm"
           >
             {LimitSteps.map((l) => (
-              <option key={l} value={l} className="dark:text-slate-100">
+              <option key={l} value={l} className="text-text-secondary">
                 {l}
               </option>
             ))}
