@@ -1,3 +1,4 @@
+export { default as useActiveWorkTypes } from './hooks/useActiveWorkTypes';
 export { default as useAddWork } from './hooks/useAddWork';
 export { default as useAllocateWork } from './hooks/useAllocateWork';
 export { default as useRecentExports } from './hooks/useRecentExports';

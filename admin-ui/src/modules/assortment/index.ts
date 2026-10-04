@@ -4,6 +4,7 @@ export { default as useAddAssortmentMedia } from './hooks/useAddAssortmentMedia'
 export { default as useAddAssortmentProduct } from './hooks/useAddAssortmentProduct';
 export { default as useAssortment } from './hooks/useAssortment';
 export { default as useAssortmentChildren } from './hooks/useAssortmentChildren';
+export { useAssortmentExport } from './hooks/useAssortmentExport';
 export { default as useAssortmentFilters } from './hooks/useAssortmentFilters';
 export { default as useAssortmentLinks } from './hooks/useAssortmentLinks';
 export { default as useAssortmentMedia } from './hooks/useAssortmentMedia';
@@ -11,6 +12,7 @@ export { default as useAssortmentPaths } from './hooks/useAssortmentPaths';
 export { default as useAssortmentProducts } from './hooks/useAssortmentProducts';
 export { default as useAssortments } from './hooks/useAssortments';
 export { default as useAssortmentsCount } from './hooks/useAssortmentsCount';
+export { default as useBulkAssortmentOperations } from './hooks/useBulkAssortmentOperations';
 export { default as useCreateAssortment } from './hooks/useCreateAssortment';
 export { default as usePrepareAssortmentImport } from './hooks/usePrepareAssortmentImport';
 export { default as useRemoveAssortment } from './hooks/useRemoveAssortment';
