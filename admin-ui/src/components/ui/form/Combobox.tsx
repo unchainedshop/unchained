@@ -8,6 +8,7 @@ import {
 } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import clsx from 'clsx';
+import { useIntl } from 'react-intl';
 import Badge from '../Badge';
 
 export interface IComboboxOption {
@@ -42,6 +43,7 @@ const Combobox = ({
   id,
   className,
 }: ComboboxProps) => {
+  const { formatMessage } = useIntl();
   const [query, setQuery] = useState('');
 
   const filteredOptions = useMemo(() => {
@@ -115,10 +117,12 @@ const Combobox = ({
             </ComboboxButton>
             <ComboboxOptions className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-surface border border-border-subtle py-1 text-sm shadow-lg focus:outline-hidden">
               {isLoading ? (
-                <div className="px-4 py-2 text-text-muted">Loading...</div>
+                <div className="px-4 py-2 text-text-muted">
+                  {formatMessage({ id: 'loading', defaultMessage: 'Loading ...' })}
+                </div>
               ) : filteredOptions.length === 0 ? (
                 <div className="px-4 py-2 text-text-muted">
-                  No results found
+                  {formatMessage({ id: 'no_results_found', defaultMessage: 'No results found' })}
                 </div>
               ) : (
                 filteredOptions.map((opt) => (
@@ -177,9 +181,13 @@ const Combobox = ({
         </ComboboxButton>
         <ComboboxOptions className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-surface border border-border-subtle py-1 text-sm shadow-lg focus:outline-hidden">
           {isLoading ? (
-            <div className="px-4 py-2 text-text-muted">Loading...</div>
+            <div className="px-4 py-2 text-text-muted">
+              {formatMessage({ id: 'loading', defaultMessage: 'Loading ...' })}
+            </div>
           ) : filteredOptions.length === 0 ? (
-            <div className="px-4 py-2 text-text-muted">No results found</div>
+            <div className="px-4 py-2 text-text-muted">
+              {formatMessage({ id: 'no_results_found', defaultMessage: 'No results found' })}
+            </div>
           ) : (
             filteredOptions.map((opt) => (
               <ComboboxOption
