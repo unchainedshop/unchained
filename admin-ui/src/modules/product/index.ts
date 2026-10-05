@@ -1,5 +1,6 @@
 export { default as useAddProductAssignment } from './hooks/useAddProductAssignment';
 export { default as useAddProductMedia } from './hooks/useAddProductMedia';
+export { default as useBulkProductOperations } from './hooks/useBulkProductOperations';
 export { default as useCreateProduct } from './hooks/useCreateProduct';
 export { default as useCreateProductBundleItem } from './hooks/useCreateProductBundleItem';
 export { default as useCreateProductVariation } from './hooks/useCreateProductVariation';
@@ -11,6 +12,8 @@ export { default as useProduct } from './hooks/useProduct';
 export { default as useProductAssignments } from './hooks/useProductAssignments';
 export { default as useProductBundleItems } from './hooks/useProductBundleItems';
 export { default as useProductCatalogPrices } from './hooks/useProductCatalogPrices';
+export { useProductExport } from './hooks/useProductExport';
+export { default as useProductFulfillmentSimulation } from './hooks/useProductFulfillmentSimulation';
 export { default as useProductMedia } from './hooks/useProductMedia';
 export { default as useProductPlan } from './hooks/useProductPlan';
 export { default as useProductPlanConfigurationOptions } from './hooks/useProductPlanConfigurationOptions';
@@ -31,6 +34,7 @@ export { default as useRemoveProductMedia } from './hooks/useRemoveProductMedia'
 export { default as useRemoveProductVariation } from './hooks/useRemoveProductVariation';
 export { default as useRemoveProductVariationOption } from './hooks/useRemoveProductVariationOption';
 export { default as useScaffoldBundleItem } from './hooks/useScaffoldBundleItem';
+export { default as useScaffoldVariationProduct } from './hooks/useScaffoldVariationProduct';
 export { default as useSmartContractStandards } from './hooks/useSmartContractStandards';
 export { default as useTranslatedProductMediaTexts } from './hooks/useTranslatedProductMediaTexts';
 export { default as useTranslatedProductTexts } from './hooks/useTranslatedProductTexts';
