@@ -48,10 +48,13 @@ const UserBookmarks = ({ _id: userId }) => {
   }
 
   return (
-    <div className="mt-4">
-      <ul className="divide-y divide-border-default">
-        {bookmarks.map(({ _id, created, product }) => (
-          <li key={_id} className="flex items-center gap-4 py-4">
+    <div className="space-y-4 mt-4">
+      {bookmarks.map(({ _id, created, product }) => (
+        <div
+          key={_id}
+          className="rounded-lg shadow-sm bg-surface p-4 border-border-subtle"
+        >
+          <div className="flex items-center">
             <Link
               href={`/products?slug=${product?._id}`}
               className="shrink-0"
@@ -69,15 +72,15 @@ const UserBookmarks = ({ _id: userId }) => {
                     defaultMessage: 'Product image',
                   })
                 }
-                width={64}
-                height={64}
-                className="rounded-md object-cover"
+                width={48}
+                height={48}
+                className="h-12 w-12 rounded-lg object-cover object-center"
               />
             </Link>
-            <div className="min-w-0 flex-1">
+            <div className="ml-4 flex-1 min-w-0">
               <Link
                 href={`/products?slug=${product?._id}`}
-                className="text-sm font-medium text-primary hover:underline"
+                className="text-sm font-semibold text-text-primary hover:underline"
               >
                 {product?.texts?.title ||
                   formatMessage({
@@ -86,16 +89,18 @@ const UserBookmarks = ({ _id: userId }) => {
                   })}
               </Link>
               {created && (
-                <p className="mt-1 text-xs text-secondary">
-                  {formatMessage({
-                    id: 'bookmarked_on',
-                    defaultMessage: 'Bookmarked on',
-                  })}{' '}
-                  {formatDateTime(created, {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
+                <p className="text-xs text-text-muted">
+                  <time dateTime={created}>
+                    {formatMessage({
+                      id: 'bookmarked_on',
+                      defaultMessage: 'Bookmarked on',
+                    })}{' '}
+                    {formatDateTime(created, {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </time>
                 </p>
               )}
             </div>
@@ -110,9 +115,9 @@ const UserBookmarks = ({ _id: userId }) => {
                 defaultMessage: 'Remove bookmark',
               })}
             />
-          </li>
-        ))}
-      </ul>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
