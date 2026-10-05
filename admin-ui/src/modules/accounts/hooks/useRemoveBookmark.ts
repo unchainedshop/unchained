@@ -1,5 +1,9 @@
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
+import {
+  IRemoveBookmarkMutation,
+  IRemoveBookmarkMutationVariables,
+} from '../../../gql/types';
 
 const RemoveBookmarkMutation = gql`
   mutation RemoveBookmark($bookmarkId: ID!) {
@@ -10,7 +14,10 @@ const RemoveBookmarkMutation = gql`
 `;
 
 const useRemoveBookmark = () => {
-  const [removeBookmarkMutation] = useMutation(RemoveBookmarkMutation);
+  const [removeBookmarkMutation] = useMutation<
+    IRemoveBookmarkMutation,
+    IRemoveBookmarkMutationVariables
+  >(RemoveBookmarkMutation);
 
   const removeBookmark = async (bookmarkId: string) => {
     return removeBookmarkMutation({

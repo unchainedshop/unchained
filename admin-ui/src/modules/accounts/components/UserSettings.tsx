@@ -64,7 +64,7 @@ const GetCurrentTab = ({ user, selectedView, ...extendedData }) => {
     return <UserProductReviews {...user} />;
   if (
     selectedView === 'bookmarks' &&
-    viewerCan(user, IRoleAction.ManageBookmarks)
+    viewerCan(user, IRoleAction.ViewUserPrivateInfos)
   )
     return <UserBookmarks {...user} />;
 
@@ -165,7 +165,7 @@ const UserSettings = ({ user, extendedData }) => {
       }),
       Icon: <StarIcon className="h-5 w-5" />,
     },
-    viewerCan(user, IRoleAction.ManageBookmarks) && {
+    viewerCan(user, IRoleAction.ViewUserPrivateInfos) && {
       id: 'bookmarks',
       title: formatMessage({
         id: 'bookmarks',

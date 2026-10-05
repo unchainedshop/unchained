@@ -1,3 +1,7 @@
+import {
+  IUserBookmarksQuery,
+  IUserBookmarksQueryVariables,
+} from '../../../gql/types';
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 
@@ -28,7 +32,7 @@ const UserBookmarksQuery = gql`
 `;
 
 const useUserBookmarks = ({ userId = null }: { userId?: string }) => {
-  const { data, loading, error } = useQuery(UserBookmarksQuery, {
+  const { data, loading, error } = useQuery<IUserBookmarksQuery, IUserBookmarksQueryVariables>(UserBookmarksQuery, {
     skip: !userId,
     variables: { userId },
   });
