@@ -71,43 +71,70 @@ const BreadCrumbs = ({
       path: currentRoute.replace(/.$/, ''),
     };
   });
+  const parent = result?.length > 1 ? result[result.length - 2] : null;
+
   return (
-    <nav
-      className="mb-5 hidden sm:flex lg:mt-5 lg:mb-8"
-      aria-label="Breadcrumb"
-    >
-      <ol className="flex items-center space-x-4">
-        {result?.map((data, i) => (
-          <li key={data.path}>
-            <div className="flex items-center">
-              {i !== 0 && (
-                <svg
-                  className="mr-4 h-5 w-5 shrink-0 text-text-muted"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
+    <>
+      {parent && (
+        <nav className="mb-4 flex sm:hidden" aria-label="Breadcrumb">
+          <Link
+            href={parent.path}
+            className="flex items-center text-sm font-medium capitalize text-text-muted hover:text-text-primary focus:outline-hidden focus:ring-2 focus:ring-focus-ring rounded-md px-1 py-1"
+          >
+            <svg
+              className="mr-1.5 h-4 w-4 shrink-0"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+            {parent.name}
+          </Link>
+        </nav>
+      )}
+      <nav
+        className="mb-5 hidden sm:flex lg:mt-5 lg:mb-8"
+        aria-label="Breadcrumb"
+      >
+        <ol className="flex items-center space-x-4">
+          {result?.map((data, i) => (
+            <li key={data.path}>
+              <div className="flex items-center">
+                {i !== 0 && (
+                  <svg
+                    className="mr-4 h-5 w-5 shrink-0 text-text-muted"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+                <Link
+                  href={data.path}
+                  className="text-sm font-medium capitalize text-text-muted hover:text-text-primary focus:outline-hidden focus:ring-2 focus:ring-focus-ring rounded-md px-1 py-1"
                 >
-                  <path
-                    fillRule="evenodd"
-                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              )}
-              <Link
-                href={data.path}
-                className="text-sm font-medium capitalize text-text-muted hover:text-text-primary focus:outline-hidden focus:ring-2 focus:ring-focus-ring rounded-md px-1 py-1"
-              >
-                {i === result.length - 1 && currentPageTitle
-                  ? currentPageTitle
-                  : data.name}
-              </Link>
-            </div>
-          </li>
-        ))}
-      </ol>
-    </nav>
+                  {i === result.length - 1 && currentPageTitle
+                    ? currentPageTitle
+                    : data.name}
+                </Link>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </>
   );
 };
 
