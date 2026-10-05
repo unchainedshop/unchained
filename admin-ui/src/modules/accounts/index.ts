@@ -16,6 +16,7 @@ export { default as useGenerateWebAuthCredentials } from './hooks/useGenerateWeb
 export { default as useLoginWithPassword } from './hooks/useLoginWithPassword';
 export { default as useLoginWithWebAuthn } from './hooks/useLoginWithWebAuthn';
 export { default as useLogoutAllSessions } from './hooks/useLogoutAllSessions';
+export { default as useRemoveBookmark } from './hooks/useRemoveBookmark';
 export { default as useRemoveEmail } from './hooks/useRemoveEmail';
 export { default as useRemoveWeb3Address } from './hooks/useRemoveWeb3Address';
 export { default as useRemoveWebAuthCredentials } from './hooks/useRemoveWebAuthCredentials';
@@ -28,6 +29,7 @@ export { default as useSetUsername } from './hooks/useSetUsername';
 export { default as useUpdateUserAvatar } from './hooks/useUpdateUserAvatar';
 export { default as useUpdateUserProfile } from './hooks/useUpdateUserProfile';
 export { default as useUser } from './hooks/useUser';
+export { default as useUserBookmarks } from './hooks/useUserBookmarks';
 export { useUserExport } from './hooks/useUserExport';
 export { default as useUserWebAuthnCredentials } from './hooks/useUserWebAuthnCredentials';
 export { default as useUsers } from './hooks/useUsers';
