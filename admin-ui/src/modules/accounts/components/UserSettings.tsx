@@ -1,5 +1,6 @@
 import {
   BanknotesIcon,
+  BookmarkIcon,
   ClipboardDocumentListIcon,
   CreditCardIcon,
   LockClosedIcon,
@@ -28,6 +29,7 @@ import UserCart from './UserCart';
 import UserEnrollments from './UserEnrollments';
 import UserOrders from './UserOrders';
 import UserQuotations from './UserQuotations';
+import UserBookmarks from './UserBookmarks';
 import UserTokens from './UserTokens';
 import useAuth from '../../Auth/useAuth';
 
@@ -60,6 +62,11 @@ const GetCurrentTab = ({ user, selectedView, ...extendedData }) => {
     viewerCan(user, IRoleAction.ViewUserProductReviews)
   )
     return <UserProductReviews {...user} />;
+  if (
+    selectedView === 'bookmarks' &&
+    viewerCan(user, IRoleAction.ManageBookmarks)
+  )
+    return <UserBookmarks {...user} />;
 
   if (
     selectedView === 'payment_credentials' &&
@@ -157,6 +164,14 @@ const UserSettings = ({ user, extendedData }) => {
         defaultMessage: 'Reviews',
       }),
       Icon: <StarIcon className="h-5 w-5" />,
+    },
+    viewerCan(user, IRoleAction.ManageBookmarks) && {
+      id: 'bookmarks',
+      title: formatMessage({
+        id: 'bookmarks',
+        defaultMessage: 'Bookmarks',
+      }),
+      Icon: <BookmarkIcon className="h-5 w-5" />,
     },
     viewerCan(user, IRoleAction.ViewUserPrivateInfos) && {
       id: 'logs',
