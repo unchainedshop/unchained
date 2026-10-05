@@ -444,7 +444,7 @@ export type IContactInput = {
 export type IContractConfiguration = {
   ercMetadataProperties?: Maybe<Scalars['JSON']['output']>;
   supply: Scalars['Int']['output'];
-  tokenId?: Maybe<Scalars['String']['output']>;
+  tokenId: Scalars['String']['output'];
 };
 
 export type ICountry = {
@@ -661,23 +661,17 @@ export type IDispatch = {
 export type IEnrollment = {
   _id: Scalars['ID']['output'];
   billingAddress?: Maybe<IAddress>;
-  cancellationComment?: Maybe<Scalars['String']['output']>;
-  cancellationReason?: Maybe<IEnrollmentTerminationReason>;
   contact?: Maybe<IContact>;
-  contractStartDate?: Maybe<Scalars['DateTimeISO']['output']>;
   country?: Maybe<ICountry>;
   created: Scalars['DateTimeISO']['output'];
   currency?: Maybe<ICurrency>;
   delivery?: Maybe<IEnrollmentDelivery>;
   enrollmentNumber?: Maybe<Scalars['String']['output']>;
-  /** When the enrollment ends (scheduled or past), null while it renews */
   expires?: Maybe<Scalars['DateTimeISO']['output']>;
   isExpired?: Maybe<Scalars['Boolean']['output']>;
-  minimumCommitmentEnd?: Maybe<Scalars['DateTimeISO']['output']>;
   payment?: Maybe<IEnrollmentPayment>;
   periods: Array<IEnrollmentPeriod>;
   plan: IEnrollmentPlan;
-  resumeAt?: Maybe<Scalars['DateTimeISO']['output']>;
   status: IEnrollmentStatus;
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
   user: IUser;
@@ -733,18 +727,8 @@ export enum IEnrollmentStatus {
   Initial = 'INITIAL',
   /** Paused because of overdue payments */
   Paused = 'PAUSED',
-  /** Manually suspended by admin */
-  Suspended = 'SUSPENDED',
   /** Terminated / Ended enrollment */
   Terminated = 'TERMINATED'
-}
-
-export enum IEnrollmentTerminationReason {
-  AdminAction = 'ADMIN_ACTION',
-  Expired = 'EXPIRED',
-  Other = 'OTHER',
-  PaymentFailed = 'PAYMENT_FAILED',
-  UserRequested = 'USER_REQUESTED'
 }
 
 export type IEvent = {
@@ -802,11 +786,7 @@ export enum IEventType {
   DeliveryProviderUpdate = 'DELIVERY_PROVIDER_UPDATE',
   EnrollmentAddPeriod = 'ENROLLMENT_ADD_PERIOD',
   EnrollmentCreate = 'ENROLLMENT_CREATE',
-  EnrollmentPlanChange = 'ENROLLMENT_PLAN_CHANGE',
   EnrollmentRemove = 'ENROLLMENT_REMOVE',
-  EnrollmentResume = 'ENROLLMENT_RESUME',
-  EnrollmentSuspend = 'ENROLLMENT_SUSPEND',
-  EnrollmentTrialEnding = 'ENROLLMENT_TRIAL_ENDING',
   EnrollmentUpdate = 'ENROLLMENT_UPDATE',
   FileCreate = 'FILE_CREATE',
   FileRemove = 'FILE_REMOVE',
@@ -870,6 +850,7 @@ export enum IEventType {
   QuotationRemove = 'QUOTATION_REMOVE',
   QuotationRequestCreate = 'QUOTATION_REQUEST_CREATE',
   QuotationUpdate = 'QUOTATION_UPDATE',
+  ShopSettingsUpdated = 'SHOP_SETTINGS_UPDATED',
   TokenInvalidated = 'TOKEN_INVALIDATED',
   TokenOwnershipChanged = 'TOKEN_OWNERSHIP_CHANGED',
   Unknown = 'UNKNOWN',
@@ -1357,13 +1338,7 @@ export type IMutation = {
   signPaymentProviderForCredentialRegistration?: Maybe<Scalars['String']['output']>;
   /** End customer impersonated user session and resume the impersonator session */
   stopImpersonation?: Maybe<ILoginMethodResponse>;
-  /** Suspend an actively running enrollment. Optionally schedule automatic resume. */
-  suspendEnrollment: IEnrollment;
-  /**
-   * Terminate an enrollment. The enrollment adapter decides when the termination takes effect (e.g. after
-   * a notice period), never before the minimum commitment ends; a later date is stored as expires and the
-   * enrollment runs until then. Optionally provide a cancellation reason and comment for churn analysis.
-   */
+  /** Terminate an actively running enrollment by changing it's status to TERMINATED */
   terminateEnrollment: IEnrollment;
   /** Hide the product visible from any shop listings (product queries) */
   unpublishProduct: IProduct;
@@ -1400,10 +1375,7 @@ export type IMutation = {
   updateCurrency: ICurrency;
   /** Updates the delivery provider specified */
   updateDeliveryProvider: IDeliveryProvider;
-  /**
-   * Update a enrollment. Setting or clearing expires sets the end date as given, without the
-   * termination policy of terminateEnrollment, and requires manageEnrollments
-   */
+  /** Update a enrollment */
   updateEnrollment: IEnrollment;
   /** Updates the specified filter with the information passed. */
   updateFilter: IFilter;
@@ -1436,6 +1408,12 @@ export type IMutation = {
   updateProductVariationTexts: Array<IProductVariationTexts>;
   /** Modify warehousing part of a product */
   updateProductWarehousing?: Maybe<IProduct>;
+  /**
+   * Update runtime settings for a given namespace. Validates against the
+   * registered zod schema and emits SHOP_SETTINGS_UPDATED on success.
+   * Requires the manageShopSettings permission.
+   */
+  updateShopSettings: Scalars['JSON']['output'];
   /** Update Profile of any user or logged in user if userId is not provided */
   updateUserProfile: IUser;
   /** Updates warehousing provider information with the provided ID */
@@ -2176,16 +2154,8 @@ export type IMutationSignPaymentProviderForCredentialRegistrationArgs = {
 };
 
 
-export type IMutationSuspendEnrollmentArgs = {
-  enrollmentId: Scalars['ID']['input'];
-  resumeAt?: InputMaybe<Scalars['DateTimeISO']['input']>;
-};
-
-
 export type IMutationTerminateEnrollmentArgs = {
-  comment?: InputMaybe<Scalars['String']['input']>;
   enrollmentId: Scalars['ID']['input'];
-  reason?: InputMaybe<IEnrollmentTerminationReason>;
 };
 
 
@@ -2282,7 +2252,6 @@ export type IMutationUpdateEnrollmentArgs = {
   contact?: InputMaybe<IContactInput>;
   delivery?: InputMaybe<IEnrollmentDeliveryInput>;
   enrollmentId?: InputMaybe<Scalars['ID']['input']>;
-  expires?: InputMaybe<Scalars['DateTimeISO']['input']>;
   meta?: InputMaybe<Scalars['JSON']['input']>;
   payment?: InputMaybe<IEnrollmentPaymentInput>;
   plan?: InputMaybe<IEnrollmentPlanInput>;
@@ -2375,6 +2344,12 @@ export type IMutationUpdateProductWarehousingArgs = {
 };
 
 
+export type IMutationUpdateShopSettingsArgs = {
+  namespace: Scalars['String']['input'];
+  value: Scalars['JSON']['input'];
+};
+
+
 export type IMutationUpdateUserProfileArgs = {
   meta?: InputMaybe<Scalars['JSON']['input']>;
   profile?: InputMaybe<IUserProfileInput>;
@@ -2441,7 +2416,6 @@ export type IOrderDelivery = {
   _id: Scalars['ID']['output'];
   delivered?: Maybe<Scalars['DateTimeISO']['output']>;
   discounts?: Maybe<Array<IOrderDeliveryDiscount>>;
-  /** Gross amount the order charges for the delivery (fees, discounts and taxes), null while not priced */
   fee?: Maybe<IPrice>;
   provider?: Maybe<IDeliveryProvider>;
   status?: Maybe<IOrderDeliveryStatus>;
@@ -2569,7 +2543,6 @@ export enum IOrderItemPriceCategory {
 export type IOrderPayment = {
   _id: Scalars['ID']['output'];
   discounts?: Maybe<Array<IOrderPaymentDiscount>>;
-  /** Gross amount the order charges for the payment (fees, discounts and taxes), null while not priced */
   fee?: Maybe<IPrice>;
   paid?: Maybe<Scalars['DateTimeISO']['output']>;
   provider?: Maybe<IPaymentProvider>;
@@ -2958,7 +2931,6 @@ export type IProductMediaTexts = {
 export type IProductPlanConfiguration = {
   billingInterval: IProductPlanConfigurationInterval;
   billingIntervalCount?: Maybe<Scalars['Int']['output']>;
-  minimumCommitmentPeriods?: Maybe<Scalars['Int']['output']>;
   trialInterval?: Maybe<IProductPlanConfigurationInterval>;
   trialIntervalCount?: Maybe<Scalars['Int']['output']>;
   usageCalculationType: IProductPlanUsageCalculationType;
@@ -3245,6 +3217,14 @@ export type IQuery = {
   searchProducts: IProductSearchResult;
   /** Get shop-global data and the resolved country/language pair */
   shopInfo: IShop;
+  /** List all registered settings namespace keys. */
+  shopSettingsNamespaces: Array<Scalars['String']['output']>;
+  /**
+   * JSON Schema for the given settings namespace, so admin forms can be
+   * generated rather than hand-built. Returns null when the namespace is
+   * not registered.
+   */
+  shopSettingsSchema?: Maybe<Scalars['JSON']['output']>;
   /** Get token */
   token?: Maybe<IToken>;
   /** Get all tokens */
@@ -3570,7 +3550,6 @@ export type IQueryProductsArgs = {
   slugs?: InputMaybe<Array<Scalars['String']['input']>>;
   sort?: InputMaybe<Array<ISortOptionInput>>;
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
-  type?: InputMaybe<IProductType>;
 };
 
 
@@ -3579,7 +3558,6 @@ export type IQueryProductsCountArgs = {
   queryString?: InputMaybe<Scalars['String']['input']>;
   slugs?: InputMaybe<Array<Scalars['String']['input']>>;
   tags?: InputMaybe<Array<Scalars['LowerCaseString']['input']>>;
-  type?: InputMaybe<IProductType>;
 };
 
 
@@ -3616,6 +3594,11 @@ export type IQuerySearchProductsArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
   orderBy?: InputMaybe<ISearchOrderBy>;
   queryString?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type IQueryShopSettingsSchemaArgs = {
+  namespace: Scalars['String']['input'];
 };
 
 
@@ -3863,7 +3846,6 @@ export enum IRoleAction {
   ManageCountries = 'manageCountries',
   ManageCurrencies = 'manageCurrencies',
   ManageDeliveryProviders = 'manageDeliveryProviders',
-  ManageEnrollments = 'manageEnrollments',
   ManageFilters = 'manageFilters',
   ManageLanguages = 'manageLanguages',
   ManagePaymentCredentials = 'managePaymentCredentials',
@@ -3871,6 +3853,7 @@ export enum IRoleAction {
   ManageProductReviews = 'manageProductReviews',
   ManageProducts = 'manageProducts',
   ManageQuotations = 'manageQuotations',
+  ManageShopSettings = 'manageShopSettings',
   ManageUsers = 'manageUsers',
   ManageWarehousingProviders = 'manageWarehousingProviders',
   ManageWorker = 'manageWorker',
@@ -3935,7 +3918,6 @@ export enum IRoleAction {
   ViewTokens = 'viewTokens',
   ViewTranslations = 'viewTranslations',
   ViewUser = 'viewUser',
-  ViewUserContactInfos = 'viewUserContactInfos',
   ViewUserCount = 'viewUserCount',
   ViewUserEnrollments = 'viewUserEnrollments',
   ViewUserOrders = 'viewUserOrders',
@@ -3989,9 +3971,20 @@ export type IShop = {
   adminUiConfig: IAdminUiConfig;
   country?: Maybe<ICountry>;
   language?: Maybe<ILanguage>;
+  /**
+   * Runtime settings for the given namespace. Public namespaces are readable
+   * by anyone; private namespaces require the manageShopSettings permission.
+   * Returns null when the namespace is not registered.
+   */
+  settings?: Maybe<Scalars['JSON']['output']>;
   userRoles: Array<Scalars['String']['output']>;
   vapidPublicKey?: Maybe<Scalars['String']['output']>;
   version?: Maybe<Scalars['String']['output']>;
+};
+
+
+export type IShopSettingsArgs = {
+  namespace: Scalars['String']['input'];
 };
 
 /** Simple Product */
@@ -4133,8 +4126,6 @@ export type IToken = {
   expiryDate?: Maybe<Scalars['DateTimeISO']['output']>;
   invalidatedDate?: Maybe<Scalars['DateTimeISO']['output']>;
   isInvalidateable: Scalars['Boolean']['output'];
-  /** The order the token was issued for, null when the viewer may not view that order */
-  order?: Maybe<IOrder>;
   product: ITokenizedProduct;
   quantity: Scalars['Int']['output'];
   status: ITokenExportStatus;
@@ -4305,7 +4296,6 @@ export type IUpdateProductInput = {
 export type IUpdateProductPlanInput = {
   billingInterval: IProductPlanConfigurationInterval;
   billingIntervalCount?: InputMaybe<Scalars['Int']['input']>;
-  minimumCommitmentPeriods?: InputMaybe<Scalars['Int']['input']>;
   trialInterval?: InputMaybe<IProductPlanConfigurationInterval>;
   trialIntervalCount?: InputMaybe<Scalars['Int']['input']>;
   usageCalculationType: IProductPlanUsageCalculationType;
@@ -4318,15 +4308,12 @@ export type IUpdateProductSupplyInput = {
   widthInMillimeters?: InputMaybe<Scalars['Int']['input']>;
 };
 
-/** Replaces the tokenization of the product as a whole: send every field to keep */
 export type IUpdateProductTokenizationInput = {
-  /** Omit for off-chain tokens (e.g. tickets) */
-  contractAddress?: InputMaybe<Scalars['String']['input']>;
+  contractAddress: Scalars['String']['input'];
   contractStandard: ISmartContractStandard;
   ercMetadataProperties?: InputMaybe<Scalars['JSON']['input']>;
   supply: Scalars['Int']['input'];
-  /** Omit for off-chain tokens (e.g. tickets); required by on-chain ERC1155 minters */
-  tokenId?: InputMaybe<Scalars['String']['input']>;
+  tokenId: Scalars['String']['input'];
 };
 
 export type IUpdateProductWarehousingInput = {

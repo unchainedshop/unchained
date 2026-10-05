@@ -149,13 +149,6 @@ export type ILogoutAllSessionsMutationVariables = Exact<{
 
 export type ILogoutAllSessionsMutation = { logoutAllSessions: { success: boolean | null } | null };
 
-export type IRemoveBookmarkMutationVariables = Exact<{
-  bookmarkId: string | number;
-}>;
-
-
-export type IRemoveBookmarkMutation = { removeBookmark: { _id: string } };
-
 export type IRemoveEmailMutationVariables = Exact<{
   email: string;
   userId?: string | number | null | undefined;
@@ -257,19 +250,6 @@ export type IUserQueryVariables = Exact<{
 
 
 export type IUserQuery = { user: { _id: string, name: string, avatar: { _id: string, name: string, size: number, type: string, url: string | null } | null } & { username?: string | null, isGuest?: boolean, isInitialPassword?: boolean, tags?: Array<unknown> | null, deleted?: unknown, lastBillingAddress?: { firstName: string | null, lastName: string | null, company: string | null, addressLine: string | null, addressLine2: string | null, postalCode: string | null, countryCode: string | null, regionCode: string | null, city: string | null } | null, lastContact?: { emailAddress: string | null, telNumber: string | null } | null, lastLogin?: { countryCode: string | null, locale: unknown, remoteAddress: string | null, remotePort: number | null, timestamp: unknown, userAgent: string | null } | null, paymentCredentials?: Array<{ _id: string, isValid: boolean, isPreferred: boolean, paymentProvider: { _id: string, type: Types.IPaymentProviderType | null, interface: { _id: string, label: string | null, version: string | null } | null } }>, emails?: Array<{ verified: boolean, address: string }> | null, web3Addresses?: Array<{ address: string, nonce: string | null, verified: boolean }>, webAuthnCredentials?: Array<{ _id: string, created: unknown, aaguid: string, counter: number, mdsMetadata: { legalHeader: string | null, description: string | null, authenticatorVersion: number | null, protocolFamily: string | null, schema: number | null, authenticationAlgorithms: Array<string> | null, publicKeyAlgAndEncodings: Array<string> | null, attestationTypes: Array<string> | null, keyProtection: Array<string> | null, upv: Array<unknown> | null, tcDisplay: Array<unknown> | null, icon: string | null, authenticatorGetInfo: unknown } | null }>, profile?: { displayName: string | null, phoneMobile: string | null, gender: string | null, birthday: unknown, address: { firstName: string | null, lastName: string | null, company: string | null, addressLine: string | null, addressLine2: string | null, postalCode: string | null, countryCode: string | null, regionCode: string | null, city: string | null } | null } | null, primaryEmail?: { verified: boolean, address: string } | null } & { roles?: Array<string> | null } & { cart?: { _id: string, items: Array<{ _id: string }> | null } | null, orders?: Array<{ _id: string, items: Array<{ _id: string }> | null }> } | null };
-
-export type IUserBookmarksQueryVariables = Exact<{
-  userId: string | number;
-}>;
-
-
-export type IUserBookmarksQuery = { user: { _id: string, bookmarks: Array<{ _id: string, created: unknown, product:
-        | { _id: string, texts: { _id: string, title: string | null } | null, media: Array<{ _id: string, file: { _id: string, url: string | null } | null }> }
-        | { _id: string, texts: { _id: string, title: string | null } | null, media: Array<{ _id: string, file: { _id: string, url: string | null } | null }> }
-        | { _id: string, texts: { _id: string, title: string | null } | null, media: Array<{ _id: string, file: { _id: string, url: string | null } | null }> }
-        | { _id: string, texts: { _id: string, title: string | null } | null, media: Array<{ _id: string, file: { _id: string, url: string | null } | null }> }
-        | { _id: string, texts: { _id: string, title: string | null } | null, media: Array<{ _id: string, file: { _id: string, url: string | null } | null }> }
-       }> } | null };
 
 export type IUserWebAuthnCredentialsQueryVariables = Exact<{
   userId: string | number;
@@ -865,15 +845,15 @@ export type IUpdateDeliveryProviderMutation = { updateDeliveryProvider:
     | { _id: string, created: unknown, updated: unknown, deleted: unknown, type: Types.IDeliveryProviderType | null, isActive: boolean | null, configuration: unknown, configurationError: Types.IDeliveryProviderError | null, interface: { _id: string, label: string | null, version: string | null } | null }
    };
 
-export type IEnrollmentDetailFragment = { _id: string, enrollmentNumber: string | null, updated: unknown, status: Types.IEnrollmentStatus, created: unknown, expires: unknown, contractStartDate: unknown, minimumCommitmentEnd: unknown, isExpired: boolean | null, country: { _id: string, isoCode: string | null } | null, billingAddress: { addressLine: string | null, addressLine2: string | null, city: string | null, company: string | null, countryCode: string | null, firstName: string | null, lastName: string | null, postalCode: string | null, regionCode: string | null } | null, contact: { emailAddress: string | null, telNumber: string | null } | null, currency: { _id: string, contractAddress: string | null, decimals: number | null, isActive: boolean | null, isoCode: string } | null, delivery: { provider:
+export type IEnrollmentDetailFragment = { _id: string, enrollmentNumber: string | null, updated: unknown, status: Types.IEnrollmentStatus, created: unknown, expires: unknown, isExpired: boolean | null, country: { _id: string, isoCode: string | null } | null, billingAddress: { addressLine: string | null, addressLine2: string | null, city: string | null, company: string | null, countryCode: string | null, firstName: string | null, lastName: string | null, postalCode: string | null, regionCode: string | null } | null, contact: { emailAddress: string | null, telNumber: string | null } | null, currency: { _id: string, contractAddress: string | null, decimals: number | null, isActive: boolean | null, isoCode: string } | null, delivery: { provider:
       | { _id: string, configuration: unknown, configurationError: Types.IDeliveryProviderError | null, isActive: boolean | null, type: Types.IDeliveryProviderType | null, interface: { _id: string, label: string | null, version: string | null } | null, simulatedPrice: { amount: number, currencyCode: string, isNetPrice: boolean, isTaxable: boolean } | null }
       | { _id: string, configuration: unknown, configurationError: Types.IDeliveryProviderError | null, isActive: boolean | null, type: Types.IDeliveryProviderType | null, interface: { _id: string, label: string | null, version: string | null } | null, simulatedPrice: { amount: number, currencyCode: string, isNetPrice: boolean, isTaxable: boolean } | null }
-     | null } | null, payment: { provider: { _id: string, configuration: unknown, configurationError: Types.IPaymentProviderError | null, isActive: boolean | null, type: Types.IPaymentProviderType | null, interface: { _id: string, label: string | null, version: string | null } | null } | null } | null, periods: Array<{ start: unknown, end: unknown, isTrial: boolean, order: { _id: string } | null }>, plan: { quantity: number, configuration: Array<{ key: string, value: string }> | null, product: { _id: string, texts: { _id: string, title: string | null } | null } }, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null } };
+     | null } | null, payment: { provider: { _id: string, configuration: unknown, configurationError: Types.IPaymentProviderError | null, isActive: boolean | null, type: Types.IPaymentProviderType | null, interface: { _id: string, label: string | null, version: string | null } | null } | null } | null, periods: Array<{ end: unknown, isTrial: boolean, start: unknown, order: { _id: string } | null }>, plan: { quantity: number, configuration: Array<{ key: string, value: string }> | null, product: { _id: string, texts: { _id: string, title: string | null } | null } }, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null } };
 
 
 export type IEnrollmentDetailFragmentVariables = Exact<{ [key: string]: never; }>;
 
-export type IEnrollmentFragment = { _id: string, enrollmentNumber: string | null, updated: unknown, status: Types.IEnrollmentStatus, created: unknown, expires: unknown, contractStartDate: unknown, minimumCommitmentEnd: unknown, isExpired: boolean | null, country: { _id: string, isoCode: string | null } | null, currency: { _id: string, isoCode: string } | null, periods: Array<{ start: unknown, end: unknown, isTrial: boolean }>, payment: { provider: { _id: string } | null } | null, delivery: { provider:
+export type IEnrollmentFragment = { _id: string, enrollmentNumber: string | null, updated: unknown, status: Types.IEnrollmentStatus, created: unknown, expires: unknown, isExpired: boolean | null, country: { _id: string, isoCode: string | null } | null, currency: { _id: string, isoCode: string } | null, periods: Array<{ start: unknown, end: unknown, isTrial: boolean }>, payment: { provider: { _id: string } | null } | null, delivery: { provider:
       | { _id: string }
       | { _id: string }
      | null } | null, plan: { quantity: number, product: { _id: string, media: Array<{ _id: string, file: { _id: string, url: string | null } | null }>, texts: { _id: string, title: string | null } | null } }, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null } };
@@ -893,10 +873,10 @@ export type IEnrollmentQueryVariables = Exact<{
 }>;
 
 
-export type IEnrollmentQuery = { enrollment: { _id: string, enrollmentNumber: string | null, updated: unknown, status: Types.IEnrollmentStatus, created: unknown, expires: unknown, contractStartDate: unknown, minimumCommitmentEnd: unknown, isExpired: boolean | null, country: { _id: string, isoCode: string | null } | null, billingAddress: { addressLine: string | null, addressLine2: string | null, city: string | null, company: string | null, countryCode: string | null, firstName: string | null, lastName: string | null, postalCode: string | null, regionCode: string | null } | null, contact: { emailAddress: string | null, telNumber: string | null } | null, currency: { _id: string, contractAddress: string | null, decimals: number | null, isActive: boolean | null, isoCode: string } | null, delivery: { provider:
+export type IEnrollmentQuery = { enrollment: { _id: string, enrollmentNumber: string | null, updated: unknown, status: Types.IEnrollmentStatus, created: unknown, expires: unknown, isExpired: boolean | null, country: { _id: string, isoCode: string | null } | null, billingAddress: { addressLine: string | null, addressLine2: string | null, city: string | null, company: string | null, countryCode: string | null, firstName: string | null, lastName: string | null, postalCode: string | null, regionCode: string | null } | null, contact: { emailAddress: string | null, telNumber: string | null } | null, currency: { _id: string, contractAddress: string | null, decimals: number | null, isActive: boolean | null, isoCode: string } | null, delivery: { provider:
         | { _id: string, configuration: unknown, configurationError: Types.IDeliveryProviderError | null, isActive: boolean | null, type: Types.IDeliveryProviderType | null, interface: { _id: string, label: string | null, version: string | null } | null, simulatedPrice: { amount: number, currencyCode: string, isNetPrice: boolean, isTaxable: boolean } | null }
         | { _id: string, configuration: unknown, configurationError: Types.IDeliveryProviderError | null, isActive: boolean | null, type: Types.IDeliveryProviderType | null, interface: { _id: string, label: string | null, version: string | null } | null, simulatedPrice: { amount: number, currencyCode: string, isNetPrice: boolean, isTaxable: boolean } | null }
-       | null } | null, payment: { provider: { _id: string, configuration: unknown, configurationError: Types.IPaymentProviderError | null, isActive: boolean | null, type: Types.IPaymentProviderType | null, interface: { _id: string, label: string | null, version: string | null } | null } | null } | null, periods: Array<{ start: unknown, end: unknown, isTrial: boolean, order: { _id: string } | null }>, plan: { quantity: number, configuration: Array<{ key: string, value: string }> | null, product: { _id: string, texts: { _id: string, title: string | null } | null } }, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null } } | null };
+       | null } | null, payment: { provider: { _id: string, configuration: unknown, configurationError: Types.IPaymentProviderError | null, isActive: boolean | null, type: Types.IPaymentProviderType | null, interface: { _id: string, label: string | null, version: string | null } | null } | null } | null, periods: Array<{ end: unknown, isTrial: boolean, start: unknown, order: { _id: string } | null }>, plan: { quantity: number, configuration: Array<{ key: string, value: string }> | null, product: { _id: string, texts: { _id: string, title: string | null } | null } }, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null } } | null };
 
 export type IEnrollmentsQueryVariables = Exact<{
   offset?: number | null | undefined;
@@ -907,7 +887,7 @@ export type IEnrollmentsQueryVariables = Exact<{
 }>;
 
 
-export type IEnrollmentsQuery = { enrollmentsCount: number, enrollments: Array<{ _id: string, enrollmentNumber: string | null, updated: unknown, status: Types.IEnrollmentStatus, created: unknown, expires: unknown, contractStartDate: unknown, minimumCommitmentEnd: unknown, isExpired: boolean | null, country: { _id: string, isoCode: string | null } | null, currency: { _id: string, isoCode: string } | null, periods: Array<{ start: unknown, end: unknown, isTrial: boolean }>, payment: { provider: { _id: string } | null } | null, delivery: { provider:
+export type IEnrollmentsQuery = { enrollmentsCount: number, enrollments: Array<{ _id: string, enrollmentNumber: string | null, updated: unknown, status: Types.IEnrollmentStatus, created: unknown, expires: unknown, isExpired: boolean | null, country: { _id: string, isoCode: string | null } | null, currency: { _id: string, isoCode: string } | null, periods: Array<{ start: unknown, end: unknown, isTrial: boolean }>, payment: { provider: { _id: string } | null } | null, delivery: { provider:
         | { _id: string }
         | { _id: string }
        | null } | null, plan: { quantity: number, product: { _id: string, media: Array<{ _id: string, file: { _id: string, url: string | null } | null }>, texts: { _id: string, title: string | null } | null } }, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null } }> };
@@ -919,27 +899,12 @@ export type ISendEnrollmentEmailMutationVariables = Exact<{
 
 export type ISendEnrollmentEmailMutation = { sendEnrollmentEmail: { success: boolean | null } | null };
 
-export type ISuspendEnrollmentMutationVariables = Exact<{
-  enrollmentId: string | number;
-}>;
-
-
-export type ISuspendEnrollmentMutation = { suspendEnrollment: { _id: string } };
-
 export type ITerminateEnrollmentMutationVariables = Exact<{
   enrollmentId: string | number;
 }>;
 
 
 export type ITerminateEnrollmentMutation = { terminateEnrollment: { _id: string } };
-
-export type IUpdateEnrollmentPlanMutationVariables = Exact<{
-  enrollmentId: string | number;
-  plan: Types.IEnrollmentPlanInput;
-}>;
-
-
-export type IUpdateEnrollmentPlanMutation = { updateEnrollment: { _id: string, status: Types.IEnrollmentStatus, plan: { quantity: number, product: { _id: string, texts: { _id: string, title: string | null } | null }, configuration: Array<{ key: string, value: string }> | null } } };
 
 export type IUserEnrollmentsQueryVariables = Exact<{
   userId: string | number;
@@ -1592,7 +1557,7 @@ export type IProductMediaTextsFragment = { _id: string, locale: unknown, title: 
 
 export type IProductMediaTextsFragmentVariables = Exact<{ [key: string]: never; }>;
 
-export type IProductPlanConfigurationFragment = { usageCalculationType: Types.IProductPlanUsageCalculationType, billingInterval: Types.IProductPlanConfigurationInterval, trialInterval: Types.IProductPlanConfigurationInterval | null, trialIntervalCount: number | null, billingIntervalCount: number | null, minimumCommitmentPeriods: number | null };
+export type IProductPlanConfigurationFragment = { usageCalculationType: Types.IProductPlanUsageCalculationType, billingInterval: Types.IProductPlanConfigurationInterval, trialInterval: Types.IProductPlanConfigurationInterval | null, trialIntervalCount: number | null, billingIntervalCount: number | null };
 
 
 export type IProductPlanConfigurationFragmentVariables = Exact<{ [key: string]: never; }>;
@@ -1607,7 +1572,7 @@ export type IProductVariationFragment = { _id: string, type: Types.IProductVaria
 
 export type IProductVariationFragmentVariables = Exact<{ [key: string]: never; }>;
 
-export type ITokenFragment = { _id: string, walletAddress: string | null, status: Types.ITokenExportStatus, quantity: number, contractAddress: string | null, chainId: string | null, tokenSerialNumber: string | null, invalidatedDate: unknown, expiryDate: unknown, ercMetadata: unknown, accessKey: string, isInvalidateable: boolean, order: { _id: string, orderNumber: string | null } | null };
+export type ITokenFragment = { _id: string, walletAddress: string | null, status: Types.ITokenExportStatus, quantity: number, contractAddress: string | null, chainId: string | null, tokenSerialNumber: string | null, invalidatedDate: unknown, expiryDate: unknown, ercMetadata: unknown, accessKey: string, isInvalidateable: boolean };
 
 
 export type ITokenFragmentVariables = Exact<{ [key: string]: never; }>;
@@ -1750,7 +1715,7 @@ export type IExportTokenMutationVariables = Exact<{
 }>;
 
 
-export type IExportTokenMutation = { exportToken: { _id: string, walletAddress: string | null, status: Types.ITokenExportStatus, quantity: number, contractAddress: string | null, chainId: string | null, tokenSerialNumber: string | null, invalidatedDate: unknown, expiryDate: unknown, ercMetadata: unknown, accessKey: string, isInvalidateable: boolean, order: { _id: string, orderNumber: string | null } | null } };
+export type IExportTokenMutation = { exportToken: { _id: string, walletAddress: string | null, status: Types.ITokenExportStatus, quantity: number, contractAddress: string | null, chainId: string | null, tokenSerialNumber: string | null, invalidatedDate: unknown, expiryDate: unknown, ercMetadata: unknown, accessKey: string, isInvalidateable: boolean } };
 
 export type IProductQueryVariables = Exact<{
   productId?: string | number | null | undefined;
@@ -1907,7 +1872,7 @@ export type IProductPlanQueryVariables = Exact<{
 export type IProductPlanQuery = { product:
     | { _id: string }
     | { _id: string }
-    | { _id: string, plan: { usageCalculationType: Types.IProductPlanUsageCalculationType, billingInterval: Types.IProductPlanConfigurationInterval, trialInterval: Types.IProductPlanConfigurationInterval | null, trialIntervalCount: number | null, billingIntervalCount: number | null, minimumCommitmentPeriods: number | null } | null }
+    | { _id: string, plan: { usageCalculationType: Types.IProductPlanUsageCalculationType, billingInterval: Types.IProductPlanConfigurationInterval, trialInterval: Types.IProductPlanConfigurationInterval | null, trialIntervalCount: number | null, billingIntervalCount: number | null } | null }
     | { _id: string }
     | { _id: string }
    | null };
@@ -1959,7 +1924,7 @@ export type IProductTokenizationQuery = { product:
     | { _id: string }
     | { _id: string }
     | { _id: string }
-    | { contractStandard: Types.ISmartContractStandard | null, contractAddress: string | null, _id: string, contractConfiguration: { tokenId: string | null, supply: number } | null }
+    | { contractStandard: Types.ISmartContractStandard | null, contractAddress: string | null, _id: string, contractConfiguration: { tokenId: string, supply: number } | null }
    | null };
 
 export type IProductVariationTypeQueryVariables = Exact<{ [key: string]: never; }>;
@@ -2005,7 +1970,6 @@ export type IProductsQueryVariables = Exact<{
   includeDrafts?: boolean | null | undefined;
   sort?: Array<Types.ISortOptionInput> | null | undefined;
   forceLocale?: unknown;
-  type?: Types.IProductType | null | undefined;
 }>;
 
 
@@ -2537,12 +2501,32 @@ export type IGlobalSearchQuery = { globalSearch: { counts: Array<{ type: Types.I
       | { __typename: 'Work', _id: string, type: Types.IWorkType }
     > } };
 
+export type IShopSettingsQueryVariables = Exact<{
+  namespace: string;
+}>;
+
+
+export type IShopSettingsQuery = { shopSettingsSchema: unknown, shopInfo: { _id: string, settings: unknown } };
+
+export type IShopSettingsNamespacesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type IShopSettingsNamespacesQuery = { shopSettingsNamespaces: Array<string> };
+
+export type IUpdateShopSettingsMutationVariables = Exact<{
+  namespace: string;
+  value: unknown;
+}>;
+
+
+export type IUpdateShopSettingsMutation = { updateShopSettings: unknown };
+
 export type IInvalidateTokenMutationVariables = Exact<{
   tokenId: string | number;
 }>;
 
 
-export type IInvalidateTokenMutation = { invalidateToken: { _id: string, walletAddress: string | null, status: Types.ITokenExportStatus, quantity: number, contractAddress: string | null, chainId: string | null, tokenSerialNumber: string | null, invalidatedDate: unknown, expiryDate: unknown, ercMetadata: unknown, accessKey: string, isInvalidateable: boolean, order: { _id: string, orderNumber: string | null } | null } };
+export type IInvalidateTokenMutation = { invalidateToken: { _id: string, walletAddress: string | null, status: Types.ITokenExportStatus, quantity: number, contractAddress: string | null, chainId: string | null, tokenSerialNumber: string | null, invalidatedDate: unknown, expiryDate: unknown, ercMetadata: unknown, accessKey: string, isInvalidateable: boolean } };
 
 export type ITokenQueryVariables = Exact<{
   tokenId: string | number;
@@ -2550,7 +2534,7 @@ export type ITokenQueryVariables = Exact<{
 }>;
 
 
-export type ITokenQuery = { token: { _id: string, walletAddress: string | null, status: Types.ITokenExportStatus, quantity: number, contractAddress: string | null, chainId: string | null, tokenSerialNumber: string | null, invalidatedDate: unknown, expiryDate: unknown, ercMetadata: unknown, accessKey: string, isInvalidateable: boolean, product: { _id: string, sequence: number, status: Types.IProductStatus, tags: Array<unknown> | null, updated: unknown, published: unknown, simulatedPrice: { amount: number, currencyCode: string } | null, texts: { _id: string, slug: string | null, title: string | null, subtitle: string | null, description: string | null, vendor: string | null, brand: string | null, labels: Array<string> | null, locale: unknown } | null, media: Array<{ _id: string, tags: Array<unknown> | null, file: { _id: string, url: string | null } | null }> }, user: { _id: string, username: string | null, isGuest: boolean, name: string, avatar: { _id: string, url: string | null } | null, primaryEmail: { verified: boolean, address: string } | null, lastContact: { telNumber: string | null, emailAddress: string | null } | null, profile: { displayName: string | null, address: { firstName: string | null, lastName: string | null } | null } | null } | null, order: { _id: string, orderNumber: string | null } | null } | null };
+export type ITokenQuery = { token: { _id: string, walletAddress: string | null, status: Types.ITokenExportStatus, quantity: number, contractAddress: string | null, chainId: string | null, tokenSerialNumber: string | null, invalidatedDate: unknown, expiryDate: unknown, ercMetadata: unknown, accessKey: string, isInvalidateable: boolean, product: { _id: string, sequence: number, status: Types.IProductStatus, tags: Array<unknown> | null, updated: unknown, published: unknown, simulatedPrice: { amount: number, currencyCode: string } | null, texts: { _id: string, slug: string | null, title: string | null, subtitle: string | null, description: string | null, vendor: string | null, brand: string | null, labels: Array<string> | null, locale: unknown } | null, media: Array<{ _id: string, tags: Array<unknown> | null, file: { _id: string, url: string | null } | null }> }, user: { _id: string, username: string | null, isGuest: boolean, name: string, avatar: { _id: string, url: string | null } | null, primaryEmail: { verified: boolean, address: string } | null, lastContact: { telNumber: string | null, emailAddress: string | null } | null, profile: { displayName: string | null, address: { firstName: string | null, lastName: string | null } | null } | null } | null } | null };
 
 export type ITokensQueryVariables = Exact<{
   queryString?: string | null | undefined;
@@ -2560,7 +2544,7 @@ export type ITokensQueryVariables = Exact<{
 }>;
 
 
-export type ITokensQuery = { tokensCount: number, tokens: Array<{ _id: string, walletAddress: string | null, status: Types.ITokenExportStatus, quantity: number, contractAddress: string | null, chainId: string | null, tokenSerialNumber: string | null, invalidatedDate: unknown, expiryDate: unknown, ercMetadata: unknown, accessKey: string, isInvalidateable: boolean, product: { _id: string, sequence: number, status: Types.IProductStatus, tags: Array<unknown> | null, updated: unknown, published: unknown, simulatedPrice: { amount: number, currencyCode: string } | null, texts: { _id: string, slug: string | null, title: string | null, subtitle: string | null, description: string | null, vendor: string | null, brand: string | null, labels: Array<string> | null, locale: unknown } | null, media: Array<{ _id: string, tags: Array<unknown> | null, file: { _id: string, url: string | null } | null }> }, user: { _id: string, username: string | null, isGuest: boolean, primaryEmail: { address: string, verified: boolean } | null, avatar: { _id: string, url: string | null } | null, profile: { displayName: string | null, address: { firstName: string | null, lastName: string | null } | null } | null } | null, order: { _id: string, orderNumber: string | null } | null }> };
+export type ITokensQuery = { tokensCount: number, tokens: Array<{ _id: string, walletAddress: string | null, status: Types.ITokenExportStatus, quantity: number, contractAddress: string | null, chainId: string | null, tokenSerialNumber: string | null, invalidatedDate: unknown, expiryDate: unknown, ercMetadata: unknown, accessKey: string, isInvalidateable: boolean, product: { _id: string, sequence: number, status: Types.IProductStatus, tags: Array<unknown> | null, updated: unknown, published: unknown, simulatedPrice: { amount: number, currencyCode: string } | null, texts: { _id: string, slug: string | null, title: string | null, subtitle: string | null, description: string | null, vendor: string | null, brand: string | null, labels: Array<string> | null, locale: unknown } | null, media: Array<{ _id: string, tags: Array<unknown> | null, file: { _id: string, url: string | null } | null }> }, user: { _id: string, username: string | null, isGuest: boolean, primaryEmail: { address: string, verified: boolean } | null, avatar: { _id: string, url: string | null } | null, profile: { displayName: string | null, address: { firstName: string | null, lastName: string | null } | null } | null } | null }> };
 
 export type IWarehousingProviderFragment = { _id: string, created: unknown, updated: unknown, deleted: unknown, isActive: boolean | null, type: Types.IWarehousingProviderType | null, configuration: unknown, configurationError: Types.IWarehousingProviderError | null, interface: { _id: string, label: string | null, version: string | null } | null };
 
