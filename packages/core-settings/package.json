@@ -1,0 +1,47 @@
+{
+  "name": "@unchainedshop/core-settings",
+  "description": "Shop-wide runtime settings module for the Unchained Engine",
+  "version": "5.0.0-alpha.7",
+  "main": "lib/settings-index.js",
+  "types": "lib/settings-index.d.ts",
+  "type": "module",
+  "scripts": {
+    "clean": "tsc -b --clean",
+    "build": "tsc -b",
+    "prepublishOnly": "npm run clean && npm run build",
+    "watch": "tsc -w",
+    "test": "node --test",
+    "test:watch": "node --test --watch"
+  },
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unchainedshop/unchained.git"
+  },
+  "keywords": [
+    "unchained",
+    "ecommerce",
+    "core"
+  ],
+  "authors": [
+    "Pascal Kaufmann",
+    "Mikael Araya",
+    "Vedran Rudelj",
+    "Joël Meiller"
+  ],
+  "license": "EUPL-1.2",
+  "bugs": {
+    "url": "https://github.com/unchainedshop/unchained/issues"
+  },
+  "homepage": "https://github.com/unchainedshop/unchained#readme",
+  "dependencies": {
+    "@unchainedshop/events": "^5.0.0-alpha.7",
+    "@unchainedshop/mongodb": "^5.0.0-alpha.7",
+    "@unchainedshop/utils": "^5.0.0-alpha.7",
+    "zod": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "typescript": "^6.0.3"
+  }
+}

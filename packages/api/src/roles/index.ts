@@ -111,6 +111,7 @@ const actions: Record<string, string> = [
   'bulkSetAssortmentActive',
   'bulkRemoveFilters',
   'bulkSetFilterActive',
+  'manageShopSettings',
   'logout',
   'logoutAllSessions',
   'loginAsGuest',

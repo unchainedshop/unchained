@@ -149,6 +149,7 @@ test.describe('MCP server (stateless, SDK v2)', () => {
       'unchained://shop/countries',
       'unchained://shop/currencies',
       'unchained://shop/languages',
+      'unchained://shop/settings',
     ]);
 
     const readResponse = await mcpFetch(rpc('resources/read', { uri: 'unchained://shop/languages' }), {

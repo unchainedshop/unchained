@@ -10,7 +10,7 @@ import * as jose from 'jose';
 // Import additional discount plugins used by kitchensink
 import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
 import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
-import { pluginRegistry } from '@unchainedshop/core';
+import { pluginRegistry, registerSettingsNamespace } from '@unchainedshop/core';
 import {
   createTicketingPlugin,
   validateTicketOrderPosition,
@@ -21,6 +21,7 @@ import {
   readAttendeeName,
 } from '@unchainedshop/ticketing/warehousing/ticket';
 import { BoxOfficePlugin } from '@unchainedshop/ticketing/payment/box-office';
+import { z } from 'zod';
 
 let fastify = null;
 let platform = null;
@@ -157,6 +158,27 @@ export async function initializeTestPlatform() {
       },
     }),
   );
+
+  // Register test settings namespaces (used by shop-settings.test.js)
+  registerSettingsNamespace({
+    key: 'TEST_GENERAL',
+    schema: z.object({
+      siteName: z.string().default('My Shop'),
+      maintenanceMode: z.boolean().default(false),
+      maxItemsPerOrder: z.number().int().min(1).max(1000).default(99),
+    }),
+    public: false,
+    defaults: { siteName: 'My Shop', maintenanceMode: false, maxItemsPerOrder: 99 },
+  });
+  registerSettingsNamespace({
+    key: 'TEST_PUBLIC',
+    schema: z.object({
+      welcomeMessage: z.string().default('Welcome!'),
+      showBanner: z.boolean().default(true),
+    }),
+    public: true,
+    defaults: { welcomeMessage: 'Welcome!', showBanner: true },
+  });
 
   const auditCollectorPort = await startAuditCollector();
 
