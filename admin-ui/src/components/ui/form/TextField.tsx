@@ -28,10 +28,9 @@ const TextField = ({
     <FieldWrapper {...field}>
       <input
         className={clsx(
-          'relative mt-1 block w-full dark:focus:autofill dark:hover:autofill dark:autofill dark:placeholder:text-slate-600 dark:bg-slate-900 dark:text-slate-200 appearance-none rounded-md border-1 dark:border-slate-700 px-4 py-2.5 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-focus-ring shadow-xs',
+          'relative mt-1 block w-full dark:focus:autofill dark:hover:autofill dark:autofill appearance-none rounded-md border-1 bg-surface-input px-4 py-2.5 text-sm text-text-primary border-border-default placeholder:text-text-muted focus:outline-hidden focus:ring-2 focus:ring-focus-ring shadow-xs',
           {
             'border-rose-700 placeholder:text-rose-500': !!field.error,
-            'border-slate-300 placeholder-slate-400': !field.error,
           },
         )}
         disabled={field.disabled}

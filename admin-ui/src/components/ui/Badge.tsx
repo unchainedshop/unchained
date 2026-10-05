@@ -3,6 +3,7 @@ import {
   bgColor,
   textColor,
   borderColor,
+  badgeButtonColors,
 } from '../../modules/common/data/miscellaneous';
 
 const Badge = ({
@@ -39,7 +40,7 @@ const Badge = ({
       {isRainbow ? (
         <span
           className={clsx(
-            'inline-flex items-center bg-white dark:bg-slate-700 px-2.5 py-0.5',
+            'inline-flex items-center bg-surface-raised px-2.5 py-0.5',
             {
               'rounded-full': !square,
               'rounded-md': square,
@@ -61,7 +62,7 @@ const Badge = ({
               id="badge-x-button"
               type="button"
               onClick={onClick}
-              className="ml-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-text-primary hover:bg-slate-900 hover:bg-opacity-10 dark:hover:bg-white dark:hover:bg-opacity-20 focus:outline-hidden focus:bg-slate-900 focus:bg-opacity-20 dark:focus:bg-white dark:focus:bg-opacity-30"
+              className="ml-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-text-primary hover:bg-surface-raised focus:outline-hidden focus:bg-surface-raised"
             >
               <svg
                 className="h-2 w-2"
@@ -98,13 +99,7 @@ const Badge = ({
               className={`ml-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${textColor(
                 normalizedColor,
                 400,
-              )} hover:${bgColor(
-                normalizedColor,
-                200,
-              )} hover:text-${normalizedColor}-500 focus:outline-hidden focus:${bgColor(
-                normalizedColor,
-                500,
-              )} focus:text-white`}
+              )} ${badgeButtonColors(normalizedColor)} focus:outline-hidden focus:text-white`}
             >
               <svg
                 className="h-2 w-2"
