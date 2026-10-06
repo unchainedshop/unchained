@@ -115,7 +115,7 @@ Pass `false` (not a function) for providers where payment is collected out of ba
 
 ### `isActive` / `isPayLaterAllowed`
 
-`isActive` (boolean, default `true`) toggles availability. `isPayLaterAllowed` (boolean, default `false`) controls whether order confirmation can proceed before payment completes — `true` = post-paid, `false` = pre-paid.
+`isActive` (boolean, default `true`) toggles availability. It is synchronous; to offer a provider only to some buyers, e.g. after a database lookup, filter the providers with the async [`filterSupportedProviders`](../carts.md#payment-provider-configuration) setting. `isPayLaterAllowed` (boolean, default `false`) controls whether order confirmation can proceed before payment completes — `true` = post-paid, `false` = pre-paid.
 
 ### `sign` / `validate`
 
