@@ -31,12 +31,12 @@ export async function migrateOrderCartsService(
 
   if (!toCart || !shouldMerge) {
     // No destination cart, move whole cart
-    this.orders.setCartOwner({ orderId: fromCart._id, userId: toUserId });
+    await this.orders.setCartOwner({ orderId: fromCart._id, userId: toUserId });
     return updateCalculationService.bind(this)(fromCart._id);
   }
 
   // Move positions
-  this.orders.moveCartPositions({ fromOrderId: fromCart._id, toOrderId: toCart._id });
+  await this.orders.moveCartPositions({ fromOrderId: fromCart._id, toOrderId: toCart._id });
 
   // Move billing address if target order has none
   if (fromCart.billingAddress && !toCart.billingAddress) {
