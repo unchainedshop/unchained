@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { afterEach, describe, it } from 'node:test';
+import { after, afterEach, before, describe, it } from 'node:test';
 import {
   DeliveryPricingAdapter,
   DeliveryPricingDirector,
@@ -52,8 +52,16 @@ const simulate = async (countryCode: string, order?: Partial<Order>) => {
 };
 
 describe('delivery tax adapters in a delivery price simulation', () => {
+  // Start from an empty registry, then hand back the plugins of a platform in the same process
+  let restorePlugins: () => void;
+  before(() => {
+    restorePlugins = pluginRegistry.clear();
+  });
   afterEach(() => {
     pluginRegistry.clear();
+  });
+  after(() => {
+    restorePlugins();
   });
 
   for (const [Adapter, countryCode] of [

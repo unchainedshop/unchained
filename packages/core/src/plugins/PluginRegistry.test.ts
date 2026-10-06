@@ -20,11 +20,37 @@ const registerPluginWithAdapters = (key: string, adapters: ReturnType<typeof cre
 };
 
 describe('PluginRegistry', () => {
-  describe('getAdapters', () => {
-    afterEach(() => {
-      pluginRegistry.clear();
-    });
+  afterEach(() => {
+    pluginRegistry.clear();
+  });
 
+  describe('clear', () => {
+    it('should return a function restoring the cleared plugins and skipped plugins', async () => {
+      pluginRegistry.register({
+        key: 'plugin.skipped',
+        label: 'plugin.skipped',
+        version: '1.0.0',
+        adapters: [createAdapter('skipped')],
+        onRegister: () => false,
+      });
+      registerPluginWithAdapters('plugin.kept', [createAdapter('kept')]);
+      await pluginRegistry.initialize({} as any);
+
+      const restore = pluginRegistry.clear();
+      assert.deepStrictEqual(pluginRegistry.getAllPlugins(), []);
+      registerPluginWithAdapters('plugin.temporary', [createAdapter('temporary')]);
+      restore();
+
+      assert.deepStrictEqual(
+        pluginRegistry.getAllPlugins().map((plugin) => plugin.key),
+        ['plugin.skipped', 'plugin.kept'],
+      );
+      const keys = pluginRegistry.getAdapters(adapterType).map((adapter) => adapter.key);
+      assert.deepStrictEqual(keys, ['kept']);
+    });
+  });
+
+  describe('getAdapters', () => {
     it('should sort adapters by ascending orderIndex across plugins', () => {
       registerPluginWithAdapters('plugin.tax', [createAdapter('tax', 80)]);
       registerPluginWithAdapters('plugin.base', [createAdapter('base', 0)]);
