@@ -52,6 +52,7 @@
 - **Ticket category names and ticket data:** `TicketEvent.categoryTitle(forceLocale)` returns the text of the production's category option (else the stored category), and the Admin UI shows it. `getTicketDetails(token, unchainedAPI, { locale, scanBaseUrl })` collects what a ticket shows (texts, event, category name, price as ordered, status, attendee, serial, QR payload) for your PDF and wallet renderers; the renderers guide uses it.
 - **Shared Admin UI submenus:** plugins with the same `navigation.label` share one submenu, ordered by the `sortOrder` of their entries.
 - **Permission checks outside of requests:** `roles.getConfiguredRoles()` from `@unchainedshop/api` returns the roles instance of the platform, so adapters and workers check actions with `userHasPermission({ userId, user, modules }, action, [])` instead of role names.
+- **Stop the platform without exiting:** `startPlatform()` also resolves to `shutdown()`, which stops the work queue, plugins, event emitter, GraphQL server, audit log and database like the `SIGTERM` / `SIGINT` handlers, but leaves the process running. Every call returns the same promise; once it has started, the platform's signal and error handlers no longer exit the process.
 
 ### Fixed
 

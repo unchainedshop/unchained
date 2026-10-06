@@ -64,10 +64,11 @@ try {
 }
 ```
 
-`startPlatform` resolves to `{ unchainedAPI, graphqlHandler, db }`:
+`startPlatform` resolves to `{ unchainedAPI, graphqlHandler, db, shutdown }`:
 - `unchainedAPI`: The Unchained Core instance (`modules`, `services`, `bulkImporter`, `bulkExporter`, `options`)
 - `graphqlHandler`: The GraphQL Yoga request handler
 - `db`: The MongoDB database handle
+- `shutdown`: Stops the work queue, plugins, event emitter, GraphQL server, audit log and database without exiting the process; every call returns the same promise. On `SIGTERM` / `SIGINT` the platform calls it and exits; once it has started, these signals no longer exit the process, so exit it yourself after awaiting `shutdown()`.
 
 To configure various aspects of the platform, `startPlatform` accepts a configuration object with various parameters:
   - `modules: Record<string, { configure: (params: ModuleInput<any>) => any }>`: Custom modules configuration point. Load your own modules in addition to the built-in core modules.
