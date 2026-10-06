@@ -844,28 +844,116 @@ const BadgeButtonVariants: Record<
   string,
   { hoverBg: string; hoverText: string; focusBg: string }
 > = {
-  red: { hoverBg: 'hover:bg-rose-200', hoverText: 'hover:text-rose-500', focusBg: 'focus:bg-rose-500' },
-  pink: { hoverBg: 'hover:bg-pink-200', hoverText: 'hover:text-pink-500', focusBg: 'focus:bg-pink-500' },
-  purple: { hoverBg: 'hover:bg-purple-200', hoverText: 'hover:text-purple-500', focusBg: 'focus:bg-purple-500' },
-  'deep-purple': { hoverBg: 'hover:bg-deep-purple-200', hoverText: 'hover:text-deep-purple-500', focusBg: 'focus:bg-deep-purple-500' },
-  blue: { hoverBg: 'hover:bg-sky-200', hoverText: 'hover:text-sky-500', focusBg: 'focus:bg-sky-500' },
-  'light-blue': { hoverBg: 'hover:bg-sky-200', hoverText: 'hover:text-sky-500', focusBg: 'focus:bg-sky-500' },
-  indigo: { hoverBg: 'hover:bg-indigo-200', hoverText: 'hover:text-indigo-500', focusBg: 'focus:bg-indigo-500' },
-  cyan: { hoverBg: 'hover:bg-cyan-200', hoverText: 'hover:text-cyan-500', focusBg: 'focus:bg-cyan-500' },
-  teal: { hoverBg: 'hover:bg-teal-200', hoverText: 'hover:text-teal-500', focusBg: 'focus:bg-teal-500' },
-  green: { hoverBg: 'hover:bg-emerald-200', hoverText: 'hover:text-emerald-500', focusBg: 'focus:bg-emerald-500' },
-  'light-green': { hoverBg: 'hover:bg-light-green-200', hoverText: 'hover:text-light-green-500', focusBg: 'focus:bg-light-green-500' },
-  lime: { hoverBg: 'hover:bg-lime-200', hoverText: 'hover:text-lime-500', focusBg: 'focus:bg-lime-500' },
-  yellow: { hoverBg: 'hover:bg-yellow-200', hoverText: 'hover:text-amber-500', focusBg: 'focus:bg-amber-500' },
-  amber: { hoverBg: 'hover:bg-amber-200', hoverText: 'hover:text-amber-500', focusBg: 'focus:bg-amber-500' },
-  orange: { hoverBg: 'hover:bg-orange-200', hoverText: 'hover:text-orange-500', focusBg: 'focus:bg-orange-500' },
-  'deep-orange': { hoverBg: 'hover:bg-deep-orange-200', hoverText: 'hover:text-deep-orange-500', focusBg: 'focus:bg-deep-orange-500' },
-  stone: { hoverBg: 'hover:bg-stone-200', hoverText: 'hover:text-stone-500', focusBg: 'focus:bg-stone-500' },
-  slate: { hoverBg: 'hover:bg-slate-200', hoverText: 'hover:text-slate-500', focusBg: 'focus:bg-slate-500' },
-  rose: { hoverBg: 'hover:bg-rose-200', hoverText: 'hover:text-rose-500', focusBg: 'focus:bg-rose-500' },
-  sky: { hoverBg: 'hover:bg-sky-200', hoverText: 'hover:text-sky-500', focusBg: 'focus:bg-sky-500' },
-  emerald: { hoverBg: 'hover:bg-emerald-200', hoverText: 'hover:text-emerald-500', focusBg: 'focus:bg-emerald-500' },
-  'blue-slate': { hoverBg: 'hover:bg-slate-200', hoverText: 'hover:text-slate-500', focusBg: 'focus:bg-slate-500' },
+  red: {
+    hoverBg: 'hover:bg-rose-200',
+    hoverText: 'hover:text-rose-500',
+    focusBg: 'focus:bg-rose-500',
+  },
+  pink: {
+    hoverBg: 'hover:bg-pink-200',
+    hoverText: 'hover:text-pink-500',
+    focusBg: 'focus:bg-pink-500',
+  },
+  purple: {
+    hoverBg: 'hover:bg-purple-200',
+    hoverText: 'hover:text-purple-500',
+    focusBg: 'focus:bg-purple-500',
+  },
+  'deep-purple': {
+    hoverBg: 'hover:bg-deep-purple-200',
+    hoverText: 'hover:text-deep-purple-500',
+    focusBg: 'focus:bg-deep-purple-500',
+  },
+  blue: {
+    hoverBg: 'hover:bg-sky-200',
+    hoverText: 'hover:text-sky-500',
+    focusBg: 'focus:bg-sky-500',
+  },
+  'light-blue': {
+    hoverBg: 'hover:bg-sky-200',
+    hoverText: 'hover:text-sky-500',
+    focusBg: 'focus:bg-sky-500',
+  },
+  indigo: {
+    hoverBg: 'hover:bg-indigo-200',
+    hoverText: 'hover:text-indigo-500',
+    focusBg: 'focus:bg-indigo-500',
+  },
+  cyan: {
+    hoverBg: 'hover:bg-cyan-200',
+    hoverText: 'hover:text-cyan-500',
+    focusBg: 'focus:bg-cyan-500',
+  },
+  teal: {
+    hoverBg: 'hover:bg-teal-200',
+    hoverText: 'hover:text-teal-500',
+    focusBg: 'focus:bg-teal-500',
+  },
+  green: {
+    hoverBg: 'hover:bg-emerald-200',
+    hoverText: 'hover:text-emerald-500',
+    focusBg: 'focus:bg-emerald-500',
+  },
+  'light-green': {
+    hoverBg: 'hover:bg-light-green-200',
+    hoverText: 'hover:text-light-green-500',
+    focusBg: 'focus:bg-light-green-500',
+  },
+  lime: {
+    hoverBg: 'hover:bg-lime-200',
+    hoverText: 'hover:text-lime-500',
+    focusBg: 'focus:bg-lime-500',
+  },
+  yellow: {
+    hoverBg: 'hover:bg-yellow-200',
+    hoverText: 'hover:text-amber-500',
+    focusBg: 'focus:bg-amber-500',
+  },
+  amber: {
+    hoverBg: 'hover:bg-amber-200',
+    hoverText: 'hover:text-amber-500',
+    focusBg: 'focus:bg-amber-500',
+  },
+  orange: {
+    hoverBg: 'hover:bg-orange-200',
+    hoverText: 'hover:text-orange-500',
+    focusBg: 'focus:bg-orange-500',
+  },
+  'deep-orange': {
+    hoverBg: 'hover:bg-deep-orange-200',
+    hoverText: 'hover:text-deep-orange-500',
+    focusBg: 'focus:bg-deep-orange-500',
+  },
+  stone: {
+    hoverBg: 'hover:bg-stone-200',
+    hoverText: 'hover:text-stone-500',
+    focusBg: 'focus:bg-stone-500',
+  },
+  slate: {
+    hoverBg: 'hover:bg-slate-200',
+    hoverText: 'hover:text-slate-500',
+    focusBg: 'focus:bg-slate-500',
+  },
+  rose: {
+    hoverBg: 'hover:bg-rose-200',
+    hoverText: 'hover:text-rose-500',
+    focusBg: 'focus:bg-rose-500',
+  },
+  sky: {
+    hoverBg: 'hover:bg-sky-200',
+    hoverText: 'hover:text-sky-500',
+    focusBg: 'focus:bg-sky-500',
+  },
+  emerald: {
+    hoverBg: 'hover:bg-emerald-200',
+    hoverText: 'hover:text-emerald-500',
+    focusBg: 'focus:bg-emerald-500',
+  },
+  'blue-slate': {
+    hoverBg: 'hover:bg-slate-200',
+    hoverText: 'hover:text-slate-500',
+    focusBg: 'focus:bg-slate-500',
+  },
 };
 
 export const badgeButtonColors = (color: string) => {

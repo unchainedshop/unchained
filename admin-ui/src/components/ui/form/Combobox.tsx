@@ -118,11 +118,17 @@ const Combobox = ({
             <ComboboxOptions className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-surface border border-border-subtle py-1 text-sm shadow-lg focus:outline-hidden">
               {isLoading ? (
                 <div className="px-4 py-2 text-text-muted">
-                  {formatMessage({ id: 'loading', defaultMessage: 'Loading ...' })}
+                  {formatMessage({
+                    id: 'loading',
+                    defaultMessage: 'Loading ...',
+                  })}
                 </div>
               ) : filteredOptions.length === 0 ? (
                 <div className="px-4 py-2 text-text-muted">
-                  {formatMessage({ id: 'no_results_found', defaultMessage: 'No results found' })}
+                  {formatMessage({
+                    id: 'no_results_found',
+                    defaultMessage: 'No results found',
+                  })}
                 </div>
               ) : (
                 filteredOptions.map((opt) => (
@@ -186,7 +192,10 @@ const Combobox = ({
             </div>
           ) : filteredOptions.length === 0 ? (
             <div className="px-4 py-2 text-text-muted">
-              {formatMessage({ id: 'no_results_found', defaultMessage: 'No results found' })}
+              {formatMessage({
+                id: 'no_results_found',
+                defaultMessage: 'No results found',
+              })}
             </div>
           ) : (
             filteredOptions.map((opt) => (
