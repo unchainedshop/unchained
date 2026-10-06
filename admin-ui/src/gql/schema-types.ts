@@ -2121,6 +2121,7 @@ export type IMutationReorderProductMediaArgs = {
 export type IMutationRequestQuotationArgs = {
   configuration?: InputMaybe<Array<IProductConfigurationParameterInput>>;
   productId: Scalars['ID']['input'];
+  quantity?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -3763,9 +3764,11 @@ export type IQuotation = {
   expires?: Maybe<Scalars['DateTimeISO']['output']>;
   fulfilled?: Maybe<Scalars['DateTimeISO']['output']>;
   isExpired?: Maybe<Scalars['Boolean']['output']>;
-  /** Proposed unit price (minor units of the quotation's currency), set when the quotation reaches PROPOSED */
+  /** Proposed unit price (minor units of the quotation's currency) and whether it is taxable and net, set when the quotation reaches PROPOSED */
   price?: Maybe<IPrice>;
   product: IProduct;
+  /** Quoted quantity: positions of the quotation take multiples of it, never less. Requested with the quotation, the proposal may change it */
+  quantity?: Maybe<Scalars['Int']['output']>;
   quotationNumber?: Maybe<Scalars['String']['output']>;
   rejected?: Maybe<Scalars['DateTimeISO']['output']>;
   status: IQuotationStatus;

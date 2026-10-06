@@ -2382,13 +2382,13 @@ export type IUserTokensQueryVariables = Exact<{
 
 export type IUserTokensQuery = { user: { _id: string, tokens: Array<{ _id: string, walletAddress: string | null, status: Types.ITokenExportStatus, chainId: string | null, tokenSerialNumber: string | null, product: { _id: string, sequence: number, status: Types.IProductStatus, tags: Array<unknown> | null, updated: unknown, published: unknown, simulatedPrice: { amount: number, currencyCode: string } | null, texts: { _id: string, slug: string | null, title: string | null, subtitle: string | null, description: string | null, vendor: string | null, brand: string | null, labels: Array<string> | null, locale: unknown } | null, media: Array<{ _id: string, tags: Array<unknown> | null, file: { _id: string, url: string | null } | null }> } }> } | null };
 
-export type IQuotationDetailFragment = { _id: string, status: Types.IQuotationStatus, created: unknown, expires: unknown, updated: unknown, isExpired: boolean | null, quotationNumber: string | null, fulfilled: unknown, rejected: unknown, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null, primaryEmail: { verified: boolean, address: string } | null }, configuration: Array<{ key: string, value: string }> | null, country: { _id: string, isoCode: string | null, flagEmoji: string | null, name: string | null } | null, currency: { _id: string, isoCode: string, isActive: boolean | null } | null, product:
+export type IQuotationDetailFragment = { _id: string, quantity: number | null, status: Types.IQuotationStatus, created: unknown, expires: unknown, updated: unknown, isExpired: boolean | null, quotationNumber: string | null, fulfilled: unknown, rejected: unknown, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null, primaryEmail: { verified: boolean, address: string } | null }, configuration: Array<{ key: string, value: string }> | null, country: { _id: string, isoCode: string | null, flagEmoji: string | null, name: string | null } | null, currency: { _id: string, isoCode: string, isActive: boolean | null } | null, product:
     | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
     | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
     | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
     | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
     | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
-   };
+  , price: { amount: number, currencyCode: string, isTaxable: boolean, isNetPrice: boolean } | null };
 
 
 export type IQuotationDetailFragmentVariables = Exact<{ [key: string]: never; }>;
@@ -2410,26 +2410,26 @@ export type IMakeQuotationProposalMutationVariables = Exact<{
 }>;
 
 
-export type IMakeQuotationProposalMutation = { makeQuotationProposal: { _id: string, status: Types.IQuotationStatus, created: unknown, expires: unknown, updated: unknown, isExpired: boolean | null, quotationNumber: string | null, fulfilled: unknown, rejected: unknown, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null, primaryEmail: { verified: boolean, address: string } | null }, configuration: Array<{ key: string, value: string }> | null, country: { _id: string, isoCode: string | null, flagEmoji: string | null, name: string | null } | null, currency: { _id: string, isoCode: string, isActive: boolean | null } | null, product:
+export type IMakeQuotationProposalMutation = { makeQuotationProposal: { _id: string, quantity: number | null, status: Types.IQuotationStatus, created: unknown, expires: unknown, updated: unknown, isExpired: boolean | null, quotationNumber: string | null, fulfilled: unknown, rejected: unknown, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null, primaryEmail: { verified: boolean, address: string } | null }, configuration: Array<{ key: string, value: string }> | null, country: { _id: string, isoCode: string | null, flagEmoji: string | null, name: string | null } | null, currency: { _id: string, isoCode: string, isActive: boolean | null } | null, product:
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
-     } };
+    , price: { amount: number, currencyCode: string, isTaxable: boolean, isNetPrice: boolean } | null } };
 
 export type IQuotationQueryVariables = Exact<{
   quotationId: string | number;
 }>;
 
 
-export type IQuotationQuery = { quotationsCount: number, quotation: { _id: string, status: Types.IQuotationStatus, created: unknown, expires: unknown, updated: unknown, isExpired: boolean | null, quotationNumber: string | null, fulfilled: unknown, rejected: unknown, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null, primaryEmail: { verified: boolean, address: string } | null }, configuration: Array<{ key: string, value: string }> | null, country: { _id: string, isoCode: string | null, flagEmoji: string | null, name: string | null } | null, currency: { _id: string, isoCode: string, isActive: boolean | null } | null, product:
+export type IQuotationQuery = { quotationsCount: number, quotation: { _id: string, quantity: number | null, status: Types.IQuotationStatus, created: unknown, expires: unknown, updated: unknown, isExpired: boolean | null, quotationNumber: string | null, fulfilled: unknown, rejected: unknown, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null, primaryEmail: { verified: boolean, address: string } | null }, configuration: Array<{ key: string, value: string }> | null, country: { _id: string, isoCode: string | null, flagEmoji: string | null, name: string | null } | null, currency: { _id: string, isoCode: string, isActive: boolean | null } | null, product:
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
-     } | null };
+    , price: { amount: number, currencyCode: string, isTaxable: boolean, isNetPrice: boolean } | null } | null };
 
 export type IQuotationsQueryVariables = Exact<{
   limit?: number | null | undefined;
@@ -2453,13 +2453,13 @@ export type IRejectQuotationMutationVariables = Exact<{
 }>;
 
 
-export type IRejectQuotationMutation = { rejectQuotation: { _id: string, status: Types.IQuotationStatus, created: unknown, expires: unknown, updated: unknown, isExpired: boolean | null, quotationNumber: string | null, fulfilled: unknown, rejected: unknown, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null, primaryEmail: { verified: boolean, address: string } | null }, configuration: Array<{ key: string, value: string }> | null, country: { _id: string, isoCode: string | null, flagEmoji: string | null, name: string | null } | null, currency: { _id: string, isoCode: string, isActive: boolean | null } | null, product:
+export type IRejectQuotationMutation = { rejectQuotation: { _id: string, quantity: number | null, status: Types.IQuotationStatus, created: unknown, expires: unknown, updated: unknown, isExpired: boolean | null, quotationNumber: string | null, fulfilled: unknown, rejected: unknown, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null, primaryEmail: { verified: boolean, address: string } | null }, configuration: Array<{ key: string, value: string }> | null, country: { _id: string, isoCode: string | null, flagEmoji: string | null, name: string | null } | null, currency: { _id: string, isoCode: string, isActive: boolean | null } | null, product:
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
-     } };
+    , price: { amount: number, currencyCode: string, isTaxable: boolean, isNetPrice: boolean } | null } };
 
 export type IUserQuotationsQueryVariables = Exact<{
   userId: string | number;
@@ -2481,13 +2481,13 @@ export type IVerifyQuotationMutationVariables = Exact<{
 }>;
 
 
-export type IVerifyQuotationMutation = { verifyQuotation: { _id: string, status: Types.IQuotationStatus, created: unknown, expires: unknown, updated: unknown, isExpired: boolean | null, quotationNumber: string | null, fulfilled: unknown, rejected: unknown, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null, primaryEmail: { verified: boolean, address: string } | null }, configuration: Array<{ key: string, value: string }> | null, country: { _id: string, isoCode: string | null, flagEmoji: string | null, name: string | null } | null, currency: { _id: string, isoCode: string, isActive: boolean | null } | null, product:
+export type IVerifyQuotationMutation = { verifyQuotation: { _id: string, quantity: number | null, status: Types.IQuotationStatus, created: unknown, expires: unknown, updated: unknown, isExpired: boolean | null, quotationNumber: string | null, fulfilled: unknown, rejected: unknown, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null, primaryEmail: { verified: boolean, address: string } | null }, configuration: Array<{ key: string, value: string }> | null, country: { _id: string, isoCode: string | null, flagEmoji: string | null, name: string | null } | null, currency: { _id: string, isoCode: string, isActive: boolean | null } | null, product:
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
       | { _id: string, texts: { _id: string, slug: string | null, subtitle: string | null, title: string | null, description: string | null } | null, media: Array<{ _id: string, file: { _id: string, type: string, url: string | null } | null }> }
-     } };
+    , price: { amount: number, currencyCode: string, isTaxable: boolean, isNetPrice: boolean } | null } };
 
 type IGlobalSearchProductFragment_BundleProduct = { __typename: 'BundleProduct', _id: string, texts: { _id: string, title: string | null, slug: string | null } | null, media: Array<{ file: { url: string | null } | null }> };
 

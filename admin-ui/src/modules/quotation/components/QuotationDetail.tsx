@@ -17,12 +17,14 @@ import useMakeQuotationProposal from '../hooks/useMakeQuotationProposal';
 import JSONView from '@/components/ui/JSONView';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { IRoleAction } from '../../../gql/types';
+import { useFormatPrice } from '../../common/utils/utils';
 import useAuth from '../../Auth/useAuth';
 
 const QuotationDetail = ({ quotation }) => {
   const { formatMessage } = useIntl();
   const { setModal } = useModal();
   const { hasRole } = useAuth();
+  const { formatPrice } = useFormatPrice();
 
   const { statusTypes: quotationStatusTypes } =
     useStatusTypes('QuotationStatus');
@@ -220,6 +222,48 @@ const QuotationDetail = ({ quotation }) => {
               <p className="mt-3 text-slate-500">
                 {quotation?.product?.description}
               </p>
+
+              {(quotation?.quantity || quotation?.price) && (
+                <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-slate-700 dark:text-slate-200">
+                  {quotation?.quantity ? (
+                    <>
+                      <dt className="text-slate-500">
+                        {formatMessage({
+                          id: 'quantity',
+                          defaultMessage: 'Quantity',
+                        })}
+                      </dt>
+                      <dd>{quotation.quantity}</dd>
+                    </>
+                  ) : null}
+                  {quotation?.price ? (
+                    <>
+                      <dt className="text-slate-500">
+                        {formatMessage({
+                          id: 'price',
+                          defaultMessage: 'Price',
+                        })}
+                      </dt>
+                      <dd>
+                        {formatPrice(quotation.price)}{' '}
+                        <span className="text-slate-500">
+                          (
+                          {quotation.price.isNetPrice
+                            ? formatMessage({
+                                id: 'net_price',
+                                defaultMessage: 'Net Price',
+                              })
+                            : formatMessage({
+                                id: 'gross_price',
+                                defaultMessage: 'Gross',
+                              })}
+                          )
+                        </span>
+                      </dd>
+                    </>
+                  ) : null}
+                </dl>
+              )}
 
               <JSONView
                 disabled
