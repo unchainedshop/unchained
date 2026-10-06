@@ -14,10 +14,9 @@ export default async function makeQuotationProposal(context: Context, params: Pa
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
 
-  const proposedQuotation = await services.quotations.proposeQuotation(
-    quotation,
-    quotationContext || {},
-  );
+  const proposedQuotation = await services.quotations.proposeQuotation(quotation, {
+    quotationContext: quotationContext || {},
+  });
 
   return getNormalizedQuotationDetails(proposedQuotation._id, context);
 }

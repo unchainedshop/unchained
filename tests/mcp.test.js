@@ -4,6 +4,7 @@ import { setupDatabase, disconnect, getServerBaseUrl } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 
 let baseUrl;
+let db;
 
 const mcpFetch = async (body, { token, method = 'POST', headers = {} } = {}) =>
   fetch(`${baseUrl}/mcp`, {
@@ -33,7 +34,7 @@ const rpc = (method, params = {}, id = 1) => ({ jsonrpc: '2.0', id, method, para
 
 test.describe('MCP server (stateless, SDK v2)', () => {
   test.before(async () => {
-    await setupDatabase();
+    [db] = await setupDatabase();
     baseUrl = getServerBaseUrl();
   });
 
@@ -139,6 +140,27 @@ test.describe('MCP server (stateless, SDK v2)', () => {
     assert.strictEqual(response.status, 200);
     const message = await parseMcpResponse(response);
     assert.strictEqual(message.result.isError, true);
+  });
+
+  test('MAKE_PROPOSAL passes the quotation context to the quotation adapter', async () => {
+    const response = await mcpFetch(
+      rpc('tools/call', {
+        name: 'quotation_management',
+        arguments: {
+          action: 'MAKE_PROPOSAL',
+          quotationId: 'processing-quotation',
+          quotationContext: { price: 4200, isNetPrice: true },
+        },
+      }),
+      { token: ADMIN_TOKEN },
+    );
+    const message = await parseMcpResponse(response);
+    assert.notStrictEqual(message.result.isError, true);
+
+    const quotation = await db.collection('quotations').findOne({ _id: 'processing-quotation' });
+    assert.strictEqual(quotation.status, 'PROPOSED');
+    assert.strictEqual(quotation.price, 4200);
+    assert.strictEqual(quotation.isNetPrice, true);
   });
 
   test('serves the localization resources', async () => {
