@@ -71,6 +71,7 @@ export const Stripe: IPaymentAdapter = {
             customer: setupIntent.customer,
             // payment_method_options: setupIntent.payment_method_options,
             payment_method_types: setupIntent.payment_method_types,
+            allowed_payment_method_types: setupIntent.allowed_payment_method_types,
             usage: setupIntent.usage,
           };
         }
@@ -126,7 +127,7 @@ export const Stripe: IPaymentAdapter = {
                 customer: paymentCredentials.meta?.customer,
                 confirm: true,
                 payment_method: paymentCredentials.token,
-                payment_method_types: paymentCredentials.meta?.payment_method_types,
+                allowed_payment_method_types: paymentCredentials.meta?.allowed_payment_method_types,
                 // payment_method_options: paymentCredentials.meta?.payment_method_options, // eslint-disable-line
               },
             );

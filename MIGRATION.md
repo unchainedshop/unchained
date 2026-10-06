@@ -282,6 +282,23 @@ The Braintree plugin was also dropped in v5 (it only exists on the v4.8.x branch
 - Implement a custom PayPal integration using `@paypal/paypal-server-sdk` (new official SDK) via `registerPaymentProvider()`
 - Use alternative payment providers (Stripe, Datatrans, Saferpay, Payrexx, PostFinance Checkout)
 
+### Stripe SDK v23 / API `2026-09-30.endive`
+
+**BREAKING CHANGE:** The Stripe plugin now requires `stripe` v23 (peer range `>=23 <24`) and pins Stripe API version `2026-09-30.endive`. Upgrade your installed package: `npm install stripe@^23`.
+
+**BREAKING CHANGE:** This API version rejects `payment_method_types` on PaymentIntent and SetupIntent create/confirm (`400 payment_method_types_no_longer_supported`). The plugin passes `transactionContext` through to Stripe unchanged, so storefronts that send `payment_method_types` to `signPaymentProviderForCheckout` / `signPaymentProviderForCredentialRegistration` must switch:
+
+```diff
+- transactionContext: { payment_method_types: ['card'] }
++ transactionContext: { allowed_payment_method_types: ['card'] }
+```
+
+Or drop it and manage payment methods in the Stripe Dashboard (dynamic payment methods), optionally with `excluded_payment_method_types`. Unlike before, `allowed_payment_method_types` silently drops types that are incompatible with the currency/amount instead of returning an error.
+
+Charging saved credentials now sends `meta.allowed_payment_method_types` (stored from the SetupIntent's field of the same name) instead of `meta.payment_method_types`. Credentials registered before the upgrade have no allowed list, so Stripe derives the type from the saved payment method.
+
+If your Stripe webhook endpoint is pinned to an older API version in the Dashboard, the events keep their old shape; the plugin only reads `metadata`, `id` and `type`, so no change is required there.
+
 ### PluginRegistry Internal Changes
 
 **BREAKING CHANGE:** `PluginRegistry.registerAdapters()` method removed (was a no-op).

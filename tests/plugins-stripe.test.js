@@ -107,7 +107,7 @@ test.describe('Plugins: Stripe Payments', async () => {
             paymentProviderId: 'stripe-payment-provider',
             transactionContext: {
               payment_method: 'pm_card_visa',
-              payment_method_types: ['card'],
+              allowed_payment_method_types: ['card'],
             },
           },
         });
