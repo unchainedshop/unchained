@@ -2,7 +2,7 @@ import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongoClient } from 'mongodb';
-import { configureProductsModule } from '@unchainedshop/core-products';
+import { configureProductsModule, productsSettings } from '@unchainedshop/core-products';
 import productionServices, { createTicketProductionSyncHandlers } from './production-services.ts';
 import { TICKET_PRODUCTION_TAG } from './production.ts';
 
@@ -33,11 +33,15 @@ before(async () => {
   client = new MongoClient(server.getUri());
   await client.connect();
   const db = client.db('ticket-productions');
+  // configureProductsModule configures the shared productsSettings: keep the slugify of a platform
+  // in the same process
+  const { slugify } = productsSettings;
   modules = {
     products: await configureProductsModule({ db, migrationRepository: undefined as any }),
     warehousing: { tokensCount: async ({ productId }: any) => issued[productId] ?? 0 },
     passes: { countReservedTickets: async ({ productId }: any) => reserved[productId] ?? 0 },
   };
+  productsSettings.slugify = slugify;
 });
 
 after(async () => {

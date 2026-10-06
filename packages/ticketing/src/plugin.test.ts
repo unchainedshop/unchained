@@ -33,7 +33,12 @@ describe('ticketing plugin', () => {
   // onRegister subscribes to events; a throwaway emitter keeps the fake modules from reacting to
   // the events of later suites in the same process
   let previousAdapter: ReturnType<typeof getEmitAdapter>;
+  // onRegister adds the magic-key rules to the configured roles; a throwaway role set keeps them
+  // away from the roles of a platform in the same process
+  let restoreRoles: () => void;
   beforeEach(() => {
+    restoreRoles = roles.snapshotConfiguredRoles();
+    roles.configureRoles({});
     previousAdapter = getEmitAdapter();
     const emitter = new EventEmitter();
     setEmitAdapter({
@@ -55,6 +60,7 @@ describe('ticketing plugin', () => {
     if (unchainedSecret === undefined) delete process.env.UNCHAINED_SECRET;
     else process.env.UNCHAINED_SECRET = unchainedSecret;
     setEmitAdapter(previousAdapter);
+    restoreRoles();
   });
 
   const unchainedAPI = { modules: {}, services: {} } as any;
