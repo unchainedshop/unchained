@@ -90,8 +90,9 @@ describe('ticketing plugin', () => {
   test('the passes module receives the discount code handlers unchanged', async () => {
     process.env.UNCHAINED_SECRET = 'secret';
     const discountCode = { generate: async () => 'code', verify: async () => null };
-    const server = await MongoMemoryServer.create();
-    const client = new MongoClient(server.getUri());
+    // Use MONGO_URL (npm test shares the run's MongoDB), else start a server of its own
+    const server = process.env.MONGO_URL ? undefined : await MongoMemoryServer.create();
+    const client = new MongoClient(process.env.MONGO_URL || server.getUri());
     try {
       await client.connect();
       const { passes } = createTicketingPlugin({ discountCode }).module!({ db: client.db('ticketing') });
@@ -100,7 +101,7 @@ describe('ticketing plugin', () => {
       assert.equal(module.verifyDiscountCode, discountCode.verify);
     } finally {
       await client.close();
-      await server.stop();
+      await server?.stop();
     }
   });
 

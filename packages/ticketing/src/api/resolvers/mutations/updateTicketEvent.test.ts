@@ -5,8 +5,9 @@ import { MongoClient } from 'mongodb';
 import updateTicketEvent from './updateTicketEvent.ts';
 
 test('event details are merged into the product meta without touching the tokenization', async () => {
-  const server = await MongoMemoryServer.create();
-  const client = new MongoClient(server.getUri());
+  // Use MONGO_URL (npm test shares the run's MongoDB), else start a server of its own
+  const server = process.env.MONGO_URL ? undefined : await MongoMemoryServer.create();
+  const client = new MongoClient(process.env.MONGO_URL || server.getUri());
   try {
     await client.connect();
     const Products = client.db('ticket-event-update').collection<any>('products');
@@ -93,13 +94,14 @@ test('event details are merged into the product meta without touching the tokeni
     }
   } finally {
     await client.close();
-    await server.stop();
+    await server?.stop();
   }
 });
 
 test('sale rules are merged into meta.saleRules rule by rule', async () => {
-  const server = await MongoMemoryServer.create();
-  const client = new MongoClient(server.getUri());
+  // Use MONGO_URL (npm test shares the run's MongoDB), else start a server of its own
+  const server = process.env.MONGO_URL ? undefined : await MongoMemoryServer.create();
+  const client = new MongoClient(process.env.MONGO_URL || server.getUri());
   try {
     await client.connect();
     const Products = client.db('ticket-event-sale-rules').collection<any>('products');
@@ -149,6 +151,6 @@ test('sale rules are merged into meta.saleRules rule by rule', async () => {
     });
   } finally {
     await client.close();
-    await server.stop();
+    await server?.stop();
   }
 });

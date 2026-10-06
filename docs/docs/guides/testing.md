@@ -107,11 +107,11 @@ Integration tests run against a live Unchained instance with MongoDB.
 
 ### Test Setup
 
-Integration tests run against a dedicated test harness, not an example app: the global setup in `tests/helpers.js` bootstraps a Fastify instance and `startPlatform()` (via `tests/setup.js`) with all plugins registered, mirroring the kitchensink configuration.
+Integration tests run against a dedicated test harness, not an example app: the global setup in `tests/helpers.js` bootstraps a Fastify instance and `startPlatform()` (via `tests/setup.js`) with all plugins registered, mirroring the kitchensink configuration. It shuts the platform down with `platform.shutdown()` in a root `after()` hook: `--test-force-exit` does not wait for `globalTeardown`.
 
 ### Environment
 
-Integration tests load `.env.tests` with `.env` as an optional fallback (see the command above). The monorepo's `.env.tests` intentionally sets **no `MONGO_URL`** — the engine starts a `mongodb-memory-server` instance automatically when the variable is absent. A minimal `.env.tests`:
+Integration tests load `.env.tests`, then the optional `.env`, whose values override it; variables already set in the shell take precedence over both (see the command above). The monorepo's `.env.tests` intentionally sets **no `MONGO_URL`**: the harness starts one in-memory `mongodb-memory-server` instance for the whole run and sets `MONGO_URL` to it, replacing any `MONGO_URL` you set. The platform and the unit tests that need a database (when they run in the same process with `npm run test`) share that server, each in its own database; run on their own, those unit tests use a `MONGO_URL` from the shell, else start a server of their own. A minimal `.env.tests`:
 
 ```bash
 NODE_ENV=test
@@ -122,8 +122,6 @@ UNCHAINED_TOKEN_SECRET=random-token-that-is-not-secret-at-all  # must be at leas
 # tests/setup.js assigns ROOT_URL from the dynamically allocated server port
 # No MONGO_URL: mongodb-memory-server is started automatically
 ```
-
-Set `MONGO_URL` only if you want to run tests against a real MongoDB instance.
 
 ### Writing an Integration Test
 
@@ -209,14 +207,19 @@ const result = await adminGraphqlFetch({
 
 ```typescript
 import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
+import { after, describe, it } from 'node:test';
 import { startPlatform } from '@unchainedshop/platform';
 
 describe('Custom Module', () => {
+  let platform;
   let unchainedAPI;
 
+  after(() => platform?.shutdown());
+
   it('should initialize', async () => {
-    const platform = await startPlatform({
+    platform = await startPlatform({
+      // No background work that could still use the database after shutdown()
+      workQueueOptions: { disableWorker: true },
       modules: {
         customModule: {
           configure: async ({ db }) => ({

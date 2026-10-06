@@ -285,8 +285,9 @@ test('the public metadata only carries the ERC metadata properties, never the pr
 });
 
 test('concurrent checkouts get distinct serials from the passes module and reduce the stock', async () => {
-  const server = await MongoMemoryServer.create();
-  const client = new MongoClient(server.getUri());
+  // Use MONGO_URL (npm test shares the run's MongoDB), else start a server of its own
+  const server = process.env.MONGO_URL ? undefined : await MongoMemoryServer.create();
+  const client = new MongoClient(process.env.MONGO_URL || server.getUri());
   try {
     await client.connect();
     const db = client.db('ticket-issuer');
@@ -318,7 +319,7 @@ test('concurrent checkouts get distinct serials from the passes module and reduc
     assert.equal(await actions.stock(now), 20 - 8);
   } finally {
     await client.close();
-    await server.stop();
+    await server?.stop();
   }
 });
 

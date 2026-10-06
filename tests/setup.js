@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import Fastify from 'fastify';
 import { startPlatform } from '@unchainedshop/platform';
 import { connect } from '@unchainedshop/api/fastify';
-import { stopDb } from '@unchainedshop/mongodb';
+import { startDb } from '@unchainedshop/mongodb';
 import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
 import * as jose from 'jose';
 
@@ -130,10 +130,14 @@ export async function initializeTestPlatform() {
   const port = await findAvailablePortPair(getRandomStartPort());
   serverPort = port;
 
-  // Set PORT env var so initDb uses the correct port for MongoDB (PORT+1)
+  // Set PORT env var so startDb uses the correct port for MongoDB (PORT+1)
   process.env.PORT = String(port);
   // Set ROOT_URL dynamically so file upload URLs use the correct port
   process.env.ROOT_URL = `http://localhost:${port}`;
+
+  // One MongoDB for the whole run: the platform and the database unit tests of npm test connect to
+  // it through MONGO_URL, which also keeps a MONGO_URL from .env away from the tests
+  process.env.MONGO_URL = await startDb({ forceInMemory: true });
 
   // Register all plugins before starting platform
   registerAllPlugins();
@@ -276,15 +280,15 @@ export async function shutdownTestPlatform() {
     fastify = null;
   }
   if (platform) {
-    await platform.graphqlHandler.dispose?.();
+    // Stops the workers, plugins and GraphQL server, flushes the audit log into the collector below
+    // and stops the run's MongoDB, which removes its temporary directory
+    await platform.shutdown();
     platform = null;
   }
   if (auditCollectorServer) {
     await new Promise((resolve) => auditCollectorServer.close(resolve));
     auditCollectorServer = null;
   }
-  // Stop MongoDB memory server to allow process to exit
-  await stopDb();
   serverPort = null;
 }
 

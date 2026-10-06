@@ -8,8 +8,9 @@ import ticketingModules, { APPLE_WALLET_PASSES_FILE_DIRECTORY } from './module.t
 import { RendererTypes, registerRenderer, renderers } from './template-registry.ts';
 
 test('voucher usage counts checkout reservations of carts and discount rows of placed orders', async () => {
-  const server = await MongoMemoryServer.create();
-  const client = new MongoClient(server.getUri());
+  // Use MONGO_URL (npm test shares the run's MongoDB), else start a server of its own
+  const server = process.env.MONGO_URL ? undefined : await MongoMemoryServer.create();
+  const client = new MongoClient(process.env.MONGO_URL || server.getUri());
   try {
     await client.connect();
     const db = client.db('ticketing-usage');
@@ -61,16 +62,17 @@ test('voucher usage counts checkout reservations of carts and discount rows of p
     assert.equal(await passes.discountCodeUsageBalance('unknown'), 0);
   } finally {
     await client.close();
-    await server.stop();
+    await server?.stop();
   }
 });
 
 describe('ticket serials, ticket counts and Apple pass refresh', () => {
-  let server: MongoMemoryServer;
+  let server: MongoMemoryServer | undefined;
   let client: MongoClient;
   before(async () => {
-    server = await MongoMemoryServer.create();
-    client = new MongoClient(server.getUri());
+    // Use MONGO_URL (npm test shares the run's MongoDB), else start a server of its own
+    server = process.env.MONGO_URL ? undefined : await MongoMemoryServer.create();
+    client = new MongoClient(process.env.MONGO_URL || server.getUri());
     await client.connect();
   });
   after(async () => {

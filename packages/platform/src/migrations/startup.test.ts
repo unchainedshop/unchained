@@ -8,12 +8,15 @@ import { MongoClient } from 'mongodb';
 const exec = promisify(execFile);
 
 describe('worker-only startup migrations', () => {
-  let server: MongoMemoryServer;
+  let server: MongoMemoryServer | undefined;
   let client: MongoClient;
+  let uri: string;
 
   before(async () => {
-    server = await MongoMemoryServer.create();
-    client = await MongoClient.connect(server.getUri());
+    // Use MONGO_URL (npm test shares the run's MongoDB), else start a server of its own
+    server = process.env.MONGO_URL ? undefined : await MongoMemoryServer.create();
+    uri = process.env.MONGO_URL || server.getUri();
+    client = await MongoClient.connect(uri);
   });
 
   after(async () => {
@@ -24,6 +27,9 @@ describe('worker-only startup migrations', () => {
   for (const mode of ['enabled-worker', 'disabled-option', 'disabled-env', 'failed-migration']) {
     test(`runs migrations only on workers and continues startup after migration failure: ${mode}`, async () => {
       const db = client.db(mode);
+      // The platform of each mode uses its own database on the same server
+      const modeUrl = new URL(uri);
+      modeUrl.pathname = `/${mode}`;
       const workerEnabled = mode === 'enabled-worker' || mode === 'failed-migration';
       const migrationSucceeded = mode === 'enabled-worker';
 
@@ -135,7 +141,7 @@ describe('worker-only startup migrations', () => {
           env: {
             ...process.env,
             NODE_ENV: 'test',
-            MONGO_URL: server.getUri(mode),
+            MONGO_URL: modeUrl.href,
             UNCHAINED_DISABLE_WORKER: mode === 'disabled-env' ? 'true' : '',
             UNCHAINED_TOKEN_SECRET: 'migration-test-secret-with-at-least-32-characters',
             EMAIL_WEBSITE_NAME: 'Migration test',
