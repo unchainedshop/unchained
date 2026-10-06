@@ -49,6 +49,13 @@ const QuotationDetailFragment = gql`
         }
       }
     }
+    quantity
+    price {
+      amount
+      currencyCode
+      isTaxable
+      isNetPrice
+    }
     status
     created
     expires
