@@ -15,6 +15,7 @@ import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 
 export default function registerEnrollment({
   adapterId,
+  orderIndex,
   isActivatedFor,
   transformOrderItem,
   configurationForOrder,
@@ -25,6 +26,7 @@ export default function registerEnrollment({
   transformPlanToNewPlan,
 }: {
   adapterId: string;
+  orderIndex?: number;
   isActivatedFor?: (productPlan?: ProductPlan) => boolean;
   transformOrderItem?: (orderPosition: OrderPosition, unchainedAPI) => Promise<EnrollmentPlan>;
   configurationForOrder: (
@@ -52,6 +54,7 @@ export default function registerEnrollment({
     key: `shop.unchained.enrollment.${adapterId}`,
     label: 'Enrollment: ' + adapterId,
     version: '1.0.0',
+    orderIndex: orderIndex ?? 0,
 
     isActivatedFor: (productPlan) => {
       return isActivatedFor ? isActivatedFor(productPlan) : true;

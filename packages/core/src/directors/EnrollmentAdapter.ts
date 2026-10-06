@@ -28,6 +28,7 @@ export interface EnrollmentAdapterActions {
 }
 
 export type IEnrollmentAdapter = IBaseAdapter & {
+  orderIndex?: number;
   isActivatedFor: (productPlan?: ProductPlan) => boolean;
 
   transformOrderItemToEnrollmentPlan: (
