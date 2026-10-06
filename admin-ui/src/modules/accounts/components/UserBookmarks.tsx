@@ -55,10 +55,7 @@ const UserBookmarks = ({ _id: userId }) => {
           className="rounded-lg shadow-sm bg-surface p-4 border-border-subtle"
         >
           <div className="flex items-center">
-            <Link
-              href={`/products?slug=${product?._id}`}
-              className="shrink-0"
-            >
+            <Link href={`/products?slug=${product?._id}`} className="shrink-0">
               <ImageWithFallback
                 src={
                   (product?.media?.length && product.media[0]?.file?.url) ||
@@ -90,7 +87,7 @@ const UserBookmarks = ({ _id: userId }) => {
               </Link>
               {created && (
                 <p className="text-xs text-text-muted">
-                  <time dateTime={created}>
+                  <time dateTime={created as string}>
                     {formatMessage({
                       id: 'bookmarked_on',
                       defaultMessage: 'Bookmarked on',

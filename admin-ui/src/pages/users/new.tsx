@@ -7,7 +7,7 @@ import CreateUserForm from '../../modules/accounts/components/CreateUserForm';
 import BreadCrumbs from '@/components/ui/BreadCrumbs';
 import PageHeader from '@/components/ui/PageHeader';
 import useAuth from '../../modules/Auth/useAuth';
-import useEnrollUser from '../../modules/accounts/hooks/useEnrollUser.ts';
+import useEnrollUser from '../../modules/accounts/hooks/useEnrollUser';
 
 const CreateUser = () => {
   const { formatMessage } = useIntl();
