@@ -74,6 +74,7 @@ export const ProductPricingDirector: IProductPricingDirector<any> = {
         product: product!,
         quantity,
         configuration: item.configuration ?? null,
+        quotationId: item.quotationId,
         user: user!,
       };
     }

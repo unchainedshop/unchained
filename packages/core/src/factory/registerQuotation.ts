@@ -9,6 +9,7 @@ import { pluginRegistry } from '../plugins/PluginRegistry.ts';
 
 export default function registerQuotation({
   adapterId,
+  orderIndex,
   isManualRequestVerificationRequired,
   isManualProposalRequired,
   quote,
@@ -18,6 +19,7 @@ export default function registerQuotation({
   transformItemConfiguration,
 }: {
   adapterId: string;
+  orderIndex?: number;
   isManualRequestVerificationRequired?: boolean;
   isManualProposalRequired?: boolean;
   quote?: (context: QuotationContext) => Promise<QuotationProposal>;
@@ -35,6 +37,7 @@ export default function registerQuotation({
     key: `shop.unchained.quotation.${adapterId}`,
     label: 'Quotation: ' + adapterId,
     version: '1.0.0',
+    orderIndex: orderIndex ?? 0,
 
     isActivatedFor: () => {
       return true;
@@ -75,7 +78,7 @@ export default function registerQuotation({
         transformItemConfiguration: async (params) => {
           return transformItemConfiguration
             ? transformItemConfiguration(params, context)
-            : { quantity: params.quantity, configuration: params.configuration };
+            : QuotationAdapter.actions(context).transformItemConfiguration(params);
         },
       };
     },

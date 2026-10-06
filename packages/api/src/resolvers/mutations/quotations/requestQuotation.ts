@@ -1,20 +1,26 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import { ProductNotFoundError, InvalidIdError } from '../../../errors.ts';
+import { ProductNotFoundError, InvalidIdError, OrderQuantityTooLowError } from '../../../errors.ts';
 
 export default async function requestQuotation(
   root: never,
-  params: { productId: string; configuration: { key: string; value: string }[] },
+  params: {
+    productId: string;
+    quantity?: number | null;
+    configuration: { key: string; value: string }[];
+  },
   context: Context,
 ) {
   const { countryCode, currencyCode, modules, services, userId } = context;
-  const { productId, configuration } = params;
+  const { productId, quantity, configuration } = params;
 
   log(`mutation requestQuotation ${productId} ${configuration ? JSON.stringify(configuration) : ''}`, {
     userId,
   });
 
   if (!productId) throw new InvalidIdError({ productId });
+
+  if (quantity != null && quantity < 1) throw new OrderQuantityTooLowError({ quantity });
 
   if (!(await modules.products.productExists({ productId })))
     throw new ProductNotFoundError({ productId });
@@ -25,6 +31,7 @@ export default async function requestQuotation(
     countryCode,
     currencyCode,
     configuration,
+    ...(quantity ? { quantity } : {}),
   });
 
   return services.quotations.processQuotation(newQuotation, {});

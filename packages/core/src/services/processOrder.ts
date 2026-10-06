@@ -23,9 +23,11 @@ const logger = createLogger('unchained:core:processOrder');
  */
 const isAutoConfirmationEnabled = async (
   {
+    order,
     orderPayment,
     orderDelivery,
   }: {
+    order: Order;
     orderPayment: OrderPayment;
     orderDelivery: OrderDelivery;
   },
@@ -40,7 +42,11 @@ const isAutoConfirmationEnabled = async (
         'PaymentProviderNotFoundError',
         `Payment provider not found: ${orderPayment.paymentProviderId}`,
       );
-    const actions = await PaymentDirector.actions(paymentProvider, {}, { modules });
+    const actions = await PaymentDirector.actions(
+      paymentProvider,
+      { order, orderPayment, userId: order.userId },
+      { modules },
+    );
     if (!actions.isPayLaterAllowed()) return false;
   }
 
@@ -53,7 +59,11 @@ const isAutoConfirmationEnabled = async (
         'DeliveryProviderNotFoundError',
         `Delivery provider not found: ${orderDelivery.deliveryProviderId}`,
       );
-    const director = await DeliveryDirector.actions(deliveryProvider, {}, { modules });
+    const director = await DeliveryDirector.actions(
+      deliveryProvider,
+      { order, orderDelivery },
+      { modules },
+    );
     if (!director.isAutoReleaseAllowed()) return false;
   }
 
@@ -91,7 +101,7 @@ const findNextStatus = async (
   // Ok, we have a payment and a delivery and the correct status,
   // let's check if we can auto-confirm or auto-fulfill
   if (status === OrderStatus.PENDING) {
-    if (await isAutoConfirmationEnabled({ orderPayment, orderDelivery }, modules)) {
+    if (await isAutoConfirmationEnabled({ order, orderPayment, orderDelivery }, modules)) {
       return OrderStatus.CONFIRMED;
     }
   }

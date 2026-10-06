@@ -36,6 +36,8 @@ pluginRegistry.register(ManualOfferingPlugin);
 `quote()` derives the proposal from the persisted quotation context:
 
 - `price`: taken from `quotation.context.price` (minor units of the quotation's currency), i.e. whatever was passed to `makeQuotationProposal`
+- `quantity`: taken from `quotation.context.quantity` if set, replacing the requested quantity
+- `isTaxable` / `isNetPrice`: taken from `quotation.context`; the price counts as taxable gross (`isTaxable: true`, `isNetPrice: false`) unless the context says otherwise
 - `expires`: `quotation.context.expires` if set, otherwise now + 1 hour
 
 ## Usage
@@ -66,7 +68,7 @@ mutation RequestQuotation {
 mutation MakeProposal {
   makeQuotationProposal(
     quotationId: "quotation-id"
-    quotationContext: { price: 8999 }
+    quotationContext: { price: 8999, quantity: 100, isNetPrice: true }
   ) {
     _id
     status
@@ -110,7 +112,7 @@ query MyQuotations {
 | `REQUESTED` | Request for proposal |
 | `PROCESSING` | Awaiting offer |
 | `PROPOSED` | A price has been proposed |
-| `FULFILLED` | Quotation has been accepted and used |
+| `FULFILLED` | Ordered: confirming the order of the quotation fulfils it (a pending order only reserves it) |
 | `REJECTED` | Quotation was rejected |
 
 ## Custom Quotation Logic

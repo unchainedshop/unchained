@@ -51,7 +51,7 @@ The built-in plugins use these slots — place your own adapters relative to the
 
 | `orderIndex` | Purpose | Built-in examples |
 |--------------|---------|-------------------|
-| 0 | Base price | `product-catalog-price`, `order-items` |
+| 0–1 | Base price | `product-catalog-price` (0), `product-quotation-price` (1), `order-items` (0) |
 | 10–40 | Conversions, composition, discounts | `product-price-rateconversion` (10), `product-discount` (30), `order-discount` (40) |
 | 80 | Taxes | `product-swiss-tax`, `delivery-eu-tax` |
 

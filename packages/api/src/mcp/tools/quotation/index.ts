@@ -7,7 +7,7 @@ export const registerQuotationTools = (server: McpServer, context: Context) => {
     'quotation_management',
     {
       description:
-        'Unified quotation management system. Supports: LIST (get quotations with filters and pagination), GET (single quotation by ID), COUNT (count quotations), VERIFY (verify a REQUESTED quotation), MAKE_PROPOSAL (create proposal for PROCESSING quotation), REJECT (reject any quotation except FULFILLED). Quotations go through lifecycle: REQUESTED → PROCESSING → PROPOSED → FULFILLED/REJECTED.',
+        'Unified quotation management system. Supports: LIST (get quotations with filters and pagination), GET (single quotation by ID), COUNT (count quotations), VERIFY (verify a REQUESTED quotation), MAKE_PROPOSAL (create proposal for PROCESSING quotation), REJECT (reject any quotation except FULFILLED). Quotations go through lifecycle: REQUESTED → PROCESSING → PROPOSED → FULFILLED/REJECTED; a pending order reserves a PROPOSED quotation, confirming the order fulfils it, rejecting it releases it.',
       inputSchema: QuotationManagementSchema,
     },
     async (params) => quotationManagement(context, params),

@@ -308,8 +308,9 @@ All callbacks are optional (the base adapter provides working defaults); only `a
 | Option | Type | Notes |
 |---|---|---|
 | `adapterId` | `string` | required |
+| `orderIndex` | `number` | default `0`; lower runs first, the first activated adapter wins |
 | `quote` | `(context) => Promise<QuotationProposal>` | produce the offer |
-| `transformItemConfiguration` | `(params, context) => Promise<QuotationItemConfiguration \| null>` | map the requested config to an order item |
+| `transformItemConfiguration` | `(params, context) => Promise<QuotationItemConfiguration \| null>` | map the requested config to an order item; default keeps the quoted configuration |
 | `isManualProposalRequired` / `isManualRequestVerificationRequired` | `boolean` | |
 | `submitRequest` / `verifyRequest` / `rejectRequest` | `(context) => Promise<boolean>` | lifecycle hooks |
 
@@ -326,6 +327,7 @@ Recurring/subscription plans. `configurationForOrder` is required.
 | Option | Type | Notes |
 |---|---|---|
 | `adapterId` | `string` | required |
+| `orderIndex` | `number` | default `0`; lower runs first, the first activated adapter wins |
 | `configurationForOrder` | `(params, context) => Promise<{ orderPositionTemplates, orderContext? } \| null>` | builds the recurring order |
 | `isActivatedFor` | `(productPlan?) => boolean` | gate by plan; default `true` |
 | `transformOrderItem` | `(orderPosition, api) => Promise<EnrollmentPlan>` | |

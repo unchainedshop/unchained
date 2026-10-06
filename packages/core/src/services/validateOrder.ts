@@ -42,10 +42,19 @@ export async function validateOrderService(this: Modules, order: Order) {
       (await this.quotations.findQuotation({
         quotationId: orderPosition.quotationId,
       }));
-    if (quotation && !this.quotations.isProposalValid(quotation)) {
+    // The pricing falls back to the catalog price for a quotation that does not apply to the
+    // position, so checking out would charge the catalog price and fulfil the quotation
+    if (
+      quotation &&
+      !this.quotations.isProposalValidFor(quotation, {
+        userId: order.userId,
+        productId: orderPosition.productId,
+        currencyCode: order.currencyCode,
+      })
+    ) {
       throw createServiceError(
         'QuotationInvalidError',
-        'Quotation expired or fulfilled, please request a new offer',
+        'Quotation expired, fulfilled or not valid for this order, please request a new offer',
       );
     }
   }

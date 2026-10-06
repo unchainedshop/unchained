@@ -19,6 +19,7 @@ export interface ProductPricingAdapterContext extends BasePricingAdapterContext 
   product: Product;
   quantity: number;
   configuration: ProductConfiguration[] | null;
+  quotationId?: string;
   order?: Order;
   user?: User;
 }

@@ -12,7 +12,14 @@ export const Quotation = {
     modules.quotations.isExpired(obj, { referenceDate }),
 
   price: (obj: QuotationType) =>
-    obj.price != null && obj.currencyCode ? { amount: obj.price, currencyCode: obj.currencyCode } : null,
+    obj.price != null && obj.currencyCode
+      ? {
+          amount: obj.price,
+          currencyCode: obj.currencyCode,
+          isTaxable: obj.isTaxable ?? true,
+          isNetPrice: obj.isNetPrice ?? false,
+        }
+      : null,
 
   product: async (obj: QuotationType, _: never, { loaders }: Context) => {
     const product = await loaders.productLoader.load({

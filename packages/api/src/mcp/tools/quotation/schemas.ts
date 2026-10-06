@@ -76,7 +76,7 @@ export const actionValidators = {
         .record(z.any(), z.any())
         .optional()
         .describe(
-          'Optional context for the proposal (e.g., pricing details, terms, delivery estimates)',
+          'Optional context for the proposal. The manual quotation adapter reads: price (unit price in minor units of the quotation currency), quantity (quoted quantity, replaces the requested one), isNetPrice / isTaxable (default taxable gross), expires (ISO date, default in 1 hour)',
         ),
     })
     .describe(

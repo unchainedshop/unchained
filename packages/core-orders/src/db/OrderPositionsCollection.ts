@@ -27,6 +27,7 @@ export const OrderPositionsCollection = async (db: mongodb.Db) => {
   await buildDbIndexes<OrderPosition>(OrderPositions, [
     { index: { orderId: 1, created: 1 } },
     { index: { productId: 1 } },
+    { index: { quotationId: 1 } },
   ]);
 
   return OrderPositions;

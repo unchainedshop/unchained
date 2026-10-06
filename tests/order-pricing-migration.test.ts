@@ -78,8 +78,8 @@ describe('persisted order pricing migration', () => {
         assert.equal(sheet.total({ category, useNetPrice: true }).amount, net);
       }
       assert.deepEqual(sheet.discountPrices(), [
-        { amount: -1_000, discountId: 'first', currencyCode: 'CHF' },
-        { amount: -250, discountId: 'second', currencyCode: 'CHF' },
+        { amount: -1_000, discountId: 'first', currencyCode: 'CHF', isTaxable: true, isNetPrice: false },
+        { amount: -250, discountId: 'second', currencyCode: 'CHF', isTaxable: true, isNetPrice: false },
       ]);
       assert.equal(sheet.total({ discountId: 'first' }).amount, -1_000);
       assert.equal(sheet.total({ discountId: 'first', useNetPrice: true }).amount, -928);
@@ -145,7 +145,7 @@ describe('persisted order pricing migration', () => {
     assert.equal(sheet.net(), 8_356.5);
     assert.equal(sheet.total({ category: 'ITEMS' }).amount, 10_000);
     assert.deepEqual(sheet.discountPrices('first'), [
-      { amount: -1_000, currencyCode: 'CHF', discountId: 'first' },
+      { amount: -1_000, currencyCode: 'CHF', discountId: 'first', isTaxable: true, isNetPrice: false },
     ]);
   });
 
@@ -195,7 +195,7 @@ describe('persisted order pricing migration', () => {
     assert.equal(sheet.total().amount, 121);
     assert.equal(sheet.total({ useNetPrice: true }).amount, 113);
     assert.deepEqual(sheet.discountPrices(), [
-      { discountId: 'promo', amount: -13, currencyCode: 'CHF' },
+      { discountId: 'promo', amount: -13, currencyCode: 'CHF', isTaxable: true, isNetPrice: false },
     ]);
     await migrate();
     assert.deepEqual(await db.collection('orders').findOne({ _id: original._id }), migrated);
@@ -284,6 +284,8 @@ describe('persisted order pricing migration', () => {
           discountId,
           amount: Math.round(sum({ category: 'DISCOUNTS', discountId })),
           currencyCode: 'CHF',
+          isTaxable: true,
+          isNetPrice: false,
         })),
       );
     }

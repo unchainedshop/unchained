@@ -141,7 +141,10 @@ export default [
       addCartQuotation(
         orderId: ID
         quotationId: ID!
-        quantity: Int = 1
+        """
+        Defaults to the quoted quantity (1 for a quotation without one); a quotation with a quantity only takes multiples of it
+        """
+        quantity: Int
         configuration: [ProductConfigurationParameterInput!]
       ): OrderItem!
 
@@ -751,7 +754,14 @@ export default [
       """
       Request for Proposal (RFP) for the specified product
       """
-      requestQuotation(productId: ID!, configuration: [ProductConfigurationParameterInput!]): Quotation!
+      requestQuotation(
+        productId: ID!
+        """
+        Requested quantity: positions of the quotation take multiples of the quoted quantity, never less
+        """
+        quantity: Int
+        configuration: [ProductConfigurationParameterInput!]
+      ): Quotation!
 
       """
       Verify quotation request elligibility. and marks requested quotations as verified if it is

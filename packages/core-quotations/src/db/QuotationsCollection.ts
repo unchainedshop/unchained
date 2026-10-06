@@ -15,6 +15,10 @@ export type QuotationStatus = (typeof QuotationStatus)[keyof typeof QuotationSta
 
 export interface QuotationProposal {
   price?: number;
+  // The quoted quantity; without it the quotation keeps the requested quantity
+  quantity?: number;
+  isTaxable?: boolean;
+  isNetPrice?: boolean;
   expires?: Date;
   meta?: any;
 }
@@ -32,9 +36,13 @@ export type Quotation = {
   currencyCode?: string;
   expires?: Date;
   fulfilled?: Date;
+  isNetPrice?: boolean;
+  isTaxable?: boolean;
   meta?: any;
   price?: number;
   productId: string;
+  // A position of the quotation takes multiples of this quantity, never less
+  quantity?: number;
   quotationNumber?: string;
   rejected?: Date;
   status: string | null;

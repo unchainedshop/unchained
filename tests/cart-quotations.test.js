@@ -66,7 +66,7 @@ test.describe('Cart: Quotations', () => {
         quotation: { _id: ProposedQuotation._id },
         unitPrice: {},
         total: {},
-        configuration: null,
+        configuration: ProposedQuotation.configuration,
       });
     });
 

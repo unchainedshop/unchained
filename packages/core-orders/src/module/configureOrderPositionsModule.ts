@@ -47,12 +47,15 @@ export const configureOrderPositionsModule = ({
     },
 
     findOrderPositions: async (
-      query: { orderId: string } | { orderIds: string[] },
+      query: { orderId: string } | { orderIds: string[] } | { quotationId: string },
     ): Promise<OrderPosition[]> => {
       if ('orderIds' in query && !query.orderIds.length) return [];
-      const orderId = 'orderIds' in query ? { $in: query.orderIds } : query.orderId;
+      const selector: mongodb.Filter<OrderPosition> =
+        'quotationId' in query
+          ? { quotationId: query.quotationId }
+          : { orderId: 'orderIds' in query ? { $in: query.orderIds } : query.orderId };
       const positions = OrderPositions.find(
-        { orderId, quantity: { $gt: 0 } },
+        { ...selector, quantity: { $gt: 0 } },
         { sort: { created: 1, _id: 1 } },
       );
       return positions.toArray();
@@ -188,13 +191,16 @@ export const configureOrderPositionsModule = ({
     }): Promise<OrderPosition> => {
       const { configuration, orderId, originalProductId, productId, quantity, ...scope } = orderPosition;
 
-      // Search for existing position
+      // Search for existing position: like product and configuration, the quotation has to
+      // match, so a position only merges with one of the same quotation, and a position
+      // without quotation only with positions without quotation
       const selector: mongodb.Filter<OrderPosition> = {
         orderId,
         productId,
         originalProductId,
         configuration: configuration ?? null,
         ...scope,
+        quotationId: scope.quotationId ?? { $not: { $type: 'string' } },
       };
 
       const upsertedOrderPosition = (await OrderPositions.findOneAndUpdate(

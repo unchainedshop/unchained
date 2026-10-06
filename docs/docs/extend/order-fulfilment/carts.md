@@ -60,6 +60,24 @@ payment providers for that specific cart like that:
 2. Filters and sorts the found providers by `filterSupportedProviders` customizable through the platform
    configuration
 
+`filterSupportedProviders` is async and gets the cart, so it can filter by buyer, e.g. offer invoice only
+to approved customers:
+
+```typescript
+await startPlatform({
+  options: {
+    payment: {
+      filterSupportedProviders: async ({ providers, order }, { modules }) => {
+        const user = await modules.users.findUserById(order.userId);
+        return providers.filter(
+          (provider) => provider.adapterKey !== 'shop.unchained.invoice' || user?.meta?.creditApproved,
+        );
+      },
+    },
+  },
+});
+```
+
 To determine the default payment provider for initial carts, `determineDefaultProvider` platform settings
 function is used.
 
@@ -97,6 +115,8 @@ valid delivery providers for that specific cart like that:
 1. Gets all active delivery providers configured
 2. Filters and sorts the found providers by `filterSupportedProviders` customizable through the platform
    configuration
+
+As for payment, `filterSupportedProviders` (`options.delivery`) is async and gets the cart.
 
 To determine the default delivery provider for initial carts, `determineDefaultProvider` platform
 settings function is used.

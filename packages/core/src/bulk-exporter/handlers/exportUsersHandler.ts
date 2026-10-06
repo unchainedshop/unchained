@@ -84,6 +84,7 @@ const USER_CSV_SCHEMA = {
     'userId',
     'quotationNumber',
     'productId',
+    'quantity',
     'status',
     'price',
     'expires',
