@@ -144,6 +144,16 @@ let configuredRoles: RolesInterface | undefined;
 // adapters, workers, provider filters). Rules then receive { userId, user, modules } as context.
 const getConfiguredRoles = (): RolesInterface | undefined => configuredRoles;
 
+// Returns a function that restores the configured roles as they are now. Primarily for tests:
+// configureRoles replaces the roles of a platform running in the same process.
+const snapshotConfiguredRoles = (): (() => void) => {
+  const previous = { allRoles, configuredRoles };
+  return () => {
+    allRoles = previous.allRoles;
+    configuredRoles = previous.configuredRoles;
+  };
+};
+
 const configureRoles = ({
   additionalRoles,
   additionalActions,
@@ -188,4 +198,11 @@ const getPublicRoles = (roles: RolesInterface): string[] => {
     .filter((name: string) => !name.startsWith('__')) as string[];
 };
 
-export { allRoles, actions, configureRoles, getConfiguredRoles, getPublicRoles };
+export {
+  allRoles,
+  actions,
+  configureRoles,
+  getConfiguredRoles,
+  getPublicRoles,
+  snapshotConfiguredRoles,
+};

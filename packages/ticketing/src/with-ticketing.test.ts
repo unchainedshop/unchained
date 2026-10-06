@@ -13,10 +13,12 @@ const foreignEvent = {
   tags: ['organizer:b'],
 };
 
-test('withTicketing wires the organizer scope into the ticketing role', async () => {
+test('withTicketing wires the organizer scope into the ticketing role', async (t) => {
   registerEvents(['ACL_DENIED']);
   const canAccessEvent = (event: any) => event.tags.includes('organizer:a');
   const options = withTicketing({}, { canAccessEvent }) as any;
+  // configureRoles replaces the roles of a platform in the same process
+  t.after(roles.snapshotConfiguredRoles());
   const permissions = roles.configureRoles(options.rolesOptions);
   const staff = {
     userId: 'gate',

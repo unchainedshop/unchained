@@ -1,4 +1,11 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useMemo } from 'react';
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useEffect,
+  useMemo,
+} from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
 import sharedContext from '../utils/sharedContext';
 export type Theme = 'light' | 'dark';
@@ -44,7 +51,9 @@ const ThemeWrapper = ({ children }: ThemeWrapperProps) => {
 
   const value = useMemo(() => [theme, setTheme] as ThemeContextType, [theme]);
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 };
 
 export default ThemeWrapper;

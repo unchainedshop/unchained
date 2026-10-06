@@ -15,17 +15,28 @@ let resolveJwksUri: typeof import('./auth.ts').resolveJwksUri;
 
 // Set environment variables and load module before all tests
 before(async () => {
-  // Set environment variables BEFORE importing the auth module
-  process.env.UNCHAINED_TOKEN_SECRET = TEST_SECRET;
-  process.env.UNCHAINED_TOKEN_EXPIRY_SECONDS = '3600';
-  process.env.UNCHAINED_TOKEN_ISSUER = 'unchained-engine';
-
-  // Dynamic import to ensure env vars are set first
-  const auth = await import('./auth.ts');
-  signAccessToken = auth.signAccessToken;
-  verifyLocalToken = auth.verifyLocalToken;
-  createAuthHandler = auth.createAuthHandler;
-  resolveJwksUri = auth.resolveJwksUri;
+  // Set environment variables BEFORE importing the auth module, which reads them on import. The
+  // previous values are restored afterwards for the other suites of a shared-process run.
+  const tokenEnv = {
+    UNCHAINED_TOKEN_SECRET: TEST_SECRET,
+    UNCHAINED_TOKEN_EXPIRY_SECONDS: '3600',
+    UNCHAINED_TOKEN_ISSUER: 'unchained-engine',
+  };
+  const previousEnv = Object.fromEntries(Object.keys(tokenEnv).map((key) => [key, process.env[key]]));
+  Object.assign(process.env, tokenEnv);
+  try {
+    // Dynamic import to ensure env vars are set first
+    const auth = await import('./auth.ts');
+    signAccessToken = auth.signAccessToken;
+    verifyLocalToken = auth.verifyLocalToken;
+    createAuthHandler = auth.createAuthHandler;
+    resolveJwksUri = auth.resolveJwksUri;
+  } finally {
+    for (const [key, value] of Object.entries(previousEnv)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  }
 });
 
 describe('signAccessToken', () => {

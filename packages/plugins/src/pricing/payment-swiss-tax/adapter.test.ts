@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { afterEach, describe, it } from 'node:test';
+import { after, afterEach, before, describe, it } from 'node:test';
 import {
   PaymentPricingAdapter,
   PaymentPricingDirector,
@@ -76,8 +76,16 @@ const price = async ({
 };
 
 describe('PaymentSwissTax', () => {
+  // Start from an empty registry, then hand back the plugins of a platform in the same process
+  let restorePlugins: () => void;
+  before(() => {
+    restorePlugins = pluginRegistry.clear();
+  });
   afterEach(() => {
     pluginRegistry.clear();
+  });
+  after(() => {
+    restorePlugins();
   });
 
   it('extracts 8.1% VAT from a gross payment fee', async () => {

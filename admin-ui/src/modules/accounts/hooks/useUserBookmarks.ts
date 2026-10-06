@@ -32,7 +32,10 @@ const UserBookmarksQuery = gql`
 `;
 
 const useUserBookmarks = ({ userId = null }: { userId?: string }) => {
-  const { data, loading, error } = useQuery<IUserBookmarksQuery, IUserBookmarksQueryVariables>(UserBookmarksQuery, {
+  const { data, loading, error } = useQuery<
+    IUserBookmarksQuery,
+    IUserBookmarksQueryVariables
+  >(UserBookmarksQuery, {
     skip: !userId,
     variables: { userId },
   });

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, before, describe, it } from 'node:test';
 import { paymentSettings, type PaymentProvider } from '@unchainedshop/core-payment';
 import { deliverySettings, type DeliveryProvider } from '@unchainedshop/core-delivery';
 import { pluginRegistry } from '../plugins/PluginRegistry.ts';
@@ -17,10 +17,18 @@ describe('supported providers', () => {
     return providers.filter(({ _id }) => _id !== 'invoice' || userId === 'approved-buyer');
   };
 
+  // The settings are those of a platform in the same process (withTicketing filters the payment
+  // providers): restore them instead of resetting them to the defaults
+  let previousPaymentSettings: typeof paymentSettings;
+  let previousDeliverySettings: typeof deliverySettings;
+  before(() => {
+    previousPaymentSettings = { ...paymentSettings };
+    previousDeliverySettings = { ...deliverySettings };
+  });
   afterEach(() => {
     pluginRegistry.clear();
-    paymentSettings.configureSettings();
-    deliverySettings.configureSettings();
+    Object.assign(paymentSettings, previousPaymentSettings);
+    Object.assign(deliverySettings, previousDeliverySettings);
   });
 
   it('payment providers are filtered by an async filterSupportedProviders', async () => {

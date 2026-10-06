@@ -1,4 +1,4 @@
-import { describe, it, afterEach } from 'node:test';
+import { describe, it, after, afterEach, before } from 'node:test';
 import assert from 'node:assert';
 import {
   toAnyValue,
@@ -66,8 +66,21 @@ const buildApiActivityEvent = (): OCSFApiActivityEvent => ({
 });
 
 describe('OTLP encoder', () => {
+  // The tests run without OTEL_* variables; the previous ones are restored for the other suites of
+  // a shared-process run
+  let previousEnv: Record<string, string | undefined>;
+  before(() => {
+    previousEnv = Object.fromEntries(OTEL_ENV_VARS.map((key) => [key, process.env[key]]));
+    for (const key of OTEL_ENV_VARS) delete process.env[key];
+  });
   afterEach(() => {
     for (const key of OTEL_ENV_VARS) delete process.env[key];
+  });
+  after(() => {
+    for (const [key, value] of Object.entries(previousEnv)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
   });
 
   it('converts primitives, arrays and objects to AnyValue', () => {

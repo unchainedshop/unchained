@@ -6,8 +6,19 @@ import { permissions as listPermissions } from '@unchainedshop/roles';
 import { configureTicketingRoles, createTicketingRoles, ticketingActions } from './roles.ts';
 import { ticketingResolvers } from './index.ts';
 
+// roles.configureRoles replaces the roles of a platform in the same process; these tests only use
+// the returned role sets, so the platform's are handed back right away
+const configureRoles = (options: Parameters<typeof roles.configureRoles>[0]) => {
+  const restoreRoles = roles.snapshotConfiguredRoles();
+  try {
+    return roles.configureRoles(options);
+  } finally {
+    restoreRoles();
+  }
+};
+
 registerEvents(['ACL_DENIED']);
-const permissions = roles.configureRoles({
+const permissions = configureRoles({
   additionalActions: ticketingActions,
   additionalRoles: {
     ticketing: configureTicketingRoles,
@@ -157,7 +168,7 @@ function createScopedPlatform() {
     const organizers = context.user.roles.filter((role: string) => role.startsWith('organizer:'));
     return product.tags.some((tag: string) => organizers.includes(tag));
   };
-  const scopedPermissions = roles.configureRoles({
+  const scopedPermissions = configureRoles({
     additionalActions: ticketingActions,
     additionalRoles: {
       ticketing: createTicketingRoles({ canAccessEvent }),
@@ -322,11 +333,11 @@ test('an organizer scope never widens access and leaves administrators alone', a
 
 test('the ticketing rules are registered once when the role configurator is reused', async () => {
   const configure = createTicketingRoles();
-  const reused = roles.configureRoles({
+  const reused = configureRoles({
     additionalActions: ticketingActions,
     additionalRoles: { ticketing: configure, 'gate-staff': configure },
   });
-  const once = roles.configureRoles({
+  const once = configureRoles({
     additionalActions: ticketingActions,
     additionalRoles: { ticketing: configure },
   });

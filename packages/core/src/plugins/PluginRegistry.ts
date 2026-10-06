@@ -328,11 +328,20 @@ class PluginRegistry {
   /**
    * Clear all registered plugins
    * WARNING: This is primarily for testing purposes
+   *
+   * @returns Function that restores the cleared plugins, so a test sharing the process
+   * with a running platform can hand the platform's plugins back
    */
-  clear(): void {
-    this.plugins.clear();
+  clear(): () => void {
+    const { plugins, moduleFactories, skippedPlugins } = this;
+    this.plugins = new Map();
     this.moduleFactories = [];
-    this.skippedPlugins.clear();
+    this.skippedPlugins = new Set();
+    return () => {
+      this.plugins = plugins;
+      this.moduleFactories = moduleFactories;
+      this.skippedPlugins = skippedPlugins;
+    };
   }
 }
 

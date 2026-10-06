@@ -139,8 +139,10 @@ test('ticketing schema is optional and every plugin operation validates when ins
   assert.ok(operations >= 7);
 });
 
-test('GraphQL lets scanner staff list attendees and redeem without exposing private user data or access keys', async () => {
+test('GraphQL lets scanner staff list attendees and redeem without exposing private user data or access keys', async (t) => {
   registerEvents(['ACL_DENIED']);
+  // configureRoles replaces the roles of a platform in the same process
+  t.after(roles.snapshotConfiguredRoles());
   const permissions = roles.configureRoles({
     additionalActions: ticketingActions,
     additionalRoles: { ticketing: configureTicketingRoles },

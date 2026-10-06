@@ -91,10 +91,8 @@ const Step = ({ onClick, disabled = false, label }) => {
       className={clsx(
         'relative inline-flex items-center border border-border-default bg-surface px-4 py-2 text-sm font-medium  hover:bg-surface-subtle ',
         {
-          'z-10 border-border-default bg-accent text-text-on-accent':
-            disabled,
-          'text-text-secondary hover:bg-surface-subtle':
-            !disabled,
+          'z-10 border-border-default bg-accent text-text-on-accent': disabled,
+          'text-text-secondary hover:bg-surface-subtle': !disabled,
         },
       )}
     >
@@ -240,9 +238,7 @@ const Pagination = ({
                   defaultMessage="<p> Showing <span>{from}</span> to <span>{to}</span> of <span>{total}</span> results </p>"
                   values={{
                     p: (chunks) => (
-                      <p className="text-sm text-text-secondary">
-                        {chunks}
-                      </p>
+                      <p className="text-sm text-text-secondary">{chunks}</p>
                     ),
                     span: (chunks) => (
                       <span className="font-medium">{chunks}</span>

@@ -3,9 +3,12 @@ import assert from 'node:assert/strict';
 import { roles } from '@unchainedshop/api';
 import setupMagicKey from './magic-key.ts';
 
-// A fresh role set keeps these rules away from any platform another suite started in this process.
+// A fresh role set keeps these rules away from any platform another suite started in this process,
+// whose configured roles are handed back once the rules are set up.
+const restoreRoles = roles.snapshotConfiguredRoles();
 const permissions = roles.configureRoles({});
 setupMagicKey();
+restoreRoles();
 
 const orders = [
   { _id: 'order-1', userId: 'buyer' },

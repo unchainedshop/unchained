@@ -1,4 +1,4 @@
-import { test } from 'node:test';
+import { test, type TestContext } from 'node:test';
 import assert from 'node:assert/strict';
 import { roles } from '@unchainedshop/api';
 import { withTicketing } from './with-ticketing.ts';
@@ -19,10 +19,15 @@ const providers = [
   { _id: 'invoice', adapterKey: 'shop.unchained.invoice' },
 ] as any[];
 
-const configure = () => roles.configureRoles((withTicketing({}) as any).rolesOptions);
+// The box office reads the configured roles: replace them for the test and restore the roles of a
+// platform in the same process afterwards
+const configure = (t: TestContext) => {
+  t.after(roles.snapshotConfiguredRoles());
+  roles.configureRoles((withTicketing({}) as any).rolesOptions);
+};
 
-test('the box office permission is derived by the roles engine', async () => {
-  configure();
+test('the box office permission is derived by the roles engine', async (t) => {
+  configure(t);
   assert.equal(await canSellAtBoxOffice(users.staff, modules), true);
   assert.equal(await canSellAtBoxOffice(users.admin, modules), true);
   assert.equal(await canSellAtBoxOffice(users.customer, modules), false);
@@ -30,8 +35,8 @@ test('the box office permission is derived by the roles engine', async () => {
   assert.equal(await canSellAtBoxOffice(null, modules), false);
 });
 
-test('box office providers come first for staff and never show for customers', async () => {
-  configure();
+test('box office providers come first for staff and never show for customers', async (t) => {
+  configure(t);
   const filter = withBoxOfficePaymentProviders();
   const ids = async (userId: string) =>
     (await filter({ providers, order: { userId } as any }, { modules })).map(({ _id }) => _id);
@@ -39,8 +44,8 @@ test('box office providers come first for staff and never show for customers', a
   assert.deepEqual(await ids('customer'), ['card', 'invoice']);
 });
 
-test('the project filter decides on the result, and wrapping twice changes nothing', async () => {
-  configure();
+test('the project filter decides on the result, and wrapping twice changes nothing', async (t) => {
+  configure(t);
   const projectFilter = async ({ providers: allowed }: any) =>
     allowed.filter(({ _id }: any) => _id !== 'card');
   const filter = withBoxOfficePaymentProviders(projectFilter);
@@ -59,8 +64,8 @@ test('the project filter decides on the result, and wrapping twice changes nothi
   );
 });
 
-test('the box office adapter charges only for staff', async () => {
-  configure();
+test('the box office adapter charges only for staff', async (t) => {
+  configure(t);
   const charge = (userId: string) =>
     BoxOffice.actions([], { userId, modules, paymentProvider: {} as any } as any).charge();
   assert.ok(await charge('staff'));
