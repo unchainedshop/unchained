@@ -5,6 +5,7 @@ import { validateOrderService } from './validateOrder.ts';
 import { processOrderService } from './processOrder.ts';
 import type { User } from '@unchainedshop/core-users';
 import { reserveOrderDiscountsForCheckout } from './reserveOrderDiscountsForCheckout.ts';
+import { reserveOrderQuotationsForCheckout } from './reserveOrderQuotationsForCheckout.ts';
 
 /**
  * Service function to checkout an order.
@@ -39,8 +40,10 @@ export async function checkoutOrderService(
 
   const lock = await this.orders.acquireLock(order._id, 'checkout');
   let discounts: Awaited<ReturnType<typeof reserveOrderDiscountsForCheckout>> | undefined;
+  let quotations: Awaited<ReturnType<typeof reserveOrderQuotationsForCheckout>> | undefined;
 
   try {
+    quotations = await reserveOrderQuotationsForCheckout.call(this, order);
     discounts = await reserveOrderDiscountsForCheckout.call(this, order);
     const processedOrder = await processOrderService.bind(this)(order, transactionContext);
 
@@ -62,6 +65,7 @@ export async function checkoutOrderService(
     return processedOrder;
   } finally {
     await discounts?.release();
+    await quotations?.release();
     await lock.release();
   }
 }

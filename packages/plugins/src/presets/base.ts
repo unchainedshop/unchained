@@ -26,6 +26,7 @@ import { OrderDiscountPlugin } from '../pricing/order-discount/index.ts';
 import { OrderDeliveryPlugin } from '../pricing/order-delivery/index.ts';
 import { OrderPaymentPlugin } from '../pricing/order-payment/index.ts';
 import { ProductPricePlugin } from '../pricing/product-catalog-price/index.ts';
+import { ProductQuotationPricePlugin } from '../pricing/product-quotation-price/index.ts';
 import { ProductDiscountPlugin } from '../pricing/product-discount/index.ts';
 
 // Import plugins - Quotations
@@ -80,6 +81,7 @@ export function registerBasePlugins() {
 
   // Pricing - Product level
   pluginRegistry.register(ProductPricePlugin);
+  pluginRegistry.register(ProductQuotationPricePlugin);
   pluginRegistry.register(ProductDiscountPlugin);
 
   // Quotations

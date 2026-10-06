@@ -7,8 +7,9 @@ import {
   ProductNotFoundError,
   InvalidIdError,
   OrderNotFoundError,
+  QuotationNotFoundError,
+  QuotationItemConfigurationError,
 } from '../../../errors.ts';
-import { ordersSettings } from '@unchainedshop/core-orders';
 
 export default async function updateCartItem(
   root: never,
@@ -20,7 +21,7 @@ export default async function updateCartItem(
   context: Context,
 ) {
   const { modules, services, userId } = context;
-  const { itemId, configuration, quantity = 1 } = params;
+  const { itemId, configuration, quantity } = params;
 
   log(`mutation updateCartItem ${itemId} ${quantity} ${JSON.stringify(configuration)}`, { userId });
 
@@ -37,28 +38,22 @@ export default async function updateCartItem(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  const product = await modules.products.findProduct({
-    productId: item.productId,
-  });
-  if (!product) throw new ProductNotFoundError({ productId: item.productId });
+  if (quantity != null && quantity < 1) throw new OrderQuantityTooLowError({ quantity });
 
-  if (quantity !== null && quantity < 1) throw new OrderQuantityTooLowError({ quantity });
-
-  await ordersSettings.validateOrderPosition(
-    {
-      order,
-      product,
-      configuration,
-      quantityDiff: quantity - item.quantity,
-    },
-    context,
-  );
-
-  await modules.orders.positions.updateProductItem({
-    orderPositionId: item._id,
-    quantity: quantity || null,
-    configuration: configuration || null,
-  });
+  try {
+    await services.orders.updateCartItem({ order, item, quantity, configuration }, context);
+  } catch (error) {
+    switch (error.name) {
+      case 'ProductNotFoundError':
+        throw new ProductNotFoundError({ productId: item.productId });
+      case 'QuotationNotFoundError':
+        throw new QuotationNotFoundError({ quotationId: item.quotationId });
+      case 'QuotationItemConfigurationError':
+        throw new QuotationItemConfigurationError({ configuration });
+      default:
+        throw error;
+    }
+  }
 
   await services.orders.updateCalculation(order._id);
   return modules.orders.positions.findOrderPosition({ itemId: item._id });

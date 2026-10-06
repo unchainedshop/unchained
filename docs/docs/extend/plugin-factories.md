@@ -310,7 +310,7 @@ All callbacks are optional (the base adapter provides working defaults); only `a
 | `adapterId` | `string` | required |
 | `orderIndex` | `number` | default `0`; lower runs first, the first activated adapter wins |
 | `quote` | `(context) => Promise<QuotationProposal>` | produce the offer |
-| `transformItemConfiguration` | `(params, context) => Promise<QuotationItemConfiguration \| null>` | map the requested config to an order item |
+| `transformItemConfiguration` | `(params, context) => Promise<QuotationItemConfiguration \| null>` | map the requested config to an order item; default keeps the quoted configuration |
 | `isManualProposalRequired` / `isManualRequestVerificationRequired` | `boolean` | |
 | `submitRequest` / `verifyRequest` / `rejectRequest` | `(context) => Promise<boolean>` | lifecycle hooks |
 

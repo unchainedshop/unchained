@@ -6,6 +6,12 @@ export async function migrateUserDataService(userIdBeforeLogin: string, userId: 
   const user = await this.users.findUserById(userId);
   const userBeforeLogin = await this.users.findUserById(userIdBeforeLogin);
 
+  // A guest's open quotations belong to the user they log in as. Before the carts: a migrated
+  // cart is recalculated, and a quotation prices its positions only for its owner
+  if (userBeforeLogin?.guest) {
+    await this.quotations.replaceUserIdOfOpenQuotations(userIdBeforeLogin, userId);
+  }
+
   await migrateOrderCartsService.bind(this)({
     fromUserId: userIdBeforeLogin,
     toUserId: userId,

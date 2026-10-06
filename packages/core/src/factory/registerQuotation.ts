@@ -78,7 +78,7 @@ export default function registerQuotation({
         transformItemConfiguration: async (params) => {
           return transformItemConfiguration
             ? transformItemConfiguration(params, context)
-            : { quantity: params.quantity, configuration: params.configuration };
+            : QuotationAdapter.actions(context).transformItemConfiguration(params);
         },
       };
     },

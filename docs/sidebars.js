@@ -186,6 +186,7 @@ const sidebars = {
               link: { type: 'doc', id: 'plugins/pricing/index' },
               items: [
                 'plugins/pricing/pricing-product-catalog-price',
+                'plugins/pricing/pricing-product-quotation-price',
                 'plugins/pricing/pricing-product-rate-conversion',
                 'plugins/pricing/pricing-product-discount',
                 'plugins/pricing/pricing-product-swiss-tax',

@@ -10,15 +10,16 @@ import {
   ProductNotFoundError,
   OrderNotFoundError,
   QuotationItemConfigurationError,
+  QuotationInvalidError,
+  OrderItemNotFoundError,
 } from '../../../errors.ts';
-import { QuotationDirector } from '@unchainedshop/core';
 
 export default async function addCartQuotation(
   root: never,
   params: {
     orderId?: string;
     quotationId: string;
-    quantity: number;
+    quantity?: number | null;
     configuration: { key: string; value: string }[];
   },
   context: Context,
@@ -35,11 +36,11 @@ export default async function addCartQuotation(
 
   if (!quotationId) throw new InvalidIdError({ quotationId });
 
-  if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
+  if (quantity != null && quantity < 1) throw new OrderQuantityTooLowError({ quantity });
 
   const quotation = await modules.quotations.findQuotation({ quotationId });
   if (!quotation) throw new QuotationNotFoundError({ quotationId });
-
+  // Checked before the cart is initialised, so a quotation that cannot be added creates no cart
   if (quotation.status !== QuotationStatus.PROPOSED) {
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
@@ -52,29 +53,30 @@ export default async function addCartQuotation(
   if (!order) throw new OrderNotFoundError({ orderId });
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
-  if (
-    !(await modules.products.productExists({
-      productId: quotation.productId,
-    }))
-  )
-    throw new ProductNotFoundError({ productId: quotation.productId });
+  // Ownership of cart and quotation is checked by the addCartQuotation ACL
+  let position;
+  try {
+    position = await services.orders.addCartQuotation(
+      { order, quotation, quantity, configuration },
+      context,
+    );
+  } catch (error) {
+    switch (error.name) {
+      case 'QuotationWrongStatusError':
+        throw new QuotationWrongStatusError({ status: quotation.status });
+      case 'QuotationInvalidError':
+        throw new QuotationInvalidError({ quotationId, orderId: order._id });
+      case 'ProductNotFoundError':
+        throw new ProductNotFoundError({ productId: quotation.productId });
+      case 'QuotationItemConfigurationError':
+        throw new QuotationItemConfigurationError({ configuration });
+      case 'OrderItemNotFoundError':
+        throw new OrderItemNotFoundError({});
+      default:
+        throw error;
+    }
+  }
 
-  const director = await QuotationDirector.actions({ quotation }, context);
-  const quotationConfiguration = await director.transformItemConfiguration({
-    quantity,
-    configuration,
-  });
-
-  if (!quotationConfiguration) throw new QuotationItemConfigurationError({ configuration });
-
-  const updatedOrderPosition = await modules.orders.positions.addProductItem({
-    quantity: quotationConfiguration.quantity || 1,
-    configuration: quotationConfiguration.configuration,
-    quotationId,
-    productId: quotation.productId,
-    originalProductId: quotation.productId,
-    orderId: order._id,
-  });
   await services.orders.updateCalculation(order._id);
-  return modules.orders.positions.findOrderPosition({ itemId: updatedOrderPosition._id });
+  return modules.orders.positions.findOrderPosition({ itemId: position._id });
 }

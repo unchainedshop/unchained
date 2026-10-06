@@ -183,6 +183,10 @@ export const QuotationItemConfigurationError = createError(
 );
 
 export const QuotationNotFoundError = createError('QuotationNotFoundError', 'Quotation not found');
+export const QuotationInvalidError = createError(
+  'QuotationInvalidError',
+  'The quotation is not valid for this order',
+);
 export const BookmarkAlreadyExistsError = createError(
   'BookmarkAlreadyExistsError',
   'Bookmark already exists',

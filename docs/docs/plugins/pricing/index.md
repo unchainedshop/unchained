@@ -16,6 +16,7 @@ Calculate prices when products are queried or added to cart.
 | Adapter Key | Order | Description | When to Use |
 |-------------|-------|-------------|-------------|
 | [`shop.unchained.pricing.product-price`](./pricing-product-catalog-price.md) | 0 | Base catalog price | Always — provides the base price from the product catalog |
+| [`shop.unchained.pricing.product-quotation-price`](./pricing-product-quotation-price.md) | 1 | Quoted price | Always — positions of accepted quotations get the proposed unit price |
 | [`shop.unchained.pricing.rate-conversion`](./pricing-product-rate-conversion.md) | 10 | Currency conversion | When selling in multiple currencies |
 | [`shop.unchained.pricing.product-discount`](./pricing-product-discount.md) | 30 | Apply discounts | When using product-level discount rules or coupons |
 | [`shop.unchained.pricing.product-swiss-tax`](./pricing-product-swiss-tax.md) | 80 | Swiss VAT | Swiss shops requiring 8.1% / 2.6% VAT calculation |

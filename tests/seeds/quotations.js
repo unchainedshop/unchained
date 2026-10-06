@@ -15,6 +15,7 @@ export const ProcessingQuotation = {
     },
   ],
   countryCode: 'CH',
+  currencyCode: 'CHF',
   log: [
     {
       date: new Date('2019-10-14T19:02:36.845+0000'),
@@ -43,6 +44,7 @@ export const ProposedQuotation = {
     },
   ],
   countryCode: 'CH',
+  currencyCode: 'CHF',
   log: [
     {
       date: new Date('2019-10-14T19:08:01.178+0000'),
@@ -68,6 +70,7 @@ export const OtherUsersQuotation = {
   productId: 'simpleproduct',
   configuration: [],
   countryCode: 'CH',
+  currencyCode: 'CHF',
   log: [],
   quotationNumber: 'A99XY01',
 };

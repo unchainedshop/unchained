@@ -1,5 +1,5 @@
 import { SortDirection, type SortOption } from '@unchainedshop/utils';
-import { type Quotation, QuotationStatus } from '../db/QuotationsCollection.ts';
+import { type Quotation, type QuotationProposal, QuotationStatus } from '../db/QuotationsCollection.ts';
 import { emit, registerEvents } from '@unchainedshop/events';
 import {
   generateDbFilterById,
@@ -22,6 +22,7 @@ export interface QuotationData {
   configuration?: { key: string; value: string }[];
   countryCode?: string;
   productId: string;
+  quantity?: number;
   userId: string;
 }
 
@@ -145,8 +146,17 @@ export const configureQuotationsModule = async ({
       return quotationCount;
     },
     openQuotationWithProduct: async ({ productId }: { productId: string }) => {
-      const selector: mongodb.Filter<Quotation> = { productId };
-      selector.status = { $in: [QuotationStatus.REQUESTED, QuotationStatus.PROPOSED] };
+      // A proposal stays PROPOSED after its orders, so an expired one no longer counts as open
+      const selector: mongodb.Filter<Quotation> = {
+        productId,
+        $or: [
+          { status: QuotationStatus.REQUESTED },
+          {
+            status: QuotationStatus.PROPOSED,
+            $or: [{ expires: { $not: { $type: 'date' } } }, { expires: { $gt: new Date() } }],
+          },
+        ],
+      };
       return Quotations.findOne(selector);
     },
 
@@ -198,6 +208,19 @@ export const configureQuotationsModule = async ({
       return quotation.status === QuotationStatus.PROPOSED && !this.isExpired(quotation);
     },
 
+    // A valid proposal only applies to an order position of its owner, product and currency
+    isProposalValidFor(
+      quotation: Quotation,
+      { userId, productId, currencyCode }: { userId: string; productId: string; currencyCode: string },
+    ): boolean {
+      return (
+        this.isProposalValid(quotation) &&
+        quotation.userId === userId &&
+        quotation.productId === productId &&
+        quotation.currencyCode === currencyCode
+      );
+    },
+
     // Mutations
     create: async ({
       countryCode,
@@ -231,8 +254,29 @@ export const configureQuotationsModule = async ({
       );
       return deletedCount;
     },
+    // Fulfilled and rejected quotations stay with the user they were made for
+    replaceUserIdOfOpenQuotations: async (fromUserId: string, toUserId: string): Promise<number> => {
+      const result = await Quotations.updateMany(
+        {
+          userId: fromUserId,
+          status: {
+            $in: [null, QuotationStatus.REQUESTED, QuotationStatus.PROCESSING, QuotationStatus.PROPOSED],
+          },
+        },
+        { $set: { userId: toUserId, updated: new Date() } },
+      );
+      return result.modifiedCount;
+    },
     updateContext: updateQuotationFields(['context']),
-    updateProposal: updateQuotationFields(['price', 'expires', 'meta']),
+    updateProposal: (quotationId: string, proposal: QuotationProposal) =>
+      updateQuotationFields([
+        'price',
+        'isTaxable',
+        'isNetPrice',
+        'expires',
+        'meta',
+        ...(Number.isInteger(proposal.quantity) && proposal.quantity! > 0 ? ['quantity'] : []),
+      ])(quotationId, proposal),
 
     updateStatus,
   };

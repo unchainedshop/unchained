@@ -47,7 +47,7 @@ export const QuotationAdapter: Omit<IQuotationAdapter, 'key' | 'label' | 'versio
     return false;
   },
 
-  actions: () => {
+  actions: (params) => {
     return {
       configurationError: () => {
         return QuotationError.NOT_IMPLEMENTED;
@@ -77,8 +77,13 @@ export const QuotationAdapter: Omit<IQuotationAdapter, 'key' | 'label' | 'versio
         return true;
       },
 
+      // A cart position of a quotation is priced as quoted, so by default it carries the quoted
+      // configuration whatever configuration the buyer passes, and takes multiples of the quoted
+      // quantity, never less
       transformItemConfiguration: async ({ quantity, configuration }) => {
-        return { quantity, configuration };
+        const quotedQuantity = params?.quotation?.quantity;
+        if (quotedQuantity && (!quantity || quantity % quotedQuantity !== 0)) return null;
+        return { quantity, configuration: params?.quotation?.configuration ?? configuration };
       },
     };
   },

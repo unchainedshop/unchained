@@ -59,7 +59,12 @@ export default [
       configuration: [ProductConfigurationParameter!]
 
       """
-      Proposed unit price (minor units of the quotation's currency), set when the quotation reaches PROPOSED
+      Quoted quantity: positions of the quotation take multiples of it, never less. Requested with the quotation, the proposal may change it
+      """
+      quantity: Int
+
+      """
+      Proposed unit price (minor units of the quotation's currency) and whether it is taxable and net, set when the quotation reaches PROPOSED
       """
       price: Price
     }
