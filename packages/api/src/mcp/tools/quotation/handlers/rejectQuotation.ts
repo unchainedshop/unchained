@@ -15,7 +15,9 @@ export default async function rejectQuotation(context: Context, params: Params<'
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
 
-  const rejectedQuotation = await services.quotations.rejectQuotation(quotation, quotationContext || {});
+  const rejectedQuotation = await services.quotations.rejectQuotation(quotation, {
+    quotationContext: quotationContext || {},
+  });
 
   return getNormalizedQuotationDetails(rejectedQuotation._id, context);
 }
