@@ -6,15 +6,16 @@ import { getEmitHistoryAdapter, setEmitHistoryAdapter } from '@unchainedshop/eve
 import { configureEventsModule, type EventsModule } from './configureEventsModule.ts';
 
 describe('event report date ranges', () => {
-  let server: MongoMemoryServer;
+  let server: MongoMemoryServer | undefined;
   let client: MongoClient;
   let events: EventsModule;
   const start = new Date('2099-01-02T00:00:00.000Z');
   const end = new Date('2099-01-04T00:00:00.000Z');
 
   before(async () => {
-    server = await MongoMemoryServer.create();
-    client = await MongoClient.connect(server.getUri());
+    // Use MONGO_URL (npm test shares the run's MongoDB), else start a server of its own
+    server = process.env.MONGO_URL ? undefined : await MongoMemoryServer.create();
+    client = await MongoClient.connect(process.env.MONGO_URL || server.getUri());
     const historyAdapter = getEmitHistoryAdapter();
     try {
       events = await configureEventsModule({ db: client.db('event-report-test') });

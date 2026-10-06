@@ -1,4 +1,5 @@
 import { setTimeout } from 'node:timers/promises';
+import { after } from 'node:test';
 import { Collection } from 'mongodb';
 import {
   initializeTestPlatform,
@@ -44,7 +45,7 @@ export const getServerBaseUrl = () => {
 };
 
 export const disconnect = async () => {
-  // No-op - cleanup happens in globalTeardown
+  // No-op - the platform shuts down once after all tests (see globalSetup)
 };
 
 export const setupDatabase = async () => {
@@ -178,17 +179,15 @@ export const putFile = async (file, { url, type }) => {
 };
 
 export async function globalSetup() {
+  // --test-force-exit does not await globalTeardown, but it awaits the after() hooks of the root
+  // test, which an after() called here belongs to. The timeout keeps a stuck shutdown from hanging
+  // the run.
+  after(shutdownTestPlatform, { timeout: 30_000 });
   await initializeTestPlatform();
   await setupDatabase();
 }
 
 export async function globalTeardown() {
+  // Fallback; a no-op once the after() hook of globalSetup has shut the platform down
   await shutdownTestPlatform();
-}
-
-// Convenience wrapper for direct callers; --test-global-setup uses the named
-// globalSetup/globalTeardown exports above.
-export default async function setup() {
-  await globalSetup();
-  return globalTeardown;
 }

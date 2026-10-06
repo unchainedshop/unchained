@@ -1,16 +1,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongoClient } from 'mongodb';
 import { configureOrdersModule, ordersSettings, OrderStatus } from '@unchainedshop/core-orders';
 import { ticketingModules } from '@unchainedshop/ticketing';
 import { ReimbursementCode } from '@unchainedshop/ticketing/pricing/discount-reimbursement-code';
 
-// The reimbursement adapter runs against its own database with stub discount code handlers,
-// independent of the ticketing module of the shared test platform.
+// The reimbursement adapter runs against its own database of the run's MongoDB with stub discount
+// code handlers, independent of the ticketing module of the shared test platform.
 test('concurrent checkouts reserve voucher credit, and settled orders retain exact usage', async () => {
-  const server = await MongoMemoryServer.create();
-  const client = new MongoClient(server.getUri());
+  const client = new MongoClient(process.env.MONGO_URL);
   try {
     await client.connect();
     const db = client.db('ticketing-credit');
@@ -88,6 +86,5 @@ test('concurrent checkouts reserve voucher credit, and settled orders retain exa
     assert.equal(await passes.discountCodeUsageBalance('voucher'), 0);
   } finally {
     await client.close();
-    await server.stop();
   }
 });

@@ -16,7 +16,7 @@ const testPlugin = {
   version: '1.0.0',
   adapters: [] as IWorkerAdapter<any, any>[],
 };
-let server: MongoMemoryServer;
+let server: MongoMemoryServer | undefined;
 let clients: MongoClient[] = [];
 let apis: WorkerAPI[] = [];
 
@@ -48,10 +48,10 @@ describe('WorkerDirector Mongo allocation', { timeout: 15000 }, () => {
     directors.push(
       (await import(new URL('./WorkerDirector.ts?second-worker', import.meta.url).href)).WorkerDirector,
     );
-    server = await MongoMemoryServer.create();
-    clients = await Promise.all(
-      [0, 1].map(() => MongoClient.connect(server.getUri(), { monitorCommands: true })),
-    );
+    // Use MONGO_URL (npm test shares the run's MongoDB), else start a server of its own
+    server = process.env.MONGO_URL ? undefined : await MongoMemoryServer.create();
+    const url = process.env.MONGO_URL || server.getUri();
+    clients = await Promise.all([0, 1].map(() => MongoClient.connect(url, { monitorCommands: true })));
     apis = await Promise.all(
       clients.map(async (client) => {
         const db = client.db('worker-director-test');

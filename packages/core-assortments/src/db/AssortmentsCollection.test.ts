@@ -8,13 +8,16 @@ import { AssortmentsCollection } from './AssortmentsCollection.ts';
 describe('assortment indexes', () => {
   let client: MongoClient;
   let db: Db;
-  let server: MongoMemoryServer;
+  let server: MongoMemoryServer | undefined;
 
   before(async () => {
-    server = await MongoMemoryServer.create({
-      instance: { dbName: 'assortment-index-test', storageEngine: 'wiredTiger' },
-    });
-    client = new MongoClient(server.getUri());
+    // Use MONGO_URL (npm test shares the run's MongoDB), else start a server of its own
+    server = process.env.MONGO_URL
+      ? undefined
+      : await MongoMemoryServer.create({
+          instance: { dbName: 'assortment-index-test', storageEngine: 'wiredTiger' },
+        });
+    client = new MongoClient(process.env.MONGO_URL || server.getUri());
     await client.connect();
     db = client.db('assortment-index-test');
     await AssortmentsCollection(db);

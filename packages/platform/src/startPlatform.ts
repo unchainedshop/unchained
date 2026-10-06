@@ -70,6 +70,7 @@ export const startPlatform = async ({
   unchainedAPI: UnchainedCore;
   graphqlHandler: any;
   db: mongodb.Db;
+  shutdown: () => Promise<void>;
 }> => {
   const start = performance.now();
 
@@ -156,15 +157,43 @@ export const startPlatform = async ({
 
   defaultLogger.info(`Unchained Engine running`, { version });
 
-  let isCleaningUp = false;
+  let shutdownPromise: Promise<void> | undefined;
+
+  // The cleanup of the signal handlers without exiting the process; stopDb() also stops a MongoDB
+  // started in this process (by initDb() or a caller's startDb()). Every call returns the same
+  // promise, so the signal handlers and a caller like a test harness share one shutdown.
+  const shutdown = () => {
+    shutdownPromise ??= (async () => {
+      defaultLogger.debug('Stopping Workqueue');
+      stopWorkqueue();
+
+      defaultLogger.debug('Shutting down plugins');
+      await pluginRegistry.shutdown(unchainedAPI);
+
+      defaultLogger.debug('Shutting down event emitter');
+      await getEmitAdapter()?.shutdown?.();
+
+      defaultLogger.debug('Stopping GraphQL server');
+      await graphqlHandler.dispose();
+
+      if (auditLog) {
+        defaultLogger.debug('Closing audit log');
+        await auditLog.close();
+      }
+
+      defaultLogger.debug('Stopping DB Connection');
+      await stopDb();
+    })();
+    return shutdownPromise;
+  };
 
   const cleanup = (signal: string) => async () => {
-    // Prevent multiple concurrent cleanup attempts
-    if (isCleaningUp) {
+    // Prevent multiple concurrent cleanup attempts. Once shutdown() has started, also from a caller
+    // like a test harness, signals and process errors no longer exit the process.
+    if (shutdownPromise) {
       defaultLogger.debug('Cleanup already in progress, ignoring signal', { signal });
       return;
     }
-    isCleaningUp = true;
 
     defaultLogger.debug('Starting cleanup', { signal });
 
@@ -178,25 +207,7 @@ export const startPlatform = async ({
     forceExitTimeout.unref();
 
     try {
-      defaultLogger.debug('Stopping Workqueue', { signal });
-      stopWorkqueue();
-
-      defaultLogger.debug('Shutting down plugins', { signal });
-      await pluginRegistry.shutdown(unchainedAPI);
-
-      defaultLogger.debug('Shutting down event emitter', { signal });
-      await getEmitAdapter()?.shutdown?.();
-
-      defaultLogger.debug('Stopping GraphQL server', { signal });
-      await graphqlHandler.dispose();
-
-      if (auditLog) {
-        defaultLogger.debug('Closing audit log', { signal });
-        await auditLog.close();
-      }
-
-      defaultLogger.debug('Stopping DB Connection', { signal });
-      await stopDb();
+      await shutdown();
 
       defaultLogger.debug(`Unchained Engine exiting gracefully`, { signal, version });
       clearTimeout(forceExitTimeout);
@@ -232,5 +243,5 @@ export const startPlatform = async ({
   const end = performance.now();
   defaultLogger.debug(`Unchained Engine started in ${(end - start).toFixed(0)} ms`);
 
-  return { unchainedAPI, graphqlHandler, db };
+  return { unchainedAPI, graphqlHandler, db, shutdown };
 };

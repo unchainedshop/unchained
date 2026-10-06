@@ -114,6 +114,9 @@ The package also exports the [built-in template resolvers](src/templates/index.t
 | `unchainedAPI` | Core modules, services, bulk importer/exporter, and options |
 | `graphqlHandler` | GraphQL Yoga server instance |
 | `db` | MongoDB database instance |
+| `shutdown` | Stops the work queue, plugins, event emitter, GraphQL server, audit log and database without exiting the process; every call returns the same promise |
+
+On `SIGTERM` / `SIGINT` the platform calls `shutdown()` and exits. Once `shutdown()` has started, these signals no longer exit the process, so exit it yourself after awaiting `shutdown()`.
 
 ## License
 

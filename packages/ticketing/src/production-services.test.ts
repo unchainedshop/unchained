@@ -22,15 +22,16 @@ const {
   removeTicketProduction,
 } = productionServices.ticketing;
 
-let server: MongoMemoryServer;
+let server: MongoMemoryServer | undefined;
 let client: MongoClient;
 let modules: any;
 const reserved: Record<string, number> = {};
 const issued: Record<string, number> = {};
 
 before(async () => {
-  server = await MongoMemoryServer.create();
-  client = new MongoClient(server.getUri());
+  // Use MONGO_URL (npm test shares the run's MongoDB), else start a server of its own
+  server = process.env.MONGO_URL ? undefined : await MongoMemoryServer.create();
+  client = new MongoClient(process.env.MONGO_URL || server.getUri());
   await client.connect();
   const db = client.db('ticket-productions');
   // configureProductsModule configures the shared productsSettings: keep the slugify of a platform
@@ -46,7 +47,7 @@ before(async () => {
 
 after(async () => {
   await client.close();
-  await server.stop();
+  await server?.stop();
 });
 
 const CHF = (amount: number) => [{ amount, currencyCode: 'CHF', countryCode: 'CH' }];

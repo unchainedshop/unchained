@@ -1,15 +1,20 @@
 import { after, before, beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert';
-import { initDb, stopDb } from '@unchainedshop/mongodb';
-import type { Db } from 'mongodb';
+import { MongoClient, type Db } from 'mongodb';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 import { configureUsersModule, type UsersModule } from './configureUsersModule.ts';
 
 describe('active administrator invariant', () => {
+  let server: MongoMemoryServer | undefined;
+  let client: MongoClient;
   let db: Db;
   let users: UsersModule;
 
   before(async () => {
-    db = await initDb({ forceInMemory: true, port: 0 });
+    // Use MONGO_URL (npm test shares the run's MongoDB), else start a server of its own
+    server = process.env.MONGO_URL ? undefined : await MongoMemoryServer.create();
+    client = await MongoClient.connect(process.env.MONGO_URL || server.getUri());
+    db = client.db('users-module-test');
     const migrations = new Map();
     users = await configureUsersModule({
       db,
@@ -30,7 +35,8 @@ describe('active administrator invariant', () => {
   });
 
   after(async () => {
-    await stopDb();
+    await client?.close();
+    await server?.stop();
   });
 
   const createUser = async (id: string, roles: string[] = []) => {

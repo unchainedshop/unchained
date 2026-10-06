@@ -74,8 +74,9 @@ test('scanner lists and counts filter drafts, search and validity before paginat
 });
 
 test('the slot range matches starts stored as Date or ISO string, falls back to the meta slot and combines with tags', async () => {
-  const server = await MongoMemoryServer.create();
-  const client = new MongoClient(server.getUri());
+  // Use MONGO_URL (npm test shares the run's MongoDB), else start a server of its own
+  const server = process.env.MONGO_URL ? undefined : await MongoMemoryServer.create();
+  const client = new MongoClient(process.env.MONGO_URL || server.getUri());
   try {
     await client.connect();
     const Products = client.db('ticket-events-slot').collection<any>('products');
@@ -145,7 +146,7 @@ test('the slot range matches starts stored as Date or ISO string, falls back to 
     assert.ok((await find({})).includes('dateless'));
   } finally {
     await client.close();
-    await server.stop();
+    await server?.stop();
   }
 });
 
