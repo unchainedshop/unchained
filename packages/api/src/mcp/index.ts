@@ -10,6 +10,7 @@ import { registerAssortmentTools } from './tools/assortment/index.ts';
 import { registerUsersTools } from './tools/users/index.ts';
 import { registerSystemTools } from './tools/system/index.ts';
 import { registerLocalizationResources } from './resources/localization.ts';
+import { registerSettingsResources } from './resources/settings.ts';
 
 export default function createMcpServer(server: McpServerType, context: Context, roles) {
   if (!roles?.includes('admin')) {
@@ -17,6 +18,7 @@ export default function createMcpServer(server: McpServerType, context: Context,
   }
 
   registerLocalizationResources(server, context);
+  registerSettingsResources(server, context);
   registerFilterTools(server, context);
   registerProductTools(server, context);
   registerAssortmentTools(server, context);

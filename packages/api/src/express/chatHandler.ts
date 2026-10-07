@@ -14,6 +14,7 @@ import generateImageHandler from '../chat/generateImageHandler.ts';
 import defaultSystemPrompt from '../chat/defaultSystemPrompt.ts';
 import normalizeToolsIndex from '../chat/normalizeToolsIndex.ts';
 import { buildChatResourceContext } from '../mcp/resources/localization.ts';
+import { buildSettingsChatResourceContext } from '../mcp/resources/settings.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api:chat');
@@ -103,7 +104,10 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
 
       // Shop configuration is read in-process from the same data the MCP resources serve
       // (admin-gated inside the builder, mirroring the /mcp auth wall).
-      const resourceContext = await buildChatResourceContext(unchainedContext);
+      const [resourceContext, settingsContext] = await Promise.all([
+        buildChatResourceContext(unchainedContext),
+        buildSettingsChatResourceContext(unchainedContext),
+      ]);
 
       const tools: aiTypes.ToolSet = {
         ...defaultUnchainedTools,
@@ -164,7 +168,7 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any): Reques
         // supports it.
         ...restChatConfig,
         abortSignal: lifecycle.signal,
-        system: system + resourceContext,
+        system: system + resourceContext + settingsContext,
         model,
         tools: cacheControlledTools,
         onEnd: async (event) => {
