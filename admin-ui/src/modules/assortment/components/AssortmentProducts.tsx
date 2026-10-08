@@ -173,7 +173,8 @@ const AssortmentProducts = ({ assortmentId }) => {
           />
         }
       >
-        {loading ? (
+        {/* Keep the list mounted while a refetch runs, otherwise an open row menu closes. */}
+        {loading && !linkedProducts.length ? (
           <div className="ml-auto w-full md:col-span-2 my-auto">
             <Loading />
           </div>
