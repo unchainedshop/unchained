@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/utils",
   "description": "Common utility functions and base classes for the Unchained Engine",
-  "version": "5.0.0-alpha.10",
+  "version": "5.0.0-alpha.11",
   "files": [
     "lib"
   ],
@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^5.0.0-alpha.10",
+    "@unchainedshop/logger": "^5.0.0-alpha.11",
     "awesome-phonenumber": "^7.8.0"
   },
   "devDependencies": {

@@ -97,7 +97,7 @@
 - **Enrollments with an unsupported plan:** `createEnrollment` and `updateEnrollment(plan)` for a plan no enrollment adapter handles answered an internal error, and `createEnrollment` left an `INITIAL` enrollment behind. They now answer `EnrollmentPlanNotSupportedError` / `EnrollmentPlanChangeNotSupportedError` before anything is stored.
 - **`Enrollment.country`** was resolved through the currency loader.
 
-## v5.0.0-alpha.10 (2026-09-23)
+## v5.0.0-alpha.11 (2026-09-23)
 
 alpha.6 skipped to re-align engine version with admin-ui.
 

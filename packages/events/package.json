@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/events",
   "description": "Event emitter abstraction layer for the Unchained Engine",
-  "version": "5.0.0-alpha.10",
+  "version": "5.0.0-alpha.11",
   "files": [
     "lib"
   ],
@@ -37,7 +37,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^5.0.0-alpha.10"
+    "@unchainedshop/logger": "^5.0.0-alpha.11"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",
