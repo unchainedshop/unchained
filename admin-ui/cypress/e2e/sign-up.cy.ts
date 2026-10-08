@@ -10,6 +10,10 @@ import { aliasQuery, fullAliasName } from '../utils/aliasQuery';
 import hasOperationName from '../utils/hasOperationName';
 import replaceIntlPlaceholder from '../utils/replaceIntlPlaceholder';
 
+// The anonymous user is looked up more than once before the sign-up (on / and again once
+// /log-in/ renders), so the lookup after the sign-up gets its own alias.
+const CurrentUserAfterSignUp = `${UserOperations.CurrentUser}AfterSignUp`;
+
 describe('Sign Up', () => {
   let isLoggedIn = false;
 
@@ -30,7 +34,10 @@ describe('Sign Up', () => {
       }
 
       if (hasOperationName(req, UserOperations.CurrentUser)) {
-        aliasQuery(req, UserOperations.CurrentUser);
+        aliasQuery(
+          req,
+          isLoggedIn ? CurrentUserAfterSignUp : UserOperations.CurrentUser,
+        );
         if (isLoggedIn) {
           req.reply(CurrentUserResponse);
         } else {
@@ -68,25 +75,13 @@ describe('Sign Up', () => {
       },
     );
 
-    // TODO: Investigate why this request is made further
-    cy.wait(fullAliasName(UserOperations.CurrentUser)).then(
-      (currentSubject) => {
-        const { response } = currentSubject;
-        expect(response.body).to.deep.eq({
-          data: { impersonator: null, me: null },
-        });
-      },
-    );
-
     cy.location('pathname').should('eq', '/');
 
-    cy.wait(fullAliasName(UserOperations.CurrentUser)).then(
-      (currentSubject) => {
-        const { response } = currentSubject;
+    cy.wait(fullAliasName(CurrentUserAfterSignUp)).then((currentSubject) => {
+      const { response } = currentSubject;
 
-        expect(response.body).to.deep.eq(CurrentUserResponse);
-      },
-    );
+      expect(response.body).to.deep.eq(CurrentUserResponse);
+    });
   });
 
   it('Should [RETURN ERROR] when [EMAIL EXISTS] ', () => {

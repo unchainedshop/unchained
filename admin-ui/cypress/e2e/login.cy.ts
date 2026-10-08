@@ -11,6 +11,10 @@ import { aliasQuery, fullAliasName } from '../utils/aliasQuery';
 import hasOperationName from '../utils/hasOperationName';
 import replaceIntlPlaceholder from '../utils/replaceIntlPlaceholder';
 
+// The anonymous user is looked up more than once before the login (on / and again once
+// /log-in/ renders), so the lookup after the login gets its own alias.
+const CurrentUserAfterLogin = `${UserOperations.CurrentUser}AfterLogin`;
+
 describe('Login', () => {
   let isLoggedIn = false;
 
@@ -41,7 +45,10 @@ describe('Login', () => {
       }
 
       if (hasOperationName(req, UserOperations.CurrentUser)) {
-        aliasQuery(req, UserOperations.CurrentUser);
+        aliasQuery(
+          req,
+          isLoggedIn ? CurrentUserAfterLogin : UserOperations.CurrentUser,
+        );
         if (isLoggedIn) {
           req.reply(CurrentUserResponse);
         } else req.reply({ data: { impersonator: null, me: null } });
@@ -96,13 +103,11 @@ describe('Login', () => {
       expect(response.body).to.deep.eq(LogInSuccessResponse);
     });
 
-    cy.wait(fullAliasName(UserOperations.CurrentUser)).then(
-      (currentSubject) => {
-        const { response } = currentSubject;
+    cy.wait(fullAliasName(CurrentUserAfterLogin)).then((currentSubject) => {
+      const { response } = currentSubject;
 
-        expect(response.body).to.deep.eq(CurrentUserResponse);
-      },
-    );
+      expect(response.body).to.deep.eq(CurrentUserResponse);
+    });
     cy.location('pathname').should('eq', '/');
   });
 

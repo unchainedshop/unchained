@@ -172,6 +172,7 @@ describe('Product Subscription', () => {
             usageCalculationType: calculation1.value,
             billingInterval: interval1.value,
             trialInterval: interval2.value,
+            minimumCommitmentPeriods: null,
           },
         });
         expect(response.body).to.deep.eq(UpdateProductPlanResponse);
