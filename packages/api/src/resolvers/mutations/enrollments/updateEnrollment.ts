@@ -15,13 +15,12 @@ import {
 } from '../../../errors.ts';
 import { checkAction } from '../../../acl.ts';
 import { actions } from '../../../roles/index.ts';
-import type { Address, Contact } from '@unchainedshop/mongodb';
 
 interface UpdateEnrollmentParams {
   enrollmentId: string;
-  contact?: Contact;
+  contact?: NonNullable<Enrollment['contact']>;
   plan: EnrollmentPlan;
-  billingAddress: Address;
+  billingAddress: NonNullable<Enrollment['billingAddress']>;
   payment?: Enrollment['payment'];
   delivery?: Enrollment['delivery'];
   meta?: any;

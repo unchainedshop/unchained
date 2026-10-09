@@ -53,6 +53,7 @@
 - **Shared Admin UI submenus:** plugins with the same `navigation.label` share one submenu, ordered by the `sortOrder` of their entries.
 - **Permission checks outside of requests:** `roles.getConfiguredRoles()` from `@unchainedshop/api` returns the roles instance of the platform, so adapters and workers check actions with `userHasPermission({ userId, user, modules }, action, [])` instead of role names.
 - **Stop the platform without exiting:** `startPlatform()` also resolves to `shutdown()`, which stops the work queue, plugins, event emitter, GraphQL server, audit log and database like the `SIGTERM` / `SIGINT` handlers, but leaves the process running. Every call returns the same promise; once it has started, the platform's signal and error handlers no longer exit the process.
+- **`@unchainedshop/api` no longer depends on `@unchainedshop/mongodb`:** its resolvers take the address and contact types from the core packages, as the layer rules require.
 
 ### Fixed
 

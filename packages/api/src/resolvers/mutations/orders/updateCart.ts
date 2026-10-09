@@ -1,12 +1,12 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
 import { InvalidIdError, OrderNotFoundError, OrderWrongStatusError } from '../../../errors.ts';
-import type { Address, Contact } from '@unchainedshop/mongodb';
+import type { Order } from '@unchainedshop/core-orders';
 
 interface UpdateCartParams {
   orderId?: string;
-  billingAddress?: Address;
-  contact?: Contact;
+  billingAddress?: NonNullable<Order['billingAddress']>;
+  contact?: NonNullable<Order['contact']>;
   paymentProviderId?: string;
   deliveryProviderId?: string;
   meta?: any;
