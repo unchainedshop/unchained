@@ -69,4 +69,16 @@ describe('ACP config is env-driven, not Stripe-hardcoded', () => {
     process.env.ROOT_URL = 'not-an-absolute-url';
     assert.ok(getACPConfigurationErrors().some((error) => error.includes('absolute')));
   });
+
+  it('loads with a relative ROOT_URL and reports it instead of throwing', async (t) => {
+    const { getACPConfigurationErrors } = await importConfigWith(t, {
+      ...configuredEnvironment,
+      ACP_PAYMENT_MERCHANT_ID: 'merchant-id',
+      ROOT_URL: 'example.com',
+    });
+
+    assert.ok(
+      getACPConfigurationErrors().includes('ROOT_URL or ACP_SELLER_URL must be an absolute URL'),
+    );
+  });
 });

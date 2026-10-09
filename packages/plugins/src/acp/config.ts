@@ -88,8 +88,6 @@ export const getACPPaymentHandler = () => {
   } as const;
 };
 
-export const acpPaymentHandler = getACPPaymentHandler();
-
 export const getAcpAcceptedHandlerIds = (
   handler: ReturnType<typeof getACPPaymentHandler> = getACPPaymentHandler(),
 ) => [
@@ -100,7 +98,6 @@ export const getAcpAcceptedHandlerIds = (
   ]),
 ];
 
-export const acpAcceptedHandlerIds = getAcpAcceptedHandlerIds(acpPaymentHandler);
 export const acpPaymentAdapterKeys = parseList(ACP_PAYMENT_ADAPTER_KEYS);
 
 export const isAcpAdapterKeyAllowed = (
