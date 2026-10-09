@@ -1,5 +1,4 @@
 import type { Context } from '../../context.ts';
-import normalizeMediaUrl from './normalizeMediaUrl.ts';
 
 const normalizeProxyAssignments = async (assignment, context: Context) => {
   const { loaders, modules, locale } = context;
@@ -9,7 +8,7 @@ const normalizeProxyAssignments = async (assignment, context: Context) => {
   const productMedias = await modules.products.media.findProductMedias({
     productId: assignment.productId,
   });
-  const media = await normalizeMediaUrl(productMedias, context);
+  const media = await context.services.files.resolveMediaFiles(productMedias);
   const texts = await loaders.productTextLoader.load({
     productId: assignment.productId,
     locale,
