@@ -305,6 +305,22 @@ If your Stripe webhook endpoint is pinned to an older API version in the Dashboa
 
 If you were calling this method, simply remove it. Adapters are now registered via `pluginRegistry.register()` or preset functions.
 
+### Plugin Routes: `context.rawRequest` Removed
+
+**BREAKING CHANGE:** plugin HTTP route handlers no longer receive the Node.js request as `context.rawRequest`. Read the body from the WHATWG `Request` the handler gets:
+
+```typescript
+import { Readable } from 'node:stream';
+
+// Before
+const stream = context.rawRequest;
+
+// After
+const stream = request.body && Readable.fromWeb(request.body);
+```
+
+`request.text()`, `request.json()` and `request.formData()` work as well. The handler context is typed as `PluginHttpRequestContext` from `@unchainedshop/core`; `context.getHeader()` returns `string | undefined`.
+
 ### Plugin Authoring Factories (new, recommended)
 
 Custom adapters can now be registered with a single typed call instead of a hand-built `IPlugin`. The factories are re-exported from `@unchainedshop/core` (`registerPaymentProvider`, `registerDeliveryProvider`, `registerProductPricing`, `registerOrderDiscount`, `registerWorker`, `registerFileAdapter`, `registerQuotation`, `registerEnrollment`, …). `pluginRegistry.register()` with a hand-built `IPlugin` remains the low-level path for custom keys/versions, routes, modules or lifecycle hooks. See the [Plugin Factories](https://docs.unchained.shop/extend/plugin-factories) documentation.

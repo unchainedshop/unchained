@@ -3,7 +3,7 @@ import assert from 'node:assert';
 import http from 'node:http';
 import { once } from 'node:events';
 import handleMcpHttpRequest from './handleMcpHttpRequest.ts';
-import { toWebRequest, sendWebResponse } from './nodeHttpBridge.ts';
+import { toWebRequest, sendWebResponse } from '../http/nodeHttpBridge.ts';
 import type { Context } from '../context.ts';
 
 // End-to-end over a real socket with a body-parsing server (like express/fastify):
