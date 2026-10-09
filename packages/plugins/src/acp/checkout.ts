@@ -1,6 +1,6 @@
 import { PaymentDirector } from '@unchainedshop/core';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
-import { PaymentProviderType } from '@unchainedshop/core-payment';
+import { PaymentProviderType, type PaymentProvider } from '@unchainedshop/core-payment';
 import type { Order } from '@unchainedshop/core-orders';
 import {
   ACP_API_VERSION,
@@ -41,7 +41,7 @@ const mapAddress = (address: any) => {
   return hasAddress(mappedAddress) ? mappedAddress : undefined;
 };
 
-const mapContact = (body: Record<string, any>, order?: Order) => {
+const mapContact = (body: Record<string, any>) => {
   const buyer = body.buyer;
   const fulfillment = body.fulfillment_details;
   if (!buyer && !fulfillment?.email && !fulfillment?.phone_number) return undefined;
@@ -49,7 +49,6 @@ const mapContact = (body: Record<string, any>, order?: Order) => {
     throw invalidRequest('invalid_buyer', 'buyer.email is required', '$.buyer.email');
   }
   return {
-    ...order?.contact,
     ...(buyer?.email || fulfillment?.email ? { emailAddress: buyer?.email || fulfillment.email } : {}),
     ...(buyer?.phone_number || fulfillment?.phone_number
       ? { telNumber: buyer?.phone_number || fulfillment.phone_number }
@@ -111,15 +110,77 @@ const toCartInputError = (error: unknown): never => {
   throw error;
 };
 
-const updateOrder = async (context: ACPContext, initialOrder: Order, body: Record<string, any>) => {
+const unavailableFulfillmentOption = () =>
+  invalidRequest(
+    'invalid_fulfillment_option',
+    'The selected fulfillment option is not available',
+    '$.selected_fulfillment_options[0].option_id',
+  );
+
+// Validates every session field a request can change before anything is written, so a
+// rejected request never leaves a partially updated session behind.
+const parseCheckoutUpdate = (body: Record<string, any>) => {
+  const selectedOptions = body.selected_fulfillment_options;
+  if (selectedOptions !== undefined && (!Array.isArray(selectedOptions) || selectedOptions.length > 1)) {
+    throw invalidRequest(
+      'invalid_fulfillment_option',
+      'Exactly one fulfillment option can be selected',
+      '$.selected_fulfillment_options',
+    );
+  }
+  const selectedOption = selectedOptions?.[0];
+  if (selectedOption && typeof selectedOption.option_id !== 'string') {
+    throw invalidRequest(
+      'invalid_fulfillment_option',
+      'selected_fulfillment_options[0].option_id is required',
+      '$.selected_fulfillment_options[0].option_id',
+    );
+  }
+
+  return {
+    items: Object.hasOwn(body, 'line_items') ? extractACPItems(body.line_items) : undefined,
+    contact: mapContact(body),
+    fulfillmentAddress: mapAddress(body.fulfillment_details?.address),
+    billingAddress: mapAddress(body.payment_data?.billing_address),
+    selectedOption: selectedOption as { option_id: string; type?: string } | undefined,
+  };
+};
+
+const resolveFulfillmentOption = async (
+  context: ACPContext,
+  order: Order,
+  selected: { option_id: string; type?: string },
+) => {
+  const options = await getACPFulfillmentOptions(order, context);
+  const option = options.find(({ id }) => id === selected.option_id);
+  if (!option || (selected.type && selected.type !== option.type)) {
+    throw unavailableFulfillmentOption();
+  }
+  return option;
+};
+
+const applyCheckoutUpdate = async (
+  context: ACPContext,
+  initialOrder: Order,
+  {
+    items,
+    contact,
+    fulfillmentAddress,
+    billingAddress,
+    selectedOption,
+  }: ReturnType<typeof parseCheckoutUpdate>,
+) => {
+  // Resolved against the current session, before the first write.
+  const option =
+    selectedOption && (await resolveFulfillmentOption(context, initialOrder, selectedOption));
   let order = initialOrder;
   let needsCalculation = false;
 
-  if (Object.hasOwn(body, 'line_items')) {
+  if (items) {
     try {
       order = await context.services.orders.replaceCartProducts({
         orderId: order._id,
-        items: extractACPItems(body.line_items),
+        items,
         context: {
           localeContext: context.locale,
           userId: order.userId,
@@ -131,15 +192,12 @@ const updateOrder = async (context: ACPContext, initialOrder: Order, body: Recor
     }
   }
 
-  const contact = mapContact(body, order);
-  const fulfillmentAddress = mapAddress(body.fulfillment_details?.address);
-  const billingAddress = mapAddress(body.payment_data?.billing_address);
   const orderBillingAddress = billingAddress || fulfillmentAddress;
   const previousBillingAddress = order.billingAddress;
   if (contact || orderBillingAddress) {
     order =
       (await context.modules.orders.updateCartFields(order._id, {
-        ...(contact ? { contact } : {}),
+        ...(contact ? { contact: { ...order.contact, ...contact } } : {}),
         ...(orderBillingAddress ? { billingAddress: orderBillingAddress } : {}),
       })) || order;
     needsCalculation = true;
@@ -179,40 +237,14 @@ const updateOrder = async (context: ACPContext, initialOrder: Order, body: Recor
     return false;
   };
 
-  const selectedOptions = body.selected_fulfillment_options;
-  if (selectedOptions !== undefined && (!Array.isArray(selectedOptions) || selectedOptions.length > 1)) {
-    throw invalidRequest(
-      'invalid_fulfillment_option',
-      'Exactly one fulfillment option can be selected',
-      '$.selected_fulfillment_options',
-    );
-  }
-  const selected = selectedOptions?.[0];
-
-  if (!selected && (await syncDeliveryAddress(order))) {
+  if (!option && (await syncDeliveryAddress(order))) {
     needsCalculation = true;
   }
   if (needsCalculation) {
     order = await context.services.orders.updateCalculation(order._id);
   }
 
-  if (selected) {
-    if (typeof selected.option_id !== 'string') {
-      throw invalidRequest(
-        'invalid_fulfillment_option',
-        'selected_fulfillment_options[0].option_id is required',
-        '$.selected_fulfillment_options[0].option_id',
-      );
-    }
-    const options = await getACPFulfillmentOptions(order, context);
-    const option = options.find(({ id }) => id === selected.option_id);
-    if (!option || (selected.type && selected.type !== option.type)) {
-      throw invalidRequest(
-        'invalid_fulfillment_option',
-        'The selected fulfillment option is not available',
-        '$.selected_fulfillment_options[0].option_id',
-      );
-    }
+  if (option) {
     try {
       order = await context.services.orders.selectDeliveryProvider({
         orderId: order._id,
@@ -226,13 +258,7 @@ const updateOrder = async (context: ACPContext, initialOrder: Order, body: Recor
       }
     } catch (error) {
       const serviceError = error as Error;
-      if (serviceError.name.includes('DeliveryProvider')) {
-        throw invalidRequest(
-          'invalid_fulfillment_option',
-          'The selected fulfillment option is not available',
-          '$.selected_fulfillment_options[0].option_id',
-        );
-      }
+      if (serviceError.name.includes('DeliveryProvider')) throw unavailableFulfillmentOption();
       throw error;
     }
   }
@@ -264,8 +290,11 @@ const configuredPaymentProvider = async (context: ACPContext) => {
   return provider;
 };
 
-const selectConfiguredPaymentProvider = async (context: ACPContext, order: Order) => {
-  const provider = await configuredPaymentProvider(context);
+const selectConfiguredPaymentProvider = async (
+  context: ACPContext,
+  order: Order,
+  provider: PaymentProvider,
+) => {
   try {
     const updated = await context.services.orders.selectPaymentProvider({
       orderId: order._id,
@@ -302,14 +331,15 @@ export const createCheckoutSession = async (
   context: ACPContext,
   body: Record<string, any>,
 ): Promise<ACPRouteResult> => {
-  if (!Array.isArray(body.line_items) || body.line_items.length === 0) {
+  const update = parseCheckoutUpdate(body);
+  const { items } = update;
+  if (!items?.length) {
     throw invalidRequest(
       'invalid_line_items',
       'line_items must contain at least one item',
       '$.line_items',
     );
   }
-  const items = extractACPItems(body.line_items);
   if (typeof body.currency !== 'string' || !body.currency) {
     throw invalidRequest('invalid_currency', 'currency is required', '$.currency');
   }
@@ -323,7 +353,7 @@ export const createCheckoutSession = async (
   if (!body.capabilities || typeof body.capabilities !== 'object' || Array.isArray(body.capabilities)) {
     throw invalidRequest('invalid_capabilities', 'capabilities is required', '$.capabilities');
   }
-  await configuredPaymentProvider(context);
+  const paymentProvider = await configuredPaymentProvider(context);
 
   const products = await Promise.all(
     items.map(({ productId }) => context.modules.products.findProduct({ productId })),
@@ -364,8 +394,8 @@ export const createCheckoutSession = async (
       (await context.modules.orders.updateContext(cart._id, {
         acp: { apiVersion: ACP_API_VERSION, createdAt: new Date().toISOString() },
       })) || cart;
-    order = await updateOrder(context, order, body);
-    order = await selectConfiguredPaymentProvider(context, order);
+    order = await applyCheckoutUpdate(context, order, update);
+    order = await selectConfiguredPaymentProvider(context, order, paymentProvider);
     return { status: 201, body: await serializeCheckoutSession(order, context) };
   } catch (error) {
     if (userId) await context.services.users.deleteUser({ userId }).catch(() => undefined);
@@ -388,7 +418,7 @@ export const updateCheckoutSession = async (
 ): Promise<ACPRouteResult> => {
   const order = await loadACPOrder(context);
   assertMutable(order);
-  const updated = await updateOrder(context, order, body);
+  const updated = await applyCheckoutUpdate(context, order, parseCheckoutUpdate(body));
   return { status: 200, body: await serializeCheckoutSession(updated, context) };
 };
 
@@ -419,15 +449,17 @@ export const completeCheckoutSession = async (
 ): Promise<ACPRouteResult> => {
   let order = await loadACPOrder(context);
   assertMutable(order);
-  order = await updateOrder(context, order, body);
-  if (!order.contact?.emailAddress) {
+  const update = parseCheckoutUpdate(body);
+  const paymentContext = extractPaymentContext(body.payment_data);
+  if (!update.contact?.emailAddress && !order.contact?.emailAddress) {
     throw invalidRequest('invalid_buyer', 'buyer.email is required', '$.buyer.email');
   }
-  order = await selectConfiguredPaymentProvider(context, order);
+  const paymentProvider = await configuredPaymentProvider(context);
 
-  const completed = await context.services.orders.checkoutOrder(order._id, {
-    paymentContext: extractPaymentContext(body.payment_data),
-  });
+  order = await applyCheckoutUpdate(context, order, update);
+  order = await selectConfiguredPaymentProvider(context, order, paymentProvider);
+
+  const completed = await context.services.orders.checkoutOrder(order._id, { paymentContext });
   if (!completed) {
     throw new ACPError(500, 'processing_error', 'checkout_failed', 'Could not complete checkout');
   }

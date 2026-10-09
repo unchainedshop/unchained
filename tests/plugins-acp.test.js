@@ -406,6 +406,79 @@ test.describe('Plugins: ACP checkout', () => {
     assert.strictEqual(unchanged.line_items[0].quantity, 1);
   });
 
+  test('rejects an invalid update without applying any part of it', async () => {
+    const created = await createSession();
+
+    const invalidBuyer = await acpFetch(`/acp/checkout_sessions/${created.id}`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: { line_items: [{ id: 'simpleproduct', quantity: 3 }], buyer: { first_name: 'Ada' } },
+    });
+    assert.strictEqual(invalidBuyer.status, 400);
+    assert.strictEqual((await invalidBuyer.json()).code, 'invalid_buyer');
+
+    const unavailableOption = await acpFetch(`/acp/checkout_sessions/${created.id}`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: {
+        line_items: [{ id: 'simpleproduct', quantity: 3 }],
+        selected_fulfillment_options: [{ type: 'shipping', option_id: 'not-an-option', item_ids: [] }],
+      },
+    });
+    assert.strictEqual(unavailableOption.status, 400);
+    assert.strictEqual((await unavailableOption.json()).code, 'invalid_fulfillment_option');
+
+    const unchanged = await (await acpFetch(`/acp/checkout_sessions/${created.id}`)).json();
+    assert.deepStrictEqual(
+      unchanged.line_items.map(({ id, quantity }) => ({ id, quantity })),
+      [{ id: created.line_items[0].id, quantity: 1 }],
+    );
+  });
+
+  test('rejects an invalid complete without applying its session updates', async () => {
+    const created = await createSession();
+    const sessionUpdate = {
+      fulfillment_details: {
+        address: {
+          name: 'Ada Lovelace',
+          line_one: 'Teststrasse 1',
+          postal_code: '8000',
+          city: 'Zürich',
+          country: 'CH',
+        },
+      },
+      line_items: [{ id: 'simpleproduct', quantity: 4 }],
+    };
+
+    const missingToken = await acpFetch(`/acp/checkout_sessions/${created.id}/complete`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: { ...sessionUpdate, buyer: { email: 'not-persisted@example.com' }, payment_data: {} },
+    });
+    assert.strictEqual(missingToken.status, 400);
+    assert.strictEqual((await missingToken.json()).code, 'invalid_payment_data');
+
+    const missingBuyer = await acpFetch(`/acp/checkout_sessions/${created.id}/complete`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: {
+        ...sessionUpdate,
+        payment_data: {
+          handler_id: 'stripe_spt',
+          instrument: { type: 'card', credential: { type: 'spt', token: 'spt_test' } },
+        },
+      },
+    });
+    assert.strictEqual(missingBuyer.status, 400);
+    assert.strictEqual((await missingBuyer.json()).code, 'invalid_buyer');
+
+    const unchanged = await (await acpFetch(`/acp/checkout_sessions/${created.id}`)).json();
+    assert.strictEqual(unchanged.status, 'not_ready_for_payment');
+    assert.strictEqual(unchanged.buyer, undefined);
+    assert.strictEqual(unchanged.fulfillment_details?.address, undefined);
+    assert.strictEqual(unchanged.line_items[0].quantity, 1);
+  });
+
   test('rejects non-integer quantities and arbitrary fulfillment option IDs', async () => {
     const created = await createSession();
     const invalidQuantity = await acpFetch(`/acp/checkout_sessions/${created.id}`, {
