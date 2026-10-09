@@ -1,22 +1,33 @@
-import { describe, it } from 'node:test';
+import { describe, it, type TestContext } from 'node:test';
 import assert from 'node:assert';
 
-// Runs in its own test-runner process (default per-file isolation), so setting env
-// before the first (dynamic) import of config.ts evaluates it fresh. Proves the ACP
-// payment layer is driven entirely by configuration — a non-Stripe PSP configured via
-// env is accepted, and Stripe receives NO special treatment.
-describe('ACP config is env-driven, not Stripe-hardcoded', () => {
-  it('adopts a non-Stripe adapter + handler configured purely via env', async () => {
-    process.env.ACP_PAYMENT_ADAPTER_KEYS = 'com.acme.payment.adyen,org.example.paypal';
-    process.env.ACP_PAYMENT_HANDLER_ID = 'adyen_token';
-    process.env.ACP_PAYMENT_HANDLER_PSP = 'adyen';
-    process.env.ACP_PAYMENT_HANDLER_DISPLAY_NAME = 'Adyen Card';
-    process.env.ACP_PAYMENT_MERCHANT_ID = 'merchant-adyen';
-    process.env.UNCHAINED_ACP_API_KEY = 'test-api-key';
-    process.env.UNCHAINED_ACP_PAYMENT_PROVIDER_ID = 'payment-provider-id';
-    process.env.ACP_CHECKOUT_CONTINUE_URL = 'https://shop.example.test/checkout';
-    process.env.ROOT_URL = 'https://initial.example.test';
+// config.ts reads most of its settings when it is evaluated, and `npm test` runs every test
+// file in one process (--test-isolation=none). Each case therefore imports its own copy of
+// the module and restores the environment afterwards, so nothing leaks into other files.
+const importConfigWith = async (t: TestContext, environment: Record<string, string>) => {
+  for (const [key, value] of Object.entries(environment)) {
+    const original = process.env[key];
+    process.env[key] = value;
+    t.after(() => {
+      if (original === undefined) delete process.env[key];
+      else process.env[key] = original;
+    });
+  }
+  const specifier = `./config.ts?${crypto.randomUUID()}`;
+  return (await import(specifier)) as typeof import('./config.ts');
+};
 
+const configuredEnvironment = {
+  UNCHAINED_ACP_API_KEY: 'test-api-key',
+  UNCHAINED_ACP_PAYMENT_PROVIDER_ID: 'payment-provider-id',
+  ACP_CHECKOUT_CONTINUE_URL: 'https://shop.example.test/checkout',
+  ROOT_URL: 'https://initial.example.test',
+};
+
+// Proves the ACP payment layer is driven entirely by configuration — a non-Stripe PSP
+// configured via env is accepted, and Stripe receives NO special treatment.
+describe('ACP config is env-driven, not Stripe-hardcoded', () => {
+  it('adopts a non-Stripe adapter + handler configured purely via env', async (t) => {
     const {
       acpConfig,
       acpPaymentAdapterKeys,
@@ -24,7 +35,14 @@ describe('ACP config is env-driven, not Stripe-hardcoded', () => {
       getACPConfigurationErrors,
       isAcpAdapterKeyAllowed,
       isAcpHandlerAccepted,
-    } = await import('./config.ts');
+    } = await importConfigWith(t, {
+      ...configuredEnvironment,
+      ACP_PAYMENT_ADAPTER_KEYS: 'com.acme.payment.adyen,org.example.paypal',
+      ACP_PAYMENT_HANDLER_ID: 'adyen_token',
+      ACP_PAYMENT_HANDLER_PSP: 'adyen',
+      ACP_PAYMENT_HANDLER_DISPLAY_NAME: 'Adyen Card',
+      ACP_PAYMENT_MERCHANT_ID: 'merchant-adyen',
+    });
 
     assert.deepEqual(acpPaymentAdapterKeys, ['com.acme.payment.adyen', 'org.example.paypal']);
     assert.equal(isAcpAdapterKeyAllowed('com.acme.payment.adyen'), true);
