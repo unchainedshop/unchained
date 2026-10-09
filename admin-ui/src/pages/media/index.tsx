@@ -1,6 +1,9 @@
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
-import { PhotoIcon } from '@heroicons/react/24/outline';
+import {
+  ListBulletIcon,
+  Squares2X2Icon,
+} from '@heroicons/react/24/outline';
 import BreadCrumbs from '@/components/ui/BreadCrumbs';
 
 import InfiniteScroll from '../../modules/common/components/InfiniteScroll';
@@ -8,6 +11,7 @@ import Loading from '@/components/ui/Loading';
 import PageHeader from '@/components/ui/PageHeader';
 import { DefaultLimit } from '../../modules/common/data/miscellaneous';
 import MediaList from '../../modules/media/components/MediaList';
+import MediaGrid from '../../modules/media/components/MediaGrid';
 import useMedias from '../../modules/media/hooks/useMedias';
 import MultipleSelect from '../../modules/common/components/MultipleSelect';
 import { extractQuery } from '../../modules/common/utils/normalizeFilterKeys';
@@ -35,6 +39,7 @@ const Media = () => {
   const offset = parseInt(query?.skip as string, 10) || 0;
   const sort = query?.sort || '';
 
+  const viewMode = (query?.view as string) || 'grid';
   const { queryString, mediaId, ...restQuery } = query;
 
   const setQueryString = (searchString) => {
@@ -118,7 +123,33 @@ const Media = () => {
         </div>
       </div>
       <div className="min-w-full overflow-x-auto px-1">
-        <ListHeader />
+        <div className="flex items-center justify-between">
+          <ListHeader />
+          <div className="flex items-center rounded-lg border border-border-default">
+            <button
+              type="button"
+              onClick={() =>
+                push({ query: { ...query, view: 'grid' } }, undefined, {
+                  shallow: true,
+                })
+              }
+              className={`rounded-l-lg p-2 ${viewMode === 'grid' ? 'bg-surface-secondary text-text-primary' : 'text-text-secondary hover:text-text-primary'}`}
+            >
+              <Squares2X2Icon className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                push({ query: { ...query, view: 'list' } }, undefined, {
+                  shallow: true,
+                })
+              }
+              className={`rounded-r-lg p-2 ${viewMode === 'list' ? 'bg-surface-secondary text-text-primary' : 'text-text-secondary hover:text-text-primary'}`}
+            >
+              <ListBulletIcon className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
 
         <SearchWithTags
           onSearchChange={setQueryString}
@@ -131,6 +162,8 @@ const Media = () => {
           >
             {loading && medias?.length === 0 ? (
               <Loading />
+            ) : viewMode === 'grid' ? (
+              <MediaGrid medias={medias} />
             ) : (
               <MediaList medias={medias} sortable />
             )}
