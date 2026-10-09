@@ -1,16 +1,7 @@
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
+import { IMediaQuery, IMediaQueryVariables } from '../../../gql/types';
 import MediaFragment from '../fragments/MediaFragment';
-
-interface IMediaQuery {
-  media: {
-    _id: string;
-    name: string;
-    type: string;
-    size: number;
-    url: string;
-  } | null;
-}
 
 const MediaQuery = gql`
   query Media($mediaId: ID!) {
@@ -21,8 +12,8 @@ const MediaQuery = gql`
   ${MediaFragment}
 `;
 
-const useMedia = ({ mediaId = null }) => {
-  const { data, loading, error } = useQuery<IMediaQuery>(MediaQuery, {
+const useMedia = ({ mediaId = null }: IMediaQueryVariables) => {
+  const { data, loading, error } = useQuery<IMediaQuery, IMediaQueryVariables>(MediaQuery, {
     skip: !mediaId,
     variables: { mediaId },
   });
