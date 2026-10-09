@@ -2,16 +2,19 @@ import React, { useEffect, useRef, useState } from 'react';
 import { IRoleAction } from '../../../gql/types';
 
 import { useIntl } from 'react-intl';
+import { toast } from 'react-toastify';
 import DatePickerField from '@/components/ui/form/DatePickerField';
 import Form from '../../forms/components/Form';
 import SelectField from '@/components/ui/form/SelectField';
 import TextField from '@/components/ui/form/TextField';
 import useForm, { OnSubmitType } from '../../forms/hooks/useForm';
 import useUpdateUserAvatar from '../hooks/useUpdateUserAvatar';
+import useLinkUserAvatar from '../hooks/useLinkUserAvatar';
 import useUpdateUserProfile from '../hooks/useUpdateUserProfile';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import SaveAndCancelButtons from '@/components/ui/SaveAndCancelButtons';
 import AddressFields from './AddressFields';
+import MediaPicker from '../../media/components/MediaPicker';
 import { UserCircleIcon } from '@heroicons/react/24/outline';
 
 import FormWrapper from '../../common/components/FormWrapper';
@@ -25,6 +28,8 @@ const ProfileView = ({ profile, avatar, _id, viewerAllowedActions }) => {
   const { formatDateTime } = useFormatDateTime();
   const { updateUserProfile } = useUpdateUserProfile();
   const { updateUserAvatar } = useUpdateUserAvatar();
+  const { linkUserAvatar } = useLinkUserAvatar();
+  const [avatarPickerOpen, setAvatarPickerOpen] = useState(false);
   const canUpdateUser = viewerAllowedActions?.includes(IRoleAction.UpdateUser);
   const canUploadAvatar = viewerAllowedActions?.includes(
     IRoleAction.UploadUserAvatar,
@@ -81,6 +86,25 @@ const ProfileView = ({ profile, avatar, _id, viewerAllowedActions }) => {
     });
 
     return true;
+  };
+
+  const onLinkAvatar = async (media) => {
+    try {
+      await linkUserAvatar({ userId: _id, mediaId: media._id });
+      toast.success(
+        formatMessage({
+          id: 'avatar_linked',
+          defaultMessage: 'Avatar updated successfully',
+        }),
+      );
+    } catch (err) {
+      toast.error(
+        formatMessage({
+          id: 'fail_link_avatar',
+          defaultMessage: 'Failed to update avatar',
+        }),
+      );
+    }
   };
 
   const successMessage = formatMessage({
@@ -218,6 +242,22 @@ const ProfileView = ({ profile, avatar, _id, viewerAllowedActions }) => {
                             defaultMessage: 'Change',
                           })}
                         </button>
+                        <button
+                          onClick={() => setAvatarPickerOpen(true)}
+                          type="button"
+                          className="rounded-md border border-border-default bg-white dark:bg-slate-600 py-2 px-3 text-sm font-medium leading-4 text-text-secondary shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
+                        >
+                          {formatMessage({
+                            id: 'select_from_library',
+                            defaultMessage: 'Select from media library',
+                          })}
+                        </button>
+                        <MediaPicker
+                          open={avatarPickerOpen}
+                          onClose={() => setAvatarPickerOpen(false)}
+                          onSelect={onLinkAvatar}
+                          types={['image']}
+                        />
                       </span>
                     )}
                   </div>
