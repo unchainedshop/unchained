@@ -96,6 +96,7 @@
 - **Enrollments expire and keep their number:** `processEnrollment` never terminated an `ACTIVE` enrollment past its `expires`, and every transition to `ACTIVE` (also from `PAUSED`) assigned a new `enrollmentNumber`.
 - **Enrollments with an unsupported plan:** `createEnrollment` and `updateEnrollment(plan)` for a plan no enrollment adapter handles answered an internal error, and `createEnrollment` left an `INITIAL` enrollment behind. They now answer `EnrollmentPlanNotSupportedError` / `EnrollmentPlanChangeNotSupportedError` before anything is stored.
 - **`Enrollment.country`** was resolved through the currency loader.
+- **Redis event emitter delivers to every subscriber:** `RedisEventEmitter` only kept the callback of the first `subscribe()` per event, so later subscribers of the same event (for example a second plugin listening to `ORDER_CHECKOUT`) never received it. Each event now reaches all of its subscribers.
 
 ## v5.0.0-alpha.11 (2026-09-23)
 
