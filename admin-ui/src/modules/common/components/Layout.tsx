@@ -16,6 +16,7 @@ import {
   DocumentTextIcon,
   FolderArrowDownIcon,
   MagnifyingGlassIcon,
+  PhotoIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -213,6 +214,13 @@ const LayoutContent = ({ children, pageHeader = '', componentName }) => {
       icon: AdjustmentsHorizontalIcon,
       requiredRole: 'viewFilters',
       href: '/filters',
+    },
+    isSystemReady && {
+      _sortOrder: 65,
+      name: formatMessage({ id: 'media', defaultMessage: 'Media' }),
+      icon: PhotoIcon,
+      href: '/media',
+      requiredRole: 'viewMedias',
     },
     isSystemReady && {
       _sortOrder: 70,
