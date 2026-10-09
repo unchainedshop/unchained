@@ -13,10 +13,13 @@ const MediaQuery = gql`
 `;
 
 const useMedia = ({ mediaId = null }: IMediaQueryVariables) => {
-  const { data, loading, error } = useQuery<IMediaQuery, IMediaQueryVariables>(MediaQuery, {
-    skip: !mediaId,
-    variables: { mediaId },
-  });
+  const { data, loading, error } = useQuery<IMediaQuery, IMediaQueryVariables>(
+    MediaQuery,
+    {
+      skip: !mediaId,
+      variables: { mediaId },
+    },
+  );
   const media = data?.media;
 
   return {

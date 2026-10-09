@@ -1,9 +1,6 @@
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
-import {
-  ListBulletIcon,
-  Squares2X2Icon,
-} from '@heroicons/react/24/outline';
+import { ListBulletIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
 import BreadCrumbs from '@/components/ui/BreadCrumbs';
 
 import InfiniteScroll from '../../modules/common/components/InfiniteScroll';

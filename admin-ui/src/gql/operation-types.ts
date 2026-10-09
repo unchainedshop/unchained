@@ -126,6 +126,14 @@ export type IForgotPasswordMutationVariables = Exact<{
 
 export type IForgotPasswordMutation = { forgotPassword: { success: boolean | null } | null };
 
+export type ILinkUserAvatarMutationVariables = Exact<{
+  userId: string | number;
+  mediaId: string | number;
+}>;
+
+
+export type ILinkUserAvatarMutation = { linkUserAvatar: { _id: string, avatar: { _id: string, url: string | null, name: string } | null } };
+
 export type ILoginWithLoginCodeMutationVariables = Exact<{
   email?: string | null | undefined;
   code?: string | null | undefined;
@@ -541,6 +549,14 @@ export type ICreateAssortmentMutationVariables = Exact<{
 
 
 export type ICreateAssortmentMutation = { createAssortment: { _id: string, texts: { _id: string, slug: string | null } | null } };
+
+export type ILinkAssortmentMediaMutationVariables = Exact<{
+  assortmentId: string | number;
+  mediaId: string | number;
+}>;
+
+
+export type ILinkAssortmentMediaMutation = { linkAssortmentMedia: { _id: string } };
 
 export type IRemoveAssortmentMutationVariables = Exact<{
   assortmentId: string | number;
@@ -1802,6 +1818,14 @@ export type IExportTokenMutationVariables = Exact<{
 
 
 export type IExportTokenMutation = { exportToken: { _id: string, walletAddress: string | null, status: Types.ITokenExportStatus, quantity: number, contractAddress: string | null, chainId: string | null, tokenSerialNumber: string | null, invalidatedDate: unknown, expiryDate: unknown, ercMetadata: unknown, accessKey: string, isInvalidateable: boolean, order: { _id: string, orderNumber: string | null } | null } };
+
+export type ILinkProductMediaMutationVariables = Exact<{
+  productId: string | number;
+  mediaId: string | number;
+}>;
+
+
+export type ILinkProductMediaMutation = { linkProductMedia: { _id: string } };
 
 export type IProductQueryVariables = Exact<{
   productId?: string | number | null | undefined;

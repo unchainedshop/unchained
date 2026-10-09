@@ -1,5 +1,9 @@
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
+import {
+  ILinkUserAvatarMutation,
+  ILinkUserAvatarMutationVariables,
+} from '../../../gql/types';
 
 const LinkUserAvatarMutation = gql`
   mutation LinkUserAvatar($userId: ID!, $mediaId: ID!) {
@@ -15,20 +19,17 @@ const LinkUserAvatarMutation = gql`
 `;
 
 const useLinkUserAvatar = () => {
-  const [linkUserAvatarMutation] = useMutation(LinkUserAvatarMutation, {
+  const [linkUserAvatarMutation] = useMutation<
+    ILinkUserAvatarMutation,
+    ILinkUserAvatarMutationVariables
+  >(LinkUserAvatarMutation, {
     refetchQueries: ['User', 'CurrentUser'],
   });
 
-  const linkUserAvatar = async ({
-    userId,
-    mediaId,
-  }: {
-    userId: string;
-    mediaId: string;
-  }) => {
-    return linkUserAvatarMutation({
-      variables: { userId, mediaId },
-    });
+  const linkUserAvatar = async (
+    variables: ILinkUserAvatarMutationVariables,
+  ) => {
+    return linkUserAvatarMutation({ variables });
   };
 
   return { linkUserAvatar };

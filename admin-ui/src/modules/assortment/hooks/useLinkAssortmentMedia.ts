@@ -1,5 +1,9 @@
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
+import {
+  ILinkAssortmentMediaMutation,
+  ILinkAssortmentMediaMutationVariables,
+} from '../../../gql/types';
 
 const LinkAssortmentMediaMutation = gql`
   mutation LinkAssortmentMedia($assortmentId: ID!, $mediaId: ID!) {
@@ -10,23 +14,17 @@ const LinkAssortmentMediaMutation = gql`
 `;
 
 const useLinkAssortmentMedia = () => {
-  const [linkAssortmentMediaMutation] = useMutation(
-    LinkAssortmentMediaMutation,
-    {
-      refetchQueries: ['Assortment'],
-    },
-  );
+  const [linkAssortmentMediaMutation] = useMutation<
+    ILinkAssortmentMediaMutation,
+    ILinkAssortmentMediaMutationVariables
+  >(LinkAssortmentMediaMutation, {
+    refetchQueries: ['Assortment'],
+  });
 
-  const linkAssortmentMedia = async ({
-    assortmentId,
-    mediaId,
-  }: {
-    assortmentId: string;
-    mediaId: string;
-  }) => {
-    return linkAssortmentMediaMutation({
-      variables: { assortmentId, mediaId },
-    });
+  const linkAssortmentMedia = async (
+    variables: ILinkAssortmentMediaMutationVariables,
+  ) => {
+    return linkAssortmentMediaMutation({ variables });
   };
 
   return { linkAssortmentMedia };
