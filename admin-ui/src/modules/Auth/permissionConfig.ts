@@ -28,6 +28,7 @@ const ROUTE_ROLES: Record<string, string> = {
   '/users/new': 'enrollUser',
   '/users': 'viewUsers',
   '/events': 'viewEvents',
+  '/media': 'viewMedias',
   '/orders': 'viewOrders',
   '/quotations': 'viewQuotations',
   '/enrollments': 'viewEnrollments',
