@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import {
   Dialog,
@@ -24,10 +24,19 @@ interface MediaPickerProps {
 const MediaPicker = ({ open, onClose, onSelect, types }: MediaPickerProps) => {
   const { formatMessage } = useIntl();
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  useEffect(() => {
+    timerRef.current = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 300);
+    return () => clearTimeout(timerRef.current);
+  }, [searchQuery]);
 
   const { medias, loading, hasMore, loadMore } = useMedias({
     limit: 24,
-    queryString: searchQuery || null,
+    queryString: debouncedQuery || null,
     types: types || null,
   });
 
