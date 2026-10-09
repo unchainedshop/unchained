@@ -413,6 +413,11 @@ export default [
       updateProductTexts(productId: ID!, texts: [ProductTextInput!]!): [ProductTexts!]!
 
       """
+      Link an existing media file to a product
+      """
+      linkProductMedia(productId: ID!, mediaId: ID!): ProductMedia!
+
+      """
       Remove a media asset from a product's visualization
       """
       removeProductMedia(productMediaId: ID!): ProductMedia!
@@ -670,6 +675,11 @@ export default [
       reorderAssortmentFilters(sortKeys: [ReorderAssortmentFilterInput!]!): [AssortmentFilter!]!
 
       """
+      Link an existing media file to an assortment
+      """
+      linkAssortmentMedia(assortmentId: ID!, mediaId: ID!): AssortmentMedia!
+
+      """
       Remove a media asset from a assortment
       """
       removeAssortmentMedia(assortmentMediaId: ID!): AssortmentMedia!
@@ -874,6 +884,11 @@ export default [
       prepareProductMediaUpload(mediaName: String!, productId: ID!): MediaUploadTicket!
       prepareAssortmentMediaUpload(mediaName: String!, assortmentId: ID!): MediaUploadTicket!
       prepareUserAvatarUpload(mediaName: String!, userId: ID): MediaUploadTicket!
+
+      """
+      Link an existing media file as a user's avatar
+      """
+      linkUserAvatar(userId: ID!, mediaId: ID!): User!
       confirmMediaUpload(mediaUploadTicketId: ID!, size: Int!, type: String!): Media!
 
       """

@@ -51,6 +51,7 @@ import removeProductVariation from './products/removeProductVariation.ts';
 import updateProductVariationTexts from './products/updateProductVariationTexts.ts';
 import removeProductVariationOption from './products/removeProductVariationOption.ts';
 import confirmMediaUpload from './files/confirmMediaUpload.ts';
+import linkProductMedia from './products/linkProductMedia.ts';
 import removeProductMedia from './products/removeProductMedia.ts';
 import reorderProductMedia from './products/reorderProductMedia.ts';
 import updateProductCommerce from './products/updateProductCommerce.ts';
@@ -105,6 +106,7 @@ import reorderAssortmentProducts from './assortments/reorderAssortmentProducts.t
 import addAssortmentLink from './assortments/addAssortmentLink.ts';
 import removeAssortmentLink from './assortments/removeAssortmentLink.ts';
 import reorderAssortmentLinks from './assortments/reorderAssortmentLinks.ts';
+import linkAssortmentMedia from './assortments/linkAssortmentMedia.ts';
 import addAssortmentFilter from './assortments/addAssortmentFilter.ts';
 import removeAssortmentFilter from './assortments/removeAssortmentFilter.ts';
 import reorderAssortmentFilters from './assortments/reorderAssortmentFilters.ts';
@@ -146,6 +148,7 @@ import prepareUserAvatarUpload from './users/prepareUserAvatarUpload.ts';
 import rejectOrder from './orders/rejectOrder.ts';
 import removePushSubscription from './users/removePushSubscription.ts';
 import addPushSubscription from './users/addPushSubscription.ts';
+import linkUserAvatar from './users/linkUserAvatar.ts';
 import removeUserProductReviews from './users/removeUserProductReviews.ts';
 import updateCartDeliveryPickUp from './orders/updateCartDeliveryPickUp.ts';
 import updateCartDeliveryShipping from './orders/updateCartDeliveryShipping.ts';
@@ -201,6 +204,7 @@ export default {
   removeUser: acl(actions.removeUser)(removeUser),
   setPassword: acl(actions.updateUser)(setPassword),
   prepareUserAvatarUpload: acl(actions.uploadUserAvatar)(prepareUserAvatarUpload),
+  linkUserAvatar: acl(actions.uploadUserAvatar)(linkUserAvatar),
   setUserTags: acl(actions.manageUsers)(setUserTags),
   setUsername: acl(actions.updateUsername)(setUsername),
   setRoles: acl(actions.manageUsers)(setRoles),
@@ -225,6 +229,7 @@ export default {
   updateProductMediaTexts: acl(actions.manageProducts)(updateProductMediaTexts),
   confirmMediaUpload: acl(actions.confirmMediaUpload)(confirmMediaUpload),
   prepareProductMediaUpload: acl(actions.manageProducts)(prepareProductMediaUpload),
+  linkProductMedia: acl(actions.manageProducts)(linkProductMedia),
   reorderProductMedia: acl(actions.manageProducts)(reorderProductMedia),
   removeProductMedia: acl(actions.manageProducts)(removeProductMedia),
   updateProductCommerce: acl(actions.manageProducts)(updateProductCommerce),
@@ -292,6 +297,7 @@ export default {
   removeAssortment: acl(actions.manageAssortments)(removeAssortment),
   reorderAssortmentMedia: acl(actions.manageAssortments)(reorderAssortmentMedia),
   removeAssortmentMedia: acl(actions.manageAssortments)(removeAssortmentMedia),
+  linkAssortmentMedia: acl(actions.manageAssortments)(linkAssortmentMedia),
   updateAssortmentMediaTexts: acl(actions.manageAssortments)(updateAssortmentMediaTexts),
   updateAssortmentTexts: acl(actions.manageAssortments)(updateAssortmentTexts),
   addAssortmentProduct: acl(actions.manageAssortments)(addAssortmentProduct),
