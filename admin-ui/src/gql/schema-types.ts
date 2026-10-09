@@ -1205,6 +1205,12 @@ export type IMutation = {
   impersonate: ILoginMethodResponse;
   /** Tokenize */
   invalidateToken: IToken;
+  /** Link an existing media file to an assortment */
+  linkAssortmentMedia: IAssortmentMedia;
+  /** Link an existing media file to a product */
+  linkProductMedia: IProductMedia;
+  /** Link an existing media file as a user's avatar */
+  linkUserAvatar: IUser;
   /** Login as Guest User (creates an anonymous user and returns logged in token) */
   loginAsGuest?: Maybe<ILoginMethodResponse>;
   /** Log the user in with a password. */
@@ -1831,6 +1837,24 @@ export type IMutationImpersonateArgs = {
 
 export type IMutationInvalidateTokenArgs = {
   tokenId: Scalars['ID']['input'];
+};
+
+
+export type IMutationLinkAssortmentMediaArgs = {
+  assortmentId: Scalars['ID']['input'];
+  mediaId: Scalars['ID']['input'];
+};
+
+
+export type IMutationLinkProductMediaArgs = {
+  mediaId: Scalars['ID']['input'];
+  productId: Scalars['ID']['input'];
+};
+
+
+export type IMutationLinkUserAvatarArgs = {
+  mediaId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
 };
 
 

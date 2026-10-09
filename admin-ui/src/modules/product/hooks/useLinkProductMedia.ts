@@ -1,5 +1,9 @@
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
+import {
+  ILinkProductMediaMutation,
+  ILinkProductMediaMutationVariables,
+} from '../../../gql/types';
 
 const LinkProductMediaMutation = gql`
   mutation LinkProductMedia($productId: ID!, $mediaId: ID!) {
@@ -10,20 +14,17 @@ const LinkProductMediaMutation = gql`
 `;
 
 const useLinkProductMedia = () => {
-  const [linkProductMediaMutation] = useMutation(LinkProductMediaMutation, {
+  const [linkProductMediaMutation] = useMutation<
+    ILinkProductMediaMutation,
+    ILinkProductMediaMutationVariables
+  >(LinkProductMediaMutation, {
     refetchQueries: ['Product'],
   });
 
-  const linkProductMedia = async ({
-    productId,
-    mediaId,
-  }: {
-    productId: string;
-    mediaId: string;
-  }) => {
-    return linkProductMediaMutation({
-      variables: { productId, mediaId },
-    });
+  const linkProductMedia = async (
+    variables: ILinkProductMediaMutationVariables,
+  ) => {
+    return linkProductMediaMutation({ variables });
   };
 
   return { linkProductMedia };
