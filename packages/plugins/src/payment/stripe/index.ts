@@ -2,8 +2,9 @@ import { createLogger } from '@unchainedshop/logger';
 import type { IPlugin } from '@unchainedshop/core';
 import { Stripe } from './adapter.ts';
 import { stripeWebhookHandler } from './api.ts';
+import { stripe } from './stripe.ts';
 
-const { STRIPE_WEBHOOK_PATH = '/payment/stripe/webhook' } = process.env;
+export const stripeWebhookPath = process.env.STRIPE_WEBHOOK_PATH || '/payment/stripe/webhook';
 
 const logger = createLogger('unchained:stripe');
 
@@ -17,7 +18,7 @@ export const StripePlugin: IPlugin = {
 
   routes: [
     {
-      path: STRIPE_WEBHOOK_PATH,
+      path: stripeWebhookPath,
       method: 'POST',
       handler: stripeWebhookHandler,
     },
@@ -26,6 +27,11 @@ export const StripePlugin: IPlugin = {
   onRegister: () => {
     if (!process.env.STRIPE_SECRET) {
       throw new Error('STRIPE_SECRET not set');
+    }
+    if (!stripe) {
+      throw new Error(
+        "Stripe client initialization failed; make sure the 'stripe' package is installed",
+      );
     }
     if (!process.env.STRIPE_ENDPOINT_SECRET) {
       logger.warn('STRIPE_ENDPOINT_SECRET not set - webhooks will not work');
