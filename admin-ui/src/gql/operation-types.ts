@@ -1149,6 +1149,30 @@ export type IUpdateLanguageMutationVariables = Exact<{
 
 export type IUpdateLanguageMutation = { updateLanguage: { _id: string, isoCode: string | null, isActive: boolean | null, isBase: boolean | null, name: string | null } };
 
+export type IMediaFragment = { _id: string, name: string, type: string, size: number, url: string | null };
+
+
+export type IMediaFragmentVariables = Exact<{ [key: string]: never; }>;
+
+export type IMediaQueryVariables = Exact<{
+  mediaId: string | number;
+}>;
+
+
+export type IMediaQuery = { media: { _id: string, name: string, type: string, size: number, url: string | null } | null };
+
+export type IMediasQueryVariables = Exact<{
+  limit?: number | null | undefined;
+  offset?: number | null | undefined;
+  path?: string | null | undefined;
+  types?: Array<string> | null | undefined;
+  queryString?: string | null | undefined;
+  sort?: Array<Types.ISortOptionInput> | null | undefined;
+}>;
+
+
+export type IMediasQuery = { mediasCount: number, medias: Array<{ _id: string, name: string, type: string, size: number, url: string | null }> };
+
 export type IOrderDetailFragment = { _id: string, orderNumber: string | null, status: Types.IOrderStatus | null, created: unknown, updated: unknown, ordered: unknown, confirmed: unknown, fulfilled: unknown, totalTax: { amount: number, currencyCode: string } | null, itemsTotal: { amount: number, currencyCode: string } | null, totalDiscount: { amount: number, currencyCode: string } | null, totalPayment: { amount: number, currencyCode: string } | null, totalDelivery: { amount: number, currencyCode: string } | null, user: { _id: string, username: string | null, isGuest: boolean, avatar: { _id: string, url: string | null } | null, profile: { displayName: string | null, address: { firstName: string | null, lastName: string | null } | null } | null } | null, discounts: Array<{ _id: string, trigger: Types.IOrderDiscountTrigger, code: string | null, interface: { _id: string, label: string | null, version: string | null } | null, total: { amount: number, currencyCode: string, isTaxable: boolean, isNetPrice: boolean }, discounted: Array<
       | { _id: string, orderDiscount: { _id: string, total: { amount: number, currencyCode: string, isTaxable: boolean, isNetPrice: boolean } }, total: { amount: number, currencyCode: string, isTaxable: boolean, isNetPrice: boolean } }
       | { _id: string, orderDiscount: { _id: string, total: { amount: number, currencyCode: string, isTaxable: boolean, isNetPrice: boolean } }, total: { amount: number, currencyCode: string, isTaxable: boolean, isNetPrice: boolean } }

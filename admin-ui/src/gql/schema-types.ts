@@ -3198,6 +3198,12 @@ export type IQuery = {
   languagesCount: Scalars['Int']['output'];
   /** Currently logged in user */
   me?: Maybe<IUser>;
+  /** Get a specific media object by ID */
+  media?: Maybe<IMedia>;
+  /** List all media objects in the system, sorted by creation date (descending) by default */
+  medias: Array<IMedia>;
+  /** Returns total number of media objects matching the filters */
+  mediasCount: Scalars['Int']['output'];
   /** Get a specific single order */
   order?: Maybe<IOrder>;
   /** Returns aggregated report of all the orders that occurred in the system */
@@ -3478,6 +3484,28 @@ export type IQueryLanguagesArgs = {
 export type IQueryLanguagesCountArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
   queryString?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type IQueryMediaArgs = {
+  mediaId: Scalars['ID']['input'];
+};
+
+
+export type IQueryMediasArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  path?: InputMaybe<Scalars['String']['input']>;
+  queryString?: InputMaybe<Scalars['String']['input']>;
+  sort?: InputMaybe<Array<ISortOptionInput>>;
+  types?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+
+export type IQueryMediasCountArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+  queryString?: InputMaybe<Scalars['String']['input']>;
+  types?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
@@ -3923,6 +3951,8 @@ export enum IRoleAction {
   ViewLanguage = 'viewLanguage',
   ViewLanguages = 'viewLanguages',
   ViewLogs = 'viewLogs',
+  ViewMedia = 'viewMedia',
+  ViewMedias = 'viewMedias',
   ViewOrder = 'viewOrder',
   ViewOrders = 'viewOrders',
   ViewPaymentInterfaces = 'viewPaymentInterfaces',
