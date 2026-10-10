@@ -31,13 +31,16 @@ const MEDIA_TYPE_OPTIONS = [
 
 const Media = () => {
   const { formatMessage } = useIntl();
-  const { query, push } = useRouter();
+  const router = useRouter();
+  const { query, push } = router;
   const limit = parseInt(query?.limit as string, 10) || DefaultLimit;
   const offset = parseInt(query?.skip as string, 10) || 0;
   const sort = query?.sort || '';
 
   const viewMode = (query?.view as string) || 'grid';
   const { queryString, mediaId, ...restQuery } = query;
+
+  if (!router.isReady) return <Loading />;
 
   const setQueryString = (searchString) => {
     const { skip, ...withoutSkip } = restQuery;
