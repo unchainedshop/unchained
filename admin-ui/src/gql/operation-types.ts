@@ -126,6 +126,14 @@ export type IForgotPasswordMutationVariables = Exact<{
 
 export type IForgotPasswordMutation = { forgotPassword: { success: boolean | null } | null };
 
+export type ILinkUserAvatarMutationVariables = Exact<{
+  userId: string | number;
+  mediaId: string | number;
+}>;
+
+
+export type ILinkUserAvatarMutation = { linkUserAvatar: { _id: string, avatar: { _id: string, url: string | null, name: string } | null } };
+
 export type ILoginWithPasswordMutationVariables = Exact<{
   username?: string | null | undefined;
   email?: string | null | undefined;
@@ -525,6 +533,14 @@ export type ICreateAssortmentMutationVariables = Exact<{
 
 
 export type ICreateAssortmentMutation = { createAssortment: { _id: string, texts: { _id: string, slug: string | null } | null } };
+
+export type ILinkAssortmentMediaMutationVariables = Exact<{
+  assortmentId: string | number;
+  mediaId: string | number;
+}>;
+
+
+export type ILinkAssortmentMediaMutation = { linkAssortmentMedia: { _id: string } };
 
 export type IRemoveAssortmentMutationVariables = Exact<{
   assortmentId: string | number;
@@ -1149,6 +1165,30 @@ export type IUpdateLanguageMutationVariables = Exact<{
 
 export type IUpdateLanguageMutation = { updateLanguage: { _id: string, isoCode: string | null, isActive: boolean | null, isBase: boolean | null, name: string | null } };
 
+export type IMediaFragment = { _id: string, name: string, type: string, size: number, url: string | null };
+
+
+export type IMediaFragmentVariables = Exact<{ [key: string]: never; }>;
+
+export type IMediaQueryVariables = Exact<{
+  mediaId: string | number;
+}>;
+
+
+export type IMediaQuery = { media: { _id: string, name: string, type: string, size: number, url: string | null } | null };
+
+export type IMediasQueryVariables = Exact<{
+  limit?: number | null | undefined;
+  offset?: number | null | undefined;
+  path?: string | null | undefined;
+  types?: Array<string> | null | undefined;
+  queryString?: string | null | undefined;
+  sort?: Array<Types.ISortOptionInput> | null | undefined;
+}>;
+
+
+export type IMediasQuery = { mediasCount: number, medias: Array<{ _id: string, name: string, type: string, size: number, url: string | null }> };
+
 export type IOrderDetailFragment = { _id: string, orderNumber: string | null, status: Types.IOrderStatus | null, created: unknown, updated: unknown, ordered: unknown, confirmed: unknown, fulfilled: unknown, totalTax: { amount: number, currencyCode: string } | null, itemsTotal: { amount: number, currencyCode: string } | null, totalDiscount: { amount: number, currencyCode: string } | null, totalPayment: { amount: number, currencyCode: string } | null, totalDelivery: { amount: number, currencyCode: string } | null, user: { _id: string, username: string | null, isGuest: boolean, avatar: { _id: string, url: string | null } | null, profile: { displayName: string | null, address: { firstName: string | null, lastName: string | null } | null } | null } | null, discounts: Array<{ _id: string, trigger: Types.IOrderDiscountTrigger, code: string | null, interface: { _id: string, label: string | null, version: string | null } | null, total: { amount: number, currencyCode: string, isTaxable: boolean, isNetPrice: boolean }, discounted: Array<
       | { _id: string, orderDiscount: { _id: string, total: { amount: number, currencyCode: string, isTaxable: boolean, isNetPrice: boolean } }, total: { amount: number, currencyCode: string, isTaxable: boolean, isNetPrice: boolean } }
       | { _id: string, orderDiscount: { _id: string, total: { amount: number, currencyCode: string, isTaxable: boolean, isNetPrice: boolean } }, total: { amount: number, currencyCode: string, isTaxable: boolean, isNetPrice: boolean } }
@@ -1751,6 +1791,14 @@ export type IExportTokenMutationVariables = Exact<{
 
 
 export type IExportTokenMutation = { exportToken: { _id: string, walletAddress: string | null, status: Types.ITokenExportStatus, quantity: number, contractAddress: string | null, chainId: string | null, tokenSerialNumber: string | null, invalidatedDate: unknown, expiryDate: unknown, ercMetadata: unknown, accessKey: string, isInvalidateable: boolean, order: { _id: string, orderNumber: string | null } | null } };
+
+export type ILinkProductMediaMutationVariables = Exact<{
+  productId: string | number;
+  mediaId: string | number;
+}>;
+
+
+export type ILinkProductMediaMutation = { linkProductMedia: { _id: string } };
 
 export type IProductQueryVariables = Exact<{
   productId?: string | number | null | undefined;

@@ -23,6 +23,13 @@ export const MediaObjectsCollection = async (db: mongodb.Db) => {
     { index: { path: 1 } },
     { index: { expires: 1 }, options: { expireAfterSeconds: 0 } },
     { index: { created: -1 } },
+    {
+      index: { name: 'text', _id: 'text' },
+      options: {
+        weights: { _id: 8, name: 5 },
+        name: 'media_objects_fulltext_search',
+      },
+    },
   ]);
 
   return MediaObjects;

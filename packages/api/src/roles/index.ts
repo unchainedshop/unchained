@@ -128,6 +128,8 @@ const actions: Record<string, string> = [
   'confirmMediaUpload',
   'viewStatistics',
   'removeUser',
+  'viewMedia',
+  'viewMedias',
   'downloadFile',
   'uploadUserAvatar',
   'uploadTempFile',
