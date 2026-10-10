@@ -104,7 +104,7 @@ const WarehousingProviderDetailPage = ({ warehousingProviderId }) => {
       </div>
 
       {loading ? (
-        <Loading />
+        <Loading variant="detail" />
       ) : (
         <ProviderDetail
           readOnly={!hasRole(IRoleAction.ManageWarehousingProviders)}

@@ -40,7 +40,7 @@ const PasswordReset = () => {
     return { success: true, data };
   };
 
-  if (loading || typeof isValid !== 'boolean') return <Loading />;
+  if (loading || typeof isValid !== 'boolean') return <Loading variant="content" />;
 
   return !isValid ? (
     // Error state: Invalid/expired token

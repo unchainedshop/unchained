@@ -130,7 +130,7 @@ const Users = () => {
           onLoadMore={loadMore}
         >
           {loading && users?.length === 0 ? (
-            <Loading />
+            <Loading variant="list" />
           ) : (
             <UserList users={users} availableTagOptions={userTagOptions} />
           )}

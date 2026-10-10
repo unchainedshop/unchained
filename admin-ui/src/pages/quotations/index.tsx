@@ -92,7 +92,7 @@ const Quotations = () => {
             onLoadMore={loadMore}
           >
             {loading && quotations?.length === 0 ? (
-              <Loading />
+              <Loading variant="list" />
             ) : (
               <QuotationList sortable quotations={quotations} showUser />
             )}

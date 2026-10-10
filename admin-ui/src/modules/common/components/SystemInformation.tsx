@@ -7,7 +7,7 @@ const ShopInformation = () => {
   const { formatMessage, locale } = useIntl();
   const { shopInfo, loading } = useShopInfo();
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="detail" />;
   return (
     <>
       <h2 className="ml-4 mb-6 text-xl text-text-primary">

@@ -29,7 +29,7 @@ const UserQuotations = ({ _id: userId }) => {
     queryString: queryString as string,
   });
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="list" />;
   return (
     <div className="space-y-4 mt-4">
       <SearchField defaultValue={queryString} onInputChange={setQueryString} />

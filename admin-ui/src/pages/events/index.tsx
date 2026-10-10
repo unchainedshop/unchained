@@ -135,7 +135,7 @@ const Events = () => {
             onLoadMore={loadMore}
           >
             {loading && events?.length === 0 ? (
-              <Loading />
+              <Loading variant="list" />
             ) : (
               <EventList events={events} sortable />
             )}

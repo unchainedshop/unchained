@@ -137,7 +137,7 @@ const Orders = () => {
               onLoadMore={loadMore}
             >
               {loading && orders?.length === 0 ? (
-                <Loading />
+                <Loading variant="list" />
               ) : (
                 <OrderList
                   loading={loading && orders?.length > 0}

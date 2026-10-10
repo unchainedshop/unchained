@@ -75,7 +75,7 @@ const TokensPage = () => {
           defaultSearchValue={queryString}
         >
           <>
-            {loading ? <Loading /> : <TokenList tokens={tokens} />}
+            {loading ? <Loading variant="list" /> : <TokenList tokens={tokens} />}
             {!loading && !tokens?.length && (
               <NoData
                 message={formatMessage({

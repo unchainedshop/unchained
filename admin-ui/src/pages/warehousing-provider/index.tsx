@@ -100,7 +100,7 @@ const WarehousingProviders = () => {
         />
       </ListHeader>
       {loading ? (
-        <Loading />
+        <Loading variant="list" />
       ) : (
         <ProvidersList
           providerPath="/warehousing-provider?warehousingProviderId"

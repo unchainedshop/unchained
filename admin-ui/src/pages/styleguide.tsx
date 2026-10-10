@@ -173,16 +173,36 @@ const StyleGuidePage = () => {
             </div>
           </section>
 
-          {/* Loading Indicators */}
+          {/* Loading Skeletons */}
           <section>
             <h2 className="text-2xl font-semibold text-text-primary mb-6">
-              Loading Indicators
+              Loading Skeletons
             </h2>
-            <div className="bg-surface rounded-lg p-8 border border-border-subtle">
-              <h3 className="text-lg font-medium text-text-secondary mb-4">
-                Loading Indicators
-              </h3>
-              <Loading />
+            <div className="space-y-8">
+              <div className="bg-surface rounded-lg p-8 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
+                  Content (default)
+                </h3>
+                <Loading />
+              </div>
+              <div className="bg-surface rounded-lg p-8 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
+                  List
+                </h3>
+                <Loading variant="list" />
+              </div>
+              <div className="bg-surface rounded-lg p-8 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
+                  Detail
+                </h3>
+                <Loading variant="detail" />
+              </div>
+              <div className="bg-surface rounded-lg p-8 border border-border-subtle">
+                <h3 className="text-lg font-medium text-text-secondary mb-4">
+                  Form
+                </h3>
+                <Loading variant="form" />
+              </div>
             </div>
           </section>
 

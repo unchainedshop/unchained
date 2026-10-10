@@ -158,7 +158,7 @@ const Languages = () => {
             onLoadMore={loadMore}
           >
             {loading && languages?.length === 0 ? (
-              <Loading />
+              <Loading variant="list" />
             ) : (
               <LanguageList
                 sortable

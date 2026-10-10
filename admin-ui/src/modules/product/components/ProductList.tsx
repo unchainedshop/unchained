@@ -153,7 +153,7 @@ const ProductList = ({
   const canSelect = bulkActions.length > 0;
 
   if (loading && products?.length === 0) {
-    return <Loading />;
+    return <Loading variant="list" />;
   }
   return (
     <>

@@ -139,7 +139,7 @@ const WorkDetailPage = ({ workerId }) => {
           />
         ) : null}
       </div>
-      {!work ? <Loading /> : <WorkDetail work={work} />}
+      {!work ? <Loading variant="detail" /> : <WorkDetail work={work} />}
     </div>
   );
 };

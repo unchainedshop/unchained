@@ -173,7 +173,7 @@ const AssortmentFilters = ({ assortmentId }) => {
       >
         {loading ? (
           <div className="ml-auto shadow-sm dark:shadow-none w-full md:col-span-2">
-            <Loading />
+            <Loading variant="list" />
           </div>
         ) : (
           <div className="ml-auto shadow-sm dark:shadow-none w-full md:col-span-2 bg-surface">

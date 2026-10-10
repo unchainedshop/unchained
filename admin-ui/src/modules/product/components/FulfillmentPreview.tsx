@@ -110,7 +110,7 @@ const FulfillmentPreview = ({ productId }) => {
       </div>
 
       {loading ? (
-        <Loading />
+        <Loading variant="list" />
       ) : error && !dispatches.length && !unroutedStocks.length ? (
         <div className="text-sm text-danger">
           {formatMessage({

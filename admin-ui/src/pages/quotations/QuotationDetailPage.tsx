@@ -33,7 +33,7 @@ const QuotationDetailPage = ({ quotationId }) => {
           )}
         />
       </div>
-      {loading ? <Loading /> : <QuotationDetail quotation={quotation} />}
+      {loading ? <Loading variant="detail" /> : <QuotationDetail quotation={quotation} />}
     </div>
   );
 };

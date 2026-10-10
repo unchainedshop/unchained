@@ -57,7 +57,7 @@ const InfiniteScroll = ({
       {hasMore && <div ref={sentinelRef} className="h-4" />}
       {loading && (
         <div className="flex justify-center py-4">
-          <Loading />
+          <Loading variant="list" />
         </div>
       )}
     </>

@@ -158,7 +158,7 @@ const Currencies = () => {
             onLoadMore={loadMore}
           >
             {loading && currencies?.length === 0 ? (
-              <Loading />
+              <Loading variant="list" />
             ) : (
               <CurrencyList
                 currencies={currencies}

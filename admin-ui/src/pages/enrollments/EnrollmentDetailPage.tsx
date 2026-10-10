@@ -37,7 +37,7 @@ const EnrollmentDetailPage = ({ enrollmentId }) => {
         />
       </div>
       {loading ? (
-        <Loading />
+        <Loading variant="detail" />
       ) : (
         <EnrollmentDetail enrollment={enrollment as IEnrollment} />
       )}

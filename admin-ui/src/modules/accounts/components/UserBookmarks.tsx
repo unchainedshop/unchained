@@ -32,7 +32,7 @@ const UserBookmarks = ({ _id: userId }) => {
     }
   };
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="list" />;
 
   if (!bookmarks.length) {
     return (

@@ -51,7 +51,7 @@ const TokenDetailPage = ({ tokenId }) => {
     );
   }, [tokenId]);
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="detail" />;
   return (
     <>
       <BreadCrumbs currentPageTitle={token?.tokenSerialNumber} />

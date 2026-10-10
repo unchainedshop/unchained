@@ -46,7 +46,7 @@ const BundleItemsList = ({ productId }) => {
     );
   };
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="list" />;
 
   return bundleItems.length ? (
     <>

@@ -13,7 +13,7 @@ const LatestOrders = () => {
   });
 
   return !orders?.length && loading ? (
-    <Loading />
+    <Loading variant="list" />
   ) : (
     <OrderList orders={orders} loading={loading} showUser sortable />
   );

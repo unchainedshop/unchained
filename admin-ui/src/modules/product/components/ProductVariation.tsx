@@ -172,7 +172,7 @@ const ProductVariation = ({
       />,
     );
   };
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="list" />;
 
   return (
     <div className="mt-6 overflow-hidden rounded-md w-full max-w-full">

@@ -69,7 +69,7 @@ const AuthWrapper = ({ children }) => {
 
   return (
     <AuthContext.Provider value={ctx}>
-      {(loading && !currentUser) || awaitingRedirect ? <Loading /> : children}
+      {(loading && !currentUser) || awaitingRedirect ? <Loading variant="content" /> : children}
     </AuthContext.Provider>
   );
 };

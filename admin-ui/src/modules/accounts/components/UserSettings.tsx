@@ -40,7 +40,7 @@ const canAccessPluginTab = (config, hasRole) =>
 
 const GetCurrentTab = ({ user, selectedView, ...extendedData }) => {
   const { hasRole } = useAuth();
-  if (!user) return <Loading />;
+  if (!user) return <Loading variant="form" />;
   if (selectedView === 'profile') return <ProfileView {...user} />;
   if (selectedView === 'account') return <AccountView {...user} />;
   if (selectedView === 'orders' && viewerCan(user, IRoleAction.ViewUserOrders))

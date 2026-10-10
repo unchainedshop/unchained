@@ -173,7 +173,7 @@ const AssortmentLinks = ({ assortmentId }) => {
         }
       >
         {loading ? (
-          <Loading />
+          <Loading variant="list" />
         ) : (
           <div className="ml-auto shadow-sm dark:shadow-none dark:bg-slate-800 w-full md:col-span-2 bg-white">
             <DndContext

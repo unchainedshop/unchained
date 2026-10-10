@@ -59,7 +59,7 @@ const FilterDetailPage = ({ filterId }) => {
     router.push('/404');
     return null;
   }
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="detail" />;
   return (
     <div className="mt-5 max-w-full">
       <BreadCrumbs currentPageTitle={filter?.key} />

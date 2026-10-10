@@ -92,7 +92,7 @@ const LanguageDetailPage = ({ languageId }) => {
         )}
       </div>
       {loading ? (
-        <Loading />
+        <Loading variant="form" />
       ) : (
         <div className="mx-auto mt-6 sm:max-w-xl">
           <FormWrapper>

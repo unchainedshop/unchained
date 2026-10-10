@@ -49,7 +49,7 @@ const PluginSlot = ({ slot, children, ...props }: PluginSlotProps) => {
             componentName={componentName}
           >
             <PluginRuntimeProvider value={runtimeCtx}>
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Loading variant="detail" />}>
                 {children ? (
                   children(Component, config, manifest)
                 ) : (

@@ -29,7 +29,7 @@ const AssortmentListView = ({
   });
 
   if (loading && assortments?.length === 0) {
-    return <Loading />;
+    return <Loading variant="list" />;
   }
 
   return (

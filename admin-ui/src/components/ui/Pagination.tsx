@@ -219,7 +219,7 @@ const Pagination = ({
             className="py-2 leading-5"
           />
         ) : (
-          <Loading />
+          <Loading variant="list" />
         )
       ) : null}
 

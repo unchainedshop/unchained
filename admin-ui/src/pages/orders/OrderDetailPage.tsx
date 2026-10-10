@@ -74,7 +74,7 @@ const OrderDetailPage = ({ orderId }) => {
           />
         ) : null}
       </div>
-      {loading ? <Loading /> : <OrderDetail order={order} />}
+      {loading ? <Loading variant="detail" /> : <OrderDetail order={order} />}
     </div>
   );
 };

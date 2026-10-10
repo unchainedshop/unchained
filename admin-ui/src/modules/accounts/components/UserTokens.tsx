@@ -25,7 +25,7 @@ const UserTokens = ({ _id: userId }) => {
   const { formatMessage } = useIntl();
   const { formatPrice } = useFormatPrice();
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="list" />;
   return tokens.length ? (
     <div className="bg-white">
       <div className="mt-5 -mx-px grid grid-cols-1 border-l border-slate-300 sm:mx-0 sm:grid-cols-2 lg:grid-cols-3">

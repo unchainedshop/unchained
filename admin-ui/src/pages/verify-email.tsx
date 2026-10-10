@@ -48,7 +48,7 @@ const VerifyEmail = () => {
     if (query.token) verify();
   }, [query.token]);
 
-  if (loading || typeof isValid !== 'boolean') return <Loading />;
+  if (loading || typeof isValid !== 'boolean') return <Loading variant="content" />;
 
   return !isValid ? (
     // Error state: Token invalid/expired

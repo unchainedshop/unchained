@@ -104,7 +104,7 @@ const DeliveryProviderDetailPage = ({ deliveryProviderId }) => {
         )}
       </div>
       {loading ? (
-        <Loading />
+        <Loading variant="detail" />
       ) : (
         <ProviderDetail
           readOnly={!hasRole(IRoleAction.ManageDeliveryProviders)}

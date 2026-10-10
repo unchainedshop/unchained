@@ -15,7 +15,7 @@ const AssortmentGraphView = ({ options }) => {
 
   return (
     <div className="mt-5">
-      {loading ? <Loading /> : <AssortmentGraph assortments={assortments} />}
+      {loading ? <Loading variant="detail" /> : <AssortmentGraph assortments={assortments} />}
     </div>
   );
 };

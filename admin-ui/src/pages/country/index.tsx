@@ -161,7 +161,7 @@ const Country = () => {
             onLoadMore={loadMore}
           >
             {loading && countries?.length === 0 ? (
-              <Loading />
+              <Loading variant="list" />
             ) : (
               <CountryList
                 sortable

@@ -6,6 +6,7 @@ export { default as SearchField } from './SearchField';
 export { default as CopyableText } from './CopyableText';
 
 export { default as Loading } from './Loading';
+export { Skeleton } from './Loading';
 export { default as NoData } from './NoData';
 
 export { default as Accordion } from './Accordion/Accordion';

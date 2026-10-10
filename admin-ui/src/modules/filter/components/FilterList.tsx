@@ -119,7 +119,7 @@ const FilterList = ({
   const canSelect = bulkActions.length > 0;
 
   if (loading && filters?.length === 0) {
-    return <Loading />;
+    return <Loading variant="list" />;
   }
 
   return (

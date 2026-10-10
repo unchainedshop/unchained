@@ -91,7 +91,7 @@ const PaymentProviders = () => {
         />
       </ListHeader>
       {loading ? (
-        <Loading />
+        <Loading variant="list" />
       ) : (
         <ProvidersList
           providerPath="/payment-provider?paymentProviderId"

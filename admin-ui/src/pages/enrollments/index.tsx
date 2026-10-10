@@ -132,7 +132,7 @@ const EnrollmentListView = () => {
               onLoadMore={loadMore}
             >
               {loading && enrollments?.length === 0 ? (
-                <Loading />
+                <Loading variant="list" />
               ) : (
                 <EnrollmentList enrollments={enrollments} showUser sortable />
               )}

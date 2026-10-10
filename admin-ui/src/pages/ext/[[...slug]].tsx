@@ -11,7 +11,7 @@ const PluginEntityPage = () => {
   const { manifests, getComponent, loading } = usePlugins();
   const { hasRole } = useAuth();
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="content" />;
 
   const slugParts = Array.isArray(slug) ? slug : slug ? [slug] : [];
 
@@ -34,7 +34,7 @@ const PluginEntityPage = () => {
     if (entity) {
       if (entity.requiredRole && !hasRole(entity.requiredRole)) {
         router.replace('/403');
-        return <Loading />;
+        return <Loading variant="content" />;
       }
 
       let componentName: string;
@@ -80,7 +80,7 @@ const PluginEntityPage = () => {
     if (page) {
       if (page.requiredRole && !hasRole(page.requiredRole)) {
         router.replace('/403');
-        return <Loading />;
+        return <Loading variant="content" />;
       }
       const Component = getComponent(manifest.name, page.component);
       if (Component)

@@ -102,7 +102,7 @@ const PaymentProviderDetailPage = ({ paymentProviderId }) => {
         )}
       </div>
       {loading ? (
-        <Loading />
+        <Loading variant="detail" />
       ) : (
         <ProviderDetail
           readOnly={!hasRole(IRoleAction.ManagePaymentProviders)}

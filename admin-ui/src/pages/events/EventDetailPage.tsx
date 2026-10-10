@@ -26,7 +26,7 @@ const EventDetailPage = ({ eventId }) => {
           { id: (event as any)?._id },
         )}
       />
-      {loading ? <Loading /> : <EventDetail event={event} />}
+      {loading ? <Loading variant="detail" /> : <EventDetail event={event} />}
     </div>
   );
 };

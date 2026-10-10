@@ -19,7 +19,7 @@ const UserCart = ({ _id: userId }) => {
   const { hasRole } = useAuth();
   const { cart, loading } = useUserCart({ userId });
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading variant="list" />;
 
   if (!cart)
     return (

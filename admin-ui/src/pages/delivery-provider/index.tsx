@@ -96,7 +96,7 @@ const DeliveryProviders = () => {
         />
       </ListHeader>
       {loading ? (
-        <Loading />
+        <Loading variant="list" />
       ) : (
         <ProvidersList
           canEdit={hasRole(IRoleAction.ViewDeliveryProvider)}

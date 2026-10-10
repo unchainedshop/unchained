@@ -139,7 +139,7 @@ const WorkQueueListView = () => {
           threshold={threshold}
         >
           {loading && workQueue?.length === 0 ? (
-            <Loading />
+            <Loading variant="list" />
           ) : isMessagesView ? (
             <MessagesList
               messageGroups={messageGroups}
