@@ -14,7 +14,7 @@ const MediaDetail = ({ media }) => {
   const isImage = media.type?.startsWith('image');
 
   return (
-    <div className="mt-5 rounded-lg border border-border-default p-4 shadow-sm sm:p-6 lg:p-8">
+    <div className="mt-5 rounded-lg border border-border-subtle bg-surface p-4 shadow-sm sm:p-6 lg:p-8">
       <div className="flex flex-col gap-4">
         <div className="flex justify-between">
           <div className="my-1 text-sm font-semibold">
@@ -32,7 +32,7 @@ const MediaDetail = ({ media }) => {
         </div>
 
         {isImage && media.url && (
-          <div className="flex justify-center rounded-lg border border-border-default bg-surface-secondary p-4">
+          <div className="flex justify-center rounded-lg border border-border-subtle bg-surface-subtle p-4">
             <ImageWithFallback
               src={media.url}
               alt={media.name}

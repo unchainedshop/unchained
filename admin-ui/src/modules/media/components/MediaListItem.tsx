@@ -20,7 +20,7 @@ const MediaListItem = ({ media }) => {
           {isImage ? (
             <MediaAvatar file={media} />
           ) : (
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-surface-secondary">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-surface-subtle">
               <span className="text-xs text-text-secondary">
                 {media.type?.split('/')[1]?.toUpperCase() || '?'}
               </span>

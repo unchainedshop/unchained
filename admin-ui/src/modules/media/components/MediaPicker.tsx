@@ -126,9 +126,9 @@ const MediaPicker = ({ open, onClose, onSelect, types }: MediaPickerProps) => {
                               key={media._id}
                               type="button"
                               onClick={() => handleSelect(media)}
-                              className="group flex flex-col overflow-hidden rounded-lg border border-border-default text-left transition-all hover:border-focus-ring hover:shadow-md focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
+                              className="group flex flex-col overflow-hidden rounded-lg border border-border-subtle bg-surface text-left shadow-sm transition-all hover:border-focus-ring hover:shadow-md focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
                             >
-                              <div className="flex h-32 items-center justify-center bg-surface-secondary">
+                              <div className="flex h-32 items-center justify-center bg-surface-subtle">
                                 {isImage && media.url ? (
                                   <ImageWithFallback
                                     src={media.url}
