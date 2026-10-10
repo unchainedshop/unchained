@@ -16,9 +16,9 @@ const MediaGridItem = ({ media }) => {
   return (
     <Link
       href={`/media?mediaId=${media._id}`}
-      className="group flex flex-col overflow-hidden rounded-lg border border-border-default shadow-sm transition-shadow hover:shadow-md"
+      className="group flex flex-col overflow-hidden rounded-lg border border-border-subtle bg-surface shadow-sm transition-shadow hover:shadow-md"
     >
-      <div className="flex h-40 items-center justify-center bg-surface-secondary">
+      <div className="flex h-40 items-center justify-center bg-surface-subtle">
         {isImage && media.url ? (
           <ImageWithFallback
             src={media.url}
