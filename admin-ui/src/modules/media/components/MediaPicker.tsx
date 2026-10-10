@@ -109,7 +109,7 @@ const MediaPicker = ({ open, onClose, onSelect, types }: MediaPickerProps) => {
                     onLoadMore={loadMore}
                   >
                     {loading && medias?.length === 0 ? (
-                      <Loading />
+                      <Loading variant="list" />
                     ) : medias?.length === 0 ? (
                       <p className="py-8 text-center text-sm text-text-muted">
                         {formatMessage({
