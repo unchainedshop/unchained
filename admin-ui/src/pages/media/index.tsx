@@ -158,7 +158,7 @@ const Media = () => {
             onLoadMore={loadMore}
           >
             {loading && medias?.length === 0 ? (
-              <Loading />
+              <Loading variant="list" />
             ) : viewMode === 'grid' ? (
               <MediaGrid medias={medias} />
             ) : (

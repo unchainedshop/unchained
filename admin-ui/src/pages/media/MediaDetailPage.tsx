@@ -26,7 +26,7 @@ const MediaDetailPage = ({ mediaId }) => {
           { name: media?.name || mediaId },
         )}
       />
-      {loading ? <Loading /> : media && <MediaDetail media={media} />}
+      {loading ? <Loading variant="detail" /> : media && <MediaDetail media={media} />}
     </div>
   );
 };
