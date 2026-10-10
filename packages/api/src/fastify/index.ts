@@ -378,7 +378,8 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
           });
 
           fastify.setNotFoundHandler(async (request, reply) => {
-            if (request.method === 'GET' && !request.url.includes('.')) {
+            const pathname = request.url.split('?')[0];
+            if (request.method === 'GET' && !pathname.includes('.')) {
               if (process.env.NODE_ENV !== 'production') reply.header('Cache-Control', 'no-cache');
 
               // CSP nonce convention (@fastify/helmet with enableCSPNonces:
@@ -403,7 +404,8 @@ export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
           });
 
           fastify.setNotFoundHandler(async (request, reply) => {
-            if (request.method === 'GET' && !request.url.includes('.')) {
+            const pathname = request.url.split('?')[0];
+            if (request.method === 'GET' && !pathname.includes('.')) {
               return reply
                 .type('text/html')
                 .send(resolveAdminUIHTML(preparedHTML, request.url, opts.prefix));
