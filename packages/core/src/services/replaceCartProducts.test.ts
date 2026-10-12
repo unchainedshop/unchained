@@ -54,6 +54,61 @@ describe('replaceCartProductsService', () => {
     assert.equal(positions.addProductItem.mock.calls[0].arguments[0].productId, 'c');
   });
 
+  it('validates the quantity a product changes by across its positions', async (t) => {
+    const validateOrderPosition = t.mock.method(
+      ordersSettings,
+      'validateOrderPosition',
+      async () => undefined,
+    );
+    const attendees = (value: string) => [{ key: 'attendees', value }];
+    const replace = (
+      currentPositions: Record<string, unknown>[],
+      items: { productId: string; quantity: number; configuration: { key: string; value: string }[] }[],
+    ) =>
+      replaceCartProductsService.call(
+        {
+          orders: {
+            positions: {
+              findOrderPositions: async () => currentPositions,
+              updateProductItem: mock.fn(),
+              addProductItem: mock.fn(),
+              delete: mock.fn(),
+            },
+          },
+          products: {
+            findProduct: async ({ productId }: { productId: string }) => ({ _id: productId }),
+            resolveOrderableProduct: async (product: unknown) => product,
+          },
+        } as unknown as Modules,
+        { order: { _id: 'order-id' } as Order, items },
+      );
+
+    await replace(
+      [],
+      [
+        { productId: 'ticket', quantity: 3, configuration: attendees('A') },
+        { productId: 'ticket', quantity: 3, configuration: attendees('B') },
+      ],
+    );
+    await replace(
+      [
+        {
+          _id: 'seats-a',
+          originalProductId: 'ticket',
+          productId: 'ticket',
+          quantity: 3,
+          configuration: attendees('A'),
+        },
+      ],
+      [{ productId: 'ticket', quantity: 3, configuration: attendees('B') }],
+    );
+
+    assert.deepEqual(
+      validateOrderPosition.mock.calls.map(({ arguments: [{ quantityDiff }] }) => quantityDiff),
+      [3, 6, 0],
+    );
+  });
+
   it('writes nothing when an item is invalid', async () => {
     const positions = {
       findOrderPositions: async () => [],

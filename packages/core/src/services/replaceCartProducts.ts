@@ -29,13 +29,21 @@ export async function replaceCartProductsService(
   }
 
   const currentPositions = await this.orders.positions.findOrderPositions({ orderId: order._id });
-  const currentQuantity = (key: string) =>
+  const currentProductQuantity = (productId: string) =>
     currentPositions
-      .filter((position) => positionKey(position) === key)
+      .filter((position) => position.productId === productId)
       .reduce((sum, { quantity }) => sum + quantity, 0);
-  for (const [key, { product, quantity, configuration }] of wantedPositions) {
+  const wantedProductQuantities = new Map<string, number>();
+  for (const { product, quantity, configuration } of wantedPositions.values()) {
+    const wantedProductQuantity = (wantedProductQuantities.get(product._id) ?? 0) + quantity;
+    wantedProductQuantities.set(product._id, wantedProductQuantity);
     await ordersSettings.validateOrderPosition(
-      { order, product, configuration, quantityDiff: quantity - currentQuantity(key) },
+      {
+        order,
+        product,
+        configuration,
+        quantityDiff: wantedProductQuantity - currentProductQuantity(product._id),
+      },
       { ...unchainedAPI, modules: this },
     );
   }
