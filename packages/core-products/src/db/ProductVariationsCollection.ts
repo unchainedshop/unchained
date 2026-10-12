@@ -14,6 +14,7 @@ export type ProductVariation = {
   options: string[];
   productId: string;
   type: string;
+  sortKey?: number;
 } & TimestampFields;
 
 export type ProductVariationText = {
@@ -34,7 +35,7 @@ export const ProductVariationsCollection = async (db: mongodb.Db) => {
   const ProductVariations = db.collection<ProductVariation>('product_variations');
   const ProductVariationTexts = db.collection<ProductVariationText>('product_variation_texts');
 
-  await buildDbIndexes(ProductVariations, [{ index: { productId: 1 } }]);
+  await buildDbIndexes(ProductVariations, [{ index: { productId: 1, sortKey: 1 } }]);
 
   await buildDbIndexes(ProductVariationTexts, [
     { index: { productVariationId: 1 } },

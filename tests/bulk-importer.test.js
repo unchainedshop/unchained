@@ -283,6 +283,73 @@ test.describe('Bulk Importer', () => {
     }, 30000);
   });
 
+  test.describe('Import Product Variations', () => {
+    const variation = (key) => ({
+      _id: `ordered-${key}`,
+      key,
+      type: 'TEXT',
+      options: [{ value: `${key}-1`, content: { de: { title: `${key} 1` } } }],
+      content: { de: { title: key } },
+    });
+
+    const importVariations = async (operation, keys) => {
+      const { data: { addWork } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addWork($input: JSON) {
+            addWork(type: BULK_IMPORT, input: $input, retries: 0, priority: 10) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          input: {
+            events: [
+              {
+                entity: 'PRODUCT',
+                operation,
+                payload: {
+                  _id: 'ORDERED',
+                  specification: {
+                    type: 'CONFIGURABLE_PRODUCT',
+                    content: { de: { title: 'Ordered variations' } },
+                  },
+                  variations: keys.map(variation),
+                },
+              },
+            ],
+          },
+        },
+      });
+      assert.ok(addWork);
+      await waitForImport(addWork._id);
+    };
+
+    const variationKeys = async () => {
+      const { data: { product } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query OrderedVariations {
+            product(productId: "ORDERED") {
+              ... on ConfigurableProduct {
+                variations {
+                  key
+                }
+              }
+            }
+          }
+        `,
+      });
+      return product.variations.map(({ key }) => key);
+    };
+
+    test('keeps the variations in the order of the payload, also after a reorder', async () => {
+      await importVariations('CREATE', ['size', 'color', 'length', 'width']);
+      assert.deepStrictEqual(await variationKeys(), ['size', 'color', 'length', 'width']);
+
+      await importVariations('UPDATE', ['width', 'length', 'color', 'size']);
+      assert.deepStrictEqual(await variationKeys(), ['width', 'length', 'color', 'size']);
+    }, 30000);
+  });
+
   test.describe('Import Filters', () => {
     test('adds 1 CREATE and 1 UPDATE event', async () => {
       const { data: { addWork } = {} } = await graphqlFetch({

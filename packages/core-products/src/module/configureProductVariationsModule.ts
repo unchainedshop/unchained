@@ -119,6 +119,7 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
       const variations = ProductVariations.find(selector, {
         skip: offset,
         limit,
+        sort: { sortKey: 1 },
         ...options,
       });
 
@@ -127,17 +128,28 @@ export const configureProductVariationsModule = async ({ db }: ModuleInput<Recor
 
     create: async ({
       type,
+      sortKey,
       ...doc
     }: Omit<ProductVariation, '_id' | 'created'> &
       Pick<Partial<ProductVariation>, '_id' | 'created'> & {
         locale?: string;
         title?: string;
       }): Promise<ProductVariation> => {
+      if (sortKey === undefined || sortKey === null) {
+        // Append after the product's last variation
+        const lastProductVariation = (await ProductVariations.findOne(
+          { productId: doc.productId },
+          { sort: { sortKey: -1 } },
+        )) || { sortKey: 0 };
+        sortKey = (lastProductVariation.sortKey || 0) + 1;
+      }
+
       const { insertedId: productVariationId } = await ProductVariations.insertOne({
         _id: generateDbObjectId(),
         created: new Date(),
         type: ProductVariationType[type],
         ...doc,
+        sortKey,
       });
 
       const productVariation = (await ProductVariations.findOne(

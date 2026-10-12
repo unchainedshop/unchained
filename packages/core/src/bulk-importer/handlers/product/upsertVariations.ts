@@ -56,47 +56,48 @@ export default async function upsertVariations(
 ) {
   const { modules } = unchainedAPI;
 
-  const upsertedProductVariationIds = await Promise.all(
-    variations.map(async ({ content, options, ...variationsRest }) => {
-      const variation = await upsert(
-        {
-          ...variationsRest,
-          options: options.map((option) => option.value),
-          productId,
-        },
-        unchainedAPI,
-      );
+  // One after another, so the variations keep the order of the payload
+  const upsertedProductVariationIds: string[] = [];
+  for (const [index, { content, options, ...variationsRest }] of variations.entries()) {
+    const variation = await upsert(
+      {
+        ...variationsRest,
+        options: options.map((option) => option.value),
+        productId,
+        sortKey: index + 1,
+      },
+      unchainedAPI,
+    );
 
-      await Promise.all(
-        options.map(async ({ content: optionContent, value: optionValue }) => {
-          if (optionContent) {
-            await modules.products.variations.texts.updateVariationTexts(
-              variation._id,
-              Object.entries(optionContent).map(([locale, localizedData]: [string, any]) => {
-                return {
-                  locale,
-                  ...localizedData,
-                };
-              }),
-              optionValue,
-            );
-          }
+    await Promise.all(
+      options.map(async ({ content: optionContent, value: optionValue }) => {
+        if (optionContent) {
+          await modules.products.variations.texts.updateVariationTexts(
+            variation._id,
+            Object.entries(optionContent).map(([locale, localizedData]: [string, any]) => {
+              return {
+                locale,
+                ...localizedData,
+              };
+            }),
+            optionValue,
+          );
+        }
+      }),
+    );
+    if (content) {
+      await modules.products.variations.texts.updateVariationTexts(
+        variation._id,
+        Object.entries(content).map(([locale, localizedData]: [string, any]) => {
+          return {
+            locale,
+            ...localizedData,
+          };
         }),
       );
-      if (content) {
-        await modules.products.variations.texts.updateVariationTexts(
-          variation._id,
-          Object.entries(content).map(([locale, localizedData]: [string, any]) => {
-            return {
-              locale,
-              ...localizedData,
-            };
-          }),
-        );
-      }
-      return variation._id;
-    }),
-  );
+    }
+    upsertedProductVariationIds.push(variation._id);
+  }
   const allVariations = await modules.products.variations.findProductVariations({
     productId,
   });
