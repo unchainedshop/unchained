@@ -1,4 +1,10 @@
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
+import {
+  setupDatabase,
+  createAnonymousGraphqlFetch,
+  createLoggedInGraphqlFetch,
+  disconnect,
+  tokenCookieOf,
+} from './helpers.js';
 import { LeveledPricingProduct, SimpleProduct } from './seeds/products.js';
 import { ConfirmedOrder, SimplePosition } from './seeds/orders.js';
 import assert from 'node:assert';
@@ -419,6 +425,61 @@ test.describe('Cart: Product Items', () => {
           },
         ],
       });
+    });
+
+    test('failed adds create no cart', async () => {
+      const { headers } = await createAnonymousGraphqlFetch()({
+        query: /* GraphQL */ `
+          mutation {
+            loginAsGuest {
+              _id
+            }
+          }
+        `,
+      });
+      const guestFetch = createLoggedInGraphqlFetch(`Bearer ${tokenCookieOf(headers)}`);
+
+      for (const [item, code] of [
+        [{ productId: 'non-existing-id', quantity: 1 }, 'ProductNotFoundError'],
+        [{ productId: SimpleProduct._id, quantity: 0 }, 'OrderQuantityTooLowError'],
+      ]) {
+        const single = await guestFetch({
+          query: /* GraphQL */ `
+            mutation addCartProduct($productId: ID!, $quantity: Int) {
+              addCartProduct(productId: $productId, quantity: $quantity) {
+                _id
+              }
+            }
+          `,
+          variables: item,
+        });
+        assert.strictEqual(single.errors?.[0]?.extensions?.code, code);
+
+        const multiple = await guestFetch({
+          query: /* GraphQL */ `
+            mutation addMultipleCartProducts($items: [OrderItemInput!]!) {
+              addMultipleCartProducts(items: $items) {
+                _id
+              }
+            }
+          `,
+          variables: { items: [item] },
+        });
+        assert.strictEqual(multiple.errors?.[0]?.extensions?.code, code);
+      }
+
+      const { data } = await guestFetch({
+        query: /* GraphQL */ `
+          query {
+            me {
+              cart {
+                _id
+              }
+            }
+          }
+        `,
+      });
+      assert.strictEqual(data.me.cart, null);
     });
   });
 

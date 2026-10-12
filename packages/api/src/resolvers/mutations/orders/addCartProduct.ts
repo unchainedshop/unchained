@@ -1,6 +1,12 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import { InvalidIdError, OrderWrongStatusError, OrderNotFoundError } from '../../../errors.ts';
+import {
+  ProductNotFoundError,
+  OrderQuantityTooLowError,
+  InvalidIdError,
+  OrderWrongStatusError,
+  OrderNotFoundError,
+} from '../../../errors.ts';
 import { rethrowCartProductError } from './mapOrderServiceError.ts';
 
 export default async function addCartProduct(
@@ -18,6 +24,10 @@ export default async function addCartProduct(
   );
 
   if (!originalProductId) throw new InvalidIdError({ productId: originalProductId });
+  if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
+
+  const originalProduct = await modules.products.findProduct({ productId: originalProductId });
+  if (!originalProduct) throw new ProductNotFoundError({ productId: originalProductId });
 
   const order = await services.orders.findOrInitCart({
     orderId,
