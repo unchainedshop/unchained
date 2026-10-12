@@ -38,6 +38,8 @@
   - The AI chat only answers pages of the API's own host, `localhost` and `ROOT_URL` (more with `chat.allowedOrigins`) and requires JSON. It uses the MCP server in-process, `chat.unchainedMCPUrl` is removed.
   - `context.getHeader()` returns `string | undefined`, `GetHeaderFn` is removed.
   - Deep imports below `@unchainedshop/api/lib/` moved: the adapters, `auth` and `adminUiPlugins` to `lib/http/`, `acl` to `lib/roles/`. The entry points are unchanged.
+- **Cart providers are validated:** `updateCart` rejects a payment or delivery provider that does not exist (`PaymentProviderNotFoundError` / `DeliverProviderNotFoundError`) instead of setting it, and all cart provider mutations reject a provider the cart does not support (`OrderPaymentTypeError` / `OrderDeliveryTypeError`).
+- **`services.orders.addMultipleCartProducts({ order, items }, unchainedAPI)`** takes the cart instead of `orderId`, checks every item before adding any and returns the added positions; `addCartProduct` uses it.
 
 ### Improvements
 
@@ -65,6 +67,7 @@
 - **Fetch handler and plain Node.js server:** `createFetchHandler()` from `@unchainedshop/api/fetch` (Bun, Deno) and `connect()` from `@unchainedshop/api/node`. `@unchainedshop/api` no longer depends on `@whatwg-node/server`.
 - **One request context type:** `UnchainedRequestContext` from `@unchainedshop/core`; plugin routes get `PluginHttpRequestContext` with `user` and `roles` and check permissions without casts.
 - **Faster Admin UI, every route audited:** Admin UI files skip the request context (70–100% more requests per second) and `_next/static` is cached as immutable. MCP, chat, plugin routes and your own routes run as the user of the request, so their events carry it.
+- **Cart and media services:** `services.orders.selectDeliveryProvider` / `selectPaymentProvider`, `services.users.provisionGuest` and `services.files.resolveMediaFiles` hold the logic of the cart provider mutations, `loginAsGuest` and the MCP media tools.
 
 ### Fixed
 

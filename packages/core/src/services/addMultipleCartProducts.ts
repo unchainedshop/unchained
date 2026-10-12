@@ -1,56 +1,59 @@
+import { ordersSettings, type Order, type OrderPosition } from '@unchainedshop/core-orders';
 import type { Modules } from '../modules.ts';
-import type { Order } from '@unchainedshop/core-orders';
-import { ordersSettings } from '@unchainedshop/core-orders';
 import { createServiceError } from '../errors.ts';
+
+interface CartProductItem {
+  productId: string;
+  quantity: number;
+  configuration?: { key: string; value: string }[];
+}
+
+const resolveCartProducts = (modules: Modules, items: CartProductItem[]) =>
+  Promise.all(
+    items.map(async ({ productId, quantity, configuration }) => {
+      const originalProduct = await modules.products.findProduct({ productId });
+      if (!originalProduct) {
+        throw createServiceError('ProductNotFoundError', `Product not found: ${productId}`, {
+          productId,
+        });
+      }
+      if (quantity < 1) {
+        throw createServiceError('InvalidQuantityError', `Invalid quantity for product: ${productId}`, {
+          productId,
+          quantity,
+        });
+      }
+      const product = await modules.products.resolveOrderableProduct(originalProduct, {
+        configuration,
+      });
+      return { originalProductId: originalProduct._id, product, quantity, configuration };
+    }),
+  );
 
 export async function addMultipleCartProductsService(
   this: Modules,
-  {
-    orderId,
-    items,
-    context,
-  }: {
-    orderId: string;
-    items: {
-      productId: string;
-      quantity: number;
-      configuration?: { key: string; value: string }[];
-    }[];
-    context: {
-      localeContext: Intl.Locale;
-      userId?: string;
-      countryCode?: string;
-    };
-  },
-): Promise<Order | null> {
-  const order = await this.orders.findOrder({ orderId });
-  if (!order) return null;
-
-  for (const { productId, quantity, configuration } of items) {
-    const originalProduct = await this.products.findProduct({ productId });
-    if (!originalProduct) {
-      throw createServiceError('ProductNotFoundError', `Product not found: ${productId}`);
-    }
-
-    if (quantity < 1) {
-      throw createServiceError('InvalidQuantityError', `Invalid quantity for product: ${productId}`);
-    }
-
-    const product = await this.products.resolveOrderableProduct(originalProduct, { configuration });
-
+  { order, items }: { order: Order; items: CartProductItem[] },
+  unchainedAPI: Record<string, any> = {},
+): Promise<OrderPosition[]> {
+  const cartProducts = await resolveCartProducts(this, items);
+  for (const { product, quantity, configuration } of cartProducts) {
     await ordersSettings.validateOrderPosition(
       { order, product, configuration, quantityDiff: quantity },
-      { modules: this, ...context },
+      { ...unchainedAPI, modules: this },
     );
-
-    await this.orders.positions.addProductItem({
-      quantity,
-      configuration,
-      originalProductId: originalProduct._id,
-      productId: product._id,
-      orderId: order._id,
-    });
   }
 
-  return order;
+  const positions: OrderPosition[] = [];
+  for (const { originalProductId, product, quantity, configuration } of cartProducts) {
+    positions.push(
+      await this.orders.positions.addProductItem({
+        orderId: order._id,
+        originalProductId,
+        productId: product._id,
+        quantity,
+        configuration,
+      }),
+    );
+  }
+  return positions;
 }

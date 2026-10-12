@@ -1,6 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
 import { InvalidIdError, OrderNotFoundError, OrderWrongStatusError } from '../../../errors.ts';
+import { rethrowDeliveryProviderError, rethrowPaymentProviderError } from './mapOrderServiceError.ts';
 import type { Order } from '@unchainedshop/core-orders';
 
 interface UpdateCartParams {
@@ -24,7 +25,7 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
   if (paymentProviderId === '') throw new InvalidIdError({ paymentProviderId });
   if (deliveryProviderId === '') throw new InvalidIdError({ deliveryProviderId });
 
-  const order = await services.orders.findOrInitCart({
+  let order = await services.orders.findOrInitCart({
     orderId,
     user: user!,
     countryCode: context.countryCode,
@@ -34,16 +35,21 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
 
   // Batch update non-provider fields in a single database operation
   if (meta || billingAddress || contact) {
-    await modules.orders.updateCartFields(order._id, { meta, billingAddress, contact });
+    order =
+      (await modules.orders.updateCartFields(order._id, { meta, billingAddress, contact })) || order;
   }
 
   // Provider updates trigger events and need to be handled separately
   if (paymentProviderId) {
-    await modules.orders.setPaymentProvider(order._id, paymentProviderId);
+    order = await services.orders
+      .selectPaymentProvider({ order, paymentProviderId })
+      .catch(rethrowPaymentProviderError);
   }
 
   if (deliveryProviderId) {
-    await modules.orders.setDeliveryProvider(order._id, deliveryProviderId);
+    order = await services.orders
+      .selectDeliveryProvider({ order, deliveryProviderId })
+      .catch(rethrowDeliveryProviderError);
   }
 
   // Recalculate, then return

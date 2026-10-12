@@ -967,6 +967,55 @@ test.describe('Cart: Delivery and Payment Updates', () => {
     });
   });
 
+  test.describe('Mutation.updateCart', () => {
+    const updateCartProviders = (variables) =>
+      graphqlFetchAsAdmin({
+        query: /* GraphQL */ `
+          mutation UpdateCart($orderId: ID, $paymentProviderId: ID, $deliveryProviderId: ID) {
+            updateCart(
+              orderId: $orderId
+              paymentProviderId: $paymentProviderId
+              deliveryProviderId: $deliveryProviderId
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: { orderId: ShippingOrder._id, ...variables },
+      });
+
+    test('rejects providers that do not exist instead of setting them', async () => {
+      const before = await db.collection('orders').findOne({ _id: ShippingOrder._id });
+
+      const payment = await updateCartProviders({ paymentProviderId: 'non-existing-provider' });
+      assert.strictEqual(payment.errors?.[0]?.extensions?.code, 'PaymentProviderNotFoundError');
+      const delivery = await updateCartProviders({ deliveryProviderId: 'non-existing-provider' });
+      assert.strictEqual(delivery.errors?.[0]?.extensions?.code, 'DeliverProviderNotFoundError');
+
+      const after = await db.collection('orders').findOne({ _id: ShippingOrder._id });
+      assert.strictEqual(after.paymentId, before.paymentId);
+      assert.strictEqual(after.deliveryId, before.deliveryId);
+    });
+
+    test('rejects providers the cart does not support', async () => {
+      await db.collection('payment-providers').insertOne({
+        _id: 'unsupported-payment-provider',
+        adapterKey: 'shop.unchained.removed-plugin',
+        type: 'INVOICE',
+        configuration: [],
+        created: new Date(),
+      });
+      try {
+        const { errors } = await updateCartProviders({
+          paymentProviderId: 'unsupported-payment-provider',
+        });
+        assert.strictEqual(errors?.[0]?.extensions?.code, 'OrderPaymentTypeError');
+      } finally {
+        await db.collection('payment-providers').deleteOne({ _id: 'unsupported-payment-provider' });
+      }
+    });
+  });
+
   test.describe('Providers without a registered adapter', () => {
     const STALE_PROVIDER_ID = 'provider-without-adapter';
     const staleProviders = [

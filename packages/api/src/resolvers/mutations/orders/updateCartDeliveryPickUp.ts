@@ -1,13 +1,8 @@
 import type { Context } from '../../../context.ts';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { log } from '@unchainedshop/logger';
-import {
-  InvalidIdError,
-  OrderDeliveryNotFoundError,
-  OrderDeliveryTypeError,
-  OrderNotFoundError,
-  OrderWrongStatusError,
-} from '../../../errors.ts';
+import { InvalidIdError, OrderNotFoundError, OrderWrongStatusError } from '../../../errors.ts';
+import { rethrowDeliveryProviderError } from './mapOrderServiceError.ts';
 
 export default async function updateCartDeliveryPickUp(
   root: never,
@@ -22,7 +17,7 @@ export default async function updateCartDeliveryPickUp(
 
   if (!deliveryProviderId) throw new InvalidIdError({ deliveryProviderId });
 
-  let order = await services.orders.findOrInitCart({
+  const order = await services.orders.findOrInitCart({
     orderId,
     user: user!,
     countryCode: context.countryCode,
@@ -30,25 +25,13 @@ export default async function updateCartDeliveryPickUp(
   if (!order) throw new OrderNotFoundError({ orderId });
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
-  const provider = await modules.delivery.findProvider({
-    deliveryProviderId,
-  });
-  const deliveryProviderType = provider?.type;
-
-  if (deliveryProviderType !== DeliveryProviderType.PICKUP)
-    throw new OrderDeliveryTypeError({
-      orderId: order._id,
-      received: deliveryProviderType,
-      required: DeliveryProviderType.PICKUP,
-    });
-
-  order = (await modules.orders.setDeliveryProvider(order._id, deliveryProviderId)) || order;
-
-  if (!order.deliveryId) throw new OrderDeliveryNotFoundError({ orderId: order._id });
-
-  await modules.orders.deliveries.updateContext(order.deliveryId, {
-    orderPickUpLocationId,
-    meta,
-  });
+  await services.orders
+    .selectDeliveryProvider({
+      order,
+      deliveryProviderId,
+      expectedType: DeliveryProviderType.PICKUP,
+      deliveryContext: { orderPickUpLocationId, meta },
+    })
+    .catch(rethrowDeliveryProviderError);
   return services.orders.updateCalculation(order._id);
 }

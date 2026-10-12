@@ -1,13 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import {
-  ProductNotFoundError,
-  OrderQuantityTooLowError,
-  InvalidIdError,
-  OrderWrongStatusError,
-  OrderNotFoundError,
-} from '../../../errors.ts';
-import { ordersSettings } from '@unchainedshop/core-orders';
+import { InvalidIdError, OrderWrongStatusError, OrderNotFoundError } from '../../../errors.ts';
+import { rethrowCartProductError } from './mapOrderServiceError.ts';
 
 export default async function addCartProduct(
   root: never,
@@ -24,10 +18,6 @@ export default async function addCartProduct(
   );
 
   if (!originalProductId) throw new InvalidIdError({ productId: originalProductId });
-  if (quantity < 1) throw new OrderQuantityTooLowError({ quantity });
-
-  const originalProduct = await modules.products.findProduct({ productId: originalProductId });
-  if (!originalProduct) throw new ProductNotFoundError({ productId: originalProductId });
 
   const order = await services.orders.findOrInitCart({
     orderId,
@@ -38,26 +28,12 @@ export default async function addCartProduct(
 
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
-  const product = await modules.products.resolveOrderableProduct(originalProduct, { configuration });
-
-  // Validate add to cart mutation
-  await ordersSettings.validateOrderPosition(
-    {
-      order,
-      product,
-      configuration,
-      quantityDiff: quantity,
-    },
-    context,
-  );
-
-  const orderPosition = await modules.orders.positions.addProductItem({
-    quantity,
-    configuration,
-    productId: product._id,
-    originalProductId,
-    orderId: order._id,
-  });
+  const [orderPosition] = await services.orders
+    .addMultipleCartProducts(
+      { order, items: [{ productId: originalProductId, quantity, configuration }] },
+      context,
+    )
+    .catch(rethrowCartProductError);
 
   await services.orders.updateCalculation(order._id);
   return modules.orders.positions.findOrderPosition({ itemId: orderPosition._id });
