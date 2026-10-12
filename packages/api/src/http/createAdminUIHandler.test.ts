@@ -40,6 +40,14 @@ describe('createAdminUIHandler', { skip: !built && 'the admin-ui is not built' }
     assert.equal(page!.headers.get('content-type'), 'text/html; charset=utf-8');
     assert.match(await page!.text(), /<html/);
     assert.equal(await get('/missing-chunk.js'), undefined);
+    assert.equal(await get('/_next/static/chunks/missing.js'), undefined);
+  });
+
+  it('answers plugin pages with dots in their path', async () => {
+    for (const path of ['/ext/reports.v2', '/ext/ticketing/festival-2.0_id_abc']) {
+      const page = await get(path);
+      assert.equal(page!.headers.get('content-type'), 'text/html; charset=utf-8', path);
+    }
   });
 
   it('serves no dotfiles and nothing outside the export', async () => {

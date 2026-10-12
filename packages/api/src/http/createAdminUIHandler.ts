@@ -144,8 +144,10 @@ export function createAdminUIHandler({ prefix = '/', theme, plugins = [] }: Admi
       return new Response(landingPage, { headers: { 'content-type': 'text/html; charset=utf-8' } });
     }
 
+    // A missing file (a dotted path) is no page, except below /ext/: the paths of plugin pages are
+    // free-form, a dot there can be part of a slug or an entity id
     const file = await serveFile(request, root!, path);
-    if (file || path.includes('.')) return file;
+    if (file || (path.includes('.') && !path.startsWith('/ext/'))) return file;
 
     // Client-side routes get the HTML of their page or the root page. CSP nonce convention
     // (helmet): with a nonce for the request, the injected import map tag carries it, without
