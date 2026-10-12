@@ -1,8 +1,10 @@
+import { stringifyCookie } from 'cookie';
 import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   disconnect,
+  tokenCookieOf,
 } from './helpers.js';
 import {
   getServerPort,
@@ -184,13 +186,16 @@ test.describe('Auth: JWT revocation for users without a stored tokenVersion', ()
       variables: { username, email: `${username}@unchained.local`, password: 'Revocation-Test-1' },
     });
     assert.ifError(errors?.[0]);
-    const token = headers.get('set-cookie')?.match(/unchained_token=([^;,]+)/)?.[1];
+    const token = tokenCookieOf(headers);
     assert.ok(token, 'createUser should set the unchained_token cookie');
     return { userId: data.createUser.user._id, token };
   };
 
   const withSession = (token) => (request) =>
-    createAnonymousGraphqlFetch()({ ...request, headers: { cookie: `unchained_token=${token}` } });
+    createAnonymousGraphqlFetch()({
+      ...request,
+      headers: { cookie: stringifyCookie({ unchained_token: token }) },
+    });
 
   const currentUserId = async (token) => {
     const { data } = await withSession(token)({

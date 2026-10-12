@@ -1,5 +1,6 @@
 import type { User } from '@unchainedshop/core-users';
 import { emit } from '@unchainedshop/events';
+import { parseCookie, stringifySetCookie } from 'cookie';
 import { signAccessToken, createAuthHandler, type AuthConfig } from '../auth.ts';
 import type { LoginFn, LogoutFn } from '../context.ts';
 import { API_EVENTS } from '../events.ts';
@@ -35,46 +36,38 @@ const secure = !UNCHAINED_COOKIE_INSECURE;
 const sameSite =
   (
     {
-      none: 'None',
-      lax: 'Lax',
-      strict: 'Strict',
-      '1': 'Strict',
+      none: 'none',
+      lax: 'lax',
+      strict: 'strict',
+      '1': 'strict',
       '0': false,
-    } as Record<string, string | false>
-  )[UNCHAINED_COOKIE_SAMESITE.trim().toLowerCase()] ?? 'Lax'; // Unknown values default to Lax; '0' must stay without SameSite
+    } as Record<string, 'none' | 'lax' | 'strict' | false>
+  )[UNCHAINED_COOKIE_SAMESITE.trim().toLowerCase()] ?? 'lax'; // Unknown values default to lax; '0' must stay without SameSite
 
 if (!secure && process.env.NODE_ENV === 'production') {
   logger.warn(
     'SECURITY WARNING: Running with UNCHAINED_COOKIE_INSECURE in production is not recommended',
   );
 }
-if (sameSite === 'None' && !secure) {
+if (sameSite === 'none' && !secure) {
   logger.warn('SECURITY WARNING: SameSite=None requires Secure flag to be effective');
 }
 
 /** Set-Cookie value of the JWT token cookie, an expiry in the past deletes it */
 const tokenCookie = (token: string, expires: Date) =>
-  [
-    `${UNCHAINED_COOKIE_NAME}=${token}`,
-    `Path=${UNCHAINED_COOKIE_PATH}`,
-    UNCHAINED_COOKIE_DOMAIN && `Domain=${UNCHAINED_COOKIE_DOMAIN}`,
-    `Expires=${expires.toUTCString()}`,
-    'HttpOnly', // OWASP: Always true to prevent XSS access
-    secure && 'Secure',
-    sameSite && `SameSite=${sameSite}`,
-  ]
-    .filter(Boolean)
-    .join('; ');
+  stringifySetCookie({
+    name: UNCHAINED_COOKIE_NAME,
+    value: token,
+    path: UNCHAINED_COOKIE_PATH,
+    domain: UNCHAINED_COOKIE_DOMAIN,
+    expires,
+    httpOnly: true, // OWASP: Always true to prevent XSS access
+    secure,
+    sameSite,
+  });
 
-const readCookie = (cookieHeader: string | undefined, name: string) => {
-  for (const pair of cookieHeader?.split(';') ?? []) {
-    const separator = pair.indexOf('=');
-    if (separator > 0 && pair.slice(0, separator).trim() === name) {
-      return pair.slice(separator + 1).trim();
-    }
-  }
-  return undefined;
-};
+// Built once: invalid cookie settings fail at startup instead of at login
+const expiredTokenCookie = tokenCookie('', new Date(0));
 
 /**
  * Extract Bearer token from Authorization header
@@ -109,7 +102,7 @@ export async function createAuthContext(
   // Extract token from Authorization header (Bearer scheme only) or cookie
   const authHeader = getHeader('authorization');
   const headerToken = extractBearerToken(authHeader);
-  const cookieToken = readCookie(getHeader('cookie'), UNCHAINED_COOKIE_NAME);
+  const cookieToken = parseCookie(getHeader('cookie') ?? '')[UNCHAINED_COOKIE_NAME];
   const token = headerToken || cookieToken;
 
   // Create auth handler with configured providers
@@ -151,7 +144,7 @@ export async function createAuthContext(
   // cryptographically valid until expiration. For immediate revocation of all
   // tokens, use the logoutAllSessions mutation which increments tokenVersion.
   const logout: LogoutFn = async () => {
-    appendHeader('set-cookie', tokenCookie('', new Date(0)));
+    appendHeader('set-cookie', expiredTokenCookie);
 
     if (authResult.userId) {
       const tokenObject = {

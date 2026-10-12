@@ -132,6 +132,7 @@
     "@unchainedshop/logger": "^5.0.0-alpha.11",
     "@unchainedshop/roles": "^5.0.0-alpha.11",
     "@unchainedshop/utils": "^5.0.0-alpha.11",
+    "cookie": "^2.0.1",
     "dataloader": "^2.2.3",
     "graphql-scalars": "^2.0.0",
     "jose": "^6.0.10",

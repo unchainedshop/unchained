@@ -127,7 +127,7 @@ The API supports locally signed JWTs, configured OIDC providers, and API keys. C
 | `UNCHAINED_COOKIE_SAMESITE` | SameSite attribute | `lax` |
 | `UNCHAINED_COOKIE_INSECURE` | Any nonempty value disables the Secure attribute | Unset |
 
-Cookies are `httpOnly` and `secure` by default. Account/token handling and ACL enforcement are implemented by the authentication middleware and resolvers; access to domain modules directly does not run those GraphQL permission checks.
+Cookies are `httpOnly` and `secure` by default. The engine reads and writes the token cookie with the `cookie` package (RFC 6265), so a cookie setting it cannot put into a valid `Set-Cookie` header, such as a domain with a port, stops the engine at startup. Account/token handling and ACL enforcement are implemented by the authentication middleware and resolvers; access to domain modules directly does not run those GraphQL permission checks.
 
 ## CORS and reverse proxies
 
@@ -143,7 +143,7 @@ await connect(app, { graphqlHandler, unchainedAPI: unchainedCore }, {
 
 The context resolver then prefers `X-Real-IP`, followed by the last address in `X-Forwarded-For`. Enable this only when a trusted reverse proxy overwrites those headers and direct access to the server is prevented. Framework-level proxy configuration is separate from this connector option.
 
-The development-only `allowRemoteToLocalhostSecureCookies` connector option adds permissive CORS headers, overrides the forwarded protocol, and enables proxy address handling. It defaults to `false` and throws in production.
+The development-only `allowRemoteToLocalhostSecureCookies` connector option adds permissive CORS headers and enables proxy address handling. It defaults to `false` and throws in production.
 
 ## Events
 

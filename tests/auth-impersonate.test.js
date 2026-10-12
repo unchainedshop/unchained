@@ -1,10 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert';
+import { stringifyCookie } from 'cookie';
 import {
   setupDatabase,
   createLoggedInGraphqlFetch,
   createAnonymousGraphqlFetch,
   disconnect,
+  tokenCookieOf,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 
@@ -141,13 +143,8 @@ test.describe('Impersonation', () => {
       assert.ok(impersonate);
       assert.strictEqual(impersonate.user._id, 'user');
 
-      const setCookieHeader = result.headers.get('set-cookie');
-      assert.ok(setCookieHeader, 'Set-Cookie header should be present');
-
-      // Extract JWT token cookie
-      const tokenMatch = setCookieHeader.match(/unchained_token=([^;,]+)/);
-      assert.ok(tokenMatch, 'Cookie should contain unchained_token');
-      const sessionCookie = tokenMatch[1];
+      const sessionCookie = tokenCookieOf(result.headers);
+      assert.ok(sessionCookie, 'impersonate should set the unchained_token cookie');
 
       const graphqlFetchAsImpersonated = createLoggedInGraphqlFetch(null);
 
@@ -166,7 +163,7 @@ test.describe('Impersonation', () => {
           }
         `,
         headers: {
-          cookie: `unchained_token=${sessionCookie}`,
+          cookie: stringifyCookie({ unchained_token: sessionCookie }),
         },
       });
 
@@ -245,9 +242,7 @@ test.describe('Impersonation after revocation', () => {
       `,
       variables: { userId: 'user' },
     });
-    const impersonationToken = impersonation.headers
-      .get('set-cookie')
-      ?.match(/unchained_token=([^;,]+)/)?.[1];
+    const impersonationToken = tokenCookieOf(impersonation.headers);
     assert.ok(impersonationToken, 'impersonate should set the unchained_token cookie');
 
     await adminFetch({
@@ -264,7 +259,7 @@ test.describe('Impersonation after revocation', () => {
     const withImpersonationToken = (request) =>
       createLoggedInGraphqlFetch(null)({
         ...request,
-        headers: { cookie: `unchained_token=${impersonationToken}` },
+        headers: { cookie: stringifyCookie({ unchained_token: impersonationToken }) },
       });
 
     const { data: meData } = await withImpersonationToken({
@@ -290,6 +285,6 @@ test.describe('Impersonation after revocation', () => {
       `,
     });
     assert.strictEqual(data?.stopImpersonation ?? null, null);
-    assert.doesNotMatch(headers.get('set-cookie') ?? '', /unchained_token=[^;]+/);
+    assert.ok(!tokenCookieOf(headers), 'a revoked impersonation gets no new token');
   });
 });

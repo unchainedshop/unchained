@@ -1,5 +1,6 @@
 import { setTimeout } from 'node:timers/promises';
 import { after } from 'node:test';
+import { parseSetCookie } from 'cookie';
 import { Collection } from 'mongodb';
 import {
   initializeTestPlatform,
@@ -111,6 +112,13 @@ export const createLoggedInGraphqlFetch = (token = ADMIN_TOKEN) => {
     };
   };
 };
+
+// The token cookie a response sets: its value, '' when the response deletes it
+export const tokenCookieOf = (headers) =>
+  headers
+    .getSetCookie()
+    .map((setCookie) => parseSetCookie(setCookie))
+    .findLast(({ name }) => name === 'unchained_token')?.value;
 
 // Poll an already-enqueued work item until it reaches one of `status` (default the
 // terminal states), then return the work object. Use this instead of a fixed sleep:
