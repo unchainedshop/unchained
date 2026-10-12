@@ -998,20 +998,24 @@ test.describe('Cart: Delivery and Payment Updates', () => {
     });
 
     test('rejects providers the cart does not support', async () => {
-      await db.collection('payment-providers').insertOne({
-        _id: 'unsupported-payment-provider',
-        adapterKey: 'shop.unchained.removed-plugin',
-        type: 'INVOICE',
-        configuration: [],
-        created: new Date(),
-      });
-      try {
-        const { errors } = await updateCartProviders({
-          paymentProviderId: 'unsupported-payment-provider',
+      const unsupportedProviders = [
+        ['payment-providers', 'INVOICE', 'paymentProviderId', 'OrderPaymentTypeError'],
+        ['delivery-providers', 'SHIPPING', 'deliveryProviderId', 'OrderDeliveryTypeError'],
+      ];
+      for (const [collection, type, variable, code] of unsupportedProviders) {
+        await db.collection(collection).insertOne({
+          _id: 'unsupported-provider',
+          adapterKey: 'shop.unchained.removed-plugin',
+          type,
+          configuration: [],
+          created: new Date(),
         });
-        assert.strictEqual(errors?.[0]?.extensions?.code, 'OrderPaymentTypeError');
-      } finally {
-        await db.collection('payment-providers').deleteOne({ _id: 'unsupported-payment-provider' });
+        try {
+          const { errors } = await updateCartProviders({ [variable]: 'unsupported-provider' });
+          assert.strictEqual(errors?.[0]?.extensions?.code, code);
+        } finally {
+          await db.collection(collection).deleteOne({ _id: 'unsupported-provider' });
+        }
       }
     });
   });

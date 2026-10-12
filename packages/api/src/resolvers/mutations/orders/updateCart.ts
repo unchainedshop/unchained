@@ -40,16 +40,16 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
   }
 
   // Provider updates trigger events and need to be handled separately
-  if (paymentProviderId) {
-    order = await services.orders
-      .selectPaymentProvider({ order, paymentProviderId })
-      .catch(rethrowPaymentProviderError);
-  }
-
   if (deliveryProviderId) {
     order = await services.orders
       .selectDeliveryProvider({ order, deliveryProviderId })
       .catch(rethrowDeliveryProviderError);
+  }
+
+  if (paymentProviderId) {
+    order = await services.orders
+      .selectPaymentProvider({ order, paymentProviderId })
+      .catch(rethrowPaymentProviderError);
   }
 
   // Recalculate, then return
