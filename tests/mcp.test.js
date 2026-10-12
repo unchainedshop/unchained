@@ -2,6 +2,7 @@ import assert from 'node:assert';
 import test from 'node:test';
 import { setupDatabase, disconnect, getServerBaseUrl } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
+import { JpegMedia, JpegProductMedia, SimpleProduct } from './seeds/products.js';
 
 let baseUrl;
 let db;
@@ -179,6 +180,40 @@ test.describe('MCP server (stateless, SDK v2)', () => {
     const readMessage = await parseMcpResponse(readResponse);
     assert.strictEqual(readMessage.result.contents[0].mimeType, 'application/json');
     assert.ok(JSON.parse(readMessage.result.contents[0].text).baseLanguages.length > 0);
+  });
+
+  test('media and avatar tools answer files with their download URL', async () => {
+    const callTool = async (name, args) => {
+      const response = await mcpFetch(rpc('tools/call', { name, arguments: args }), {
+        token: ADMIN_TOKEN,
+      });
+      const message = await parseMcpResponse(response);
+      return JSON.parse(message.result.content[0].text).data;
+    };
+
+    const { media } = await callTool('product_management', {
+      action: 'GET_MEDIA',
+      productId: SimpleProduct._id,
+    });
+    assert.deepStrictEqual(
+      media.map(({ _id, file }) => [_id, file.url]),
+      [[JpegProductMedia._id, JpegMedia.url]],
+    );
+
+    try {
+      await db.collection('users').updateOne({ _id: 'user' }, { $set: { avatarId: JpegMedia._id } });
+      const { avatar } = await callTool('users_management', { action: 'GET_AVATAR', userId: 'user' });
+      assert.deepStrictEqual(
+        avatar.map(({ file }) => file.url),
+        [JpegMedia.url],
+      );
+
+      await db.collection('users').updateOne({ _id: 'user' }, { $set: { avatarId: 'missing-file' } });
+      const missing = await callTool('users_management', { action: 'GET_AVATAR', userId: 'user' });
+      assert.deepStrictEqual(missing.avatar, []);
+    } finally {
+      await db.collection('users').updateOne({ _id: 'user' }, { $unset: { avatarId: 1 } });
+    }
   });
 
   test('returns 405 for GET (no standalone SSE stream in stateless mode)', async () => {

@@ -1,14 +1,11 @@
-import type { File } from '@unchainedshop/core-files';
 import type { Modules } from '../modules.ts';
 import { createFileDownloadURLService } from './createFileDownloadURL.ts';
 
-export async function resolveMediaFilesService<Media extends { mediaId: string }>(
-  this: Modules,
-  medias: Media[],
-): Promise<(Media & { file: File & { url: string } })[]> {
+export async function resolveMediaFilesService(this: Modules, medias: { mediaId: string }[]) {
+  const files = await this.files.findFiles({ fileIds: medias.map(({ mediaId }) => mediaId) });
   const resolvedMedias = await Promise.all(
     medias.map(async (media) => {
-      const file = await this.files.findFile({ fileId: media.mediaId });
+      const file = files.find(({ _id }) => _id === media.mediaId);
       const url = file && (await createFileDownloadURLService.bind(this)({ file }));
       return url ? { ...media, file: { ...file, url } } : null;
     }),
