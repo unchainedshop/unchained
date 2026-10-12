@@ -1,11 +1,12 @@
 import type { User } from '@unchainedshop/core-users';
 import { emit } from '@unchainedshop/events';
-import { signAccessToken, createAuthHandler, type AuthConfig } from '../auth.ts';
+import { parseCookie, stringifySetCookie } from 'cookie';
+import { signAccessToken, createAuthHandler, type AuthConfig } from './auth.ts';
 import type { LoginFn, LogoutFn } from '../context.ts';
 import { API_EVENTS } from '../events.ts';
 import { createLogger } from '@unchainedshop/logger';
 
-const logger = createLogger('unchained:api:auth-middleware');
+const logger = createLogger('unchained:api:auth-context');
 
 const {
   UNCHAINED_COOKIE_NAME = 'unchained_token',
@@ -13,27 +14,12 @@ const {
   UNCHAINED_COOKIE_DOMAIN,
   UNCHAINED_COOKIE_SAMESITE = 'lax', // OWASP: Changed from 'none' to 'lax' for CSRF protection
   UNCHAINED_COOKIE_INSECURE,
-  UNCHAINED_TOKEN_EXPIRY_SECONDS = '3600', // Match auth.ts default
 } = process.env;
 
 export interface AuthContextParams {
-  getHeader: (key: string) => string | undefined;
-  setHeader: (key: string, value: string) => void;
-  getCookie: (name: string) => string | undefined;
-  setCookie: (name: string, value: string, options: CookieOptions) => void;
-  clearCookie: (name: string, options: CookieOptions) => void;
+  getHeader: (name: string) => string | undefined;
+  appendHeader: (name: string, value: string) => void;
   remoteAddress?: string;
-  remotePort?: number;
-}
-
-export interface CookieOptions {
-  domain?: string;
-  path?: string;
-  secure?: boolean;
-  httpOnly?: boolean;
-  sameSite?: 'strict' | 'lax' | 'none' | boolean;
-  maxAge?: number;
-  expires?: Date;
 }
 
 export interface AuthContext {
@@ -45,46 +31,39 @@ export interface AuthContext {
   logout: LogoutFn;
 }
 
-/**
- * Get cookie options for the main JWT token cookie
- */
-function getTokenCookieOptions(expires?: Date): CookieOptions {
-  const secure = !UNCHAINED_COOKIE_INSECURE;
-  const sameSite =
-    (
-      {
-        none: 'none',
-        lax: 'lax',
-        strict: 'strict',
-        '1': true,
-        '0': false,
-      } as Record<string, boolean | 'none' | 'lax' | 'strict'>
-    )[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] ?? 'lax'; // Unknown values default to 'lax'; '0' must stay false
+const SAME_SITE_SETTINGS: Record<string, 'none' | 'lax' | 'strict' | false> = {
+  none: 'none',
+  lax: 'lax',
+  strict: 'strict',
+  '1': 'strict',
+  '0': false,
+};
 
-  // Warn if using insecure configuration in production
-  if (!secure && process.env.NODE_ENV === 'production') {
-    logger.warn(
-      'SECURITY WARNING: Running with UNCHAINED_COOKIE_INSECURE in production is not recommended',
-    );
-  }
+const secure = !UNCHAINED_COOKIE_INSECURE;
+const sameSite = SAME_SITE_SETTINGS[UNCHAINED_COOKIE_SAMESITE.trim().toLowerCase()] ?? 'lax';
 
-  // Warn if using SameSite=None without Secure
-  if (sameSite === 'none' && !secure) {
-    logger.warn('SECURITY WARNING: SameSite=None requires Secure flag to be effective');
-  }
-
-  const expirySeconds = parseInt(UNCHAINED_TOKEN_EXPIRY_SECONDS, 10);
-
-  return {
-    domain: UNCHAINED_COOKIE_DOMAIN,
-    path: UNCHAINED_COOKIE_PATH,
-    secure,
-    httpOnly: true, // OWASP: Always true to prevent XSS access
-    sameSite: sameSite as boolean | 'none' | 'lax' | 'strict',
-    maxAge: expires ? undefined : expirySeconds * 1000,
-    expires,
-  };
+if (!secure && process.env.NODE_ENV === 'production') {
+  logger.warn(
+    'SECURITY WARNING: Running with UNCHAINED_COOKIE_INSECURE in production is not recommended',
+  );
 }
+if (sameSite === 'none' && !secure) {
+  logger.warn('SECURITY WARNING: SameSite=None requires Secure flag to be effective');
+}
+
+const tokenCookie = (token: string, expires: Date) =>
+  stringifySetCookie({
+    name: UNCHAINED_COOKIE_NAME,
+    value: token,
+    path: UNCHAINED_COOKIE_PATH,
+    domain: UNCHAINED_COOKIE_DOMAIN,
+    expires,
+    httpOnly: true,
+    secure,
+    sameSite,
+  });
+
+const expiredTokenCookie = tokenCookie('', new Date(0));
 
 /**
  * Extract Bearer token from Authorization header
@@ -114,12 +93,12 @@ export async function createAuthContext(
   params: AuthContextParams,
   authConfig?: AuthConfig,
 ): Promise<AuthContext> {
-  const { getHeader, getCookie, setCookie, clearCookie } = params;
+  const { getHeader, appendHeader } = params;
 
   // Extract token from Authorization header (Bearer scheme only) or cookie
   const authHeader = getHeader('authorization');
   const headerToken = extractBearerToken(authHeader);
-  const cookieToken = getCookie(UNCHAINED_COOKIE_NAME);
+  const cookieToken = parseCookie(getHeader('cookie') ?? '')[UNCHAINED_COOKIE_NAME];
   const token = headerToken || cookieToken;
 
   // Create auth handler with configured providers
@@ -140,7 +119,7 @@ export async function createAuthContext(
     });
 
     // Set JWT cookie
-    setCookie(UNCHAINED_COOKIE_NAME, newToken, getTokenCookieOptions(expires));
+    appendHeader('set-cookie', tokenCookie(newToken, expires));
 
     const tokenObject = {
       _id: crypto.randomUUID(), // Session ID equivalent
@@ -161,7 +140,7 @@ export async function createAuthContext(
   // cryptographically valid until expiration. For immediate revocation of all
   // tokens, use the logoutAllSessions mutation which increments tokenVersion.
   const logout: LogoutFn = async () => {
-    clearCookie(UNCHAINED_COOKIE_NAME, getTokenCookieOptions());
+    appendHeader('set-cookie', expiredTokenCookie);
 
     if (authResult.userId) {
       const tokenObject = {

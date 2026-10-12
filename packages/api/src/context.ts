@@ -1,7 +1,6 @@
-import type { UnchainedCore } from '@unchainedshop/core';
-import type { RolesInterface } from '@unchainedshop/roles';
+import type { UnchainedCore, UnchainedRequestContext } from '@unchainedshop/core';
 import instantiateLoaders, { type UnchainedLoaders } from './loaders/index.ts';
-import { getLocaleContext, type UnchainedLocaleContext } from './locale-context.ts';
+import { getLocaleContext } from './locale-context.ts';
 import type { UnchainedServerOptions } from './api-index.ts';
 import type { User } from '@unchainedshop/core-users';
 
@@ -17,15 +16,15 @@ export type LoginFn = (
 ) => Promise<{ _id: string; tokenExpires: Date }>;
 
 export type LogoutFn = (sessionId?: string) => Promise<boolean>;
-export interface UnchainedUserContext {
+export type UnchainedUserContext = Pick<
+  UnchainedRequestContext,
+  'userId' | 'impersonatorId' | 'user'
+> & {
   login: LoginFn;
   logout: LogoutFn;
-  userId?: string;
-  impersonatorId?: string;
   accessToken?: string;
   tokenVersion?: number;
-  user?: User;
-}
+};
 
 export interface CustomAdminUiProperties {
   entityName: string;
@@ -40,21 +39,18 @@ export interface AdminUiConfig {
   defaultUserTags?: string[];
 }
 
-export interface UnchainedHTTPServerContext {
-  setHeader: (key: string, value: string) => void;
-  getHeader: (key: string) => string;
-  remoteAddress?: string;
-  remotePort?: number;
-}
+export type UnchainedHTTPServerContext = Pick<
+  UnchainedRequestContext,
+  'getHeader' | 'setHeader' | 'remoteAddress' | 'remotePort'
+>;
 
-export type Context = UnchainedCore & {
-  version?: string;
-  roles?: RolesInterface;
-  adminUiConfig?: AdminUiConfig;
-  loaders: UnchainedLoaders;
-} & UnchainedUserContext &
-  UnchainedLocaleContext &
-  UnchainedHTTPServerContext;
+export type Context = UnchainedCore &
+  UnchainedRequestContext &
+  UnchainedUserContext & {
+    version?: string;
+    adminUiConfig?: AdminUiConfig;
+    loaders: UnchainedLoaders;
+  };
 
 let context;
 

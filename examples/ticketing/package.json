@@ -36,7 +36,6 @@
     "test:integration:run": "node --no-warnings --test --test-concurrency=1 tests/*.test.*"
   },
   "dependencies": {
-    "@fastify/cookie": "^11.0.2",
     "@unchainedshop/api": "^5.0.0-alpha.11",
     "@unchainedshop/core": "^5.0.0-alpha.11",
     "@unchainedshop/core-delivery": "^5.0.0-alpha.11",
@@ -50,6 +49,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.2.0",
+    "cookie": "^2.0.1",
     "mongodb-memory-server": "^11.0.0",
     "prettier": "^3.6.2",
     "typescript": "^6.0.3"

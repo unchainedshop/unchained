@@ -2,15 +2,28 @@ import type { UnchainedCore } from '../core-index.ts';
 import { createLogger } from '@unchainedshop/logger';
 import type { IBaseAdapter } from '@unchainedshop/utils';
 import type { mongodb } from '@unchainedshop/mongodb';
+import type { User } from '@unchainedshop/core-users';
+import type { RolesInterface } from '@unchainedshop/roles';
 
 const logger = createLogger('unchained:core');
 
-/**
- * HTTP route definition using WHATWG Fetch API
- *
- * This uses standard web APIs (Request/Response) making handlers familiar
- * to developers and compatible with modern JavaScript environments.
- */
+export interface UnchainedRequestContext {
+  getHeader: (name: string) => string | undefined;
+  setHeader: (name: string, value: string) => void;
+  remoteAddress?: string;
+  remotePort?: number;
+  locale: Intl.Locale;
+  countryCode: string;
+  currencyCode: string;
+  userId?: string;
+  user?: User;
+  impersonatorId?: string;
+  roles?: RolesInterface;
+}
+
+export type PluginHttpRequestContext = UnchainedCore &
+  UnchainedRequestContext & { params: Record<string, string> };
+
 export interface PluginHttpRoute {
   /** Route path (e.g., /payment/webhook or /files/:directoryName/:fileName) */
   path: string;
@@ -41,17 +54,7 @@ export interface PluginHttpRoute {
    * }
    * ```
    */
-  handler: (
-    request: Request,
-    context: UnchainedCore & {
-      /** URL path parameters extracted from route pattern */
-      params: Record<string, string>;
-      /** Authenticated user ID if present */
-      userId?: string;
-      /** Impersonator user ID if present */
-      impersonatorId?: string;
-    },
-  ) => Response | Promise<Response>;
+  handler: (request: Request, context: PluginHttpRequestContext) => Response | Promise<Response>;
 }
 
 /**

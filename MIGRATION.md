@@ -15,7 +15,7 @@ npm uninstall @modelcontextprotocol/sdk
 npm install @modelcontextprotocol/server
 ```
 
-**If you have chat enabled**, the chat handlers no longer import any `@modelcontextprotocol/*` client package — the shop-configuration resources are read in-process. Chat deployments need `ai` and `@ai-sdk/mcp` (unchanged) **and** `@modelcontextprotocol/server`, because the chat tools are still derived through the engine's own `/mcp` endpoint. The engine still boots without any of these packages installed; `/mcp` then answers `503` and logs a warning naming the missing package instead of failing.
+**If you have chat enabled**, the chat handlers no longer import any `@modelcontextprotocol/*` client package — the shop-configuration resources are read in-process. Chat deployments need `ai` and `@ai-sdk/mcp` (unchanged) **and** `@modelcontextprotocol/server`, because the chat runs the engine's MCP server in-process. The engine still boots without any of these packages installed; `/mcp` then answers `503` and logs a warning naming the missing package instead of failing.
 
 **Wire-behavior changes** (all spec-conformant; MCP Inspector, `@ai-sdk/mcp` and other current clients handle them transparently):
 
@@ -304,6 +304,18 @@ If your Stripe webhook endpoint is pinned to an older API version in the Dashboa
 **BREAKING CHANGE:** `PluginRegistry.registerAdapters()` method removed (was a no-op).
 
 If you were calling this method, simply remove it. Adapters are now registered via `pluginRegistry.register()` or preset functions.
+
+### HTTP Layer: WHATWG Endpoints
+
+**BREAKING CHANGE:** plugin route handlers no longer get `context.rawRequest`. Read the WHATWG `request` instead (`request.json()`, `request.text()`, `Readable.fromWeb(request.body)`); the context is typed as `PluginHttpRequestContext` from `@unchainedshop/core`.
+
+**BREAKING CHANGE:** `connect()` no longer registers `cookie-parser` / `@fastify/cookie`. Register it yourself if your routes read `req.cookies` / `request.cookies` (`@fastify/oauth2` registers it on its own).
+
+**BREAKING CHANGE:** `adminUIRouter` and `connectChat` are removed, pass `adminUI` and `chat` to `connect()`. `AdminUIRouterOptions` is now `AdminUIOptions`.
+
+**BREAKING CHANGE (Fastify):** `bodyLimit` applies to GraphQL only. The Admin UI is a `GET /*` route, which conflicts with a `GET /*` route of your own: serve it below a `prefix` then.
+
+**BREAKING CHANGE:** the AI chat only answers pages of the API's own host, `localhost` and the `ROOT_URL` host, and `POST /chat` requires `Content-Type: application/json`. Add the origin of an Admin UI served from elsewhere to `chat.allowedOrigins`. `chat.unchainedMCPUrl` is removed: the chat uses the MCP server in-process.
 
 ### Plugin Authoring Factories (new, recommended)
 

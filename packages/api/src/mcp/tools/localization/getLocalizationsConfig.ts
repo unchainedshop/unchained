@@ -1,4 +1,4 @@
-import type { Context } from 'vm';
+import type { Context } from '../../../context.ts';
 import { CountryNotFoundError, CurrencyNotFoundError, LanguageNotFoundError } from '../../../errors.ts';
 import type { LocalizationType, LocalizationModuleConfig } from './schemas.ts';
 

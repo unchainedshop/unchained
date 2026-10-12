@@ -35,7 +35,6 @@ export function getTicketingPaths(): TicketingPaths {
   };
 }
 
-/** The HTTP connectors pass the request context merged with the unchained API and the path params. */
 export type TicketingRouteContext = Context & TicketingAPI & { params: Record<string, string> };
 
 type TicketingRouteHandler = (request: Request, context: TicketingRouteContext) => Promise<Response>;
@@ -295,7 +294,6 @@ export async function appleLogHandler(request: Request): Promise<Response> {
   return new Response(null, { status: 200 });
 }
 
-// PluginHttpRoute types its context as UnchainedCore; the connectors pass the full request context.
 const route = (
   method: PluginHttpRoute['method'],
   path: string,

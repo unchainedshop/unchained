@@ -66,7 +66,6 @@
     "@unchainedshop/events": "^5.0.0-alpha.11",
     "@unchainedshop/logger": "^5.0.0-alpha.11",
     "@unchainedshop/mongodb": "^5.0.0-alpha.11",
-    "@unchainedshop/roles": "^5.0.0-alpha.11",
     "@unchainedshop/utils": "^5.0.0-alpha.11"
   },
   "peerDependencies": {

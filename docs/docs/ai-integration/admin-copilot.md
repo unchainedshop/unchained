@@ -22,6 +22,8 @@ The Chat API uses the [Vercel AI SDK](https://ai-sdk.dev/) to stream responses. 
 
 Both endpoints require an authenticated user with the `admin` role. They accept the session cookie or a bearer token and return HTTP 401 for unauthenticated requests and HTTP 403 for users without that role.
 
+The endpoints only answer pages of the API's own host, `localhost` and the `ROOT_URL` host (403, add others to `allowedOrigins`), and `POST /chat` only takes JSON (415) up to 10 MB (413).
+
 ## Setup
 
 To enable the Copilot, pass a `chat` configuration when connecting your server framework. Install the optional peer packages `ai` and `@ai-sdk/mcp` plus a model provider from the [AI SDK providers list](https://ai-sdk.dev/providers/ai-sdk-providers).
@@ -100,8 +102,8 @@ The `chat` object extends the Vercel AI SDK's `streamText` parameters (minus `me
 | `system` | `string` | No | Custom system prompt (a sensible default is built in) |
 | `tools` | `Record<string, Tool>` | No | Additional custom tools beyond MCP tools |
 | `maxRetries` | `number` | No | Retry count on failure (default: `3`) |
-| `unchainedMCPUrl` | `string` | No | MCP server URL, defaults to `${ROOT_URL}/mcp` |
 | `imageGenerationTool` | `{ model, uploadUrl? }` | No | Enable image generation in the Copilot |
+| `allowedOrigins` | `string[]` | No | Further page origins that may use the chat, e.g. an Admin UI on a CDN |
 
 No temperature is set by default — reasoning models reject the parameter. If your model supports it, pass `temperature` explicitly in the chat configuration.
 

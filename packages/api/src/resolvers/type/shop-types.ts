@@ -1,7 +1,7 @@
 import type { Context } from '../../context.ts';
 import type { Country } from '@unchainedshop/core-countries';
 import type { Language } from '@unchainedshop/core-languages';
-import { checkAction } from '../../acl.ts';
+import { checkAction } from '../../roles/acl.ts';
 import { actions, getPublicRoles } from '../../roles/index.ts';
 
 type HelperType<T> = (root: never, params: never, context: Context) => Promise<T>;

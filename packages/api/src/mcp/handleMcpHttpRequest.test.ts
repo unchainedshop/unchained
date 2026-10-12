@@ -3,7 +3,7 @@ import assert from 'node:assert';
 import http from 'node:http';
 import { once } from 'node:events';
 import handleMcpHttpRequest from './handleMcpHttpRequest.ts';
-import { toWebRequest, sendWebResponse } from './nodeHttpBridge.ts';
+import { toWebRequest, sendWebResponse } from '../http/nodeHttpBridge.ts';
 import type { Context } from '../context.ts';
 
 // End-to-end over a real socket with a body-parsing server (like express/fastify):
@@ -26,9 +26,8 @@ before(async () => {
   server = http.createServer(async (req, res) => {
     const chunks: Buffer[] = [];
     for await (const chunk of req) chunks.push(chunk as Buffer); // drain like a body parser
-    const parsedBody = chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf8')) : undefined;
-    const bodyText = parsedBody !== undefined ? JSON.stringify(parsedBody) : undefined;
-    const response = await handleMcpHttpRequest(context, toWebRequest(req, res, bodyText), parsedBody);
+    const body = chunks.length ? Buffer.concat(chunks).toString('utf8') : undefined;
+    const response = await handleMcpHttpRequest(context, toWebRequest(req, res, { body }));
     await sendWebResponse(res, response);
   });
   server.listen(0, '127.0.0.1');
@@ -74,7 +73,6 @@ describe('handleMcpHttpRequest over a real socket', () => {
         },
         body: JSON.stringify(body),
       }),
-      body,
     );
     assert.strictEqual(response.status, 403);
   });
@@ -93,7 +91,6 @@ describe('handleMcpHttpRequest over a real socket', () => {
         },
         body: JSON.stringify(body),
       }),
-      body,
     );
     assert.strictEqual(response.status, 403);
   });
@@ -103,6 +100,21 @@ describe('handleMcpHttpRequest over a real socket', () => {
     assert.strictEqual(response.status, 200);
     const message = await parseMcpResponse(response);
     assert.strictEqual(message.result.tools.length, 9);
+  });
+
+  it('lists tool schemas the OpenAI provider of the AI SDK accepts', async () => {
+    // @ai-sdk/openai refuses propertyNames that are not a string schema, which fails every
+    // chat request; z.record(z.any(), ...) produces `propertyNames: {}`
+    const message = await parseMcpResponse(await post({ jsonrpc: '2.0', id: 4, method: 'tools/list' }));
+    const invalid: string[] = [];
+    const walk = (node: unknown, path: string) => {
+      if (!node || typeof node !== 'object') return;
+      const { propertyNames } = node as { propertyNames?: { type?: string } };
+      if (propertyNames !== undefined && propertyNames?.type !== 'string') invalid.push(path);
+      for (const [key, value] of Object.entries(node)) walk(value, `${path}.${key}`);
+    };
+    for (const tool of message.result.tools) walk(tool.inputSchema, tool.name);
+    assert.deepStrictEqual(invalid, []);
   });
 
   it('serves a modern-era (2026-07-28) tools/list — pre-drained body must not abort it', async () => {

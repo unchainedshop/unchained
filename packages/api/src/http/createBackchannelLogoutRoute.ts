@@ -1,7 +1,7 @@
 import * as jose from 'jose';
 import { createLogger } from '@unchainedshop/logger';
 import type { PluginHttpRoute } from '@unchainedshop/core';
-import { getJWKS, resolveJwksUri, resolveOIDCUserId, type OIDCProviderConfig } from '../auth.ts';
+import { getJWKS, resolveJwksUri, resolveOIDCUserId, type OIDCProviderConfig } from './auth.ts';
 
 const logger = createLogger('unchained:api:backchannel-logout');
 

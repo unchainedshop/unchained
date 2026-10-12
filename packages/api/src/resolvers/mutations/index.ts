@@ -1,5 +1,5 @@
 import { actions } from '../../roles/index.ts';
-import { checkResolver as acl } from '../../acl.ts';
+import { checkResolver as acl } from '../../roles/acl.ts';
 import loginWithPassword from './accounts/loginWithPassword.ts';
 import loginWithWebAuthn from './accounts/loginWithWebAuthn.ts';
 import loginAsGuest from './accounts/loginAsGuest.ts';

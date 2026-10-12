@@ -14,9 +14,9 @@ export * from './context.ts';
 export * from './locale-context.ts';
 export * from './loaders/index.ts';
 export * from './errors.ts';
-export * as acl from './acl.ts';
+export * as acl from './roles/acl.ts';
 export * as roles from './roles/index.ts';
-export type { OIDCProviderConfig, AuthConfig } from './auth.ts';
+export type { OIDCProviderConfig, AuthConfig } from './http/auth.ts';
 export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
 
 import type { RolesInterface } from '@unchainedshop/roles';

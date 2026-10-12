@@ -39,7 +39,18 @@ await connect(fastify, { graphqlHandler, unchainedAPI: unchainedCore });
 await fastify.listen({ port: 4010 });
 ```
 
-`connect()` mounts the GraphQL endpoint, `/mcp`, and routes supplied by registered plugins. Admin UI hosting requires the optional `@unchainedshop/admin-ui` package; Fastify also needs `@fastify/static`. Configure a prefix with `{ adminUI: { prefix: '/admin' } }` in the third argument to `connect()`.
+`connect()` mounts the GraphQL endpoint, `/mcp`, and routes supplied by registered plugins. Admin UI hosting requires the optional `@unchainedshop/admin-ui` package. Configure a prefix with `{ adminUI: { prefix: '/admin' } }` in the third argument to `connect()`.
+
+## Without a framework
+
+`connect()` of `@unchainedshop/api/node` serves a `node:http` server. Bun and Deno use the fetch handler, which answers `undefined` for requests that are not the engine's:
+
+```typescript
+import { createFetchHandler } from '@unchainedshop/api/fetch';
+
+const handler = createFetchHandler({ graphqlHandler }, { adminUI: true });
+Bun.serve({ fetch: async (request) => (await handler(request)) ?? new Response(null, { status: 404 }) });
+```
 
 ## API overview
 
@@ -55,7 +66,7 @@ await fastify.listen({ port: 4010 });
 | `acl` | Access control utilities |
 | `roles` | Role configuration and permission actions (`roles.actions`) |
 
-The HTTP subpaths export `connect`, `adminUIRouter`, `connectChat`, and Admin UI configuration types. The main package exports domain-specific errors such as `ProductNotFoundError`, `OrderNotFoundError`, `UserNotFoundError`, `NoPermissionError`, and `InvalidIdError`.
+The HTTP subpaths `/express`, `/fastify` and `/node` export `connect` and the Admin UI configuration types, `/fetch` exports `createFetchHandler`. The main package exports domain-specific errors such as `ProductNotFoundError`, `OrderNotFoundError`, `UserNotFoundError`, `NoPermissionError`, and `InvalidIdError`.
 
 ## Extending the server
 
@@ -90,7 +101,7 @@ MCP support is an optional peer dependency:
 npm install @modelcontextprotocol/server
 ```
 
-Without it, the engine boots and `/mcp` responds with `503`. Chat handlers configured through `connect(..., { chat })` additionally need `ai` and `@ai-sdk/mcp`, as well as `@modelcontextprotocol/server`: chat obtains tools through the engine's own MCP endpoint.
+Without it, the engine boots and `/mcp` responds with `503`. Chat handlers configured through `connect(..., { chat })` additionally need `ai` and `@ai-sdk/mcp`, as well as `@modelcontextprotocol/server`: chat uses the engine's MCP server in-process. Chat only answers pages of the API's own host, `localhost` and `ROOT_URL` (more with `chat.allowedOrigins`).
 
 ## Authentication and cookies
 
@@ -105,7 +116,7 @@ The API supports locally signed JWTs, configured OIDC providers, and API keys. C
 | `UNCHAINED_COOKIE_SAMESITE` | SameSite attribute | `lax` |
 | `UNCHAINED_COOKIE_INSECURE` | Any nonempty value disables the Secure attribute | Unset |
 
-Cookies are `httpOnly` and `secure` by default. Account/token handling and ACL enforcement are implemented by the authentication middleware and resolvers; access to domain modules directly does not run those GraphQL permission checks.
+Cookies are `httpOnly` and `secure` by default. Invalid cookie settings, such as a domain with a port, stop the engine at startup. Account/token handling and ACL enforcement are implemented by the authentication middleware and resolvers; access to domain modules directly does not run those GraphQL permission checks.
 
 ## CORS and reverse proxies
 
@@ -121,7 +132,7 @@ await connect(app, { graphqlHandler, unchainedAPI: unchainedCore }, {
 
 The context resolver then prefers `X-Real-IP`, followed by the last address in `X-Forwarded-For`. Enable this only when a trusted reverse proxy overwrites those headers and direct access to the server is prevented. Framework-level proxy configuration is separate from this connector option.
 
-The development-only `allowRemoteToLocalhostSecureCookies` connector option adds permissive CORS headers, overrides the forwarded protocol, and enables proxy address handling. It defaults to `false` and throws in production.
+The development-only `allowRemoteToLocalhostSecureCookies` connector option adds permissive CORS headers and enables proxy address handling. It defaults to `false` and throws in production.
 
 ## Events
 

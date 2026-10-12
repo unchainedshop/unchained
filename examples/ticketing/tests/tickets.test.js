@@ -1,16 +1,22 @@
 import test from 'node:test';
 import assert from 'node:assert';
+import { parseSetCookie, stringifyCookie } from 'cookie';
 
 // Runs against the example started by `test:integration:start` (see package.json), which seeds the
 // demo event, the ticket issuer provider and the gate user (seed.ts).
 const baseUrl = process.env.ROOT_URL || 'http://localhost:4010';
 const password = process.env.UNCHAINED_SEED_PASSWORD || 'password';
 
+// The cookies a response sets, as the Cookie header of the next requests
 const cookieOf = (response) =>
-  response.headers
-    .getSetCookie()
-    .map((setCookie) => setCookie.split(';')[0])
-    .join('; ');
+  stringifyCookie(
+    Object.fromEntries(
+      response.headers.getSetCookie().map((setCookie) => {
+        const { name, value } = parseSetCookie(setCookie);
+        return [name, value];
+      }),
+    ),
+  );
 
 const graphql = async (query, variables = {}, { cookie, headers = {} } = {}) => {
   const response = await fetch(`${baseUrl}/graphql`, {

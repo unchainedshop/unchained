@@ -8,7 +8,7 @@ import type { DeliveryProvider } from '@unchainedshop/core-delivery';
 
 import type { Context } from '../../../context.ts';
 import { PlanProduct } from './product-plan-types.ts';
-import { checkAction } from '../../../acl.ts';
+import { checkAction } from '../../../roles/acl.ts';
 import { actions } from '../../../roles/index.ts';
 
 export const TokenizedProduct = {

@@ -1,7 +1,19 @@
-import { readFile } from 'fs/promises';
+import { readFile } from 'node:fs/promises';
 import type { Context } from '../../context.ts';
 import { log } from '@unchainedshop/logger';
-import { getConfiguredTags } from '../../utils/getConfiguredTags.ts';
+
+const getConfiguredTags = async (
+  existingTags: Promise<string[]>,
+  envVar: string,
+  configDefault: string[] = [],
+) => {
+  const envTags = (process.env[envVar] || '')
+    .split(',')
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+  const defaultTags = envTags.length ? envTags : configDefault.filter(Boolean);
+  return [...new Set([...defaultTags, ...(await existingTags)])];
+};
 
 export default function shopInfo(
   root: never,
@@ -42,19 +54,19 @@ export default function shopInfo(
       },
       productTags: () =>
         getConfiguredTags(
-          () => modules.products.existingTags(),
+          modules.products.existingTags(),
           'UNCHAINED_ADMIN_UI_DEFAULT_PRODUCT_TAGS',
           adminUiConfig?.defaultProductTags,
         ),
       assortmentTags: () =>
         getConfiguredTags(
-          () => modules.assortments.existingTags(),
+          modules.assortments.existingTags(),
           'UNCHAINED_ADMIN_UI_DEFAULT_ASSORTMENT_TAGS',
           adminUiConfig?.defaultAssortmentTags,
         ),
       userTags: () =>
         getConfiguredTags(
-          () => modules.users.existingTags(),
+          modules.users.existingTags(),
           'UNCHAINED_ADMIN_UI_DEFAULT_USER_TAGS',
           adminUiConfig?.defaultUserTags,
         ),

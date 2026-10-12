@@ -1,21 +1,67 @@
-import type { FastifyInstance, RouteHandlerMethod, FastifyRequest } from 'fastify';
 import type * as aiTypes from 'ai';
 import type * as mcpTypes from '@ai-sdk/mcp';
 import type { Context } from '../context.ts';
-import generateImageHandler from '../chat/generateImageHandler.ts';
-import defaultSystemPrompt from '../chat/defaultSystemPrompt.ts';
-import normalizeToolsIndex from '../chat/normalizeToolsIndex.ts';
+import generateImageHandler from './generateImageHandler.ts';
+import defaultSystemPrompt from './defaultSystemPrompt.ts';
+import normalizeToolsIndex from './normalizeToolsIndex.ts';
 import {
   chatErrorStatus,
   createChatRequestLifecycle,
   type ChatConfiguration,
   errorHandler,
-  logOptionalPeerLoadError,
-} from '../chat/utils.ts';
+} from './utils.ts';
 import { buildChatResourceContext } from '../mcp/resources/localization.ts';
+import {
+  createInProcessMcpTransport,
+  isAllowedBrowserOrigin,
+  isMcpServerAvailable,
+} from '../mcp/handleMcpHttpRequest.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api:chat');
+
+const logOptionalPeerLoadError = (packageName: string, error: unknown) => {
+  if ((error as Error)?.message?.startsWith(`Cannot find package '${packageName}'`)) {
+    logger.warn(`optional peer npm package '${packageName}' not installed, chat will not work`);
+  } else {
+    logger.error(`failed to load '${packageName}'`, error);
+  }
+};
+
+const MAX_BODY_SIZE = 10 * 1024 * 1024;
+
+const readBodyWithinLimit = async (request: Request) => {
+  if (Number(request.headers.get('content-length')) > MAX_BODY_SIZE) return undefined;
+  const chunks: Uint8Array<ArrayBuffer>[] = [];
+  let size = 0;
+  for await (const chunk of request.body ?? []) {
+    size += chunk.byteLength;
+    if (size > MAX_BODY_SIZE) return undefined;
+    chunks.push(chunk);
+  }
+  return new Blob(chunks).text();
+};
+
+const parseMessages = (text: string) => {
+  try {
+    return (JSON.parse(text) as { messages?: unknown }).messages;
+  } catch {
+    return undefined;
+  }
+};
+
+const readMessages = async (request: Request) => {
+  const contentType = request.headers.get('content-type')?.split(';')[0].trim().toLowerCase();
+  if (contentType !== 'application/json') {
+    return Response.json({ error: 'messages must be application/json' }, { status: 415 });
+  }
+  const body = await readBodyWithinLimit(request).catch(() => '');
+  if (body === undefined) return Response.json({ error: 'messages too large' }, { status: 413 });
+  const messages = parseMessages(body);
+  return Array.isArray(messages)
+    ? messages
+    : Response.json({ error: 'messages missing' }, { status: 400 });
+};
 
 let convertToModelMessages: typeof aiTypes.convertToModelMessages;
 let stepCountIs: typeof aiTypes.stepCountIs;
@@ -37,85 +83,89 @@ try {
   logOptionalPeerLoadError('@ai-sdk/mcp', error);
 }
 
-const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
+export const createChatHandler = (chatConfiguration: ChatConfiguration) => {
+  if (!createMCPClient || !streamText || !isMcpServerAvailable()) {
+    logger.warn(
+      'Optional dependencies for AI SDK Chat Handler are not installed. Please install ai, @ai-sdk/mcp and @modelcontextprotocol/server to use this feature.',
+    );
+    return undefined;
+  }
   if (!chatConfiguration?.model) {
     throw new Error('Model is required');
   }
 
   const {
     tools: additionalTools = {},
-    unchainedMCPUrl = `${process.env.ROOT_URL}/mcp`,
     model,
     imageGenerationTool,
     abortSignal: configuredAbortSignal,
     onAbort: configuredOnAbort,
     onEnd: configuredOnEnd,
     onFinish: configuredOnFinish,
+    allowedOrigins = [],
     ...restChatConfig
-  } = chatConfiguration;
+  }: any = chatConfiguration;
 
   const system = chatConfiguration.system ?? defaultSystemPrompt;
+  const pageOrigins: string[] = allowedOrigins.map((origin: string) => new URL(origin).origin);
 
-  const mcpChatHandler: RouteHandlerMethod = async (req: FastifyRequest, res) => {
-    if (req.method === 'OPTIONS') {
-      res.headers({
-        'access-control-allow-credentials': 'true',
-        'access-control-allow-private-network': 'true',
+  return async (request: Request, context: Context): Promise<Response> => {
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 200,
+        headers: {
+          'access-control-allow-credentials': 'true',
+          'access-control-allow-private-network': 'true',
+        },
       });
-      return res.status(200).send();
     }
 
-    // Chat proxies the admin-gated /mcp surface: enforce the same auth wall up front
-    // instead of letting the downstream MCP 401 surface as a 500.
-    const unchainedContext = (req as FastifyRequest & { unchainedContext: Context }).unchainedContext;
-    const user = unchainedContext?.user;
+    const { user } = context;
     if (!user) {
-      return res.status(401).send({ error: 'unauthorized' });
+      return Response.json({ error: 'unauthorized' }, { status: 401 });
     }
     if (!(user.roles || []).includes('admin')) {
-      return res.status(403).send({ error: 'forbidden', message: 'Chat requires admin privileges' });
+      return Response.json(
+        { error: 'forbidden', message: 'Chat requires admin privileges' },
+        { status: 403 },
+      );
     }
 
-    let client: Awaited<ReturnType<typeof createMCPClient>> | undefined;
-    const lifecycle = createChatRequestLifecycle(res.raw, configuredAbortSignal);
+    if (!isAllowedBrowserOrigin(request, pageOrigins)) {
+      return Response.json({ error: 'forbidden', message: 'Origin not allowed' }, { status: 403 });
+    }
+    const messages = request.method === 'POST' ? await readMessages(request) : [];
+    if (messages instanceof Response) return messages;
+
+    const lifecycle = createChatRequestLifecycle(request.signal, configuredAbortSignal);
     try {
-      client = await createMCPClient({
-        transport: {
-          type: 'http',
-          url: unchainedMCPUrl,
-          headers: {
-            // Forward both auth mechanisms accepted by /mcp: cookie sessions and bearer tokens
-            Cookie: req.headers.cookie || '',
-            ...(req.headers.authorization ? { Authorization: req.headers.authorization } : {}),
-          },
-        },
+      const client = await createMCPClient({
+        transport: await createInProcessMcpTransport(context),
         initializationOptions: { signal: lifecycle.signal },
       });
-      lifecycle.setClientClose(() => client!.close());
+      lifecycle.setClientClose(() => client.close());
 
       const defaultUnchainedTools = await client.tools();
 
       // Shop configuration is read in-process from the same data the MCP resources serve
       // (admin-gated inside the builder, mirroring the /mcp auth wall).
-      const resourceContext = await buildChatResourceContext(unchainedContext);
+      const resourceContext = await buildChatResourceContext(context);
 
       const tools: aiTypes.ToolSet = {
         ...defaultUnchainedTools,
         ...additionalTools,
       };
       if (imageGenerationTool) {
-        tools.generateImage = generateImageHandler(req)(imageGenerationTool) as any;
+        tools.generateImage = generateImageHandler(request)(imageGenerationTool) as any;
       }
 
-      if (req.method === 'GET') {
+      if (request.method !== 'POST') {
         await lifecycle.close();
-        return res.status(200).send({
+        return Response.json({
           tools: normalizeToolsIndex(tools),
           cached: false,
         });
       }
-
-      const { messages } = req.body as any;
 
       const cacheControlledTools = { ...tools };
       const keys = Object.keys(cacheControlledTools);
@@ -192,41 +242,13 @@ const setupMCPChatHandler = (chatConfiguration: ChatConfiguration & any) => {
         await lifecycle.close();
       });
 
-      return res.send(
-        result.toUIMessageStreamResponse({
-          onError: errorHandler,
-        }),
-      );
-    } catch (err: any) {
+      return result.toUIMessageStreamResponse({
+        onError: errorHandler,
+      });
+    } catch (err) {
       logger.error(err);
       await lifecycle.close();
-      if (lifecycle.signal.aborted || res.raw.destroyed) return res;
-      res.status(chatErrorStatus(err));
-      return res.send({ error: errorHandler(err) });
+      return Response.json({ error: errorHandler(err) }, { status: chatErrorStatus(err) });
     }
   };
-  return mcpChatHandler;
-};
-
-export const connectChat = (app: FastifyInstance, chatConfiguration: ChatConfiguration) => {
-  if (!createMCPClient || !streamText) {
-    logger.warn(
-      'Optional dependencies for AI SDK Chat Handler are not installed. Please install @ai-sdk/mcp and ai packages to use this feature.',
-    );
-    return;
-  }
-
-  const handler = setupMCPChatHandler(chatConfiguration);
-
-  app.route({
-    url: '/chat',
-    method: ['POST', 'OPTIONS'],
-    handler,
-  });
-
-  app.route({
-    url: '/chat/tools',
-    method: ['GET', 'OPTIONS'],
-    handler,
-  });
 };

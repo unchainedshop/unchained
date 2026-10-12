@@ -1,5 +1,5 @@
 import { log } from '@unchainedshop/logger';
-import { checkAction } from '../../../acl.ts';
+import { checkAction } from '../../../roles/acl.ts';
 import { actions } from '../../../roles/index.ts';
 import type { Context } from '../../../context.ts';
 import type { Product } from '@unchainedshop/core-products';

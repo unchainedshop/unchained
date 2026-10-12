@@ -30,9 +30,7 @@ export default async (options: GraphQLServerOptions) => {
   const server = createYoga({
     schema,
     logging: logger,
-    context: async (ctx: any) => {
-      return (ctx.req as any)?.unchainedContext;
-    },
+    context: async (ctx: any) => ctx.unchainedContext ?? ctx.req?.unchainedContext,
     ...options,
     // graphql-js reference engine instead of @graphql-tools/executor: the ported
     // executor drops schema argument defaults for unprovided variables on graphql 17.

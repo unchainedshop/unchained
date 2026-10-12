@@ -1,6 +1,6 @@
 import type { File as FileType } from '@unchainedshop/core-files';
 import type { Context } from '../../context.ts';
-import { checkAction } from '../../acl.ts';
+import { checkAction } from '../../roles/acl.ts';
 import { actions } from '../../roles/index.ts';
 import { createLogger } from '@unchainedshop/logger';
 

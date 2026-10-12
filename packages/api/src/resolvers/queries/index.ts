@@ -1,5 +1,5 @@
 import { actions } from '../../roles/index.ts';
-import { checkResolver as acl } from '../../acl.ts';
+import { checkResolver as acl } from '../../roles/acl.ts';
 
 import activeWorkTypes from './worker/activeWorkTypes.ts';
 import assortment from './assortments/assortment.ts';

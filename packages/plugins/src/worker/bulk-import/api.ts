@@ -1,25 +1,15 @@
 import { createLogger } from '@unchainedshop/logger';
-import type { UnchainedCore } from '@unchainedshop/core';
-import type { RolesInterface } from '@unchainedshop/roles';
+import type { PluginHttpRequestContext } from '@unchainedshop/core';
+import { Readable } from 'node:stream';
 
 const logger = createLogger('unchained:bulk-import');
 
 export async function bulkImportHandler(
   request: Request,
-  context: UnchainedCore & {
-    params: Record<string, string>;
-    rawRequest?: any;
-    roles?: RolesInterface;
-    userId?: string;
-    user?: any;
-  },
+  context: PluginHttpRequestContext,
 ): Promise<Response> {
   try {
-    const hasPermission = await context.roles?.userHasPermission(
-      context as { userId?: string; user?: any },
-      'bulkImport',
-      [],
-    );
+    const hasPermission = await context.roles?.userHasPermission(context, 'bulkImport', []);
     if (!hasPermission) {
       return Response.json(
         { error: 'Permission denied', message: 'User does not have bulkImport permission' },
@@ -34,16 +24,15 @@ export async function bulkImportHandler(
       updateShouldUpsertIfIDNotExists:
         url.searchParams.get('updateShouldUpsertIfIDNotExists') === 'true',
       skipCacheInvalidation: url.searchParams.get('skipCacheInvalidation') === 'true',
-      remoteAddress: (context as any).remoteAddress,
+      remoteAddress: context.remoteAddress,
     };
 
     const date = new Date().toISOString();
 
-    // Use rawRequest for stream access (Node.js IncomingMessage)
-    const stream = context.rawRequest;
-    if (!stream) {
+    if (!request.body) {
       return Response.json({ error: 'No request stream available' }, { status: 400 });
     }
+    const stream = Readable.fromWeb(request.body as Parameters<typeof Readable.fromWeb>[0]);
 
     const file = await context.services.files.uploadFileFromStream({
       directoryName: 'bulk-import-streams',

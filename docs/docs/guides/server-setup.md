@@ -7,7 +7,7 @@ description: Choose and configure Express or Fastify as your HTTP server framewo
 
 # Server Setup
 
-Unchained Engine supports both Express and Fastify as HTTP server frameworks, with identical functionality through the `connect()` function from `@unchainedshop/api/express` or `@unchainedshop/api/fastify`. Fastify is used by the default [kitchensink example](https://github.com/unchainedshop/unchained/tree/master/examples/kitchensink) and recommended for new projects; the [kitchensink-express example](https://github.com/unchainedshop/unchained/tree/master/examples/kitchensink-express) shows the Express equivalent.
+Unchained Engine supports Express, Fastify and plain Node.js, with identical functionality through the `connect()` function from `@unchainedshop/api/express`, `@unchainedshop/api/fastify` or `@unchainedshop/api/node`. Fastify is used by the default [kitchensink example](https://github.com/unchainedshop/unchained/tree/master/examples/kitchensink) and recommended for new projects; the [kitchensink-express example](https://github.com/unchainedshop/unchained/tree/master/examples/kitchensink-express) shows the Express equivalent.
 
 ## Fastify Setup (Recommended)
 
@@ -66,9 +66,20 @@ await httpServer.listen({ port: process.env.PORT || 3000 });
 Import the preset without a file extension (`@unchainedshop/plugins/presets/all`) — the package exports map appends `.js` itself. `startPlatform({})` needs no `modules` argument for the built-in core modules.
 :::
 
+## Plain Node.js, Bun and Deno
+
+`connect(createServer(), platform, options)` from `@unchainedshop/api/node` serves a `node:http` server. Bun and Deno use the fetch handler, which answers `undefined` for requests that are not the engine's:
+
+```typescript
+import { createFetchHandler } from '@unchainedshop/api/fetch';
+
+const handler = createFetchHandler(platform, { adminUI: true });
+Bun.serve({ fetch: async (request) => (await handler(request)) ?? new Response(null, { status: 404 }) });
+```
+
 ## Connect Options
 
-Both adapters accept the same options in the third argument:
+All adapters accept the same options in the third argument:
 
 ```typescript
 await connect(server, platform, {
@@ -80,7 +91,7 @@ await connect(server, platform, {
   adminUI: boolean | { prefix?: string; theme?: AdminUIThemeConfig; plugins?: AdminUIPluginConfig[] },
 
   // AI chat endpoint (Vercel AI SDK model instances)
-  chat: { model: LanguageModel; imageGenerationTool?: { model: ImageModel; uploadUrl?: string } },
+  chat: { model: LanguageModel; imageGenerationTool?: { model: ImageModel; uploadUrl?: string }; allowedOrigins?: string[] },
 
   // OIDC/OAuth authentication configuration
   authConfig: AuthConfig,
@@ -139,6 +150,8 @@ fastify.route({
   },
 });
 ```
+
+Your routes get the request context as `req.unchainedContext` (Express: routes added after `connect()`) or `request.unchainedContext` (Fastify, skipped with `config: { unchainedContext: false }`). The engine's endpoints are routes of your app too: Express middleware added before `connect()` and Fastify hooks, including those of `@fastify/rate-limit`, apply to them. Add Express body parsers after `connect()`, or keep `req.rawBody` (`express.json({ verify })`), so webhooks get the body as sent.
 
 ## Admin UI
 

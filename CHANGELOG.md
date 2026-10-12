@@ -30,6 +30,14 @@
 - **Ticketing Admin UI plugin without extra slots:** `ticketingAdminPlugin()` no longer takes `additionalSlots`: their components had to be exported by the ticketing bundle, which a project cannot do. Add your own pages with a plugin of your own and `navigation: ticketingNavigation`; plugins with the same navigation label now share one submenu.
 - **Attendee names by default:** without a `ticketMeta` hook, the ticket issuer now stores the attendee names of the order position configuration `attendees` (one per seat, comma-separated) as `token.meta.attendeeName`. Projects that use that configuration key for something else pass a `ticketMeta` hook.
 - **Quotations in the cart:** a proposed quotation now prices its cart position: `registerBasePlugins()` registers the new `ProductQuotationPricePlugin` (`shop.unchained.pricing.product-quotation-price`, orderIndex 1), which replaces the catalog price with `quotation.price × quantity`, taxed as the proposal states (`isTaxable` / `isNetPrice`, default taxable gross). Open carts with quotation lines are repriced on their next calculation. A quotation quotes a quantity (`requestQuotation(quantity)`, `Quotation.quantity`, proposal `quantity`): `addCartQuotation` without `quantity` adds the quoted quantity (before: 1). `transformItemConfiguration` decides the total quantity of the quotation's line (`addCartQuotation` passes existing + added instead of the added quantity); the default keeps the quotation's configuration, whatever the buyer sends, and takes multiples of the quoted quantity, never less. A checked-out order reserves its quotation: while the order is pending, no other cart can add or check it out; confirming the order fulfils it, rejecting it releases it. Checkout locks the quotations and checks them again before payment. Only the owner's cart in the quotation's currency takes a quotation (`QuotationInvalidError`), checkout fails for a quotation that no longer applies instead of charging the catalog price, `addCartProduct` no longer merges into a quotation line, and a guest's open quotations move to the user on login.
+- **One HTTP layer for Express, Fastify and plain Node:** `connect()` mounts the engine's endpoints (MCP, AI chat, plugin routes, back-channel logout, Admin UI) as WHATWG handlers on routes of your app, so its middleware and hooks apply. See MIGRATION.md:
+  - Plugin route handlers no longer get `context.rawRequest`, they read the WHATWG `request`. Route paths are literal segments and `:name` parameters.
+  - `connect()` no longer registers `cookie-parser` / `@fastify/cookie` and no longer needs `@fastify/static`. Invalid `UNCHAINED_COOKIE_*` settings stop the engine at startup.
+  - `adminUIRouter` and `connectChat` are removed, `AdminUIRouterOptions` is now `AdminUIOptions`.
+  - Fastify: `bodyLimit` applies to GraphQL only, MCP and chat take up to 10 MB. The Admin UI is a `GET /*` route below its prefix.
+  - The AI chat only answers pages of the API's own host, `localhost` and `ROOT_URL` (more with `chat.allowedOrigins`) and requires JSON. It uses the MCP server in-process, `chat.unchainedMCPUrl` is removed.
+  - `context.getHeader()` returns `string | undefined`, `GetHeaderFn` is removed.
+  - Deep imports below `@unchainedshop/api/lib/` moved: the adapters, `auth` and `adminUiPlugins` to `lib/http/`, `acl` to `lib/roles/`. The entry points are unchanged.
 
 ### Improvements
 
@@ -54,6 +62,9 @@
 - **Permission checks outside of requests:** `roles.getConfiguredRoles()` from `@unchainedshop/api` returns the roles instance of the platform, so adapters and workers check actions with `userHasPermission({ userId, user, modules }, action, [])` instead of role names.
 - **Stop the platform without exiting:** `startPlatform()` also resolves to `shutdown()`, which stops the work queue, plugins, event emitter, GraphQL server, audit log and database like the `SIGTERM` / `SIGINT` handlers, but leaves the process running. Every call returns the same promise; once it has started, the platform's signal and error handlers no longer exit the process.
 - **`@unchainedshop/api` no longer depends on `@unchainedshop/mongodb`:** its resolvers take the address and contact types from the core packages, as the layer rules require.
+- **Fetch handler and plain Node.js server:** `createFetchHandler()` from `@unchainedshop/api/fetch` (Bun, Deno) and `connect()` from `@unchainedshop/api/node`. `@unchainedshop/api` no longer depends on `@whatwg-node/server`.
+- **One request context type:** `UnchainedRequestContext` from `@unchainedshop/core`; plugin routes get `PluginHttpRequestContext` with `user` and `roles` and check permissions without casts.
+- **Faster Admin UI, every route audited:** Admin UI files skip the request context (70–100% more requests per second) and `_next/static` is cached as immutable. MCP, chat, plugin routes and your own routes run as the user of the request, so their events carry it.
 
 ### Fixed
 
@@ -99,6 +110,9 @@
 - **`Enrollment.country`** was resolved through the currency loader.
 - **Redis event emitter delivers to every subscriber:** `RedisEventEmitter` only kept the callback of the first `subscribe()` per event, so later subscribers of the same event (for example a second plugin listening to `ORDER_CHECKOUT`) never received it. Each event now reaches all of its subscribers.
 - **Stripe customers and intents:** a failed customer search was swallowed and created another Stripe customer, so every hiccup left a duplicate; the error is now reported. Payment and setup intents take amount, currency, customer, receipt e-mail and the order ids in `metadata` from the order, so values in `transactionContext` can no longer override them (other options and custom metadata keys are still passed to Stripe). The plugin is skipped when the `stripe` package cannot be initialized, instead of failing at the first payment.
+- **Server errors no longer leak details:** a failing plugin route, or a request context that cannot be created (Fastify sent the error message), answers a generic `500` and logs the stack.
+- **Fastify:** MCP over HTTP/2 and `HEAD /graphql` answered `500`.
+- **Admin Copilot with OpenAI models:** MCP tool schemas used `propertyNames: {}`, which `@ai-sdk/openai` rejects.
 
 ## v5.0.0-alpha.11 (2026-09-23)
 
