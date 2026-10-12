@@ -1,18 +1,7 @@
 import type * as aiTypes from 'ai';
 import { createLogger } from '@unchainedshop/logger';
-import { isPeerNotInstalledError } from '../utils/optionalPeerError.ts';
 
 const logger = createLogger('unchained:api:chat');
-
-// Distinguishes a genuinely absent optional peer (expected, warn) from a package that is
-// installed but failed to load (a real error that must not be reported as "not installed").
-export const logOptionalPeerLoadError = (packageName: string, error: unknown) => {
-  if (isPeerNotInstalledError(packageName, error)) {
-    logger.warn(`optional peer npm package '${packageName}' not installed, chat will not work`);
-  } else {
-    logger.error(`failed to load '${packageName}'`, error);
-  }
-};
 
 let NoSuchToolError: typeof aiTypes.NoSuchToolError;
 let InvalidArgumentError: typeof aiTypes.InvalidArgumentError;

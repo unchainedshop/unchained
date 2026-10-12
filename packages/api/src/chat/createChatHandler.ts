@@ -9,7 +9,6 @@ import {
   createChatRequestLifecycle,
   type ChatConfiguration,
   errorHandler,
-  logOptionalPeerLoadError,
 } from './utils.ts';
 import { buildChatResourceContext } from '../mcp/resources/localization.ts';
 import {
@@ -20,6 +19,14 @@ import {
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api:chat');
+
+const logOptionalPeerLoadError = (packageName: string, error: unknown) => {
+  if ((error as Error)?.message?.startsWith(`Cannot find package '${packageName}'`)) {
+    logger.warn(`optional peer npm package '${packageName}' not installed, chat will not work`);
+  } else {
+    logger.error(`failed to load '${packageName}'`, error);
+  }
+};
 
 const MAX_BODY_SIZE = 10 * 1024 * 1024;
 

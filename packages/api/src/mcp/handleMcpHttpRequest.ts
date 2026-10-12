@@ -2,7 +2,6 @@ import type { McpHttpHandler, McpServer as McpServerType } from '@modelcontextpr
 import type { Context } from '../context.ts';
 import { createLogger } from '@unchainedshop/logger';
 import createMcpServer from './index.ts';
-import { isPeerNotInstalledError } from '../utils/optionalPeerError.ts';
 
 const logger = createLogger('unchained:api:mcp');
 
@@ -24,7 +23,7 @@ try {
   localhostAllowedHostnames = mcpSDKServer.localhostAllowedHostnames;
   localhostAllowedOrigins = mcpSDKServer.localhostAllowedOrigins;
 } catch (error) {
-  if (isPeerNotInstalledError('@modelcontextprotocol/server', error)) {
+  if ((error as Error)?.message?.startsWith("Cannot find package '@modelcontextprotocol/server'")) {
     logger.warn(
       `optional peer npm package '@modelcontextprotocol/server' not installed, mcp will not work`,
     );
