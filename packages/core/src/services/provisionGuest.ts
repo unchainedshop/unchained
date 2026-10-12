@@ -10,7 +10,7 @@ export async function provisionGuestService(
     forceCartCreation,
   }: {
     countryCode: string;
-    lastLogin: UserLastLogin;
+    lastLogin: Omit<UserLastLogin, 'countryCode'>;
     forceCartCreation?: boolean;
   },
 ) {
@@ -25,7 +25,7 @@ export async function provisionGuestService(
     { skipMessaging: true },
   );
 
-  const user = (await this.users.updateHeartbeat(guestUserId, lastLogin)) as User;
+  const user = (await this.users.updateHeartbeat(guestUserId, { ...lastLogin, countryCode })) as User;
   const cart = await nextUserCartService.bind(this)({ user, countryCode, forceCartCreation });
   return { user, cart };
 }
