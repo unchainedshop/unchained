@@ -1,35 +1,13 @@
-import { runWithAuditContext } from '@unchainedshop/events';
-import type { AuthContextParams } from '../middleware/createAuthMiddleware.ts';
-import type { AuthConfig } from '../auth.ts';
+import type { FastifyBaseLogger, FastifyInstance } from 'fastify';
 import type { YogaServerInstance } from 'graphql-yoga';
-import type { UnchainedCore } from '@unchainedshop/core';
-import { pluginRegistry } from '@unchainedshop/core';
-import fastifyCookie from '@fastify/cookie';
-import type { FastifyBaseLogger, FastifyInstance, FastifyPluginAsync } from 'fastify';
 import { createLogger } from '@unchainedshop/logger';
-import mcpHandler from './mcpHandler.ts';
-import { connectChat } from './chatHandler.ts';
-import type { ChatConfiguration } from '../chat/utils.ts';
-import { mountRoutes } from './mountRoutes.ts';
-import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
-import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
-import {
-  preparePluginAssets,
-  prepareAdminUIHTML,
-  resolveAdminUIHTML,
-  injectAdminUIImportMap,
-  buildImportMapTag,
-  resolveAdminUIPath,
-  type AdminUIPluginConfig,
-  type AdminUIThemeConfig,
-} from '../adminUiPlugins.ts';
-import {
-  createRequestContext,
-  headerValue,
-  resolveRemoteAddress,
-} from '../http/createRequestContext.ts';
+import type { Context } from '../context.ts';
+import { createEndpoints, type ConnectOptions } from '../http/createEndpoints.ts';
+import { withAuditContext } from '../http/createRequestContext.ts';
+import { getNodeHeader, toWebRequest } from '../http/nodeHttpBridge.ts';
 
+export type { ConnectOptions } from '../http/createEndpoints.ts';
+export type { AdminUIOptions } from '../http/createAdminUIHandler.ts';
 export type {
   AdminUIPluginConfig,
   AdminUIPluginEntityConfig,
@@ -41,47 +19,16 @@ export type {
   AdminUIThemeConfig,
 } from '../adminUiPlugins.ts';
 
-export interface AdminUIRouterOptions {
-  prefix?: string;
-  enabled?: boolean;
-  theme?: AdminUIThemeConfig;
-  plugins?: AdminUIPluginConfig[];
-  importMapTag?: string | null;
-  importMapJSON?: string | null;
+declare module 'fastify' {
+  interface FastifyRequest {
+    /** The engine's request context, null for requests without a route and the Admin UI's */
+    unchainedContext: Context | null;
+  }
+  interface FastifyContextConfig {
+    /** false: the requests of the route get no request context */
+    unchainedContext?: boolean;
+  }
 }
-
-const { MCP_API_PATH = '/mcp' } = process.env;
-
-const createMiddlewareHook = (authConfig?: AuthConfig, trustProxy = false) =>
-  async function middlewareHook(req: any, reply: any) {
-    const setHeader = (key: string, value: string) => reply.header(key, value);
-    const getHeader = (key: string) => headerValue(req.headers, key);
-    const getCookie = (name: string) => req.cookies?.[name];
-    const setCookie = (name: string, value: string, options: any) =>
-      reply.setCookie(name, value, options);
-    const clearCookie = (name: string, options: any) =>
-      reply.clearCookie(name, { ...options, maxAge: 0 });
-    const { remoteAddress, remotePort } = resolveRemoteAddress(req.raw, trustProxy);
-
-    const authContextParams: AuthContextParams = {
-      setHeader,
-      getHeader,
-      getCookie,
-      setCookie,
-      clearCookie,
-      remoteAddress,
-      remotePort,
-    };
-
-    const { context, auditContext } = await createRequestContext(
-      authContextParams,
-      authConfig,
-      req,
-      reply,
-    );
-    (req as any).unchainedContext = context;
-    (req as any)._auditContext = auditContext;
-  };
 
 export const unchainedLogger = (prefix: string): FastifyBaseLogger => {
   const logger = createLogger(prefix);
@@ -100,280 +47,95 @@ export const unchainedLogger = (prefix: string): FastifyBaseLogger => {
   return new (Logger as any)();
 };
 
+/**
+ * Serves the engine's endpoints as routes of a Fastify instance, so the hooks of the app and of its
+ * plugins apply to them. GraphQL gets its body from Fastify's parsers (`bodyLimit`, 415 for other
+ * content types), MCP, chat and plugin routes read it as sent. The routes of the app get the
+ * request context as `request.unchainedContext` and take precedence over the Admin UI.
+ */
 export const connect = async (
   fastify: FastifyInstance,
-  {
-    graphqlHandler,
-    unchainedAPI,
-  }: {
-    graphqlHandler: YogaServerInstance<any, any>;
-    unchainedAPI: UnchainedCore;
-  },
-  {
-    allowRemoteToLocalhostSecureCookies = false,
-    adminUI = false,
-    chat,
-    authConfig,
-    trustProxy = false,
-  }: {
-    allowRemoteToLocalhostSecureCookies?: boolean;
-    adminUI?: boolean | Omit<AdminUIRouterOptions, 'enabled'>;
-    chat?: ChatConfiguration;
-    authConfig?: AuthConfig;
-    /** SECURITY: Enable this ONLY if behind a properly configured reverse proxy
-     * that strips/validates x-forwarded-for and x-real-ip headers from untrusted sources */
-    trustProxy?: boolean;
-  } = {},
+  platform: { graphqlHandler: YogaServerInstance<any, any> },
+  options: ConnectOptions = {},
 ) => {
-  if (allowRemoteToLocalhostSecureCookies) {
-    // SECURITY: This mode is for development only - block in production
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error(
-        'allowRemoteToLocalhostSecureCookies is not allowed in production. ' +
-          'Configure a proper CORS policy with specific allowed origins instead.',
-      );
-    }
+  const {
+    graphqlHandler: yoga,
+    routes,
+    serveAdminUI,
+    createContext,
+    corsHeaders,
+  } = createEndpoints(platform, options);
 
-    // Workaround: Allow to use sandbox with localhost (development only)
-    // https://github.com/fastify/fastify-cookie/issues/308
-    fastify.addHook('preHandler', async function (request) {
-      request.headers['x-forwarded-proto'] = 'https';
-    });
-    fastify.addHook('onSend', async function (req, reply) {
-      reply.headers({
-        'Access-Control-Allow-Private-Network': 'true',
-        'Access-Control-Allow-Origin': req.headers.origin || '*',
-        'Access-Control-Allow-Credentials': 'true',
-        'Access-Control-Allow-Methods': ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'].join(', '),
-        'Access-Control-Allow-Headers': req.headers['access-control-request-headers'] || '*',
-      });
-    });
-  }
-
-  // Register cookie plugin for JWT cookie handling. Plugins registered before connect()
-  // (e.g. @fastify/oauth2) may register their own @fastify/cookie, but only once Fastify
-  // loads them; decide after everything queued so far has loaded to avoid a duplicate.
-  fastify.after(() => {
-    if (!fastify.hasReplyDecorator('setCookie')) {
-      fastify.register(fastifyCookie);
-    }
+  fastify.decorateRequest('unchainedContext', null);
+  // The request context of every route, the engine's and the app's, but the Admin UI's
+  fastify.addHook('onRequest', async (request, reply) => {
+    if (request.is404 || request.routeOptions.config.unchainedContext === false) return;
+    const getHeader = (name: string) => getNodeHeader(request.raw, name);
+    if (corsHeaders) reply.headers(corsHeaders(getHeader));
+    request.unchainedContext = await createContext(
+      {
+        getHeader,
+        setHeader: (name, value) => reply.header(name, value),
+        appendHeader: (name, value) => reply.header(name, value),
+        remoteAddress: request.socket.remoteAddress,
+        remotePort: request.socket.remotePort,
+      },
+      request,
+      reply,
+    );
+  });
+  // Handlers run as the user of the request, from preHandler as body parsing leaves the async
+  // context of onRequest
+  fastify.addHook('preHandler', (request, reply, done) => {
+    if (request.unchainedContext) withAuditContext(request.unchainedContext, done);
+    else done();
   });
 
-  fastify.decorateRequest('unchainedContext');
-  // Note: allowRemoteToLocalhostSecureCookies implies trustProxy for dev convenience
-  fastify.addHook(
-    'onRequest',
-    createMiddlewareHook(authConfig, trustProxy || allowRemoteToLocalhostSecureCookies),
-  );
+  // As a plugin, the routes come after the plugins registered before, so hooks those add to every
+  // route, like the ones of @fastify/rate-limit, apply to them too. HEAD is listed: the HEAD routes
+  // Fastify derives from GET routes cannot send a web Response.
+  fastify.register(async (engine) => {
+    // GraphQL Yoga's Fastify integration
+    engine.route({
+      url: yoga.graphqlEndpoint,
+      method: ['GET', 'HEAD', 'POST', 'OPTIONS'],
+      handler: (request, reply) =>
+        yoga.handleNodeRequestAndResponse(request, reply, { req: request, reply }),
+    });
 
-  fastify.route({
-    url: graphqlHandler.graphqlEndpoint,
-    method: ['GET', 'POST', 'OPTIONS'],
-    handler: async (req, reply) => {
-      const auditCtx = (req as any)._auditContext;
-      const handle = () =>
-        graphqlHandler.handleNodeRequestAndResponse(req, reply, {
-          req,
-          reply,
+    engine.register(async (endpoints) => {
+      // MCP, the chat and plugin routes read their bodies as sent
+      endpoints.removeAllContentTypeParsers();
+      endpoints.addContentTypeParser('*', (request, payload, done) => done(null, payload));
+      for (const { path, methods, handler } of routes) {
+        endpoints.route({
+          url: path,
+          method: methods,
+          handler: (request, reply) =>
+            handler(
+              toWebRequest(request.raw, reply.raw, { protocol: request.protocol, body: request.body }),
+              request.unchainedContext!,
+              request.params as Record<string, string>,
+            ),
         });
-      if (auditCtx) {
-        return runWithAuditContext(auditCtx, handle);
       }
-      return handle();
-    },
+    });
+
+    if (serveAdminUI) {
+      const { basePath, assetPaths } = serveAdminUI;
+      for (const url of basePath ? [basePath, `${basePath}/*`, ...assetPaths] : ['/*']) {
+        engine.route({
+          url,
+          method: ['GET', 'HEAD'],
+          config: { unchainedContext: false },
+          handler: async (request, reply) =>
+            (await serveAdminUI(
+              toWebRequest(request.raw, reply.raw, { protocol: request.protocol }),
+              // CSP nonce convention of @fastify/helmet with enableCSPNonces
+              (reply as any).cspNonce?.script,
+            )) ?? reply.callNotFound(),
+        });
+      }
+    }
   });
-
-  // MCP endpoint (remains framework-specific due to SDK requirements)
-  fastify.route({
-    url: MCP_API_PATH,
-    method: ['GET', 'POST', 'DELETE'],
-    handler: mcpHandler,
-  });
-
-  if (chat) {
-    connectChat(fastify, chat);
-  }
-
-  // Collect all routes: plugin routes + backchannel logout (if OIDC configured)
-  const routes = pluginRegistry.getRoutes();
-
-  if (authConfig?.oidcProviders?.length) {
-    routes.push(createBackchannelLogoutRoute(authConfig.oidcProviders));
-  }
-
-  // Mount all routes uniformly
-  mountRoutes(fastify, unchainedAPI, routes);
-
-  if (adminUI) {
-    const adminUIOptions = typeof adminUI === 'object' ? adminUI : undefined;
-    const adminUIPlugins: AdminUIPluginConfig[] = adminUIOptions?.plugins || [];
-
-    // generateThemeCSS without a theme yields the same default, so the optional
-    // @unchainedshop/admin-ui dependency is only resolved when a theme is set.
-    // Resolution happens lazily on first request: connect() is not awaited by
-    // callers, so nothing may suspend here before the routes are registered.
-    // We resolve the specifier at runtime via import.meta.resolve so the engine
-    // builds and boots without admin-ui being compiled first (it ships its own
-    // build artefacts) — keeping this a runtime-only, optional dependency.
-    let themePromise: Promise<{ css: string; etag: string }> | undefined;
-    const resolveThemeCSS = async () => {
-      let css = '/* default theme */';
-      if (adminUIOptions?.theme) {
-        try {
-          const themeModuleUrl = import.meta.resolve('@unchainedshop/admin-ui/theme');
-          const { generateThemeCSS } = await import(themeModuleUrl);
-          css = generateThemeCSS(adminUIOptions.theme);
-        } catch {
-          fastify.log.warn(
-            "npm dependency @unchainedshop/admin-ui is not installed, can't apply admin-ui theme",
-          );
-        }
-      }
-      const etag = `"${createHash('sha256').update(css).digest('hex').slice(0, 8)}"`;
-      return { css, etag };
-    };
-    fastify.get('/admin-ui-theme.css', async (request, reply) => {
-      const { css, etag } = await (themePromise ||= resolveThemeCSS());
-      if (request.headers['if-none-match'] === etag) {
-        return reply.code(304).send();
-      }
-      return reply
-        .header('Cache-Control', 'public, max-age=0, must-revalidate')
-        .header('ETag', etag)
-        .type('text/css')
-        .send(css);
-    });
-
-    const devMode = process.env.NODE_ENV !== 'production';
-    const {
-      routes: pluginRoutes,
-      importMapTag,
-      importMapJSON,
-    } = preparePluginAssets(adminUIPlugins, fastify.log, {
-      devMode,
-    });
-
-    for (const [path, asset] of pluginRoutes) {
-      fastify.get(path, async (request, reply) => {
-        if (asset.etag) {
-          const ifNoneMatch = request.headers['if-none-match'];
-          if (ifNoneMatch === asset.etag) {
-            return reply.code(304).send();
-          }
-          reply.header('ETag', asset.etag);
-        }
-        const body = typeof asset.content === 'function' ? asset.content() : asset.content;
-        return reply
-          .header('Cache-Control', asset.cacheControl)
-          .header('X-Content-Type-Options', 'nosniff')
-          .header('Access-Control-Allow-Origin', '*')
-          .type(asset.contentType)
-          .send(body);
-      });
-    }
-
-    fastify.register(adminUIRouter, {
-      enabled: true,
-      prefix: adminUIOptions?.prefix || '/',
-      plugins: adminUIPlugins,
-      importMapTag,
-      importMapJSON,
-    });
-  }
 };
-
-const fallbackLandingPageHandler = (request: any, reply: any) => {
-  if (request.raw.method === 'GET') {
-    try {
-      // Try to resolve from package exports first (works in non-bundled environments)
-      const staticURL = import.meta.resolve('@unchainedshop/api/index.html');
-      const staticPath = new URL(staticURL).pathname;
-      return reply.type('text/html').send(readFileSync(staticPath));
-    } catch {
-      // Fallback for bundled environments: use relative path from this file
-      const fallbackPath = new URL('../../index.html', import.meta.url).pathname;
-      return reply.type('text/html').send(readFileSync(fallbackPath));
-    }
-  } else {
-    return reply.status(404).send();
-  }
-};
-
-export const adminUIRouter: FastifyPluginAsync<AdminUIRouterOptions> = async (
-  fastify: FastifyInstance,
-  opts,
-) => {
-  try {
-    let fastifyStatic;
-    try {
-      const fastifyStaticModule = await import('@fastify/static');
-      fastifyStatic = fastifyStaticModule.default;
-    } catch {
-      fastify.log.warn("npm dependency @fastify/static is not installed, can't serve admin-ui");
-    }
-
-    if (fastifyStatic) {
-      const adminUIPath = resolveAdminUIPath();
-      if (adminUIPath) {
-        // The admin-ui is a Next.js static export. Serve exact pre-rendered
-        // pages first, use the dedicated catch-all for /ext/*, and fall back
-        // to root for unknown application routes.
-        if (opts.importMapJSON) {
-          const preparedHTML = prepareAdminUIHTML(adminUIPath);
-
-          await fastify.register(fastifyStatic, {
-            root: adminUIPath,
-            prefix: opts.prefix || '/',
-            wildcard: false,
-            index: false,
-          });
-
-          fastify.setNotFoundHandler(async (request, reply) => {
-            if (request.method === 'GET' && !request.url.includes('.')) {
-              if (process.env.NODE_ENV !== 'production') reply.header('Cache-Control', 'no-cache');
-
-              // CSP nonce convention (@fastify/helmet with enableCSPNonces:
-              // true): the plugin decorates reply.cspNonce = { script, style }.
-              // When present, the injected import map tag carries the script
-              // nonce; without it, strict CSPs will block the tag.
-              const nonce = (reply as any).cspNonce?.script as string | undefined;
-              const tag = nonce ? buildImportMapTag(opts.importMapJSON!, nonce) : opts.importMapTag!;
-              return reply
-                .type('text/html')
-                .send(injectAdminUIImportMap(preparedHTML, request.url, tag, opts.prefix));
-            }
-            return reply.code(404).send({ error: 'Not Found' });
-          });
-        } else {
-          const preparedHTML = prepareAdminUIHTML(adminUIPath);
-
-          await fastify.register(fastifyStatic, {
-            root: adminUIPath,
-            prefix: opts.prefix || '/',
-            wildcard: false,
-          });
-
-          fastify.setNotFoundHandler(async (request, reply) => {
-            if (request.method === 'GET' && !request.url.includes('.')) {
-              return reply
-                .type('text/html')
-                .send(resolveAdminUIHTML(preparedHTML, request.url, opts.prefix));
-            }
-            return reply.code(404).send({ error: 'Not Found' });
-          });
-        }
-        return;
-      }
-    }
-    await fastify.get(opts.prefix || '/', fallbackLandingPageHandler);
-  } catch (e) {
-    fastify.log.error(e);
-    if (process.env.NODE_ENV !== 'production') {
-      fastify.get('/', async (request, reply) => {
-        return reply.redirect('http://localhost:3000');
-      });
-    }
-  }
-};
-
-export { connectChat };

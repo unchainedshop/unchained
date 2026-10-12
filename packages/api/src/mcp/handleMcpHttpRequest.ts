@@ -37,14 +37,18 @@ try {
 // travels through the pass-through authInfo.
 let handler: McpHttpHandler | undefined;
 const getHandler = () => {
-  handler ??= createMcpHandler(async ({ authInfo }) => {
-    const { context, roles } = authInfo!.extra as { context: Context; roles: string[] };
-    return createMcpServer(
-      new McpServer({ name: 'Unchained MCP Server', version: '1.0.0' }),
-      context,
-      roles,
-    );
-  });
+  handler ??= createMcpHandler(
+    async ({ authInfo }) => {
+      const { context, roles } = authInfo!.extra as { context: Context; roles: string[] };
+      return createMcpServer(
+        new McpServer({ name: 'Unchained MCP Server', version: '1.0.0' }),
+        context,
+        roles,
+      );
+    },
+    // The SDK reads the request body itself; tool calls may carry media as base64
+    { maxRequestBodySize: 10 * 1024 * 1024 },
+  );
   return handler;
 };
 
@@ -61,11 +65,32 @@ const configuredHostname = () => {
 const allowedHostnames = () => [...new Set([...localhostAllowedHostnames(), configuredHostname()])];
 const allowedOrigins = () => [...new Set([...localhostAllowedOrigins(), configuredHostname()])];
 
+/**
+ * The Origin check of the chat, which calls MCP with the cookie of the admin: browsers send the
+ * cookie along with requests of any page, so an Origin has to be the API's own host, localhost or
+ * the ROOT_URL host (any port, like the check below) or one of the given origins. Requests without
+ * one come from other clients.
+ */
+export const isAllowedBrowserOrigin = (request: Request, pageOrigins: string[] = []) => {
+  const origin = request.headers.get('origin');
+  if (!origin) return true;
+  try {
+    const { hostname, origin: pageOrigin } = new URL(origin);
+    return (
+      pageOrigins.includes(pageOrigin) ||
+      ['localhost', '127.0.0.1', '[::1]', configuredHostname(), new URL(request.url).hostname].includes(
+        hostname,
+      )
+    );
+  } catch {
+    return false; // "null", the Origin of sandboxed documents and redirects across sites
+  }
+};
+
 // All security decisions happen here, before any SDK code runs.
 export default async function handleMcpHttpRequest(
   context: Context | undefined,
   request: Request,
-  parsedBody?: unknown,
 ): Promise<Response> {
   const user = context?.user;
   if (!user) {
@@ -119,6 +144,5 @@ export default async function handleMcpHttpRequest(
       scopes: roles,
       extra: { context, roles },
     },
-    parsedBody,
   });
 }

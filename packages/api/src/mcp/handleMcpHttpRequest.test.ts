@@ -26,9 +26,8 @@ before(async () => {
   server = http.createServer(async (req, res) => {
     const chunks: Buffer[] = [];
     for await (const chunk of req) chunks.push(chunk as Buffer); // drain like a body parser
-    const parsedBody = chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf8')) : undefined;
-    const bodyText = parsedBody !== undefined ? JSON.stringify(parsedBody) : undefined;
-    const response = await handleMcpHttpRequest(context, toWebRequest(req, res, bodyText), parsedBody);
+    const body = chunks.length ? Buffer.concat(chunks).toString('utf8') : undefined;
+    const response = await handleMcpHttpRequest(context, toWebRequest(req, res, { body }));
     await sendWebResponse(res, response);
   });
   server.listen(0, '127.0.0.1');
@@ -74,7 +73,6 @@ describe('handleMcpHttpRequest over a real socket', () => {
         },
         body: JSON.stringify(body),
       }),
-      body,
     );
     assert.strictEqual(response.status, 403);
   });
@@ -93,7 +91,6 @@ describe('handleMcpHttpRequest over a real socket', () => {
         },
         body: JSON.stringify(body),
       }),
-      body,
     );
     assert.strictEqual(response.status, 403);
   });

@@ -24,7 +24,7 @@ describe('toWebRequest', () => {
   it('maps method, url, headers and a pre-serialized body', async () => {
     let captured: Request;
     const base = await listen(async (req, res) => {
-      captured = toWebRequest(req, res, JSON.stringify({ hello: 'world' }));
+      captured = toWebRequest(req, res, { body: JSON.stringify({ hello: 'world' }) });
       res.end();
     });
     await fetch(`${base}/mcp?foo=bar`, {
@@ -49,7 +49,7 @@ describe('toWebRequest', () => {
     let captured: Request;
     const base = await listen(async (req, res) => {
       for await (const chunk of req) void chunk; // drain, like express.json / fastify do
-      captured = toWebRequest(req, res, '{}');
+      captured = toWebRequest(req, res, { body: '{}' });
       await sleep(100); // give a wrongly-keyed 'close' abort time to fire
       assert.strictEqual(captured.signal.aborted, false);
       res.end('ok');
@@ -67,7 +67,7 @@ describe('toWebRequest', () => {
     });
     const base = await listen(async (req, res) => {
       for await (const chunk of req) void chunk;
-      captured = toWebRequest(req, res, '{}');
+      captured = toWebRequest(req, res, { body: '{}' });
       release();
       // keep the response open so the client can abort mid-flight
       await sleep(1_000);
@@ -92,11 +92,60 @@ describe('toWebRequest', () => {
     let captured: Request;
     const base = await listen((req, res) => {
       req.headers.host = 'a b'; // Node's parser delivers these; new URL() would throw
-      captured = toWebRequest(req, res, undefined);
+      captured = toWebRequest(req, res);
       res.end();
     });
     await fetch(base);
     assert.strictEqual(new URL(captured!.url).host, 'localhost');
+  });
+
+  it('takes protocol and path from the server and skips HTTP/2 pseudo-headers', async () => {
+    let captured: Request;
+    const base = await listen((req, res) => {
+      // What Node's HTTP/2 compatibility API delivers next to the regular header fields
+      Object.assign(req.headers, { ':method': 'GET', ':path': '/', ':authority': 'shop.test' });
+      delete req.headers.host;
+      captured = toWebRequest(req, res, { protocol: 'https', path: '/gridfs/media/logo.png?s=1' });
+      res.end();
+    });
+    await fetch(`${base}/`);
+    assert.strictEqual(captured!.url, 'https://shop.test/gridfs/media/logo.png?s=1');
+    assert.ok([...captured!.headers.keys()].every((name) => !name.startsWith(':')));
+  });
+
+  it('passes a parsed object on as JSON and never gives GET a body', async () => {
+    const captured: Request[] = [];
+    const base = await listen((req, res) => {
+      captured.push(toWebRequest(req, res, { body: { logout_token: 'abc' } }));
+      res.end();
+    });
+    await fetch(base, {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: 'logout_token=abc',
+    });
+    await fetch(base, { method: 'GET' });
+    assert.strictEqual(captured[0].headers.get('content-type'), 'application/json');
+    assert.deepStrictEqual(await captured[0].json(), { logout_token: 'abc' });
+    assert.strictEqual(captured[1].body, null);
+  });
+
+  it('streams the request body on demand and leaves an unread body to others', async () => {
+    let streamed = '';
+    let unread = '';
+    const base = await listen(async (req, res) => {
+      const request = toWebRequest(req, res);
+      if (req.url === '/stream') {
+        streamed = await request.text();
+      } else {
+        for await (const chunk of req) unread += chunk; // e.g. the next route's body parser
+      }
+      res.end();
+    });
+    await fetch(`${base}/stream`, { method: 'POST', body: 'raw bytes as sent' });
+    await fetch(`${base}/other`, { method: 'POST', body: 'still readable' });
+    assert.strictEqual(streamed, 'raw bytes as sent');
+    assert.strictEqual(unread, 'still readable');
   });
 });
 
@@ -113,6 +162,22 @@ describe('sendWebResponse', () => {
     assert.strictEqual(response.headers.get('x-one'), '1');
     assert.deepStrictEqual(response.headers.getSetCookie(), ['a=1; Path=/', 'b=2; Path=/']);
     assert.strictEqual(await response.text(), '"ok"');
+  });
+
+  it('sends any async iterable body, like the ponyfill responses of GraphQL Yoga', async () => {
+    const base = await listen(async (req, res) => {
+      const ponyfillLike = {
+        status: 200,
+        headers: new Headers({ 'content-type': 'text/plain' }),
+        body: (async function* () {
+          yield new TextEncoder().encode('from an ');
+          yield new TextEncoder().encode('iterable');
+        })(),
+      } as unknown as Response;
+      await sendWebResponse(res, ponyfillLike);
+    });
+    const response = await fetch(base);
+    assert.strictEqual(await response.text(), 'from an iterable');
   });
 
   it('streams SSE chunks progressively instead of buffering the whole body', async () => {

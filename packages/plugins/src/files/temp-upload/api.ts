@@ -1,24 +1,14 @@
 import { createLogger } from '@unchainedshop/logger';
-import { type UnchainedCore, getFileAdapter } from '@unchainedshop/core';
-import type { RolesInterface } from '@unchainedshop/roles';
+import { getFileAdapter, type PluginHttpRequestContext } from '@unchainedshop/core';
 
 const logger = createLogger('unchained:temp-upload');
 
 export async function tempUploadHandler(
   request: Request,
-  context: UnchainedCore & {
-    params: Record<string, string>;
-    roles?: RolesInterface;
-    userId?: string;
-    user?: any;
-  },
+  context: PluginHttpRequestContext,
 ): Promise<Response> {
   try {
-    const hasPermission = await context.roles?.userHasPermission(
-      context as { userId?: string; user?: any },
-      'uploadTempFile',
-      [],
-    );
+    const hasPermission = await context.roles?.userHasPermission(context, 'uploadTempFile', []);
     if (!hasPermission) {
       return Response.json(
         { error: 'Permission denied', message: 'User does not have uploadTempFile permission' },

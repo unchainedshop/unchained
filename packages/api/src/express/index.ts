@@ -1,34 +1,12 @@
-import e from 'express';
-import cookieParser from 'cookie-parser';
+import type { Express, Request, RequestHandler, Response } from 'express';
 import type { YogaServerInstance } from 'graphql-yoga';
-import type { UnchainedCore } from '@unchainedshop/core';
-import { pluginRegistry } from '@unchainedshop/core';
-import { createHash } from 'node:crypto';
+import type { Context } from '../context.ts';
+import { createEndpoints, type ConnectOptions } from '../http/createEndpoints.ts';
+import { withAuditContext } from '../http/createRequestContext.ts';
+import { getNodeHeader, sendWebResponse, toWebRequest } from '../http/nodeHttpBridge.ts';
 
-import { runWithAuditContext } from '@unchainedshop/events';
-import type { AuthContextParams } from '../middleware/createAuthMiddleware.ts';
-import type { AuthConfig } from '../auth.ts';
-import createMCPMiddleware from './createMCPMiddleware.ts';
-import type { ChatConfiguration } from '../chat/utils.ts';
-import { connectChat } from './chatHandler.ts';
-import { mountRoutes } from './mountRoutes.ts';
-import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
-import {
-  preparePluginAssets,
-  prepareAdminUIHTML,
-  resolveAdminUIHTML,
-  injectAdminUIImportMap,
-  buildImportMapTag,
-  resolveAdminUIPath,
-  type AdminUIPluginConfig,
-  type AdminUIThemeConfig,
-} from '../adminUiPlugins.ts';
-import {
-  createRequestContext,
-  headerValue,
-  resolveRemoteAddress,
-} from '../http/createRequestContext.ts';
-
+export type { ConnectOptions } from '../http/createEndpoints.ts';
+export type { AdminUIOptions } from '../http/createAdminUIHandler.ts';
 export type {
   AdminUIPluginConfig,
   AdminUIPluginEntityConfig,
@@ -40,252 +18,76 @@ export type {
   AdminUIThemeConfig,
 } from '../adminUiPlugins.ts';
 
-export interface AdminUIRouterOptions {
-  prefix?: string;
-  enabled?: boolean;
-  theme?: AdminUIThemeConfig;
-  plugins?: AdminUIPluginConfig[];
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Express {
+    interface Request {
+      /** The engine's request context: its endpoints and the app's routes after connect() get it */
+      unchainedContext?: Context;
+    }
+  }
 }
 
-export const adminUIRouter = (
-  enabled = true,
-  theme?: AdminUIThemeConfig,
-  plugins: AdminUIPluginConfig[] = [],
+// The full URL, also when the app is mounted below a path, and a body an app-wide parser read
+const webRequest = (req: Request, res: Response) =>
+  toWebRequest(req, res, { protocol: req.protocol, path: req.originalUrl, body: req.body });
+
+/**
+ * Serves the engine's endpoints as routes of an Express app, after the middleware and routes the
+ * app added before. The routes the app adds after connect() get the request context as
+ * `req.unchainedContext`.
+ */
+export const connect = async (
+  app: Express,
+  platform: { graphqlHandler: YogaServerInstance<any, any> },
+  options: ConnectOptions = {},
 ) => {
-  const router = e.Router();
+  const {
+    graphqlHandler: yoga,
+    routes,
+    serveAdminUI,
+    createContext,
+    corsHeaders,
+  } = createEndpoints(platform, options);
 
-  const adminUIPath = resolveAdminUIPath();
-  if (!adminUIPath) return router;
-
-  if (enabled) {
-    // generateThemeCSS without a theme yields the same default, so the optional
-    // @unchainedshop/admin-ui dependency is only resolved when a theme is set.
-    // Resolution happens lazily on first request so this router stays synchronous.
-    // We resolve the specifier at runtime via import.meta.resolve so the engine
-    // builds and boots without admin-ui being compiled first (it ships its own
-    // build artefacts) — keeping this a runtime-only, optional dependency.
-    let themePromise: Promise<{ css: string; etag: string }> | undefined;
-    const resolveThemeCSS = async () => {
-      let css = '/* default theme */';
-      if (theme) {
-        try {
-          const themeModuleUrl = import.meta.resolve('@unchainedshop/admin-ui/theme');
-          const { generateThemeCSS } = await import(themeModuleUrl);
-          css = generateThemeCSS(theme);
-        } catch {
-          console.warn(
-            "npm dependency @unchainedshop/admin-ui is not installed, can't apply admin-ui theme",
-          );
-        }
-      }
-      const etag = `"${createHash('sha256').update(css).digest('hex').slice(0, 8)}"`;
-      return { css, etag };
-    };
-    router.get('/admin-ui-theme.css', async (req, res) => {
-      const { css, etag } = await (themePromise ||= resolveThemeCSS());
-      if (req.headers['if-none-match'] === etag) {
-        return res.status(304).end();
-      }
-      res
-        .set('Cache-Control', 'public, max-age=0, must-revalidate')
-        .set('ETag', etag)
-        .type('text/css')
-        .send(css);
-    });
-
-    const log = { info: console.info, warn: console.warn };
-    const devMode = process.env.NODE_ENV !== 'production';
-    const {
-      routes: pluginRoutes,
-      importMapTag,
-      importMapJSON,
-    } = preparePluginAssets(plugins, log, { devMode });
-
-    for (const [path, asset] of pluginRoutes) {
-      router.get(path, (req, res) => {
-        if (asset.etag) {
-          if (req.headers['if-none-match'] === asset.etag) {
-            return res.status(304).end();
-          }
-          res.set('ETag', asset.etag);
-        }
-        const body = typeof asset.content === 'function' ? asset.content() : asset.content;
-        res
-          .set('Cache-Control', asset.cacheControl)
-          .set('X-Content-Type-Options', 'nosniff')
-          .set('Access-Control-Allow-Origin', '*')
-          .type(asset.contentType)
-          .send(body);
-      });
-    }
-
-    // With an import map to inject, index.html must not be served directly by
-    // the static handler so that / falls through to the injecting catch-all.
-    router.use(e.static(adminUIPath, importMapTag ? { index: false } : undefined));
-
-    // The admin-ui is a Next.js static export. Serve exact pre-rendered pages
-    // first, use the dedicated catch-all for /ext/*, and fall back to root for
-    // unknown application routes.
-    if (importMapJSON) {
-      const preparedHTML = prepareAdminUIHTML(adminUIPath);
-
-      router.get(/(.*)/, (req, res) => {
-        if (devMode) res.set('Cache-Control', 'no-cache');
-
-        // CSP nonce convention (Express/helmet): a middleware upstream sets
-        // res.locals.cspNonce (see helmet's CSP nonce docs) and references it
-        // as `'nonce-...'` in script-src. When present, the injected import
-        // map tag carries it; without it, strict CSPs will block the tag.
-        const nonce = (res as any).locals?.cspNonce as string | undefined;
-        const tag = nonce ? buildImportMapTag(importMapJSON, nonce) : importMapTag!;
-        return res.type('text/html').send(injectAdminUIImportMap(preparedHTML, req.path, tag));
-      });
-    } else {
-      const preparedHTML = prepareAdminUIHTML(adminUIPath);
-
-      router.get(/(.*)/, (req, res) => {
-        return res.type('text/html').send(resolveAdminUIHTML(preparedHTML, req.path));
-      });
-    }
-  }
-
-  return router;
-};
-
-const { MCP_API_PATH = '/mcp' } = process.env;
-
-const createAddContextMiddleware = (authConfig?: AuthConfig, trustProxy = false) =>
-  async function middlewareWithContext(req: e.Request, res: e.Response, next: e.NextFunction) {
-    try {
-      const setHeader = (key: string, value: string) => res.setHeader(key, value);
-      const getHeader = (key: string) => headerValue(req.headers, key);
-      const getCookie = (name: string) => (req as any).cookies?.[name];
-      const setCookie = (name: string, value: string, options: any) => res.cookie(name, value, options);
-      const clearCookie = (name: string, options: any) =>
-        res.clearCookie(name, { ...options, maxAge: 0 });
-      const { remoteAddress, remotePort } = resolveRemoteAddress(req, trustProxy);
-
-      const authContextParams: AuthContextParams = {
-        setHeader,
+  // The rest of the request runs as the user of its context
+  const withContext: RequestHandler = async (req, res, next) => {
+    const getHeader = (name: string) => getNodeHeader(req, name);
+    if (corsHeaders) res.set(corsHeaders(getHeader));
+    const context = await createContext(
+      {
         getHeader,
-        getCookie,
-        setCookie,
-        clearCookie,
-        remoteAddress,
-        remotePort,
-      };
-
-      const { context, auditContext } = await createRequestContext(
-        authContextParams,
-        authConfig,
-        req,
-        res,
-      );
-      (req as any).unchainedContext = context;
-      (req as any)._auditContext = auditContext;
-
-      next();
-    } catch (error) {
-      next(error);
-    }
+        setHeader: (name, value) => res.setHeader(name, value),
+        appendHeader: (name, value) => res.append(name, value),
+        remoteAddress: req.socket.remoteAddress,
+        remotePort: req.socket.remotePort,
+      },
+      req,
+      res,
+    );
+    req.unchainedContext = context;
+    withAuditContext(context, next);
   };
 
-export const connect = async (
-  expressApp: e.Express,
-  {
-    graphqlHandler,
-    unchainedAPI,
-  }: {
-    graphqlHandler: YogaServerInstance<any, any>;
-    unchainedAPI: UnchainedCore;
-  },
-  {
-    allowRemoteToLocalhostSecureCookies = false,
-    adminUI = false,
-    chat,
-    authConfig,
-    trustProxy = false,
-  }: {
-    allowRemoteToLocalhostSecureCookies?: boolean;
-    adminUI?: boolean | Omit<AdminUIRouterOptions, 'enabled'>;
-    chat?: ChatConfiguration;
-    authConfig?: AuthConfig;
-    /** SECURITY: Enable this ONLY if behind a properly configured reverse proxy
-     * that strips/validates x-forwarded-for and x-real-ip headers from untrusted sources */
-    trustProxy?: boolean;
-  } = {},
-) => {
-  const adminUIOptions = typeof adminUI === 'object' ? adminUI : undefined;
-  const adminUITheme = adminUIOptions?.theme;
-  const adminUIPlugins: AdminUIPluginConfig[] = adminUIOptions?.plugins || [];
-  if (allowRemoteToLocalhostSecureCookies) {
-    // SECURITY: This mode is for development only - block in production
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error(
-        'allowRemoteToLocalhostSecureCookies is not allowed in production. ' +
-          'Configure a proper CORS policy with specific allowed origins instead.',
-      );
-    }
+  // GraphQL Yoga's Express integration: Yoga reads the body unless an app-wide parser did
+  app.all(yoga.graphqlEndpoint, withContext, (req, res) => yoga(req, res));
 
-    // Workaround: Allow to use sandbox with localhost (development only)
-    expressApp.set('trust proxy', 1);
-    expressApp.use((req, res, next) => {
-      req.headers['x-forwarded-proto'] = 'https';
-      res.setHeader('Access-Control-Allow-Private-Network', 'true');
-      res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
-      res.setHeader(
-        'Access-Control-Allow-Methods',
-        ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'].join(', '),
-      );
-      res.setHeader(
-        'Access-Control-Allow-Headers',
-        req.headers['access-control-request-headers'] || '*',
-      );
-      next();
+  for (const { path, methods, handler } of routes) {
+    const answer: RequestHandler = async (req, res) => {
+      const params = req.params as Record<string, string>;
+      await sendWebResponse(res, await handler(webRequest(req, res), req.unchainedContext!, params));
+    };
+    for (const method of methods) app[method.toLowerCase() as 'get'](path, withContext, answer);
+  }
+
+  if (serveAdminUI) {
+    app.get('/{*path}', async (req, res, next) => {
+      // CSP nonce convention of helmet: an earlier middleware sets res.locals.cspNonce
+      const response = await serveAdminUI(webRequest(req, res), res.locals.cspNonce);
+      if (response) await sendWebResponse(res, response);
+      else next();
     });
   }
 
-  // Use cookie-parser for JWT cookie handling
-  expressApp.use(cookieParser());
-
-  // Add auth context middleware
-  // Note: allowRemoteToLocalhostSecureCookies implies trustProxy for dev convenience
-  expressApp.use(
-    createAddContextMiddleware(authConfig, trustProxy || allowRemoteToLocalhostSecureCookies),
-  );
-
-  // GraphQL endpoint — wrapped with audit context so all events emitted
-  // during resolver execution carry the authenticated user's identity
-  expressApp.use(graphqlHandler.graphqlEndpoint, (req, res) => {
-    const auditCtx = (req as any)._auditContext;
-    if (auditCtx) {
-      return runWithAuditContext(auditCtx, () => graphqlHandler.handle(req, res));
-    }
-    return graphqlHandler.handle(req, res);
-  });
-
-  // MCP endpoint (remains framework-specific due to SDK requirements)
-  expressApp.use(MCP_API_PATH, e.json({ limit: '10mb' }));
-  expressApp.use(MCP_API_PATH, createMCPMiddleware);
-
-  if (chat) {
-    connectChat(expressApp, chat);
-  }
-
-  // Collect all routes: plugin routes + backchannel logout (if OIDC configured)
-  const routes = pluginRegistry.getRoutes();
-
-  if (authConfig?.oidcProviders?.length) {
-    routes.push(createBackchannelLogoutRoute(authConfig.oidcProviders));
-  }
-
-  // Mount all routes uniformly
-  mountRoutes(expressApp, unchainedAPI, routes);
-
-  if (adminUI) {
-    expressApp.use(adminUIOptions?.prefix || '/', adminUIRouter(true, adminUITheme, adminUIPlugins));
-  }
+  app.use(withContext);
 };
-
-export { connectChat };

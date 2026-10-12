@@ -2,38 +2,49 @@ import type { UnchainedCore } from '../core-index.ts';
 import { createLogger } from '@unchainedshop/logger';
 import type { IBaseAdapter } from '@unchainedshop/utils';
 import type { mongodb } from '@unchainedshop/mongodb';
+import type { User } from '@unchainedshop/core-users';
+import type { RolesInterface } from '@unchainedshop/roles';
 
 const logger = createLogger('unchained:core');
 
 /**
- * Transport-neutral request context available to every plugin HTTP route.
- *
- * Domain capabilities come from UnchainedCore. Request metadata is deliberately
- * expressed without Express/Fastify types so route handlers remain portable.
+ * The HTTP request being served, independent of the server framework: GraphQL resolvers,
+ * MCP tools and plugin routes all get it as part of their context.
  */
-export type PluginHttpRequestContext = UnchainedCore & {
-  /** URL path parameters extracted from the route pattern */
-  params: Record<string, string>;
+export interface UnchainedRequestContext {
   /** Read a request header by its case-insensitive name */
   getHeader: (name: string) => string | undefined;
   /** Set a response header */
   setHeader: (name: string, value: string) => void;
+  remoteAddress?: string;
+  remotePort?: number;
   locale: Intl.Locale;
   countryCode: string;
   currencyCode: string;
-  remoteAddress?: string;
-  remotePort?: number;
-  /** Authenticated user ID if present */
+  /** Authenticated user if present */
   userId?: string;
+  user?: User;
   /** Impersonator user ID if present */
   impersonatorId?: string;
-};
+  /** Checks actions of the user: `roles.userHasPermission(context, action, [obj, params])` */
+  roles?: RolesInterface;
+}
+
+/** The context of a plugin HTTP route: the core modules and services plus the request */
+export type PluginHttpRequestContext = UnchainedCore &
+  UnchainedRequestContext & {
+    /** URL path parameters extracted from the route pattern */
+    params: Record<string, string>;
+  };
 
 export interface PluginHttpRoute {
-  /** Route path (e.g., /payment/webhook or /files/:directoryName/:fileName) */
+  /**
+   * Route path of literal segments and `:name` parameters
+   * (e.g., /payment/webhook or /files/:directoryName/:fileName)
+   */
   path: string;
 
-  /** HTTP method(s) to match */
+  /** HTTP method(s) to match, GET routes answer HEAD requests as well */
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'ALL';
 
   /**

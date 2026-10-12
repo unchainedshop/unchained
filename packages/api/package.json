@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/api",
-  "description": "GraphQL API layer for the Unchained Engine with Express/Fastify adapters and MCP server",
+  "description": "GraphQL API layer for the Unchained Engine with a fetch handler, Express/Fastify/Node adapters and MCP server",
   "mcpName": "io.github.unchainedshop/unchained",
   "version": "5.0.0-alpha.11",
   "files": [
@@ -23,6 +23,14 @@
     "./express": {
       "import": "./lib/express/index.js",
       "types": "./lib/express/index.d.ts"
+    },
+    "./node": {
+      "import": "./lib/node/index.js",
+      "types": "./lib/node/index.d.ts"
+    },
+    "./fetch": {
+      "import": "./lib/http/createFetchHandler.js",
+      "types": "./lib/http/createFetchHandler.d.ts"
     },
     "./lib/*": {
       "import": "./lib/*",
@@ -66,12 +74,9 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "peerDependencies": {
     "@ai-sdk/mcp": "^2.0.29",
-    "@fastify/cookie": ">= 11 < 12",
-    "@fastify/static": ">= 10.1.3 < 11",
     "@modelcontextprotocol/server": ">= 2 < 3",
     "@unchainedshop/admin-ui": "^5.0.0-alpha.11",
     "ai": ">= 7 < 8",
-    "cookie-parser": ">= 1.4 < 2",
     "express": ">= 5 < 6",
     "fastify": ">= 5.2 < 6",
     "graphql": ">= 16.14 < 18",
@@ -82,9 +87,6 @@
       "optional": false
     },
     "graphql-yoga": {
-      "optional": false
-    },
-    "cookie-parser": {
       "optional": false
     },
     "@modelcontextprotocol/server": {
@@ -100,12 +102,6 @@
       "optional": true
     },
     "fastify": {
-      "optional": true
-    },
-    "@fastify/cookie": {
-      "optional": true
-    },
-    "@fastify/static": {
       "optional": true
     },
     "express": {
@@ -144,14 +140,10 @@
   },
   "devDependencies": {
     "@ai-sdk/mcp": "^2.0.34",
-    "@fastify/cookie": "^11.0.2",
-    "@fastify/static": "^10.1.3",
     "@modelcontextprotocol/server": "^2.0.0",
-    "@types/cookie-parser": "^1.4.8",
     "@types/express": "^5.0.3",
     "@types/node": "^26.2.0",
     "ai": "^7.0.73",
-    "cookie-parser": "^1.4.7",
     "express": "^5.1.0",
     "fastify": "^5.4.0",
     "graphql": "^17.0.2",

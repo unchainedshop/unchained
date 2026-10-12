@@ -30,7 +30,6 @@
     "build": ""
   },
   "dependencies": {
-    "@fastify/cookie": "^11.0.2",
     "@unchainedshop/api": "^5.0.0-alpha.11",
     "@unchainedshop/platform": "^5.0.0-alpha.11",
     "@unchainedshop/plugins": "^5.0.0-alpha.11",

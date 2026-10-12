@@ -112,7 +112,7 @@ If a value in `.env` seems to have no effect, check whether your shell exports t
 
 #### `The decorator 'serializeCookie' has already been added!`
 
-Up to v5.0.0-alpha.11, `connect()` and `@fastify/oauth2` (or any plugin that brings its own `@fastify/cookie`) both registered the cookie plugin, and Fastify refused to start. Upgrade, or `await fastify.register(fastifyCookie)` yourself before registering `@fastify/oauth2` and calling `connect()`; both skip their own registration when the cookie plugin is already loaded.
+Up to v5.0.0-alpha.11, `connect()` and `@fastify/oauth2` (or any plugin that brings its own `@fastify/cookie`) both registered the cookie plugin, and Fastify refused to start. Since then `connect()` no longer registers it: upgrade, and register `@fastify/cookie` only once yourself if your own routes need cookies.
 
 #### Missing Environment Variables
 

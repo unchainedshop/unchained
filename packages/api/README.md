@@ -39,7 +39,29 @@ await connect(fastify, { graphqlHandler, unchainedAPI: unchainedCore });
 await fastify.listen({ port: 4010 });
 ```
 
-`connect()` mounts the GraphQL endpoint, `/mcp`, and routes supplied by registered plugins. Admin UI hosting requires the optional `@unchainedshop/admin-ui` package; Fastify also needs `@fastify/static`. Configure a prefix with `{ adminUI: { prefix: '/admin' } }` in the third argument to `connect()`.
+`connect()` serves the GraphQL endpoint, `/mcp`, the routes supplied by registered plugins and, with `adminUI`, the Admin UI (requires the optional `@unchainedshop/admin-ui` package). Configure a prefix with `{ adminUI: { prefix: '/admin' } }` in the third argument to `connect()`. The routes of your app get the request context as `req.unchainedContext`.
+
+## Without a framework
+
+The endpoints are WHATWG handlers, which the Express and Fastify adapters mount as routes of your app. Serve them from a plain Node.js server with `@unchainedshop/api/node`, or from any runtime that speaks `Request` / `Response`:
+
+```typescript
+import { createServer } from 'node:http';
+import { connect } from '@unchainedshop/api/node';
+
+const server = createServer();
+await connect(server, { graphqlHandler }, { adminUI: true });
+server.listen(4010);
+```
+
+```typescript
+import { createFetchHandler } from '@unchainedshop/api/fetch';
+
+const handler = createFetchHandler({ graphqlHandler }, { adminUI: true });
+Bun.serve({
+  fetch: async (request) => (await handler(request)) ?? new Response('Not Found', { status: 404 }),
+});
+```
 
 ## API overview
 
@@ -55,7 +77,7 @@ await fastify.listen({ port: 4010 });
 | `acl` | Access control utilities |
 | `roles` | Role configuration and permission actions (`roles.actions`) |
 
-The HTTP subpaths export `connect`, `adminUIRouter`, `connectChat`, and Admin UI configuration types. The main package exports domain-specific errors such as `ProductNotFoundError`, `OrderNotFoundError`, `UserNotFoundError`, `NoPermissionError`, and `InvalidIdError`.
+The HTTP subpaths `/express`, `/fastify` and `/node` export `connect` and the Admin UI configuration types, `/fetch` exports `createFetchHandler`. The main package exports domain-specific errors such as `ProductNotFoundError`, `OrderNotFoundError`, `UserNotFoundError`, `NoPermissionError`, and `InvalidIdError`.
 
 ## Extending the server
 
@@ -90,7 +112,7 @@ MCP support is an optional peer dependency:
 npm install @modelcontextprotocol/server
 ```
 
-Without it, the engine boots and `/mcp` responds with `503`. Chat handlers configured through `connect(..., { chat })` additionally need `ai` and `@ai-sdk/mcp`, as well as `@modelcontextprotocol/server`: chat obtains tools through the engine's own MCP endpoint.
+Without it, the engine boots and `/mcp` responds with `503`. Chat handlers configured through `connect(..., { chat })` additionally need `ai` and `@ai-sdk/mcp`, as well as `@modelcontextprotocol/server`: chat obtains tools through the engine's own MCP endpoint. Chat answers browser pages of the API's own host, `localhost` and the `ROOT_URL` host only (`chat.allowedOrigins` adds an Admin UI served from elsewhere) and takes JSON bodies of up to 10 MB.
 
 ## Authentication and cookies
 

@@ -34,7 +34,6 @@
     "test-mcp-oauth": "node --no-warnings --env-file=.env.defaults --env-file-if-exists=.env test-mcp-oauth.ts"
   },
   "dependencies": {
-    "@fastify/cookie": "^11.0.2",
     "@fastify/oauth2": "^8.1.2",
     "@modelcontextprotocol/server": "^2.0.0",
     "@unchainedshop/admin-ui": "^5.0.0-alpha.11",

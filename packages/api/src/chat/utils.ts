@@ -1,5 +1,4 @@
 import type * as aiTypes from 'ai';
-import type { ServerResponse } from 'node:http';
 import { createLogger } from '@unchainedshop/logger';
 import { isPeerNotInstalledError } from '../utils/optionalPeerError.ts';
 
@@ -31,6 +30,11 @@ export type StreamTextParams = Parameters<typeof aiTypes.streamText>[0];
 export type ChatConfiguration = Omit<StreamTextParams, 'messages'> & {
   unchainedMCPUrl?: string;
   imageGenerationTool?: { model: aiTypes.ImageModel; uploadUrl?: string };
+  /**
+   * Origins of pages that may use the chat besides the API's own host, localhost and the ROOT_URL
+   * host, e.g. of an Admin UI served from a CDN: ['https://admin.example.com']
+   */
+  allowedOrigins?: string[];
 };
 
 export const errorHandler = (error: any): string => {
@@ -45,24 +49,19 @@ export const errorHandler = (error: any): string => {
 export const chatErrorStatus = (error: unknown): number =>
   (error as { statusCode?: number })?.statusCode === 503 ? 503 : 500;
 
-// Owns the lifetime shared by a chat HTTP response, its model stream, and its MCP client.
-// ServerResponse.close distinguishes an abandoned response via writableFinished, just like
-// the MCP Node bridge. A configured caller signal participates in the same cancellation path.
-export const createChatRequestLifecycle = (response: ServerResponse, configuredSignal?: AbortSignal) => {
-  const disconnectController = new AbortController();
-  const signal = configuredSignal
-    ? AbortSignal.any([configuredSignal, disconnectController.signal])
-    : disconnectController.signal;
+// Owns the lifetime shared by a chat request, its model stream, and its MCP client. The request
+// signal aborts when the client disconnects before the response finished; a configured caller
+// signal participates in the same cancellation path.
+export const createChatRequestLifecycle = (
+  requestSignal: AbortSignal,
+  configuredSignal?: AbortSignal,
+) => {
+  const signal = configuredSignal ? AbortSignal.any([configuredSignal, requestSignal]) : requestSignal;
   let clientClose: (() => Promise<void>) | undefined;
   let closing: Promise<void> | undefined;
 
-  const detach = () => {
-    response.off('close', abortOnDisconnect);
-    signal.removeEventListener('abort', closeAfterAbort);
-  };
-
   const close = async () => {
-    detach();
+    signal.removeEventListener('abort', closeAfterAbort);
     if (!clientClose) return;
     closing ??= clientClose();
     await closing;
@@ -72,13 +71,6 @@ export const createChatRequestLifecycle = (response: ServerResponse, configuredS
     void close().catch((error) => logger.error('Failed to close MCP chat client', error));
   };
 
-  const abortOnDisconnect = () => {
-    if (!response.writableFinished && !disconnectController.signal.aborted) {
-      disconnectController.abort(new Error('Chat HTTP client disconnected'));
-    }
-  };
-
-  response.once('close', abortOnDisconnect);
   signal.addEventListener('abort', closeAfterAbort, { once: true });
   if (signal.aborted) queueMicrotask(closeAfterAbort);
 

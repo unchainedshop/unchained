@@ -13,27 +13,13 @@ const {
   UNCHAINED_COOKIE_DOMAIN,
   UNCHAINED_COOKIE_SAMESITE = 'lax', // OWASP: Changed from 'none' to 'lax' for CSRF protection
   UNCHAINED_COOKIE_INSECURE,
-  UNCHAINED_TOKEN_EXPIRY_SECONDS = '3600', // Match auth.ts default
 } = process.env;
 
 export interface AuthContextParams {
-  getHeader: (key: string) => string | undefined;
-  setHeader: (key: string, value: string) => void;
-  getCookie: (name: string) => string | undefined;
-  setCookie: (name: string, value: string, options: CookieOptions) => void;
-  clearCookie: (name: string, options: CookieOptions) => void;
+  getHeader: (name: string) => string | undefined;
+  /** Adds a response header field, also when one of the same name exists (Set-Cookie) */
+  appendHeader: (name: string, value: string) => void;
   remoteAddress?: string;
-  remotePort?: number;
-}
-
-export interface CookieOptions {
-  domain?: string;
-  path?: string;
-  secure?: boolean;
-  httpOnly?: boolean;
-  sameSite?: 'strict' | 'lax' | 'none' | boolean;
-  maxAge?: number;
-  expires?: Date;
 }
 
 export interface AuthContext {
@@ -45,46 +31,50 @@ export interface AuthContext {
   logout: LogoutFn;
 }
 
-/**
- * Get cookie options for the main JWT token cookie
- */
-function getTokenCookieOptions(expires?: Date): CookieOptions {
-  const secure = !UNCHAINED_COOKIE_INSECURE;
-  const sameSite =
-    (
-      {
-        none: 'none',
-        lax: 'lax',
-        strict: 'strict',
-        '1': true,
-        '0': false,
-      } as Record<string, boolean | 'none' | 'lax' | 'strict'>
-    )[UNCHAINED_COOKIE_SAMESITE?.trim()?.toLowerCase()] ?? 'lax'; // Unknown values default to 'lax'; '0' must stay false
+const secure = !UNCHAINED_COOKIE_INSECURE;
+const sameSite =
+  (
+    {
+      none: 'None',
+      lax: 'Lax',
+      strict: 'Strict',
+      '1': 'Strict',
+      '0': false,
+    } as Record<string, string | false>
+  )[UNCHAINED_COOKIE_SAMESITE.trim().toLowerCase()] ?? 'Lax'; // Unknown values default to Lax; '0' must stay without SameSite
 
-  // Warn if using insecure configuration in production
-  if (!secure && process.env.NODE_ENV === 'production') {
-    logger.warn(
-      'SECURITY WARNING: Running with UNCHAINED_COOKIE_INSECURE in production is not recommended',
-    );
-  }
-
-  // Warn if using SameSite=None without Secure
-  if (sameSite === 'none' && !secure) {
-    logger.warn('SECURITY WARNING: SameSite=None requires Secure flag to be effective');
-  }
-
-  const expirySeconds = parseInt(UNCHAINED_TOKEN_EXPIRY_SECONDS, 10);
-
-  return {
-    domain: UNCHAINED_COOKIE_DOMAIN,
-    path: UNCHAINED_COOKIE_PATH,
-    secure,
-    httpOnly: true, // OWASP: Always true to prevent XSS access
-    sameSite: sameSite as boolean | 'none' | 'lax' | 'strict',
-    maxAge: expires ? undefined : expirySeconds * 1000,
-    expires,
-  };
+if (!secure && process.env.NODE_ENV === 'production') {
+  logger.warn(
+    'SECURITY WARNING: Running with UNCHAINED_COOKIE_INSECURE in production is not recommended',
+  );
 }
+if (sameSite === 'None' && !secure) {
+  logger.warn('SECURITY WARNING: SameSite=None requires Secure flag to be effective');
+}
+
+/** Set-Cookie value of the JWT token cookie, an expiry in the past deletes it */
+const tokenCookie = (token: string, expires: Date) =>
+  [
+    `${UNCHAINED_COOKIE_NAME}=${token}`,
+    `Path=${UNCHAINED_COOKIE_PATH}`,
+    UNCHAINED_COOKIE_DOMAIN && `Domain=${UNCHAINED_COOKIE_DOMAIN}`,
+    `Expires=${expires.toUTCString()}`,
+    'HttpOnly', // OWASP: Always true to prevent XSS access
+    secure && 'Secure',
+    sameSite && `SameSite=${sameSite}`,
+  ]
+    .filter(Boolean)
+    .join('; ');
+
+const readCookie = (cookieHeader: string | undefined, name: string) => {
+  for (const pair of cookieHeader?.split(';') ?? []) {
+    const separator = pair.indexOf('=');
+    if (separator > 0 && pair.slice(0, separator).trim() === name) {
+      return pair.slice(separator + 1).trim();
+    }
+  }
+  return undefined;
+};
 
 /**
  * Extract Bearer token from Authorization header
@@ -114,12 +104,12 @@ export async function createAuthContext(
   params: AuthContextParams,
   authConfig?: AuthConfig,
 ): Promise<AuthContext> {
-  const { getHeader, getCookie, setCookie, clearCookie } = params;
+  const { getHeader, appendHeader } = params;
 
   // Extract token from Authorization header (Bearer scheme only) or cookie
   const authHeader = getHeader('authorization');
   const headerToken = extractBearerToken(authHeader);
-  const cookieToken = getCookie(UNCHAINED_COOKIE_NAME);
+  const cookieToken = readCookie(getHeader('cookie'), UNCHAINED_COOKIE_NAME);
   const token = headerToken || cookieToken;
 
   // Create auth handler with configured providers
@@ -140,7 +130,7 @@ export async function createAuthContext(
     });
 
     // Set JWT cookie
-    setCookie(UNCHAINED_COOKIE_NAME, newToken, getTokenCookieOptions(expires));
+    appendHeader('set-cookie', tokenCookie(newToken, expires));
 
     const tokenObject = {
       _id: crypto.randomUUID(), // Session ID equivalent
@@ -161,7 +151,7 @@ export async function createAuthContext(
   // cryptographically valid until expiration. For immediate revocation of all
   // tokens, use the logoutAllSessions mutation which increments tokenVersion.
   const logout: LogoutFn = async () => {
-    clearCookie(UNCHAINED_COOKIE_NAME, getTokenCookieOptions());
+    appendHeader('set-cookie', tokenCookie('', new Date(0)));
 
     if (authResult.userId) {
       const tokenObject = {

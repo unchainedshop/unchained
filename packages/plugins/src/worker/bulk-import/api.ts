@@ -1,6 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
 import type { PluginHttpRequestContext } from '@unchainedshop/core';
-import type { RolesInterface } from '@unchainedshop/roles';
 import { Readable } from 'node:stream';
 
 const logger = createLogger('unchained:bulk-import');
@@ -10,15 +9,7 @@ export async function bulkImportHandler(
   context: PluginHttpRequestContext,
 ): Promise<Response> {
   try {
-    const authentication = context as PluginHttpRequestContext & {
-      roles?: RolesInterface;
-      user?: any;
-    };
-    const hasPermission = await authentication.roles?.userHasPermission(
-      authentication,
-      'bulkImport',
-      [],
-    );
+    const hasPermission = await context.roles?.userHasPermission(context, 'bulkImport', []);
     if (!hasPermission) {
       return Response.json(
         { error: 'Permission denied', message: 'User does not have bulkImport permission' },

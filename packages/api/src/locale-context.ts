@@ -1,15 +1,13 @@
 import { resolveBestSupported, resolveBestCurrency, memoizeWithTTL } from '@unchainedshop/utils';
-import type { UnchainedCore } from '@unchainedshop/core';
+import type { UnchainedCore, UnchainedRequestContext } from '@unchainedshop/core';
 import type { UnchainedHTTPServerContext } from './context.ts';
 import { createLogger } from '@unchainedshop/logger';
 const logger = createLogger('unchained:api');
 
-export interface UnchainedLocaleContext {
-  countryCode: string;
-  locale: Intl.Locale;
-  currencyCode: string;
-}
-export type GetHeaderFn = (key: string) => string | string[];
+export type UnchainedLocaleContext = Pick<
+  UnchainedRequestContext,
+  'countryCode' | 'locale' | 'currencyCode'
+>;
 
 const uncachedResolveDefaultContext = async (
   { acceptLang, acceptCountry },
