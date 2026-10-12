@@ -102,6 +102,21 @@ describe('handleMcpHttpRequest over a real socket', () => {
     assert.strictEqual(message.result.tools.length, 9);
   });
 
+  it('lists tool schemas the OpenAI provider of the AI SDK accepts', async () => {
+    // @ai-sdk/openai refuses propertyNames that are not a string schema, which fails every
+    // chat request; z.record(z.any(), ...) produces `propertyNames: {}`
+    const message = await parseMcpResponse(await post({ jsonrpc: '2.0', id: 4, method: 'tools/list' }));
+    const invalid: string[] = [];
+    const walk = (node: unknown, path: string) => {
+      if (!node || typeof node !== 'object') return;
+      const { propertyNames } = node as { propertyNames?: { type?: string } };
+      if (propertyNames !== undefined && propertyNames?.type !== 'string') invalid.push(path);
+      for (const [key, value] of Object.entries(node)) walk(value, `${path}.${key}`);
+    };
+    for (const tool of message.result.tools) walk(tool.inputSchema, tool.name);
+    assert.deepStrictEqual(invalid, []);
+  });
+
   it('serves a modern-era (2026-07-28) tools/list — pre-drained body must not abort it', async () => {
     // Regression: the modern era checks the request signal before dispatch; an abort
     // signal wired to the request stream's 'close' turned every modern request into

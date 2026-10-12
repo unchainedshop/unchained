@@ -117,6 +117,7 @@
 - **Plugin route errors no longer leak details:** an exception in a plugin route answered `500` with the exception message; it now answers `{ "error": "Internal Server Error" }` and logs the error with its stack.
 - **MCP over HTTP/2:** with Fastify and `http2: true`, every MCP request answered `500` (the HTTP/2 pseudo-headers were copied into the web request).
 - **`HEAD` with Fastify:** `HEAD /graphql` answered `500`: the HEAD route Fastify derives from a GET route cannot send a web `Response`. The engine's routes answer HEAD themselves.
+- **Admin Copilot with OpenAI models:** the MCP tools `product_management`, `assortment_management`, `provider_management` and `quotation_management` described their free-form maps with `propertyNames: {}`, which `@ai-sdk/openai` rejects, so every chat request failed with "JSON Schema propertyNames that does not use a string schema". The maps now have string keys.
 
 
 ## v5.0.0-alpha.11 (2026-09-23)

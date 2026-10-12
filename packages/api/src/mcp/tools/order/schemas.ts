@@ -130,11 +130,11 @@ export const actionValidators = {
         })
         .min(1, 'orderId cannot be empty'),
       paymentContext: z
-        .record(z.any(), z.any())
+        .record(z.string(), z.any())
         .optional()
         .describe('Optional JSON context related to payment (e.g., transaction details).'),
       deliveryContext: z
-        .record(z.any(), z.any())
+        .record(z.string(), z.any())
         .optional()
         .describe('Optional JSON context related to delivery (e.g., shipping info).'),
       comment: z
@@ -157,11 +157,11 @@ export const actionValidators = {
         .min(1, 'orderId cannot be empty')
         .describe('The unique identifier of the order to reject.'),
       paymentContext: z
-        .record(z.any(), z.any())
+        .record(z.string(), z.any())
         .optional()
         .describe('Optional JSON context related to payment, e.g., transaction adjustments.'),
       deliveryContext: z
-        .record(z.any(), z.any())
+        .record(z.string(), z.any())
         .optional()
         .describe('Optional JSON context related to delivery, e.g., shipment adjustments.'),
       comment: z

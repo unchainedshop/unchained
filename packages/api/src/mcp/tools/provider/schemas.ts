@@ -18,7 +18,7 @@ export const ConfigurationEntry = z
       .min(1)
       .describe('Configuration parameter name (e.g., "apiKey", "webhookUrl", "sandbox")'),
     value: z
-      .union([z.string(), z.number(), z.boolean(), z.record(z.any(), z.any())])
+      .union([z.string(), z.number(), z.boolean(), z.record(z.string(), z.any())])
       .describe(
         'Configuration parameter value (string, number, boolean, or object depending on the setting)',
       ),
