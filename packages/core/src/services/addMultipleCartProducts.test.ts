@@ -5,7 +5,7 @@ import type { Modules } from '../modules.ts';
 import { addMultipleCartProductsService } from './addMultipleCartProducts.ts';
 
 describe('addMultipleCartProductsService', () => {
-  it('checks every item before adding any', async () => {
+  it('adds nothing when a product does not exist', async () => {
     const addProductItem = mock.fn();
     const modules = {
       orders: { positions: { addProductItem } },

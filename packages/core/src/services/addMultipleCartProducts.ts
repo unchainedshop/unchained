@@ -36,15 +36,12 @@ export async function addMultipleCartProductsService(
   unchainedAPI: Record<string, any> = {},
 ): Promise<OrderPosition[]> {
   const cartProducts = await resolveCartProducts(this, items);
-  for (const { product, quantity, configuration } of cartProducts) {
+  const positions: OrderPosition[] = [];
+  for (const { originalProductId, product, quantity, configuration } of cartProducts) {
     await ordersSettings.validateOrderPosition(
       { order, product, configuration, quantityDiff: quantity },
       { ...unchainedAPI, modules: this },
     );
-  }
-
-  const positions: OrderPosition[] = [];
-  for (const { originalProductId, product, quantity, configuration } of cartProducts) {
     positions.push(
       await this.orders.positions.addProductItem({
         orderId: order._id,

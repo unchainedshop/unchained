@@ -39,7 +39,7 @@
   - `context.getHeader()` returns `string | undefined`, `GetHeaderFn` is removed.
   - Deep imports below `@unchainedshop/api/lib/` moved: the adapters, `auth` and `adminUiPlugins` to `lib/http/`, `acl` to `lib/roles/`. The entry points are unchanged.
 - **Cart providers are validated:** `updateCart` rejects a payment or delivery provider that does not exist (`PaymentProviderNotFoundError` / `DeliverProviderNotFoundError`) instead of setting it, and all cart provider mutations reject a provider the cart does not support (`OrderPaymentTypeError` / `OrderDeliveryTypeError`).
-- **`services.orders.addMultipleCartProducts({ order, items }, unchainedAPI)`** takes the cart instead of `orderId`, checks every item before adding any and returns the added positions; `addCartProduct` uses it.
+- **`services.orders.addMultipleCartProducts({ order, items }, unchainedAPI)`** takes the cart instead of `orderId`, checks that every product exists before adding any and returns the added positions; `addCartProduct` uses it.
 
 ### Improvements
 
