@@ -18,7 +18,8 @@
     "./files/*": "./lib/files/*/index.js",
     "./pricing/tax/*": "./lib/pricing/tax/*.js",
     "./pricing/*": "./lib/pricing/*/index.js",
-    "./worker/*": "./lib/worker/*/index.js"
+    "./worker/*": "./lib/worker/*/index.js",
+    "./acp": "./lib/acp/index.js"
   },
   "type": "module",
   "scripts": {

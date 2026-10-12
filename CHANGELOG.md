@@ -72,6 +72,7 @@
 - **Faster Admin UI, every route audited:** Admin UI files skip the request context (70–100% more requests per second) and `_next/static` is cached as immutable. MCP, chat, plugin routes and your own routes run as the user of the request, so their events carry it.
 - **Cart and media services:** `services.orders.selectDeliveryProvider` / `selectPaymentProvider` and `services.files.resolveMediaFiles` hold the logic of the cart provider mutations and the MCP media tools.
 - **`services.users.provisionGuest`** creates a guest with its cart, for `loginAsGuest` and ACP.
+- **Agentic Commerce Protocol:** `ACPPlugin` (in the `all` preset, inactive until `UNCHAINED_ACP_API_KEY` is set) serves ACP `2026-04-17` checkout sessions, a product feed and signed order webhooks and charges Stripe Shared Payment Tokens; `services.orders.replaceCartProducts` sets the products of a cart.
 
 ### Fixed
 

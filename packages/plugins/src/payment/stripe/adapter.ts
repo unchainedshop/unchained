@@ -1,5 +1,11 @@
 import { createLogger } from '@unchainedshop/logger';
-import { stripe, createOrderPaymentIntent, createRegistrationIntent } from './stripe.ts';
+import {
+  stripe,
+  createOrderPaymentIntent,
+  createRegistrationIntent,
+  createAcpSharedPaymentTokenIntent,
+  ACP_SPT_STRIPE_VERSION,
+} from './stripe.ts';
 import {
   OrderPricingSheet,
   type IPaymentAdapter,
@@ -103,21 +109,55 @@ export const Stripe: IPaymentAdapter = {
         return paymentIntent.client_secret;
       },
 
-      charge: async ({ paymentIntentId, paymentCredentials }) => {
-        if (!paymentIntentId && !paymentCredentials) {
-          throw new Error('You have to provide paymentIntentId or paymentCredentials');
-        }
-
+      charge: async ({ paymentIntentId, paymentCredentials, acpToken, acpHandlerId }) => {
         const { order, orderPayment } = context;
 
         if (!order) throw new Error('order not found in context');
         if (!orderPayment) throw new Error('orderPayment not found in context');
 
-        const { userId, name, email } = await assertUserData(order?.userId);
         const pricing = OrderPricingSheet({
           calculation: order.calculation,
           currencyCode: order.currencyCode,
         });
+
+        if (acpToken) {
+          const paymentIntentObject = await createAcpSharedPaymentTokenIntent({
+            acpToken,
+            order,
+            orderPayment,
+            pricing,
+            descriptorPrefix,
+          });
+
+          if (paymentIntentObject.status === 'succeeded') {
+            return {
+              transactionId: paymentIntentObject.id,
+              status: paymentIntentObject.status,
+              paymentMethod: paymentIntentObject.payment_method,
+              acp: {
+                handlerId: acpHandlerId,
+                chargeId:
+                  typeof paymentIntentObject.latest_charge === 'string'
+                    ? paymentIntentObject.latest_charge
+                    : (paymentIntentObject.latest_charge?.id ?? null),
+                stripeApiVersion: ACP_SPT_STRIPE_VERSION,
+                capturedAt: new Date().toISOString(),
+              },
+            };
+          }
+
+          logger.info('ACP SPT charge postponed because paymentIntent has wrong status', {
+            paymentIntentId: paymentIntentObject.id,
+          });
+
+          return false;
+        }
+
+        if (!paymentIntentId && !paymentCredentials) {
+          throw new Error('You have to provide paymentIntentId or paymentCredentials');
+        }
+
+        const { userId, name, email } = await assertUserData(order?.userId);
 
         const paymentIntentObject = paymentIntentId
           ? await stripe.paymentIntents.retrieve(paymentIntentId)
