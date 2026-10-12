@@ -151,7 +151,7 @@ fastify.route({
 });
 ```
 
-Your routes get the request context as `req.unchainedContext` (Express: routes added after `connect()`) or `request.unchainedContext` (Fastify, skipped with `config: { unchainedContext: false }`). The engine's endpoints are routes of your app too: Express middleware added before `connect()` and Fastify hooks, including those of `@fastify/rate-limit`, apply to them.
+Your routes get the request context as `req.unchainedContext` (Express: routes added after `connect()`) or `request.unchainedContext` (Fastify, skipped with `config: { unchainedContext: false }`). The engine's endpoints are routes of your app too: Express middleware added before `connect()` and Fastify hooks, including those of `@fastify/rate-limit`, apply to them. Add Express body parsers after `connect()`, or keep `req.rawBody` (`express.json({ verify })`), so webhooks get the body as sent.
 
 ## Admin UI
 

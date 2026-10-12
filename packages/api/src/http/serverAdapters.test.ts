@@ -96,6 +96,18 @@ const traceStatus = (base: string, path: string) =>
       .end();
   });
 
+// A request context that cannot be created (database down) answers without details
+const assertGenericErrors = async (base: string) => {
+  for (const path of ['/echo', '/app-route']) {
+    const response = await fetch(`${base}${path}`, {
+      method: path === '/echo' ? 'POST' : 'GET',
+      headers: { 'x-test-fail': '1' },
+    });
+    assert.equal(response.status, 500, path);
+    assert.deepEqual(await response.json(), { error: 'Internal Server Error' }, path);
+  }
+};
+
 const servers: http.Server[] = [];
 const fastifyApps: FastifyInstance[] = [];
 let contextsCreated = 0;
@@ -128,6 +140,8 @@ describe('server adapters', () => {
     previousResolver = getCurrentContextResolver();
     setCurrentContextResolver(async (params) => {
       contextsCreated += 1;
+      if (params.getHeader('x-test-fail'))
+        throw new Error('connect ECONNREFUSED mongodb://admin:s3cret@db');
       return { ...params, userId: params.getHeader('x-test-user'), loaders: {} } as any;
     });
     restoreRegistry = pluginRegistry.clear();
@@ -209,6 +223,29 @@ describe('server adapters', () => {
       assert.equal(status, 200);
     });
 
+    it('passes the raw body an app keeps beside its body parser', async () => {
+      const base = await expressApp((app) =>
+        app.use(
+          express.json({
+            verify: (req, _res, buf) => {
+              (req as { rawBody?: Buffer }).rawBody = buf;
+            },
+          }),
+        ),
+      );
+      const raw = '{ "id": "evt_1",  "spaced": true }';
+      const response = await fetch(`${base}/echo`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: raw,
+      });
+      assert.equal((await response.json()).text, raw);
+    });
+
+    it('answers a request context that cannot be created with a generic error', async () => {
+      await assertGenericErrors(await expressApp());
+    });
+
     it('answers GraphQL with Yoga, also after an app-wide body parser', async () => {
       await assertGraphQL(await postGraphQL(await expressApp()));
       await assertGraphQL(await postGraphQL(await expressApp((app) => app.use(express.json()))));
@@ -264,6 +301,10 @@ describe('server adapters', () => {
 
     it('answers GraphQL with bodies of the Fastify parsers', async () => {
       await assertGraphQL(await postGraphQL(await fastifyApp()));
+    });
+
+    it('answers a request context that cannot be created with a generic error', async () => {
+      await assertGenericErrors(await fastifyApp());
     });
 
     it('applies the body limit and content types of Fastify to GraphQL', async () => {
@@ -378,6 +419,14 @@ describe('server adapters', () => {
       const response = await fetch(`${base}/info`, { headers: { 'x-test-user': 'u3' } });
       assert.deepEqual(await response.json(), { url: `${base}/info`, userId: 'u3' });
       assert.equal((await fetch(`${base}/unknown`)).status, 404);
+    });
+
+    it('answers a request context that cannot be created with a generic error', async () => {
+      const { server, base } = await listen();
+      await connectNode(server, platform);
+      const response = await fetch(`${base}/echo`, { method: 'POST', headers: { 'x-test-fail': '1' } });
+      assert.equal(response.status, 500);
+      assert.deepEqual(await response.json(), { error: 'Internal Server Error' });
     });
 
     it('answers methods a web request cannot carry with a 404', async () => {

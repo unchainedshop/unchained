@@ -1,9 +1,12 @@
 import type { Express, Request, RequestHandler, Response } from 'express';
 import type { YogaServerInstance } from 'graphql-yoga';
+import { createLogger } from '@unchainedshop/logger';
 import type { Context } from '../context.ts';
-import { createEndpoints, type ConnectOptions } from '../http/createEndpoints.ts';
+import { createEndpoints, internalServerError, type ConnectOptions } from '../http/createEndpoints.ts';
 import { withAuditContext } from '../http/createRequestContext.ts';
 import { getNodeHeader, sendWebResponse, toWebRequest } from '../http/nodeHttpBridge.ts';
+
+const logger = createLogger('unchained:api:express');
 
 export type { ConnectOptions } from '../http/createEndpoints.ts';
 export type { AdminUIOptions } from '../http/createAdminUIHandler.ts';
@@ -27,8 +30,24 @@ declare global {
   }
 }
 
-const webRequest = (req: Request, res: Response) =>
-  toWebRequest(req, res, { protocol: req.protocol, path: req.originalUrl, body: req.body });
+const routesGivenParsedBodies = new Set<string>();
+
+const webRequest = (req: Request, res: Response) => {
+  const { rawBody } = req as { rawBody?: unknown };
+  const route = req.route?.path ?? req.path;
+  if (req.body !== undefined && rawBody === undefined && !routesGivenParsedBodies.has(route)) {
+    routesGivenParsedBodies.add(route);
+    logger.warn(
+      `${req.method} ${route} gets the body of an app-wide body parser re-serialized, so webhook ` +
+        'signatures fail: add body parsers after connect() or keep req.rawBody',
+    );
+  }
+  return toWebRequest(req, res, {
+    protocol: req.protocol,
+    path: req.originalUrl,
+    body: rawBody ?? req.body,
+  });
+};
 
 export const connect = async (
   app: Express,
@@ -46,17 +65,22 @@ export const connect = async (
   const withContext: RequestHandler = async (req, res, next) => {
     const getHeader = (name: string) => getNodeHeader(req, name);
     if (corsHeaders) res.set(corsHeaders(getHeader));
-    req.unchainedContext = await createContext(
-      {
-        getHeader,
-        setHeader: (name, value) => res.setHeader(name, value),
-        appendHeader: (name, value) => res.append(name, value),
-        remoteAddress: req.socket.remoteAddress,
-        remotePort: req.socket.remotePort,
-      },
-      req,
-      res,
-    );
+    try {
+      req.unchainedContext = await createContext(
+        {
+          getHeader,
+          setHeader: (name, value) => res.setHeader(name, value),
+          appendHeader: (name, value) => res.append(name, value),
+          remoteAddress: req.socket.remoteAddress,
+          remotePort: req.socket.remotePort,
+        },
+        req,
+        res,
+      );
+    } catch (error) {
+      await sendWebResponse(res, internalServerError(req.method, req.originalUrl, error));
+      return;
+    }
     withAuditContext(req.unchainedContext, next);
   };
 

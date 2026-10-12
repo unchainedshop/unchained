@@ -109,7 +109,7 @@
 - **`Enrollment.country`** was resolved through the currency loader.
 - **Redis event emitter delivers to every subscriber:** `RedisEventEmitter` only kept the callback of the first `subscribe()` per event, so later subscribers of the same event (for example a second plugin listening to `ORDER_CHECKOUT`) never received it. Each event now reaches all of its subscribers.
 - **Stripe customers and intents:** a failed customer search was swallowed and created another Stripe customer, so every hiccup left a duplicate; the error is now reported. Payment and setup intents take amount, currency, customer, receipt e-mail and the order ids in `metadata` from the order, so values in `transactionContext` can no longer override them (other options and custom metadata keys are still passed to Stripe). The plugin is skipped when the `stripe` package cannot be initialized, instead of failing at the first payment.
-- **Plugin route errors no longer leak details:** they answer a generic `500` and log the stack.
+- **Server errors no longer leak details:** a failing plugin route, or a request context that cannot be created (Fastify sent the error message), answers a generic `500` and logs the stack.
 - **Fastify:** MCP over HTTP/2 and `HEAD /graphql` answered `500`.
 - **Admin Copilot with OpenAI models:** MCP tool schemas used `propertyNames: {}`, which `@ai-sdk/openai` rejects.
 

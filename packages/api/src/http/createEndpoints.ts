@@ -28,8 +28,8 @@ export interface EngineRoute {
 
 export const ALL_METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
 
-export const internalServerError = (request: Request, error: unknown) => {
-  logger.error(`${request.method} ${new URL(request.url).pathname} failed`, {
+export const internalServerError = (method: string, url: string, error: unknown) => {
+  logger.error(`${method} ${URL.parse(url, 'http://localhost')?.pathname ?? url} failed`, {
     error: error instanceof Error ? error.stack : String(error),
   });
   return Response.json({ error: 'Internal Server Error' }, { status: 500 });
@@ -38,7 +38,9 @@ export const internalServerError = (request: Request, error: unknown) => {
 const withInternalServerError = ({ handler, ...route }: EngineRoute): EngineRoute => ({
   ...route,
   handler: (request, context, params) =>
-    handler(request, context, params).catch((error) => internalServerError(request, error)),
+    handler(request, context, params).catch((error) =>
+      internalServerError(request.method, request.url, error),
+    ),
 });
 
 const devCorsHeaders = (getHeader: (name: string) => string | undefined) => ({

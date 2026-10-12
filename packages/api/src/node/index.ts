@@ -1,6 +1,6 @@
 import type { IncomingMessage, Server, ServerResponse } from 'node:http';
 import type { YogaServerInstance } from 'graphql-yoga';
-import { ALL_METHODS, type ConnectOptions } from '../http/createEndpoints.ts';
+import { ALL_METHODS, internalServerError, type ConnectOptions } from '../http/createEndpoints.ts';
 import { createFetchHandler } from '../http/createFetchHandler.ts';
 import { getNodeHeader, sendWebResponse, toWebRequest } from '../http/nodeHttpBridge.ts';
 
@@ -26,8 +26,8 @@ export const connect = async (
   };
 
   server.on('request', async (req, res) => {
-    const response = await answer(req, res).catch(() =>
-      Response.json({ error: 'Internal Server Error' }, { status: 500 }),
+    const response = await answer(req, res).catch((error) =>
+      internalServerError(req.method ?? 'GET', req.url ?? '/', error),
     );
     await sendWebResponse(res, response ?? new Response('Not Found', { status: 404 })).catch(() =>
       res.destroy(),

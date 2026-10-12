@@ -103,7 +103,7 @@ export const createFetchHandler = (
       );
       return withContextHeaders(response, contextHeaders);
     } catch (error) {
-      return internalServerError(request, error);
+      return internalServerError(request.method, request.url, error);
     }
   };
 };

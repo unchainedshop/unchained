@@ -2,7 +2,7 @@ import type { FastifyBaseLogger, FastifyInstance } from 'fastify';
 import type { YogaServerInstance } from 'graphql-yoga';
 import { createLogger } from '@unchainedshop/logger';
 import type { Context } from '../context.ts';
-import { createEndpoints, type ConnectOptions } from '../http/createEndpoints.ts';
+import { createEndpoints, internalServerError, type ConnectOptions } from '../http/createEndpoints.ts';
 import { withAuditContext } from '../http/createRequestContext.ts';
 import { getNodeHeader, toWebRequest } from '../http/nodeHttpBridge.ts';
 
@@ -63,17 +63,21 @@ export const connect = async (
     if (request.is404 || request.routeOptions.config.unchainedContext === false) return;
     const getHeader = (name: string) => getNodeHeader(request.raw, name);
     if (corsHeaders) reply.headers(corsHeaders(getHeader));
-    request.unchainedContext = await createContext(
-      {
-        getHeader,
-        setHeader: (name, value) => reply.header(name, value),
-        appendHeader: (name, value) => reply.header(name, value),
-        remoteAddress: request.socket.remoteAddress,
-        remotePort: request.socket.remotePort,
-      },
-      request,
-      reply,
-    );
+    try {
+      request.unchainedContext = await createContext(
+        {
+          getHeader,
+          setHeader: (name, value) => reply.header(name, value),
+          appendHeader: (name, value) => reply.header(name, value),
+          remoteAddress: request.socket.remoteAddress,
+          remotePort: request.socket.remotePort,
+        },
+        request,
+        reply,
+      );
+    } catch (error) {
+      return reply.send(internalServerError(request.method, request.url, error));
+    }
   });
   fastify.addHook('preHandler', (request, reply, done) => {
     if (request.unchainedContext) withAuditContext(request.unchainedContext, done);
