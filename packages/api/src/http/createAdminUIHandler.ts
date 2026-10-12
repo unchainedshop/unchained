@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { openAsBlob, readFileSync } from 'node:fs';
-import { stat } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
+import { readFile, stat } from 'node:fs/promises';
 import { resolve, sep } from 'node:path';
 import mime from 'mime';
 import { createLogger } from '@unchainedshop/logger';
@@ -32,7 +32,7 @@ const withCharset = (contentType: string) =>
 
 const conditionalResponse = (
   request: Request,
-  body: string | Blob | null,
+  body: BodyInit | null,
   headers: Record<string, string>,
 ) =>
   headers.etag && request.headers.get('if-none-match') === headers.etag
@@ -69,7 +69,7 @@ const serveFile = async (request: Request, root: string, path: string) => {
   const stats = await stat(filePath).catch(() => undefined);
   if (!stats?.isFile()) return undefined;
 
-  return conditionalResponse(request, request.method === 'HEAD' ? null : await openAsBlob(filePath), {
+  return conditionalResponse(request, request.method === 'HEAD' ? null : await readFile(filePath), {
     'cache-control': path.startsWith('/_next/static/') ? IMMUTABLE_CACHE : 'public, max-age=0',
     'content-type': withCharset(mime.getType(filePath) || 'application/octet-stream'),
     etag: `W/"${stats.size.toString(16)}-${Math.floor(stats.mtimeMs).toString(16)}"`,

@@ -1,4 +1,4 @@
-import { readFile } from 'fs/promises';
+import { readFile } from 'node:fs/promises';
 import type { Context } from '../../context.ts';
 import { log } from '@unchainedshop/logger';
 import { getConfiguredTags } from '../../utils/getConfiguredTags.ts';
