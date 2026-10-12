@@ -157,7 +157,8 @@ const discoveredJwksUris = new Map<string, Promise<string>>();
  */
 export function resolveJwksUri(provider: OIDCProviderConfig): Promise<string> {
   if (provider.jwksUri) return Promise.resolve(provider.jwksUri);
-  const issuer = provider.issuer.replace(/\/+$/, '');
+  let issuer = provider.issuer;
+  while (issuer.endsWith('/')) issuer = issuer.slice(0, -1);
   let jwksUri = discoveredJwksUris.get(issuer);
   if (!jwksUri) {
     jwksUri = fetch(`${issuer}/.well-known/openid-configuration`, {

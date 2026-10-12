@@ -11,6 +11,7 @@ import {
   preparePluginAssets,
   resolveAdminUIHTML,
   resolveAdminUIPath,
+  trimTrailingSlashes,
   type AdminUIPluginConfig,
   type AdminUIThemeConfig,
 } from './adminUiPlugins.ts';
@@ -80,7 +81,7 @@ const serveFile = async (request: Request, root: string, path: string) => {
 
 export function createAdminUIHandler({ prefix = '/', theme, plugins = [] }: AdminUIOptions = {}) {
   const devMode = process.env.NODE_ENV !== 'production';
-  const basePath = prefix.replace(/\/+$/, '');
+  const basePath = trimTrailingSlashes(prefix);
   const root = resolveAdminUIPath();
   const {
     routes: assets,
