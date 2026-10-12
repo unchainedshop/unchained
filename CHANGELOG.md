@@ -35,7 +35,7 @@
   - `connect()` no longer registers `cookie-parser` / `@fastify/cookie` and no longer needs `@fastify/static`. Invalid `UNCHAINED_COOKIE_*` settings stop the engine at startup.
   - `adminUIRouter` and `connectChat` are removed, `AdminUIRouterOptions` is now `AdminUIOptions`.
   - Fastify: `bodyLimit` applies to GraphQL only, MCP and chat take up to 10 MB. The Admin UI is a `GET /*` route below its prefix.
-  - The AI chat only answers pages of the API's own host, `localhost` and `ROOT_URL` (more with `chat.allowedOrigins`) and requires JSON.
+  - The AI chat only answers pages of the API's own host, `localhost` and `ROOT_URL` (more with `chat.allowedOrigins`) and requires JSON. It uses the MCP server in-process, `chat.unchainedMCPUrl` is removed.
   - `context.getHeader()` returns `string | undefined`, `GetHeaderFn` is removed.
 
 ### Improvements

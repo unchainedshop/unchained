@@ -4,7 +4,6 @@ import http from 'node:http';
 import { once } from 'node:events';
 import { MockLanguageModelV4 } from 'ai/test';
 import { createChatHandler } from './createChatHandler.ts';
-import handleMcpHttpRequest from '../mcp/handleMcpHttpRequest.ts';
 import { sendWebResponse, toWebRequest } from '../http/nodeHttpBridge.ts';
 import type { Context } from '../context.ts';
 
@@ -40,16 +39,7 @@ const chatServer = async (chatConfiguration: any, context: Context = adminContex
   });
 };
 
-const unavailableMcpServer = () =>
-  listen((_req, res) => {
-    res.writeHead(503, { 'content-type': 'application/json' });
-    res.end(JSON.stringify({ error: 'unavailable' }));
-  });
-
-const availableMcpServer = () =>
-  listen(async (req, res) => {
-    await sendWebResponse(res, await handleMcpHttpRequest(adminContext, toWebRequest(req, res)));
-  });
+const chatConfig = { model: {} } as any;
 
 const slowModel = () => {
   let modelSignal: AbortSignal | undefined;
@@ -140,19 +130,17 @@ const assertDisconnectAbortsGeneration = async (
 };
 
 describe('chat auth gating', () => {
-  // The MCP endpoint is never contacted on rejected requests, so a dead URL suffices.
-  const deadMcpConfig = { model: {}, unchainedMCPUrl: 'http://127.0.0.1:9/mcp' } as any;
   const anonymousContext = {} as unknown as Context;
   const nonAdminContext = { user: { _id: 'shopper', roles: ['consumer'] } } as unknown as Context;
 
   it('rejects anonymous requests with 401', async () => {
-    const chatUrl = await chatServer(deadMcpConfig, anonymousContext);
+    const chatUrl = await chatServer(chatConfig, anonymousContext);
     const response = await fetch(`${chatUrl}/chat/tools`);
     assert.strictEqual(response.status, 401);
   });
 
   it('rejects non-admin requests with 403', async () => {
-    const chatUrl = await chatServer(deadMcpConfig, nonAdminContext);
+    const chatUrl = await chatServer(chatConfig, nonAdminContext);
     const response = await fetch(`${chatUrl}/chat`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -163,14 +151,11 @@ describe('chat auth gating', () => {
 });
 
 describe('chat cross-site protection', () => {
-  // The admin's cookie goes along with requests of any page: the checks run before the MCP
-  // endpoint is contacted, so a dead URL suffices
-  const deadMcpConfig = { model: {}, unchainedMCPUrl: 'http://127.0.0.1:9/mcp' } as any;
   const post = (chatUrl: string, headers: Record<string, string>, body: string) =>
     fetch(`${chatUrl}/chat`, { method: 'POST', headers, body });
 
   it('rejects bodies that are not JSON with 415', async () => {
-    const chatUrl = await chatServer(deadMcpConfig);
+    const chatUrl = await chatServer(chatConfig);
     // text/plain needs no CORS preflight, so a page of any site can send it
     const response = await post(
       chatUrl,
@@ -181,7 +166,7 @@ describe('chat cross-site protection', () => {
   });
 
   it('rejects pages of other sites with 403', async () => {
-    const chatUrl = await chatServer(deadMcpConfig);
+    const chatUrl = await chatServer(chatConfig);
     const response = await post(
       chatUrl,
       { 'content-type': 'application/json', origin: 'https://evil.example' },
@@ -193,7 +178,7 @@ describe('chat cross-site protection', () => {
   });
 
   it('rejects bodies over 10 MB with 413', async () => {
-    const chatUrl = await chatServer(deadMcpConfig);
+    const chatUrl = await chatServer(chatConfig);
     const response = await post(
       chatUrl,
       { 'content-type': 'application/json' },
@@ -203,7 +188,7 @@ describe('chat cross-site protection', () => {
 
     // Without a content-length the bytes are counted while reading
     const chunk = new Uint8Array(6 * 1024 * 1024);
-    const streamed = await createChatHandler(deadMcpConfig)!(
+    const streamed = await createChatHandler(chatConfig)!(
       new Request('http://localhost/chat', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -216,13 +201,7 @@ describe('chat cross-site protection', () => {
   });
 
   it('accepts pages of its own host, localhost and the allowed origins', async () => {
-    const mcpUrl = await availableMcpServer();
-    const chatUrl = await chatServer({
-      model: {},
-      unchainedMCPUrl: `${mcpUrl}/mcp`,
-      // An Admin UI on a CDN
-      allowedOrigins: ['https://admin.example.com/'],
-    });
+    const chatUrl = await chatServer({ model: {}, allowedOrigins: ['https://admin.example.com/'] });
     for (const origin of [chatUrl, 'http://localhost:3000', 'https://admin.example.com']) {
       const response = await fetch(`${chatUrl}/chat/tools`, { headers: { origin } });
       assert.strictEqual(response.status, 200, origin);
@@ -234,21 +213,18 @@ describe('chat cross-site protection', () => {
   });
 });
 
-describe('chat MCP failure handling', () => {
-  it('preserves an MCP 503', async () => {
-    const mcpUrl = await unavailableMcpServer();
-    const chatUrl = await chatServer({ model: {}, unchainedMCPUrl: `${mcpUrl}/mcp` });
-
-    const response = await fetch(`${chatUrl}/chat/tools`);
-    assert.strictEqual(response.status, 503);
+describe('chat MCP', () => {
+  it('uses the tools of the engine MCP server in-process', async () => {
+    const chatUrl = await chatServer(chatConfig);
+    const { tools } = await (await fetch(`${chatUrl}/chat/tools`)).json();
+    assert.ok(tools.some(({ name }: { name: string }) => name === 'product_management'));
   });
 });
 
 describe('chat disconnect handling', () => {
   it('aborts model generation when the HTTP client disconnects', async () => {
-    const mcpUrl = await availableMcpServer();
     const state = slowModel();
-    const chatUrl = await chatServer({ model: state.model, unchainedMCPUrl: `${mcpUrl}/mcp` });
+    const chatUrl = await chatServer({ model: state.model });
     await assertDisconnectAbortsGeneration(chatUrl, state);
   });
 });

@@ -28,7 +28,6 @@ try {
 export type StreamTextParams = Parameters<typeof aiTypes.streamText>[0];
 
 export type ChatConfiguration = Omit<StreamTextParams, 'messages'> & {
-  unchainedMCPUrl?: string;
   imageGenerationTool?: { model: aiTypes.ImageModel; uploadUrl?: string };
   allowedOrigins?: string[];
 };

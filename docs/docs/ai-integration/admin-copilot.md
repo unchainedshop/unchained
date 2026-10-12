@@ -102,7 +102,6 @@ The `chat` object extends the Vercel AI SDK's `streamText` parameters (minus `me
 | `system` | `string` | No | Custom system prompt (a sensible default is built in) |
 | `tools` | `Record<string, Tool>` | No | Additional custom tools beyond MCP tools |
 | `maxRetries` | `number` | No | Retry count on failure (default: `3`) |
-| `unchainedMCPUrl` | `string` | No | MCP server URL, defaults to `${ROOT_URL}/mcp` |
 | `imageGenerationTool` | `{ model, uploadUrl? }` | No | Enable image generation in the Copilot |
 | `allowedOrigins` | `string[]` | No | Further page origins that may use the chat, e.g. an Admin UI on a CDN |
 

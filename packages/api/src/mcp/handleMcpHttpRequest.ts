@@ -12,11 +12,13 @@ let hostHeaderValidationResponse: typeof import('@modelcontextprotocol/server').
 let originValidationResponse: typeof import('@modelcontextprotocol/server').originValidationResponse;
 let localhostAllowedHostnames: typeof import('@modelcontextprotocol/server').localhostAllowedHostnames;
 let localhostAllowedOrigins: typeof import('@modelcontextprotocol/server').localhostAllowedOrigins;
+let InMemoryTransport: typeof import('@modelcontextprotocol/server').InMemoryTransport;
 
 try {
   const mcpSDKServer = await import('@modelcontextprotocol/server');
   createMcpHandler = mcpSDKServer.createMcpHandler;
   McpServer = mcpSDKServer.McpServer;
+  InMemoryTransport = mcpSDKServer.InMemoryTransport;
   hostHeaderValidationResponse = mcpSDKServer.hostHeaderValidationResponse;
   originValidationResponse = mcpSDKServer.originValidationResponse;
   localhostAllowedHostnames = mcpSDKServer.localhostAllowedHostnames;
@@ -35,20 +37,27 @@ try {
 // authenticated context, so there is no session to hijack, nothing to leak between principals,
 // and the endpoint works multi-replica. The handler itself is a singleton; per-request state
 // travels through the pass-through authInfo.
+const createUnchainedMcpServer = (context: Context, roles: string[]) =>
+  createMcpServer(new McpServer({ name: 'Unchained MCP Server', version: '1.0.0' }), context, roles);
+
 let handler: McpHttpHandler | undefined;
 const getHandler = () => {
   handler ??= createMcpHandler(
     async ({ authInfo }) => {
       const { context, roles } = authInfo!.extra as { context: Context; roles: string[] };
-      return createMcpServer(
-        new McpServer({ name: 'Unchained MCP Server', version: '1.0.0' }),
-        context,
-        roles,
-      );
+      return createUnchainedMcpServer(context, roles);
     },
     { maxRequestBodySize: 10 * 1024 * 1024 },
   );
   return handler;
+};
+
+export const isMcpServerAvailable = () => Boolean(McpServer);
+
+export const createInProcessMcpTransport = async (context: Context) => {
+  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+  await createUnchainedMcpServer(context, context.user?.roles ?? []).connect(serverTransport);
+  return clientTransport;
 };
 
 const resourceUrl = () => process.env.ROOT_URL || 'http://localhost:4010';

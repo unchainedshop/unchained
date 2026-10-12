@@ -12,7 +12,11 @@ import {
   logOptionalPeerLoadError,
 } from './utils.ts';
 import { buildChatResourceContext } from '../mcp/resources/localization.ts';
-import { isAllowedBrowserOrigin } from '../mcp/handleMcpHttpRequest.ts';
+import {
+  createInProcessMcpTransport,
+  isAllowedBrowserOrigin,
+  isMcpServerAvailable,
+} from '../mcp/handleMcpHttpRequest.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api:chat');
@@ -21,14 +25,14 @@ const MAX_BODY_SIZE = 10 * 1024 * 1024;
 
 const readBodyWithinLimit = async (request: Request) => {
   if (Number(request.headers.get('content-length')) > MAX_BODY_SIZE) return undefined;
-  const chunks: Uint8Array[] = [];
+  const chunks: Uint8Array<ArrayBuffer>[] = [];
   let size = 0;
   for await (const chunk of request.body ?? []) {
     size += chunk.byteLength;
     if (size > MAX_BODY_SIZE) return undefined;
     chunks.push(chunk);
   }
-  return Buffer.concat(chunks).toString();
+  return new Blob(chunks).text();
 };
 
 const parseMessages = (text: string) => {
@@ -73,9 +77,9 @@ try {
 }
 
 export const createChatHandler = (chatConfiguration: ChatConfiguration) => {
-  if (!createMCPClient || !streamText) {
+  if (!createMCPClient || !streamText || !isMcpServerAvailable()) {
     logger.warn(
-      'Optional dependencies for AI SDK Chat Handler are not installed. Please install @ai-sdk/mcp and ai packages to use this feature.',
+      'Optional dependencies for AI SDK Chat Handler are not installed. Please install ai, @ai-sdk/mcp and @modelcontextprotocol/server to use this feature.',
     );
     return undefined;
   }
@@ -85,7 +89,6 @@ export const createChatHandler = (chatConfiguration: ChatConfiguration) => {
 
   const {
     tools: additionalTools = {},
-    unchainedMCPUrl = `${process.env.ROOT_URL}/mcp`,
     model,
     imageGenerationTool,
     abortSignal: configuredAbortSignal,
@@ -110,8 +113,6 @@ export const createChatHandler = (chatConfiguration: ChatConfiguration) => {
       });
     }
 
-    // Chat proxies the admin-gated /mcp surface: enforce the same auth wall up front
-    // instead of letting the downstream MCP 401 surface as a 500.
     const { user } = context;
     if (!user) {
       return Response.json({ error: 'unauthorized' }, { status: 401 });
@@ -132,17 +133,7 @@ export const createChatHandler = (chatConfiguration: ChatConfiguration) => {
     const lifecycle = createChatRequestLifecycle(request.signal, configuredAbortSignal);
     try {
       const client = await createMCPClient({
-        transport: {
-          type: 'http',
-          url: unchainedMCPUrl,
-          headers: {
-            // Forward both auth mechanisms accepted by /mcp: cookie sessions and bearer tokens
-            Cookie: request.headers.get('cookie') || '',
-            ...(request.headers.has('authorization')
-              ? { Authorization: request.headers.get('authorization')! }
-              : {}),
-          },
-        },
+        transport: await createInProcessMcpTransport(context),
         initializationOptions: { signal: lifecycle.signal },
       });
       lifecycle.setClientClose(() => client.close());

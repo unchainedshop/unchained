@@ -101,7 +101,7 @@ MCP support is an optional peer dependency:
 npm install @modelcontextprotocol/server
 ```
 
-Without it, the engine boots and `/mcp` responds with `503`. Chat handlers configured through `connect(..., { chat })` additionally need `ai` and `@ai-sdk/mcp`, as well as `@modelcontextprotocol/server`: chat obtains tools through the engine's own MCP endpoint. Chat only answers pages of the API's own host, `localhost` and `ROOT_URL` (more with `chat.allowedOrigins`).
+Without it, the engine boots and `/mcp` responds with `503`. Chat handlers configured through `connect(..., { chat })` additionally need `ai` and `@ai-sdk/mcp`, as well as `@modelcontextprotocol/server`: chat uses the engine's MCP server in-process. Chat only answers pages of the API's own host, `localhost` and `ROOT_URL` (more with `chat.allowedOrigins`).
 
 ## Authentication and cookies
 
