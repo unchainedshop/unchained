@@ -38,7 +38,7 @@
   - The AI chat only answers pages of the API's own host, `localhost` and `ROOT_URL` (more with `chat.allowedOrigins`) and requires JSON. It uses the MCP server in-process, `chat.unchainedMCPUrl` is removed.
   - `context.getHeader()` returns `string | undefined`, `GetHeaderFn` is removed.
   - Deep imports below `@unchainedshop/api/lib/` moved: the adapters, `auth` and `adminUiPlugins` to `lib/http/`, `acl` to `lib/roles/`. The entry points are unchanged.
-- **Cart providers are validated:** `updateCart` rejects a payment or delivery provider that does not exist (`PaymentProviderNotFoundError` / `DeliverProviderNotFoundError`) instead of setting it, and all cart provider mutations reject a provider the cart does not support (`OrderPaymentTypeError` / `OrderDeliveryTypeError`).
+- **Cart providers are validated:** all cart provider mutations reject a payment or delivery provider that does not exist with `PaymentProviderNotFoundError` / `DeliverProviderNotFoundError` (`updateCart` used to set it, `updateCartPayment*` / `updateCartDelivery*` answered `OrderPaymentTypeError` / `OrderDeliveryTypeError`) and one the cart does not support with `OrderPaymentTypeError` / `OrderDeliveryTypeError`.
 - **`services.orders.addMultipleCartProducts({ order, items }, unchainedAPI)`** takes the cart instead of `orderId`, checks that every product exists before adding any and returns the added positions; `addCartProduct` uses it.
 
 ### Improvements

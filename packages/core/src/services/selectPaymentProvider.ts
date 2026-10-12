@@ -19,16 +19,16 @@ export async function selectPaymentProviderService(
   },
 ): Promise<Order> {
   const provider = await this.payment.paymentProviders.findProvider({ paymentProviderId });
-  if (expectedType && provider?.type !== expectedType) {
-    throw createServiceError('PaymentProviderTypeError', 'Payment provider has the wrong type', {
-      orderId: order._id,
-      received: provider?.type,
-      required: expectedType,
-    });
-  }
   if (!provider) {
     throw createServiceError('PaymentProviderNotFoundError', 'Payment provider not found', {
       paymentProviderId,
+    });
+  }
+  if (expectedType && provider.type !== expectedType) {
+    throw createServiceError('PaymentProviderTypeError', 'Payment provider has the wrong type', {
+      orderId: order._id,
+      received: provider.type,
+      required: expectedType,
     });
   }
 

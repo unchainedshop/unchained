@@ -19,16 +19,16 @@ export async function selectDeliveryProviderService(
   },
 ): Promise<Order> {
   const provider = await this.delivery.findProvider({ deliveryProviderId });
-  if (expectedType && provider?.type !== expectedType) {
-    throw createServiceError('DeliveryProviderTypeError', 'Delivery provider has the wrong type', {
-      orderId: order._id,
-      received: provider?.type,
-      required: expectedType,
-    });
-  }
   if (!provider) {
     throw createServiceError('DeliveryProviderNotFoundError', 'Delivery provider not found', {
       deliveryProviderId,
+    });
+  }
+  if (expectedType && provider.type !== expectedType) {
+    throw createServiceError('DeliveryProviderTypeError', 'Delivery provider has the wrong type', {
+      orderId: order._id,
+      received: provider.type,
+      required: expectedType,
     });
   }
 

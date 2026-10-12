@@ -222,7 +222,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
       assert.strictEqual(errors[0].extensions?.required, 'SHIPPING');
     });
 
-    test('should throw OrderDeliveryTypeError when given non-existing delivery provider ID', async () => {
+    test('should throw DeliverProviderNotFoundError when given non-existing delivery provider ID', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation UpdateCartDeliveryShipping(
@@ -256,7 +256,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
       });
 
       assert.ok(errors);
-      assert.strictEqual(errors[0].extensions?.code, 'OrderDeliveryTypeError');
+      assert.strictEqual(errors[0].extensions?.code, 'DeliverProviderNotFoundError');
     });
 
     test('should throw OrderWrongStatusError if order is not on cart status', async () => {
@@ -483,7 +483,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
       assert.strictEqual(errors[0].extensions?.required, 'PICKUP');
     });
 
-    test('should throw OrderDeliveryTypeError when non-existing delivery provider ID is passed', async () => {
+    test('should throw DeliverProviderNotFoundError when non-existing delivery provider ID is passed', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation UpdateCartDeliveryPickUp(
@@ -527,7 +527,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
       });
 
       assert.ok(errors);
-      assert.strictEqual(errors[0].extensions?.code, 'OrderDeliveryTypeError');
+      assert.strictEqual(errors[0].extensions?.code, 'DeliverProviderNotFoundError');
     });
 
     test('should throw OrderWrongStatusError if order is not on cart status', async () => {
@@ -779,7 +779,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
       assert.strictEqual(errors[0].extensions?.code, 'OrderNotFoundError');
     });
 
-    test('should throw OrderPaymentTypeError non-existing payment provider ID is given', async () => {
+    test('should throw PaymentProviderNotFoundError non-existing payment provider ID is given', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation UpdateCartPaymentInvoice($orderId: ID, $paymentProviderId: ID!, $meta: JSON) {
@@ -809,7 +809,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
         },
       });
 
-      assert.strictEqual(errors[0].extensions?.code, 'OrderPaymentTypeError');
+      assert.strictEqual(errors[0].extensions?.code, 'PaymentProviderNotFoundError');
     });
   });
 
@@ -933,7 +933,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
       assert.strictEqual(errors[0].extensions?.required, 'GENERIC');
     });
 
-    test('should throw OrderPaymentTypeError non-existing payment provider ID is given', async () => {
+    test('should throw PaymentProviderNotFoundError non-existing payment provider ID is given', async () => {
       const { errors } = await graphqlFetchAsAdmin({
         query: /* GraphQL */ `
           mutation UpdateCartPaymentGeneric($orderId: ID, $paymentProviderId: ID!, $meta: JSON) {
@@ -963,7 +963,7 @@ test.describe('Cart: Delivery and Payment Updates', () => {
         },
       });
       assert.ok(errors);
-      assert.strictEqual(errors[0].extensions?.code, 'OrderPaymentTypeError');
+      assert.strictEqual(errors[0].extensions?.code, 'PaymentProviderNotFoundError');
     });
   });
 
