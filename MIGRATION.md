@@ -485,7 +485,7 @@ const platform = await startPlatform(
 await connect(fastify, platform, { adminUI: { plugins: [ticketingAdminPlugin()] } });
 ```
 
-Do not pass `ticketingModules` any more; the plugin provides the `passes` module. `UNCHAINED_SECRET` is still required; without it the engine does not start (`TICKETING_SECRET_MISSING`). The ticketing route paths are read when `createTicketingPlugin()` is called, and a missing `@parse/node-apn` is reported when the first Apple pass update is pushed instead of at startup.
+Do not pass `ticketingModules` any more; the plugin provides the `passes` module. `UNCHAINED_SECRET` is still required; without it the engine does not start (`TICKETING_SECRET_MISSING`). The ticketing route paths are read when `createTicketingPlugin()` is called. Uninstall `@parse/node-apn`: the plugin pushes pass updates without it.
 
 **2. Custom GraphQL schema.** A `schema` passed to `startPlatform` makes the server ignore `typeDefs` and `resolvers`, so the ticketing API would silently be missing. Add `ticketingTypeDefs` and `ticketingResolvers` to your own schema, and build it after `startPlatform` from `Object.keys(roles.actions)` (the `RoleAction` enum needs `scanTicket`, `gateControl` and `cancelTicket`, or `User.allowedActions` fails for admins and staff); see [Custom GraphQL schema](https://docs.unchained.shop/guides/ticketing-setup#custom-graphql-schema). A list of `actions` you copied from `roles.actions` at import time does not contain them.
 

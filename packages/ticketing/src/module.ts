@@ -102,7 +102,19 @@ const configurePasses = async ({ db, options }: ModuleInput<TicketingOptions>) =
       try {
         const pushTokens = registrations.map(({ pushToken }) => pushToken);
         logger.info(`Send update pass notification to ${pushTokens.join(',')}`);
-        await pushToApplePushNotificationService(pushTokens);
+        const inactivePushTokens = await pushToApplePushNotificationService(
+          pushTokens,
+          pass.passTypeIdentifier,
+        );
+        if (inactivePushTokens.length) {
+          await MediaObjects.updateMany(
+            {
+              path: APPLE_WALLET_PASSES_FILE_DIRECTORY,
+              'meta.registrations.pushToken': { $in: inactivePushTokens },
+            },
+            { $pull: { 'meta.registrations': { pushToken: { $in: inactivePushTokens } } } },
+          );
+        }
       } catch (e) {
         logger.error(e);
       }

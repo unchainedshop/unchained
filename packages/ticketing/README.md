@@ -11,8 +11,6 @@ Guides: [Event Ticketing](https://docs.unchained.shop/guides/ticketing-setup) an
 
 ```bash
 npm install @unchainedshop/ticketing
-# Optional: pushes updated Apple Wallet passes to the devices that saved them
-npm install @parse/node-apn
 ```
 
 `UNCHAINED_SECRET` must be set: it derives the magic keys of orders.
@@ -98,7 +96,7 @@ Then create one `VIRTUAL` warehousing provider with the adapter key `shop.unchai
 | `UNCHAINED_PDF_PRINT_HANDLER_PATH` | Tickets PDF route, default `/rest/print_tickets` |
 | `GOOGLE_WALLET_WEBSERVICE_PATH` | Google Wallet route, default `/rest/google-wallet` |
 | `APPLE_WALLET_WEBSERVICE_PATH` | Apple Wallet download and PassKit web service, default `/rest/apple-wallet` |
-| `PASS_CERTIFICATE_PATH`, `PASS_CERTIFICATE_SECRET` | Apple pass certificate and key (PEM) and passphrase, for push updates with `@parse/node-apn` |
+| `PASS_CERTIFICATE_PATH`, `PASS_CERTIFICATE_SECRET` | Apple pass certificate and key (PEM) and passphrase, for push updates |
 | `DISCOUNT_CODE_SECRET` | 32 bytes as hex, signs reimbursement codes |
 
 ## License

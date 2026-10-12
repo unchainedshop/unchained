@@ -20,8 +20,6 @@ The package draws nothing itself: the PDF and the wallet passes come from render
 
 ```bash
 npm install @unchainedshop/ticketing
-# Optional: pushes updated Apple Wallet passes to the devices that saved them
-npm install @parse/node-apn
 ```
 
 The Admin UI plugin needs `@unchainedshop/admin-ui` (an optional peer). The HTTP routes are served by `connect()` of `@unchainedshop/api/express` or `@unchainedshop/api/fastify`; nothing framework-specific is imported from the ticketing package.

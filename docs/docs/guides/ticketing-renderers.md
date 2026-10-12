@@ -20,8 +20,6 @@ This guide builds all three step by step. The code is complete: copy it into you
 ```bash
 npm install @react-pdf/renderer react qrcode passkit-generator googleapis
 npm install --save-dev @types/qrcode @types/react
-# Pushes updated Apple passes to the devices that saved them
-npm install @parse/node-apn
 ```
 
 :::caution `@walletpass/pass-js`
@@ -469,7 +467,7 @@ The plugin stores every rendered pass as a file and implements Apple's PassKit w
 2. When a ticket is redeemed (`scanTicket`) or cancelled (`cancelTicket`, `cancelEvent`), the plugin renders its stored pass again, now with `voided: true`, and pushes a notification through APNs to the registered devices.
 3. The device then downloads the new version from the web service.
 
-For step 2, install `@parse/node-apn` and set `PASS_CERTIFICATE_PATH` / `PASS_CERTIFICATE_SECRET` as above. Without them the pass is re-rendered but devices only see the change when they refresh the pass themselves. `ROOT_URL` must be the public `https://` URL of the engine, and `APPLE_WALLET_WEBSERVICE_PATH` must not change once passes are out: saved passes keep the URL they were issued with.
+For step 2, set `PASS_CERTIFICATE_PATH` / `PASS_CERTIFICATE_SECRET` as above. Without them the pass is re-rendered but devices only see the change when they refresh the pass themselves. `ROOT_URL` must be the public `https://` URL of the engine, and `APPLE_WALLET_WEBSERVICE_PATH` must not change once passes are out: saved passes keep the URL they were issued with.
 
 Changing an event's details (`updateTicketEvent`) or transferring a ticket to someone else does not re-render saved passes; the new version is rendered when the pass is downloaded again.
 
