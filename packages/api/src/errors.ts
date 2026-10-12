@@ -12,6 +12,13 @@ export const createError = (code: string, message: string): any =>
     }
   };
 
+export const rethrowAs =
+  (apiErrors: Record<string, new (details?: Record<string, unknown>) => Error>) =>
+  (error: Error & { details?: Record<string, unknown> }): never => {
+    const APIError = apiErrors[error.name];
+    throw APIError ? new APIError(error.details) : error;
+  };
+
 export const PermissionSystemError = createError('PermissionSystemError', 'Permission System Error');
 export const NoPermissionError = createError('NoPermissionError', 'Not authorized');
 export const ProductNotFoundError = createError('ProductNotFoundError', 'Product not found');
@@ -369,3 +376,22 @@ export const DuplicateFilterKeyError = createError(
   'DuplicateFilterKeyError',
   'Key already registered for another filter',
 );
+
+export const rethrowCartProductError = rethrowAs({
+  ProductNotFoundError,
+  InvalidQuantityError: OrderQuantityTooLowError,
+});
+
+export const rethrowDeliveryProviderError = rethrowAs({
+  DeliveryProviderNotFoundError: DeliverProviderNotFoundError,
+  DeliveryProviderTypeError: OrderDeliveryTypeError,
+  DeliveryProviderNotSupportedError: OrderDeliveryTypeError,
+  OrderDeliveryNotFoundError,
+});
+
+export const rethrowPaymentProviderError = rethrowAs({
+  PaymentProviderNotFoundError,
+  PaymentProviderTypeError: OrderPaymentTypeError,
+  PaymentProviderNotSupportedError: OrderPaymentTypeError,
+  OrderPaymentNotFoundError,
+});

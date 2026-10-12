@@ -6,8 +6,8 @@ import {
   InvalidIdError,
   OrderWrongStatusError,
   OrderNotFoundError,
+  rethrowCartProductError,
 } from '../../../errors.ts';
-import { rethrowCartProductError } from './mapOrderServiceError.ts';
 
 export default async function addCartProduct(
   root: never,

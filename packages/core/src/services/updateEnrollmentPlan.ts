@@ -21,6 +21,7 @@ export async function updateEnrollmentPlanService(
     throw createServiceError(
       'EnrollmentPlanChangeNotSupportedError',
       'Plan change is not supported for this enrollment',
+      { enrollmentId: enrollment._id },
     );
   }
 

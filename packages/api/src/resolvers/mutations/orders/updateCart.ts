@@ -1,7 +1,12 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import { InvalidIdError, OrderNotFoundError, OrderWrongStatusError } from '../../../errors.ts';
-import { rethrowDeliveryProviderError, rethrowPaymentProviderError } from './mapOrderServiceError.ts';
+import {
+  InvalidIdError,
+  OrderNotFoundError,
+  OrderWrongStatusError,
+  rethrowDeliveryProviderError,
+  rethrowPaymentProviderError,
+} from '../../../errors.ts';
 import type { Order } from '@unchainedshop/core-orders';
 
 interface UpdateCartParams {

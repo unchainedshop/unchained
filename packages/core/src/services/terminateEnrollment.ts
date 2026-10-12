@@ -25,6 +25,7 @@ export async function terminateEnrollmentService(
     throw createServiceError(
       'EnrollmentTerminationNotAllowedError',
       'Enrollment termination is not allowed at this time',
+      { enrollmentId: enrollment._id },
     );
   }
 

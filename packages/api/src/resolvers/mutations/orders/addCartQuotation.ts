@@ -12,6 +12,7 @@ import {
   QuotationItemConfigurationError,
   QuotationInvalidError,
   OrderItemNotFoundError,
+  rethrowAs,
 } from '../../../errors.ts';
 
 export default async function addCartQuotation(
@@ -54,28 +55,17 @@ export default async function addCartQuotation(
   if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
 
   // Ownership of cart and quotation is checked by the addCartQuotation ACL
-  let position;
-  try {
-    position = await services.orders.addCartQuotation(
-      { order, quotation, quantity, configuration },
-      context,
+  const position = await services.orders
+    .addCartQuotation({ order, quotation, quantity, configuration }, context)
+    .catch(
+      rethrowAs({
+        QuotationWrongStatusError,
+        QuotationInvalidError,
+        ProductNotFoundError,
+        QuotationItemConfigurationError,
+        OrderItemNotFoundError,
+      }),
     );
-  } catch (error) {
-    switch (error.name) {
-      case 'QuotationWrongStatusError':
-        throw new QuotationWrongStatusError({ status: quotation.status });
-      case 'QuotationInvalidError':
-        throw new QuotationInvalidError({ quotationId, orderId: order._id });
-      case 'ProductNotFoundError':
-        throw new ProductNotFoundError({ productId: quotation.productId });
-      case 'QuotationItemConfigurationError':
-        throw new QuotationItemConfigurationError({ configuration });
-      case 'OrderItemNotFoundError':
-        throw new OrderItemNotFoundError({});
-      default:
-        throw error;
-    }
-  }
 
   await services.orders.updateCalculation(order._id);
   return modules.orders.positions.findOrderPosition({ itemId: position._id });

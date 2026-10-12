@@ -5,8 +5,8 @@ import {
   OrderQuantityTooLowError,
   OrderWrongStatusError,
   OrderNotFoundError,
+  rethrowCartProductError,
 } from '../../../errors.ts';
-import { rethrowCartProductError } from './mapOrderServiceError.ts';
 
 export default async function addMultipleCartProducts(
   root: never,

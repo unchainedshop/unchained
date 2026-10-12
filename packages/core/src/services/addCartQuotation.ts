@@ -31,6 +31,7 @@ export async function addCartQuotationService(
     throw createServiceError(
       'QuotationWrongStatusError',
       `Quotation ${quotation._id} is ${quotation.status}, not PROPOSED`,
+      { status: quotation.status },
     );
   }
   // The quoted price only applies in the quotation's currency
@@ -38,6 +39,7 @@ export async function addCartQuotationService(
     throw createServiceError(
       'QuotationInvalidError',
       `Quotation ${quotation._id} is not in the currency of order ${order._id}`,
+      { quotationId: quotation._id, orderId: order._id },
     );
   }
 
@@ -46,12 +48,15 @@ export async function addCartQuotationService(
     throw createServiceError(
       'QuotationInvalidError',
       `Quotation ${quotation._id} is reserved by another order`,
+      { quotationId: quotation._id, orderId: order._id },
     );
   }
 
   const product = await this.products.findProduct({ productId: quotation.productId });
   if (!product) {
-    throw createServiceError('ProductNotFoundError', `Product not found: ${quotation.productId}`);
+    throw createServiceError('ProductNotFoundError', `Product not found: ${quotation.productId}`, {
+      productId: quotation.productId,
+    });
   }
 
   const existingPosition = (await this.orders.positions.findOrderPositions({ orderId: order._id })).find(
@@ -70,6 +75,7 @@ export async function addCartQuotationService(
     throw createServiceError(
       'QuotationItemConfigurationError',
       `Quotation ${quotation._id} does not take quantity ${requestedQuantity}`,
+      { configuration },
     );
   }
   const lineQuantity = quotationConfiguration.quantity || requestedQuantity;

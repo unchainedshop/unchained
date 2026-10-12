@@ -28,7 +28,9 @@ export async function updateCartItemService(
 
   const product = await this.products.findProduct({ productId: item.productId });
   if (!product) {
-    throw createServiceError('ProductNotFoundError', `Product not found: ${item.productId}`);
+    throw createServiceError('ProductNotFoundError', `Product not found: ${item.productId}`, {
+      productId: item.productId,
+    });
   }
 
   let itemQuantity = quantity === undefined ? 1 : quantity;
@@ -36,7 +38,9 @@ export async function updateCartItemService(
   if (item.quotationId) {
     const quotation = await this.quotations.findQuotation({ quotationId: item.quotationId });
     if (!quotation) {
-      throw createServiceError('QuotationNotFoundError', `Quotation not found: ${item.quotationId}`);
+      throw createServiceError('QuotationNotFoundError', `Quotation not found: ${item.quotationId}`, {
+        quotationId: item.quotationId,
+      });
     }
     const director = await QuotationDirector.actions({ quotation }, context);
     // without a quantity, a quotation line keeps its quantity
@@ -49,6 +53,7 @@ export async function updateCartItemService(
       throw createServiceError(
         'QuotationItemConfigurationError',
         `Quotation ${quotation._id} does not take quantity ${requestedQuantity}`,
+        { configuration },
       );
     }
     itemQuantity = quotationConfiguration.quantity || requestedQuantity;

@@ -1,8 +1,12 @@
 import type { Context } from '../../../context.ts';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError, OrderNotFoundError, OrderWrongStatusError } from '../../../errors.ts';
-import { rethrowDeliveryProviderError } from './mapOrderServiceError.ts';
+import {
+  InvalidIdError,
+  OrderNotFoundError,
+  OrderWrongStatusError,
+  rethrowDeliveryProviderError,
+} from '../../../errors.ts';
 
 export default async function updateCartDeliveryShipping(
   root: never,
