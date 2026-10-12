@@ -1,10 +1,10 @@
 import type { IncomingMessage, Server, ServerResponse } from 'node:http';
 import type { YogaServerInstance } from 'graphql-yoga';
-import { ALL_METHODS, internalServerError, type ConnectOptions } from '../http/createEndpoints.ts';
-import { createFetchHandler } from '../http/createFetchHandler.ts';
-import { getNodeHeader, sendWebResponse, toWebRequest } from '../http/nodeHttpBridge.ts';
+import { ALL_METHODS, internalServerError, type ConnectOptions } from './createEndpoints.ts';
+import { createFetchHandler } from './createFetchHandler.ts';
+import { getNodeHeader, sendWebResponse, toWebRequest } from './nodeHttpBridge.ts';
 
-export type { ConnectOptions } from '../http/createEndpoints.ts';
+export type { ConnectOptions } from './createEndpoints.ts';
 
 export const connect = async (
   server: Server,

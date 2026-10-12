@@ -13,7 +13,7 @@ import {
   resolveAdminUIPath,
   type AdminUIPluginConfig,
   type AdminUIThemeConfig,
-} from '../adminUiPlugins.ts';
+} from './adminUiPlugins.ts';
 
 const logger = createLogger('unchained:api:admin-ui');
 

@@ -17,16 +17,16 @@
       "types": "./lib/api-index.d.ts"
     },
     "./fastify": {
-      "import": "./lib/fastify/index.js",
-      "types": "./lib/fastify/index.d.ts"
+      "import": "./lib/http/fastify.js",
+      "types": "./lib/http/fastify.d.ts"
     },
     "./express": {
-      "import": "./lib/express/index.js",
-      "types": "./lib/express/index.d.ts"
+      "import": "./lib/http/express.js",
+      "types": "./lib/http/express.d.ts"
     },
     "./node": {
-      "import": "./lib/node/index.js",
-      "types": "./lib/node/index.d.ts"
+      "import": "./lib/http/node.js",
+      "types": "./lib/http/node.d.ts"
     },
     "./fetch": {
       "import": "./lib/http/createFetchHandler.js",

@@ -37,6 +37,7 @@
   - Fastify: `bodyLimit` applies to GraphQL only, MCP and chat take up to 10 MB. The Admin UI is a `GET /*` route below its prefix.
   - The AI chat only answers pages of the API's own host, `localhost` and `ROOT_URL` (more with `chat.allowedOrigins`) and requires JSON. It uses the MCP server in-process, `chat.unchainedMCPUrl` is removed.
   - `context.getHeader()` returns `string | undefined`, `GetHeaderFn` is removed.
+  - Deep imports below `@unchainedshop/api/lib/` moved: the adapters, `auth` and `adminUiPlugins` to `lib/http/`, `acl` to `lib/roles/`. The entry points are unchanged.
 
 ### Improvements
 

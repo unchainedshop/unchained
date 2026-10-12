@@ -1,12 +1,12 @@
 import type { User } from '@unchainedshop/core-users';
 import { emit } from '@unchainedshop/events';
 import { parseCookie, stringifySetCookie } from 'cookie';
-import { signAccessToken, createAuthHandler, type AuthConfig } from '../auth.ts';
+import { signAccessToken, createAuthHandler, type AuthConfig } from './auth.ts';
 import type { LoginFn, LogoutFn } from '../context.ts';
 import { API_EVENTS } from '../events.ts';
 import { createLogger } from '@unchainedshop/logger';
 
-const logger = createLogger('unchained:api:auth-middleware');
+const logger = createLogger('unchained:api:auth-context');
 
 const {
   UNCHAINED_COOKIE_NAME = 'unchained_token',

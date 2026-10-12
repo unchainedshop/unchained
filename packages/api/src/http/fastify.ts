@@ -2,12 +2,12 @@ import type { FastifyBaseLogger, FastifyInstance } from 'fastify';
 import type { YogaServerInstance } from 'graphql-yoga';
 import { createLogger } from '@unchainedshop/logger';
 import type { Context } from '../context.ts';
-import { createEndpoints, internalServerError, type ConnectOptions } from '../http/createEndpoints.ts';
-import { withAuditContext } from '../http/createRequestContext.ts';
-import { getNodeHeader, toWebRequest } from '../http/nodeHttpBridge.ts';
+import { createEndpoints, internalServerError, type ConnectOptions } from './createEndpoints.ts';
+import { withAuditContext } from './createRequestContext.ts';
+import { getNodeHeader, toWebRequest } from './nodeHttpBridge.ts';
 
-export type { ConnectOptions } from '../http/createEndpoints.ts';
-export type { AdminUIOptions } from '../http/createAdminUIHandler.ts';
+export type { ConnectOptions } from './createEndpoints.ts';
+export type { AdminUIOptions } from './createAdminUIHandler.ts';
 export type {
   AdminUIPluginConfig,
   AdminUIPluginEntityConfig,
@@ -17,7 +17,7 @@ export type {
   AdminUIPluginSlotConfig,
   AdminUIThemeTokens,
   AdminUIThemeConfig,
-} from '../adminUiPlugins.ts';
+} from './adminUiPlugins.ts';
 
 declare module 'fastify' {
   interface FastifyRequest {

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, sep } from 'node:path';
-import { resolveAdminUIPath } from '../adminUiPlugins.ts';
+import { resolveAdminUIPath } from './adminUiPlugins.ts';
 import { createAdminUIHandler } from './createAdminUIHandler.ts';
 
 const root = resolveAdminUIPath();

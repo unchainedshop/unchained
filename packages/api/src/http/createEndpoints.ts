@@ -1,11 +1,11 @@
 import type { YogaServerInstance } from 'graphql-yoga';
 import { pluginRegistry } from '@unchainedshop/core';
 import { createLogger } from '@unchainedshop/logger';
-import type { AuthConfig } from '../auth.ts';
+import type { AuthConfig } from './auth.ts';
 import { createChatHandler } from '../chat/createChatHandler.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
 import type { Context } from '../context.ts';
-import { createBackchannelLogoutRoute } from '../handlers/createBackchannelLogoutHandler.ts';
+import { createBackchannelLogoutRoute } from './createBackchannelLogoutRoute.ts';
 import handleMcpHttpRequest from '../mcp/handleMcpHttpRequest.ts';
 import { createAdminUIHandler, type AdminUIOptions } from './createAdminUIHandler.ts';
 import { createRequestContext, type RequestContextParams } from './createRequestContext.ts';

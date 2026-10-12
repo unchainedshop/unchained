@@ -1,7 +1,7 @@
 import type { CheckPermissionArgs } from '@unchainedshop/roles';
 import { emit } from '@unchainedshop/events';
-import { NoPermissionError, PermissionSystemError } from './errors.ts';
-import { API_EVENTS } from './events.ts';
+import { NoPermissionError, PermissionSystemError } from '../errors.ts';
+import { API_EVENTS } from '../events.ts';
 
 const SENSITIVE_ACTION_PREFIXES = [
   'manageUser',

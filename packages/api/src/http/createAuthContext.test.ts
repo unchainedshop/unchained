@@ -6,7 +6,7 @@ import { parseSetCookie } from 'cookie';
 // imports a fresh module instance (distinct URL) after setting UNCHAINED_COOKIE_SAMESITE.
 const logoutCookieFor = async (sameSite: string) => {
   process.env.UNCHAINED_COOKIE_SAMESITE = sameSite;
-  const modulePath = `./createAuthMiddleware.ts?samesite=${encodeURIComponent(sameSite)}`;
+  const modulePath = `./createAuthContext.ts?samesite=${encodeURIComponent(sameSite)}`;
   const { createAuthContext } = await import(modulePath);
 
   const setCookies: string[] = [];
@@ -41,7 +41,7 @@ describe('createAuthContext cookie SameSite', () => {
 
 describe('createAuthContext token cookie', () => {
   it('reads the token cookie and deletes it on logout', async () => {
-    const { createAuthContext } = await import('./createAuthMiddleware.ts?token-cookie');
+    const { createAuthContext } = await import('./createAuthContext.ts?token-cookie');
     const setCookies: string[] = [];
     const headers: Record<string, string> = { cookie: 'other=1; unchained_token=not-a-jwt; last=2' };
     const authContext = await createAuthContext({
@@ -68,11 +68,11 @@ describe('createAuthContext token cookie', () => {
       else process.env.UNCHAINED_COOKIE_DOMAIN = UNCHAINED_COOKIE_DOMAIN;
     });
     process.env.UNCHAINED_COOKIE_DOMAIN = 'shop.test; SameSite=None';
-    await assert.rejects(import('./createAuthMiddleware.ts?invalid-domain'), /option domain is invalid/);
+    await assert.rejects(import('./createAuthContext.ts?invalid-domain'), /option domain is invalid/);
   });
 
   it('decodes a percent-encoded token cookie and keeps a malformed one as sent', async () => {
-    const { createAuthContext } = await import('./createAuthMiddleware.ts?token-cookie');
+    const { createAuthContext } = await import('./createAuthContext.ts?token-cookie');
     const accessTokenOf = async (cookie: string) =>
       (
         await createAuthContext({

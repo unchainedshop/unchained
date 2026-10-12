@@ -1,6 +1,6 @@
 import type { Context } from '../../context.ts';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
-import { checkAction } from '../../acl.ts';
+import { checkAction } from '../../roles/acl.ts';
 import { actions } from '../../roles/index.ts';
 
 export const Token = {

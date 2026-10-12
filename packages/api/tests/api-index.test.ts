@@ -4,7 +4,7 @@ import assert from 'node:assert';
 import { createRoles, Role } from '@unchainedshop/roles';
 import { admin } from '../src/roles/admin.ts';
 import { actions } from '../src/roles/index.ts';
-import { checkAction, ensureActionExists, ensureIsFunction } from '../src/acl.ts';
+import { checkAction, ensureActionExists, ensureIsFunction } from '../src/roles/acl.ts';
 import { NoPermissionError, PermissionSystemError } from '../src/errors.ts';
 import { registerEvents } from '@unchainedshop/events';
 import { API_EVENTS } from '../src/events.ts';

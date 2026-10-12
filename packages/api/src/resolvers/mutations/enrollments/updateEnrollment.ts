@@ -13,7 +13,7 @@ import {
   ProductWrongStatusError,
   ProductWrongTypeError,
 } from '../../../errors.ts';
-import { checkAction } from '../../../acl.ts';
+import { checkAction } from '../../../roles/acl.ts';
 import { actions } from '../../../roles/index.ts';
 
 interface UpdateEnrollmentParams {

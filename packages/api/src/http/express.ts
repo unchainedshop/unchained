@@ -2,14 +2,14 @@ import type { Express, Request, RequestHandler, Response } from 'express';
 import type { YogaServerInstance } from 'graphql-yoga';
 import { createLogger } from '@unchainedshop/logger';
 import type { Context } from '../context.ts';
-import { createEndpoints, internalServerError, type ConnectOptions } from '../http/createEndpoints.ts';
-import { withAuditContext } from '../http/createRequestContext.ts';
-import { getNodeHeader, sendWebResponse, toWebRequest } from '../http/nodeHttpBridge.ts';
+import { createEndpoints, internalServerError, type ConnectOptions } from './createEndpoints.ts';
+import { withAuditContext } from './createRequestContext.ts';
+import { getNodeHeader, sendWebResponse, toWebRequest } from './nodeHttpBridge.ts';
 
 const logger = createLogger('unchained:api:express');
 
-export type { ConnectOptions } from '../http/createEndpoints.ts';
-export type { AdminUIOptions } from '../http/createAdminUIHandler.ts';
+export type { ConnectOptions } from './createEndpoints.ts';
+export type { AdminUIOptions } from './createAdminUIHandler.ts';
 export type {
   AdminUIPluginConfig,
   AdminUIPluginEntityConfig,
@@ -19,7 +19,7 @@ export type {
   AdminUIPluginSlotConfig,
   AdminUIThemeTokens,
   AdminUIThemeConfig,
-} from '../adminUiPlugins.ts';
+} from './adminUiPlugins.ts';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

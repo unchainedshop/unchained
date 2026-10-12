@@ -12,9 +12,9 @@ import {
   setCurrentContextResolver,
   type UnchainedContextResolver,
 } from '../context.ts';
-import { connect as connectExpress } from '../express/index.ts';
-import { connect as connectFastify } from '../fastify/index.ts';
-import { connect as connectNode } from '../node/index.ts';
+import { connect as connectExpress } from './express.ts';
+import { connect as connectFastify } from './fastify.ts';
+import { connect as connectNode } from './node.ts';
 import createGraphQLServer from '../createGraphQLServer.ts';
 
 const routes: PluginHttpRoute[] = [

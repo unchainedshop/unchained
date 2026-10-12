@@ -1,7 +1,7 @@
 import { runWithAuditContext } from '@unchainedshop/events';
-import type { AuthConfig } from '../auth.ts';
+import type { AuthConfig } from './auth.ts';
 import { getCurrentContextResolver, type Context } from '../context.ts';
-import { createAuthContext } from '../middleware/createAuthMiddleware.ts';
+import { createAuthContext } from './createAuthContext.ts';
 
 export interface RequestContextParams {
   getHeader: (name: string) => string | undefined;

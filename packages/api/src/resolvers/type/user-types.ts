@@ -11,7 +11,7 @@ import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { permissions } from '@unchainedshop/roles';
 import type { ProductReview } from '@unchainedshop/core-products';
 import type { Country } from '@unchainedshop/core-countries';
-import { checkAction, checkTypeResolver } from '../../acl.ts';
+import { checkAction, checkTypeResolver } from '../../roles/acl.ts';
 import { actions } from '../../roles/index.ts';
 import type { Context } from '../../context.ts';
 
