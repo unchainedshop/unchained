@@ -1,13 +1,18 @@
-import { after, afterEach, beforeEach, describe, test } from 'node:test';
+import { after, afterEach, before, beforeEach, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
 import { once } from 'node:events';
 import { Readable } from 'node:stream';
 import express from 'express';
 import Fastify from 'fastify';
-import type { PluginHttpRoute } from '@unchainedshop/core';
-import { mountRoutes as mountExpressRoutes } from '@unchainedshop/api/lib/express/mountRoutes.js';
-import { mountRoutes as mountFastifyRoutes } from '@unchainedshop/api/lib/fastify/mountRoutes.js';
+import { pluginRegistry, type PluginHttpRoute } from '@unchainedshop/core';
+import {
+  getCurrentContextResolver,
+  setCurrentContextResolver,
+  type UnchainedContextResolver,
+} from '@unchainedshop/api';
+import { connect as connectExpress } from '@unchainedshop/api/express';
+import { connect as connectFastify } from '@unchainedshop/api/fastify';
 import { createTicketingRoutes } from './routes.ts';
 import { RendererTypes, registerRenderer, renderers } from './template-registry.ts';
 
@@ -379,25 +384,39 @@ describe('ticketing routes', () => {
   describe('mounted through the api connectors', () => {
     const servers: http.Server[] = [];
     const fastifyApps: ReturnType<typeof Fastify>[] = [];
+    const platform = { graphqlHandler: { graphqlEndpoint: '/graphql' } } as any;
+    let unchainedAPI: object;
+    let previousResolver: UnchainedContextResolver;
+    let restoreRegistry: () => void;
+
+    before(() => {
+      previousResolver = getCurrentContextResolver();
+      setCurrentContextResolver(async (params) => ({ ...unchainedAPI, ...params }) as any);
+      restoreRegistry = pluginRegistry.clear();
+      pluginRegistry.register({ key: 'test.ticketing', label: 'Ticketing', version: '1.0.0', routes });
+    });
+
     after(async () => {
+      restoreRegistry();
+      setCurrentContextResolver(previousResolver);
       await Promise.all(fastifyApps.map((app) => app.close()));
       for (const server of servers) server.close();
     });
 
     const start = {
-      express: async (unchainedAPI: any) => {
+      express: async () => {
         const app = express();
-        mountExpressRoutes(app, unchainedAPI, routes);
+        await connectExpress(app, platform);
         const server = http.createServer(app);
         servers.push(server);
         server.listen(0, '127.0.0.1');
         await once(server, 'listening');
         return `http://127.0.0.1:${(server.address() as { port: number }).port}`;
       },
-      fastify: async (unchainedAPI: any) => {
+      fastify: async () => {
         const app = Fastify();
         fastifyApps.push(app);
-        mountFastifyRoutes(app, unchainedAPI, routes);
+        await connectFastify(app, platform);
         await app.listen({ port: 0, host: '127.0.0.1' });
         return `http://127.0.0.1:${(app.server.address() as { port: number }).port}`;
       },
@@ -410,7 +429,8 @@ describe('ticketing routes', () => {
           async () => 'https://pay.google.com/gp/v/save/jwt',
         );
         const { context, calls } = createContext();
-        const baseUrl = await start[framework](context);
+        unchainedAPI = context;
+        const baseUrl = await start[framework]();
 
         const registered = await fetch(`${baseUrl}${deviceRegistration}`, {
           method: 'POST',
