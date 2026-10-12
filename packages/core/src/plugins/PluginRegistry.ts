@@ -7,44 +7,28 @@ import type { RolesInterface } from '@unchainedshop/roles';
 
 const logger = createLogger('unchained:core');
 
-/**
- * The HTTP request being served, independent of the server framework: GraphQL resolvers,
- * MCP tools and plugin routes all get it as part of their context.
- */
 export interface UnchainedRequestContext {
-  /** Read a request header by its case-insensitive name */
   getHeader: (name: string) => string | undefined;
-  /** Set a response header */
   setHeader: (name: string, value: string) => void;
   remoteAddress?: string;
   remotePort?: number;
   locale: Intl.Locale;
   countryCode: string;
   currencyCode: string;
-  /** Authenticated user if present */
   userId?: string;
   user?: User;
-  /** Impersonator user ID if present */
   impersonatorId?: string;
-  /** Checks actions of the user: `roles.userHasPermission(context, action, [obj, params])` */
   roles?: RolesInterface;
 }
 
-/** The context of a plugin HTTP route: the core modules and services plus the request */
 export type PluginHttpRequestContext = UnchainedCore &
-  UnchainedRequestContext & {
-    /** URL path parameters extracted from the route pattern */
-    params: Record<string, string>;
-  };
+  UnchainedRequestContext & { params: Record<string, string> };
 
 export interface PluginHttpRoute {
-  /**
-   * Route path of literal segments and `:name` parameters
-   * (e.g., /payment/webhook or /files/:directoryName/:fileName)
-   */
+  /** Route path (e.g., /payment/webhook or /files/:directoryName/:fileName) */
   path: string;
 
-  /** HTTP method(s) to match, GET routes answer HEAD requests as well */
+  /** HTTP method(s) to match */
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'ALL';
 
   /**

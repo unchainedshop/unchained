@@ -94,7 +94,6 @@ export const gridfsRouteHandler = async (request: Request, context: PluginHttpRe
         },
       );
 
-      // Node's pipeline accepts the WHATWG request body directly.
       const bodyStream = request.body;
 
       if (!bodyStream) {

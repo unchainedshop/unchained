@@ -30,10 +30,6 @@ export type StreamTextParams = Parameters<typeof aiTypes.streamText>[0];
 export type ChatConfiguration = Omit<StreamTextParams, 'messages'> & {
   unchainedMCPUrl?: string;
   imageGenerationTool?: { model: aiTypes.ImageModel; uploadUrl?: string };
-  /**
-   * Origins of pages that may use the chat besides the API's own host, localhost and the ROOT_URL
-   * host, e.g. of an Admin UI served from a CDN: ['https://admin.example.com']
-   */
   allowedOrigins?: string[];
 };
 
@@ -49,9 +45,6 @@ export const errorHandler = (error: any): string => {
 export const chatErrorStatus = (error: unknown): number =>
   (error as { statusCode?: number })?.statusCode === 503 ? 503 : 500;
 
-// Owns the lifetime shared by a chat request, its model stream, and its MCP client. The request
-// signal aborts when the client disconnects before the response finished; a configured caller
-// signal participates in the same cancellation path.
 export const createChatRequestLifecycle = (
   requestSignal: AbortSignal,
   configuredSignal?: AbortSignal,

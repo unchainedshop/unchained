@@ -46,7 +46,6 @@ const getHandler = () => {
         roles,
       );
     },
-    // The SDK reads the request body itself; tool calls may carry media as base64
     { maxRequestBodySize: 10 * 1024 * 1024 },
   );
   return handler;
@@ -65,26 +64,14 @@ const configuredHostname = () => {
 const allowedHostnames = () => [...new Set([...localhostAllowedHostnames(), configuredHostname()])];
 const allowedOrigins = () => [...new Set([...localhostAllowedOrigins(), configuredHostname()])];
 
-/**
- * The Origin check of the chat, which calls MCP with the cookie of the admin: browsers send the
- * cookie along with requests of any page, so an Origin has to be the API's own host, localhost or
- * the ROOT_URL host (any port, like the check below) or one of the given origins. Requests without
- * one come from other clients.
- */
+const LOCAL_HOSTNAMES = ['localhost', '127.0.0.1', '[::1]'];
+
 export const isAllowedBrowserOrigin = (request: Request, pageOrigins: string[] = []) => {
   const origin = request.headers.get('origin');
   if (!origin) return true;
-  try {
-    const { hostname, origin: pageOrigin } = new URL(origin);
-    return (
-      pageOrigins.includes(pageOrigin) ||
-      ['localhost', '127.0.0.1', '[::1]', configuredHostname(), new URL(request.url).hostname].includes(
-        hostname,
-      )
-    );
-  } catch {
-    return false; // "null", the Origin of sandboxed documents and redirects across sites
-  }
+  const page = URL.parse(origin);
+  const ownHostnames = [...LOCAL_HOSTNAMES, configuredHostname(), new URL(request.url).hostname];
+  return !!page && (pageOrigins.includes(page.origin) || ownHostnames.includes(page.hostname));
 };
 
 // All security decisions happen here, before any SDK code runs.

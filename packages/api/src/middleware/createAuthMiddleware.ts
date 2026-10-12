@@ -18,7 +18,6 @@ const {
 
 export interface AuthContextParams {
   getHeader: (name: string) => string | undefined;
-  /** Adds a response header field, also when one of the same name exists (Set-Cookie) */
   appendHeader: (name: string, value: string) => void;
   remoteAddress?: string;
 }
@@ -32,17 +31,16 @@ export interface AuthContext {
   logout: LogoutFn;
 }
 
+const SAME_SITE_SETTINGS: Record<string, 'none' | 'lax' | 'strict' | false> = {
+  none: 'none',
+  lax: 'lax',
+  strict: 'strict',
+  '1': 'strict',
+  '0': false,
+};
+
 const secure = !UNCHAINED_COOKIE_INSECURE;
-const sameSite =
-  (
-    {
-      none: 'none',
-      lax: 'lax',
-      strict: 'strict',
-      '1': 'strict',
-      '0': false,
-    } as Record<string, 'none' | 'lax' | 'strict' | false>
-  )[UNCHAINED_COOKIE_SAMESITE.trim().toLowerCase()] ?? 'lax'; // Unknown values default to lax; '0' must stay without SameSite
+const sameSite = SAME_SITE_SETTINGS[UNCHAINED_COOKIE_SAMESITE.trim().toLowerCase()] ?? 'lax';
 
 if (!secure && process.env.NODE_ENV === 'production') {
   logger.warn(
@@ -53,7 +51,6 @@ if (sameSite === 'none' && !secure) {
   logger.warn('SECURITY WARNING: SameSite=None requires Secure flag to be effective');
 }
 
-/** Set-Cookie value of the JWT token cookie, an expiry in the past deletes it */
 const tokenCookie = (token: string, expires: Date) =>
   stringifySetCookie({
     name: UNCHAINED_COOKIE_NAME,
@@ -61,12 +58,11 @@ const tokenCookie = (token: string, expires: Date) =>
     path: UNCHAINED_COOKIE_PATH,
     domain: UNCHAINED_COOKIE_DOMAIN,
     expires,
-    httpOnly: true, // OWASP: Always true to prevent XSS access
+    httpOnly: true,
     secure,
     sameSite,
   });
 
-// Built once: invalid cookie settings fail at startup instead of at login
 const expiredTokenCookie = tokenCookie('', new Date(0));
 
 /**

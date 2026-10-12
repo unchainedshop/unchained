@@ -1,37 +1,28 @@
 import type { YogaServerInstance } from 'graphql-yoga';
-import { createLogger } from '@unchainedshop/logger';
 import {
   ALL_METHODS,
   createEndpoints,
+  internalServerError,
   type ConnectOptions,
   type EngineRoute,
 } from './createEndpoints.ts';
 import { withAuditContext } from './createRequestContext.ts';
 
-export type { ConnectOptions as FetchHandlerOptions } from './createEndpoints.ts';
+export type { ConnectOptions } from './createEndpoints.ts';
 
-const logger = createLogger('unchained:api:http');
-
-/** What the server knows about a request besides the request itself */
 export interface ServerContext {
-  /** Address and port of the client socket */
   remoteAddress?: string;
   remotePort?: number;
-  /** Nonce of the request's Content-Security-Policy, for the import map the Admin UI injects */
   cspNonce?: string;
-  /** The server's own request and response, passed on to custom context resolvers */
   req?: unknown;
   res?: unknown;
 }
 
-/** Answers the engine's endpoints, undefined for requests that are not the engine's */
-export type FetchHandler = (request: Request, server?: ServerContext) => Promise<Response | undefined>;
-
-// Route paths are literal segments and `:name` parameters, a trailing slash is optional
 const matchPath = (path: string, pathname: string) => {
   const segments = path.split('/');
   const parts = pathname.split('/');
-  if (parts.length === segments.length + 1 && !parts.at(-1)) parts.pop();
+  const hasTrailingSlash = parts.length === segments.length + 1 && !parts.at(-1);
+  if (hasTrailingSlash) parts.pop();
   if (parts.length !== segments.length) return undefined;
   const params: Record<string, string> = {};
   try {
@@ -43,38 +34,32 @@ const matchPath = (path: string, pathname: string) => {
       }
     }
   } catch {
-    return undefined; // malformed percent-encoding
+    return undefined;
   }
   return params;
 };
 
-// Headers set through the context are defaults of the response, Set-Cookie fields add up
-const withHeaders = (response: Response, headers: Headers): Response => {
-  const merge = (target: Headers) => {
-    for (const [name, value] of headers) {
-      if (name === 'set-cookie') target.append(name, value);
-      else if (!target.has(name)) target.set(name, value);
+const withContextHeaders = (response: Response, contextHeaders: Headers): Response => {
+  const merge = (headers: Headers) => {
+    for (const [name, value] of contextHeaders) {
+      if (name === 'set-cookie') headers.append(name, value);
+      else if (!headers.has(name)) headers.set(name, value);
     }
   };
   try {
     merge(response.headers);
     return response;
   } catch {
-    // Immutable headers, e.g. of Response.redirect()
-    const copy = new Response(response.body, response);
-    merge(copy.headers);
-    return copy;
+    const mutableCopy = new Response(response.body, response);
+    merge(mutableCopy.headers);
+    return mutableCopy;
   }
 };
 
-/**
- * The engine's HTTP endpoints as one WHATWG fetch handler, e.g. for Bun and Deno: GraphQL, MCP,
- * the AI chat, the plugin routes and the Admin UI.
- */
 export const createFetchHandler = (
   platform: { graphqlHandler: YogaServerInstance<any, any> },
   options?: ConnectOptions,
-): FetchHandler => {
+) => {
   const { graphqlHandler, routes, serveAdminUI, createContext, corsHeaders } = createEndpoints(
     platform,
     options,
@@ -85,28 +70,28 @@ export const createFetchHandler = (
     handler: async (request, unchainedContext) =>
       graphqlHandler.handleRequest(request, { unchainedContext }),
   };
+  const engineRoutes = [graphql, ...routes];
 
   const findRoute = (method: string, pathname: string) => {
-    for (const route of [graphql, ...routes]) {
-      const params = route.methods.includes(method) ? matchPath(route.path, pathname) : undefined;
+    for (const route of engineRoutes) {
+      const params = route.methods.includes(method) && matchPath(route.path, pathname);
       if (params) return { route, params };
     }
     return undefined;
   };
 
-  return async (request, server = {}) => {
-    const { pathname } = new URL(request.url);
-    const matched = findRoute(request.method, pathname);
+  return async (request: Request, server: ServerContext = {}): Promise<Response | undefined> => {
+    const matched = findRoute(request.method, new URL(request.url).pathname);
     if (!matched) return serveAdminUI?.(request, server.cspNonce);
 
     const getHeader = (name: string) => request.headers.get(name) ?? undefined;
-    const headers = new Headers(corsHeaders?.(getHeader));
+    const contextHeaders = new Headers(corsHeaders?.(getHeader));
     try {
       const context = await createContext(
         {
           getHeader,
-          setHeader: (name, value) => headers.set(name, value),
-          appendHeader: (name, value) => headers.append(name, value),
+          setHeader: (name, value) => contextHeaders.set(name, value),
+          appendHeader: (name, value) => contextHeaders.append(name, value),
           remoteAddress: server.remoteAddress,
           remotePort: server.remotePort,
         },
@@ -116,12 +101,9 @@ export const createFetchHandler = (
       const response = await withAuditContext(context, () =>
         matched.route.handler(request, context, matched.params),
       );
-      return withHeaders(response, headers);
+      return withContextHeaders(response, contextHeaders);
     } catch (error) {
-      logger.error(`${request.method} ${pathname} failed`, {
-        error: error instanceof Error ? error.stack : String(error),
-      });
-      return Response.json({ error: 'Internal Server Error' }, { status: 500 });
+      return internalServerError(request, error);
     }
   };
 };

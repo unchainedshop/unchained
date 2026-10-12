@@ -22,21 +22,14 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
-      /** The engine's request context: its endpoints and the app's routes after connect() get it */
       unchainedContext?: Context;
     }
   }
 }
 
-// The full URL, also when the app is mounted below a path, and a body an app-wide parser read
 const webRequest = (req: Request, res: Response) =>
   toWebRequest(req, res, { protocol: req.protocol, path: req.originalUrl, body: req.body });
 
-/**
- * Serves the engine's endpoints as routes of an Express app, after the middleware and routes the
- * app added before. The routes the app adds after connect() get the request context as
- * `req.unchainedContext`.
- */
 export const connect = async (
   app: Express,
   platform: { graphqlHandler: YogaServerInstance<any, any> },
@@ -50,11 +43,10 @@ export const connect = async (
     corsHeaders,
   } = createEndpoints(platform, options);
 
-  // The rest of the request runs as the user of its context
   const withContext: RequestHandler = async (req, res, next) => {
     const getHeader = (name: string) => getNodeHeader(req, name);
     if (corsHeaders) res.set(corsHeaders(getHeader));
-    const context = await createContext(
+    req.unchainedContext = await createContext(
       {
         getHeader,
         setHeader: (name, value) => res.setHeader(name, value),
@@ -65,11 +57,9 @@ export const connect = async (
       req,
       res,
     );
-    req.unchainedContext = context;
-    withAuditContext(context, next);
+    withAuditContext(req.unchainedContext, next);
   };
 
-  // GraphQL Yoga's Express integration: Yoga reads the body unless an app-wide parser did
   app.all(yoga.graphqlEndpoint, withContext, (req, res) => yoga(req, res));
 
   for (const { path, methods, handler } of routes) {
@@ -82,7 +72,6 @@ export const connect = async (
 
   if (serveAdminUI) {
     app.get('/{*path}', async (req, res, next) => {
-      // CSP nonce convention of helmet: an earlier middleware sets res.locals.cspNonce
       const response = await serveAdminUI(webRequest(req, res), res.locals.cspNonce);
       if (response) await sendWebResponse(res, response);
       else next();

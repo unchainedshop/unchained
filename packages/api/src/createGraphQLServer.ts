@@ -30,8 +30,6 @@ export default async (options: GraphQLServerOptions) => {
   const server = createYoga({
     schema,
     logging: logger,
-    // The fetch handler passes the request context, Node.js servers hand it over as the
-    // unchainedContext of their request
     context: async (ctx: any) => ctx.unchainedContext ?? ctx.req?.unchainedContext,
     ...options,
     // graphql-js reference engine instead of @graphql-tools/executor: the ported

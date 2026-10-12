@@ -35,7 +35,6 @@ export function getTicketingPaths(): TicketingPaths {
   };
 }
 
-/** The engine passes route handlers the request context of the API with the path params. */
 export type TicketingRouteContext = Context & TicketingAPI & { params: Record<string, string> };
 
 type TicketingRouteHandler = (request: Request, context: TicketingRouteContext) => Promise<Response>;
@@ -295,7 +294,6 @@ export async function appleLogHandler(request: Request): Promise<Response> {
   return new Response(null, { status: 200 });
 }
 
-// PluginHttpRoute types its context as PluginHttpRequestContext; the engine passes the full API context.
 const route = (
   method: PluginHttpRoute['method'],
   path: string,

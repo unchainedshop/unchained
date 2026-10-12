@@ -17,17 +17,14 @@ import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api:chat');
 
-// Conversations carry tool results and travel to MCP, whose requests are limited to 10 MB as well
 const MAX_BODY_SIZE = 10 * 1024 * 1024;
 
-/** The text of a request body, undefined when it is larger than MAX_BODY_SIZE */
-const readBody = async (request: Request) => {
+const readBodyWithinLimit = async (request: Request) => {
   if (Number(request.headers.get('content-length')) > MAX_BODY_SIZE) return undefined;
   const chunks: Uint8Array[] = [];
   let size = 0;
   for await (const chunk of request.body ?? []) {
     size += chunk.byteLength;
-    // Leaving the loop cancels the rest of the body
     if (size > MAX_BODY_SIZE) return undefined;
     chunks.push(chunk);
   }
@@ -40,6 +37,19 @@ const parseMessages = (text: string) => {
   } catch {
     return undefined;
   }
+};
+
+const readMessages = async (request: Request) => {
+  const contentType = request.headers.get('content-type')?.split(';')[0].trim().toLowerCase();
+  if (contentType !== 'application/json') {
+    return Response.json({ error: 'messages must be application/json' }, { status: 415 });
+  }
+  const body = await readBodyWithinLimit(request).catch(() => '');
+  if (body === undefined) return Response.json({ error: 'messages too large' }, { status: 413 });
+  const messages = parseMessages(body);
+  return Array.isArray(messages)
+    ? messages
+    : Response.json({ error: 'messages missing' }, { status: 400 });
 };
 
 let convertToModelMessages: typeof aiTypes.convertToModelMessages;
@@ -62,10 +72,6 @@ try {
   logOptionalPeerLoadError('@ai-sdk/mcp', error);
 }
 
-/**
- * The admin chat (POST /chat, GET /chat/tools): streams a model conversation over the tools of
- * the MCP endpoint. Undefined when the optional ai and @ai-sdk/mcp packages are not installed.
- */
 export const createChatHandler = (chatConfiguration: ChatConfiguration) => {
   if (!createMCPClient || !streamText) {
     logger.warn(
@@ -91,7 +97,6 @@ export const createChatHandler = (chatConfiguration: ChatConfiguration) => {
   }: any = chatConfiguration;
 
   const system = chatConfiguration.system ?? defaultSystemPrompt;
-  // Throws at boot on a malformed origin instead of rejecting every request
   const pageOrigins: string[] = allowedOrigins.map((origin: string) => new URL(origin).origin);
 
   return async (request: Request, context: Context): Promise<Response> => {
@@ -118,27 +123,11 @@ export const createChatHandler = (chatConfiguration: ChatConfiguration) => {
       );
     }
 
-    // The admin's cookie goes along with requests of any page: only pages of the API's own host
-    // may use it, and messages must be JSON, which other pages cannot send without a CORS preflight
     if (!isAllowedBrowserOrigin(request, pageOrigins)) {
       return Response.json({ error: 'forbidden', message: 'Origin not allowed' }, { status: 403 });
     }
-    let messages: any[] = [];
-    if (request.method === 'POST') {
-      const contentType = request.headers.get('content-type')?.split(';')[0].trim().toLowerCase();
-      if (contentType !== 'application/json') {
-        return Response.json({ error: 'messages must be application/json' }, { status: 415 });
-      }
-      const body = await readBody(request).catch(() => '');
-      if (body === undefined) {
-        return Response.json({ error: 'messages too large' }, { status: 413 });
-      }
-      const parsed = parseMessages(body);
-      if (!Array.isArray(parsed)) {
-        return Response.json({ error: 'messages missing' }, { status: 400 });
-      }
-      messages = parsed;
-    }
+    const messages = request.method === 'POST' ? await readMessages(request) : [];
+    if (messages instanceof Response) return messages;
 
     const lifecycle = createChatRequestLifecycle(request.signal, configuredAbortSignal);
     try {
@@ -172,7 +161,6 @@ export const createChatHandler = (chatConfiguration: ChatConfiguration) => {
         tools.generateImage = generateImageHandler(request)(imageGenerationTool) as any;
       }
 
-      // GET and HEAD of /chat/tools
       if (request.method !== 'POST') {
         await lifecycle.close();
         return Response.json({
