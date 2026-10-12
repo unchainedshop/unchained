@@ -39,28 +39,17 @@ await connect(fastify, { graphqlHandler, unchainedAPI: unchainedCore });
 await fastify.listen({ port: 4010 });
 ```
 
-`connect()` serves the GraphQL endpoint, `/mcp`, the routes supplied by registered plugins and, with `adminUI`, the Admin UI (requires the optional `@unchainedshop/admin-ui` package). Configure a prefix with `{ adminUI: { prefix: '/admin' } }` in the third argument to `connect()`. The routes of your app get the request context as `req.unchainedContext`.
+`connect()` mounts the GraphQL endpoint, `/mcp`, and routes supplied by registered plugins. Admin UI hosting requires the optional `@unchainedshop/admin-ui` package. Configure a prefix with `{ adminUI: { prefix: '/admin' } }` in the third argument to `connect()`.
 
 ## Without a framework
 
-The endpoints are WHATWG handlers, which the Express and Fastify adapters mount as routes of your app. Serve them from a plain Node.js server with `@unchainedshop/api/node`, or from any runtime that speaks `Request` / `Response`:
-
-```typescript
-import { createServer } from 'node:http';
-import { connect } from '@unchainedshop/api/node';
-
-const server = createServer();
-await connect(server, { graphqlHandler }, { adminUI: true });
-server.listen(4010);
-```
+`connect()` of `@unchainedshop/api/node` serves a `node:http` server. Bun and Deno use the fetch handler, which answers `undefined` for requests that are not the engine's:
 
 ```typescript
 import { createFetchHandler } from '@unchainedshop/api/fetch';
 
 const handler = createFetchHandler({ graphqlHandler }, { adminUI: true });
-Bun.serve({
-  fetch: async (request) => (await handler(request)) ?? new Response('Not Found', { status: 404 }),
-});
+Bun.serve({ fetch: async (request) => (await handler(request)) ?? new Response(null, { status: 404 }) });
 ```
 
 ## API overview
@@ -112,7 +101,7 @@ MCP support is an optional peer dependency:
 npm install @modelcontextprotocol/server
 ```
 
-Without it, the engine boots and `/mcp` responds with `503`. Chat handlers configured through `connect(..., { chat })` additionally need `ai` and `@ai-sdk/mcp`, as well as `@modelcontextprotocol/server`: chat obtains tools through the engine's own MCP endpoint. Chat answers browser pages of the API's own host, `localhost` and the `ROOT_URL` host only (`chat.allowedOrigins` adds an Admin UI served from elsewhere) and takes JSON bodies of up to 10 MB.
+Without it, the engine boots and `/mcp` responds with `503`. Chat handlers configured through `connect(..., { chat })` additionally need `ai` and `@ai-sdk/mcp`, as well as `@modelcontextprotocol/server`: chat obtains tools through the engine's own MCP endpoint. Chat only answers pages of the API's own host, `localhost` and `ROOT_URL` (more with `chat.allowedOrigins`).
 
 ## Authentication and cookies
 
@@ -127,7 +116,7 @@ The API supports locally signed JWTs, configured OIDC providers, and API keys. C
 | `UNCHAINED_COOKIE_SAMESITE` | SameSite attribute | `lax` |
 | `UNCHAINED_COOKIE_INSECURE` | Any nonempty value disables the Secure attribute | Unset |
 
-Cookies are `httpOnly` and `secure` by default. The engine reads and writes the token cookie with the `cookie` package (RFC 6265), so a cookie setting it cannot put into a valid `Set-Cookie` header, such as a domain with a port, stops the engine at startup. Account/token handling and ACL enforcement are implemented by the authentication middleware and resolvers; access to domain modules directly does not run those GraphQL permission checks.
+Cookies are `httpOnly` and `secure` by default. Invalid cookie settings, such as a domain with a port, stop the engine at startup. Account/token handling and ACL enforcement are implemented by the authentication middleware and resolvers; access to domain modules directly does not run those GraphQL permission checks.
 
 ## CORS and reverse proxies
 

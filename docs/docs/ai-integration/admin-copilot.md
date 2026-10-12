@@ -22,7 +22,7 @@ The Chat API uses the [Vercel AI SDK](https://ai-sdk.dev/) to stream responses. 
 
 Both endpoints require an authenticated user with the `admin` role. They accept the session cookie or a bearer token and return HTTP 401 for unauthenticated requests and HTTP 403 for users without that role.
 
-Browsers send the session cookie along with requests of any page, so the endpoints only answer pages of the API's own host, `localhost` and the `ROOT_URL` host (HTTP 403 for other `Origin` headers), and `POST /chat` only accepts `Content-Type: application/json` (HTTP 415), which other sites cannot send without a CORS preflight. An Admin UI served from elsewhere, e.g. a CDN, needs its origin in `allowedOrigins`. Bodies are limited to 10 MB (HTTP 413).
+The endpoints only answer pages of the API's own host, `localhost` and the `ROOT_URL` host (403, add others to `allowedOrigins`), and `POST /chat` only takes JSON (415) up to 10 MB (413).
 
 ## Setup
 
@@ -104,7 +104,7 @@ The `chat` object extends the Vercel AI SDK's `streamText` parameters (minus `me
 | `maxRetries` | `number` | No | Retry count on failure (default: `3`) |
 | `unchainedMCPUrl` | `string` | No | MCP server URL, defaults to `${ROOT_URL}/mcp` |
 | `imageGenerationTool` | `{ model, uploadUrl? }` | No | Enable image generation in the Copilot |
-| `allowedOrigins` | `string[]` | No | Origins of pages besides the API's own host, `localhost` and the `ROOT_URL` host that may use the chat, e.g. `['https://admin.example.com']` for an Admin UI on a CDN |
+| `allowedOrigins` | `string[]` | No | Further page origins that may use the chat, e.g. an Admin UI on a CDN |
 
 No temperature is set by default — reasoning models reject the parameter. If your model supports it, pass `temperature` explicitly in the chat configuration.
 

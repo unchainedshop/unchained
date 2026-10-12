@@ -305,59 +305,17 @@ If your Stripe webhook endpoint is pinned to an older API version in the Dashboa
 
 If you were calling this method, simply remove it. Adapters are now registered via `pluginRegistry.register()` or preset functions.
 
-### HTTP Layer: WHATWG Endpoints for Every Server
+### HTTP Layer: WHATWG Endpoints
 
-The engine's endpoints (MCP, chat, plugin routes, back-channel logout, Admin UI) are WHATWG handlers. `connect()` of `@unchainedshop/api/express` and `@unchainedshop/api/fastify` mounts them as routes of the framework, next to GraphQL Yoga's own integration, so the middleware and hooks of your app apply to them; `connect(app, platform, options)` keeps its options.
+**BREAKING CHANGE:** plugin route handlers no longer get `context.rawRequest`. Read the WHATWG `request` instead (`request.json()`, `request.text()`, `Readable.fromWeb(request.body)`); the context is typed as `PluginHttpRequestContext` from `@unchainedshop/core`.
 
-**BREAKING CHANGE:** plugin HTTP route handlers no longer receive the Node.js request as `context.rawRequest`. Read the body from the WHATWG `Request` the handler gets:
+**BREAKING CHANGE:** `connect()` no longer registers `cookie-parser` / `@fastify/cookie`. Register it yourself if your routes read `req.cookies` / `request.cookies` (`@fastify/oauth2` registers it on its own).
 
-```typescript
-import { Readable } from 'node:stream';
+**BREAKING CHANGE:** `adminUIRouter` and `connectChat` are removed, pass `adminUI` and `chat` to `connect()`. `AdminUIRouterOptions` is now `AdminUIOptions`.
 
-// Before
-const stream = context.rawRequest;
+**BREAKING CHANGE (Fastify):** `bodyLimit` applies to GraphQL only. The Admin UI is a `GET /*` route, which conflicts with a `GET /*` route of your own: serve it below a `prefix` then.
 
-// After
-const stream = request.body && Readable.fromWeb(request.body as any);
-```
-
-`request.text()`, `request.json()` and `request.formData()` work as well. The handler context is typed as `PluginHttpRequestContext` from `@unchainedshop/core`, with `user` and `roles` for permission checks (`context.roles?.userHasPermission(context, 'bulkImport', [])`); `context.getHeader()` returns `string | undefined`. Route paths consist of literal segments and `:name` parameters.
-
-**BREAKING CHANGE:** `connect()` no longer registers `cookie-parser` / `@fastify/cookie`, and the Admin UI no longer needs `@fastify/static`. If routes of your app read `req.cookies` / `request.cookies` or call `reply.setCookie`, register the cookie plugin yourself:
-
-```typescript
-// Express
-app.use(cookieParser());
-// Fastify (@fastify/oauth2 registers it on its own)
-await fastify.register(fastifyCookie);
-```
-
-**BREAKING CHANGE:** `adminUIRouter` and `connectChat` are removed from `@unchainedshop/api/express` and `@unchainedshop/api/fastify`; pass `adminUI` and `chat` to `connect()`. The type of the `adminUI` option is `AdminUIOptions` (was `AdminUIRouterOptions`).
-
-**BREAKING CHANGE (Fastify):** MCP and the AI chat read their bodies as sent, like plugin routes, instead of through Fastify's JSON parser: Fastify's `bodyLimit` now applies to GraphQL only, MCP and chat take up to 10 MB and refuse unauthenticated requests before reading the body. The Admin UI is a `GET` route below its `prefix`, `/*` without one: routes of your app take precedence, requests for files it does not have go to your not-found handler, and a `GET /*` route of your own conflicts with it at startup, so serve the Admin UI below a prefix then:
-
-```typescript
-await connect(fastify, platform, { adminUI: { prefix: '/admin' } });
-```
-
-**BREAKING CHANGE:** the AI chat (`/chat`, `/chat/tools`) only answers browser pages of the API's own host, `localhost` and the `ROOT_URL` host, and `POST /chat` requires `Content-Type: application/json`: the session cookie goes along with requests of any page, so other sites could otherwise drive the MCP tools of a signed-in admin. An Admin UI served from elsewhere, e.g. a CDN, needs its origin in `chat.allowedOrigins`:
-
-```typescript
-await connect(fastify, platform, {
-  chat: { model, allowedOrigins: ['https://admin.example.com'] },
-});
-```
-
-Without a framework, serve the engine with `connect(server, platform, options)` from `@unchainedshop/api/node`, or use the handler of `createFetchHandler(platform, options)` from `@unchainedshop/api/fetch` (answers `undefined` for requests that are not the engine's):
-
-```typescript
-import { createServer } from 'node:http';
-import { connect } from '@unchainedshop/api/node';
-
-const server = createServer();
-await connect(server, platform, { adminUI: true });
-server.listen(3000);
-```
+**BREAKING CHANGE:** the AI chat only answers pages of the API's own host, `localhost` and the `ROOT_URL` host, and `POST /chat` requires `Content-Type: application/json`. Add the origin of an Admin UI served from elsewhere to `chat.allowedOrigins`.
 
 ### Plugin Authoring Factories (new, recommended)
 

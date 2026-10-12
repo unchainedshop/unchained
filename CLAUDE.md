@@ -206,7 +206,7 @@ Example modules: core-orders, core-products, core-users, core-payment, core-deli
 - Individual packages extend shared base configs
 
 ### API Structure
-The HTTP endpoints besides GraphQL (MCP, chat, plugin routes, back-channel logout, Admin UI) are WHATWG handlers, defined once with the request context in `packages/api/src/http/createEndpoints.ts`. The Express and Fastify adapters mount them and GraphQL Yoga as native routes (request context in a middleware / `onRequest` hook, Node bridge `http/nodeHttpBridge.ts`), so the app's middleware, hooks and body limits apply; the fetch handler and the Node adapter dispatch them themselves. Keep endpoint logic in the handlers, not in an adapter:
+The HTTP endpoints besides GraphQL (MCP, chat, plugin routes, back-channel logout, Admin UI) are WHATWG handlers defined once in `packages/api/src/http/createEndpoints.ts`. The Express and Fastify adapters mount them as native routes, the fetch handler and the Node adapter dispatch them. Keep endpoint logic in the handlers, not in an adapter:
 - **Fetch handler**: Import `createFetchHandler` from `@unchainedshop/api/fetch` (Bun, Deno)
 - **Node.js**: Import from `@unchainedshop/api/node`
 - **Express**: Import from `@unchainedshop/api/express`
