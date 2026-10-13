@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
 import { ProductNotFoundError, OrderQuantityTooLowError } from '../../../errors.ts';
-import loadCart from './loadCart.ts';
+import { loadCart } from '../../loadCart.ts';
 
 export default async function addMultipleCartProducts(
   root: never,

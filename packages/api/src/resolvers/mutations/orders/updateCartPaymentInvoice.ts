@@ -1,8 +1,8 @@
 import type { Context } from '../../../context.ts';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError, rethrowPaymentProviderError } from '../../../errors.ts';
-import loadCart from './loadCart.ts';
+import { InvalidIdError, mapServiceError, paymentProviderErrors } from '../../../errors.ts';
+import { loadCart } from '../../loadCart.ts';
 
 export default async function updateCartPaymentInvoice(
   root: never,
@@ -17,13 +17,15 @@ export default async function updateCartPaymentInvoice(
 
   const order = await loadCart(context, orderId);
 
-  await services.orders
-    .selectPaymentProvider({
+  try {
+    await services.orders.selectPaymentProvider({
       order,
       paymentProviderId,
       expectedType: PaymentProviderType.INVOICE,
       paymentContext: { meta },
-    })
-    .catch(rethrowPaymentProviderError);
+    });
+  } catch (error) {
+    throw mapServiceError(error, paymentProviderErrors);
+  }
   return services.orders.updateCalculation(order._id);
 }

@@ -1,7 +1,7 @@
 import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, AssortmentNotFoundError } from '../../../errors.ts';
-import { createBulkOperationResult, normalizeBulkIds } from './bulkOperation.ts';
+import { createBulkOperationResult, normalizeBulkIds } from '../../bulkOperation.ts';
 
 export default async function bulkAssignProductsToAssortment(
   root: never,

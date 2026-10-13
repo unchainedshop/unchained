@@ -2,10 +2,11 @@ import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
 import {
   InvalidIdError,
-  rethrowDeliveryProviderError,
-  rethrowPaymentProviderError,
+  mapServiceError,
+  deliveryProviderErrors,
+  paymentProviderErrors,
 } from '../../../errors.ts';
-import loadCart from './loadCart.ts';
+import { loadCart } from '../../loadCart.ts';
 import type { Order } from '@unchainedshop/core-orders';
 
 interface UpdateCartParams {
@@ -39,15 +40,19 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
 
   // Provider updates trigger events and need to be handled separately
   if (deliveryProviderId) {
-    order = await services.orders
-      .selectDeliveryProvider({ order, deliveryProviderId })
-      .catch(rethrowDeliveryProviderError);
+    try {
+      order = await services.orders.selectDeliveryProvider({ order, deliveryProviderId });
+    } catch (error) {
+      throw mapServiceError(error, deliveryProviderErrors);
+    }
   }
 
   if (paymentProviderId) {
-    order = await services.orders
-      .selectPaymentProvider({ order, paymentProviderId })
-      .catch(rethrowPaymentProviderError);
+    try {
+      order = await services.orders.selectPaymentProvider({ order, paymentProviderId });
+    } catch (error) {
+      throw mapServiceError(error, paymentProviderErrors);
+    }
   }
 
   // Recalculate, then return

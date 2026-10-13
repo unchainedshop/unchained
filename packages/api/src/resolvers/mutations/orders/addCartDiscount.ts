@@ -4,7 +4,7 @@ import {
   OrderDiscountCodeAlreadyPresentError,
   OrderDiscountCodeNotValidError,
 } from '../../../errors.ts';
-import loadCart from './loadCart.ts';
+import { loadCart } from '../../loadCart.ts';
 
 export default async function addCartDiscount(
   root: never,

@@ -1,7 +1,7 @@
 import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import { getPublicRoles } from '../../../roles/index.ts';
-import { createBulkOperationResult, normalizeBulkIds } from './bulkOperation.ts';
+import { createBulkOperationResult, normalizeBulkIds } from '../../bulkOperation.ts';
 
 export default async function bulkSetUserRoles(
   root: never,

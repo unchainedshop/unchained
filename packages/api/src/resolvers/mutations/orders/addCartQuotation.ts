@@ -10,9 +10,9 @@ import {
   QuotationItemConfigurationError,
   QuotationInvalidError,
   OrderItemNotFoundError,
-  rethrowAs,
+  mapServiceError,
 } from '../../../errors.ts';
-import loadCart from './loadCart.ts';
+import { loadCart } from '../../loadCart.ts';
 
 export default async function addCartQuotation(
   root: never,
@@ -48,17 +48,21 @@ export default async function addCartQuotation(
   const order = await loadCart(context, orderId);
 
   // Ownership of cart and quotation is checked by the addCartQuotation ACL
-  const position = await services.orders
-    .addCartQuotation({ order, quotation, quantity, configuration }, context)
-    .catch(
-      rethrowAs({
-        QuotationWrongStatusError,
-        QuotationInvalidError,
-        ProductNotFoundError,
-        QuotationItemConfigurationError,
-        OrderItemNotFoundError,
-      }),
+  let position;
+  try {
+    position = await services.orders.addCartQuotation(
+      { order, quotation, quantity, configuration },
+      context,
     );
+  } catch (error) {
+    throw mapServiceError(error, {
+      QuotationWrongStatusError,
+      QuotationInvalidError,
+      ProductNotFoundError,
+      QuotationItemConfigurationError,
+      OrderItemNotFoundError,
+    });
+  }
 
   await services.orders.updateCalculation(order._id);
   return modules.orders.positions.findOrderPosition({ itemId: position._id });

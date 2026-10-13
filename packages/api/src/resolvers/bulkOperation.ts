@@ -1,4 +1,4 @@
-import { BulkOperationTooLargeError } from '../../../errors.ts';
+import { BulkOperationTooLargeError } from '../errors.ts';
 
 export const MAX_BULK_OPERATION_SIZE = 1000;
 

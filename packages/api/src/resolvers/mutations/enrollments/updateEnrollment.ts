@@ -12,7 +12,7 @@ import {
   ProductNotFoundError,
   ProductWrongStatusError,
   ProductWrongTypeError,
-  rethrowAs,
+  mapServiceError,
 } from '../../../errors.ts';
 import { checkAction } from '../../../roles/acl.ts';
 import { actions } from '../../../roles/index.ts';
@@ -102,12 +102,14 @@ export default async function updateEnrollment(
     }
 
     if (enrollment.status !== EnrollmentStatus.INITIAL) {
-      enrollment = await services.enrollments.updateEnrollmentPlan(enrollment, { plan }).catch(
-        rethrowAs({
+      try {
+        enrollment = await services.enrollments.updateEnrollmentPlan(enrollment, { plan });
+      } catch (error) {
+        throw mapServiceError(error, {
           EnrollmentPlanChangeNotSupportedError,
           EnrollmentPlanNotSupportedError: EnrollmentPlanChangeNotSupportedError,
-        }),
-      );
+        });
+      }
     } else {
       enrollment = (await modules.enrollments.updatePlan(enrollmentId, plan)) as Enrollment;
       enrollment = await services.enrollments.initializeEnrollment(enrollment, {

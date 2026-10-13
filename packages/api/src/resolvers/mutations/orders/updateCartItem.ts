@@ -9,7 +9,7 @@ import {
   OrderNotFoundError,
   QuotationNotFoundError,
   QuotationItemConfigurationError,
-  rethrowAs,
+  mapServiceError,
 } from '../../../errors.ts';
 
 export default async function updateCartItem(
@@ -41,9 +41,15 @@ export default async function updateCartItem(
 
   if (quantity != null && quantity < 1) throw new OrderQuantityTooLowError({ quantity });
 
-  await services.orders
-    .updateCartItem({ order, item, quantity, configuration }, context)
-    .catch(rethrowAs({ ProductNotFoundError, QuotationNotFoundError, QuotationItemConfigurationError }));
+  try {
+    await services.orders.updateCartItem({ order, item, quantity, configuration }, context);
+  } catch (error) {
+    throw mapServiceError(error, {
+      ProductNotFoundError,
+      QuotationNotFoundError,
+      QuotationItemConfigurationError,
+    });
+  }
 
   await services.orders.updateCalculation(order._id);
   return modules.orders.positions.findOrderPosition({ itemId: item._id });

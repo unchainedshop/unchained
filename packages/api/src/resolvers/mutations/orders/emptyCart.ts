@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import loadCart from './loadCart.ts';
+import { loadCart } from '../../loadCart.ts';
 
 export default async function emptyCart(
   root: never,

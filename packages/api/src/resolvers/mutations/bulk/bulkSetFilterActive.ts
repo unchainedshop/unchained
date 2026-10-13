@@ -1,6 +1,6 @@
 import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
-import { createBulkOperationResult, normalizeBulkIds } from './bulkOperation.ts';
+import { createBulkOperationResult, normalizeBulkIds } from '../../bulkOperation.ts';
 
 export default async function bulkSetFilterActive(
   root: never,

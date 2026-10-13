@@ -12,12 +12,13 @@ export const createError = (code: string, message: string): any =>
     }
   };
 
-export const rethrowAs =
-  (apiErrors: Record<string, new (details?: Record<string, unknown>) => Error>) =>
-  (error: Error & { details?: Record<string, unknown> }): never => {
-    const APIError = apiErrors[error.name];
-    throw APIError ? new APIError(error.details) : error;
-  };
+export const mapServiceError = (
+  error: Error & { details?: Record<string, unknown> },
+  apiErrors: Record<string, new (details?: Record<string, unknown>) => Error>,
+) => {
+  const APIError = apiErrors[error.name];
+  return APIError ? new APIError(error.details) : error;
+};
 
 export const PermissionSystemError = createError('PermissionSystemError', 'Permission System Error');
 export const NoPermissionError = createError('NoPermissionError', 'Not authorized');
@@ -377,12 +378,12 @@ export const DuplicateFilterKeyError = createError(
   'Key already registered for another filter',
 );
 
-export const rethrowDeliveryProviderError = rethrowAs({
+export const deliveryProviderErrors = {
   DeliveryProviderNotFoundError: DeliverProviderNotFoundError,
   DeliveryProviderNotSupportedError: OrderDeliveryTypeError,
-});
+};
 
-export const rethrowPaymentProviderError = rethrowAs({
+export const paymentProviderErrors = {
   PaymentProviderNotFoundError,
   PaymentProviderNotSupportedError: OrderPaymentTypeError,
-});
+};

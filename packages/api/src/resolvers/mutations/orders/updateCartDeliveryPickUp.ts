@@ -1,8 +1,8 @@
 import type { Context } from '../../../context.ts';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError, rethrowDeliveryProviderError } from '../../../errors.ts';
-import loadCart from './loadCart.ts';
+import { InvalidIdError, mapServiceError, deliveryProviderErrors } from '../../../errors.ts';
+import { loadCart } from '../../loadCart.ts';
 
 export default async function updateCartDeliveryPickUp(
   root: never,
@@ -17,13 +17,15 @@ export default async function updateCartDeliveryPickUp(
 
   const order = await loadCart(context, orderId);
 
-  await services.orders
-    .selectDeliveryProvider({
+  try {
+    await services.orders.selectDeliveryProvider({
       order,
       deliveryProviderId,
       expectedType: DeliveryProviderType.PICKUP,
       deliveryContext: { orderPickUpLocationId, meta },
-    })
-    .catch(rethrowDeliveryProviderError);
+    });
+  } catch (error) {
+    throw mapServiceError(error, deliveryProviderErrors);
+  }
   return services.orders.updateCalculation(order._id);
 }
