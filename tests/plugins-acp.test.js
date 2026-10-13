@@ -356,6 +356,38 @@ test.describe('Plugins: ACP checkout', () => {
     assert.deepStrictEqual([replay.status, replay.headers.get('idempotent-replayed')], [400, 'true']);
   });
 
+  test('keeps buyer and recipient contact apart', async () => {
+    const created = await createSession();
+    const res = await acpFetch(`/acp/checkout_sessions/${created.id}`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: {
+        buyer: { email: 'buyer@example.com', phone_number: '+41791111111' },
+        fulfillment_details: { email: 'recipient@example.com', phone_number: '+41792222222' },
+      },
+    });
+    const session = await res.json();
+    assert.deepStrictEqual(session.buyer, {
+      email: 'buyer@example.com',
+      phone_number: '+41791111111',
+    });
+    assert.partialDeepStrictEqual(session.fulfillment_details, {
+      email: 'recipient@example.com',
+      phone_number: '+41792222222',
+    });
+
+    const order = await db.collection('orders').findOne({ _id: created.id });
+    const delivery = await db.collection('order_deliveries').findOne({ _id: order.deliveryId });
+    assert.deepStrictEqual(order.contact, {
+      emailAddress: 'buyer@example.com',
+      telNumber: '+41791111111',
+    });
+    assert.deepStrictEqual(delivery.context.contact, {
+      emailAddress: 'recipient@example.com',
+      telNumber: '+41792222222',
+    });
+  });
+
   test('complete uses buyer information persisted by an earlier update', async () => {
     const created = await createSession();
     const updated = await acpFetch(`/acp/checkout_sessions/${created.id}`, {

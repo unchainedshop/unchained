@@ -55,19 +55,19 @@ const mapAddress = (address: any) => {
   return hasAddress(mappedAddress) ? mappedAddress : undefined;
 };
 
-const mapContact = (body: Record<string, any>) => {
-  const buyer = body.buyer;
-  const fulfillment = body.fulfillment_details;
-  if (!buyer && !fulfillment?.email && !fulfillment?.phone_number) return undefined;
+const mapContact = (contact?: { email?: string; phone_number?: string }) =>
+  contact?.email || contact?.phone_number
+    ? {
+        ...(contact.email ? { emailAddress: contact.email } : {}),
+        ...(contact.phone_number ? { telNumber: contact.phone_number } : {}),
+      }
+    : undefined;
+
+const mapBuyer = (buyer?: { email?: string; phone_number?: string }) => {
   if (buyer && (!buyer.email || typeof buyer.email !== 'string')) {
     throw invalidRequest('invalid_buyer', 'buyer.email is required', '$.buyer.email');
   }
-  return {
-    ...(buyer?.email || fulfillment?.email ? { emailAddress: buyer?.email || fulfillment.email } : {}),
-    ...(buyer?.phone_number || fulfillment?.phone_number
-      ? { telNumber: buyer?.phone_number || fulfillment.phone_number }
-      : {}),
-  };
+  return mapContact(buyer);
 };
 
 export const extractACPItems = (lineItems: unknown) => {
@@ -155,7 +155,8 @@ const parseCheckoutUpdate = (body: Record<string, any>) => {
 
   return {
     items: Object.hasOwn(body, 'line_items') ? extractACPItems(body.line_items) : undefined,
-    contact: mapContact(body),
+    contact: mapBuyer(body.buyer),
+    fulfillmentContact: mapContact(body.fulfillment_details),
     fulfillmentAddress: mapAddress(body.fulfillment_details?.address),
     billingAddress: mapAddress(body.payment_data?.billing_address),
     selectedOption: selectedOption as { option_id: string; type?: string } | undefined,
@@ -198,6 +199,7 @@ const applyCheckoutUpdate = async (
   {
     items,
     contact,
+    fulfillmentContact,
     fulfillmentAddress,
     billingAddress,
     selectedOption,
@@ -233,19 +235,25 @@ const applyCheckoutUpdate = async (
     });
   }
 
-  if (option?.type !== 'pickup' && order.deliveryId && (fulfillmentAddress || billingAddress)) {
+  if (order.deliveryId && (fulfillmentAddress || billingAddress || fulfillmentContact)) {
     const delivery = await context.modules.orders.deliveries.findDelivery({
       orderDeliveryId: order.deliveryId,
     });
-    const address = nextDeliveryAddress({
-      fulfillmentAddress,
-      billingAddress,
-      previousBillingAddress: initialOrder.billingAddress,
-      deliveryAddress: delivery?.context?.address,
+    const address =
+      option?.type !== 'pickup' && (fulfillmentAddress || billingAddress)
+        ? nextDeliveryAddress({
+            fulfillmentAddress,
+            billingAddress,
+            previousBillingAddress: initialOrder.billingAddress,
+            deliveryAddress: delivery?.context?.address,
+          })
+        : undefined;
+    await context.modules.orders.deliveries.updateContext(order.deliveryId, {
+      ...(address !== undefined ? { address } : {}),
+      ...(fulfillmentContact
+        ? { contact: { ...delivery?.context?.contact, ...fulfillmentContact } }
+        : {}),
     });
-    if (address !== undefined) {
-      await context.modules.orders.deliveries.updateContext(order.deliveryId, { address });
-    }
   }
 
   return { order, messages: selectedOption && !option ? [unavailableFulfillmentOption] : [] };

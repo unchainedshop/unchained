@@ -144,6 +144,7 @@ export const serializeCheckoutSession = async (
   const fulfillmentAddress = hasAddress(selectedDelivery?.context?.address)
     ? selectedDelivery?.context?.address
     : order.billingAddress;
+  const fulfillmentContact = { ...order.contact, ...selectedDelivery?.context?.contact };
   const items = netTotal(OrderPricingRowCategory.Items);
   const discount = -netTotal(OrderPricingRowCategory.Discounts);
   const fulfillment = netTotal(OrderPricingRowCategory.Delivery);
@@ -163,10 +164,10 @@ export const serializeCheckoutSession = async (
         }
       : undefined,
     fulfillment_details:
-      fulfillmentAddress || order.contact
+      fulfillmentAddress || fulfillmentContact.emailAddress || fulfillmentContact.telNumber
         ? {
-            ...(order.contact?.emailAddress ? { email: order.contact.emailAddress } : {}),
-            ...(order.contact?.telNumber ? { phone_number: order.contact.telNumber } : {}),
+            ...(fulfillmentContact.emailAddress ? { email: fulfillmentContact.emailAddress } : {}),
+            ...(fulfillmentContact.telNumber ? { phone_number: fulfillmentContact.telNumber } : {}),
             ...(fulfillmentAddress ? { address: toACPAddress(fulfillmentAddress) } : {}),
           }
         : undefined,
