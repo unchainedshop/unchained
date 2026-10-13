@@ -196,4 +196,24 @@ test.describe('Plugins: ACP Shared Payment Token charge (real Stripe)', () => {
       await Promise.all([revokeSPT(declinedSptId), revokeSPT(sptId)]);
     }
   });
+
+  test('reports an SPT that needs authentication and keeps the session open', async () => {
+    const orderId = await readySession();
+    const sptId = await mintSPT({ paymentMethod: 'pm_card_authenticationRequired' });
+    try {
+      const authenticationRequired = await completeSession(orderId, sptId);
+      assert.strictEqual(
+        authenticationRequired.status,
+        200,
+        JSON.stringify(authenticationRequired.body),
+      );
+      assert.strictEqual(authenticationRequired.body.status, 'ready_for_payment');
+      assert.deepStrictEqual(
+        authenticationRequired.body.messages.map(({ type, code }) => ({ type, code })),
+        [{ type: 'error', code: 'requires_3ds' }],
+      );
+    } finally {
+      await revokeSPT(sptId);
+    }
+  });
 });

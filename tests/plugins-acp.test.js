@@ -44,15 +44,29 @@ const validSessionBody = () => ({
   capabilities: { payment: {} },
 });
 
-const createSession = async () => {
+const readySessionBody = () => ({
+  ...validSessionBody(),
+  buyer: { email: 'buyer@example.com' },
+  fulfillment_details: {
+    address: {
+      name: 'Ada Lovelace',
+      line_one: 'Teststrasse 1',
+      postal_code: '8000',
+      city: 'Zürich',
+      country: 'CH',
+    },
+  },
+});
+
+const createSession = async (body = validSessionBody()) => {
   const res = await acpFetch('/acp/checkout_sessions', {
     method: 'POST',
-    body: validSessionBody(),
+    body,
     idempotencyKey: idem(),
   });
-  const body = await res.json();
-  assert.strictEqual(res.status, 201, JSON.stringify(body));
-  return body;
+  const session = await res.json();
+  assert.strictEqual(res.status, 201, JSON.stringify(session));
+  return session;
 };
 
 test.describe('Plugins: ACP checkout', () => {
@@ -682,25 +696,7 @@ test.describe('Plugins: ACP checkout', () => {
   });
 
   test('processes one request per session while the payment is charged', async (t) => {
-    const createdResponse = await acpFetch('/acp/checkout_sessions', {
-      method: 'POST',
-      idempotencyKey: idem(),
-      body: {
-        ...validSessionBody(),
-        buyer: { email: 'buyer@example.com' },
-        fulfillment_details: {
-          address: {
-            name: 'Ada Lovelace',
-            line_one: 'Teststrasse 1',
-            postal_code: '8000',
-            city: 'Zürich',
-            country: 'CH',
-          },
-        },
-      },
-    });
-    const created = await createdResponse.json();
-    assert.strictEqual(createdResponse.status, 201, JSON.stringify(created));
+    const created = await createSession(readySessionBody());
 
     const { promise: charging, resolve: chargingStarted } = Promise.withResolvers();
     const { promise: paid, resolve: pay } = Promise.withResolvers();
@@ -759,6 +755,31 @@ test.describe('Plugins: ACP checkout', () => {
       body: {},
     });
     assert.strictEqual(lateCancel.status, 405);
+  });
+
+  test('reports a payment that needs an authentication of the buyer', async (t) => {
+    const created = await createSession(readySessionBody());
+    t.mock.method(PaymentDirector, 'chargeOrderPayment', async () => {
+      throw new Error('The payment requires an authentication of the buyer', {
+        cause: 'PAYMENT_REQUIRES_ACTION',
+      });
+    });
+
+    const res = await acpFetch(`/acp/checkout_sessions/${created.id}/complete`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: {
+        payment_data: {
+          handler_id: 'stripe_spt',
+          instrument: { type: 'card', credential: { type: 'spt', token: 'spt_test' } },
+        },
+      },
+    });
+    const session = await res.json();
+
+    assert.strictEqual(res.status, 200);
+    assert.partialDeepStrictEqual(session.messages, [{ type: 'error', code: 'requires_3ds' }]);
+    assert.strictEqual((await db.collection('orders').findOne({ _id: created.id })).status, null);
   });
 
   test('GET /acp/feed.jsonl streams a product feed as ndjson', async () => {

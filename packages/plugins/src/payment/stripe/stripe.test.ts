@@ -127,4 +127,21 @@ describe('Stripe gateway', () => {
     );
     assert.equal(create.mock.calls[0].arguments[1].idempotencyKey, 'acp-payment-1-spt_declined');
   });
+
+  it('reports a shared payment token charge that needs an authentication of the buyer', async () => {
+    const create = mock.fn(async () => ({ id: 'pi_1', status: 'requires_action' }));
+
+    await assert.rejects(
+      createAcpSharedPaymentTokenIntent(
+        {
+          acpToken: 'spt_3ds',
+          order: { _id: 'order-12345678', currencyCode: 'CHF' } as any,
+          orderPayment: { _id: 'payment-1' } as any,
+          pricing: { total: () => ({ amount: 1000, currencyCode: 'CHF' }) } as any,
+        },
+        createClient({ paymentIntents: { create } }),
+      ),
+      { cause: 'PAYMENT_REQUIRES_ACTION' },
+    );
+  });
 });

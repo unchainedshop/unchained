@@ -17,6 +17,11 @@ import { getACPFulfillmentOptions, hasAddress, serializeCheckoutSession } from '
 
 const SESSION_LOCK_TTL = 90000;
 
+const paymentMessageCodes = new Map([
+  ['PAYMENT_DECLINED', 'payment_declined'],
+  ['PAYMENT_REQUIRES_ACTION', 'requires_3ds'],
+]);
+
 const invalidRequest = (code: string, message: string, param?: string) =>
   new ACPError(400, 'invalid_request', code, message, param ? { param } : {});
 
@@ -428,11 +433,12 @@ export const completeCheckoutSession = async (
       },
     };
   } catch (error) {
-    if (error.cause !== 'PAYMENT_DECLINED') throw error;
+    const code = paymentMessageCodes.get(error.cause);
+    if (!code) throw error;
     return {
       status: 200,
       body: await serializeCheckoutSession(calculated, context, [
-        { type: 'error', code: 'payment_declined', content_type: 'plain', content: error.message },
+        { type: 'error', code, content_type: 'plain', content: error.message },
       ]),
     };
   }

@@ -1,6 +1,7 @@
 import type StripeClient from 'stripe';
 import { createLogger } from '@unchainedshop/logger';
 import type { UnchainedCore } from '@unchainedshop/core';
+import { OrderStatus } from '@unchainedshop/core-orders';
 import { stripe } from './stripe.ts';
 
 const logger = createLogger('unchained:stripe:handler');
@@ -57,9 +58,12 @@ const processWebhookEvent = async (
     }
     await modules.orders.payments.logEvent(orderPaymentId, event);
 
-    const order = await services.orders.checkoutOrder(orderPayment.orderId, {
-      paymentContext: { paymentIntentId: paymentIntent.id },
-    });
+    const paymentContext = { paymentIntentId: paymentIntent.id };
+    const paidOrder = await modules.orders.findOrder({ orderId: orderPayment.orderId });
+    const order =
+      paidOrder?.status === OrderStatus.PENDING
+        ? await services.orders.processOrder(paidOrder, { paymentContext })
+        : await services.orders.checkoutOrder(orderPayment.orderId, { paymentContext });
     if (!order) throw new Error(`Order with id ${orderPayment.orderId} not found`);
 
     logger.info('Stripe webhook checkout successful', {

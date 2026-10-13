@@ -205,7 +205,7 @@ export const createAcpSharedPaymentTokenIntent = async (
   stripeClient: StripeClient = stripe,
 ) => {
   try {
-    return await stripeClient.paymentIntents.create(
+    const paymentIntent = await stripeClient.paymentIntents.create(
       {
         ...orderIntentParams({ order, orderPayment, pricing, description: descriptorPrefix }),
         confirm: true,
@@ -216,6 +216,12 @@ export const createAcpSharedPaymentTokenIntent = async (
         idempotencyKey: `acp-${orderPayment._id}-${acpToken}`,
       },
     );
+    if (paymentIntent.status === 'requires_action') {
+      throw new Error('The payment requires an authentication of the buyer', {
+        cause: 'PAYMENT_REQUIRES_ACTION',
+      });
+    }
+    return paymentIntent;
   } catch (error) {
     throw error.type === 'StripeCardError'
       ? new Error(error.message, { cause: 'PAYMENT_DECLINED' })
