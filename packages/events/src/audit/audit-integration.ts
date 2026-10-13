@@ -611,6 +611,7 @@ export function configureAuditIntegration(auditLog: AuditLog): void {
     await auditLog.logAuthentication({
       activity: OCSF_AUTH_ACTIVITY.LOGON,
       ...ctx,
+      userName: ctx.userName || p.email,
       success: false,
       message: 'Failed login attempt',
     });

@@ -27,6 +27,7 @@ import {
   OCSF_CLASS,
   OCSF_CATEGORY,
   OCSF_SEVERITY,
+  OCSF_USER_TYPE,
   OCSF_STATUS,
   OCSF_AUTH_ACTIVITY,
   OCSF_ACCOUNT_ACTIVITY,
@@ -163,7 +164,13 @@ export class AuditLog {
     };
   }
 
-  private createUser(userId?: string, userName?: string): OCSFUser {
+  // OCSF requires a user uid or name: requests without a login act as anonymous, the rest as the engine
+  private createUser(userId?: string, userName?: string, remoteAddress?: string): OCSFUser {
+    if (!userId && !userName) {
+      return remoteAddress
+        ? { name: 'anonymous', type_id: OCSF_USER_TYPE.UNKNOWN }
+        : { name: this.serviceName, type_id: OCSF_USER_TYPE.SYSTEM };
+    }
     return {
       uid: userId,
       name: userName,
@@ -261,7 +268,7 @@ export class AuditLog {
       time: Date.now(),
       message: input.message || activityMessages[activityId] || 'Authentication Event',
       metadata: this.createMetadata(crypto.randomUUID()),
-      user: this.createUser(input.userId, input.userName),
+      user: this.createUser(input.userId, input.userName, input.remoteAddress),
       // OCSF requires service or dst_endpoint on authentication events
       service: { name: this.serviceName },
       src_endpoint: this.createEndpoint(input.remoteAddress),
@@ -295,7 +302,7 @@ export class AuditLog {
       time: Date.now(),
       message: input.message || activityMessages[activityId] || 'Account Change',
       metadata: this.createMetadata(crypto.randomUUID()),
-      user: this.createUser(input.userId, input.userName),
+      user: this.createUser(input.userId, input.userName, input.remoteAddress),
       actor: input.actorUserId
         ? {
             user: this.createUser(input.actorUserId, input.actorUserName),
@@ -345,7 +352,7 @@ export class AuditLog {
       message: input.message || activityMessages[activityId] || 'API Activity',
       metadata: this.createMetadata(crypto.randomUUID()),
       actor: {
-        user: this.createUser(input.userId, input.userName),
+        user: this.createUser(input.userId, input.userName, input.remoteAddress),
         session: input.sessionId ? { uid: input.sessionId } : undefined,
       },
       api: {

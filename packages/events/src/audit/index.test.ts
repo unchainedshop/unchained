@@ -10,6 +10,7 @@ import {
   OCSF_AUTH_ACTIVITY,
   OCSF_ACCOUNT_ACTIVITY,
   OCSF_API_ACTIVITY,
+  OCSF_USER_TYPE,
   createAuditLog,
 } from './index.ts';
 
@@ -130,6 +131,21 @@ describe('AuditLog (OCSF Format)', () => {
     assert.strictEqual(roleChange.message, 'User Roles Changed');
     assert.strictEqual(roleChange.user.uid, 'target-user');
     assert.strictEqual(roleChange.actor.user.uid, 'admin-user');
+  });
+
+  it('should name anonymous requests and the engine as users', async () => {
+    const [anonymous, system] = await captureEvents(async (auditLog) => {
+      await auditLog.logApiActivity({
+        activity: OCSF_API_ACTIVITY.ACCESS_DENIED,
+        remoteAddress: '10.0.0.3',
+        success: false,
+      });
+      await auditLog.logApiActivity({ activity: OCSF_API_ACTIVITY.UPDATE, operation: 'createOrder' });
+    });
+
+    assert.deepStrictEqual(anonymous.actor.user, { name: 'anonymous', type_id: OCSF_USER_TYPE.UNKNOWN });
+    assert.strictEqual(system.actor.user.type_id, OCSF_USER_TYPE.SYSTEM);
+    assert.ok(system.actor.user.name);
   });
 
   it('should build API activity events with request details', async () => {

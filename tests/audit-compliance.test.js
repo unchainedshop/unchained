@@ -24,7 +24,7 @@ import { SimpleProduct } from './seeds/products.js';
 import assert from 'node:assert';
 import test from 'node:test';
 
-import { OCSF_CLASS, OCSF_AUTH_ACTIVITY, OCSF_STATUS } from '@unchainedshop/events';
+import { OCSF_CLASS, OCSF_AUTH_ACTIVITY, OCSF_STATUS, OCSF_USER_TYPE } from '@unchainedshop/events';
 
 const waitForEvents = async (predicate, timeoutMs = 3000) => {
   const start = Date.now();
@@ -178,6 +178,15 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
         }
       `,
     });
+    await anonymousFetch({
+      query: /* GraphQL */ `
+        mutation {
+          loginWithPassword(email: "nobody@unchained.local", password: "definitely-wrong") {
+            _id
+          }
+        }
+      `,
+    });
 
     const authEvents = await waitForEvents(
       (e) =>
@@ -189,6 +198,13 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
     const failureEvent = authEvents[0];
     assert.ok(failureEvent, 'Failed login should produce a failed LOGON audit event');
     assert.strictEqual(failureEvent.user?.name, 'admin');
+    const [unknownEmailEvent] = await waitForEvents(
+      (e) =>
+        e.class_uid === OCSF_CLASS.AUTHENTICATION &&
+        e.status_id === OCSF_STATUS.FAILURE &&
+        e.user?.name === 'nobody@unchained.local',
+    );
+    assert.ok(unknownEmailEvent, 'A failed login by e-mail should name the address');
 
     const successEvents = getCapturedAuditEvents().filter(
       (e) =>
@@ -226,6 +242,10 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
     );
     assert.ok(deniedMutation, 'A denied mutation should be audited with its schema coordinate');
     assert.strictEqual(deniedMutation.activity_name, 'Access Denied');
+    assert.deepStrictEqual(deniedMutation.actor.user, {
+      name: 'anonymous',
+      type_id: OCSF_USER_TYPE.UNKNOWN,
+    });
 
     const [deniedField] = await waitForEvents(
       (e) => e.api?.operation === 'manageUsers' && e.unmapped?.data?.key === 'Shop.userRoles',
