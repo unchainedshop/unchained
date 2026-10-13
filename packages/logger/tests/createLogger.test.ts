@@ -767,30 +767,52 @@ describe('createLogger', () => {
       assert.strictEqual(calls, 0);
     });
 
-    it('should let provider keys win over user-supplied args', () => {
+    it('should let user-supplied args win over provider keys', () => {
       process.env.UNCHAINED_LOG_FORMAT = 'json';
-      setLogContextProvider(() => ({ trace_id: 'real' }));
+      setLogContextProvider(() => ({ trace_id: 'from-provider', span_id: 'kept' }));
       const logger = createLogger('ctx-overwrite');
 
       consoleOutput = [];
-      logger.info('hello', { trace_id: 'fake', other: 'kept' });
+      logger.info('hello', { trace_id: 'per-call' });
 
       const parsed = JSON.parse(consoleOutput[consoleOutput.length - 1]);
-      assert.strictEqual(parsed.trace_id, 'real');
-      assert.strictEqual(parsed.other, 'kept');
+      assert.strictEqual(parsed.trace_id, 'per-call');
+      assert.strictEqual(parsed.span_id, 'kept');
     });
 
-    it('should skip merge when provider returns undefined', () => {
+    it('should not let the provider override timestamp, level, name or message', () => {
       process.env.UNCHAINED_LOG_FORMAT = 'json';
-      setLogContextProvider(() => undefined);
-      const logger = createLogger('ctx-undefined');
+      setLogContextProvider(() => ({
+        timestamp: 'hax',
+        level: 'TRACE',
+        name: 'evil',
+        message: 'spoof',
+      }));
+      const logger = createLogger('ctx-reserved');
 
       consoleOutput = [];
       logger.info('hello');
 
       const parsed = JSON.parse(consoleOutput[consoleOutput.length - 1]);
+      assert.notStrictEqual(parsed.timestamp, 'hax');
+      assert.strictEqual(parsed.level, 'INFO');
+      assert.strictEqual(parsed.name, 'ctx-reserved');
       assert.strictEqual(parsed.message, 'hello');
-      assert.ok(!('trace_id' in parsed));
+    });
+
+    it('should skip merge when provider returns null or undefined', () => {
+      process.env.UNCHAINED_LOG_FORMAT = 'json';
+      const logger = createLogger('ctx-undefined');
+
+      for (const nothing of [null, undefined]) {
+        setLogContextProvider(() => nothing);
+        consoleOutput = [];
+        logger.info('hello');
+
+        const parsed = JSON.parse(consoleOutput[consoleOutput.length - 1]);
+        assert.strictEqual(parsed.message, 'hello');
+        assert.ok(!('trace_id' in parsed));
+      }
     });
 
     it('should swallow provider exceptions and still emit the log', () => {
@@ -828,17 +850,19 @@ describe('createLogger', () => {
       assert.strictEqual('polluted' in Object.prototype, false);
     });
 
-    it('should clear the provider when set to undefined', () => {
+    it('should clear the provider when set to null or undefined', () => {
       process.env.UNCHAINED_LOG_FORMAT = 'json';
-      setLogContextProvider(() => ({ trace_id: 'first' }));
-      setLogContextProvider(undefined);
       const logger = createLogger('ctx-clear');
 
-      consoleOutput = [];
-      logger.info('hello');
+      for (const nothing of [null, undefined]) {
+        setLogContextProvider(() => ({ trace_id: 'first' }));
+        setLogContextProvider(nothing);
+        consoleOutput = [];
+        logger.info('hello');
 
-      const parsed = JSON.parse(consoleOutput[consoleOutput.length - 1]);
-      assert.ok(!('trace_id' in parsed));
+        const parsed = JSON.parse(consoleOutput[consoleOutput.length - 1]);
+        assert.ok(!('trace_id' in parsed));
+      }
     });
 
     it('should allow dynamic per-call values', () => {

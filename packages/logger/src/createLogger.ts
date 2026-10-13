@@ -152,21 +152,21 @@ const formatTimestamp = (): string => {
  * Integrators register one to inject request-scoped fields such as `trace_id` and
  * `span_id` from an OpenTelemetry active span.
  */
-export type LogContextProvider = () => Record<string, unknown> | undefined;
+export type LogContextProvider = () => Record<string, unknown> | null | undefined;
 
-let logContextProvider: LogContextProvider | undefined;
+let logContextProvider: LogContextProvider | null | undefined;
 
 /**
  * Registers a context provider whose returned fields are merged into JSON log
  * records. The provider runs once per emitted log line and only when
- * `UNCHAINED_LOG_FORMAT=json`. Pass `undefined` to unregister.
+ * `UNCHAINED_LOG_FORMAT=json`. Pass `null` or `undefined` to unregister.
  *
- * Provider-supplied keys win over user-supplied args, so trace context is not
- * overridable by accidental log payload keys.
+ * Fields passed to the log call win over provider fields, and the provider
+ * cannot override `timestamp`, `level`, `name` or `message`.
  *
  * Errors thrown by the provider are swallowed — telemetry must never break logs.
  */
-export const setLogContextProvider = (provider: LogContextProvider | undefined): void => {
+export const setLogContextProvider = (provider: LogContextProvider | null | undefined): void => {
   logContextProvider = provider;
 };
 
@@ -231,28 +231,28 @@ export const createLogger = (moduleName: string): Logger => {
         message: typeof message === 'string' ? message : message,
       };
 
+      // Merge log context provider output (e.g. trace_id/span_id from active span).
+      if (logContextProvider) {
+        try {
+          const extra = logContextProvider();
+          if (extra && typeof extra === 'object') {
+            for (const key in extra) {
+              if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+              if (Object.hasOwn(logObject, key)) continue;
+              logObject[key] = extra[key];
+            }
+          }
+        } catch {
+          // Telemetry must never break logging
+        }
+      }
+
       // Merge additional args if they're objects, guarding against prototype pollution
       if (args.length > 0 && typeof args[0] === 'object' && args[0] !== null) {
         for (const key in args[0]) {
           // Skip prototype pollution vectors
           if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
           logObject[key] = args[0][key];
-        }
-      }
-
-      // Merge log context provider output (e.g. trace_id/span_id from active span).
-      // Provider keys are written last so they win over user-supplied args.
-      if (logContextProvider) {
-        try {
-          const extra = logContextProvider();
-          if (extra) {
-            for (const key in extra) {
-              if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
-              logObject[key] = extra[key];
-            }
-          }
-        } catch {
-          // Telemetry must never break logging
         }
       }
 
