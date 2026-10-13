@@ -44,6 +44,17 @@ export const OCSF_SEVERITY = {
 } as const;
 
 /**
+ * OCSF User Type IDs
+ */
+export const OCSF_USER_TYPE = {
+  UNKNOWN: 0,
+  USER: 1,
+  ADMIN: 2,
+  SYSTEM: 3,
+  OTHER: 99,
+} as const;
+
+/**
  * OCSF Status IDs for authentication/API results
  */
 export const OCSF_STATUS = {
