@@ -13,6 +13,15 @@ type ACPRouteAction = (
 
 const logger = createLogger('unchained:acp');
 
+const sessionInProgress = () =>
+  new ACPError(
+    409,
+    'invalid_request',
+    'session_in_progress',
+    'Another request is processing this checkout session',
+    { headers: { 'Retry-After': '1' } },
+  );
+
 const responseFrom = (result: ACPRouteResult, headers: Record<string, string>) => {
   const body = result.contentType ? (result.body as BodyInit) : JSON.stringify(result.body);
   return new Response(body, {
@@ -75,9 +84,10 @@ export const createACPRoute = (
         ...(result.replayed ? { 'Idempotent-Replayed': 'true' } : {}),
       });
     } catch (error) {
-      if (error instanceof ACPError) {
+      const failure = error?.cause === 'LOCKED' ? sessionInProgress() : error;
+      if (failure instanceof ACPError) {
         return responseFrom(
-          { status: error.status, body: error.toJSON(), headers: error.options.headers },
+          { status: failure.status, body: failure.toJSON(), headers: failure.options.headers },
           { 'Request-Id': requestId },
         );
       }

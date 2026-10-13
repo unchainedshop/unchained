@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import test from 'node:test';
+import { OrderPricingSheet, PaymentDirector } from '@unchainedshop/core';
 import { setupDatabase, disconnect, getServerBaseUrl } from './helpers.js';
 
 const API_KEY = 'test-acp-secret-key';
@@ -535,6 +536,86 @@ test.describe('Plugins: ACP checkout', () => {
       ]),
       [guestsBefore, cartsBefore, positionsBefore],
     );
+  });
+
+  test('processes one request per session while the payment is charged', async (t) => {
+    const createdResponse = await acpFetch('/acp/checkout_sessions', {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: {
+        ...validSessionBody(),
+        buyer: { email: 'buyer@example.com' },
+        fulfillment_details: {
+          address: {
+            name: 'Ada Lovelace',
+            line_one: 'Teststrasse 1',
+            postal_code: '8000',
+            city: 'Zürich',
+            country: 'CH',
+          },
+        },
+      },
+    });
+    const created = await createdResponse.json();
+    assert.strictEqual(createdResponse.status, 201, JSON.stringify(created));
+
+    const { promise: charging, resolve: chargingStarted } = Promise.withResolvers();
+    const { promise: paid, resolve: pay } = Promise.withResolvers();
+    let chargedAmount;
+    t.mock.method(PaymentDirector, 'chargeOrderPayment', async (order, _context, { modules }) => {
+      chargedAmount = OrderPricingSheet({
+        calculation: order.calculation,
+        currencyCode: order.currencyCode,
+      }).total().amount;
+      chargingStarted();
+      await paid;
+      return modules.orders.payments.updateStatus(order.paymentId, {
+        status: 'PAID',
+        transactionId: 'charged-while-locked',
+        info: '{}',
+      });
+    });
+
+    const completing = acpFetch(`/acp/checkout_sessions/${created.id}/complete`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: {
+        payment_data: {
+          handler_id: 'stripe_spt',
+          instrument: { type: 'card', credential: { type: 'spt', token: 'spt_test' } },
+        },
+      },
+    });
+    await charging;
+    const [update, cancel] = await Promise.all([
+      acpFetch(`/acp/checkout_sessions/${created.id}`, {
+        method: 'POST',
+        idempotencyKey: idem(),
+        body: { line_items: [{ id: 'simpleproduct', quantity: 10 }] },
+      }),
+      acpFetch(`/acp/checkout_sessions/${created.id}/cancel`, {
+        method: 'POST',
+        idempotencyKey: idem(),
+        body: {},
+      }),
+    ]);
+    pay();
+    const completed = await (await completing).json();
+
+    assert.deepStrictEqual(
+      [update.status, (await update.json()).code, update.headers.get('retry-after'), cancel.status],
+      [409, 'session_in_progress', '1', 409],
+    );
+    assert.strictEqual(completed.status, 'completed');
+    assert.strictEqual(completed.line_items[0].quantity, 1);
+    assert.strictEqual(completed.totals.find(({ type }) => type === 'total').amount, chargedAmount);
+
+    const lateCancel = await acpFetch(`/acp/checkout_sessions/${created.id}/cancel`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: {},
+    });
+    assert.strictEqual(lateCancel.status, 405);
   });
 
   test('GET /acp/feed.jsonl streams a product feed as ndjson', async () => {

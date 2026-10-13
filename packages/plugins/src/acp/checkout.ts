@@ -15,6 +15,8 @@ import type { ACPRouteResult } from './idempotency.ts';
 import { acpContextOf, isACPCanceled, serializeACPOrder } from './order.ts';
 import { getACPFulfillmentOptions, hasAddress, serializeCheckoutSession } from './serializer.ts';
 
+const SESSION_LOCK_TTL = 90000;
+
 const invalidRequest = (code: string, message: string, param?: string) =>
   new ACPError(400, 'invalid_request', code, message, param ? { param } : {});
 
@@ -103,6 +105,19 @@ export const loadACPOrder = async (context: ACPContext) => {
 const assertMutable = (order: Order) => {
   if (order.status !== null || isACPCanceled(order)) {
     throw new ACPError(405, 'invalid_request', 'session_terminal', 'Session is terminal');
+  }
+};
+
+const lockACPSession = async (context: ACPContext) => {
+  const { _id } = await loadACPOrder(context);
+  const lock = await context.modules.orders.acquireLock(_id, 'acp', SESSION_LOCK_TTL);
+  try {
+    const order = await loadACPOrder(context);
+    assertMutable(order);
+    return Object.assign(order, { [Symbol.asyncDispose]: lock.release });
+  } catch (error) {
+    await lock.release();
+    throw error;
   }
 };
 
@@ -352,8 +367,7 @@ export const updateCheckoutSession = async (
   context: ACPContext,
   body: Record<string, any>,
 ): Promise<ACPRouteResult> => {
-  const order = await loadACPOrder(context);
-  assertMutable(order);
+  await using order = await lockACPSession(context);
   await applyCheckoutUpdate(context, order, parseCheckoutUpdate(body));
   const updated = await context.services.orders.updateCalculation(order._id);
   return { status: 200, body: await serializeCheckoutSession(updated, context) };
@@ -384,8 +398,7 @@ export const completeCheckoutSession = async (
   context: ACPContext,
   body: Record<string, any>,
 ): Promise<ACPRouteResult> => {
-  const order = await loadACPOrder(context);
-  assertMutable(order);
+  await using order = await lockACPSession(context);
   const update = parseCheckoutUpdate(body);
   const paymentContext = extractPaymentContext(body.payment_data);
   if (!update.contact?.emailAddress && !order.contact?.emailAddress) {
@@ -427,8 +440,7 @@ export const cancelCheckoutSession = async (
   _request: Request,
   context: ACPContext,
 ): Promise<ACPRouteResult> => {
-  const order = await loadACPOrder(context);
-  assertMutable(order);
+  await using order = await lockACPSession(context);
   const canceled = await context.modules.orders.updateContext(order._id, {
     acp: { ...acpContextOf(order), canceled: true },
   });
