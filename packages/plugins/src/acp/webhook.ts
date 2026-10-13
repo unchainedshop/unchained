@@ -8,8 +8,7 @@ import { acpContextOf, serializeACPOrder } from './order.ts';
 
 const logger = createLogger('unchained:acp:webhook');
 let configured = false;
-const DEDUPE_WINDOW = 60_000;
-const recentlyDelivered = new Map<string, number>();
+const deliveriesByOrder = new Map<string, Promise<void>>();
 
 export const signACPWebhookPayload = (
   rawBody: string,
@@ -52,6 +51,21 @@ const sendWebhook = async (order: Order, created: boolean) => {
   }
 };
 
+export const deliverACPWebhook = async (order: Order, created: boolean) => {
+  const previousDelivery = deliveriesByOrder.get(order._id);
+  const delivery = (async () => {
+    await previousDelivery;
+    try {
+      await sendWebhook(order, created);
+    } catch (error) {
+      logger.error(`ACP webhook could not be sent: ${error}`);
+    }
+  })();
+  deliveriesByOrder.set(order._id, delivery);
+  await delivery;
+  if (deliveriesByOrder.get(order._id) === delivery) deliveriesByOrder.delete(order._id);
+};
+
 export const configureACPWebhooks = () => {
   if (configured || !acpConfig.webhookUrl || !acpConfig.webhookSecret) {
     return;
@@ -62,15 +76,7 @@ export const configureACPWebhooks = () => {
     subscribe(name, async ({ payload }: any) => {
       const order: Order | undefined = payload?.order;
       if (!order || !acpContextOf(order)) return;
-      const now = Date.now();
-      for (const [key, deliveredAt] of recentlyDelivered) {
-        if (now - deliveredAt >= DEDUPE_WINDOW) recentlyDelivered.delete(key);
-      }
-      const dedupeKey = `${name}:${order._id}:${order.status}`;
-      const lastDelivered = recentlyDelivered.get(dedupeKey);
-      if (lastDelivered && now - lastDelivered < DEDUPE_WINDOW) return;
-      recentlyDelivered.set(dedupeKey, now);
-      await sendWebhook(order, created);
+      await deliverACPWebhook(order, created);
     });
   };
 
