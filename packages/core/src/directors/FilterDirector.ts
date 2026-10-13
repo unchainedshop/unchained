@@ -251,7 +251,7 @@ export const FilterDirector: IFilterDirector = {
       Promise.resolve(new Set(productIds)),
     );
 
-    return [...intersectedProductIds];
+    return productIds.filter((productId) => intersectedProductIds.has(productId));
   },
 
   async filterFacets(filter, params, unchainedAPI) {
