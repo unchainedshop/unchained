@@ -14,6 +14,7 @@ export default tseslint.config(
   globalIgnores([
     '.git',
     '.aider*',
+    '.context/',
     'node_modules/',
     'examples/',
     './docs/',
