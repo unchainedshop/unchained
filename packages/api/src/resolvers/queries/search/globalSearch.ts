@@ -1,3 +1,4 @@
+import type { GraphQLResolveInfo } from 'graphql';
 import { log } from '@unchainedshop/logger';
 import { checkAction } from '../../../roles/acl.ts';
 import { actions } from '../../../roles/index.ts';
@@ -232,13 +233,19 @@ async function checkTypeAuthorization(
   defaultLimit: number,
   typeLimits: TypeLimitInput[] | undefined,
   options: SearchOptions,
+  info: GraphQLResolveInfo,
 ): Promise<void> {
   await Promise.all(
     types.map((type) =>
-      checkAction(context, typeActionMap[type], [
-        root,
-        getSearchParams(type, queryString, getLimitForType(type, defaultLimit, typeLimits), options),
-      ]),
+      checkAction(
+        context,
+        typeActionMap[type],
+        [
+          root,
+          getSearchParams(type, queryString, getLimitForType(type, defaultLimit, typeLimits), options),
+        ],
+        info,
+      ),
     ),
   );
 }
@@ -257,6 +264,7 @@ export default async function globalSearch(
     includeCarts?: boolean;
   },
   context: Context,
+  info: GraphQLResolveInfo,
 ) {
   const {
     query: queryString,
@@ -289,6 +297,7 @@ export default async function globalSearch(
     limit,
     typeLimits,
     searchOptions,
+    info,
   );
 
   if (!sanitizedQuery) return { results: [], counts: [] };

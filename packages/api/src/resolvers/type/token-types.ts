@@ -1,3 +1,4 @@
+import type { GraphQLResolveInfo } from 'graphql';
 import type { Context } from '../../context.ts';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { checkAction } from '../../roles/acl.ts';
@@ -53,9 +54,14 @@ export const Token = {
     return services.warehousing.isTokenInvalidateable({ token, product });
   },
 
-  accessKey: async (token: TokenSurrogate, params: never, requestContext: Context) => {
+  accessKey: async (
+    token: TokenSurrogate,
+    params: never,
+    requestContext: Context,
+    info: GraphQLResolveInfo,
+  ) => {
     const { modules } = requestContext;
-    await checkAction(requestContext, actions.updateToken, [undefined, { tokenId: token._id }]);
+    await checkAction(requestContext, actions.updateToken, [undefined, { tokenId: token._id }], info);
     // This generates a hash that is stable until ownership is changed and allows accessing token
     // data and operations
     return modules.warehousing.buildAccessKeyFromToken(token);

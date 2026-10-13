@@ -1,3 +1,4 @@
+import type { GraphQLResolveInfo } from 'graphql';
 import type { CheckPermissionArgs } from '@unchainedshop/roles';
 import { emit } from '@unchainedshop/events';
 import { NoPermissionError, PermissionSystemError } from '../errors.ts';
@@ -26,7 +27,6 @@ const defaultOptions = {
   mapArgs: (...args) => args,
 };
 
-const emptyObject = {};
 const emptyArray: CheckPermissionArgs = [];
 
 export const ensureActionExists = (action, userOptions) => {
@@ -48,8 +48,8 @@ const isSensitiveAction = (action: string): boolean => {
   return SENSITIVE_ACTION_PREFIXES.some((prefix) => action.startsWith(prefix));
 };
 
-const checkAction = async (context, action, args = emptyArray, options: any = emptyObject) => {
-  const { key } = options || emptyObject;
+const checkAction = async (context, action, args = emptyArray, info?: GraphQLResolveInfo) => {
+  const key = info?.parentType ? `${info.parentType.name}.${info.fieldName}` : undefined;
 
   const hasPermission = await context.roles.userHasPermission(context, action, args);
   if (hasPermission) {
@@ -69,7 +69,7 @@ const checkAction = async (context, action, args = emptyArray, options: any = em
     key,
   });
 
-  const keyText = key && key !== '' ? ` in "${key}"` : '';
+  const keyText = key ? ` in "${key}"` : '';
 
   throw new NoPermissionError({
     userId: context.userId,
@@ -82,14 +82,12 @@ const checkAction = async (context, action, args = emptyArray, options: any = em
 };
 
 const wrapFunction = (fn, name, action, userOptions?: any) => {
-  const key = name || fn.name;
   const options = { ...defaultOptions, ...userOptions };
-  ensureIsFunction(fn, action, options, key);
-  const actionOptions = { key: options.showKey ? key : '' };
-  return async (root, params, context, ...other) => {
-    const args = options.mapArgs(root, params, ...other);
-    await checkAction(context, action, args, actionOptions);
-    return fn(root, params, context, ...other);
+  ensureIsFunction(fn, action, options, name || fn.name);
+  return async (root, params, context, info?: GraphQLResolveInfo, ...other) => {
+    const args = options.mapArgs(root, params, info, ...other);
+    await checkAction(context, action, args, options.showKey ? info : undefined);
+    return fn(root, params, context, info, ...other);
   };
 };
 
@@ -99,8 +97,8 @@ const checkResolver = (action, userOptions?: any) => {
 };
 
 const checkTypeResolver = (action, key) =>
-  async function _checkTypeResolver(obj, params, context) {
-    await checkAction(context, action, [obj, params]);
+  async function _checkTypeResolver(obj, params, context, info?: GraphQLResolveInfo) {
+    await checkAction(context, action, [obj, params], info);
     if (typeof obj[key] === 'function') {
       return obj[key](params, context);
     }

@@ -41,6 +41,7 @@
   - Deep imports below `@unchainedshop/api/lib/` moved: the adapters, `auth` and `adminUiPlugins` to `lib/http/`, `acl` to `lib/roles/`. The entry points are unchanged.
 - **Cart providers are validated:** all cart provider mutations reject a payment or delivery provider that does not exist with `PaymentProviderNotFoundError` / `DeliverProviderNotFoundError` (`updateCart` used to set it, `updateCartPayment*` / `updateCartDelivery*` answered `OrderPaymentTypeError` / `OrderDeliveryTypeError`) and one the cart does not support with `OrderPaymentTypeError` / `OrderDeliveryTypeError`.
 - **`services.orders.addMultipleCartProducts({ order, items }, unchainedAPI)`** takes the cart instead of `orderId`, checks that every product exists before adding any and returns the added positions; `addCartProduct` uses it.
+- **ACL events name the GraphQL field:** `ACL_DENIED` and `ACL_GRANTED_SENSITIVE` carry the schema coordinate of the checked field as `key` (`Mutation.removeUser`, `User.emails`, field-level checks included) instead of the resolver function name, and audit records add it as `unmapped.data.key`. `acl.checkAction(context, action, args, info)` takes the resolver `info` instead of `{ key }`.
 
 ### Improvements
 

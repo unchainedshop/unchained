@@ -199,6 +199,40 @@ test.describe('Audit Log Compliance - Checkout Flow', () => {
     assert.ok(successEvents.length >= 1, 'Successful login should produce a LOGON audit event');
   });
 
+  test('Audit: denied access names the GraphQL field', async () => {
+    const anonymousFetch = createAnonymousGraphqlFetch();
+
+    await anonymousFetch({
+      query: /* GraphQL */ `
+        mutation {
+          removeUser(userId: "audit-test-user") {
+            _id
+          }
+        }
+      `,
+    });
+    await anonymousFetch({
+      query: /* GraphQL */ `
+        {
+          shopInfo {
+            userRoles
+          }
+        }
+      `,
+    });
+
+    const [deniedMutation] = await waitForEvents(
+      (e) => e.api?.operation === 'removeUser' && e.unmapped?.data?.key === 'Mutation.removeUser',
+    );
+    assert.ok(deniedMutation, 'A denied mutation should be audited with its schema coordinate');
+    assert.strictEqual(deniedMutation.activity_name, 'Access Denied');
+
+    const [deniedField] = await waitForEvents(
+      (e) => e.api?.operation === 'manageUsers' && e.unmapped?.data?.key === 'Shop.userRoles',
+    );
+    assert.ok(deniedField, 'A denied field should be audited with its schema coordinate');
+  });
+
   test('Audit: emitted events are well-formed OCSF', async () => {
     const apiEvents = await waitForEvents((e) => e.class_uid === OCSF_CLASS.API_ACTIVITY);
     assert.ok(apiEvents.length >= 3, 'Should have API activity events (order, add, checkout)');

@@ -1,3 +1,4 @@
+import type { GraphQLResolveInfo } from 'graphql';
 import { log } from '@unchainedshop/logger';
 import { EnrollmentDirector } from '@unchainedshop/core';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
@@ -31,6 +32,7 @@ export default async function updateEnrollment(
   root: never,
   params: UpdateEnrollmentParams,
   context: Context,
+  info: GraphQLResolveInfo,
 ) {
   const { modules, services, userId } = context;
   const { billingAddress, contact, delivery, enrollmentId, meta, payment, plan, expires } = params;
@@ -56,7 +58,7 @@ export default async function updateEnrollment(
 
   // Owners end their enrollment with terminateEnrollment, setting the end date directly is an admin decision
   if (expires !== undefined) {
-    await checkAction(context, actions.manageEnrollments, [root, params]);
+    await checkAction(context, actions.manageEnrollments, [root, params], info);
   }
 
   if (meta) {

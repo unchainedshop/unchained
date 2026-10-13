@@ -74,6 +74,7 @@ interface ApiEventMapping {
   activity: ApiActivity;
   operation: string;
   message: string | ((p: Record<string, any>) => string);
+  data?: (p: Record<string, any>) => Record<string, any> | undefined;
   success?: boolean;
   entityKey?: string;
   entityIdKey?: string;
@@ -170,12 +171,14 @@ const API_EVENT_MAP: Record<string, ApiEventMapping> = {
     activity: OCSF_API_ACTIVITY.ACCESS_DENIED,
     operation: '',
     message: (p) => `Access denied: ${p.action || 'unknown'}`,
+    data: (p) => p.key && { key: p.key },
     success: false,
   },
   ACL_GRANTED_SENSITIVE: {
     activity: OCSF_API_ACTIVITY.UPDATE,
     operation: '',
     message: (p) => `Sensitive access granted: ${p.action || 'unknown'}`,
+    data: (p) => p.key && { key: p.key },
   },
 
   // Products
@@ -675,7 +678,7 @@ export function configureAuditIntegration(auditLog: AuditLog): void {
       const ctx = extractContext(p);
 
       let message: string;
-      let data: Record<string, any> | null = null;
+      let data: Record<string, any> | null = mapping.data?.(p) || null;
       if (mapping.trackChangedFields) {
         const entity = mapping.entityKey ? p[mapping.entityKey] : undefined;
         const idKey = mapping.entityIdKey ? p[mapping.entityIdKey] : undefined;

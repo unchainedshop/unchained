@@ -1,3 +1,4 @@
+import type { GraphQLResolveInfo } from 'graphql';
 import type {
   Product,
   ProductContractConfiguration,
@@ -52,15 +53,15 @@ export const TokenizedProduct = {
     });
   },
 
-  async tokens(product: Product, params: never, requestContext: Context) {
-    await checkAction(requestContext, actions.viewTokens, [product, params]);
+  async tokens(product: Product, params: never, requestContext: Context, info: GraphQLResolveInfo) {
+    await checkAction(requestContext, actions.viewTokens, [product, params], info);
     const tokens = await requestContext.modules.warehousing.findTokens({
       productId: product._id,
     });
     return tokens;
   },
-  async tokensCount(product: Product, params: never, requestContext: Context) {
-    await checkAction(requestContext, actions.viewTokens, [product, params]);
+  async tokensCount(product: Product, params: never, requestContext: Context, info: GraphQLResolveInfo) {
+    await checkAction(requestContext, actions.viewTokens, [product, params], info);
     return requestContext.modules.warehousing.tokensCount({
       productId: product._id,
     });

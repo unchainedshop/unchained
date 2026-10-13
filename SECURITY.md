@@ -208,7 +208,7 @@ type PaymentCredentials = {
 
 ## Error Handling
 
-Authentication failures use `InvalidCredentials`, and invalid reset/verification tokens use "Token invalid or expired". ACL failures use `NoPermissionError` with a message identifying the user, denied action, and resolver; those identifiers can also appear in error extensions. See [the error definitions](packages/api/src/errors.ts) and [ACL implementation](packages/api/src/acl.ts).
+Authentication failures use `InvalidCredentials`, and invalid reset/verification tokens use "Token invalid or expired". ACL failures use `NoPermissionError` with a message identifying the user, denied action, and GraphQL field as schema coordinate (e.g. `User.emails`); those identifiers can also appear in error extensions. See [the error definitions](packages/api/src/errors.ts) and [ACL implementation](packages/api/src/roles/acl.ts).
 
 Error payloads and logs can include metadata or stack traces. Review custom errors, plugin logging, and log access controls before exposing them outside your deployment.
 

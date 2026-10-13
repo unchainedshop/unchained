@@ -377,6 +377,7 @@ test.describe('User Removal', () => {
             type: 'ACL_GRANTED_SENSITIVE',
             'payload.userId': User._id,
             'payload.action': 'removeUser',
+            'payload.key': 'Mutation.removeUser',
           });
           if (!auditEvent) await new Promise((resolve) => setTimeout(resolve, 10));
         }

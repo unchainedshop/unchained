@@ -1,3 +1,4 @@
+import type { GraphQLFieldResolver } from 'graphql';
 import type { Bookmark } from '@unchainedshop/core-bookmarks';
 import type { SortOption } from '@unchainedshop/utils';
 import type { Enrollment, EnrollmentStatus } from '@unchainedshop/core-enrollments';
@@ -36,7 +37,7 @@ export interface WebAuthnCredentials {
   mdsMetadata: any;
 }
 
-type HelperType<P, T> = (user: UserType, params: P, context: Context) => Promise<T>;
+type HelperType<P, T> = GraphQLFieldResolver<UserType, Context, P, Promise<T>>;
 
 export interface UserHelperTypes {
   _id: HelperType<any, boolean>;
@@ -162,8 +163,8 @@ export const User: UserHelperTypes = {
   tags: checkTypeResolver(viewUserPrivateInfos, 'tags'),
   username: checkTypeResolver(viewUserPrivateInfos, 'username'),
 
-  name: async (user, params, context) => {
-    await checkAction(context, viewUserPublicInfos, [user, params]);
+  name: async (user, params, context, info) => {
+    await checkAction(context, viewUserPublicInfos, [user, params], info);
 
     const { profile } = user;
     if (profile && profile.displayName && profile.displayName !== '') return profile.displayName;
@@ -171,24 +172,24 @@ export const User: UserHelperTypes = {
     return user._id;
   },
 
-  primaryEmail: async (user, params, context) => {
-    await checkAction(context, viewUserContactInfos, [user, params]);
+  primaryEmail: async (user, params, context, info) => {
+    await checkAction(context, viewUserContactInfos, [user, params], info);
     return context.modules.users.primaryEmail(user);
   },
 
-  isInitialPassword: async (user, params, context) => {
-    await checkAction(context, viewUserPrivateInfos, [user, params]);
+  isInitialPassword: async (user, params, context, info) => {
+    await checkAction(context, viewUserPrivateInfos, [user, params], info);
     const { password: { initial } = { initial: undefined } } = user.services || {};
     return user.initialPassword || !!initial;
   },
 
-  isGuest: async (user, params, context) => {
-    await checkAction(context, viewUserPrivateInfos, [user, params]);
+  isGuest: async (user, params, context, info) => {
+    await checkAction(context, viewUserPrivateInfos, [user, params], info);
     return !!user.guest;
   },
 
-  avatar: async (user, params, context) => {
-    await checkAction(context, viewUserPublicInfos, [user, params]);
+  avatar: async (user, params, context, info) => {
+    await checkAction(context, viewUserPublicInfos, [user, params], info);
     const { loaders } = context;
     if (!user.avatarId) return null;
     return loaders.fileLoader.load({
@@ -196,15 +197,15 @@ export const User: UserHelperTypes = {
     });
   },
 
-  bookmarks: async (user, params, context) => {
-    await checkAction(context, viewUserPrivateInfos, [user, params]);
+  bookmarks: async (user, params, context, info) => {
+    await checkAction(context, viewUserPrivateInfos, [user, params], info);
 
     return context.modules.bookmarks.findBookmarksByUserId(user._id);
   },
 
-  async cart(user, params, context) {
+  async cart(user, params, context, info) {
     const { loaders, countryCode } = context;
-    await checkAction(context, viewUserOrders, [user, params]);
+    await checkAction(context, viewUserOrders, [user, params], info);
     return loaders.cartLoader.load({
       countryCode,
       orderNumber: params.orderNumber,
@@ -212,8 +213,8 @@ export const User: UserHelperTypes = {
     });
   },
 
-  async tokens(user, params, context) {
-    await checkAction(context, viewUserTokens, [user, params]);
+  async tokens(user, params, context, info) {
+    await checkAction(context, viewUserTokens, [user, params], info);
     const walletAddresses =
       user.services?.web3?.flatMap((service) => {
         return service.verified ? [service.address] : [];
@@ -225,8 +226,8 @@ export const User: UserHelperTypes = {
     });
   },
 
-  async country(user, params, context) {
-    await checkAction(context, viewUserPrivateInfos, [user, params]);
+  async country(user, params, context, info) {
+    await checkAction(context, viewUserPrivateInfos, [user, params], info);
     const userLocale = context.modules.users.userLocale(user);
     if (!userLocale.region) return null;
     return context.loaders.countryLoader.load({
@@ -234,8 +235,8 @@ export const User: UserHelperTypes = {
     });
   },
 
-  async enrollments(user, params, context) {
-    await checkAction(context, viewUserEnrollments, [user, params]);
+  async enrollments(user, params, context, info) {
+    await checkAction(context, viewUserEnrollments, [user, params], info);
 
     return context.modules.enrollments.findEnrollments({
       ...(params || {}),
@@ -243,22 +244,22 @@ export const User: UserHelperTypes = {
     });
   },
 
-  language: async (user, params, context) => {
-    await checkAction(context, viewUserPrivateInfos, [user, params]);
+  language: async (user, params, context, info) => {
+    await checkAction(context, viewUserPrivateInfos, [user, params], info);
     const userLocale = context.modules.users.userLocale(user);
     return context.loaders.languageLoader.load({ isoCode: userLocale.language });
   },
 
-  allowedActions: async (user, params, context) => {
-    await checkAction(context, viewUserRoles, [user, params]);
+  allowedActions: async (user, params, context, info) => {
+    await checkAction(context, viewUserRoles, [user, params], info);
 
     const userRoles = context.roles!.getUserRoles(user?._id, user.roles, true);
     return permissions(userRoles, context.roles!.roles) as Promise<string[]>;
   },
 
-  viewerAllowedActions: async (user, params, context) => {
+  viewerAllowedActions: async (user, params, context, info) => {
     const targetArgs: [UserType, { userId: string }] = [user, { userId: user._id }];
-    await checkAction(context, viewUser, targetArgs);
+    await checkAction(context, viewUser, targetArgs, info);
 
     const allowedActions = await Promise.all(
       USER_TARGET_ACTIONS.map(async (action) => {
@@ -273,8 +274,8 @@ export const User: UserHelperTypes = {
     return allowedActions.filter((action): action is string => action !== null).toSorted();
   },
 
-  orders: async (user, params, context) => {
-    await checkAction(context, viewUserOrders, [user, params]);
+  orders: async (user, params, context, info) => {
+    await checkAction(context, viewUserOrders, [user, params], info);
 
     return context.modules.orders.findOrders({
       ...(params || {}),
@@ -282,8 +283,8 @@ export const User: UserHelperTypes = {
     });
   },
 
-  paymentCredentials: async (user, params, context) => {
-    await checkAction(context, viewUserPrivateInfos, [user, params]);
+  paymentCredentials: async (user, params, context, info) => {
+    await checkAction(context, viewUserPrivateInfos, [user, params], info);
 
     return context.modules.payment.paymentCredentials.findPaymentCredentials(
       { ...params.selector, userId: user._id },
@@ -296,25 +297,25 @@ export const User: UserHelperTypes = {
     );
   },
 
-  webAuthnCredentials: async (user, params, context) => {
-    await checkAction(context, viewUserPrivateInfos, [user, params]);
+  webAuthnCredentials: async (user, params, context, info) => {
+    await checkAction(context, viewUserPrivateInfos, [user, params], info);
     return user.services?.webAuthn || [];
   },
 
-  web3Addresses: async (user, params, context) => {
-    await checkAction(context, viewUserPrivateInfos, [user, params]);
+  web3Addresses: async (user, params, context, info) => {
+    await checkAction(context, viewUserPrivateInfos, [user, params], info);
     return user.services?.web3 || [];
   },
-  quotations: async (user, params, context) => {
-    await checkAction(context, viewUserQuotations, [user, params]);
+  quotations: async (user, params, context, info) => {
+    await checkAction(context, viewUserQuotations, [user, params], info);
 
     return context.modules.quotations.findQuotations({
       ...(params || {}),
       userId: user._id,
     });
   },
-  pushSubscriptions: async (user, _, context) => {
-    await checkAction(context, viewUserPrivateInfos, [user]);
+  pushSubscriptions: async (user, _, context, info) => {
+    await checkAction(context, viewUserPrivateInfos, [user], info);
     return (user?.pushSubscriptions || []).map(({ keys, userAgent, expirationTime, endpoint }) => ({
       _id: keys.p256dh,
       userAgent,
@@ -322,18 +323,18 @@ export const User: UserHelperTypes = {
       endpoint,
     }));
   },
-  async reviews(user, params, context) {
+  async reviews(user, params, context, info) {
     const { modules } = context;
-    await checkAction(context, viewUserProductReviews, [user, params]);
+    await checkAction(context, viewUserProductReviews, [user, params], info);
 
     return modules.products.reviews.findProductReviews({
       ...(params || {}),
       authorId: user._id,
     });
   },
-  async reviewsCount(user, params, context) {
+  async reviewsCount(user, params, context, info) {
     const { modules } = context;
-    await checkAction(context, viewUserProductReviews, [user, params]);
+    await checkAction(context, viewUserProductReviews, [user, params], info);
     return modules.products.reviews.count({
       authorId: user._id,
     });

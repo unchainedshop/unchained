@@ -69,18 +69,28 @@ describe('acl', () => {
       );
     });
 
-    it('should include userId and action in error', async () => {
+    it('should include userId, action and the schema coordinate in error', async () => {
       const context = { userId: 'user1', user: { roles: [] }, roles };
+      const info = { parentType: { name: 'Test' }, fieldName: 'myField' } as any;
       await assert.rejects(
-        () => checkAction(context, 'testAction', [], { key: 'myKey' }),
+        () => checkAction(context, 'testAction', [], info),
         (err: any) => {
           return (
             err.extensions?.code === 'NoPermissionError' &&
             err.extensions?.userId === 'user1' &&
             err.extensions?.action === 'testAction' &&
-            err.extensions?.key === 'myKey'
+            err.extensions?.key === 'Test.myField' &&
+            err.message.endsWith(' in "Test.myField"')
           );
         },
+      );
+    });
+
+    it('should not name a field without resolver info', async () => {
+      const context = { userId: 'user1', user: { roles: [] }, roles };
+      await assert.rejects(
+        () => checkAction(context, 'testAction', [], {} as any),
+        (err: any) => err.extensions?.key === undefined && !err.message.includes(' in "'),
       );
     });
   });
@@ -127,6 +137,16 @@ describe('acl', () => {
       assert.strictEqual(fn.mock.calls.length, 0);
     });
 
+    it('wrapped function should name the schema coordinate when not permitted', async () => {
+      const wrapped = checkResolver('testAction')(async () => 'result', 'testFn');
+      const context = { userId: 'user1', user: { roles: [] }, roles };
+      const info = { parentType: { name: 'Test' }, fieldName: 'mutation' } as any;
+      await assert.rejects(
+        () => wrapped('root', {}, context, info),
+        (err: any) => err.extensions?.key === 'Test.mutation',
+      );
+    });
+
     it('wrapped function should pass correct args (root, params, context, info)', async () => {
       roles.adminRole!.allow('testAction', () => true);
       const decorator = checkResolver('testAction');
@@ -168,6 +188,16 @@ describe('acl', () => {
         (err: any) => {
           return err.extensions?.code === 'NoPermissionError';
         },
+      );
+    });
+
+    it('should name the schema coordinate when not permitted', async () => {
+      const resolver = checkTypeResolver('testAction', 'name');
+      const context = { userId: 'user1', user: { roles: [] }, roles };
+      const info = { parentType: { name: 'Test' }, fieldName: 'field' } as any;
+      await assert.rejects(
+        () => resolver({ name: 'Alice' }, {}, context, info),
+        (err: any) => err.extensions?.key === 'Test.field',
       );
     });
   });

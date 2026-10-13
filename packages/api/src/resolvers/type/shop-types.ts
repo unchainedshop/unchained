@@ -1,10 +1,11 @@
+import type { GraphQLFieldResolver } from 'graphql';
 import type { Context } from '../../context.ts';
 import type { Country } from '@unchainedshop/core-countries';
 import type { Language } from '@unchainedshop/core-languages';
 import { checkAction } from '../../roles/acl.ts';
 import { actions, getPublicRoles } from '../../roles/index.ts';
 
-type HelperType<T> = (root: never, params: never, context: Context) => Promise<T>;
+type HelperType<T> = GraphQLFieldResolver<never, Context, never, Promise<T>>;
 export interface ShopHelperTypes {
   _id: () => string;
   country: HelperType<Country>;
@@ -24,8 +25,8 @@ export const Shop: ShopHelperTypes = {
     return loaders.countryLoader.load({ isoCode: countryCode });
   },
 
-  userRoles: async (_root, _params, context) => {
-    await checkAction(context, (actions as any).manageUsers);
+  userRoles: async (_root, _params, context, info) => {
+    await checkAction(context, actions.manageUsers, [], info);
     return getPublicRoles(context.roles!);
   },
 };
