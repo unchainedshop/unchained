@@ -126,9 +126,8 @@ export const serializeCheckoutSession = async (
     calculation: order.calculation,
     currencyCode: order.currencyCode,
   });
-  const priceTotal = (
-    category?: (typeof OrderPricingRowCategory)[keyof typeof OrderPricingRowCategory],
-  ) => pricing.total({ category, useNetPrice: false }).amount;
+  const netTotal = (category: (typeof OrderPricingRowCategory)[keyof typeof OrderPricingRowCategory]) =>
+    pricing.total({ category, useNetPrice: true }).amount;
   const fulfillmentOptions = await getACPFulfillmentOptions(order, context);
   const selectedDelivery = order.deliveryId
     ? await context.modules.orders.deliveries.findDelivery({ orderDeliveryId: order.deliveryId })
@@ -145,10 +144,12 @@ export const serializeCheckoutSession = async (
   const fulfillmentAddress = hasAddress(selectedDelivery?.context?.address)
     ? selectedDelivery?.context?.address
     : order.billingAddress;
-  const discount = priceTotal(OrderPricingRowCategory.Discounts);
-  const fulfillment = priceTotal(OrderPricingRowCategory.Delivery);
-  const fee = priceTotal(OrderPricingRowCategory.Payment);
-  const tax = pricing.taxSum();
+  const items = netTotal(OrderPricingRowCategory.Items);
+  const discount = -netTotal(OrderPricingRowCategory.Discounts);
+  const fulfillment = netTotal(OrderPricingRowCategory.Delivery);
+  const fee = netTotal(OrderPricingRowCategory.Payment);
+  const total = pricing.total({ useNetPrice: false }).amount;
+  const tax = total - items + discount - fulfillment - fee;
 
   return {
     id: order._id,
@@ -178,18 +179,14 @@ export const serializeCheckoutSession = async (
       totals: [],
     })),
     totals: [
-      {
-        type: 'items_base_amount',
-        display_text: 'Items',
-        amount: priceTotal(OrderPricingRowCategory.Items),
-      },
+      { type: 'items_base_amount', display_text: 'Items', amount: items },
       ...(discount ? [{ type: 'discount', display_text: 'Discount', amount: discount }] : []),
       ...(fulfillment
         ? [{ type: 'fulfillment', display_text: 'Fulfillment', amount: fulfillment }]
         : []),
-      ...(tax ? [{ type: 'tax', display_text: 'Tax', amount: Math.round(tax) }] : []),
+      ...(tax ? [{ type: 'tax', display_text: 'Tax', amount: tax }] : []),
       ...(fee ? [{ type: 'fee', display_text: 'Payment fee', amount: fee }] : []),
-      { type: 'total', display_text: 'Total', amount: priceTotal() },
+      { type: 'total', display_text: 'Total', amount: total },
     ],
     fulfillment_options: fulfillmentOptions.map(({ response }) => response),
     selected_fulfillment_options: selectedOption
@@ -206,7 +203,6 @@ export const serializeCheckoutSession = async (
     capabilities: {
       payment: { handlers: [acpConfig.paymentHandler] },
       interventions: {},
-      extensions: [],
     },
     continue_url: acpConfig.continueUrl,
     created_at: order.created?.toISOString(),
