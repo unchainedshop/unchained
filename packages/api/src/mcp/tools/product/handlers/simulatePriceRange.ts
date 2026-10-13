@@ -20,27 +20,15 @@ export default async function simulatePriceRange(
     });
   }
 
-  const currency = currencyCode || context.currencyCode;
-  const pricingContext = {
-    product,
-    user: context.user,
-    countryCode: context.countryCode,
-    currencyCode: currency,
-    quantity,
-    configuration: vectors,
-  };
-
-  const pricing = await services.products.simulateProductPricing(pricingContext as any);
-
-  if (!pricing) return { price: null };
-
-  const minPrice = pricing?.unitPrice({ useNetPrice });
-  const maxPrice = pricing?.unitPrice({ useNetPrice });
-
   return {
-    min: minPrice,
-    max: maxPrice,
-    isNetPrice: useNetPrice,
-    currencyCode: pricing?.currencyCode,
+    priceRange: await services.products.simulateConfigurablePriceRange({
+      product,
+      currencyCode: currencyCode || context.currencyCode,
+      countryCode: context.countryCode,
+      quantity,
+      useNetPrice,
+      vectors,
+      user: context.user,
+    }),
   };
 }

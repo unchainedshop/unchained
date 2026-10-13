@@ -2,7 +2,9 @@ import assert from 'node:assert';
 import test from 'node:test';
 import { setupDatabase, disconnect, getServerBaseUrl } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
-import { JpegMedia, JpegProductMedia, SimpleProduct } from './seeds/products.js';
+import { JpegMedia, JpegProductMedia, ProxyProduct, SimpleProduct } from './seeds/products.js';
+import { AssortmentProduct } from './seeds/assortments.js';
+import { MultiChoiceFilter } from './seeds/filters.js';
 
 let baseUrl;
 let db;
@@ -242,6 +244,62 @@ test.describe('MCP server (stateless, SDK v2)', () => {
     } finally {
       await db.collection('users').updateOne({ _id: 'user' }, { $unset: { avatarId: 1 } });
     }
+  });
+
+  test('product price range and siblings come from the services of their GraphQL fields', async () => {
+    const { priceRange } = await callTool('product_management', {
+      action: 'SIMULATE_PRICE_RANGE',
+      productId: ProxyProduct._id,
+    });
+    assert.ok(priceRange.minPrice.amount < priceRange.maxPrice.amount);
+
+    await db.collection('assortment_products').insertOne({
+      _id: 'mcp-sibling',
+      assortmentId: AssortmentProduct.assortmentId,
+      productId: ProxyProduct._id,
+      sortKey: 2,
+      tags: [],
+    });
+    try {
+      const { products } = await callTool('product_management', {
+        action: 'GET_SIBLINGS',
+        productId: SimpleProduct._id,
+      });
+      assert.deepStrictEqual(
+        products.map(({ _id }) => _id),
+        [ProxyProduct._id],
+      );
+    } finally {
+      await db.collection('assortment_products').deleteOne({ _id: 'mcp-sibling' });
+    }
+  });
+
+  test('REMOVE of users and filters cleans up like GraphQL', async () => {
+    await db.collection('users').insertOne({
+      _id: 'mcp-removed-user',
+      username: 'mcp-removed-user',
+      emails: [],
+      roles: [],
+      services: {},
+      created: new Date(),
+    });
+    await db.collection('bookmarks').insertOne({
+      _id: 'mcp-removed-bookmark',
+      userId: 'mcp-removed-user',
+      productId: SimpleProduct._id,
+      created: new Date(),
+    });
+    await callTool('users_management', { action: 'REMOVE', userId: 'mcp-removed-user' });
+    assert.strictEqual(
+      await db.collection('bookmarks').countDocuments({ userId: 'mcp-removed-user' }),
+      0,
+    );
+
+    await callTool('filter_management', { action: 'REMOVE', filterId: MultiChoiceFilter._id });
+    assert.strictEqual(
+      await db.collection('assortment_filters').countDocuments({ filterId: MultiChoiceFilter._id }),
+      0,
+    );
   });
 
   test('returns 405 for GET (no standalone SSE stream in stateless mode)', async () => {

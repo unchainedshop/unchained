@@ -16,7 +16,7 @@ export default async function verifyQuotation(context: Context, params: Params<'
   }
 
   const verifiedQuotation = await services.quotations.verifyQuotation(quotation, {
-    quotationContext: quotationContext || {},
+    quotationContext,
   });
 
   return getNormalizedQuotationDetails(verifiedQuotation._id, context);

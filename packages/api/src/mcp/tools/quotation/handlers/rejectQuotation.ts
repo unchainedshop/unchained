@@ -16,7 +16,7 @@ export default async function rejectQuotation(context: Context, params: Params<'
   }
 
   const rejectedQuotation = await services.quotations.rejectQuotation(quotation, {
-    quotationContext: quotationContext || {},
+    quotationContext,
   });
 
   return getNormalizedQuotationDetails(rejectedQuotation._id, context);

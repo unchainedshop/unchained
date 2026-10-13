@@ -15,7 +15,7 @@ export default async function makeQuotationProposal(context: Context, params: Pa
   }
 
   const proposedQuotation = await services.quotations.proposeQuotation(quotation, {
-    quotationContext: quotationContext || {},
+    quotationContext,
   });
 
   return getNormalizedQuotationDetails(proposedQuotation._id, context);

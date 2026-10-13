@@ -117,6 +117,7 @@
 - **Fastify:** MCP over HTTP/2 and `HEAD /graphql` answered `500`.
 - **Admin Copilot with OpenAI models:** MCP tool schemas used `propertyNames: {}`, which `@ai-sdk/openai` rejects.
 - **`removeOrder`** deletes the positions, payments, deliveries and discounts of the cart; before it left them behind, delivery addresses included.
+- **MCP actions match GraphQL:** users `REMOVE` runs the `deleteUser` cleanup, filter `REMOVE` unlinks the filter from assortments, `SIMULATE_PRICE_RANGE` prices the variants, `GET_SIBLINGS` returns the products of the same assortments, and the quotation actions keep a stored quotation context when none is given.
 
 ## v5.0.0-alpha.11 (2026-09-23)
 

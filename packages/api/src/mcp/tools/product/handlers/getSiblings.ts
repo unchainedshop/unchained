@@ -4,13 +4,15 @@ import { getNormalizedProductDetails } from '../../../utils/getNormalizedProduct
 import type { Params } from '../schemas.ts';
 
 export default async function getSiblings(context: Context, params: Params<'GET_SIBLINGS'>) {
-  const { modules } = context;
-  const { productId, includeInactive = false } = params;
+  const { modules, services } = context;
+  const { productId, assortmentId, includeInactive = false } = params;
 
   const product = await modules.products.findProduct({ productId });
   if (!product) throw new ProductNotFoundError({ productId });
 
-  const siblings = await modules.products.proxyProducts(product, [], {
+  const siblings = await services.products.findProductSiblings({
+    product,
+    assortmentId,
     includeInactive,
   });
 
