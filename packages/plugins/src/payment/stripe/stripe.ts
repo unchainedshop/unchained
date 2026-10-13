@@ -203,15 +203,22 @@ export const createAcpSharedPaymentTokenIntent = async (
     descriptorPrefix?: string;
   },
   stripeClient: StripeClient = stripe,
-) =>
-  stripeClient.paymentIntents.create(
-    {
-      ...orderIntentParams({ order, orderPayment, pricing, description: descriptorPrefix }),
-      confirm: true,
-      payment_method_data: { shared_payment_granted_token: acpToken } as any,
-    },
-    {
-      apiVersion: ACP_SPT_STRIPE_VERSION,
-      idempotencyKey: `acp-${orderPayment._id}`,
-    },
-  );
+) => {
+  try {
+    return await stripeClient.paymentIntents.create(
+      {
+        ...orderIntentParams({ order, orderPayment, pricing, description: descriptorPrefix }),
+        confirm: true,
+        payment_method_data: { shared_payment_granted_token: acpToken } as any,
+      },
+      {
+        apiVersion: ACP_SPT_STRIPE_VERSION,
+        idempotencyKey: `acp-${orderPayment._id}-${acpToken}`,
+      },
+    );
+  } catch (error) {
+    throw error.type === 'StripeCardError'
+      ? new Error(error.message, { cause: 'PAYMENT_DECLINED' })
+      : error;
+  }
+};

@@ -395,19 +395,32 @@ export const completeCheckoutSession = async (
 
   const updated = await applyCheckoutUpdate(context, order, update);
   await selectConfiguredPaymentProvider(context, updated, paymentProvider);
-  await context.services.orders.updateCalculation(order._id);
+  const calculated = await context.services.orders.updateCalculation(order._id);
 
-  const completed = await context.services.orders.checkoutOrder(order._id, { paymentContext });
-  if (!completed) {
-    throw new ACPError(500, 'processing_error', 'checkout_failed', 'Could not complete checkout');
+  try {
+    const completed = await context.services.orders.checkoutOrder(order._id, { paymentContext });
+    if (!completed) {
+      throw new ACPError(500, 'processing_error', 'checkout_failed', 'Could not complete checkout');
+    }
+    return {
+      status: 200,
+      body: {
+        ...(await serializeCheckoutSession(completed, context)),
+        order: serializeACPOrder(completed),
+      },
+    };
+  } catch (error) {
+    if (error.cause !== 'PAYMENT_DECLINED') throw error;
+    return {
+      status: 200,
+      body: {
+        ...(await serializeCheckoutSession(calculated, context)),
+        messages: [
+          { type: 'error', code: 'payment_declined', content_type: 'plain', content: error.message },
+        ],
+      },
+    };
   }
-  return {
-    status: 200,
-    body: {
-      ...(await serializeCheckoutSession(completed, context)),
-      order: serializeACPOrder(completed),
-    },
-  };
 };
 
 export const cancelCheckoutSession = async (

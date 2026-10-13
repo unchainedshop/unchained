@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import { describe, it, mock } from 'node:test';
 import type StripeClient from 'stripe';
-import { createOrderPaymentIntent, upsertCustomer } from './stripe.ts';
+import {
+  createAcpSharedPaymentTokenIntent,
+  createOrderPaymentIntent,
+  upsertCustomer,
+} from './stripe.ts';
 
 const createClient = ({
   customers = {},
@@ -102,5 +106,25 @@ describe('Stripe gateway', () => {
       userId: 'user-1',
       environment: '',
     });
+  });
+
+  it('charges every shared payment token under its own idempotency key and reports declines', async () => {
+    const create = mock.fn(async () => {
+      throw Object.assign(new Error('Your card was declined.'), { type: 'StripeCardError' });
+    });
+
+    await assert.rejects(
+      createAcpSharedPaymentTokenIntent(
+        {
+          acpToken: 'spt_declined',
+          order: { _id: 'order-12345678', currencyCode: 'CHF' } as any,
+          orderPayment: { _id: 'payment-1' } as any,
+          pricing: { total: () => ({ amount: 1000, currencyCode: 'CHF' }) } as any,
+        },
+        createClient({ paymentIntents: { create } }),
+      ),
+      { message: 'Your card was declined.', cause: 'PAYMENT_DECLINED' },
+    );
+    assert.equal(create.mock.calls[0].arguments[1].idempotencyKey, 'acp-payment-1-spt_declined');
   });
 });
