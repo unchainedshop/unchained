@@ -11,6 +11,7 @@ import {
   OCSF_AUTH_ACTIVITY,
   OCSF_ACCOUNT_ACTIVITY,
   OCSF_API_ACTIVITY,
+  OCSF_USER_TYPE,
   createAuditLog,
   type OCSFAuthenticationEvent,
 } from './index.ts';
@@ -275,6 +276,28 @@ describe('AuditLog (OCSF Format)', () => {
 
     assert.ok(entries.length >= 1);
     assert.strictEqual(entries[0].class_uid, OCSF_CLASS.API_ACTIVITY);
+  });
+
+  it('should name anonymous requests and the engine as users', async () => {
+    await auditLog.logApiActivity({
+      activity: OCSF_API_ACTIVITY.ACCESS_DENIED,
+      operation: 'anonymousRequest',
+      remoteAddress: '10.0.0.3',
+      success: false,
+    });
+    await auditLog.logApiActivity({ activity: OCSF_API_ACTIVITY.UPDATE, operation: 'systemActivity' });
+
+    const entries: any[] = await auditLog.find({ classUids: [OCSF_CLASS.API_ACTIVITY] });
+    const userOf = (operation: string) =>
+      entries.find((e) => e.api?.operation === operation)?.actor.user;
+    assert.deepStrictEqual(userOf('anonymousRequest'), {
+      name: 'anonymous',
+      type_id: OCSF_USER_TYPE.UNKNOWN,
+    });
+    assert.deepStrictEqual(userOf('systemActivity'), {
+      name: 'Unchained Engine',
+      type_id: OCSF_USER_TYPE.SYSTEM,
+    });
   });
 
   it('should have default messages for e-commerce activities', async () => {
