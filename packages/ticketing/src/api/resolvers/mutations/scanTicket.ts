@@ -1,4 +1,4 @@
-import type { Context } from '@unchainedshop/api';
+import type { Context, GraphQLResolveInfo } from '@unchainedshop/api';
 import { InvalidIdError, TokenNotFoundError } from '@unchainedshop/api';
 import type { Product } from '@unchainedshop/core-products';
 import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
@@ -85,6 +85,7 @@ export default async function scanTicket(
     accessKey,
   }: { tokenId: string; productId?: string | null; accessKey?: string | null },
   context: Context,
+  info: GraphQLResolveInfo,
 ) {
   const { modules, services, userId } = context;
   log(`mutation scanTicket ${tokenId}`, { userId, productId });
@@ -94,7 +95,7 @@ export default async function scanTicket(
   const product = await modules.products.findProduct({ productId: token.productId });
 
   // Organizer scope first, so staff learn nothing about the tickets of events outside it.
-  await assertTicketEventInScope(product, context, 'scanTicket');
+  await assertTicketEventInScope(product, context, 'scanTicket', info);
   // The access key depends on the current holder, so a QR code issued before a transfer no longer
   // matches. Typed codes (serials, names) carry no key and rely on the staff member's judgement.
   if (

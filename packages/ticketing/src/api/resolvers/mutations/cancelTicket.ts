@@ -1,4 +1,4 @@
-import type { Context } from '@unchainedshop/api';
+import type { Context, GraphQLResolveInfo } from '@unchainedshop/api';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, TokenNotFoundError } from '@unchainedshop/api';
 import { TicketingModuleNotFoundError, TokenAlreadyRedeemedError } from '../../errors.ts';
@@ -8,6 +8,7 @@ export default async function cancelTicket(
   root: never,
   { tokenId, generateDiscount }: { tokenId: string; generateDiscount?: boolean },
   context: Context,
+  info: GraphQLResolveInfo,
 ) {
   const { modules, services, userId, countryCode, currencyCode } = context;
   log(`mutation cancelTicket ${tokenId}`, { userId, generateDiscount });
@@ -20,7 +21,7 @@ export default async function cancelTicket(
   // A role granted cancelTicket stays within its organizer scope.
   if (hasTicketEventScope(context)) {
     const product = await modules.products.findProduct({ productId: token.productId });
-    await assertTicketEventInScope(product, context, 'cancelTicket');
+    await assertTicketEventInScope(product, context, 'cancelTicket', info);
   }
 
   if (token.meta?.cancelled) {

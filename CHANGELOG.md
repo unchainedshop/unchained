@@ -73,6 +73,7 @@
 
 ### Fixed
 
+- **Organizer-scope denials are audited:** a ticketing action outside the organizer scope is denied through the new `acl.denyAction`, so it emits `ACL_DENIED` with its schema coordinate like any failed permission check.
 - **Price flags:** `Order.total`, `OrderItem.total`, `OrderItem.unitPrice` and the discount totals set `isNetPrice` and `isTaxable` like the simulated prices (`isNetPrice` follows `useNetPrice`, `isTaxable` is whether the price contains tax, also negative tax of a discount); before they were always `false`. `OrderDiscount.total(useNetPrice: true)` returns the net amount instead of ignoring the argument.
 - **`OrderDelivery.fee` and `OrderPayment.fee`** were always `null`; they return the gross amount the order charges for the delivery / payment.
 - **Simulated delivery prices are taxed:** the CH / EU / UK / US delivery tax adapters only activated with an order delivery, so `DeliveryProvider.simulatedPrice` returned untaxed fees. A price simulated for an order (`simulatedPrice(orderId)`) is taxed at the delivery address of the order, like the cart; before, the adapters fell back to the billing address.

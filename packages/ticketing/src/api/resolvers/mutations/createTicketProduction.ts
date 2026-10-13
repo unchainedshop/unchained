@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { Context } from '@unchainedshop/api';
+import type { Context, GraphQLResolveInfo } from '@unchainedshop/api';
 import { ProductType, type Product } from '@unchainedshop/core-products';
 import { log } from '@unchainedshop/logger';
 import type { CreateTicketProductionInput } from '../../../production-services.ts';
@@ -12,6 +12,7 @@ export default async function createTicketProduction(
   _root: never,
   { production }: { production: CreateTicketProductionInput },
   context: Context,
+  info: GraphQLResolveInfo,
 ) {
   log('mutation createTicketProduction', { userId: context.userId });
   const services = getProductionServices(context);
@@ -21,6 +22,6 @@ export default async function createTicketProduction(
     type: ProductType.CONFIGURABLE_PRODUCT,
     tags: [TICKET_PRODUCTION_TAG, ...(production.tags ?? [])],
   } as Product;
-  await assertTicketEventInScope(candidate, context, 'manageProducts');
+  await assertTicketEventInScope(candidate, context, 'manageProducts', info);
   return withTicketProductionErrors(() => services.createTicketProduction(production));
 }

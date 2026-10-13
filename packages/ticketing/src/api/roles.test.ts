@@ -276,6 +276,22 @@ test('an organizer scope narrows gate staff to their own events', async () => {
   assert.ok(asked.every((entry) => entry.startsWith('gate-a:')));
 });
 
+test('an organizer scope denial is reported like a failed permission check', async () => {
+  const { contextFor } = createScopedPlatform();
+  const staff = contextFor({ _id: 'gate-a', roles: ['ticketing', 'organizer:a'] });
+  const info = { parentType: { name: 'Test' }, fieldName: 'scanTicket' };
+  await assert.rejects(
+    (ticketingResolvers as any).Mutation.scanTicket(
+      undefined,
+      { tokenId: 'foreign-ticket' },
+      staff,
+      info,
+    ),
+    (error: any) =>
+      error.extensions?.code === 'NoPermissionError' && error.extensions?.key === 'Test.scanTicket',
+  );
+});
+
 test('a role granted cancelTicket only cancels within its organizer scope', async () => {
   const { contextFor, cancelled } = createScopedPlatform();
   const organizer = contextFor({ _id: 'organizer-a', roles: ['organizer:a'] });

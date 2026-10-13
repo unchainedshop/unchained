@@ -1,4 +1,4 @@
-import type { Context } from '@unchainedshop/api';
+import type { Context, GraphQLResolveInfo } from '@unchainedshop/api';
 import { InvalidIdError, ProductNotFoundError, ProductWrongTypeError } from '@unchainedshop/api';
 import { InvalidTicketSaleRulesError, TicketPerformanceManagedError } from '../../errors.ts';
 import { isTicketProduction } from '../../../production.ts';
@@ -46,6 +46,7 @@ export default async function updateTicketEvent(
   _root: never,
   { productId, event }: { productId: string; event: UpdateTicketEventInput },
   context: Context,
+  info: GraphQLResolveInfo,
 ) {
   const { modules, userId } = context;
   log(`mutation updateTicketEvent ${productId}`, { userId });
@@ -60,7 +61,7 @@ export default async function updateTicketEvent(
       required: ProductType.TOKENIZED_PRODUCT,
     });
   }
-  await assertTicketEventInScope(product, context, 'manageProducts');
+  await assertTicketEventInScope(product, context, 'manageProducts', info);
 
   const changes: Record<string, unknown> = Object.fromEntries(
     EVENT_PROPERTIES.filter(([field]) => event?.[field] !== undefined).map(([field, key]) => [

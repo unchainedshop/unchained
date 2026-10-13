@@ -1,4 +1,4 @@
-import type { Context } from '@unchainedshop/api';
+import type { Context, GraphQLResolveInfo } from '@unchainedshop/api';
 import { InvalidIdError } from '@unchainedshop/api';
 import { log } from '@unchainedshop/logger';
 import { isTicketProduction } from '../../../production.ts';
@@ -16,6 +16,7 @@ export default async function cancelTicketPerformance(
     generateDiscount,
   }: { productionId: string; startsAt: Date; generateDiscount?: boolean },
   context: Context,
+  info: GraphQLResolveInfo,
 ) {
   const { modules, userId, countryCode, currencyCode } = context;
   log(`mutation cancelTicketPerformance ${productionId}`, { userId });
@@ -24,7 +25,7 @@ export default async function cancelTicketPerformance(
   const production = await modules.products.findProduct({ productId: productionId });
   if (!isTicketProduction(production)) throw new TicketProductionNotFoundError({ productionId });
   // A role granted cancelTicket stays within its organizer scope.
-  await assertTicketEventInScope(production, context, 'cancelTicket');
+  await assertTicketEventInScope(production, context, 'cancelTicket', info);
 
   const slot = new Date(startsAt).toISOString();
   const performance = await withTicketProductionErrors(

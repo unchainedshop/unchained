@@ -48,20 +48,11 @@ const isSensitiveAction = (action: string): boolean => {
   return SENSITIVE_ACTION_PREFIXES.some((prefix) => action.startsWith(prefix));
 };
 
-const checkAction = async (context, action, args = emptyArray, info?: GraphQLResolveInfo) => {
-  const key = info?.parentType ? `${info.parentType.name}.${info.fieldName}` : undefined;
+const schemaCoordinate = (info?: GraphQLResolveInfo) =>
+  info?.parentType ? `${info.parentType.name}.${info.fieldName}` : undefined;
 
-  const hasPermission = await context.roles.userHasPermission(context, action, args);
-  if (hasPermission) {
-    if (isSensitiveAction(action)) {
-      await emit(API_EVENTS.ACL_GRANTED_SENSITIVE, {
-        userId: context.userId,
-        action,
-        key,
-      });
-    }
-    return;
-  }
+const denyAction = async (context, action, info?: GraphQLResolveInfo) => {
+  const key = schemaCoordinate(info);
 
   await emit(API_EVENTS.ACL_DENIED, {
     userId: context.userId,
@@ -79,6 +70,19 @@ const checkAction = async (context, action, args = emptyArray, info?: GraphQLRes
       context.userId || 'anonymous'
     }" has no permission to perform the action "${action}"${keyText}`,
   });
+};
+
+const checkAction = async (context, action, args = emptyArray, info?: GraphQLResolveInfo) => {
+  const hasPermission = await context.roles.userHasPermission(context, action, args);
+  if (!hasPermission) return denyAction(context, action, info);
+
+  if (isSensitiveAction(action)) {
+    await emit(API_EVENTS.ACL_GRANTED_SENSITIVE, {
+      userId: context.userId,
+      action,
+      key: schemaCoordinate(info),
+    });
+  }
 };
 
 const wrapFunction = (fn, name, action, userOptions?: any) => {
@@ -128,4 +132,4 @@ const resolverDecorator = function resolverDecorator(action, userOptions?: any) 
 // resolverToBeChecked: () => ...
 export default resolverDecorator;
 
-export { resolverDecorator, checkResolver, checkTypeResolver, checkAction };
+export { resolverDecorator, checkResolver, checkTypeResolver, checkAction, denyAction };

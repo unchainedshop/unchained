@@ -1,4 +1,4 @@
-import type { Context } from '@unchainedshop/api';
+import type { Context, GraphQLResolveInfo } from '@unchainedshop/api';
 import { log } from '@unchainedshop/logger';
 import { ProductStatus } from '@unchainedshop/core-products';
 import { InvalidIdError, ProductNotFoundError, ProductWrongStatusError } from '@unchainedshop/api';
@@ -9,6 +9,7 @@ export default async function cancelEvent(
   root: never,
   { productId, generateDiscount }: { productId: string; generateDiscount?: boolean },
   context: Context,
+  info: GraphQLResolveInfo,
 ) {
   const { modules, services, userId, countryCode, currencyCode } = context;
   log(`mutation cancelEvent ${productId}`, { userId });
@@ -19,7 +20,7 @@ export default async function cancelEvent(
   if (!product) throw new ProductNotFoundError({ productId });
 
   // A role granted cancelTicket stays within its organizer scope.
-  await assertTicketEventInScope(product, context, 'cancelTicket');
+  await assertTicketEventInScope(product, context, 'cancelTicket', info);
 
   if (product.status !== ProductStatus.ACTIVE) {
     throw new ProductWrongStatusError({ productId });

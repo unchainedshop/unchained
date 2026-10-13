@@ -1,4 +1,4 @@
-import type { Context } from '@unchainedshop/api';
+import type { Context, GraphQLResolveInfo } from '@unchainedshop/api';
 import { InvalidIdError } from '@unchainedshop/api';
 import { isTicketProduction } from '../production.ts';
 import type { TicketingServices } from '../services.ts';
@@ -6,11 +6,15 @@ import { TicketProductionNotFoundError, TicketingModuleNotFoundError } from './e
 import { assertTicketEventInScope } from './roles.ts';
 
 /** The production a mutation changes, within the organizer scope of the user. */
-export async function findTicketProductionInScope(productionId: string, context: Context) {
+export async function findTicketProductionInScope(
+  productionId: string,
+  context: Context,
+  info: GraphQLResolveInfo,
+) {
   if (!productionId) throw new InvalidIdError({ productionId });
   const production = await context.modules.products.findProduct({ productId: productionId });
   if (!isTicketProduction(production)) throw new TicketProductionNotFoundError({ productionId });
-  await assertTicketEventInScope(production, context, 'manageProducts');
+  await assertTicketEventInScope(production, context, 'manageProducts', info);
   return production!;
 }
 

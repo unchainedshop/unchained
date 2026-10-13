@@ -17,6 +17,7 @@ export * from './errors.ts';
 export * as acl from './roles/acl.ts';
 export * as roles from './roles/index.ts';
 export type { OIDCProviderConfig, AuthConfig } from './http/auth.ts';
+export type { GraphQLResolveInfo } from 'graphql';
 export { createContextResolver, getCurrentContextResolver, setCurrentContextResolver };
 
 import type { RolesInterface } from '@unchainedshop/roles';

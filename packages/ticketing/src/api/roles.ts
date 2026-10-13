@@ -1,5 +1,5 @@
-import type { Context } from '@unchainedshop/api';
-import { NoPermissionError, roles } from '@unchainedshop/api';
+import type { Context, GraphQLResolveInfo } from '@unchainedshop/api';
+import { acl, roles } from '@unchainedshop/api';
 import { ProductStatus, ProductType, type Product } from '@unchainedshop/core-products';
 import { getTicketEventStart } from '../event-details.ts';
 
@@ -111,18 +111,15 @@ export async function isTicketEventInScope(
   return decisions.get(event._id)!;
 }
 
-/** Throws NoPermissionError when the event is outside the viewer's organizer scope. */
+/** Denies the action like a failed permission check when the event is outside the viewer's organizer scope. */
 export async function assertTicketEventInScope(
   event: Product | null | undefined,
   context: Context,
   action: string,
+  info: GraphQLResolveInfo,
 ): Promise<void> {
   if (await isTicketEventInScope(event, context)) return;
-  throw new NoPermissionError({
-    userId: context.userId,
-    action,
-    message: `The user "${context.userId}" has no permission to perform the action "${action}" for this event`,
-  });
+  await acl.denyAction(context, action, info);
 }
 
 /**
