@@ -6,9 +6,6 @@ export default async function removeUser(context: Context, params: Params<'REMOV
   const { modules, services } = context;
   const { userId, removeUserReviews } = params;
 
-  if (!userId) {
-    throw new Error('userId is required');
-  }
   if (!(await modules.users.userExists({ userId }))) throw new UserNotFoundError({ userId });
 
   if (removeUserReviews) {

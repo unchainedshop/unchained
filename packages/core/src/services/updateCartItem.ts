@@ -28,9 +28,7 @@ export async function updateCartItemService(
 
   const product = await this.products.findProduct({ productId: item.productId });
   if (!product) {
-    throw createServiceError('ProductNotFoundError', `Product not found: ${item.productId}`, {
-      productId: item.productId,
-    });
+    throw createServiceError('ProductNotFoundError', 'Product not found', { productId: item.productId });
   }
 
   let itemQuantity = quantity === undefined ? 1 : quantity;

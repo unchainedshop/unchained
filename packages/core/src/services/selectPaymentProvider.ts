@@ -24,31 +24,19 @@ export async function selectPaymentProviderService(
       paymentProviderId,
     });
   }
-  if (expectedType && provider.type !== expectedType) {
-    throw createServiceError('PaymentProviderTypeError', 'Payment provider has the wrong type', {
+  const supportedProviders = await supportedPaymentProvidersService.call(this, { order });
+  const isSupported = supportedProviders.some(({ _id }) => _id === provider._id);
+  if (!isSupported || (expectedType && provider.type !== expectedType)) {
+    throw createServiceError('PaymentProviderNotSupportedError', 'Payment provider not supported', {
       orderId: order._id,
       received: provider.type,
       required: expectedType,
     });
   }
 
-  const supportedProviders = await supportedPaymentProvidersService.bind(this)({ order });
-  if (!supportedProviders.some(({ _id }) => _id === paymentProviderId)) {
-    throw createServiceError(
-      'PaymentProviderNotSupportedError',
-      'Payment provider is not supported for this cart',
-      { orderId: order._id, paymentProviderId },
-    );
-  }
-
   const updatedOrder = (await this.orders.setPaymentProvider(order._id, paymentProviderId)) || order;
-  if (!updatedOrder.paymentId) {
-    throw createServiceError('OrderPaymentNotFoundError', 'Order payment not found', {
-      orderId: order._id,
-    });
-  }
   if (paymentContext) {
-    await this.orders.payments.updateContext(updatedOrder.paymentId, paymentContext);
+    await this.orders.payments.updateContext(updatedOrder.paymentId!, paymentContext);
   }
   return updatedOrder;
 }

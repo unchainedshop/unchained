@@ -967,57 +967,27 @@ test.describe('Cart: Delivery and Payment Updates', () => {
     });
   });
 
-  test.describe('Mutation.updateCart', () => {
-    const updateCartProviders = (variables) =>
-      graphqlFetchAsAdmin({
-        query: /* GraphQL */ `
-          mutation UpdateCart($orderId: ID, $paymentProviderId: ID, $deliveryProviderId: ID) {
-            updateCart(
-              orderId: $orderId
-              paymentProviderId: $paymentProviderId
-              deliveryProviderId: $deliveryProviderId
-            ) {
-              _id
-            }
-          }
-        `,
+  test('Mutation.updateCart rejects providers that do not exist or the cart does not support', async () => {
+    const before = await db.collection('orders').findOne({ _id: ShippingOrder._id });
+    const removedPlugin = { _id: 'unsupported', adapterKey: 'shop.unchained.removed-plugin' };
+    await db.collection('payment-providers').insertOne({ ...removedPlugin, type: 'INVOICE' });
+    await db.collection('delivery-providers').insertOne({ ...removedPlugin, type: 'SHIPPING' });
+    for (const [variables, code] of [
+      [{ paymentProviderId: 'non-existing' }, 'PaymentProviderNotFoundError'],
+      [{ deliveryProviderId: 'non-existing' }, 'DeliverProviderNotFoundError'],
+      [{ paymentProviderId: 'unsupported' }, 'OrderPaymentTypeError'],
+      [{ deliveryProviderId: 'unsupported' }, 'OrderDeliveryTypeError'],
+    ]) {
+      const { errors } = await graphqlFetchAsAdmin({
+        query: `mutation ($orderId: ID, $paymentProviderId: ID, $deliveryProviderId: ID) { updateCart(orderId: $orderId, paymentProviderId: $paymentProviderId, deliveryProviderId: $deliveryProviderId) { _id } }`,
         variables: { orderId: ShippingOrder._id, ...variables },
       });
-
-    test('rejects providers that do not exist instead of setting them', async () => {
-      const before = await db.collection('orders').findOne({ _id: ShippingOrder._id });
-
-      const payment = await updateCartProviders({ paymentProviderId: 'non-existing-provider' });
-      assert.strictEqual(payment.errors?.[0]?.extensions?.code, 'PaymentProviderNotFoundError');
-      const delivery = await updateCartProviders({ deliveryProviderId: 'non-existing-provider' });
-      assert.strictEqual(delivery.errors?.[0]?.extensions?.code, 'DeliverProviderNotFoundError');
-
-      const after = await db.collection('orders').findOne({ _id: ShippingOrder._id });
-      assert.strictEqual(after.paymentId, before.paymentId);
-      assert.strictEqual(after.deliveryId, before.deliveryId);
-    });
-
-    test('rejects providers the cart does not support', async () => {
-      const unsupportedProviders = [
-        ['payment-providers', 'INVOICE', 'paymentProviderId', 'OrderPaymentTypeError'],
-        ['delivery-providers', 'SHIPPING', 'deliveryProviderId', 'OrderDeliveryTypeError'],
-      ];
-      for (const [collection, type, variable, code] of unsupportedProviders) {
-        await db.collection(collection).insertOne({
-          _id: 'unsupported-provider',
-          adapterKey: 'shop.unchained.removed-plugin',
-          type,
-          configuration: [],
-          created: new Date(),
-        });
-        try {
-          const { errors } = await updateCartProviders({ [variable]: 'unsupported-provider' });
-          assert.strictEqual(errors?.[0]?.extensions?.code, code);
-        } finally {
-          await db.collection(collection).deleteOne({ _id: 'unsupported-provider' });
-        }
-      }
-    });
+      assert.strictEqual(errors?.[0]?.extensions?.code, code);
+    }
+    await db.collection('payment-providers').deleteOne({ _id: 'unsupported' });
+    await db.collection('delivery-providers').deleteOne({ _id: 'unsupported' });
+    const after = await db.collection('orders').findOne({ _id: ShippingOrder._id });
+    assert.deepStrictEqual([after.paymentId, after.deliveryId], [before.paymentId, before.deliveryId]);
   });
 
   test.describe('Providers without a registered adapter', () => {

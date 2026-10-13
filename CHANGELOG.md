@@ -67,7 +67,7 @@
 - **Fetch handler and plain Node.js server:** `createFetchHandler()` from `@unchainedshop/api/fetch` (Bun, Deno) and `connect()` from `@unchainedshop/api/node`. `@unchainedshop/api` no longer depends on `@whatwg-node/server`.
 - **One request context type:** `UnchainedRequestContext` from `@unchainedshop/core`; plugin routes get `PluginHttpRequestContext` with `user` and `roles` and check permissions without casts.
 - **Faster Admin UI, every route audited:** Admin UI files skip the request context (70–100% more requests per second) and `_next/static` is cached as immutable. MCP, chat, plugin routes and your own routes run as the user of the request, so their events carry it.
-- **Cart and media services:** `services.orders.selectDeliveryProvider` / `selectPaymentProvider`, `services.users.provisionGuest` and `services.files.resolveMediaFiles` hold the logic of the cart provider mutations, `loginAsGuest` and the MCP media tools.
+- **Cart and media services:** `services.orders.selectDeliveryProvider` / `selectPaymentProvider` and `services.files.resolveMediaFiles` hold the logic of the cart provider mutations and the MCP media tools.
 
 ### Fixed
 

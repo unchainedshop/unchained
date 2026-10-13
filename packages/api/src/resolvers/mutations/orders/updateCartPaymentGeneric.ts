@@ -1,33 +1,21 @@
 import type { Context } from '../../../context.ts';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 import { log } from '@unchainedshop/logger';
-import {
-  InvalidIdError,
-  OrderNotFoundError,
-  OrderWrongStatusError,
-  rethrowPaymentProviderError,
-} from '../../../errors.ts';
+import { InvalidIdError, rethrowPaymentProviderError } from '../../../errors.ts';
+import loadCart from './loadCart.ts';
 
 export default async function updateCartPaymentGeneric(
   root: never,
   params: { orderId: string; paymentProviderId: string; meta?: any },
   context: Context,
 ) {
-  const { modules, services, userId, user } = context;
+  const { services, userId } = context;
   const { orderId, paymentProviderId, meta } = params;
-  log(`mutation updateCartPaymentGeneric provider ${paymentProviderId}`, {
-    userId,
-  });
+  log(`mutation updateCartPaymentGeneric provider ${paymentProviderId}`, { userId });
 
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
 
-  const order = await services.orders.findOrInitCart({
-    orderId,
-    user: user!,
-    countryCode: context.countryCode,
-  });
-  if (!order) throw new OrderNotFoundError({ orderId });
-  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
+  const order = await loadCart(context, orderId);
 
   await services.orders
     .selectPaymentProvider({

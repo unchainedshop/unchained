@@ -1,20 +1,14 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import {
-  ProductNotFoundError,
-  OrderQuantityTooLowError,
-  InvalidIdError,
-  OrderWrongStatusError,
-  OrderNotFoundError,
-  rethrowCartProductError,
-} from '../../../errors.ts';
+import { ProductNotFoundError, OrderQuantityTooLowError, InvalidIdError } from '../../../errors.ts';
+import loadCart from './loadCart.ts';
 
 export default async function addCartProduct(
   root: never,
   { orderId, productId: originalProductId, quantity, configuration },
   context: Context,
 ) {
-  const { modules, services, userId, user } = context;
+  const { modules, services, userId } = context;
 
   log(
     `mutation addCartProduct ${originalProductId} ${quantity} ${
@@ -29,21 +23,12 @@ export default async function addCartProduct(
   const originalProduct = await modules.products.findProduct({ productId: originalProductId });
   if (!originalProduct) throw new ProductNotFoundError({ productId: originalProductId });
 
-  const order = await services.orders.findOrInitCart({
-    orderId,
-    user: user!,
-    countryCode: context.countryCode,
-  });
-  if (!order) throw new OrderNotFoundError({ orderId });
+  const order = await loadCart(context, orderId);
 
-  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
-
-  const [orderPosition] = await services.orders
-    .addMultipleCartProducts(
-      { order, items: [{ productId: originalProductId, quantity, configuration }] },
-      context,
-    )
-    .catch(rethrowCartProductError);
+  const [orderPosition] = await services.orders.addMultipleCartProducts(
+    { order, items: [{ productId: originalProductId, quantity, configuration }] },
+    context,
+  );
 
   await services.orders.updateCalculation(order._id);
   return modules.orders.positions.findOrderPosition({ itemId: orderPosition._id });

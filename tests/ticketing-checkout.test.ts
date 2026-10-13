@@ -203,19 +203,11 @@ test.describe('Ticketing: checkout', () => {
       assert.equal(result.errors?.[0]?.extensions?.maxPerOrder, 2);
 
       result = await userFetch({
-        query: /* GraphQL */ `
-          mutation AddTicketBatch($orderId: ID, $items: [OrderItemInput!]!) {
-            addMultipleCartProducts(orderId: $orderId, items: $items) {
-              _id
-            }
-          }
-        `,
+        query:
+          'mutation ($orderId: ID, $items: [OrderItemInput!]!) { addMultipleCartProducts(orderId: $orderId, items: $items) { _id } }',
         variables: {
-          orderId: await createCart('tickets-sale-rules-batch'),
-          items: [
-            { productId: TheaterEventId, quantity: 2 },
-            { productId: TheaterEventId, quantity: 1 },
-          ],
+          orderId: await createCart('tickets-batch'),
+          items: [2, 1].map((quantity) => ({ productId: TheaterEventId, quantity })),
         },
       });
       assert.equal(result.errors?.[0]?.extensions?.code, 'TicketOrderLimitExceededError');

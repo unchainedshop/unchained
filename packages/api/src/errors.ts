@@ -377,21 +377,12 @@ export const DuplicateFilterKeyError = createError(
   'Key already registered for another filter',
 );
 
-export const rethrowCartProductError = rethrowAs({
-  ProductNotFoundError,
-  InvalidQuantityError: OrderQuantityTooLowError,
-});
-
 export const rethrowDeliveryProviderError = rethrowAs({
   DeliveryProviderNotFoundError: DeliverProviderNotFoundError,
-  DeliveryProviderTypeError: OrderDeliveryTypeError,
   DeliveryProviderNotSupportedError: OrderDeliveryTypeError,
-  OrderDeliveryNotFoundError,
 });
 
 export const rethrowPaymentProviderError = rethrowAs({
   PaymentProviderNotFoundError,
-  PaymentProviderTypeError: OrderPaymentTypeError,
   PaymentProviderNotSupportedError: OrderPaymentTypeError,
-  OrderPaymentNotFoundError,
 });

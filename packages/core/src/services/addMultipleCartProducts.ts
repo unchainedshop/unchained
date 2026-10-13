@@ -13,19 +13,12 @@ const resolveCartProducts = (modules: Modules, items: CartProductItem[]) =>
     items.map(async ({ productId, quantity, configuration }) => {
       const originalProduct = await modules.products.findProduct({ productId });
       if (!originalProduct) {
-        throw createServiceError('ProductNotFoundError', `Product not found: ${productId}`, {
-          productId,
-        });
+        throw createServiceError('ProductNotFoundError', 'Product not found', { productId });
       }
       if (quantity < 1) {
-        throw createServiceError('InvalidQuantityError', `Invalid quantity for product: ${productId}`, {
-          productId,
-          quantity,
-        });
+        throw createServiceError('InvalidQuantityError', 'Invalid quantity', { productId, quantity });
       }
-      const product = await modules.products.resolveOrderableProduct(originalProduct, {
-        configuration,
-      });
+      const product = await modules.products.resolveOrderableProduct(originalProduct, { configuration });
       return { originalProductId: originalProduct._id, product, quantity, configuration };
     }),
   );

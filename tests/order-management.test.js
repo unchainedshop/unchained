@@ -51,12 +51,10 @@ test.describe('Order: Transaction / Management', () => {
       _id: SimpleOrder._id,
       status: 'OPEN',
     });
-    for (const collection of ['order_positions', 'order_payments', 'order_deliveries']) {
-      assert.strictEqual(
-        await db.collection(collection).countDocuments({ orderId: SimpleOrder._id }),
-        0,
-      );
-    }
+    const leftovers = ['order_positions', 'order_payments', 'order_deliveries'].map((name) =>
+      db.collection(name).countDocuments({ orderId: SimpleOrder._id }),
+    );
+    assert.deepStrictEqual(await Promise.all(leftovers), [0, 0, 0]);
   });
 
   test('return not found error when passed non existing orderId', async () => {

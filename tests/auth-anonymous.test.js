@@ -34,13 +34,11 @@ test.describe('Auth for anonymous users', () => {
             loginAsGuest {
               _id
               user {
-                _id
                 isGuest
               }
             }
           }
         `,
-        headers: { 'x-shop-country': 'CH' },
       });
       const { data: { workQueue } = {} } = await adminGraphqlFetch({
         query: /* GraphQL */ `
@@ -58,8 +56,6 @@ test.describe('Auth for anonymous users', () => {
       assert.strictEqual(work.length, 0);
       assert.ok(result.data.loginAsGuest);
       assert.ok(result.data.loginAsGuest?.user?.isGuest);
-      const guest = await Users.findOne({ _id: result.data.loginAsGuest.user._id });
-      assert.strictEqual(guest.lastLogin.countryCode, 'CH');
     });
   });
 

@@ -24,31 +24,19 @@ export async function selectDeliveryProviderService(
       deliveryProviderId,
     });
   }
-  if (expectedType && provider.type !== expectedType) {
-    throw createServiceError('DeliveryProviderTypeError', 'Delivery provider has the wrong type', {
+  const supportedProviders = await supportedDeliveryProvidersService.call(this, { order });
+  const isSupported = supportedProviders.some(({ _id }) => _id === provider._id);
+  if (!isSupported || (expectedType && provider.type !== expectedType)) {
+    throw createServiceError('DeliveryProviderNotSupportedError', 'Delivery provider not supported', {
       orderId: order._id,
       received: provider.type,
       required: expectedType,
     });
   }
 
-  const supportedProviders = await supportedDeliveryProvidersService.bind(this)({ order });
-  if (!supportedProviders.some(({ _id }) => _id === deliveryProviderId)) {
-    throw createServiceError(
-      'DeliveryProviderNotSupportedError',
-      'Delivery provider is not supported for this cart',
-      { orderId: order._id, deliveryProviderId },
-    );
-  }
-
   const updatedOrder = (await this.orders.setDeliveryProvider(order._id, deliveryProviderId)) || order;
-  if (!updatedOrder.deliveryId) {
-    throw createServiceError('OrderDeliveryNotFoundError', 'Order delivery not found', {
-      orderId: order._id,
-    });
-  }
   if (deliveryContext) {
-    await this.orders.deliveries.updateContext(updatedOrder.deliveryId, deliveryContext);
+    await this.orders.deliveries.updateContext(updatedOrder.deliveryId!, deliveryContext);
   }
   return updatedOrder;
 }

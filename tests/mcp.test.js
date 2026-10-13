@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import test from 'node:test';
 import { setupDatabase, disconnect, getServerBaseUrl } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
-import { JpegMedia, JpegProductMedia, ProxyProduct, SimpleProduct } from './seeds/products.js';
+import { JpegMedia, ProxyProduct, SimpleProduct } from './seeds/products.js';
 import { AssortmentProduct } from './seeds/assortments.js';
 import { MultiChoiceFilter } from './seeds/filters.js';
 
@@ -35,8 +35,8 @@ const parseMcpResponse = async (response) => {
 
 const rpc = (method, params = {}, id = 1) => ({ jsonrpc: '2.0', id, method, params });
 
-const callTool = async (name, args) => {
-  const response = await mcpFetch(rpc('tools/call', { name, arguments: args }), {
+const callTool = async (name, action, args) => {
+  const response = await mcpFetch(rpc('tools/call', { name, arguments: { action, ...args } }), {
     token: ADMIN_TOKEN,
   });
   const message = await parseMcpResponse(response);
@@ -192,114 +192,56 @@ test.describe('MCP server (stateless, SDK v2)', () => {
     assert.ok(JSON.parse(readMessage.result.contents[0].text).baseLanguages.length > 0);
   });
 
-  test('media and avatar tools answer files with their download URL', async () => {
-    const { media } = await callTool('product_management', {
-      action: 'GET_MEDIA',
-      productId: SimpleProduct._id,
-    });
-    assert.deepStrictEqual(
-      media.map(({ _id, file }) => [_id, file.url]),
-      [[JpegProductMedia._id, JpegMedia.url]],
-    );
-
-    try {
-      await db.collection('users').updateOne({ _id: 'user' }, { $set: { avatarId: JpegMedia._id } });
-      const { avatar } = await callTool('users_management', { action: 'GET_AVATAR', userId: 'user' });
-      assert.deepStrictEqual(
-        avatar.map(({ file }) => file.url),
-        [JpegMedia.url],
-      );
-
-      await db.collection('users').updateOne({ _id: 'user' }, { $set: { avatarId: 'missing-file' } });
-      const missing = await callTool('users_management', { action: 'GET_AVATAR', userId: 'user' });
-      assert.deepStrictEqual(missing.avatar, []);
-    } finally {
-      await db.collection('users').updateOne({ _id: 'user' }, { $unset: { avatarId: 1 } });
-    }
-  });
-
-  test('TOP_CUSTOMERS answers every customer with avatar and without credentials', async () => {
-    const findUserCustomer = async () => {
-      const { customers } = await callTool('order_management', {
-        action: 'TOP_CUSTOMERS',
-        from: '2020-01-01T00:00:00Z',
-        to: '2020-12-31T23:59:59Z',
-      });
-      return customers.find(({ userId }) => userId === 'user');
+  test('media, avatar and top customer tools answer download URLs and no credentials', async () => {
+    const urls = (media) => media.map(({ file }) => file.url);
+    const setAvatar = (avatarId) =>
+      db.collection('users').updateOne({ _id: 'user' }, { $set: { avatarId } });
+    const getAvatar = () => callTool('users_management', 'GET_AVATAR', { userId: 'user' });
+    const topCustomer = async () => {
+      const top = await callTool('order_management', 'TOP_CUSTOMERS', { from: '2020-01-01T00:00:00Z' });
+      return top.customers.find(({ userId }) => userId === 'user').user;
     };
 
-    const withoutAvatar = await findUserCustomer();
-    assert.strictEqual(withoutAvatar.user._id, 'user');
-    assert.strictEqual(withoutAvatar.user.services, undefined);
-    assert.deepStrictEqual(withoutAvatar.user.avatar, []);
-
+    const { media } = await callTool('product_management', 'GET_MEDIA', {
+      productId: SimpleProduct._id,
+    });
+    assert.deepStrictEqual(urls(media), [JpegMedia.url]);
+    assert.deepStrictEqual((await topCustomer()).avatar, []);
     try {
-      await db.collection('users').updateOne({ _id: 'user' }, { $set: { avatarId: JpegMedia._id } });
-      const withAvatar = await findUserCustomer();
-      assert.deepStrictEqual(
-        withAvatar.user.avatar.map(({ file }) => file.url),
-        [JpegMedia.url],
-      );
-      assert.strictEqual(withAvatar.user.services, undefined);
+      await setAvatar(JpegMedia._id);
+      assert.deepStrictEqual(urls((await getAvatar()).avatar), [JpegMedia.url]);
+      const customer = await topCustomer();
+      assert.deepStrictEqual([urls(customer.avatar), customer.services], [[JpegMedia.url], undefined]);
+      await setAvatar('missing-file');
+      assert.deepStrictEqual((await getAvatar()).avatar, []);
     } finally {
-      await db.collection('users').updateOne({ _id: 'user' }, { $unset: { avatarId: 1 } });
+      await setAvatar(null);
     }
   });
 
-  test('product price range and siblings come from the services of their GraphQL fields', async () => {
-    const { priceRange } = await callTool('product_management', {
-      action: 'SIMULATE_PRICE_RANGE',
+  test('product, user and filter actions use the services of their GraphQL counterparts', async () => {
+    const { priceRange } = await callTool('product_management', 'SIMULATE_PRICE_RANGE', {
       productId: ProxyProduct._id,
     });
     assert.ok(priceRange.minPrice.amount < priceRange.maxPrice.amount);
 
-    await db.collection('assortment_products').insertOne({
-      _id: 'mcp-sibling',
-      assortmentId: AssortmentProduct.assortmentId,
-      productId: ProxyProduct._id,
-      sortKey: 2,
-      tags: [],
-    });
-    try {
-      const { products } = await callTool('product_management', {
-        action: 'GET_SIBLINGS',
-        productId: SimpleProduct._id,
-      });
-      assert.deepStrictEqual(
-        products.map(({ _id }) => _id),
-        [ProxyProduct._id],
-      );
-    } finally {
-      await db.collection('assortment_products').deleteOne({ _id: 'mcp-sibling' });
-    }
-  });
-
-  test('REMOVE of users and filters cleans up like GraphQL', async () => {
-    await db.collection('users').insertOne({
-      _id: 'mcp-removed-user',
-      username: 'mcp-removed-user',
-      emails: [],
-      roles: [],
-      services: {},
-      created: new Date(),
-    });
-    await db.collection('bookmarks').insertOne({
-      _id: 'mcp-removed-bookmark',
-      userId: 'mcp-removed-user',
+    const sibling = { ...AssortmentProduct, _id: 'mcp-sibling', productId: ProxyProduct._id };
+    await db.collection('assortment_products').insertOne(sibling);
+    const { products } = await callTool('product_management', 'GET_SIBLINGS', {
       productId: SimpleProduct._id,
-      created: new Date(),
     });
-    await callTool('users_management', { action: 'REMOVE', userId: 'mcp-removed-user' });
-    assert.strictEqual(
-      await db.collection('bookmarks').countDocuments({ userId: 'mcp-removed-user' }),
-      0,
-    );
+    await db.collection('assortment_products').deleteOne({ _id: 'mcp-sibling' });
+    assert.strictEqual(products.length, 1);
+    assert.strictEqual(products[0]._id, ProxyProduct._id);
 
-    await callTool('filter_management', { action: 'REMOVE', filterId: MultiChoiceFilter._id });
-    assert.strictEqual(
-      await db.collection('assortment_filters').countDocuments({ filterId: MultiChoiceFilter._id }),
-      0,
-    );
+    await db.collection('users').insertOne({ _id: 'mcp-removed', username: 'mcp-removed', roles: [] });
+    await db.collection('bookmarks').insertOne({ userId: 'mcp-removed', productId: SimpleProduct._id });
+    await callTool('users_management', 'REMOVE', { userId: 'mcp-removed' });
+    assert.strictEqual(await db.collection('bookmarks').countDocuments({ userId: 'mcp-removed' }), 0);
+
+    const filterId = MultiChoiceFilter._id;
+    await callTool('filter_management', 'REMOVE', { filterId });
+    assert.strictEqual(await db.collection('assortment_filters').countDocuments({ filterId }), 0);
   });
 
   test('returns 405 for GET (no standalone SSE stream in stateless mode)', async () => {

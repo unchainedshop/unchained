@@ -14,12 +14,7 @@ const apiWith = (orders: any[], work: any[]) =>
       payment: { paymentProviders: { findProviders: async () => [] } },
       products: { findProducts: async () => [] },
     },
-    services: {
-      worker: {
-        addMessage: async (template: string, input: any) =>
-          work.push({ type: 'MESSAGE', input: { template, ...input } }),
-      },
-    },
+    services: { worker: { addMessage: async (template, input) => work.push({ template, ...input }) } },
   }) as any;
 
 const period = { from: '2030-01-01T00:00:00.000Z', to: '2030-01-02T00:00:00.000Z' };
@@ -41,11 +36,10 @@ test('the worker e-mails the report of a period with orders to the recipients', 
   assert.equal(result.success, true);
   assert.equal(result.result.sent, true);
   assert.equal(work.length, 1);
-  assert.equal(work[0].type, 'MESSAGE');
-  assert.equal(work[0].input.template, 'TICKET_SALES_REPORT');
-  assert.match(work[0].input.csv.orders, /\r\nA1,/);
+  assert.equal(work[0].template, 'TICKET_SALES_REPORT');
+  assert.match(work[0].csv.orders, /\r\nA1,/);
 
-  const [email] = await resolveTicketSalesReportTemplate(work[0].input, {} as any);
+  const [email] = await resolveTicketSalesReportTemplate(work[0], {} as any);
   assert.equal(email.input.to, 'office@example.com');
   assert.match(email.input.text, /CHF: 1 orders, 0 tickets, 50 CHF/);
   assert.equal(email.input.attachments.length, 3);
