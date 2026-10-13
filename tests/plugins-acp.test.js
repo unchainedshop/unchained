@@ -1,6 +1,7 @@
 import assert from 'node:assert';
 import test from 'node:test';
 import { OrderPricingSheet, PaymentDirector } from '@unchainedshop/core';
+import { deliverySettings } from '@unchainedshop/core-delivery';
 import { setupDatabase, disconnect, getServerBaseUrl } from './helpers.js';
 
 const API_KEY = 'test-acp-secret-key';
@@ -26,6 +27,16 @@ const acpFetch = (
     },
     ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
   });
+
+const unavailableOptionMessage = {
+  type: 'error',
+  code: 'invalid',
+  param: '$.selected_fulfillment_options[0].option_id',
+  content_type: 'plain',
+  content: 'The selected fulfillment option is not available',
+};
+
+const sessionTotal = (session) => session.totals.find(({ type }) => type === 'total').amount;
 
 const validSessionBody = () => ({
   line_items: [{ id: 'simpleproduct', quantity: 1 }],
@@ -411,7 +422,16 @@ test.describe('Plugins: ACP checkout', () => {
     assert.strictEqual(invalidBuyer.status, 400);
     assert.strictEqual((await invalidBuyer.json()).code, 'invalid_buyer');
 
-    const unavailableOption = await acpFetch(`/acp/checkout_sessions/${created.id}`, {
+    const unchanged = await (await acpFetch(`/acp/checkout_sessions/${created.id}`)).json();
+    assert.deepStrictEqual(
+      unchanged.line_items.map(({ id, quantity }) => ({ id, quantity })),
+      [{ id: created.line_items[0].id, quantity: 1 }],
+    );
+  });
+
+  test('applies an update and reports an unavailable fulfillment option as a message', async () => {
+    const created = await createSession();
+    const res = await acpFetch(`/acp/checkout_sessions/${created.id}`, {
       method: 'POST',
       idempotencyKey: idem(),
       body: {
@@ -419,14 +439,78 @@ test.describe('Plugins: ACP checkout', () => {
         selected_fulfillment_options: [{ type: 'shipping', option_id: 'not-an-option', item_ids: [] }],
       },
     });
-    assert.strictEqual(unavailableOption.status, 400);
-    assert.strictEqual((await unavailableOption.json()).code, 'invalid_fulfillment_option');
+    const updated = await res.json();
+    assert.strictEqual(res.status, 200);
+    assert.deepStrictEqual(updated.messages, [unavailableOptionMessage]);
 
-    const unchanged = await (await acpFetch(`/acp/checkout_sessions/${created.id}`)).json();
-    assert.deepStrictEqual(
-      unchanged.line_items.map(({ id, quantity }) => ({ id, quantity })),
-      [{ id: created.line_items[0].id, quantity: 1 }],
+    const persisted = await (await acpFetch(`/acp/checkout_sessions/${created.id}`)).json();
+    assert.strictEqual(persisted.line_items[0].quantity, 3);
+    assert.strictEqual(sessionTotal(persisted), 3 * sessionTotal(created));
+  });
+
+  test('selects a fulfillment option that only the updated address supports', async (t) => {
+    t.mock.method(deliverySettings, 'filterSupportedProviders', async ({ providers, order }) =>
+      providers.filter(
+        ({ _id }) =>
+          _id ===
+          (order.billingAddress?.countryCode === 'DE'
+            ? 'send-mail-delivery-provider'
+            : 'simple-delivery-provider'),
+      ),
     );
+    const created = await createSession();
+    const res = await acpFetch(`/acp/checkout_sessions/${created.id}`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: {
+        fulfillment_details: {
+          address: {
+            name: 'Ada Lovelace',
+            line_one: 'Unter den Linden 1',
+            postal_code: '10117',
+            city: 'Berlin',
+            country: 'DE',
+          },
+        },
+        selected_fulfillment_options: [
+          { type: 'shipping', option_id: 'send-mail-delivery-provider', item_ids: [] },
+        ],
+      },
+    });
+    const updated = await res.json();
+    assert.strictEqual(res.status, 200, JSON.stringify(updated));
+    assert.deepStrictEqual(updated.messages, []);
+    assert.strictEqual(updated.selected_fulfillment_options[0].option_id, 'send-mail-delivery-provider');
+  });
+
+  test('does not charge a complete with an unavailable fulfillment option', async () => {
+    const created = await createSession();
+    const res = await acpFetch(`/acp/checkout_sessions/${created.id}/complete`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: {
+        buyer: { email: 'buyer@example.com' },
+        fulfillment_details: {
+          address: {
+            name: 'Ada Lovelace',
+            line_one: 'Teststrasse 1',
+            postal_code: '8000',
+            city: 'Zürich',
+            country: 'CH',
+          },
+        },
+        selected_fulfillment_options: [{ type: 'shipping', option_id: 'not-an-option', item_ids: [] }],
+        payment_data: {
+          handler_id: 'stripe_spt',
+          instrument: { type: 'card', credential: { type: 'spt', token: 'spt_test' } },
+        },
+      },
+    });
+    const session = await res.json();
+    assert.strictEqual(res.status, 200);
+    assert.deepStrictEqual(session.messages, [unavailableOptionMessage]);
+    assert.strictEqual(session.order, undefined);
+    assert.strictEqual((await db.collection('orders').findOne({ _id: created.id })).status, null);
   });
 
   test('rejects an invalid complete without applying its session updates', async () => {
@@ -473,7 +557,7 @@ test.describe('Plugins: ACP checkout', () => {
     assert.strictEqual(unchanged.line_items[0].quantity, 1);
   });
 
-  test('rejects non-integer quantities and arbitrary fulfillment option IDs', async () => {
+  test('rejects non-integer quantities and reports arbitrary fulfillment option IDs', async () => {
     const created = await createSession();
     const invalidQuantity = await acpFetch(`/acp/checkout_sessions/${created.id}`, {
       method: 'POST',
@@ -490,8 +574,8 @@ test.describe('Plugins: ACP checkout', () => {
         selected_fulfillment_options: [{ type: 'shipping', option_id: 'arbitrary-id', item_ids: [] }],
       },
     });
-    assert.strictEqual(invalidFulfillment.status, 400);
-    assert.strictEqual((await invalidFulfillment.json()).code, 'invalid_fulfillment_option');
+    assert.strictEqual(invalidFulfillment.status, 200);
+    assert.deepStrictEqual((await invalidFulfillment.json()).messages, [unavailableOptionMessage]);
   });
 
   test('rejects malformed JSON without creating a guest', async () => {
@@ -521,13 +605,10 @@ test.describe('Plugins: ACP checkout', () => {
     const res = await acpFetch('/acp/checkout_sessions', {
       method: 'POST',
       idempotencyKey: idem(),
-      body: {
-        ...validSessionBody(),
-        selected_fulfillment_options: [{ type: 'shipping', option_id: 'not-an-option', item_ids: [] }],
-      },
+      body: { ...validSessionBody(), line_items: [{ id: 'missing-product', quantity: 1 }] },
     });
     assert.strictEqual(res.status, 400);
-    assert.strictEqual((await res.json()).code, 'invalid_fulfillment_option');
+    assert.strictEqual((await res.json()).code, 'product_not_found');
     assert.deepStrictEqual(
       await Promise.all([
         db.collection('users').countDocuments({ guest: true }),

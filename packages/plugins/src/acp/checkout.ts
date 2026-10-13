@@ -30,12 +30,13 @@ const unsupportedCurrency = (currency: string) =>
     '$.currency',
   );
 
-const unavailableFulfillmentOption = () =>
-  invalidRequest(
-    'invalid_fulfillment_option',
-    'The selected fulfillment option is not available',
-    '$.selected_fulfillment_options[0].option_id',
-  );
+const unavailableFulfillmentOption = {
+  type: 'error',
+  code: 'invalid',
+  param: '$.selected_fulfillment_options[0].option_id',
+  content_type: 'plain',
+  content: 'The selected fulfillment option is not available',
+};
 
 const mapAddress = (address: any) => {
   if (!address) return undefined;
@@ -161,17 +162,15 @@ const parseCheckoutUpdate = (body: Record<string, any>) => {
   };
 };
 
-const resolveFulfillmentOption = async (
+const findFulfillmentOption = async (
   context: ACPContext,
   order: Order,
   selected: { option_id: string; type?: string },
 ) => {
   const options = await getACPFulfillmentOptions(order, context);
-  const option = options.find(({ id }) => id === selected.option_id);
-  if (!option || (selected.type && selected.type !== option.type)) {
-    throw unavailableFulfillmentOption();
-  }
-  return option;
+  return options.find(
+    ({ id, type }) => id === selected.option_id && (!selected.type || selected.type === type),
+  );
 };
 
 const nextDeliveryAddress = ({
@@ -204,8 +203,6 @@ const applyCheckoutUpdate = async (
     selectedOption,
   }: ReturnType<typeof parseCheckoutUpdate>,
 ) => {
-  const option =
-    selectedOption && (await resolveFulfillmentOption(context, initialOrder, selectedOption));
   let order = initialOrder;
 
   if (items) {
@@ -225,18 +222,15 @@ const applyCheckoutUpdate = async (
       })) || order;
   }
 
+  const option = selectedOption && (await findFulfillmentOption(context, order, selectedOption));
   if (option) {
-    try {
-      order = await context.services.orders.selectDeliveryProvider({
-        order,
-        deliveryProviderId: option.providerId,
-        expectedType:
-          option.type === 'pickup' ? DeliveryProviderType.PICKUP : DeliveryProviderType.SHIPPING,
-        deliveryContext: option.deliveryContext,
-      });
-    } catch (error) {
-      throw error.name?.startsWith('DeliveryProvider') ? unavailableFulfillmentOption() : error;
-    }
+    order = await context.services.orders.selectDeliveryProvider({
+      order,
+      deliveryProviderId: option.providerId,
+      expectedType:
+        option.type === 'pickup' ? DeliveryProviderType.PICKUP : DeliveryProviderType.SHIPPING,
+      deliveryContext: option.deliveryContext,
+    });
   }
 
   if (option?.type !== 'pickup' && order.deliveryId && (fulfillmentAddress || billingAddress)) {
@@ -254,7 +248,7 @@ const applyCheckoutUpdate = async (
     }
   }
 
-  return order;
+  return { order, messages: selectedOption && !option ? [unavailableFulfillmentOption] : [] };
 };
 
 const configuredPaymentProvider = async (context: ACPContext) => {
@@ -336,14 +330,14 @@ export const createCheckoutSession = async (
       throw unsupportedCurrency(body.currency);
     }
 
-    let order =
+    const session =
       (await context.modules.orders.updateContext(cart._id, {
         acp: { apiVersion: ACP_API_VERSION, createdAt: new Date().toISOString() },
       })) || cart;
-    order = await applyCheckoutUpdate(context, order, update);
+    const { order, messages } = await applyCheckoutUpdate(context, session, update);
     await selectConfiguredPaymentProvider(context, order, paymentProvider);
-    order = await context.services.orders.updateCalculation(order._id);
-    return { status: 201, body: await serializeCheckoutSession(order, context) };
+    const calculated = await context.services.orders.updateCalculation(order._id);
+    return { status: 201, body: await serializeCheckoutSession(calculated, context, messages) };
   } catch (error) {
     try {
       await context.services.users.deleteUser({ userId: user._id });
@@ -368,9 +362,9 @@ export const updateCheckoutSession = async (
   body: Record<string, any>,
 ): Promise<ACPRouteResult> => {
   await using order = await lockACPSession(context);
-  await applyCheckoutUpdate(context, order, parseCheckoutUpdate(body));
+  const { messages } = await applyCheckoutUpdate(context, order, parseCheckoutUpdate(body));
   const updated = await context.services.orders.updateCalculation(order._id);
-  return { status: 200, body: await serializeCheckoutSession(updated, context) };
+  return { status: 200, body: await serializeCheckoutSession(updated, context, messages) };
 };
 
 const extractPaymentContext = (paymentData: any) => {
@@ -406,9 +400,12 @@ export const completeCheckoutSession = async (
   }
   const paymentProvider = await configuredPaymentProvider(context);
 
-  const updated = await applyCheckoutUpdate(context, order, update);
+  const { order: updated, messages } = await applyCheckoutUpdate(context, order, update);
   await selectConfiguredPaymentProvider(context, updated, paymentProvider);
   const calculated = await context.services.orders.updateCalculation(order._id);
+  if (messages.length) {
+    return { status: 200, body: await serializeCheckoutSession(calculated, context, messages) };
+  }
 
   try {
     const completed = await context.services.orders.checkoutOrder(order._id, { paymentContext });
@@ -426,12 +423,9 @@ export const completeCheckoutSession = async (
     if (error.cause !== 'PAYMENT_DECLINED') throw error;
     return {
       status: 200,
-      body: {
-        ...(await serializeCheckoutSession(calculated, context)),
-        messages: [
-          { type: 'error', code: 'payment_declined', content_type: 'plain', content: error.message },
-        ],
-      },
+      body: await serializeCheckoutSession(calculated, context, [
+        { type: 'error', code: 'payment_declined', content_type: 'plain', content: error.message },
+      ]),
     };
   }
 };

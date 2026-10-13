@@ -114,7 +114,11 @@ export const getACPFulfillmentOptions = async (
   return options.flat();
 };
 
-export const serializeCheckoutSession = async (order: Order, context: ACPContext) => {
+export const serializeCheckoutSession = async (
+  order: Order,
+  context: ACPContext,
+  messages: Record<string, unknown>[] = [],
+) => {
   const positions = await context.modules.orders.positions.findOrderPositions({
     orderId: order._id,
   });
@@ -197,7 +201,7 @@ export const serializeCheckoutSession = async (order: Order, context: ACPContext
           },
         ]
       : undefined,
-    messages: [],
+    messages,
     links: sellerLinks('terms_of_use'),
     capabilities: {
       payment: { handlers: [acpConfig.paymentHandler] },
