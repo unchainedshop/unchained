@@ -6,6 +6,7 @@ import {
   EnrollmentTerminationNotAllowedError,
   EnrollmentWrongStatusError,
   InvalidIdError,
+  mapServiceError,
 } from '../../../errors.ts';
 
 export default async function terminateEnrollment(
@@ -36,10 +37,7 @@ export default async function terminateEnrollment(
 
   try {
     return await services.enrollments.terminateEnrollment(enrollment, { reason, comment });
-  } catch (e) {
-    if (e.name === 'EnrollmentTerminationNotAllowedError') {
-      throw new EnrollmentTerminationNotAllowedError({ enrollmentId });
-    }
-    throw e;
+  } catch (error) {
+    throw mapServiceError(error, { EnrollmentTerminationNotAllowedError });
   }
 }

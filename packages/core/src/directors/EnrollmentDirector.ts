@@ -80,6 +80,7 @@ export const EnrollmentDirector: IEnrollmentDirector = {
       throw createServiceError(
         'EnrollmentPlanNotSupportedError',
         'No suitable enrollment plugin available for this plan configuration',
+        { enrollmentId: enrollmentContext.enrollment._id },
       );
     }
     const adapter = Adapter.actions(context);

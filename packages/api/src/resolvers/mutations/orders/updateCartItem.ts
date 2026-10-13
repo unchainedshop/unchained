@@ -9,6 +9,7 @@ import {
   OrderNotFoundError,
   QuotationNotFoundError,
   QuotationItemConfigurationError,
+  mapServiceError,
 } from '../../../errors.ts';
 
 export default async function updateCartItem(
@@ -43,16 +44,11 @@ export default async function updateCartItem(
   try {
     await services.orders.updateCartItem({ order, item, quantity, configuration }, context);
   } catch (error) {
-    switch (error.name) {
-      case 'ProductNotFoundError':
-        throw new ProductNotFoundError({ productId: item.productId });
-      case 'QuotationNotFoundError':
-        throw new QuotationNotFoundError({ quotationId: item.quotationId });
-      case 'QuotationItemConfigurationError':
-        throw new QuotationItemConfigurationError({ configuration });
-      default:
-        throw error;
-    }
+    throw mapServiceError(error, {
+      ProductNotFoundError,
+      QuotationNotFoundError,
+      QuotationItemConfigurationError,
+    });
   }
 
   await services.orders.updateCalculation(order._id);

@@ -52,6 +52,8 @@ import { removeCartDiscountService } from './removeCartDiscount.ts';
 import { addMultipleCartProductsService } from './addMultipleCartProducts.ts';
 import { addCartQuotationService } from './addCartQuotation.ts';
 import { updateCartItemService } from './updateCartItem.ts';
+import { selectDeliveryProviderService } from './selectDeliveryProvider.ts';
+import { selectPaymentProviderService } from './selectPaymentProvider.ts';
 import { ercMetadataService } from './ercMetadata.ts';
 import { simulateProductPricingService } from './simulateProductPricing.ts';
 import { simulateProductDispatchingService } from './simulateProductDispatching.ts';
@@ -72,6 +74,7 @@ import { bulkRemoveFiltersService } from './bulkRemoveFilters.ts';
 import { bulkDeleteUsersService } from './bulkDeleteUsers.ts';
 import { bulkSetFilterActiveService } from './bulkSetFilterActive.ts';
 import { bulkAssignProductsToAssortmentService } from './bulkAssignProductsToAssortment.ts';
+import { resolveMediaFilesService } from './resolveMediaFiles.ts';
 
 // Auto-Inject Unchained API as last parameter
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
@@ -109,6 +112,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
       removeFiles: removeFilesService as Bound<typeof removeFilesService>,
       createDownloadStream: createDownloadStreamService as Bound<typeof createDownloadStreamService>,
       createFileDownloadURL: createFileDownloadURLService as Bound<typeof createFileDownloadURLService>,
+      resolveMediaFiles: resolveMediaFilesService as Bound<typeof resolveMediaFilesService>,
     },
     orders: {
       registerPaymentCredentials: registerPaymentCredentialsService as Bound<
@@ -149,6 +153,10 @@ export default function initServices(modules: Modules, customServices: CustomSer
       >,
       addCartQuotation: addCartQuotationService as Bound<typeof addCartQuotationService>,
       updateCartItem: updateCartItemService as Bound<typeof updateCartItemService>,
+      selectDeliveryProvider: selectDeliveryProviderService as Bound<
+        typeof selectDeliveryProviderService
+      >,
+      selectPaymentProvider: selectPaymentProviderService as Bound<typeof selectPaymentProviderService>,
     },
     products: {
       simulateProductPricing: simulateProductPricingService as Bound<

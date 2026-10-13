@@ -1,25 +1,17 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import { OrderNotFoundError, OrderWrongStatusError } from '../../../errors.ts';
+import { loadCart } from '../../loadCart.ts';
 
 export default async function emptyCart(
   root: never,
   { orderId }: { orderId?: string },
   context: Context,
 ) {
-  const { modules, services, userId, user } = context;
+  const { modules, services, userId } = context;
 
   log('mutation emptyCart', { userId, orderId });
 
-  const order = await services.orders.findOrInitCart({
-    orderId,
-    user: user!,
-    countryCode: context.countryCode,
-  });
-  if (!order) throw new OrderNotFoundError({ orderId });
-  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
-
-  if (!order) return null;
+  const order = await loadCart(context, orderId);
 
   await modules.orders.positions.removePositions({ orderId: order._id });
 

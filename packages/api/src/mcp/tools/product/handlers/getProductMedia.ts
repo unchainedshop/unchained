@@ -1,6 +1,5 @@
 import type { Context } from '../../../../context.ts';
 import { ProductNotFoundError } from '../../../../errors.ts';
-import normalizeMediaUrl from '../../../utils/normalizeMediaUrl.ts';
 import type { Params } from '../schemas.ts';
 
 export default async function getProductMedia(context: Context, params: Params<'GET_MEDIA'>) {
@@ -15,5 +14,5 @@ export default async function getProductMedia(context: Context, params: Params<'
     limit,
     offset,
   });
-  return { media: await normalizeMediaUrl(media, context) };
+  return { media: await context.services.files.resolveMediaFiles(media) };
 }

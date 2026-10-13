@@ -1,5 +1,4 @@
 import type { Context } from '../../context.ts';
-import normalizeMediaUrl from './normalizeMediaUrl.ts';
 
 export async function getNormalizedAssortmentDetails(
   { assortmentId, slug }: { assortmentId?: string; slug?: string },
@@ -44,7 +43,7 @@ export async function getNormalizedAssortmentDetails(
     includeInactive: true,
     includeLeaves: true,
   });
-  const media = await normalizeMediaUrl(assortmentMedias, context);
+  const media = await context.services.files.resolveMediaFiles(assortmentMedias);
 
   return {
     ...assortment,

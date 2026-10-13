@@ -2,6 +2,9 @@ import assert from 'node:assert';
 import test from 'node:test';
 import { setupDatabase, disconnect, getServerBaseUrl } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
+import { JpegMedia, ProxyProduct, SimpleProduct } from './seeds/products.js';
+import { AssortmentProduct } from './seeds/assortments.js';
+import { MultiChoiceFilter } from './seeds/filters.js';
 
 let baseUrl;
 let db;
@@ -31,6 +34,14 @@ const parseMcpResponse = async (response) => {
 };
 
 const rpc = (method, params = {}, id = 1) => ({ jsonrpc: '2.0', id, method, params });
+
+const callTool = async (name, action, args) => {
+  const response = await mcpFetch(rpc('tools/call', { name, arguments: { action, ...args } }), {
+    token: ADMIN_TOKEN,
+  });
+  const message = await parseMcpResponse(response);
+  return JSON.parse(message.result.content[0].text).data;
+};
 
 test.describe('MCP server (stateless, SDK v2)', () => {
   test.before(async () => {
@@ -179,6 +190,58 @@ test.describe('MCP server (stateless, SDK v2)', () => {
     const readMessage = await parseMcpResponse(readResponse);
     assert.strictEqual(readMessage.result.contents[0].mimeType, 'application/json');
     assert.ok(JSON.parse(readMessage.result.contents[0].text).baseLanguages.length > 0);
+  });
+
+  test('media, avatar and top customer tools answer download URLs and no credentials', async () => {
+    const urls = (media) => media.map(({ file }) => file.url);
+    const setAvatar = (avatarId) =>
+      db.collection('users').updateOne({ _id: 'user' }, { $set: { avatarId } });
+    const getAvatar = () => callTool('users_management', 'GET_AVATAR', { userId: 'user' });
+    const topCustomer = async () => {
+      const top = await callTool('order_management', 'TOP_CUSTOMERS', { from: '2020-01-01T00:00:00Z' });
+      return top.customers.find(({ userId }) => userId === 'user').user;
+    };
+
+    const { media } = await callTool('product_management', 'GET_MEDIA', {
+      productId: SimpleProduct._id,
+    });
+    assert.deepStrictEqual(urls(media), [JpegMedia.url]);
+    assert.deepStrictEqual((await topCustomer()).avatar, []);
+    try {
+      await setAvatar(JpegMedia._id);
+      assert.deepStrictEqual(urls((await getAvatar()).avatar), [JpegMedia.url]);
+      const customer = await topCustomer();
+      assert.deepStrictEqual([urls(customer.avatar), customer.services], [[JpegMedia.url], undefined]);
+      await setAvatar('missing-file');
+      assert.deepStrictEqual((await getAvatar()).avatar, []);
+    } finally {
+      await setAvatar(null);
+    }
+  });
+
+  test('product, user and filter actions use the services of their GraphQL counterparts', async () => {
+    const { priceRange } = await callTool('product_management', 'SIMULATE_PRICE_RANGE', {
+      productId: ProxyProduct._id,
+    });
+    assert.ok(priceRange.minPrice.amount < priceRange.maxPrice.amount);
+
+    const sibling = { ...AssortmentProduct, _id: 'mcp-sibling', productId: ProxyProduct._id };
+    await db.collection('assortment_products').insertOne(sibling);
+    const { products } = await callTool('product_management', 'GET_SIBLINGS', {
+      productId: SimpleProduct._id,
+    });
+    await db.collection('assortment_products').deleteOne({ _id: 'mcp-sibling' });
+    assert.strictEqual(products.length, 1);
+    assert.strictEqual(products[0]._id, ProxyProduct._id);
+
+    await db.collection('users').insertOne({ _id: 'mcp-removed', username: 'mcp-removed', roles: [] });
+    await db.collection('bookmarks').insertOne({ userId: 'mcp-removed', productId: SimpleProduct._id });
+    await callTool('users_management', 'REMOVE', { userId: 'mcp-removed' });
+    assert.strictEqual(await db.collection('bookmarks').countDocuments({ userId: 'mcp-removed' }), 0);
+
+    const filterId = MultiChoiceFilter._id;
+    await callTool('filter_management', 'REMOVE', { filterId });
+    assert.strictEqual(await db.collection('assortment_filters').countDocuments({ filterId }), 0);
   });
 
   test('returns 405 for GET (no standalone SSE stream in stateless mode)', async () => {

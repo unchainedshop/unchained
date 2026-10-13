@@ -1,6 +1,12 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import { InvalidIdError, OrderNotFoundError, OrderWrongStatusError } from '../../../errors.ts';
+import {
+  InvalidIdError,
+  mapServiceError,
+  deliveryProviderErrors,
+  paymentProviderErrors,
+} from '../../../errors.ts';
+import { loadCart } from '../../loadCart.ts';
 import type { Order } from '@unchainedshop/core-orders';
 
 interface UpdateCartParams {
@@ -15,7 +21,7 @@ interface UpdateCartParams {
 export default async function updateCart(root: never, params: UpdateCartParams, context: Context) {
   const { orderId, billingAddress, contact, paymentProviderId, deliveryProviderId, meta } = params;
 
-  const { modules, services, userId, user } = context;
+  const { modules, services, userId } = context;
 
   log('mutation updateCart', { userId });
 
@@ -24,26 +30,29 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
   if (paymentProviderId === '') throw new InvalidIdError({ paymentProviderId });
   if (deliveryProviderId === '') throw new InvalidIdError({ deliveryProviderId });
 
-  const order = await services.orders.findOrInitCart({
-    orderId,
-    user: user!,
-    countryCode: context.countryCode,
-  });
-  if (!order) throw new OrderNotFoundError({ orderId });
-  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
+  let order = await loadCart(context, orderId);
 
   // Batch update non-provider fields in a single database operation
   if (meta || billingAddress || contact) {
-    await modules.orders.updateCartFields(order._id, { meta, billingAddress, contact });
+    order =
+      (await modules.orders.updateCartFields(order._id, { meta, billingAddress, contact })) || order;
   }
 
   // Provider updates trigger events and need to be handled separately
-  if (paymentProviderId) {
-    await modules.orders.setPaymentProvider(order._id, paymentProviderId);
+  if (deliveryProviderId) {
+    try {
+      order = await services.orders.selectDeliveryProvider({ order, deliveryProviderId });
+    } catch (error) {
+      throw mapServiceError(error, deliveryProviderErrors);
+    }
   }
 
-  if (deliveryProviderId) {
-    await modules.orders.setDeliveryProvider(order._id, deliveryProviderId);
+  if (paymentProviderId) {
+    try {
+      order = await services.orders.selectPaymentProvider({ order, paymentProviderId });
+    } catch (error) {
+      throw mapServiceError(error, paymentProviderErrors);
+    }
   }
 
   // Recalculate, then return

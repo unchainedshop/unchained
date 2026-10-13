@@ -6,7 +6,7 @@ import type {
 } from '@unchainedshop/core-products';
 import type { User } from '@unchainedshop/core-users';
 import type { Modules } from '../modules.ts';
-import { ProductPricingDirector } from '../core-index.ts';
+import { simulateProductPricingService } from './simulateProductPricing.ts';
 
 export async function simulateConfigurablePriceRangeService(
   this: Modules,
@@ -37,21 +37,16 @@ export async function simulateConfigurablePriceRangeService(
   const filteredPrices = (
     await Promise.all(
       products.map(async (proxyProduct) => {
-        const pricingContext = {
+        const pricing = await simulateProductPricingService.call(this, {
           product: proxyProduct,
           user,
           countryCode,
           discounts: [],
           currencyCode,
           quantity,
-        };
-
-        const calculated = await ProductPricingDirector.rebuildCalculation(pricingContext, {
-          modules: this,
         });
-        if (!calculated || !calculated.length) return null;
+        if (!pricing) return null;
 
-        const pricing = ProductPricingDirector.calculationSheet(pricingContext, calculated);
         const unitPrice = pricing.unitPrice({ useNetPrice });
 
         return {

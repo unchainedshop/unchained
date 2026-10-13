@@ -1,29 +1,21 @@
 import type { Context } from '../../../context.ts';
 import { log } from '@unchainedshop/logger';
 import {
-  OrderWrongStatusError,
   OrderDiscountCodeAlreadyPresentError,
   OrderDiscountCodeNotValidError,
-  OrderNotFoundError,
 } from '../../../errors.ts';
+import { loadCart } from '../../loadCart.ts';
 
 export default async function addCartDiscount(
   root: never,
   { orderId, code }: { orderId?: string; code: string },
   context: Context,
 ) {
-  const { modules, services, user, userId } = context;
+  const { modules, services, userId } = context;
 
   log(`mutation addCartDiscount ${code} ${orderId}`, { userId, orderId });
 
-  const order = await services.orders.findOrInitCart({
-    orderId,
-    user: user!,
-    countryCode: context.countryCode,
-  });
-  if (!order) throw new OrderNotFoundError({ orderId });
-
-  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
+  const order = await loadCart(context, orderId);
 
   // 1. check if discount code is not already used
   if (await modules.orders.discounts.isDiscountCodeUsed({ code, orderId: order._id }))

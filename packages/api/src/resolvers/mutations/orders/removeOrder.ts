@@ -5,7 +5,7 @@ import type { Context } from '../../../context.ts';
 export default async function removeOrder(
   root: never,
   { orderId }: { orderId: string },
-  { modules, userId }: Context,
+  { modules, services, userId }: Context,
 ) {
   log('mutation removeOrder', { userId, orderId });
 
@@ -18,7 +18,7 @@ export default async function removeOrder(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  await modules.orders.delete(orderId);
+  await services.orders.deleteCart(orderId);
 
   return order;
 }

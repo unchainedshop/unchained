@@ -1,4 +1,4 @@
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect, tokenCookieOf } from './helpers.js';
 import { LeveledPricingProduct, SimpleProduct } from './seeds/products.js';
 import { ConfirmedOrder, SimplePosition } from './seeds/orders.js';
 import assert from 'node:assert';
@@ -419,6 +419,27 @@ test.describe('Cart: Product Items', () => {
           },
         ],
       });
+    });
+
+    test('failed adds create no cart', async () => {
+      const { headers } = await createLoggedInGraphqlFetch(null)({
+        query: 'mutation { loginAsGuest { _id } }',
+      });
+      const guestFetch = createLoggedInGraphqlFetch(`Bearer ${tokenCookieOf(headers)}`);
+      for (const [item, code] of [
+        [{ productId: 'non-existing-id', quantity: 1 }, 'ProductNotFoundError'],
+        [{ productId: SimpleProduct._id, quantity: 0 }, 'OrderQuantityTooLowError'],
+      ]) {
+        for (const query of [
+          'mutation ($productId: ID!, $quantity: Int) { addCartProduct(productId: $productId, quantity: $quantity) { _id } }',
+          'mutation ($items: [OrderItemInput!]!) { addMultipleCartProducts(items: $items) { _id } }',
+        ]) {
+          const { errors } = await guestFetch({ query, variables: { ...item, items: [item] } });
+          assert.strictEqual(errors?.[0]?.extensions?.code, code);
+        }
+      }
+      const { data } = await guestFetch({ query: '{ me { cart { _id } } }' });
+      assert.strictEqual(data.me.cart, null);
     });
   });
 

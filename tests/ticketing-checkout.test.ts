@@ -201,6 +201,16 @@ test.describe('Ticketing: checkout', () => {
       result = await addTickets(cartId, TheaterEventId, 1);
       assert.equal(result.errors?.[0]?.extensions?.code, 'TicketOrderLimitExceededError');
       assert.equal(result.errors?.[0]?.extensions?.maxPerOrder, 2);
+
+      result = await userFetch({
+        query:
+          'mutation ($orderId: ID, $items: [OrderItemInput!]!) { addMultipleCartProducts(orderId: $orderId, items: $items) { _id } }',
+        variables: {
+          orderId: await createCart('tickets-batch'),
+          items: [2, 1].map((quantity) => ({ productId: TheaterEventId, quantity })),
+        },
+      });
+      assert.equal(result.errors?.[0]?.extensions?.code, 'TicketOrderLimitExceededError');
     } finally {
       await db
         .collection('products')

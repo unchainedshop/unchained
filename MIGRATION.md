@@ -243,6 +243,10 @@ OrderDeliveryPickUp.pickUpLocations
 DeliveryProvider.pickupLocations
 ```
 
+#### Cart providers
+
+`updateCart`, `updateCartPayment*` and `updateCartDelivery*` answer `PaymentProviderNotFoundError` / `DeliverProviderNotFoundError` for a provider that does not exist and `OrderPaymentTypeError` / `OrderDeliveryTypeError` for one the cart does not support, which they used to set or swap for the default. Offer the cart's `supportedPaymentProviders` / `supportedDeliveryProviders`.
+
 #### Enrollments
 
 `Enrollment.expires` is the date the enrollment ends and `null` while it renews; it no longer falls back to the end of the last period. Read the end of the current period from `periods`:

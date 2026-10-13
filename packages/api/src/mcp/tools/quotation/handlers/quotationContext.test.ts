@@ -52,5 +52,7 @@ describe('MCP quotation handlers pass the quotation context', () => {
     const { context, service } = buildContext('PROCESSING');
     await makeQuotationProposal(context, { quotationId: 'quotation-1', quotationContext } as any);
     assert.deepEqual(service.mock.calls[0].arguments[1], { quotationContext });
+    await makeQuotationProposal(context, { quotationId: 'quotation-1' } as any);
+    assert.equal(service.mock.calls[1].arguments[1].quotationContext, undefined);
   });
 });

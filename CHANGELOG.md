@@ -39,6 +39,8 @@
   - The AI chat only answers pages of the API's own host, `localhost` and `ROOT_URL` (more with `chat.allowedOrigins`) and requires JSON. It uses the MCP server in-process, `chat.unchainedMCPUrl` is removed.
   - `context.getHeader()` returns `string | undefined`, `GetHeaderFn` is removed.
   - Deep imports below `@unchainedshop/api/lib/` moved: the adapters, `auth` and `adminUiPlugins` to `lib/http/`, `acl` to `lib/roles/`. The entry points are unchanged.
+- **Cart providers are validated:** all cart provider mutations reject a payment or delivery provider that does not exist with `PaymentProviderNotFoundError` / `DeliverProviderNotFoundError` (`updateCart` used to set it, `updateCartPayment*` / `updateCartDelivery*` answered `OrderPaymentTypeError` / `OrderDeliveryTypeError`) and one the cart does not support with `OrderPaymentTypeError` / `OrderDeliveryTypeError`.
+- **`services.orders.addMultipleCartProducts({ order, items }, unchainedAPI)`** takes the cart instead of `orderId`, checks that every product exists before adding any and returns the added positions; `addCartProduct` uses it.
 
 ### Improvements
 
@@ -66,6 +68,7 @@
 - **Fetch handler and plain Node.js server:** `createFetchHandler()` from `@unchainedshop/api/fetch` (Bun, Deno) and `connect()` from `@unchainedshop/api/node`. `@unchainedshop/api` no longer depends on `@whatwg-node/server`.
 - **One request context type:** `UnchainedRequestContext` from `@unchainedshop/core`; plugin routes get `PluginHttpRequestContext` with `user` and `roles` and check permissions without casts.
 - **Faster Admin UI, every route audited:** Admin UI files skip the request context (70–100% more requests per second) and `_next/static` is cached as immutable. MCP, chat, plugin routes and your own routes run as the user of the request, so their events carry it.
+- **Cart and media services:** `services.orders.selectDeliveryProvider` / `selectPaymentProvider` and `services.files.resolveMediaFiles` hold the logic of the cart provider mutations and the MCP media tools.
 
 ### Fixed
 
@@ -114,6 +117,8 @@
 - **Server errors no longer leak details:** a failing plugin route, or a request context that cannot be created (Fastify sent the error message), answers a generic `500` and logs the stack.
 - **Fastify:** MCP over HTTP/2 and `HEAD /graphql` answered `500`.
 - **Admin Copilot with OpenAI models:** MCP tool schemas used `propertyNames: {}`, which `@ai-sdk/openai` rejects.
+- **`removeOrder`** deletes the positions, payments, deliveries and discounts of the cart; before it left them behind, delivery addresses included.
+- **MCP actions match GraphQL:** users `REMOVE` runs the `deleteUser` cleanup, filter `REMOVE` unlinks the filter from assortments, `SIMULATE_PRICE_RANGE` prices the variants, `GET_SIBLINGS` returns the products of the same assortments, and the quotation actions keep a stored quotation context when none is given.
 
 ## v5.0.0-alpha.11 (2026-09-23)
 

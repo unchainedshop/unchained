@@ -1,54 +1,31 @@
 import type { Context } from '../../../context.ts';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { log } from '@unchainedshop/logger';
-import {
-  InvalidIdError,
-  OrderDeliveryNotFoundError,
-  OrderDeliveryTypeError,
-  OrderNotFoundError,
-  OrderWrongStatusError,
-} from '../../../errors.ts';
+import { InvalidIdError, mapServiceError, deliveryProviderErrors } from '../../../errors.ts';
+import { loadCart } from '../../loadCart.ts';
 
 export default async function updateCartDeliveryPickUp(
   root: never,
   params: { orderId: string; deliveryProviderId: string; orderPickUpLocationId: string; meta: any },
   context: Context,
 ) {
-  const { modules, services, userId, user } = context;
+  const { services, userId } = context;
   const { orderId, deliveryProviderId, orderPickUpLocationId, meta } = params;
-  log(`mutation updateCartDeliveryPickUp provider ${deliveryProviderId}`, {
-    userId,
-  });
+  log(`mutation updateCartDeliveryPickUp provider ${deliveryProviderId}`, { userId });
 
   if (!deliveryProviderId) throw new InvalidIdError({ deliveryProviderId });
 
-  let order = await services.orders.findOrInitCart({
-    orderId,
-    user: user!,
-    countryCode: context.countryCode,
-  });
-  if (!order) throw new OrderNotFoundError({ orderId });
-  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
+  const order = await loadCart(context, orderId);
 
-  const provider = await modules.delivery.findProvider({
-    deliveryProviderId,
-  });
-  const deliveryProviderType = provider?.type;
-
-  if (deliveryProviderType !== DeliveryProviderType.PICKUP)
-    throw new OrderDeliveryTypeError({
-      orderId: order._id,
-      received: deliveryProviderType,
-      required: DeliveryProviderType.PICKUP,
+  try {
+    await services.orders.selectDeliveryProvider({
+      order,
+      deliveryProviderId,
+      expectedType: DeliveryProviderType.PICKUP,
+      deliveryContext: { orderPickUpLocationId, meta },
     });
-
-  order = (await modules.orders.setDeliveryProvider(order._id, deliveryProviderId)) || order;
-
-  if (!order.deliveryId) throw new OrderDeliveryNotFoundError({ orderId: order._id });
-
-  await modules.orders.deliveries.updateContext(order.deliveryId, {
-    orderPickUpLocationId,
-    meta,
-  });
+  } catch (error) {
+    throw mapServiceError(error, deliveryProviderErrors);
+  }
   return services.orders.updateCalculation(order._id);
 }

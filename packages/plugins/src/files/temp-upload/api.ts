@@ -1,5 +1,5 @@
 import { createLogger } from '@unchainedshop/logger';
-import { getFileAdapter, type PluginHttpRequestContext } from '@unchainedshop/core';
+import type { PluginHttpRequestContext } from '@unchainedshop/core';
 
 const logger = createLogger('unchained:temp-upload');
 
@@ -53,10 +53,8 @@ export async function tempUploadHandler(
       expires,
     });
 
-    const fileUploadAdapter = getFileAdapter();
-    const rawUrl = await fileUploadAdapter.createDownloadURL(uploadedFile);
-    if (!rawUrl) throw new Error('Could not create download URL for file');
-    const url = context.modules.files.normalizeUrl(rawUrl, {});
+    const url = await context.services.files.createFileDownloadURL({ file: uploadedFile });
+    if (!url) throw new Error('Could not create download URL for file');
 
     return Response.json(
       { fileId: uploadedFile._id, url, expires: expires.toISOString() },

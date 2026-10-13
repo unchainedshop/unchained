@@ -12,6 +12,14 @@ export const createError = (code: string, message: string): any =>
     }
   };
 
+export const mapServiceError = (
+  error: Error & { details?: Record<string, unknown> },
+  apiErrors: Record<string, new (details?: Record<string, unknown>) => Error>,
+) => {
+  const APIError = apiErrors[error.name];
+  return APIError ? new APIError(error.details) : error;
+};
+
 export const PermissionSystemError = createError('PermissionSystemError', 'Permission System Error');
 export const NoPermissionError = createError('NoPermissionError', 'Not authorized');
 export const ProductNotFoundError = createError('ProductNotFoundError', 'Product not found');
@@ -369,3 +377,13 @@ export const DuplicateFilterKeyError = createError(
   'DuplicateFilterKeyError',
   'Key already registered for another filter',
 );
+
+export const deliveryProviderErrors = {
+  DeliveryProviderNotFoundError: DeliverProviderNotFoundError,
+  DeliveryProviderNotSupportedError: OrderDeliveryTypeError,
+};
+
+export const paymentProviderErrors = {
+  PaymentProviderNotFoundError,
+  PaymentProviderNotSupportedError: OrderPaymentTypeError,
+};

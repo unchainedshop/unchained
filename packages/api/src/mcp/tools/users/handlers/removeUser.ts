@@ -1,17 +1,16 @@
 import type { Context } from '../../../../context.ts';
+import { UserNotFoundError } from '../../../../errors.ts';
 import type { Params } from '../schemas.ts';
 
 export default async function removeUser(context: Context, params: Params<'REMOVE'>) {
-  const { modules } = context;
+  const { modules, services } = context;
   const { userId, removeUserReviews } = params;
 
-  if (!userId) {
-    throw new Error('userId is required');
-  }
+  if (!(await modules.users.userExists({ userId }))) throw new UserNotFoundError({ userId });
+
   if (removeUserReviews) {
-    await modules.products.reviews.deleteMany({ authorId: userId });
+    await modules.products.reviews.deleteByAuthorId(userId);
   }
-  await modules.users.markDeleted(userId);
-  await modules.users.findUserById(userId);
+  await services.users.deleteUser({ userId });
   return { success: true };
 }
