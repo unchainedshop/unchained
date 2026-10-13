@@ -5,9 +5,10 @@ import { SimpleOrder, ConfirmedOrder, PendingOrder } from './seeds/orders.js';
 
 test.describe('Order: Transaction / Management', () => {
   let graphqlFetch;
+  let db;
 
   test.before(async () => {
-    await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch();
   });
 
@@ -50,6 +51,12 @@ test.describe('Order: Transaction / Management', () => {
       _id: SimpleOrder._id,
       status: 'OPEN',
     });
+    for (const collection of ['order_positions', 'order_payments', 'order_deliveries']) {
+      assert.strictEqual(
+        await db.collection(collection).countDocuments({ orderId: SimpleOrder._id }),
+        0,
+      );
+    }
   });
 
   test('return not found error when passed non existing orderId', async () => {

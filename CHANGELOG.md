@@ -116,6 +116,7 @@
 - **Server errors no longer leak details:** a failing plugin route, or a request context that cannot be created (Fastify sent the error message), answers a generic `500` and logs the stack.
 - **Fastify:** MCP over HTTP/2 and `HEAD /graphql` answered `500`.
 - **Admin Copilot with OpenAI models:** MCP tool schemas used `propertyNames: {}`, which `@ai-sdk/openai` rejects.
+- **`removeOrder`** deletes the positions, payments, deliveries and discounts of the cart; before it left them behind, delivery addresses included.
 
 ## v5.0.0-alpha.11 (2026-09-23)
 
