@@ -76,6 +76,7 @@ import { bulkDeleteUsersService } from './bulkDeleteUsers.ts';
 import { bulkSetFilterActiveService } from './bulkSetFilterActive.ts';
 import { bulkAssignProductsToAssortmentService } from './bulkAssignProductsToAssortment.ts';
 import { resolveMediaFilesService } from './resolveMediaFiles.ts';
+import { provisionGuestService } from './provisionGuest.ts';
 
 // Auto-Inject Unchained API as last parameter
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
@@ -188,6 +189,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
         typeof updateUserAvatarAfterUploadService
       >,
       deleteUser: deleteUserService as Bound<typeof deleteUserService>,
+      provisionGuest: provisionGuestService as Bound<typeof provisionGuestService>,
       bulkDeleteUsers: bulkDeleteUsersService as Bound<typeof bulkDeleteUsersService>,
     },
     enrollments: {

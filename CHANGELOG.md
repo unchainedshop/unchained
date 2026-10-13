@@ -71,6 +71,7 @@
 - **One request context type:** `UnchainedRequestContext` from `@unchainedshop/core`; plugin routes get `PluginHttpRequestContext` with `user` and `roles` and check permissions without casts.
 - **Faster Admin UI, every route audited:** Admin UI files skip the request context (70–100% more requests per second) and `_next/static` is cached as immutable. MCP, chat, plugin routes and your own routes run as the user of the request, so their events carry it.
 - **Cart and media services:** `services.orders.selectDeliveryProvider` / `selectPaymentProvider` and `services.files.resolveMediaFiles` hold the logic of the cart provider mutations and the MCP media tools.
+- **`services.users.provisionGuest`** creates a guest with its cart, for `loginAsGuest` and ACP.
 
 ### Fixed
 
