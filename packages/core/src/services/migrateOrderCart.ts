@@ -29,24 +29,32 @@ export async function migrateOrderCartsService(
     return toCart;
   }
 
-  if (!toCart || !shouldMerge) {
-    // No destination cart, move whole cart
-    await this.orders.setCartOwner({ orderId: fromCart._id, userId: toUserId });
-    return updateCalculationService.bind(this)(fromCart._id);
+  if (toCart && shouldMerge) {
+    const lock = await this.orders.acquireLock(toCart._id, 'checkout');
+    try {
+      const targetCart = await this.orders.findOrder({ orderId: toCart._id });
+      if (targetCart && this.orders.isCart(targetCart)) {
+        // Move positions
+        await this.orders.moveCartPositions({ fromOrderId: fromCart._id, toOrderId: targetCart._id });
+
+        // Move billing address if target order has none
+        if (fromCart.billingAddress && !targetCart.billingAddress) {
+          await this.orders.updateBillingAddress(targetCart._id, fromCart.billingAddress);
+        }
+
+        // Move contact data if target order has none
+        if (fromCart.contact && !targetCart.contact) {
+          await this.orders.updateContact(targetCart._id, fromCart.contact);
+        }
+
+        return await updateCalculationService.bind(this)(targetCart._id);
+      }
+    } finally {
+      await lock.release();
+    }
   }
 
-  // Move positions
-  await this.orders.moveCartPositions({ fromOrderId: fromCart._id, toOrderId: toCart._id });
-
-  // Move billing address if target order has none
-  if (fromCart.billingAddress && !toCart.billingAddress) {
-    await this.orders.updateBillingAddress(toCart._id, fromCart.billingAddress);
-  }
-
-  // Move contact data if target order has none
-  if (fromCart.contact && !toCart.contact) {
-    await this.orders.updateContact(toCart._id, fromCart.contact);
-  }
-
-  return updateCalculationService.bind(this)(toCart._id);
+  // No destination cart, move whole cart
+  await this.orders.setCartOwner({ orderId: fromCart._id, userId: toUserId });
+  return updateCalculationService.bind(this)(fromCart._id);
 }

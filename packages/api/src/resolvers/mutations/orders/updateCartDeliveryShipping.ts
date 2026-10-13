@@ -2,7 +2,7 @@ import type { Context } from '../../../context.ts';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, mapServiceError, deliveryProviderErrors } from '../../../errors.ts';
-import { loadCart } from '../../loadCart.ts';
+import { lockCart } from '../../loadCart.ts';
 
 export default async function updateCartDeliveryShipping(
   root: never,
@@ -15,7 +15,7 @@ export default async function updateCartDeliveryShipping(
 
   if (!deliveryProviderId) throw new InvalidIdError({ deliveryProviderId });
 
-  const order = await loadCart(context, orderId);
+  await using order = await lockCart(context, orderId);
 
   try {
     await services.orders.selectDeliveryProvider({
@@ -27,5 +27,5 @@ export default async function updateCartDeliveryShipping(
   } catch (error) {
     throw mapServiceError(error, deliveryProviderErrors);
   }
-  return services.orders.updateCalculation(order._id);
+  return await services.orders.updateCalculation(order._id);
 }

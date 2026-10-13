@@ -2,7 +2,7 @@ import type { Context } from '../../../context.ts';
 import { PaymentProviderType } from '@unchainedshop/core-payment';
 import { log } from '@unchainedshop/logger';
 import { InvalidIdError, mapServiceError, paymentProviderErrors } from '../../../errors.ts';
-import { loadCart } from '../../loadCart.ts';
+import { lockCart } from '../../loadCart.ts';
 
 export default async function updateCartPaymentGeneric(
   root: never,
@@ -15,7 +15,7 @@ export default async function updateCartPaymentGeneric(
 
   if (!paymentProviderId) throw new InvalidIdError({ paymentProviderId });
 
-  const order = await loadCart(context, orderId);
+  await using order = await lockCart(context, orderId);
 
   try {
     await services.orders.selectPaymentProvider({
@@ -27,5 +27,5 @@ export default async function updateCartPaymentGeneric(
   } catch (error) {
     throw mapServiceError(error, paymentProviderErrors);
   }
-  return services.orders.updateCalculation(order._id);
+  return await services.orders.updateCalculation(order._id);
 }

@@ -74,10 +74,10 @@ describe('acquireLock', () => {
       uniqueValue: 'held',
       expireAt: new Date(Date.now() + 60000),
     };
-    await assert.rejects(
-      acquireLock(collection, 'order:checkout:1', 100),
-      /Could not acquire lock order:checkout:1/,
-    );
+    await assert.rejects(acquireLock(collection, 'order:checkout:1', 100), {
+      message: 'Could not acquire lock order:checkout:1',
+      cause: 'LOCKED',
+    });
   });
 
   it('release does not delete a lock somebody else took over, and never throws', async () => {

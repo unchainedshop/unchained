@@ -6,7 +6,7 @@ import {
   deliveryProviderErrors,
   paymentProviderErrors,
 } from '../../../errors.ts';
-import { loadCart } from '../../loadCart.ts';
+import { lockCart } from '../../loadCart.ts';
 import type { Order } from '@unchainedshop/core-orders';
 
 interface UpdateCartParams {
@@ -30,7 +30,8 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
   if (paymentProviderId === '') throw new InvalidIdError({ paymentProviderId });
   if (deliveryProviderId === '') throw new InvalidIdError({ deliveryProviderId });
 
-  let order = await loadCart(context, orderId);
+  await using cart = await lockCart(context, orderId);
+  let order: Order = cart;
 
   // Batch update non-provider fields in a single database operation
   if (meta || billingAddress || contact) {
@@ -56,5 +57,5 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
   }
 
   // Recalculate, then return
-  return services.orders.updateCalculation(order._id);
+  return await services.orders.updateCalculation(order._id);
 }

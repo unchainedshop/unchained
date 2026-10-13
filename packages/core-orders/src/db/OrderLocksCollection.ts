@@ -71,5 +71,5 @@ export const acquireLock = async (
       if (attempt < LOCK_RETRIES - 1) await sleep(LOCK_RETRY_DELAY_MS);
     }
   }
-  throw new Error(`Could not acquire lock ${key}`);
+  throw new Error(`Could not acquire lock ${key}`, { cause: 'LOCKED' });
 };

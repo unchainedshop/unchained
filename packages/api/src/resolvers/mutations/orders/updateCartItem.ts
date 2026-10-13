@@ -3,14 +3,13 @@ import type { Context } from '../../../context.ts';
 import {
   OrderQuantityTooLowError,
   OrderItemNotFoundError,
-  OrderWrongStatusError,
   ProductNotFoundError,
   InvalidIdError,
-  OrderNotFoundError,
   QuotationNotFoundError,
   QuotationItemConfigurationError,
   mapServiceError,
 } from '../../../errors.ts';
+import { lockCart } from '../../loadCart.ts';
 
 export default async function updateCartItem(
   root: never,
@@ -31,13 +30,7 @@ export default async function updateCartItem(
   const item = await modules.orders.positions.findOrderPosition({ itemId });
   if (!item) throw new OrderItemNotFoundError({ itemId });
 
-  const order = await modules.orders.findOrder({ orderId: item.orderId });
-
-  if (!order) throw new OrderNotFoundError({ orderId: item.orderId });
-
-  if (!modules.orders.isCart(order)) {
-    throw new OrderWrongStatusError({ status: order.status });
-  }
+  await using order = await lockCart(context, item.orderId);
 
   if (quantity != null && quantity < 1) throw new OrderQuantityTooLowError({ quantity });
 

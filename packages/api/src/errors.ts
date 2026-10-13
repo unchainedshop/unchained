@@ -172,6 +172,10 @@ export const OrderWrongStatusError = createError(
   'OrderWrongStatusError',
   'The current status of the order does not allow this operation',
 );
+export const OrderLockedError = createError(
+  'OrderLockedError',
+  'The order is being checked out or changed, try again',
+);
 export const OrderCheckoutError = createError(
   'OrderCheckoutError',
   'A problem occured while processing the order',

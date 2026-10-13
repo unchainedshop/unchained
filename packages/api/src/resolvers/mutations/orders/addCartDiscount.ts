@@ -4,7 +4,7 @@ import {
   OrderDiscountCodeAlreadyPresentError,
   OrderDiscountCodeNotValidError,
 } from '../../../errors.ts';
-import { loadCart } from '../../loadCart.ts';
+import { lockCart } from '../../loadCart.ts';
 
 export default async function addCartDiscount(
   root: never,
@@ -15,7 +15,7 @@ export default async function addCartDiscount(
 
   log(`mutation addCartDiscount ${code} ${orderId}`, { userId, orderId });
 
-  const order = await loadCart(context, orderId);
+  await using order = await lockCart(context, orderId);
 
   // 1. check if discount code is not already used
   if (await modules.orders.discounts.isDiscountCodeUsed({ code, orderId: order._id }))

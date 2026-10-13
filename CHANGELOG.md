@@ -122,6 +122,7 @@
 - **Admin Copilot with OpenAI models:** MCP tool schemas used `propertyNames: {}`, which `@ai-sdk/openai` rejects.
 - **`removeOrder`** deletes the positions, payments, deliveries and discounts of the cart; before it left them behind, delivery addresses included.
 - **MCP actions match GraphQL:** users `REMOVE` runs the `deleteUser` cleanup, filter `REMOVE` unlinks the filter from assortments, `SIMULATE_PRICE_RANGE` prices the variants, `GET_SIBLINGS` returns the products of the same assortments, and the quotation actions keep a stored quotation context when none is given.
+- **Carts can no longer change while they are checked out:** a cart mutation running during `checkoutCart` (or a payment webhook) changed the positions after the amount was charged, so the order was confirmed with items or a total nobody paid for. Cart mutations and the checkout now share the order lock; a mutation that cannot get it answers `OrderLockedError`. A payment webhook racing `checkoutCart` no longer processes the order a second time.
 
 ## v5.0.0-alpha.11 (2026-09-23)
 

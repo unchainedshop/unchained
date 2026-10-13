@@ -1,3 +1,4 @@
+import { OrderPricingSheet, PaymentDirector } from '@unchainedshop/core';
 import { createLoggedInGraphqlFetch, disconnect, setupDatabase } from './helpers.js';
 import { SimpleProduct } from './seeds/products.js';
 import assert from 'node:assert';
@@ -174,6 +175,93 @@ test.describe('Cart Checkout Flow', () => {
       assert.partialDeepStrictEqual(checkoutCart, {
         orderNumber: 'wishlist',
         status: 'CONFIRMED',
+      });
+    });
+
+    test('keeps the cart unchanged while it is being charged', async (t) => {
+      const { data: { createCart } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation {
+            createCart(orderNumber: "charging") {
+              _id
+            }
+          }
+        `,
+      });
+      const { data: { addCartProduct } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addCartProduct($productId: ID!, $orderId: ID) {
+            addCartProduct(productId: $productId, quantity: 1, orderId: $orderId) {
+              _id
+            }
+          }
+        `,
+        variables: { productId: SimpleProduct._id, orderId: createCart._id },
+      });
+      await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCart($orderId: ID, $billingAddress: AddressInput, $contact: ContactInput) {
+            updateCart(orderId: $orderId, billingAddress: $billingAddress, contact: $contact) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          orderId: createCart._id,
+          billingAddress: { firstName: 'Ada', lastName: 'Lovelace', postalCode: '8000', city: 'Zürich' },
+          contact: { emailAddress: 'hello@unchained.local' },
+        },
+      });
+
+      const chargeOrderPayment = PaymentDirector.chargeOrderPayment;
+      const { promise: charging, resolve: chargingStarted } = Promise.withResolvers();
+      const { promise: paid, resolve: pay } = Promise.withResolvers();
+      let chargedAmount;
+      t.mock.method(PaymentDirector, 'chargeOrderPayment', async (order, ...args) => {
+        chargedAmount = OrderPricingSheet({
+          calculation: order.calculation,
+          currencyCode: order.currencyCode,
+        }).total().amount;
+        chargingStarted();
+        await paid;
+        return chargeOrderPayment(order, ...args);
+      });
+
+      const checkout = graphqlFetch({
+        query: /* GraphQL */ `
+          mutation checkoutCart($orderId: ID) {
+            checkoutCart(orderId: $orderId) {
+              status
+              items {
+                quantity
+              }
+              total {
+                amount
+              }
+            }
+          }
+        `,
+        variables: { orderId: createCart._id },
+      });
+      await charging;
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation updateCartItem($itemId: ID!) {
+            updateCartItem(itemId: $itemId, quantity: 10) {
+              _id
+            }
+          }
+        `,
+        variables: { itemId: addCartProduct._id },
+      });
+      pay();
+      const { data: { checkoutCart } = {} } = await checkout;
+
+      assert.strictEqual(errors?.[0]?.extensions?.code, 'OrderLockedError');
+      assert.partialDeepStrictEqual(checkoutCart, {
+        status: 'CONFIRMED',
+        items: [{ quantity: 1 }],
+        total: { amount: chargedAmount },
       });
     });
   });

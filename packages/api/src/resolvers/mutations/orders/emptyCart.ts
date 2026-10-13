@@ -1,6 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import { loadCart } from '../../loadCart.ts';
+import { lockCart } from '../../loadCart.ts';
 
 export default async function emptyCart(
   root: never,
@@ -11,9 +11,9 @@ export default async function emptyCart(
 
   log('mutation emptyCart', { userId, orderId });
 
-  const order = await loadCart(context, orderId);
+  await using order = await lockCart(context, orderId);
 
   await modules.orders.positions.removePositions({ orderId: order._id });
 
-  return services.orders.updateCalculation(order._id);
+  return await services.orders.updateCalculation(order._id);
 }

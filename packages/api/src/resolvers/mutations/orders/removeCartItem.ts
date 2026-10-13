@@ -1,11 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import {
-  OrderItemNotFoundError,
-  OrderWrongStatusError,
-  InvalidIdError,
-  OrderNotFoundError,
-} from '../../../errors.ts';
+import { OrderItemNotFoundError, InvalidIdError } from '../../../errors.ts';
+import { lockCart } from '../../loadCart.ts';
 
 export default async function removeCartItem(
   root: never,
@@ -23,13 +19,7 @@ export default async function removeCartItem(
   });
   if (!orderItem) throw new OrderItemNotFoundError({ orderItem });
 
-  const order = await modules.orders.findOrder({ orderId: orderItem.orderId });
-
-  if (!order) throw new OrderNotFoundError({ orderId: orderItem.orderId });
-
-  if (!modules.orders.isCart(order)) {
-    throw new OrderWrongStatusError({ status: order.status });
-  }
+  await using order = await lockCart(context, orderItem.orderId);
 
   const removedOrderPosition = await modules.orders.positions.delete(itemId);
   await services.orders.updateCalculation(order._id);

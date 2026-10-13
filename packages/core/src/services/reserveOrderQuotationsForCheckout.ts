@@ -46,7 +46,7 @@ export async function reserveOrderQuotationsForCheckout(this: Modules, order: Or
       try {
         locks.push(await this.orders.acquireLock(quotationId, 'quotation', RESERVATION_LOCK_TTL));
       } catch (error) {
-        if (!(error as Error)?.message?.startsWith('Could not acquire lock')) throw error;
+        if ((error as Error)?.cause !== 'LOCKED') throw error;
         throw createServiceError('QuotationInvalidError', 'Quotation is being ordered by another order');
       }
       const quotation = await this.quotations.findQuotation({ quotationId });
