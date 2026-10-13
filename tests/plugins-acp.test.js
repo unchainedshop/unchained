@@ -765,18 +765,30 @@ test.describe('Plugins: ACP checkout', () => {
     const res = await acpFetch('/acp/feed.jsonl', { method: 'GET' });
     assert.strictEqual(res.status, 200);
     assert.match(res.headers.get('content-type') || '', /ndjson/);
-    const text = await res.text();
-    if (text.trim()) {
-      for (const line of text.trim().split('\n')) {
-        const row = JSON.parse(line);
-        assert.ok(row.id);
-        assert.ok(Array.isArray(row.variants));
-        for (const variant of row.variants) {
-          assert.ok(variant.id);
-          assert.ok(variant.title);
-        }
-        assert.ok(!('item_id' in row));
+    const rows = (await res.text())
+      .trim()
+      .split('\n')
+      .map((line) => JSON.parse(line));
+    for (const row of rows) {
+      assert.ok(row.id);
+      assert.ok(Array.isArray(row.variants));
+      for (const variant of row.variants) {
+        assert.ok(variant.id);
+        assert.ok(variant.title);
       }
+      assert.ok(!('item_id' in row));
     }
+    const exportedIds = rows.map(({ id }) => id);
+    const proxyVariantIds = ['proxy-plan-product-1', 'proxy-simple-product-1', 'proxy-simple-product-2'];
+    assert.ok(exportedIds.includes('simpleproduct'));
+    assert.ok(!exportedIds.includes('simpleproduct_draft'));
+    assert.ok(!proxyVariantIds.some((variantId) => exportedIds.includes(variantId)));
+    assert.deepStrictEqual(
+      rows
+        .find(({ id }) => id === 'proxy-product')
+        .variants.map(({ id }) => id)
+        .sort(),
+      proxyVariantIds,
+    );
   });
 });

@@ -2,6 +2,8 @@ import type { Product, ProductAssignment } from '@unchainedshop/core-products';
 import { acpConfig, sellerLinks, type ACPContext } from './config.ts';
 import { ACPError } from './error.ts';
 
+const PAGE_SIZE = 250;
+
 const productURL = (product: Product, slug?: string) =>
   `${acpConfig.productUrlBase}/${slug || product.slugs[0] || product._id}`;
 
@@ -121,17 +123,34 @@ export const buildACPProductFeed = async (context: ACPContext) => {
     );
   }
 
-  const limit = 250;
+  const { searchConfiguration, aggregatedFilteredProductIds: exportedProductIds } =
+    await context.services.filters.searchProducts(
+      { includeInactive: false },
+      { locale: context.locale },
+    );
+  const isExported = new Set(exportedProductIds);
   const rows = (async function* () {
-    for (let offset = 0; ; offset += limit) {
-      const products = await context.modules.products.findProducts(
-        { includeDrafts: false, limit, offset },
-        {},
+    for (let offset = 0; offset < exportedProductIds.length; offset += PAGE_SIZE) {
+      const productIds = exportedProductIds.slice(offset, offset + PAGE_SIZE);
+      const [products, proxies] = await Promise.all([
+        context.modules.products.search.findFilteredProducts({
+          productIds,
+          productSelector: searchConfiguration.productSelector,
+          sort: searchConfiguration.sortStage,
+        }),
+        context.modules.products.findProducts({ proxyAssignmentProductIds: productIds }),
+      ]);
+      const variantIdsOfExportedProxies = new Set(
+        proxies
+          .filter(({ _id }) => isExported.has(_id))
+          .flatMap(({ proxy }) => proxy?.assignments?.map(({ productId }) => productId) || []),
       );
-      if (!products.length) return;
-      const page = await Promise.all(products.map((product) => feedProduct(product, context)));
+      const page = await Promise.all(
+        products
+          .filter(({ _id }) => !variantIdsOfExportedProxies.has(_id))
+          .map((product) => feedProduct(product, context)),
+      );
       for (const row of page) yield `${JSON.stringify(row)}\n`;
-      if (products.length < limit) return;
     }
   })();
   const encoder = new TextEncoder();
