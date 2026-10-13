@@ -6,15 +6,13 @@ import {
   ProductNotFoundError,
   TokenWrongStatusError,
 } from '../../../errors.ts';
-import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
-import { WarehousingDirector } from '@unchainedshop/core';
 
 export default async function invalidateToken(
   root: never,
   { tokenId }: { tokenId: string },
   context: Context,
 ) {
-  const { modules, userId } = context;
+  const { modules, services, userId } = context;
   log(`mutation invalidateToken ${tokenId}`, {
     userId,
   });
@@ -28,22 +26,9 @@ export default async function invalidateToken(
   const product = await modules.products.findProduct({ productId: token.productId });
   if (!product) throw new ProductNotFoundError({ productId: token.productId });
 
-  const virtualProviders = (await context.modules.warehousing.allProviders()).filter(
-    ({ type }) => type === WarehousingProviderType.VIRTUAL,
-  );
-
-  const isInvalidateable = await WarehousingDirector.isInvalidateable(
-    virtualProviders,
-    {
-      token,
-      product,
-      quantity: token?.quantity || 1,
-      referenceDate: new Date(),
-    },
-    context,
-  );
-
-  if (!isInvalidateable) throw new TokenWrongStatusError({ tokenId });
+  if (!(await services.warehousing.isTokenInvalidateable({ token, product }))) {
+    throw new TokenWrongStatusError({ tokenId });
+  }
 
   // The update only matches tokens that are still valid, so a concurrent
   // invalidation is reported like any other already invalidated token.

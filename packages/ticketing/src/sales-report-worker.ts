@@ -58,11 +58,10 @@ export const TicketSalesReportWorker: IWorkerAdapter<TicketSalesReportWorkInput,
           totals: report.totals,
           csv: buildSalesReportCsv(report),
         };
-        await unchainedAPI.modules.worker.addWork({
-          type: 'MESSAGE',
-          retries: 0,
-          input: { template: TicketingMessageTypes.TICKET_SALES_REPORT, ...payload },
-        });
+        await unchainedAPI.services.worker.addMessage(
+          TicketingMessageTypes.TICKET_SALES_REPORT,
+          payload,
+        );
       }
       return {
         success: true,
