@@ -20,7 +20,7 @@ export interface BulkImportOperationResult {
 export type BulkImportOperation<T> = { payloadSchema?: z.ZodMiniObject } & ((
   payload: any,
   options: {
-    bulk: (collection: string) => typeof mongodb.BulkOperationBase;
+    bulk: (collection: string) => mongodb.BulkOperationBase;
     createShouldUpsertIfIDExists?: boolean;
     updateShouldUpsertIfIDNotExists?: boolean;
     skipCacheInvalidation?: boolean;
