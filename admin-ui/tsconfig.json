@@ -23,7 +23,7 @@
     "incremental": true,
     "noImplicitAny": false,
     "isolatedModules": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "plugins": [
       {
         "name": "next"
