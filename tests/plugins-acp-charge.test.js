@@ -51,10 +51,14 @@ const mintSPT = async ({ currency = 'chf', maxAmount = 1000000 } = {}) => {
 };
 
 const revokeSPT = async (id) => {
-  await fetch(`https://api.stripe.com/v1/test_helpers/shared_payment/granted_tokens/${id}/revoke`, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${STRIPE_SECRET}`, 'stripe-version': SPT_STRIPE_VERSION },
-  }).catch(() => undefined);
+  try {
+    await fetch(`https://api.stripe.com/v1/test_helpers/shared_payment/granted_tokens/${id}/revoke`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${STRIPE_SECRET}`, 'stripe-version': SPT_STRIPE_VERSION },
+    });
+  } catch {
+    /**/
+  }
 };
 
 test.describe('Plugins: ACP Shared Payment Token charge (real Stripe)', () => {

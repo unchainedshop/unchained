@@ -29,6 +29,21 @@ const availabilityForProduct = async (product: Product, context: ACPContext) => 
   }
 };
 
+const unitPriceForProduct = async (product: Product, context: ACPContext) => {
+  try {
+    const pricing = await context.services.products.simulateProductPricing({
+      product,
+      countryCode: context.countryCode,
+      currencyCode: context.currencyCode,
+      quantity: 1,
+      discounts: [],
+    });
+    return pricing?.unitPrice({ useNetPrice: false });
+  } catch {
+    return null;
+  }
+};
+
 const variantForProduct = async (
   product: Product,
   assignment: ProductAssignment | undefined,
@@ -39,16 +54,7 @@ const variantForProduct = async (
     locale: context.locale,
   });
   const title = text?.title || product.warehousing?.sku || product._id;
-  const pricing = await context.services.products
-    .simulateProductPricing({
-      product,
-      countryCode: context.countryCode,
-      currencyCode: context.currencyCode,
-      quantity: 1,
-      discounts: [],
-    })
-    .catch(() => null);
-  const unitPrice = pricing?.unitPrice({ useNetPrice: false });
+  const unitPrice = await unitPriceForProduct(product, context);
 
   return {
     id: product._id,

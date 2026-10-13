@@ -106,17 +106,18 @@ const assertMutable = (order: Order) => {
   }
 };
 
-const rethrowProductNotFound =
-  (items: { productId: string }[]) =>
-  (error: Error & { details?: { productId?: string } }): never => {
-    if (error.name !== 'ProductNotFoundError') throw error;
-    const index = items.findIndex(({ productId }) => productId === error.details?.productId);
-    throw invalidRequest(
-      'product_not_found',
-      `Product not found: ${error.details?.productId}`,
-      `$.line_items[${index}].id`,
-    );
-  };
+const lineItemError = (
+  items: { productId: string }[],
+  error: Error & { details?: { productId?: string } },
+) => {
+  if (error.name !== 'ProductNotFoundError') return error;
+  const index = items.findIndex(({ productId }) => productId === error.details?.productId);
+  return invalidRequest(
+    'product_not_found',
+    `Product not found: ${error.details?.productId}`,
+    `$.line_items[${index}].id`,
+  );
+};
 
 const parseCheckoutUpdate = (body: Record<string, any>) => {
   const selectedOptions = body.selected_fulfillment_options;
@@ -193,9 +194,11 @@ const applyCheckoutUpdate = async (
   let order = initialOrder;
 
   if (items) {
-    await context.services.orders
-      .replaceCartProducts({ order, items }, context)
-      .catch(rethrowProductNotFound(items));
+    try {
+      await context.services.orders.replaceCartProducts({ order, items }, context);
+    } catch (error) {
+      throw lineItemError(items, error);
+    }
   }
 
   const orderBillingAddress = billingAddress || fulfillmentAddress;
@@ -208,17 +211,17 @@ const applyCheckoutUpdate = async (
   }
 
   if (option) {
-    order = await context.services.orders
-      .selectDeliveryProvider({
+    try {
+      order = await context.services.orders.selectDeliveryProvider({
         order,
         deliveryProviderId: option.providerId,
         expectedType:
           option.type === 'pickup' ? DeliveryProviderType.PICKUP : DeliveryProviderType.SHIPPING,
         deliveryContext: option.deliveryContext,
-      })
-      .catch((error: Error): never => {
-        throw error.name?.startsWith('DeliveryProvider') ? unavailableFulfillmentOption() : error;
       });
+    } catch (error) {
+      throw error.name?.startsWith('DeliveryProvider') ? unavailableFulfillmentOption() : error;
+    }
   }
 
   if (option?.type !== 'pickup' && order.deliveryId && (fulfillmentAddress || billingAddress)) {
@@ -257,21 +260,26 @@ const configuredPaymentProvider = async (context: ACPContext) => {
   return provider;
 };
 
-const selectConfiguredPaymentProvider = (context: ACPContext, order: Order, provider: PaymentProvider) =>
-  context.services.orders
-    .selectPaymentProvider({
+const selectConfiguredPaymentProvider = async (
+  context: ACPContext,
+  order: Order,
+  provider: PaymentProvider,
+) => {
+  try {
+    return await context.services.orders.selectPaymentProvider({
       order,
       paymentProviderId: provider._id,
       expectedType: PaymentProviderType.GENERIC,
-    })
-    .catch((error: Error): never => {
-      throw error.name?.startsWith('PaymentProvider')
-        ? serviceUnavailable(
-            'payment_provider_unavailable',
-            'The configured payment provider is unavailable for this cart',
-          )
-        : error;
     });
+  } catch (error) {
+    throw error.name?.startsWith('PaymentProvider')
+      ? serviceUnavailable(
+          'payment_provider_unavailable',
+          'The configured payment provider is unavailable for this cart',
+        )
+      : error;
+  }
+};
 
 export const createCheckoutSession = async (
   _request: Request,
@@ -322,7 +330,11 @@ export const createCheckoutSession = async (
     order = await context.services.orders.updateCalculation(order._id);
     return { status: 201, body: await serializeCheckoutSession(order, context) };
   } catch (error) {
-    await context.services.users.deleteUser({ userId: user._id }).catch(() => undefined);
+    try {
+      await context.services.users.deleteUser({ userId: user._id });
+    } catch {
+      /**/
+    }
     throw error;
   }
 };
