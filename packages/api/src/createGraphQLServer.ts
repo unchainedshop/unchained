@@ -6,7 +6,7 @@ import {
   type YogaSchemaDefinition,
 } from 'graphql-yoga';
 import { useEngine } from '@envelop/core';
-import { parse, validate, specifiedRules, execute, subscribe } from 'graphql';
+import { execute, subscribe } from 'graphql';
 
 const logger = createLogger('unchained:api');
 
@@ -36,10 +36,7 @@ export default async (options: GraphQLServerOptions) => {
     ...options,
     // graphql-js reference engine instead of @graphql-tools/executor: the ported
     // executor drops schema argument defaults for unprovided variables on graphql 17.
-    plugins: [
-      useEngine({ parse, validate, specifiedRules, execute, subscribe }),
-      ...(options.plugins ?? []),
-    ],
+    plugins: [useEngine({ execute, subscribe }), ...(options.plugins ?? [])],
   });
 
   return server;
