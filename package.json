@@ -99,7 +99,7 @@
     "@mongodb-js/zstd"
   ],
   "allowScripts": {
-    "cypress@15.21.1": true,
+    "cypress@16.1.1": true,
     "mongodb-memory-server@11.3.0": true
   }
 }
