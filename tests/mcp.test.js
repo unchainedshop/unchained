@@ -33,6 +33,14 @@ const parseMcpResponse = async (response) => {
 
 const rpc = (method, params = {}, id = 1) => ({ jsonrpc: '2.0', id, method, params });
 
+const callTool = async (name, args) => {
+  const response = await mcpFetch(rpc('tools/call', { name, arguments: args }), {
+    token: ADMIN_TOKEN,
+  });
+  const message = await parseMcpResponse(response);
+  return JSON.parse(message.result.content[0].text).data;
+};
+
 test.describe('MCP server (stateless, SDK v2)', () => {
   test.before(async () => {
     [db] = await setupDatabase();
@@ -183,14 +191,6 @@ test.describe('MCP server (stateless, SDK v2)', () => {
   });
 
   test('media and avatar tools answer files with their download URL', async () => {
-    const callTool = async (name, args) => {
-      const response = await mcpFetch(rpc('tools/call', { name, arguments: args }), {
-        token: ADMIN_TOKEN,
-      });
-      const message = await parseMcpResponse(response);
-      return JSON.parse(message.result.content[0].text).data;
-    };
-
     const { media } = await callTool('product_management', {
       action: 'GET_MEDIA',
       productId: SimpleProduct._id,
@@ -211,6 +211,34 @@ test.describe('MCP server (stateless, SDK v2)', () => {
       await db.collection('users').updateOne({ _id: 'user' }, { $set: { avatarId: 'missing-file' } });
       const missing = await callTool('users_management', { action: 'GET_AVATAR', userId: 'user' });
       assert.deepStrictEqual(missing.avatar, []);
+    } finally {
+      await db.collection('users').updateOne({ _id: 'user' }, { $unset: { avatarId: 1 } });
+    }
+  });
+
+  test('TOP_CUSTOMERS answers every customer with avatar and without credentials', async () => {
+    const findUserCustomer = async () => {
+      const { customers } = await callTool('order_management', {
+        action: 'TOP_CUSTOMERS',
+        from: '2020-01-01T00:00:00Z',
+        to: '2020-12-31T23:59:59Z',
+      });
+      return customers.find(({ userId }) => userId === 'user');
+    };
+
+    const withoutAvatar = await findUserCustomer();
+    assert.strictEqual(withoutAvatar.user._id, 'user');
+    assert.strictEqual(withoutAvatar.user.services, undefined);
+    assert.deepStrictEqual(withoutAvatar.user.avatar, []);
+
+    try {
+      await db.collection('users').updateOne({ _id: 'user' }, { $set: { avatarId: JpegMedia._id } });
+      const withAvatar = await findUserCustomer();
+      assert.deepStrictEqual(
+        withAvatar.user.avatar.map(({ file }) => file.url),
+        [JpegMedia.url],
+      );
+      assert.strictEqual(withAvatar.user.services, undefined);
     } finally {
       await db.collection('users').updateOne({ _id: 'user' }, { $unset: { avatarId: 1 } });
     }

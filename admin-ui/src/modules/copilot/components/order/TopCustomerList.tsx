@@ -26,7 +26,7 @@ const TopCustomerList = ({ customers, dateRange }) => {
       {customers?.length ? (
         <div className="space-y-3">
           {customers.map((customer) => {
-            const avatar = customer.user?.avatar?.url;
+            const [avatar] = customer.user?.avatar || [];
 
             return (
               <div
@@ -34,9 +34,9 @@ const TopCustomerList = ({ customers, dateRange }) => {
                 className="flex items-center gap-4 p-4 bg-surface rounded-lg shadow-sm border border-border-subtle hover:shadow-md transition-shadow duration-200"
               >
                 <div className="w-14 h-14 flex-shrink-0 rounded-full overflow-hidden bg-surface-raised">
-                  {avatar ? (
+                  {avatar?.file?.url ? (
                     <ImageWithFallback
-                      src={avatar}
+                      src={avatar.file.url}
                       alt="Customer avatar"
                       width={56}
                       height={56}
