@@ -54,7 +54,7 @@
     "fastify": "^5.12.1",
     "graphql": "^17.0.2",
     "graphql-yoga": "^5.22.0",
-    "nodemailer": "^9.0.0",
+    "nodemailer": "^10.0.0",
     "stripe": "^22.0.2",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"
@@ -63,6 +63,6 @@
     "@types/node": "^26.2.0",
     "mongodb-memory-server": "^11.0.0",
     "prettier": "^3.6.2",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }

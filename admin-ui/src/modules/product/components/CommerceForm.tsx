@@ -24,7 +24,6 @@ import {
 import useProductCatalogPrices from '../hooks/useProductCatalogPrices';
 import useUpdateProductCommerce from '../hooks/useUpdateProductCommerce';
 import { fromMinorUnit } from '../utils/price.utils';
-import { has } from 'cypress/types/lodash';
 
 const normalizeCatalogPrices = (prices = [], currencies = []) => {
   if (!currencies.length) return [];

@@ -171,6 +171,6 @@
     "mongodb": "^7.5.0",
     "multer": "^2.0.1",
     "passport": "^0.7.0",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   }
 }
