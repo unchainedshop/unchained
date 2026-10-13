@@ -20,4 +20,4 @@ Routes: `POST /acp/checkout_sessions`, `GET|POST /acp/checkout_sessions/:id`, `P
 | `ACP_WEBHOOK_URL`, `ACP_WEBHOOK_SECRET` (or `OPENAI_WEBHOOK_*`) | | `order_create` / `order_update` webhooks |
 | `ACP_WEBHOOK_RETRIES` | `5` | |
 
-Idempotency and webhook deduplication are kept in memory, so run a single instance.
+Responses to `Idempotency-Key`s are kept in memory for 24 hours, up to 10,000 of them (then new `POST` requests answer `503`), so run a single instance.

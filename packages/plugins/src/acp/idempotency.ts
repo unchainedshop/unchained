@@ -11,7 +11,6 @@ export interface ACPRouteResult {
 interface StoredResponse extends ACPRouteResult {
   requestHash: string;
   expiresAt: number;
-  storedAt: number;
 }
 
 interface PendingResponse {
@@ -44,29 +43,10 @@ const prune = (now: number) => {
   for (const [key, entry] of entries) {
     if ('expiresAt' in entry && entry.expiresAt <= now) entries.delete(key);
   }
-  if (entries.size < MAX_ENTRIES) return;
-
-  const completed = [...entries.entries()]
-    .filter((entry): entry is [string, StoredResponse] => 'storedAt' in entry[1])
-    .sort((left, right) => left[1].storedAt - right[1].storedAt);
-  for (const [key] of completed) {
-    entries.delete(key);
-    if (entries.size < MAX_ENTRIES) return;
-  }
 };
 
-export const createIdempotencyScope = ({
-  authorization,
-  operation,
-  resourceId,
-}: {
-  authorization?: string | null;
-  operation: string;
-  resourceId?: string;
-}) => hash({ authorization: authorization || '', operation, resourceId: resourceId || '' });
-
 export const withIdempotency = async (
-  scope: string,
+  scope: unknown,
   key: string,
   body: unknown,
   execute: () => Promise<ACPRouteResult>,
@@ -108,12 +88,14 @@ export const withIdempotency = async (
     );
   }
 
-  const pending = execute().then((response) => ({
-    ...response,
-    requestHash,
-    expiresAt: Date.now() + TTL,
-    storedAt: Date.now(),
-  }));
+  const pending = (async (): Promise<StoredResponse> => {
+    try {
+      return { ...(await execute()), requestHash, expiresAt: Date.now() + TTL };
+    } catch (error) {
+      if (!(error instanceof ACPError) || error.status === 409) throw error;
+      return { ...error.toResult(), requestHash, expiresAt: Date.now() + TTL };
+    }
+  })();
   entries.set(cacheKey, { requestHash, promise: pending });
 
   try {

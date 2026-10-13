@@ -3,7 +3,7 @@ import { createLogger } from '@unchainedshop/logger';
 import type { ACPContext } from './config.ts';
 import { verifyACPRequest } from './auth.ts';
 import { ACPError } from './error.ts';
-import { createIdempotencyScope, withIdempotency, type ACPRouteResult } from './idempotency.ts';
+import { withIdempotency, type ACPRouteResult } from './idempotency.ts';
 
 type ACPRouteAction = (
   request: Request,
@@ -59,19 +59,18 @@ export const createACPRoute = (
   path,
   method,
   handler: async (request, context) => {
-    const requestId = request.headers.get('request-id') || crypto.randomUUID();
+    const idempotencyKey = request.headers.get('idempotency-key');
+    const headers = {
+      'Request-Id': request.headers.get('request-id') || crypto.randomUUID(),
+      ...(idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}),
+    };
     try {
       if (authenticate) await verifyACPRequest(request);
       const body = await parseBody(request);
-      const idempotencyKey = request.headers.get('idempotency-key');
       const result =
         request.method === 'POST' && idempotencyKey
           ? await withIdempotency(
-              createIdempotencyScope({
-                authorization: request.headers.get('authorization'),
-                operation,
-                resourceId: context.params.id,
-              }),
+              { operation, resourceId: context.params.id },
               idempotencyKey,
               body,
               () => action(request, context, body),
@@ -79,17 +78,13 @@ export const createACPRoute = (
           : { ...(await action(request, context, body)), replayed: false };
 
       return responseFrom(result, {
-        'Request-Id': requestId,
-        ...(idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}),
+        ...headers,
         ...(result.replayed ? { 'Idempotent-Replayed': 'true' } : {}),
       });
     } catch (error) {
       const failure = error?.cause === 'LOCKED' ? sessionInProgress() : error;
       if (failure instanceof ACPError) {
-        return responseFrom(
-          { status: failure.status, body: failure.toJSON(), headers: failure.options.headers },
-          { 'Request-Id': requestId },
-        );
+        return responseFrom(failure.toResult(), headers);
       }
       logger.error('Unexpected ACP route error', {
         operation,
@@ -104,7 +99,7 @@ export const createACPRoute = (
             message: 'The request could not be processed',
           },
         },
-        { 'Request-Id': requestId },
+        headers,
       );
     }
   },

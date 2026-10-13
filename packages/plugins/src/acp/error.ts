@@ -35,4 +35,8 @@ export class ACPError extends Error {
       ...(this.options.supportedVersions ? { supported_versions: this.options.supportedVersions } : {}),
     };
   }
+
+  toResult() {
+    return { status: this.status, body: this.toJSON(), headers: this.options.headers };
+  }
 }

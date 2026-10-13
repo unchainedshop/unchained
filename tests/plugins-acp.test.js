@@ -326,6 +326,36 @@ test.describe('Plugins: ACP checkout', () => {
     assert.strictEqual((await conflict.json()).code, 'idempotency_conflict');
   });
 
+  test('replays a session however the bearer scheme is spelled', async () => {
+    const idempotencyKey = idem();
+    const first = await acpFetch('/acp/checkout_sessions', {
+      method: 'POST',
+      body: validSessionBody(),
+      idempotencyKey,
+    });
+    const replay = await acpFetch('/acp/checkout_sessions', {
+      method: 'POST',
+      body: validSessionBody(),
+      idempotencyKey,
+      token: null,
+      headers: { authorization: `bearer ${API_KEY}` },
+    });
+    assert.strictEqual(replay.headers.get('idempotent-replayed'), 'true');
+    assert.strictEqual((await replay.json()).id, (await first.json()).id);
+  });
+
+  test('replays an error response and echoes its Idempotency-Key', async () => {
+    const idempotencyKey = idem();
+    const body = { ...validSessionBody(), line_items: [{ id: 'missing-product', quantity: 1 }] };
+    const first = await acpFetch('/acp/checkout_sessions', { method: 'POST', body, idempotencyKey });
+    const replay = await acpFetch('/acp/checkout_sessions', { method: 'POST', body, idempotencyKey });
+    assert.deepStrictEqual(
+      [first.status, first.headers.get('idempotency-key'), (await first.json()).code],
+      [400, idempotencyKey, 'product_not_found'],
+    );
+    assert.deepStrictEqual([replay.status, replay.headers.get('idempotent-replayed')], [400, 'true']);
+  });
+
   test('complete uses buyer information persisted by an earlier update', async () => {
     const created = await createSession();
     const updated = await acpFetch(`/acp/checkout_sessions/${created.id}`, {
