@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import { describe, it, mock } from 'node:test';
 import type StripeClient from 'stripe';
-import { createOrderPaymentIntent, upsertCustomer } from './stripe.ts';
+import {
+  createAcpSharedPaymentTokenIntent,
+  createOrderPaymentIntent,
+  upsertCustomer,
+} from './stripe.ts';
 
 const createClient = ({
   customers = {},
@@ -76,6 +80,7 @@ describe('Stripe gateway', () => {
         currency: 'usd',
         customer: 'cus_untrusted',
         receipt_email: 'attacker@example.com',
+        statement_descriptor_suffix: 'attacker',
         metadata: {
           orderId: 'other-order',
           orderPaymentId: 'other-payment',
@@ -92,6 +97,8 @@ describe('Stripe gateway', () => {
     assert.equal(params.customer, 'cus_expected');
     assert.equal(params.receipt_email, 'buyer@example.com');
     assert.equal(params.payment_method, 'pm_card_visa');
+    assert.equal(params.description, 'Unchained');
+    assert.equal(params.statement_descriptor_suffix, undefined);
     assert.deepEqual(params.metadata, {
       custom: 'preserved',
       orderPaymentId: 'payment-1',
@@ -99,5 +106,42 @@ describe('Stripe gateway', () => {
       userId: 'user-1',
       environment: '',
     });
+  });
+
+  it('charges every shared payment token under its own idempotency key and reports declines', async () => {
+    const create = mock.fn(async () => {
+      throw Object.assign(new Error('Your card was declined.'), { type: 'StripeCardError' });
+    });
+
+    await assert.rejects(
+      createAcpSharedPaymentTokenIntent(
+        {
+          acpToken: 'spt_declined',
+          order: { _id: 'order-12345678', currencyCode: 'CHF' } as any,
+          orderPayment: { _id: 'payment-1' } as any,
+          pricing: { total: () => ({ amount: 1000, currencyCode: 'CHF' }) } as any,
+        },
+        createClient({ paymentIntents: { create } }),
+      ),
+      { message: 'Your card was declined.', cause: 'PAYMENT_DECLINED' },
+    );
+    assert.equal(create.mock.calls[0].arguments[1].idempotencyKey, 'acp-payment-1-spt_declined');
+  });
+
+  it('reports a shared payment token charge that needs an authentication of the buyer', async () => {
+    const create = mock.fn(async () => ({ id: 'pi_1', status: 'requires_action' }));
+
+    await assert.rejects(
+      createAcpSharedPaymentTokenIntent(
+        {
+          acpToken: 'spt_3ds',
+          order: { _id: 'order-12345678', currencyCode: 'CHF' } as any,
+          orderPayment: { _id: 'payment-1' } as any,
+          pricing: { total: () => ({ amount: 1000, currencyCode: 'CHF' }) } as any,
+        },
+        createClient({ paymentIntents: { create } }),
+      ),
+      { cause: 'PAYMENT_REQUIRES_ACTION' },
+    );
   });
 });

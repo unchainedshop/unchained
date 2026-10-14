@@ -54,6 +54,7 @@ import { addCartQuotationService } from './addCartQuotation.ts';
 import { updateCartItemService } from './updateCartItem.ts';
 import { selectDeliveryProviderService } from './selectDeliveryProvider.ts';
 import { selectPaymentProviderService } from './selectPaymentProvider.ts';
+import { replaceCartProductsService } from './replaceCartProducts.ts';
 import { ercMetadataService } from './ercMetadata.ts';
 import { simulateProductPricingService } from './simulateProductPricing.ts';
 import { simulateProductDispatchingService } from './simulateProductDispatching.ts';
@@ -75,6 +76,7 @@ import { bulkDeleteUsersService } from './bulkDeleteUsers.ts';
 import { bulkSetFilterActiveService } from './bulkSetFilterActive.ts';
 import { bulkAssignProductsToAssortmentService } from './bulkAssignProductsToAssortment.ts';
 import { resolveMediaFilesService } from './resolveMediaFiles.ts';
+import { provisionGuestService } from './provisionGuest.ts';
 
 // Auto-Inject Unchained API as last parameter
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
@@ -157,6 +159,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
         typeof selectDeliveryProviderService
       >,
       selectPaymentProvider: selectPaymentProviderService as Bound<typeof selectPaymentProviderService>,
+      replaceCartProducts: replaceCartProductsService as Bound<typeof replaceCartProductsService>,
     },
     products: {
       simulateProductPricing: simulateProductPricingService as Bound<
@@ -186,6 +189,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
         typeof updateUserAvatarAfterUploadService
       >,
       deleteUser: deleteUserService as Bound<typeof deleteUserService>,
+      provisionGuest: provisionGuestService as Bound<typeof provisionGuestService>,
       bulkDeleteUsers: bulkDeleteUsersService as Bound<typeof bulkDeleteUsersService>,
     },
     enrollments: {

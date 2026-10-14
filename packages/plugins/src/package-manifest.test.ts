@@ -35,6 +35,10 @@ describe('@unchainedshop/plugins package.json', () => {
 
   it('every exports pattern resolves to at least one source', async () => {
     for (const [subpath, target] of Object.entries<string>(manifest.exports)) {
+      if (!target.includes('*')) {
+        assert.ok(await exists(toSource(target)), `"${subpath}": "${target}" has no source file`);
+        continue;
+      }
       const [directory, suffix] = toSource(target).split('*');
       const entries = await readdir(new URL(directory, packageRoot));
       let matches = 0;

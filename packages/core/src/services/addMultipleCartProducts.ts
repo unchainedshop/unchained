@@ -2,13 +2,13 @@ import { ordersSettings, type Order, type OrderPosition } from '@unchainedshop/c
 import type { Modules } from '../modules.ts';
 import { createServiceError } from '../errors.ts';
 
-interface CartProductItem {
+export interface CartProductItem {
   productId: string;
   quantity: number;
   configuration?: { key: string; value: string }[];
 }
 
-const resolveCartProducts = (modules: Modules, items: CartProductItem[]) =>
+export const resolveCartProducts = (modules: Modules, items: CartProductItem[]) =>
   Promise.all(
     items.map(async ({ productId, quantity, configuration }) => {
       const originalProduct = await modules.products.findProduct({ productId });
