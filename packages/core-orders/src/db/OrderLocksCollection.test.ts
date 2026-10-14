@@ -1,18 +1,29 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { acquireLock, type OrderLock } from './OrderLocksCollection.ts';
 import type { mongodb } from '@unchainedshop/mongodb';
 
 const duplicateKeyError = () => Object.assign(new Error('E11000 duplicate key'), { code: 11000 });
 
 // Simulates the unique-index contention behavior of the real collection: a live
-// lock makes updateOne throw E11000, an expired or absent one lets it through.
+// lock makes an upsert throw E11000, an expired or absent one lets it through,
+// and an update without upsert renews the lock of its owner.
 const buildCollectionStub = () => {
   const state: { current: OrderLock | null } = {
     current: null,
   };
   const collection = {
-    updateOne: async (_filter, update: { $set: OrderLock }) => {
+    updateOne: async (
+      filter: mongodb.Filter<OrderLock>,
+      update: { $set: OrderLock },
+      options?: mongodb.UpdateOptions,
+    ) => {
+      if (!options?.upsert) {
+        if (state.current?.uniqueValue !== filter.uniqueValue) return { matchedCount: 0 };
+        state.current = { ...state.current!, ...update.$set };
+        return { matchedCount: 1 };
+      }
       if (state.current && state.current.expireAt > new Date()) throw duplicateKeyError();
       state.current = update.$set;
       return { acknowledged: true };
@@ -67,7 +78,74 @@ describe('acquireLock', () => {
     await lock.release();
   });
 
-  it('gives up with an error after retries against a held lock', async () => {
+  it('lets twenty contending holders through one after another', async () => {
+    const { collection } = buildCollectionStub();
+    let holders = 0;
+    let mostHolders = 0;
+    const results = await Promise.allSettled(
+      Array.from({ length: 20 }, async () => {
+        const lock = await acquireLock(collection, 'order:checkout:1', 5000);
+        holders += 1;
+        mostHolders = Math.max(mostHolders, holders);
+        await sleep(20);
+        holders -= 1;
+        await lock.release();
+      }),
+    );
+    assert.strictEqual(results.filter(({ status }) => status === 'rejected').length, 0);
+    assert.strictEqual(mostHolders, 1);
+  });
+
+  it('holds a lock past its ttl until it is released', async () => {
+    const { collection } = buildCollectionStub();
+    const events: string[] = [];
+    const first = await acquireLock(collection, 'order:checkout:1', 150);
+    const second = (async () => {
+      const lock = await acquireLock(collection, 'order:checkout:1', 150);
+      events.push('second acquired');
+      return lock;
+    })();
+    await sleep(500);
+    events.push('first released');
+    await first.release();
+    await (await second).release();
+    assert.deepStrictEqual(events, ['first released', 'second acquired']);
+  });
+
+  it('stops renewing a lock somebody else took over', async (t) => {
+    const { collection, state } = buildCollectionStub();
+    const lock = await acquireLock(collection, 'order:checkout:1', 150);
+    const takenOver = {
+      key: 'order:checkout:1',
+      uniqueValue: 'other-owner',
+      expireAt: new Date(Date.now() + 60000),
+    };
+    state.current = takenOver;
+    const updateOne = t.mock.method(collection, 'updateOne');
+    await sleep(300);
+    await lock.release();
+    assert.strictEqual(updateOne.mock.callCount(), 1);
+    assert.strictEqual(state.current, takenOver);
+  });
+
+  it('keeps renewing a lock after a renewal failed', async (t) => {
+    const { collection, state } = buildCollectionStub();
+    const lock = await acquireLock(collection, 'order:checkout:1', 150);
+    t.mock.method(
+      collection,
+      'updateOne',
+      async () => {
+        throw new Error('not primary');
+      },
+      { times: 1 },
+    );
+    await sleep(500);
+    assert.ok(state.current && state.current.expireAt > new Date());
+    await lock.release();
+    assert.strictEqual(state.current, null);
+  });
+
+  it('gives up with an error after waiting for a held lock', async () => {
     const { collection, state } = buildCollectionStub();
     state.current = {
       key: 'order:checkout:1',

@@ -7,8 +7,6 @@ import type { User } from '@unchainedshop/core-users';
 import { reserveOrderDiscountsForCheckout } from './reserveOrderDiscountsForCheckout.ts';
 import { reserveOrderQuotationsForCheckout } from './reserveOrderQuotationsForCheckout.ts';
 
-const CHECKOUT_LOCK_TTL = 60000;
-
 /**
  * Service function to checkout an order.
  *
@@ -34,7 +32,7 @@ export async function checkoutOrderService(
     nextStatus?: OrderStatus;
   },
 ) {
-  const lock = await this.orders.acquireLock(orderId, 'checkout', CHECKOUT_LOCK_TTL);
+  const lock = await this.orders.acquireLock(orderId, 'checkout');
   let discounts: Awaited<ReturnType<typeof reserveOrderDiscountsForCheckout>> | undefined;
   let quotations: Awaited<ReturnType<typeof reserveOrderQuotationsForCheckout>> | undefined;
 

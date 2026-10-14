@@ -2,10 +2,6 @@ import { type Order, OrderStatus } from '@unchainedshop/core-orders';
 import type { Modules } from '../modules.ts';
 import { createServiceError } from '../errors.ts';
 
-// Spans the payment attempt: another checkout only sees the order as holding the quotation once
-// processOrder persisted its status
-const RESERVATION_LOCK_TTL = 60000;
-
 /**
  * A quotation is reserved while a checked-out order that is not rejected holds a position of it:
  * a pending order reserves it, confirming the order fulfils it, rejecting the order releases it.
@@ -44,7 +40,7 @@ export async function reserveOrderQuotationsForCheckout(this: Modules, order: Or
     ].sort();
     for (const quotationId of quotationIds) {
       try {
-        locks.push(await this.orders.acquireLock(quotationId, 'quotation', RESERVATION_LOCK_TTL));
+        locks.push(await this.orders.acquireLock(quotationId, 'quotation'));
       } catch (error) {
         if ((error as Error)?.cause !== 'LOCKED') throw error;
         throw createServiceError('QuotationInvalidError', 'Quotation is being ordered by another order');

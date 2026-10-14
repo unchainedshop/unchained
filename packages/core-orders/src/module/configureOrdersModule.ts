@@ -169,8 +169,8 @@ export const configureOrdersModule = async ({
       return modificationResult.value || Orders.findOne(selector, {});
     },
 
-    acquireLock: async (orderId: string, identifier: string, timeout = 5000) => {
-      return acquireLock(OrderLocks, `order:${identifier}:${orderId}`, timeout);
+    acquireLock: async (orderId: string, identifier: string, ttl = 5000) => {
+      return acquireLock(OrderLocks, `order:${identifier}:${orderId}`, ttl);
     },
 
     setDeliveryProvider: async (orderId: string, deliveryProviderId: string) => {

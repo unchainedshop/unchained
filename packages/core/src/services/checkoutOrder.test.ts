@@ -18,7 +18,7 @@ const modulesFor = (order: unknown, events: string[]) =>
   }) as unknown as Modules;
 
 describe('checkoutOrderService', () => {
-  it('reads the order under a lock that outlasts the charge and returns orders that left the cart', async () => {
+  it('reads the order under the lock and returns orders that left the cart', async () => {
     const events: string[] = [];
     const confirmedOrder = { _id: 'order-id', status: 'CONFIRMED' };
     const modules = modulesFor(confirmedOrder, events);
@@ -29,7 +29,6 @@ describe('checkoutOrderService', () => {
     assert.deepEqual((modules.orders.acquireLock as any).mock.calls[0].arguments, [
       'order-id',
       'checkout',
-      60000,
     ]);
   });
 

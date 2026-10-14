@@ -8,8 +8,8 @@ export interface OrderLock {
 }
 
 const DUPLICATE_KEY = 11000;
-const LOCK_RETRIES = 10;
-const LOCK_RETRY_DELAY_MS = 200;
+const LOCK_WAIT_MS = 2000;
+const LOCK_RETRY_DELAY_MS = 50;
 
 export const OrderLocksCollection = async (db: mongodb.Db) => {
   // Keep the established collection name so existing deployments retain their locks.
@@ -39,7 +39,9 @@ export const OrderLocksCollection = async (db: mongodb.Db) => {
  * index on `key` combined with upsert-only-when-expired: a live lock makes the
  * filter match nothing, the upsert then collides on the index, and the E11000
  * error is treated as contention worth retrying. The TTL index is garbage
- * collection only — expiry is enforced by the `expireAt` conditions.
+ * collection only — expiry is enforced by the `expireAt` conditions. The lease
+ * is renewed until release, so `ttl` only bounds how long a holder that stopped
+ * renewing, e.g. a crashed process, blocks others.
  */
 export const acquireLock = async (
   OrderLocks: mongodb.Collection<OrderLock>,
@@ -47,29 +49,44 @@ export const acquireLock = async (
   ttl: number,
 ) => {
   const uniqueValue = crypto.randomUUID();
-  for (let attempt = 0; attempt < LOCK_RETRIES; attempt += 1) {
+  const waitUntil = Date.now() + LOCK_WAIT_MS;
+  while (true) {
     try {
       await OrderLocks.updateOne(
         { key, expireAt: { $lt: new Date() } },
         { $set: { key, uniqueValue, expireAt: new Date(Date.now() + ttl) } },
         { upsert: true },
       );
-      return {
-        release: async () => {
-          try {
-            // Only our own, still-live lock: a lock taken over after expiry by
-            // somebody else has a different uniqueValue and must survive.
-            await OrderLocks.deleteOne({ key, uniqueValue, expireAt: { $gt: new Date() } });
-          } catch {
-            // Never throw: every call site releases inside a finally block and
-            // a throwing release would mask the actual error.
-          }
-        },
-      };
+      break;
     } catch (error) {
       if ((error as { code?: number })?.code !== DUPLICATE_KEY) throw error;
-      if (attempt < LOCK_RETRIES - 1) await sleep(LOCK_RETRY_DELAY_MS);
     }
+    if (Date.now() > waitUntil) throw new Error(`Could not acquire lock ${key}`, { cause: 'LOCKED' });
+    await sleep(LOCK_RETRY_DELAY_MS * (0.5 + Math.random()));
   }
-  throw new Error(`Could not acquire lock ${key}`, { cause: 'LOCKED' });
+  const renewal = setInterval(async () => {
+    try {
+      const { matchedCount } = await OrderLocks.updateOne(
+        { key, uniqueValue },
+        { $set: { expireAt: new Date(Date.now() + ttl) } },
+      );
+      if (!matchedCount) clearInterval(renewal);
+    } catch {
+      /**/
+    }
+  }, ttl / 3);
+  renewal.unref?.();
+  return {
+    release: async () => {
+      clearInterval(renewal);
+      try {
+        // Only our own, still-live lock: a lock taken over after expiry by
+        // somebody else has a different uniqueValue and must survive.
+        await OrderLocks.deleteOne({ key, uniqueValue, expireAt: { $gt: new Date() } });
+      } catch {
+        // Never throw: every call site releases inside a finally block and
+        // a throwing release would mask the actual error.
+      }
+    },
+  };
 };

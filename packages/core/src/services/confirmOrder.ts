@@ -14,7 +14,7 @@ export async function confirmOrderService(
 ) {
   if (order.status !== OrderStatus.PENDING) return order;
 
-  const lock = await this.orders.acquireLock(order._id, 'confirm-reject', 1500);
+  const lock = await this.orders.acquireLock(order._id, 'confirm-reject');
   try {
     return await processOrderService.bind(this)(order, {
       ...transactionContext,

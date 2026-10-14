@@ -60,7 +60,7 @@ registerQuotation({
 - `validateOrderPosition` runs for the position, as for `addCartProduct`
 - Only the owner's cart in the quotation's currency takes the quotation (`QuotationInvalidError` otherwise); a guest's open quotations move to the user on login, like the cart
 - A quotation position never merges with a position of the same product added with `addCartProduct`
-- An order reserves its quotation once it is checked out: while the order is pending, another cart cannot add it or check it out (`QuotationInvalidError`). Confirming the order fulfils the quotation, rejecting it releases the quotation again. Checkout locks the order's quotations (for up to 60 seconds) and checks them again before payment is charged, so two carts checking out at the same time cannot both order it
+- An order reserves its quotation once it is checked out: while the order is pending, another cart cannot add it or check it out (`QuotationInvalidError`). Confirming the order fulfils the quotation, rejecting it releases the quotation again. Checkout locks the order's quotations and checks them again before payment is charged, so two carts checking out at the same time cannot both order it
 
 ## Adapter order
 

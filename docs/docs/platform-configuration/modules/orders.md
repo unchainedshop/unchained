@@ -95,7 +95,7 @@ Access via `modules.orders` in the Unchained API context.
 | `updateStatus` | `orderId, { status, info? }` | Update order status |
 | `setPaymentProvider` | `orderId, paymentProviderId` | Set payment method |
 | `setDeliveryProvider` | `orderId, deliveryProviderId` | Set delivery method |
-| `acquireLock` | `orderId, identifier, timeout?` | Acquire distributed lock |
+| `acquireLock` | `orderId, identifier, ttl?` | Acquire a distributed lock, renewed until released; `ttl` (default 5000 ms) bounds how long a crashed holder keeps it |
 
 ### Sub-modules
 
