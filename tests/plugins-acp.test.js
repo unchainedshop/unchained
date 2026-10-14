@@ -2,6 +2,7 @@ import assert from 'node:assert';
 import test from 'node:test';
 import { OrderPricingSheet, PaymentDirector } from '@unchainedshop/core';
 import { deliverySettings } from '@unchainedshop/core-delivery';
+import { paymentSettings } from '@unchainedshop/core-payment';
 import { setupDatabase, disconnect, getServerBaseUrl } from './helpers.js';
 
 const API_KEY = 'test-acp-secret-key';
@@ -855,6 +856,33 @@ test.describe('Plugins: ACP checkout', () => {
 
     assert.strictEqual(res.status, 200);
     assert.partialDeepStrictEqual(session.messages, [{ type: 'error', code: 'requires_3ds' }]);
+    assert.strictEqual((await db.collection('orders').findOne({ _id: created.id })).status, null);
+  });
+
+  test('does not check out on a payment provider the recalculation switched to', async (t) => {
+    const created = await createSession(readySessionBody());
+    t.mock.method(paymentSettings, 'filterSupportedProviders', async ({ providers, order }) =>
+      OrderPricingSheet({ calculation: order.calculation, currencyCode: order.currencyCode }).total()
+        .amount > 15000
+        ? providers.filter(({ _id }) => _id !== 'acp-test-provider')
+        : providers,
+    );
+    const charge = t.mock.method(PaymentDirector, 'chargeOrderPayment');
+
+    const res = await acpFetch(`/acp/checkout_sessions/${created.id}/complete`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: {
+        line_items: [{ id: 'simpleproduct', quantity: 2 }],
+        payment_data: {
+          handler_id: 'stripe_spt',
+          instrument: { type: 'card', credential: { type: 'spt', token: 'spt_test' } },
+        },
+      },
+    });
+
+    assert.deepStrictEqual([res.status, (await res.json()).code], [503, 'payment_provider_unavailable']);
+    assert.strictEqual(charge.mock.callCount(), 0);
     assert.strictEqual((await db.collection('orders').findOne({ _id: created.id })).status, null);
   });
 

@@ -26,6 +26,12 @@ const invalidRequest = (code: string, message: string, param?: string) =>
 const serviceUnavailable = (code: string, message: string) =>
   new ACPError(503, 'service_unavailable', code, message);
 
+const paymentProviderUnavailable = () =>
+  serviceUnavailable(
+    'payment_provider_unavailable',
+    'The configured payment provider is unavailable for this cart',
+  );
+
 const unsupportedCurrency = (currency: string) =>
   invalidRequest(
     'unsupported_currency',
@@ -291,12 +297,7 @@ const selectConfiguredPaymentProvider = async (
       expectedType: PaymentProviderType.GENERIC,
     });
   } catch (error) {
-    throw error.name?.startsWith('PaymentProvider')
-      ? serviceUnavailable(
-          'payment_provider_unavailable',
-          'The configured payment provider is unavailable for this cart',
-        )
-      : error;
+    throw error.name?.startsWith('PaymentProvider') ? paymentProviderUnavailable() : error;
   }
 };
 
@@ -411,8 +412,9 @@ export const completeCheckoutSession = async (
   const paymentProvider = await configuredPaymentProvider(context);
 
   const { order: updated, messages } = await applyCheckoutUpdate(context, order, update);
-  await selectConfiguredPaymentProvider(context, updated, paymentProvider);
+  const selected = await selectConfiguredPaymentProvider(context, updated, paymentProvider);
   const calculated = await context.services.orders.updateCalculation(order._id);
+  if (calculated.paymentId !== selected.paymentId) throw paymentProviderUnavailable();
   if (messages.length) {
     return { status: 200, body: await serializeCheckoutSession(calculated, context, messages) };
   }
