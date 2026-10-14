@@ -58,6 +58,22 @@ const readySessionBody = () => ({
   },
 });
 
+const giftAddress = {
+  name: 'Gift Recipient',
+  line_one: 'Shippingstrasse 1',
+  postal_code: '8000',
+  city: 'Zürich',
+  country: 'CH',
+};
+
+const payerAddress = {
+  name: 'Paying Buyer',
+  line_one: 'Billingstrasse 2',
+  postal_code: '3000',
+  city: 'Bern',
+  country: 'CH',
+};
+
 const createSession = async (body = validSessionBody()) => {
   const res = await acpFetch('/acp/checkout_sessions', {
     method: 'POST',
@@ -400,6 +416,66 @@ test.describe('Plugins: ACP checkout', () => {
       emailAddress: 'recipient@example.com',
       telNumber: '+41792222222',
     });
+  });
+
+  test('keeps the shipping address and recipient contact when another fulfillment option is selected', async () => {
+    const created = await createSession({
+      ...validSessionBody(),
+      fulfillment_details: {
+        email: 'recipient@example.com',
+        phone_number: '+41792222222',
+        address: giftAddress,
+      },
+    });
+    await acpFetch(`/acp/checkout_sessions/${created.id}`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: { payment_data: { billing_address: payerAddress } },
+    });
+    const res = await acpFetch(`/acp/checkout_sessions/${created.id}`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: {
+        selected_fulfillment_options: [
+          { type: 'shipping', option_id: 'send-mail-delivery-provider', item_ids: [] },
+        ],
+      },
+    });
+    const switched = await res.json();
+    assert.strictEqual(res.status, 200, JSON.stringify(switched));
+    assert.partialDeepStrictEqual(switched.fulfillment_details, {
+      email: 'recipient@example.com',
+      phone_number: '+41792222222',
+      address: { line_one: giftAddress.line_one },
+    });
+
+    const order = await db.collection('orders').findOne({ _id: created.id });
+    const delivery = await db.collection('order_deliveries').findOne({ _id: order.deliveryId });
+    assert.strictEqual(delivery.deliveryProviderId, 'send-mail-delivery-provider');
+    assert.strictEqual(delivery.context.address.addressLine, giftAddress.line_one);
+    assert.strictEqual(order.billingAddress.addressLine, payerAddress.line_one);
+  });
+
+  test('keeps a separate billing address when only the shipping address changes', async () => {
+    const created = await createSession({
+      ...validSessionBody(),
+      fulfillment_details: { address: giftAddress },
+    });
+    for (const body of [
+      { payment_data: { billing_address: payerAddress } },
+      { fulfillment_details: { address: { ...giftAddress, line_one: 'Neue Strasse 9' } } },
+    ]) {
+      await acpFetch(`/acp/checkout_sessions/${created.id}`, {
+        method: 'POST',
+        idempotencyKey: idem(),
+        body,
+      });
+    }
+
+    const order = await db.collection('orders').findOne({ _id: created.id });
+    const delivery = await db.collection('order_deliveries').findOne({ _id: order.deliveryId });
+    assert.strictEqual(order.billingAddress.addressLine, payerAddress.line_one);
+    assert.strictEqual(delivery.context.address.addressLine, 'Neue Strasse 9');
   });
 
   test('complete uses buyer information persisted by an earlier update', async () => {

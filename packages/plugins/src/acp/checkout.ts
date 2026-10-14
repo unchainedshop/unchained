@@ -188,12 +188,12 @@ const nextDeliveryAddress = ({
   previousBillingAddress?: object;
   deliveryAddress?: object | null;
 }) => {
-  if (fulfillmentAddress && billingAddress) return fulfillmentAddress;
-  if (!fulfillmentAddress && !hasAddress(deliveryAddress) && hasAddress(previousBillingAddress)) {
+  const shipsToBillingAddress = !hasAddress(deliveryAddress);
+  if (fulfillmentAddress) return billingAddress || !shipsToBillingAddress ? fulfillmentAddress : null;
+  if (billingAddress && shipsToBillingAddress && hasAddress(previousBillingAddress)) {
     return previousBillingAddress;
   }
-  if (deliveryAddress != null && (fulfillmentAddress || !hasAddress(deliveryAddress))) return null;
-  return undefined;
+  return shipsToBillingAddress ? null : deliveryAddress;
 };
 
 const applyCheckoutUpdate = async (
@@ -218,7 +218,12 @@ const applyCheckoutUpdate = async (
     }
   }
 
-  const orderBillingAddress = billingAddress || fulfillmentAddress;
+  const delivery = order.deliveryId
+    ? await context.modules.orders.deliveries.findDelivery({ orderDeliveryId: order.deliveryId })
+    : null;
+  const deliveryAddress = delivery?.context?.address;
+  const orderBillingAddress =
+    billingAddress || (hasAddress(deliveryAddress) ? undefined : fulfillmentAddress);
   if (contact || orderBillingAddress) {
     order =
       (await context.modules.orders.updateCartFields(order._id, {
@@ -238,24 +243,18 @@ const applyCheckoutUpdate = async (
     });
   }
 
-  if (order.deliveryId && (fulfillmentAddress || billingAddress || fulfillmentContact)) {
-    const delivery = await context.modules.orders.deliveries.findDelivery({
-      orderDeliveryId: order.deliveryId,
-    });
-    const address =
-      option?.type !== 'pickup' && (fulfillmentAddress || billingAddress)
-        ? nextDeliveryAddress({
-            fulfillmentAddress,
-            billingAddress,
-            previousBillingAddress: initialOrder.billingAddress,
-            deliveryAddress: delivery?.context?.address,
-          })
-        : undefined;
+  if (
+    order.deliveryId &&
+    (order.deliveryId !== delivery?._id || fulfillmentAddress || billingAddress || fulfillmentContact)
+  ) {
     await context.modules.orders.deliveries.updateContext(order.deliveryId, {
-      ...(address !== undefined ? { address } : {}),
-      ...(fulfillmentContact
-        ? { contact: { ...delivery?.context?.contact, ...fulfillmentContact } }
-        : {}),
+      address: nextDeliveryAddress({
+        fulfillmentAddress,
+        billingAddress,
+        previousBillingAddress: initialOrder.billingAddress,
+        deliveryAddress,
+      }),
+      contact: { ...delivery?.context?.contact, ...fulfillmentContact },
     });
   }
 
