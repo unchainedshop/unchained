@@ -479,6 +479,26 @@ test.describe('Plugins: ACP checkout', () => {
     assert.strictEqual(delivery.context.address.addressLine, 'Neue Strasse 9');
   });
 
+  test('is ready for payment before the buyer is known', async () => {
+    const created = await createSession({
+      ...validSessionBody(),
+      fulfillment_details: { ...readySessionBody().fulfillment_details, email: 'recipient@example.com' },
+    });
+    assert.strictEqual(created.status, 'ready_for_payment');
+
+    const res = await acpFetch(`/acp/checkout_sessions/${created.id}/complete`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: {
+        payment_data: {
+          handler_id: 'stripe_spt',
+          instrument: { type: 'card', credential: { type: 'spt', token: 'spt_test' } },
+        },
+      },
+    });
+    assert.deepStrictEqual([res.status, (await res.json()).code], [400, 'invalid_buyer']);
+  });
+
   test('complete uses buyer information persisted by an earlier update', async () => {
     const created = await createSession();
     const updated = await acpFetch(`/acp/checkout_sessions/${created.id}`, {

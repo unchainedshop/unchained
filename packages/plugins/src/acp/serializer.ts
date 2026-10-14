@@ -14,11 +14,7 @@ const checkoutStatus = (order: Order, positions: OrderPosition[], isPaid: boolea
   if (order.status === OrderStatus.REJECTED) return 'requires_escalation';
   if (order.status === OrderStatus.PENDING && !isPaid) return 'complete_in_progress';
   if (order.status) return 'completed';
-  return order.contact?.emailAddress &&
-    order.billingAddress &&
-    order.deliveryId &&
-    order.paymentId &&
-    positions.length > 0
+  return order.billingAddress && order.deliveryId && order.paymentId && positions.length > 0
     ? 'ready_for_payment'
     : 'not_ready_for_payment';
 };
