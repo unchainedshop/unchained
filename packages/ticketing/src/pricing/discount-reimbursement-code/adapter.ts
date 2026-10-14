@@ -56,20 +56,13 @@ export const ReimbursementCode: IDiscountAdapter<OrderDiscountConfiguration> = {
           modules.orders.discounts.update(orderDiscount._id, {
             reservation: { ...orderDiscount.reservation, checkoutAmount: value },
           });
-        // Serialize the read-and-reserve step across carts and processes. The reservation is
-        // persisted before the lock is released, so a slow payment provider cannot outlive the
-        // lock lease and let the credit be spent twice.
-        const lock = await modules.orders.acquireLock(voucher.code, 'reimbursement');
-        try {
-          const spent = await voucher.passes.discountCodeUsageBalance(voucher.code, order._id);
-          if (checkoutAmount > Math.max(0, amount - spent)) {
-            throw new Error('DISCOUNT_USAGE_LIMIT_EXCEEDED');
-          }
-          if (!(await setCheckoutAmount(checkoutAmount))) {
-            throw new Error('INVALID_REIMBURSEMENT_CODE');
-          }
-        } finally {
-          await lock.release();
+        await using lock = await modules.orders.acquireLock(voucher.code, 'reimbursement');
+        const spent = await voucher.passes.discountCodeUsageBalance(voucher.code, order._id);
+        if (checkoutAmount > Math.max(0, amount - spent)) {
+          throw new Error('DISCOUNT_USAGE_LIMIT_EXCEEDED');
+        }
+        if (!(await setCheckoutAmount(checkoutAmount))) {
+          throw new Error('INVALID_REIMBURSEMENT_CODE');
         }
         return {
           release: async () => {

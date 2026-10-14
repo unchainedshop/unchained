@@ -8,7 +8,7 @@ const modulesFor = (order: unknown, events: string[]) =>
     orders: {
       acquireLock: mock.fn(async () => {
         events.push('lock');
-        return { release: async () => events.push('release') };
+        return { [Symbol.asyncDispose]: async () => events.push('release') };
       }),
       findOrder: async () => {
         events.push('read');

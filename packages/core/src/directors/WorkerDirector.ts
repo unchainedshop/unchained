@@ -96,30 +96,26 @@ export const WorkerDirector: IWorkerDirector = {
   ) => {
     // Reuse the Mongo lock with a reserved key shared by every worker instance.
     // Hold it through counting and claiming, then release before executing work.
-    const lock = await unchainedAPI.modules.orders.acquireLock('allocation', 'worker');
-    try {
-      const adapters = WorkerDirector.getAdapters();
-      const allocationMap = await unchainedAPI.modules.worker.allocationMap();
+    await using lock = await unchainedAPI.modules.orders.acquireLock('allocation', 'worker');
+    const adapters = WorkerDirector.getAdapters();
+    const allocationMap = await unchainedAPI.modules.worker.allocationMap();
 
-      const types = adapters
-        .filter((adapter) => {
-          if (requestedTypes && !requestedTypes.includes(adapter.type)) return false;
-          if (
-            adapter.maxParallelAllocations &&
-            adapter.maxParallelAllocations <= allocationMap[adapter.type]
-          )
-            return false;
-          return true;
-        })
-        .map((adapter) => adapter.type);
+    const types = adapters
+      .filter((adapter) => {
+        if (requestedTypes && !requestedTypes.includes(adapter.type)) return false;
+        if (
+          adapter.maxParallelAllocations &&
+          adapter.maxParallelAllocations <= allocationMap[adapter.type]
+        )
+          return false;
+        return true;
+      })
+      .map((adapter) => adapter.type);
 
-      return await unchainedAPI.modules.worker.allocateWork({
-        types,
-        worker,
-      });
-    } finally {
-      await lock.release();
-    }
+    return await unchainedAPI.modules.worker.allocateWork({
+      types,
+      worker,
+    });
   },
 
   processNextWork: async (unchainedAPI: { modules: Modules }, workerId?: string) => {

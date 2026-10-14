@@ -553,9 +553,7 @@ A failed `checkoutCart` throws an `OrderCheckoutError` (`extensions.code`); the 
 | `BillingAddressMissingError` | Billing address not set | Set billing address via `updateCart` |
 | `QuotationInvalidError` | Quotation expired or fulfilled | Request a new offer |
 
-Payment charge failures surface the same way, with the payment adapter's error name as `detailCode`.
-
-While another request checks out or changes the cart, `checkoutCart` and the cart mutations answer `OrderLockedError` instead; retry them.
+Payment charge failures surface the same way, with the payment adapter's error name as `detailCode`. While another request checks out or changes the cart, `checkoutCart` and the cart mutations answer `OrderLockedError` instead; retry them.
 
 ### Handling Payment Errors
 

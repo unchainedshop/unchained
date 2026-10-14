@@ -61,8 +61,8 @@ describe('WorkerDirector Mongo allocation', { timeout: 15000 }, () => {
             worker: await configureWorkerModule({ db }),
             orders: {
               // Same namespace and lease as configureOrdersModule.acquireLock.
-              acquireLock: (id: string, identifier: string, timeout = 5000) =>
-                acquireLock(locks, `order:${identifier}:${id}`, timeout),
+              acquireLock: (id: string, identifier: string, ttl = 5000) =>
+                acquireLock(locks, `order:${identifier}:${id}`, ttl),
             },
           },
         } as unknown as WorkerAPI;

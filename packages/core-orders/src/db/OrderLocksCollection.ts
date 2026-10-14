@@ -39,9 +39,7 @@ export const OrderLocksCollection = async (db: mongodb.Db) => {
  * index on `key` combined with upsert-only-when-expired: a live lock makes the
  * filter match nothing, the upsert then collides on the index, and the E11000
  * error is treated as contention worth retrying. The TTL index is garbage
- * collection only — expiry is enforced by the `expireAt` conditions. The lease
- * is renewed until release, so `ttl` only bounds how long a holder that stopped
- * renewing, e.g. a crashed process, blocks others.
+ * collection only — expiry is enforced by the `expireAt` conditions.
  */
 export const acquireLock = async (
   OrderLocks: mongodb.Collection<OrderLock>,
@@ -49,14 +47,11 @@ export const acquireLock = async (
   ttl: number,
 ) => {
   const uniqueValue = crypto.randomUUID();
+  const lease = () => ({ $set: { key, uniqueValue, expireAt: new Date(Date.now() + ttl) } });
   const waitUntil = Date.now() + LOCK_WAIT_MS;
   while (true) {
     try {
-      await OrderLocks.updateOne(
-        { key, expireAt: { $lt: new Date() } },
-        { $set: { key, uniqueValue, expireAt: new Date(Date.now() + ttl) } },
-        { upsert: true },
-      );
+      await OrderLocks.updateOne({ key, expireAt: { $lt: new Date() } }, lease(), { upsert: true });
       break;
     } catch (error) {
       if ((error as { code?: number })?.code !== DUPLICATE_KEY) throw error;
@@ -66,27 +61,20 @@ export const acquireLock = async (
   }
   const renewal = setInterval(async () => {
     try {
-      const { matchedCount } = await OrderLocks.updateOne(
-        { key, uniqueValue },
-        { $set: { expireAt: new Date(Date.now() + ttl) } },
-      );
+      const { matchedCount } = await OrderLocks.updateOne({ key, uniqueValue }, lease());
       if (!matchedCount) clearInterval(renewal);
     } catch {
       /**/
     }
   }, ttl / 3);
   renewal.unref?.();
-  return {
-    release: async () => {
-      clearInterval(renewal);
-      try {
-        // Only our own, still-live lock: a lock taken over after expiry by
-        // somebody else has a different uniqueValue and must survive.
-        await OrderLocks.deleteOne({ key, uniqueValue, expireAt: { $gt: new Date() } });
-      } catch {
-        // Never throw: every call site releases inside a finally block and
-        // a throwing release would mask the actual error.
-      }
-    },
+  const release = async () => {
+    clearInterval(renewal);
+    try {
+      await OrderLocks.deleteOne({ key, uniqueValue, expireAt: { $gt: new Date() } });
+    } catch {
+      /**/
+    }
   };
+  return { release, [Symbol.asyncDispose]: release };
 };

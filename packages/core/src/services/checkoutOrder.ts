@@ -32,7 +32,7 @@ export async function checkoutOrderService(
     nextStatus?: OrderStatus;
   },
 ) {
-  const lock = await this.orders.acquireLock(orderId, 'checkout');
+  await using lock = await this.orders.acquireLock(orderId, 'checkout');
   let discounts: Awaited<ReturnType<typeof reserveOrderDiscountsForCheckout>> | undefined;
   let quotations: Awaited<ReturnType<typeof reserveOrderQuotationsForCheckout>> | undefined;
 
@@ -64,6 +64,5 @@ export async function checkoutOrderService(
   } finally {
     await discounts?.release();
     await quotations?.release();
-    await lock.release();
   }
 }
