@@ -15,19 +15,26 @@ const event = {
   },
 };
 
-const deliverPaymentIntentSucceeded = async (order: { _id: string; status: string | null }) => {
+const deliverPaymentIntentSucceeded = async (orderAfterCheckout: { _id: string; status: string }) => {
   const constructEvent = mock.fn(() => event);
   const logEvent = mock.fn();
   const findOrderPayment = mock.fn(async () => ({ _id: 'payment-1', orderId: 'order-1' }));
-  const checkoutOrder = mock.fn(async () => order);
-  const processOrder = mock.fn(async () => order);
+  const checkoutOrder = mock.fn(async () => orderAfterCheckout);
+  const processOrder = mock.fn(async () => ({ ...orderAfterCheckout, status: 'CONFIRMED' }));
+  const acquireLock = mock.fn(async () => ({ [Symbol.asyncDispose]: async () => undefined }));
   const handler = createStripeWebhookHandler({
     stripeClient: { webhooks: { constructEvent } } as unknown as StripeClient,
     endpointSecret: 'whsec_test',
     environment: 'test',
   });
   const context = {
-    modules: { orders: { findOrder: async () => order, payments: { logEvent, findOrderPayment } } },
+    modules: {
+      orders: {
+        acquireLock,
+        findOrder: async () => orderAfterCheckout,
+        payments: { logEvent, findOrderPayment },
+      },
+    },
     services: { orders: { checkoutOrder, processOrder } },
   } as unknown as UnchainedCore;
   const rawBody = JSON.stringify(event);
@@ -40,13 +47,29 @@ const deliverPaymentIntentSucceeded = async (order: { _id: string; status: strin
     }),
     context,
   );
-  return { response, rawBody, constructEvent, logEvent, findOrderPayment, checkoutOrder, processOrder };
+  return {
+    response,
+    rawBody,
+    constructEvent,
+    logEvent,
+    findOrderPayment,
+    checkoutOrder,
+    processOrder,
+    acquireLock,
+  };
 };
 
 describe('Stripe webhook handler', () => {
   it('verifies the raw body and checks out the cart through core services', async () => {
-    const { response, rawBody, constructEvent, logEvent, findOrderPayment, checkoutOrder } =
-      await deliverPaymentIntentSucceeded({ _id: 'order-1', status: null });
+    const {
+      response,
+      rawBody,
+      constructEvent,
+      logEvent,
+      findOrderPayment,
+      checkoutOrder,
+      processOrder,
+    } = await deliverPaymentIntentSucceeded({ _id: 'order-1', status: 'CONFIRMED' });
 
     assert.equal(response.status, 200);
     assert.deepEqual(await response.json(), {
@@ -61,14 +84,17 @@ describe('Stripe webhook handler', () => {
       'order-1',
       { paymentContext: { paymentIntentId: 'pi_1' } },
     ]);
+    assert.equal(processOrder.mock.callCount(), 0);
   });
 
-  it('processes an order that waits for its payment', async () => {
+  it('processes an order that waits for its payment under the confirm lock', async () => {
     const pendingOrder = { _id: 'order-1', status: 'PENDING' };
-    const { response, checkoutOrder, processOrder } = await deliverPaymentIntentSucceeded(pendingOrder);
+    const { response, checkoutOrder, processOrder, acquireLock } =
+      await deliverPaymentIntentSucceeded(pendingOrder);
 
     assert.equal(response.status, 200);
-    assert.equal(checkoutOrder.mock.callCount(), 0);
+    assert.equal(checkoutOrder.mock.callCount(), 1);
+    assert.deepEqual(acquireLock.mock.calls[0].arguments, ['order-1', 'confirm-reject']);
     assert.deepEqual(processOrder.mock.calls[0].arguments, [
       pendingOrder,
       { paymentContext: { paymentIntentId: 'pi_1' } },

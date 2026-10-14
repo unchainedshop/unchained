@@ -59,12 +59,14 @@ const processWebhookEvent = async (
     await modules.orders.payments.logEvent(orderPaymentId, event);
 
     const paymentContext = { paymentIntentId: paymentIntent.id };
+    await services.orders.checkoutOrder(orderPayment.orderId, { paymentContext });
+    await using lock = await modules.orders.acquireLock(orderPayment.orderId, 'confirm-reject');
     const paidOrder = await modules.orders.findOrder({ orderId: orderPayment.orderId });
+    if (!paidOrder) throw new Error(`Order with id ${orderPayment.orderId} not found`);
     const order =
-      paidOrder?.status === OrderStatus.PENDING
+      paidOrder.status === OrderStatus.PENDING
         ? await services.orders.processOrder(paidOrder, { paymentContext })
-        : await services.orders.checkoutOrder(orderPayment.orderId, { paymentContext });
-    if (!order) throw new Error(`Order with id ${orderPayment.orderId} not found`);
+        : paidOrder;
 
     logger.info('Stripe webhook checkout successful', {
       orderPaymentId,
