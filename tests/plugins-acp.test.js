@@ -886,6 +886,69 @@ test.describe('Plugins: ACP checkout', () => {
     assert.strictEqual((await db.collection('orders').findOne({ _id: created.id })).status, null);
   });
 
+  test('reports a paid order that waits for its confirmation as completed', async (t) => {
+    const pickupProvider = await db
+      .collection('delivery-providers')
+      .findOne({ _id: 'pickup-delivery-provider' });
+    t.after(() =>
+      db.collection('delivery-providers').replaceOne({ _id: pickupProvider._id }, pickupProvider),
+    );
+    await db.collection('delivery-providers').updateOne(
+      { _id: pickupProvider._id },
+      {
+        $set: {
+          configuration: [
+            {
+              key: 'stores',
+              value: JSON.stringify([
+                {
+                  _id: 'zurich',
+                  name: 'Zurich',
+                  address: {
+                    addressLine: 'Bahnhofstrasse 1',
+                    postalCode: '8001',
+                    city: 'Zürich',
+                    countryCode: 'CH',
+                  },
+                },
+              ]),
+            },
+          ],
+        },
+      },
+    );
+    const created = await createSession(readySessionBody());
+    t.mock.method(PaymentDirector, 'chargeOrderPayment', async (order, _context, { modules }) =>
+      modules.orders.payments.updateStatus(order.paymentId, {
+        status: 'PAID',
+        transactionId: 'paid-pickup',
+        info: '{}',
+      }),
+    );
+
+    const res = await acpFetch(`/acp/checkout_sessions/${created.id}/complete`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: {
+        selected_fulfillment_options: [
+          { type: 'pickup', option_id: 'pickup-delivery-provider:zurich', item_ids: [] },
+        ],
+        payment_data: {
+          handler_id: 'stripe_spt',
+          instrument: { type: 'card', credential: { type: 'spt', token: 'spt_test' } },
+        },
+      },
+    });
+    const completed = await res.json();
+
+    assert.deepStrictEqual(
+      [res.status, completed.status, completed.order?.status],
+      [200, 'completed', 'created'],
+      JSON.stringify(completed),
+    );
+    assert.strictEqual((await db.collection('orders').findOne({ _id: created.id })).status, 'PENDING');
+  });
+
   test('GET /acp/feed.jsonl streams a product feed as ndjson', async () => {
     const res = await acpFetch('/acp/feed.jsonl', { method: 'GET' });
     assert.strictEqual(res.status, 200);

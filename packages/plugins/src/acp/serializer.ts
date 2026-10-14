@@ -1,16 +1,19 @@
 import { DeliveryDirector, OrderPricingRowCategory, OrderPricingSheet } from '@unchainedshop/core';
 import { DeliveryProviderType, type DeliveryLocation } from '@unchainedshop/core-delivery';
-import { OrderStatus, type Order, type OrderPosition } from '@unchainedshop/core-orders';
+import {
+  OrderPaymentStatus,
+  OrderStatus,
+  type Order,
+  type OrderPosition,
+} from '@unchainedshop/core-orders';
 import { ACP_API_VERSION, acpConfig, sellerLinks, type ACPContext } from './config.ts';
 import { isACPCanceled } from './order.ts';
 
-const checkoutStatus = (order: Order, positions: OrderPosition[]) => {
+const checkoutStatus = (order: Order, positions: OrderPosition[], isPaid: boolean) => {
   if (isACPCanceled(order)) return 'canceled';
-  if (order.status === OrderStatus.PENDING) return 'complete_in_progress';
-  if (order.status === OrderStatus.CONFIRMED || order.status === OrderStatus.FULFILLED) {
-    return 'completed';
-  }
   if (order.status === OrderStatus.REJECTED) return 'requires_escalation';
+  if (order.status === OrderStatus.PENDING && !isPaid) return 'complete_in_progress';
+  if (order.status) return 'completed';
   return order.contact?.emailAddress &&
     order.billingAddress &&
     order.deliveryId &&
@@ -122,6 +125,10 @@ export const serializeCheckoutSession = async (
   const positions = await context.modules.orders.positions.findOrderPositions({
     orderId: order._id,
   });
+  const payment =
+    order.status === OrderStatus.PENDING && order.paymentId
+      ? await context.modules.orders.payments.findOrderPayment({ orderPaymentId: order.paymentId })
+      : null;
   const pricing = OrderPricingSheet({
     calculation: order.calculation,
     currencyCode: order.currencyCode,
@@ -155,7 +162,7 @@ export const serializeCheckoutSession = async (
   return {
     id: order._id,
     protocol: { version: ACP_API_VERSION },
-    status: checkoutStatus(order, positions),
+    status: checkoutStatus(order, positions, payment?.status === OrderPaymentStatus.PAID),
     currency: order.currencyCode.toLowerCase(),
     buyer: order.contact?.emailAddress
       ? {

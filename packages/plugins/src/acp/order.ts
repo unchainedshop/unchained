@@ -11,7 +11,6 @@ export const acpOrderStatus = (order: Order) => {
   if (isACPCanceled(order) || order.status === OrderStatus.REJECTED) return 'canceled';
   if (order.status === OrderStatus.FULFILLED) return 'completed';
   if (order.status === OrderStatus.CONFIRMED) return 'confirmed';
-  if (order.status === OrderStatus.PENDING) return 'processing';
   return 'created';
 };
 

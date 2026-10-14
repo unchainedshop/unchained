@@ -27,10 +27,10 @@ describe('ACP webhook delivery', () => {
   it('delivers the events of an order in order, also when the first one is retried', async (t) => {
     configureReceiver(t, 1);
     const received: string[] = [];
-    let processingAttempts = 0;
+    let createdAttempts = 0;
     t.mock.method(globalThis, 'fetch', async (_url, { body }) => {
       const { data } = JSON.parse(body);
-      if (data.status === 'processing' && processingAttempts++ === 0) {
+      if (data.status === 'created' && createdAttempts++ === 0) {
         return new Response('', { status: 503 });
       }
       received.push(data.status);
@@ -42,7 +42,7 @@ describe('ACP webhook delivery', () => {
       deliverACPWebhook(acpOrder('CONFIRMED'), false),
     ]);
 
-    assert.deepEqual(received, ['processing', 'confirmed']);
+    assert.deepEqual(received, ['created', 'confirmed']);
   });
 
   it('sends an event again after its delivery failed', async (t) => {
