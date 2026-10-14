@@ -128,6 +128,36 @@ describe('Stripe gateway', () => {
     assert.equal(create.mock.calls[0].arguments[1].idempotencyKey, 'acp-payment-1-spt_declined');
   });
 
+  it('reports a shared payment token Stripe refuses as a decline and passes other errors on', async () => {
+    const charge = (error: Error) =>
+      createAcpSharedPaymentTokenIntent(
+        {
+          acpToken: 'spt_used',
+          order: { _id: 'order-12345678', currencyCode: 'CHF' } as any,
+          orderPayment: { _id: 'payment-1' } as any,
+          pricing: { total: () => ({ amount: 1000, currencyCode: 'CHF' }) } as any,
+        },
+        createClient({
+          paymentIntents: {
+            create: async () => {
+              throw error;
+            },
+          },
+        }),
+      );
+    const refused =
+      'The shared payment granted token cannot be used because it is already in a deactivated state.';
+
+    await assert.rejects(
+      charge(Object.assign(new Error(refused), { type: 'StripeInvalidRequestError' })),
+      { message: refused, cause: 'PAYMENT_DECLINED' },
+    );
+    await assert.rejects(
+      charge(Object.assign(new Error('Stripe is unavailable'), { type: 'StripeAPIError' })),
+      (error: Error) => error.message === 'Stripe is unavailable' && error.cause === undefined,
+    );
+  });
+
   it('reports a shared payment token charge that needs an authentication of the buyer', async () => {
     const create = mock.fn(async () => ({ id: 'pi_1', status: 'requires_action' }));
 

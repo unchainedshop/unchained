@@ -209,6 +209,27 @@ test.describe('Plugins: ACP Shared Payment Token charge (real Stripe)', () => {
     }
   });
 
+  test('reports an SPT that Stripe refuses as declined and charges a fresh SPT', async () => {
+    const orderId = await readySession();
+    const insufficientSptId = await mintSPT({ maxAmount: 5000 });
+    const sptId = await mintSPT();
+    try {
+      const refused = await completeSession(orderId, insufficientSptId);
+      assert.strictEqual(refused.status, 200, JSON.stringify(refused.body));
+      assert.strictEqual(refused.body.status, 'ready_for_payment');
+      assert.deepStrictEqual(
+        refused.body.messages.map(({ type, code }) => ({ type, code })),
+        [{ type: 'error', code: 'payment_declined' }],
+      );
+
+      const completed = await completeSession(orderId, sptId);
+      assert.strictEqual(completed.status, 200, JSON.stringify(completed.body));
+      assert.strictEqual(completed.body.status, 'completed');
+    } finally {
+      await Promise.all([revokeSPT(insufficientSptId), revokeSPT(sptId)]);
+    }
+  });
+
   test('reports an SPT that needs authentication and keeps the session open', async () => {
     const orderId = await readySession();
     const sptId = await mintSPT({ paymentMethod: 'pm_card_authenticationRequired' });

@@ -188,6 +188,8 @@ export const createOrderPaymentIntent = async (
   });
 };
 
+const declinedPaymentErrorTypes = new Set(['StripeCardError', 'StripeInvalidRequestError']);
+
 export const createAcpSharedPaymentTokenIntent = async (
   {
     acpToken,
@@ -223,7 +225,7 @@ export const createAcpSharedPaymentTokenIntent = async (
     }
     return paymentIntent;
   } catch (error) {
-    throw error.type === 'StripeCardError'
+    throw declinedPaymentErrorTypes.has(error.type)
       ? new Error(error.message, { cause: 'PAYMENT_DECLINED' })
       : error;
   }
