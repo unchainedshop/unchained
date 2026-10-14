@@ -1,7 +1,7 @@
 import type { Context } from '../context.ts';
 import { OrderLockedError, OrderNotFoundError, OrderWrongStatusError } from '../errors.ts';
 
-export async function loadCart(context: Context, orderId?: string) {
+async function loadCart(context: Context, orderId?: string) {
   const { modules, services, user, countryCode } = context;
   const order = await services.orders.findOrInitCart({ orderId, user: user!, countryCode });
   if (!order) throw new OrderNotFoundError({ orderId });

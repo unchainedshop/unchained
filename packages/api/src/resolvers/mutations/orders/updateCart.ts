@@ -56,6 +56,5 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
     }
   }
 
-  // Recalculate, then return
   return await services.orders.updateCalculation(order._id);
 }

@@ -25,7 +25,6 @@ export async function migrateOrderCartsService(
   });
 
   if (!fromCart) {
-    // No cart, don't copy
     return toCart;
   }
 
@@ -34,19 +33,13 @@ export async function migrateOrderCartsService(
     try {
       const targetCart = await this.orders.findOrder({ orderId: toCart._id });
       if (targetCart && this.orders.isCart(targetCart)) {
-        // Move positions
         await this.orders.moveCartPositions({ fromOrderId: fromCart._id, toOrderId: targetCart._id });
-
-        // Move billing address if target order has none
         if (fromCart.billingAddress && !targetCart.billingAddress) {
           await this.orders.updateBillingAddress(targetCart._id, fromCart.billingAddress);
         }
-
-        // Move contact data if target order has none
         if (fromCart.contact && !targetCart.contact) {
           await this.orders.updateContact(targetCart._id, fromCart.contact);
         }
-
         return await updateCalculationService.bind(this)(targetCart._id);
       }
     } finally {
@@ -54,7 +47,6 @@ export async function migrateOrderCartsService(
     }
   }
 
-  // No destination cart, move whole cart
   await this.orders.setCartOwner({ orderId: fromCart._id, userId: toUserId });
   return updateCalculationService.bind(this)(fromCart._id);
 }
