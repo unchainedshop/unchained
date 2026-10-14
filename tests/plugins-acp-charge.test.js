@@ -54,6 +54,13 @@ const mintSPT = async ({
   return json.id;
 };
 
+const retrievePaymentIntent = async (id) => {
+  const res = await fetch(`https://api.stripe.com/v1/payment_intents/${id}`, {
+    headers: { authorization: `Bearer ${STRIPE_SECRET}` },
+  });
+  return res.json();
+};
+
 const revokeSPT = async (id) => {
   try {
     await fetch(`https://api.stripe.com/v1/test_helpers/shared_payment/granted_tokens/${id}/revoke`, {
@@ -171,6 +178,10 @@ test.describe('Plugins: ACP Shared Payment Token charge (real Stripe)', () => {
       const serialized = JSON.stringify(orderPayment);
       assert.ok(!serialized.includes(sptId), 'shared payment credentials must not be persisted');
       assert.ok(serialized.includes(SPT_STRIPE_VERSION), 'expected the SPT api version in the evidence');
+
+      const paymentIntent = await retrievePaymentIntent(orderPayment.transactionId);
+      assert.strictEqual(paymentIntent.statement_descriptor_suffix, `ORD ${orderDoc.orderNumber}`);
+      assert.match(paymentIntent.description, new RegExp(` #${orderDoc.orderNumber}$`));
     } finally {
       await revokeSPT(sptId);
     }
