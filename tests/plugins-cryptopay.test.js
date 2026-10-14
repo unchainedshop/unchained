@@ -340,4 +340,34 @@ test.describe('Plugins: Cryptopay', () => {
       assert.strictEqual(orderPayment.status, 'PAID');
     });
   });
+
+  test('gives a cart its order number when its payment is signed', async () => {
+    await db.collection('order_payments').insertOne({
+      ...SimplePayment,
+      _id: 'cryptopay-payment3',
+      paymentProviderId: 'cryptopay-payment-provider',
+      orderId: 'cryptopay-order3',
+    });
+    await db.collection('orders').insertOne({
+      ...SimpleOrder,
+      _id: 'cryptopay-order3',
+      orderNumber: null,
+      paymentId: 'cryptopay-payment3',
+      currencyCode: 'BTC',
+    });
+
+    const { errors } = await graphqlFetch({
+      query: /* GraphQL */ `
+        mutation signPaymentProviderForCheckout($orderPaymentId: ID!) {
+          signPaymentProviderForCheckout(orderPaymentId: $orderPaymentId)
+        }
+      `,
+      variables: { orderPaymentId: 'cryptopay-payment3' },
+    });
+
+    const cart = await db.collection('orders').findOne({ _id: 'cryptopay-order3' });
+    assert.strictEqual(errors, undefined);
+    assert.strictEqual(cart.status, null);
+    assert.match(cart.orderNumber, /^[A-Z2-9]{6}$/);
+  });
 });

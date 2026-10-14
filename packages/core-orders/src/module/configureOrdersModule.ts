@@ -169,6 +169,18 @@ export const configureOrdersModule = async ({
       return modificationResult.value || Orders.findOne(selector, {});
     },
 
+    ensureOrderNumber: async (order: Order) => {
+      if (order.orderNumber) return order;
+      const selector = generateDbFilterById(order._id);
+      return (
+        (await Orders.findOneAndUpdate(
+          { ...selector, orderNumber: { $not: { $type: 'string' } } },
+          { $set: { orderNumber: await findNewOrderNumber(order), updated: new Date() } },
+          { returnDocument: 'after' },
+        )) || (await Orders.findOne(selector, {}))
+      );
+    },
+
     acquireLock: async (orderId: string, identifier: string, ttl = 5000) => {
       return acquireLock(OrderLocks, `order:${identifier}:${orderId}`, ttl);
     },

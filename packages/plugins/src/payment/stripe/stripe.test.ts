@@ -62,6 +62,7 @@ describe('Stripe gateway', () => {
         email: 'ada@example.com',
         order: {
           _id: 'order-12345678',
+          orderNumber: 'K7X2M9',
           currencyCode: 'CHF',
           contact: { emailAddress: 'buyer@example.com' },
         } as any,
@@ -92,6 +93,8 @@ describe('Stripe gateway', () => {
     assert.equal(params.customer, 'cus_expected');
     assert.equal(params.receipt_email, 'buyer@example.com');
     assert.equal(params.payment_method, 'pm_card_visa');
+    assert.equal(params.description, 'Unchained #K7X2M9');
+    assert.equal(params.statement_descriptor_suffix, 'ORD K7X2M9');
     assert.deepEqual(params.metadata, {
       custom: 'preserved',
       orderPaymentId: 'payment-1',

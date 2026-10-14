@@ -82,7 +82,7 @@ export const PaymentDirector: IPaymentDirector = {
           orderId,
         }));
 
-      newPaymentContext.order = order;
+      newPaymentContext.order = order && (await modules.orders.ensureOrderNumber(order));
     }
 
     const context = { ...newPaymentContext, ...unchainedAPI, paymentProvider };
