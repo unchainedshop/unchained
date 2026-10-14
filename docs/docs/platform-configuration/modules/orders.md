@@ -33,7 +33,7 @@ export interface OrdersSettingsOptions {
 
 ### Order Number Creation
 
-The `orderNumberHashFn` is used to generate human-readable codes that can be easily spelled out to support staff. The default generates a random alphanumeric uppercase string with length 6 using an unambiguous charset (no `O`, `0`, `1`). If the number has already been taken, the function gets iteratively called with an increasing `index`. An order gets its number when a payment is signed or charged for it, at the latest at checkout, so payment providers can show it.
+The `orderNumberHashFn` is used to generate human-readable codes that can be easily spelled out to support staff. The default generates a random alphanumeric uppercase string with length 6 using an unambiguous charset (no `O`, `0`, `1`). If the number has already been taken, the function gets iteratively called with an increasing `index`.
 
 [Default Random Hash Generator](https://github.com/unchainedshop/unchained/blob/master/packages/utils/src/generate-random-hash.ts)
 

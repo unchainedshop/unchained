@@ -132,8 +132,7 @@ const orderIntentParams = ({
   return {
     amount: Math.round(amount),
     currency: currencyCode.toLowerCase(),
-    description: `${String(description || EMAIL_WEBSITE_NAME || 'Unchained').trim()} #${order.orderNumber}`,
-    statement_descriptor_suffix: `ORD ${order.orderNumber}`,
+    description: String(description || EMAIL_WEBSITE_NAME || 'Unchained').trim(),
     receipt_email: order.contact?.emailAddress,
     metadata: {
       orderPaymentId: orderPayment._id,
@@ -177,6 +176,7 @@ export const createOrderPaymentIntent = async (
   const forwardedOptions = withoutAuthoritativeFields(options, [
     ...Object.keys(intentParams),
     'customer',
+    'statement_descriptor_suffix',
   ]);
 
   return stripeClient.paymentIntents.create({

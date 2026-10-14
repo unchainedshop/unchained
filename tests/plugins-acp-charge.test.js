@@ -180,8 +180,9 @@ test.describe('Plugins: ACP Shared Payment Token charge (real Stripe)', () => {
       assert.ok(serialized.includes(SPT_STRIPE_VERSION), 'expected the SPT api version in the evidence');
 
       const paymentIntent = await retrievePaymentIntent(orderPayment.transactionId);
-      assert.strictEqual(paymentIntent.statement_descriptor_suffix, `ORD ${orderDoc.orderNumber}`);
-      assert.match(paymentIntent.description, new RegExp(` #${orderDoc.orderNumber}$`));
+      assert.strictEqual(paymentIntent.statement_descriptor_suffix, null);
+      assert.strictEqual(paymentIntent.description, 'ACP Test');
+      assert.strictEqual(paymentIntent.metadata.orderId, orderId);
     } finally {
       await revokeSPT(sptId);
     }
