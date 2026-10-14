@@ -113,7 +113,6 @@ await startPlatform({
     orders: {
       ensureUserHasCart: true,
       orderNumberHashFn: (order, index) => `ORD-${index}`,
-      lockOrderDuringCheckout: true,
     },
     // Users module
     users: {

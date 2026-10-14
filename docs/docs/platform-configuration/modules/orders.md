@@ -26,12 +26,10 @@ export interface OrdersSettingsOptions {
     validationParams: OrderSettingsOrderPositionValidation,
     unchainedAPI: UnchainedAPI,
   ) => Promise<void>;
-  lockOrderDuringCheckout?: boolean;
 }
 ```
 
 - `ensureUserHasCart`: If enabled, Unchained will try to pre-generate a new cart when a user does not have one on various occasions, it's still not guaranteed that a user always has a cart. (default: false)
-- `lockOrderDuringCheckout`: If enabled, Unchained tries to use a so-called "Distributed Locking" approach with MongoDB while the checkout process is running, highly encouraged for most cases (default: false)
 
 ### Order Number Creation
 
