@@ -32,17 +32,15 @@ export async function checkoutOrderService(
     nextStatus?: OrderStatus;
   },
 ) {
-  const order = await this.orders.findOrder({ orderId });
-  if (!order) return null;
-  if (order.status !== null) return order;
-
-  await validateOrderService.bind(this)(order);
-
-  const lock = await this.orders.acquireLock(order._id, 'checkout');
+  await using lock = await this.orders.acquireLock(orderId, 'checkout');
   let discounts: Awaited<ReturnType<typeof reserveOrderDiscountsForCheckout>> | undefined;
   let quotations: Awaited<ReturnType<typeof reserveOrderQuotationsForCheckout>> | undefined;
 
   try {
+    const order = await this.orders.findOrder({ orderId });
+    if (!order || order.status !== null) return order;
+
+    await validateOrderService.bind(this)(order);
     quotations = await reserveOrderQuotationsForCheckout.call(this, order);
     discounts = await reserveOrderDiscountsForCheckout.call(this, order);
     const processedOrder = await processOrderService.bind(this)(order, transactionContext);
@@ -66,6 +64,5 @@ export async function checkoutOrderService(
   } finally {
     await discounts?.release();
     await quotations?.release();
-    await lock.release();
   }
 }

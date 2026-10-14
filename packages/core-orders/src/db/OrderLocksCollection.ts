@@ -8,8 +8,8 @@ export interface OrderLock {
 }
 
 const DUPLICATE_KEY = 11000;
-const LOCK_RETRIES = 10;
-const LOCK_RETRY_DELAY_MS = 200;
+const LOCK_WAIT_MS = 2000;
+const LOCK_RETRY_DELAY_MS = 50;
 
 export const OrderLocksCollection = async (db: mongodb.Db) => {
   // Keep the established collection name so existing deployments retain their locks.
@@ -47,29 +47,34 @@ export const acquireLock = async (
   ttl: number,
 ) => {
   const uniqueValue = crypto.randomUUID();
-  for (let attempt = 0; attempt < LOCK_RETRIES; attempt += 1) {
+  const lease = () => ({ $set: { key, uniqueValue, expireAt: new Date(Date.now() + ttl) } });
+  const waitUntil = Date.now() + LOCK_WAIT_MS;
+  while (true) {
     try {
-      await OrderLocks.updateOne(
-        { key, expireAt: { $lt: new Date() } },
-        { $set: { key, uniqueValue, expireAt: new Date(Date.now() + ttl) } },
-        { upsert: true },
-      );
-      return {
-        release: async () => {
-          try {
-            // Only our own, still-live lock: a lock taken over after expiry by
-            // somebody else has a different uniqueValue and must survive.
-            await OrderLocks.deleteOne({ key, uniqueValue, expireAt: { $gt: new Date() } });
-          } catch {
-            // Never throw: every call site releases inside a finally block and
-            // a throwing release would mask the actual error.
-          }
-        },
-      };
+      await OrderLocks.updateOne({ key, expireAt: { $lt: new Date() } }, lease(), { upsert: true });
+      break;
     } catch (error) {
       if ((error as { code?: number })?.code !== DUPLICATE_KEY) throw error;
-      if (attempt < LOCK_RETRIES - 1) await sleep(LOCK_RETRY_DELAY_MS);
     }
+    if (Date.now() > waitUntil) throw new Error(`Could not acquire lock ${key}`, { cause: 'LOCKED' });
+    await sleep(LOCK_RETRY_DELAY_MS * (0.5 + Math.random()));
   }
-  throw new Error(`Could not acquire lock ${key}`);
+  const renewal = setInterval(async () => {
+    try {
+      const { matchedCount } = await OrderLocks.updateOne({ key, uniqueValue }, lease());
+      if (!matchedCount) clearInterval(renewal);
+    } catch {
+      /**/
+    }
+  }, ttl / 3);
+  renewal.unref?.();
+  const release = async () => {
+    clearInterval(renewal);
+    try {
+      await OrderLocks.deleteOne({ key, uniqueValue, expireAt: { $gt: new Date() } });
+    } catch {
+      /**/
+    }
+  };
+  return { release, [Symbol.asyncDispose]: release };
 };

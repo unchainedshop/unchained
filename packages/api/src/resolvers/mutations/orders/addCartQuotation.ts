@@ -12,7 +12,7 @@ import {
   OrderItemNotFoundError,
   mapServiceError,
 } from '../../../errors.ts';
-import { loadCart } from '../../loadCart.ts';
+import { lockCart } from '../../loadCart.ts';
 
 export default async function addCartQuotation(
   root: never,
@@ -45,7 +45,7 @@ export default async function addCartQuotation(
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
 
-  const order = await loadCart(context, orderId);
+  await using order = await lockCart(context, orderId);
 
   // Ownership of cart and quotation is checked by the addCartQuotation ACL
   let position;

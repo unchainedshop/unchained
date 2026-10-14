@@ -24,29 +24,33 @@ export async function migrateOrderCartsService(
     userId: toUserId,
   });
 
-  if (!fromCart) {
-    // No cart, don't copy
+  if (!fromCart || fromCart._id === toCart?._id) {
     return toCart;
   }
 
-  if (!toCart || !shouldMerge) {
-    // No destination cart, move whole cart
-    await this.orders.setCartOwner({ orderId: fromCart._id, userId: toUserId });
-    return updateCalculationService.bind(this)(fromCart._id);
+  if (toCart && shouldMerge) {
+    let lock: { release: () => Promise<void> } | undefined;
+    try {
+      lock = await this.orders.acquireLock(toCart._id, 'checkout');
+      const targetCart = await this.orders.findOrder({ orderId: toCart._id });
+      if (targetCart && this.orders.isCart(targetCart)) {
+        await this.orders.moveCartPositions({ fromOrderId: fromCart._id, toOrderId: targetCart._id });
+        if (fromCart.billingAddress && !targetCart.billingAddress) {
+          await this.orders.updateBillingAddress(targetCart._id, fromCart.billingAddress);
+        }
+        if (fromCart.contact && !targetCart.contact) {
+          await this.orders.updateContact(targetCart._id, fromCart.contact);
+        }
+        return await updateCalculationService.bind(this)(targetCart._id);
+      }
+    } catch (error) {
+      if (lock || error.cause !== 'LOCKED') throw error;
+      return toCart;
+    } finally {
+      await lock?.release();
+    }
   }
 
-  // Move positions
-  await this.orders.moveCartPositions({ fromOrderId: fromCart._id, toOrderId: toCart._id });
-
-  // Move billing address if target order has none
-  if (fromCart.billingAddress && !toCart.billingAddress) {
-    await this.orders.updateBillingAddress(toCart._id, fromCart.billingAddress);
-  }
-
-  // Move contact data if target order has none
-  if (fromCart.contact && !toCart.contact) {
-    await this.orders.updateContact(toCart._id, fromCart.contact);
-  }
-
-  return updateCalculationService.bind(this)(toCart._id);
+  await this.orders.setCartOwner({ orderId: fromCart._id, userId: toUserId });
+  return updateCalculationService.bind(this)(fromCart._id);
 }
