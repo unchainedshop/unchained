@@ -15,8 +15,6 @@ import type { ACPRouteResult } from './idempotency.ts';
 import { acpContextOf, isACPCanceled, serializeACPOrder } from './order.ts';
 import { getACPFulfillmentOptions, hasAddress, serializeCheckoutSession } from './serializer.ts';
 
-const SESSION_LOCK_TTL = 90000;
-
 const paymentMessageCodes = new Map([
   ['PAYMENT_DECLINED', 'payment_declined'],
   ['PAYMENT_REQUIRES_ACTION', 'requires_3ds'],
@@ -116,7 +114,7 @@ const assertMutable = (order: Order) => {
 
 const lockACPSession = async (context: ACPContext) => {
   const { _id } = await loadACPOrder(context);
-  const lock = await context.modules.orders.acquireLock(_id, 'acp', SESSION_LOCK_TTL);
+  const lock = await context.modules.orders.acquireLock(_id, 'acp');
   try {
     const order = await loadACPOrder(context);
     assertMutable(order);
