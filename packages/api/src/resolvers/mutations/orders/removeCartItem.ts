@@ -14,12 +14,12 @@ export default async function removeCartItem(
 
   if (!itemId) throw new InvalidIdError({ itemId });
 
-  const orderItem = await modules.orders.positions.findOrderPosition({
-    itemId,
-  });
-  if (!orderItem) throw new OrderItemNotFoundError({ orderItem });
+  const position = await modules.orders.positions.findOrderPosition({ itemId });
+  if (!position) throw new OrderItemNotFoundError({ itemId });
 
-  await using order = await lockCart(context, orderItem.orderId);
+  await using order = await lockCart(context, position.orderId);
+  const orderItem = await modules.orders.positions.findOrderPosition({ itemId });
+  if (orderItem?.orderId !== order._id) throw new OrderItemNotFoundError({ itemId });
 
   const removedOrderPosition = await modules.orders.positions.delete(itemId);
   await services.orders.updateCalculation(order._id);

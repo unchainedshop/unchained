@@ -1,5 +1,5 @@
 import type { Context } from '../../../context.ts';
-import { OrderCheckoutError, OrderNotFoundError } from '../../../errors.ts';
+import { OrderCheckoutError, OrderLockedError, OrderNotFoundError } from '../../../errors.ts';
 import { createLogger, log } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:api');
@@ -30,6 +30,7 @@ export default async function checkoutCart(
     const checkedOutOrder = await services.orders.checkoutOrder(order._id, transactionContext);
     return checkedOutOrder;
   } catch (error) {
+    if (error.cause === 'LOCKED') throw new OrderLockedError({ orderId: order._id });
     logger.error(error, { userId, orderId: order._id });
     throw new OrderCheckoutError({
       userId,

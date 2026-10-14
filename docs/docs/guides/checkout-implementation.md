@@ -555,6 +555,8 @@ A failed `checkoutCart` throws an `OrderCheckoutError` (`extensions.code`); the 
 
 Payment charge failures surface the same way, with the payment adapter's error name as `detailCode`.
 
+While another request checks out or changes the cart, `checkoutCart` and the cart mutations answer `OrderLockedError` instead; retry them.
+
 ### Handling Payment Errors
 
 ```graphql

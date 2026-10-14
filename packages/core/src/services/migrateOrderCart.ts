@@ -24,13 +24,14 @@ export async function migrateOrderCartsService(
     userId: toUserId,
   });
 
-  if (!fromCart) {
+  if (!fromCart || fromCart._id === toCart?._id) {
     return toCart;
   }
 
   if (toCart && shouldMerge) {
-    const lock = await this.orders.acquireLock(toCart._id, 'checkout');
+    let lock: { release: () => Promise<void> } | undefined;
     try {
+      lock = await this.orders.acquireLock(toCart._id, 'checkout');
       const targetCart = await this.orders.findOrder({ orderId: toCart._id });
       if (targetCart && this.orders.isCart(targetCart)) {
         await this.orders.moveCartPositions({ fromOrderId: fromCart._id, toOrderId: targetCart._id });
@@ -42,8 +43,11 @@ export async function migrateOrderCartsService(
         }
         return await updateCalculationService.bind(this)(targetCart._id);
       }
+    } catch (error) {
+      if (lock || error.cause !== 'LOCKED') throw error;
+      return toCart;
     } finally {
-      await lock.release();
+      await lock?.release();
     }
   }
 

@@ -27,10 +27,12 @@ export default async function updateCartItem(
 
   if (!itemId) throw new InvalidIdError({ itemId });
 
-  const item = await modules.orders.positions.findOrderPosition({ itemId });
-  if (!item) throw new OrderItemNotFoundError({ itemId });
+  const position = await modules.orders.positions.findOrderPosition({ itemId });
+  if (!position) throw new OrderItemNotFoundError({ itemId });
 
-  await using order = await lockCart(context, item.orderId);
+  await using order = await lockCart(context, position.orderId);
+  const item = await modules.orders.positions.findOrderPosition({ itemId });
+  if (item?.orderId !== order._id) throw new OrderItemNotFoundError({ itemId });
 
   if (quantity != null && quantity < 1) throw new OrderQuantityTooLowError({ quantity });
 

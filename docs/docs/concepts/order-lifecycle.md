@@ -31,7 +31,7 @@ stateDiagram-v2
 ## Distributed Locking
 
 :::note Locking
-Unchained uses "Distributed Locking" during checkout, order confirmation, and order rejection. All of these services trigger the order processor state machine.
+Unchained uses "Distributed Locking" during checkout, order confirmation, and order rejection. All of these services trigger the order processor state machine. Cart mutations and the login cart merge take the checkout lock too, so a cart cannot change while it is checked out: a cart mutation or `checkoutCart` that cannot get the lock within 2 seconds answers `OrderLockedError`, and a login does not merge the guest cart into a locked cart. Locks are renewed while held; the lock of a crashed process expires after 5 seconds.
 :::
 
 :::note State Persistence
