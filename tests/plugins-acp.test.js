@@ -37,6 +37,14 @@ const unavailableOptionMessage = {
   content: 'The selected fulfillment option is not available',
 };
 
+const missingAddressMessage = {
+  type: 'error',
+  code: 'missing',
+  param: '$.fulfillment_details.address',
+  content_type: 'plain',
+  content: 'A delivery or billing address is required',
+};
+
 const sessionTotal = (session) => session.totals.find(({ type }) => type === 'total').amount;
 
 const validSessionBody = () => ({
@@ -602,6 +610,31 @@ test.describe('Plugins: ACP checkout', () => {
     );
   });
 
+  test('lists what a session misses and does not complete it', async () => {
+    const created = await createSession({
+      ...validSessionBody(),
+      buyer: { email: 'buyer@example.com' },
+    });
+    assert.strictEqual(created.status, 'not_ready_for_payment');
+    assert.deepStrictEqual(created.messages, [missingAddressMessage]);
+
+    const res = await acpFetch(`/acp/checkout_sessions/${created.id}/complete`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: {
+        payment_data: {
+          handler_id: 'stripe_spt',
+          instrument: { type: 'card', credential: { type: 'spt', token: 'spt_test' } },
+        },
+      },
+    });
+    const session = await res.json();
+
+    assert.deepStrictEqual([res.status, session.status], [200, 'not_ready_for_payment']);
+    assert.deepStrictEqual(session.messages, [missingAddressMessage]);
+    assert.strictEqual((await db.collection('orders').findOne({ _id: created.id })).status, null);
+  });
+
   test('rejects malformed email addresses without applying the update', async () => {
     const created = await createSession();
     const answers = [];
@@ -641,7 +674,7 @@ test.describe('Plugins: ACP checkout', () => {
     });
     const updated = await res.json();
     assert.strictEqual(res.status, 200);
-    assert.deepStrictEqual(updated.messages, [unavailableOptionMessage]);
+    assert.deepStrictEqual(updated.messages, [unavailableOptionMessage, missingAddressMessage]);
 
     const persisted = await (await acpFetch(`/acp/checkout_sessions/${created.id}`)).json();
     assert.strictEqual(persisted.line_items[0].quantity, 3);
@@ -775,7 +808,10 @@ test.describe('Plugins: ACP checkout', () => {
       },
     });
     assert.strictEqual(invalidFulfillment.status, 200);
-    assert.deepStrictEqual((await invalidFulfillment.json()).messages, [unavailableOptionMessage]);
+    assert.deepStrictEqual((await invalidFulfillment.json()).messages, [
+      unavailableOptionMessage,
+      missingAddressMessage,
+    ]);
   });
 
   test('rejects malformed JSON without creating a guest', async () => {

@@ -14,7 +14,12 @@ import {
 import { ACPError } from './error.ts';
 import type { ACPRouteResult } from './idempotency.ts';
 import { acpContextOf, isACPCanceled, serializeACPOrder } from './order.ts';
-import { getACPFulfillmentOptions, hasAddress, serializeCheckoutSession } from './serializer.ts';
+import {
+  getACPFulfillmentOptions,
+  hasAddress,
+  missingCheckoutFields,
+  serializeCheckoutSession,
+} from './serializer.ts';
 
 const paymentMessageCodes = new Map([
   ['PAYMENT_DECLINED', 'payment_declined'],
@@ -454,7 +459,8 @@ export const completeCheckoutSession = async (
   const selected = await selectConfiguredPaymentProvider(context, updated, paymentProvider);
   const calculated = await context.services.orders.updateCalculation(order._id);
   if (calculated.paymentId !== selected.paymentId) throw paymentProviderUnavailable();
-  if (messages.length) {
+  const positions = await context.modules.orders.positions.findOrderPositions({ orderId: order._id });
+  if (messages.length || missingCheckoutFields(calculated, positions).length) {
     return { status: 200, body: await serializeCheckoutSession(calculated, context, messages) };
   }
 

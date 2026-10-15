@@ -9,14 +9,30 @@ import {
 import { ACP_API_VERSION, acpConfig, sellerLinks, type ACPContext } from './config.ts';
 import { isACPCanceled } from './order.ts';
 
-const checkoutStatus = (order: Order, positions: OrderPosition[], isPaid: boolean) => {
+const missing = (param: string, content: string) => ({
+  type: 'error',
+  code: 'missing',
+  param,
+  content_type: 'plain',
+  content,
+});
+
+export const missingCheckoutFields = (order: Order, positions: OrderPosition[]) => [
+  ...(positions.length ? [] : [missing('$.line_items', 'Add at least one line item')]),
+  ...(order.billingAddress
+    ? []
+    : [missing('$.fulfillment_details.address', 'A delivery or billing address is required')]),
+  ...(order.deliveryId
+    ? []
+    : [missing('$.selected_fulfillment_options', 'Select a fulfillment option')]),
+];
+
+const checkoutStatus = (order: Order, missingFields: unknown[], isPaid: boolean) => {
   if (isACPCanceled(order)) return 'canceled';
   if (order.status === OrderStatus.REJECTED) return 'requires_escalation';
   if (order.status === OrderStatus.PENDING && !isPaid) return 'complete_in_progress';
   if (order.status) return 'completed';
-  return order.billingAddress && order.deliveryId && order.paymentId && positions.length > 0
-    ? 'ready_for_payment'
-    : 'not_ready_for_payment';
+  return missingFields.length ? 'not_ready_for_payment' : 'ready_for_payment';
 };
 
 const toACPAddress = (address: any) =>
@@ -125,6 +141,8 @@ export const serializeCheckoutSession = async (
     order.status === OrderStatus.PENDING && order.paymentId
       ? await context.modules.orders.payments.findOrderPayment({ orderPaymentId: order.paymentId })
       : null;
+  const missingFields =
+    order.status === null && !isACPCanceled(order) ? missingCheckoutFields(order, positions) : [];
   const pricing = OrderPricingSheet({
     calculation: order.calculation,
     currencyCode: order.currencyCode,
@@ -158,7 +176,7 @@ export const serializeCheckoutSession = async (
   return {
     id: order._id,
     protocol: { version: ACP_API_VERSION },
-    status: checkoutStatus(order, positions, payment?.status === OrderPaymentStatus.PAID),
+    status: checkoutStatus(order, missingFields, payment?.status === OrderPaymentStatus.PAID),
     currency: order.currencyCode.toLowerCase(),
     buyer: order.contact?.emailAddress
       ? {
@@ -202,7 +220,7 @@ export const serializeCheckoutSession = async (
           },
         ]
       : undefined,
-    messages,
+    messages: [...messages, ...missingFields],
     links: sellerLinks('terms_of_use'),
     capabilities: {
       payment: { handlers: [acpConfig.paymentHandler] },
