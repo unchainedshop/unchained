@@ -4,6 +4,7 @@ import type StripeClient from 'stripe';
 import {
   createAcpSharedPaymentTokenIntent,
   createOrderPaymentIntent,
+  resumeAcpPaymentIntent,
   upsertCustomer,
 } from './stripe.ts';
 
@@ -158,20 +159,41 @@ describe('Stripe gateway', () => {
     );
   });
 
-  it('reports a shared payment token charge that needs an authentication of the buyer', async () => {
-    const create = mock.fn(async () => ({ id: 'pi_1', status: 'requires_action' }));
+  it('resumes, confirms or cancels a payment intent that waited for the authentication', async () => {
+    const statuses = {
+      pi_waiting: 'requires_action',
+      pi_confirmable: 'requires_confirmation',
+      pi_paid: 'succeeded',
+    };
+    const calls: string[] = [];
+    const paymentIntents = {
+      retrieve: async (id: string) => ({ id, status: statuses[id] }),
+      confirm: async (id: string) => {
+        calls.push(`confirm ${id}`);
+        return { id, status: 'succeeded' };
+      },
+      cancel: async (id: string) => {
+        calls.push(`cancel ${id}`);
+        return { id, status: 'canceled' };
+      },
+    };
+    const resume = async (paymentIntentId: string, outcome: string) =>
+      (
+        await resumeAcpPaymentIntent(
+          { paymentIntentId, authenticationResult: { outcome } },
+          createClient({ paymentIntents }),
+        )
+      ).status;
 
-    await assert.rejects(
-      createAcpSharedPaymentTokenIntent(
-        {
-          acpToken: 'spt_3ds',
-          order: { _id: 'order-12345678', currencyCode: 'CHF' } as any,
-          orderPayment: { _id: 'payment-1' } as any,
-          pricing: { total: () => ({ amount: 1000, currencyCode: 'CHF' }) } as any,
-        },
-        createClient({ paymentIntents: { create } }),
-      ),
-      { cause: 'PAYMENT_REQUIRES_ACTION' },
+    assert.deepEqual(
+      [
+        await resume('pi_waiting', 'authenticated'),
+        await resume('pi_waiting', 'denied'),
+        await resume('pi_confirmable', 'authenticated'),
+        await resume('pi_paid', 'denied'),
+      ],
+      ['requires_action', 'canceled', 'succeeded', 'succeeded'],
     );
+    assert.deepEqual(calls, ['cancel pi_waiting', 'confirm pi_confirmable']);
   });
 });

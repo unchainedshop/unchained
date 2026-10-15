@@ -24,24 +24,38 @@ const {
   ACP_PAYMENT_HANDLER_VERSION = '2026-01-22',
   ACP_PAYMENT_HANDLER_PSP = 'stripe',
   ACP_PAYMENT_HANDLER_CONFIG,
+  ACP_AUTHENTICATION_METADATA,
   ACP_PAYMENT_MERCHANT_ID,
   ACP_PAYMENT_ADAPTER_KEYS = 'shop.unchained.payment.stripe',
 } = process.env;
 
 const withoutTrailingSlash = (url: string) => url.replace(/\/$/, '');
 
-const parsedPaymentHandlerConfig: { value: Record<string, unknown>; error?: string } = (() => {
-  if (!ACP_PAYMENT_HANDLER_CONFIG) return { value: {} };
+const parseJSONObject = (
+  name: string,
+  json?: string,
+): { value?: Record<string, unknown>; error?: string } => {
+  if (!json) return {};
   try {
-    const value = JSON.parse(ACP_PAYMENT_HANDLER_CONFIG);
+    const value = JSON.parse(json);
     if (!value || typeof value !== 'object' || Array.isArray(value)) {
-      return { value: {}, error: 'ACP_PAYMENT_HANDLER_CONFIG must be a JSON object' };
+      return { error: `${name} must be a JSON object` };
     }
     return { value };
   } catch {
-    return { value: {}, error: 'ACP_PAYMENT_HANDLER_CONFIG must contain valid JSON' };
+    return { error: `${name} must contain valid JSON` };
   }
-})();
+};
+
+const parsedPaymentHandlerConfig = parseJSONObject(
+  'ACP_PAYMENT_HANDLER_CONFIG',
+  ACP_PAYMENT_HANDLER_CONFIG,
+);
+const paymentHandlerConfig = parsedPaymentHandlerConfig.value || {};
+const parsedAuthenticationMetadata = parseJSONObject(
+  'ACP_AUTHENTICATION_METADATA',
+  ACP_AUTHENTICATION_METADATA,
+);
 
 const publicRoot = () =>
   withoutTrailingSlash(process.env.ROOT_URL || ACP_SELLER_URL || 'http://localhost:4010');
@@ -71,9 +85,9 @@ export const getACPPaymentHandler = () => {
       new URL('/.well-known/acp/schemas/payment-instrument.json', schemaRoot).toString(),
     ],
     config: {
-      ...parsedPaymentHandlerConfig.value,
-      psp: parsedPaymentHandlerConfig.value.psp || ACP_PAYMENT_HANDLER_PSP,
-      merchant_id: ACP_PAYMENT_MERCHANT_ID || parsedPaymentHandlerConfig.value.merchant_id,
+      ...paymentHandlerConfig,
+      psp: paymentHandlerConfig.psp || ACP_PAYMENT_HANDLER_PSP,
+      merchant_id: ACP_PAYMENT_MERCHANT_ID || paymentHandlerConfig.merchant_id,
     },
   } as const;
 };
@@ -98,7 +112,9 @@ export const isACPHandlerAccepted = (
 
 export const getACPConfigurationErrors = () => {
   if (!UNCHAINED_ACP_API_KEY) return [];
-  const errors = [parsedPaymentHandlerConfig.error].filter(Boolean) as string[];
+  const errors = [parsedPaymentHandlerConfig.error, parsedAuthenticationMetadata.error].filter(
+    Boolean,
+  ) as string[];
   if (!UNCHAINED_ACP_PAYMENT_PROVIDER_ID) {
     errors.push('UNCHAINED_ACP_PAYMENT_PROVIDER_ID is required');
   }
@@ -161,6 +177,7 @@ export const acpConfig = {
   webhookUrl: ACP_WEBHOOK_URL || OPENAI_WEBHOOK_URL,
   webhookSecret: ACP_WEBHOOK_SECRET || OPENAI_WEBHOOK_SECRET,
   webhookRetries: Math.min(10, Math.max(0, Number.parseInt(ACP_WEBHOOK_RETRIES, 10) || 0)),
+  authenticationMetadata: parsedAuthenticationMetadata.value,
   get paymentHandler() {
     return getACPPaymentHandler();
   },

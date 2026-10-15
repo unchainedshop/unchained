@@ -7,6 +7,9 @@ export const acpContextOf = (order: Order) =>
 
 export const isACPCanceled = (order: Order) => Boolean(acpContextOf(order)?.canceled);
 
+export const isACPAuthenticationRequired = (order: Order) =>
+  Boolean(acpContextOf(order)?.authenticationRequired);
+
 export const acpOrderStatus = (order: Order) => {
   if (isACPCanceled(order) || order.status === OrderStatus.REJECTED) return 'canceled';
   if (order.status === OrderStatus.FULFILLED) return 'completed';

@@ -982,29 +982,119 @@ test.describe('Plugins: ACP checkout', () => {
     assert.strictEqual(lateCancel.status, 405);
   });
 
-  test('reports a payment that needs an authentication of the buyer', async (t) => {
-    const created = await createSession(readySessionBody());
-    t.mock.method(PaymentDirector, 'chargeOrderPayment', async () => {
-      throw new Error('The payment requires an authentication of the buyer', {
-        cause: 'PAYMENT_REQUIRES_ACTION',
-      });
+  test('asks for an authentication and resumes the payment with its result', async (t) => {
+    const created = await createSession({
+      ...readySessionBody(),
+      capabilities: { payment: {}, interventions: { supported: ['3ds', 'biometric'] } },
     });
-
-    const res = await acpFetch(`/acp/checkout_sessions/${created.id}/complete`, {
-      method: 'POST',
-      idempotencyKey: idem(),
-      body: {
-        payment_data: {
-          handler_id: 'stripe_spt',
-          instrument: { type: 'card', credential: { type: 'spt', token: 'spt_test' } },
-        },
+    assert.deepStrictEqual(created.capabilities.interventions, { supported: ['3ds'] });
+    const outcomes = [];
+    t.mock.method(
+      PaymentDirector,
+      'chargeOrderPayment',
+      async (order, { transactionContext }, { modules }) => {
+        const outcome = transactionContext.acpAuthenticationResult?.outcome;
+        outcomes.push(outcome ?? 'none');
+        if (!outcome) {
+          throw new Error('The payment requires an authentication of the buyer', {
+            cause: 'PAYMENT_REQUIRES_ACTION',
+          });
+        }
+        if (outcome !== 'authenticated') {
+          throw new Error('The payment was not authenticated', { cause: 'PAYMENT_DECLINED' });
+        }
+        return modules.orders.payments.updateStatus(order.paymentId, {
+          status: 'PAID',
+          transactionId: 'authenticated',
+          info: '{}',
+        });
       },
-    });
-    const session = await res.json();
+    );
+    const paymentData = {
+      handler_id: 'stripe_spt',
+      instrument: { type: 'card', credential: { type: 'spt', token: 'spt_test' } },
+    };
+    const post = async (path, body) => {
+      const res = await acpFetch(`/acp/checkout_sessions/${created.id}${path}`, {
+        method: 'POST',
+        idempotencyKey: idem(),
+        body,
+      });
+      return { status: res.status, body: await res.json() };
+    };
 
-    assert.strictEqual(res.status, 200);
-    assert.partialDeepStrictEqual(session.messages, [{ type: 'error', code: 'requires_3ds' }]);
-    assert.strictEqual((await db.collection('orders').findOne({ _id: created.id })).status, null);
+    const required = await post('/complete', { payment_data: paymentData });
+    assert.deepStrictEqual(
+      [required.status, required.body.status, required.body.messages],
+      [200, 'authentication_required', []],
+    );
+
+    const blocked = [];
+    for (const [path, body] of [
+      ['', { line_items: [{ id: 'simpleproduct', quantity: 2 }] }],
+      ['/cancel', {}],
+      ['/complete', { payment_data: paymentData }],
+    ]) {
+      const { status, body: error } = await post(path, body);
+      blocked.push([status, error.code, error.param]);
+    }
+    assert.deepStrictEqual(blocked, Array(3).fill([400, 'requires_3ds', '$.authentication_result']));
+
+    const declined = await post('/complete', {
+      payment_data: paymentData,
+      authentication_result: { outcome: 'denied' },
+    });
+    assert.deepStrictEqual(
+      [declined.body.status, declined.body.messages.map(({ code }) => code)],
+      ['ready_for_payment', ['payment_declined']],
+    );
+
+    await post('/complete', { payment_data: paymentData });
+    const completed = await post('/complete', {
+      payment_data: paymentData,
+      authentication_result: { outcome: 'authenticated' },
+      line_items: [{ id: 'simpleproduct', quantity: 5 }],
+    });
+    assert.deepStrictEqual(
+      [completed.status, completed.body.status, completed.body.line_items[0].quantity],
+      [200, 'completed', 1],
+    );
+    assert.deepStrictEqual(outcomes, ['none', 'denied', 'none', 'authenticated']);
+  });
+
+  test('answers a complete of a completed session with that session', async (t) => {
+    const created = await createSession(readySessionBody());
+    const charge = t.mock.method(
+      PaymentDirector,
+      'chargeOrderPayment',
+      async (order, _context, { modules }) =>
+        modules.orders.payments.updateStatus(order.paymentId, {
+          status: 'PAID',
+          transactionId: 'paid-once',
+          info: '{}',
+        }),
+    );
+    const complete = async () => {
+      const res = await acpFetch(`/acp/checkout_sessions/${created.id}/complete`, {
+        method: 'POST',
+        idempotencyKey: idem(),
+        body: {
+          payment_data: {
+            handler_id: 'stripe_spt',
+            instrument: { type: 'card', credential: { type: 'spt', token: 'spt_test' } },
+          },
+        },
+      });
+      return { status: res.status, body: await res.json() };
+    };
+
+    const first = await complete();
+    const again = await complete();
+
+    assert.deepStrictEqual(
+      [again.status, again.body.status, again.body.order?.id, charge.mock.callCount()],
+      [200, 'completed', first.body.order.id, 1],
+    );
   });
 
   test('does not check out on a payment provider the recalculation switched to', async (t) => {

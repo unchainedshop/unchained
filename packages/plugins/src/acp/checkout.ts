@@ -13,18 +13,13 @@ import {
 } from './config.ts';
 import { ACPError } from './error.ts';
 import type { ACPRouteResult } from './idempotency.ts';
-import { acpContextOf, isACPCanceled, serializeACPOrder } from './order.ts';
+import { acpContextOf, isACPAuthenticationRequired, isACPCanceled, serializeACPOrder } from './order.ts';
 import {
   getACPFulfillmentOptions,
   hasAddress,
   missingCheckoutFields,
   serializeCheckoutSession,
 } from './serializer.ts';
-
-const paymentMessageCodes = new Map([
-  ['PAYMENT_DECLINED', 'payment_declined'],
-  ['PAYMENT_REQUIRES_ACTION', 'requires_3ds'],
-]);
 
 const invalidRequest = (code: string, message: string, param?: string) =>
   new ACPError(400, 'invalid_request', code, message, param ? { param } : {});
@@ -125,18 +120,33 @@ export const loadACPOrder = async (context: ACPContext) => {
   return order;
 };
 
-const assertMutable = (order: Order) => {
-  if (order.status !== null || isACPCanceled(order)) {
+const authenticationResultRequired = () =>
+  invalidRequest(
+    'requires_3ds',
+    'This checkout session requires issuer authentication. The request must include authentication_result as provided by the issuer authentication flow.',
+    '$.authentication_result',
+  );
+
+const assertNotCanceled = (order: Order) => {
+  if (isACPCanceled(order)) {
     throw new ACPError(405, 'invalid_request', 'session_terminal', 'Session is terminal');
   }
 };
 
-const lockACPSession = async (context: ACPContext) => {
+const assertMutable = (order: Order) => {
+  assertNotCanceled(order);
+  if (order.status !== null) {
+    throw new ACPError(405, 'invalid_request', 'session_terminal', 'Session is terminal');
+  }
+  if (isACPAuthenticationRequired(order)) throw authenticationResultRequired();
+};
+
+const lockACPSession = async (context: ACPContext, assertSession = assertMutable) => {
   const { _id } = await loadACPOrder(context);
   const lock = await context.modules.orders.acquireLock(_id, 'acp');
   try {
     const order = await loadACPOrder(context);
-    assertMutable(order);
+    assertSession(order);
     return Object.assign(order, { [Symbol.asyncDispose]: lock.release });
   } catch (error) {
     await lock.release();
@@ -370,7 +380,13 @@ export const createCheckoutSession = async (
 
     const session =
       (await context.modules.orders.updateContext(cart._id, {
-        acp: { apiVersion: ACP_API_VERSION, createdAt: new Date().toISOString() },
+        acp: {
+          apiVersion: ACP_API_VERSION,
+          createdAt: new Date().toISOString(),
+          interventions: [body.capabilities.interventions?.supported]
+            .flat()
+            .filter((intervention) => typeof intervention === 'string'),
+        },
       })) || cart;
     const { order, messages } = await applyCheckoutUpdate(context, session, update);
     await selectConfiguredPaymentProvider(context, order, paymentProvider);
@@ -426,9 +442,8 @@ const extractPaymentContext = (paymentData: any) => {
 };
 
 const checkoutErrorMessage = (error: any) => {
-  const paymentCode = paymentMessageCodes.get(error?.cause);
-  if (paymentCode) {
-    return { type: 'error', code: paymentCode, content_type: 'plain', content: error.message };
+  if (error?.cause === 'PAYMENT_DECLINED') {
+    return { type: 'error', code: 'payment_declined', content_type: 'plain', content: error.message };
   }
   if (isUnorderableProductError(error)) {
     return {
@@ -442,14 +457,76 @@ const checkoutErrorMessage = (error: any) => {
   return undefined;
 };
 
+const parseAuthenticationResult = (authenticationResult: any) => {
+  if (authenticationResult === undefined) throw authenticationResultRequired();
+  if (typeof authenticationResult?.outcome !== 'string') {
+    throw invalidRequest(
+      'invalid_authentication_result',
+      'authentication_result.outcome is required',
+      '$.authentication_result.outcome',
+    );
+  }
+  return authenticationResult;
+};
+
+const withAuthenticationRequired = async (
+  context: ACPContext,
+  order: Order,
+  authenticationRequired: boolean,
+) =>
+  isACPAuthenticationRequired(order) === authenticationRequired
+    ? order
+    : (await context.modules.orders.updateContext(order._id, {
+        acp: { ...acpContextOf(order), authenticationRequired },
+      })) || order;
+
+const completedSession = async (order: Order, context: ACPContext): Promise<ACPRouteResult> => ({
+  status: 200,
+  body: { ...(await serializeCheckoutSession(order, context)), order: serializeACPOrder(order) },
+});
+
+const chargeSession = async (
+  context: ACPContext,
+  order: Order,
+  paymentContext: Record<string, unknown>,
+): Promise<ACPRouteResult> => {
+  try {
+    const completed = await context.services.orders.checkoutOrder(order._id, { paymentContext });
+    if (!completed) {
+      throw new ACPError(500, 'processing_error', 'checkout_failed', 'Could not complete checkout');
+    }
+    return await completedSession(completed, context);
+  } catch (error) {
+    if (error?.cause === 'PAYMENT_REQUIRES_ACTION') {
+      const session = await withAuthenticationRequired(context, order, true);
+      return { status: 200, body: await serializeCheckoutSession(session, context) };
+    }
+    const message = checkoutErrorMessage(error);
+    if (!message) throw error;
+    const session =
+      error.cause === 'PAYMENT_DECLINED'
+        ? await withAuthenticationRequired(context, order, false)
+        : order;
+    return { status: 200, body: await serializeCheckoutSession(session, context, [message]) };
+  }
+};
+
 export const completeCheckoutSession = async (
   _request: Request,
   context: ACPContext,
   body: Record<string, any>,
 ): Promise<ACPRouteResult> => {
-  await using order = await lockACPSession(context);
-  const update = parseCheckoutUpdate(body);
+  await using order = await lockACPSession(context, assertNotCanceled);
+  if (order.status !== null) return await completedSession(order, context);
   const paymentContext = extractPaymentContext(body.payment_data);
+  if (isACPAuthenticationRequired(order)) {
+    return await chargeSession(context, order, {
+      ...paymentContext,
+      acpAuthenticationResult: parseAuthenticationResult(body.authentication_result),
+    });
+  }
+
+  const update = parseCheckoutUpdate(body);
   if (!update.contact?.emailAddress && !order.contact?.emailAddress) {
     throw invalidRequest('invalid_buyer', 'buyer.email is required', '$.buyer.email');
   }
@@ -463,24 +540,7 @@ export const completeCheckoutSession = async (
   if (messages.length || missingCheckoutFields(calculated, positions).length) {
     return { status: 200, body: await serializeCheckoutSession(calculated, context, messages) };
   }
-
-  try {
-    const completed = await context.services.orders.checkoutOrder(order._id, { paymentContext });
-    if (!completed) {
-      throw new ACPError(500, 'processing_error', 'checkout_failed', 'Could not complete checkout');
-    }
-    return {
-      status: 200,
-      body: {
-        ...(await serializeCheckoutSession(completed, context)),
-        order: serializeACPOrder(completed),
-      },
-    };
-  } catch (error) {
-    const message = checkoutErrorMessage(error);
-    if (!message) throw error;
-    return { status: 200, body: await serializeCheckoutSession(calculated, context, [message]) };
-  }
+  return await chargeSession(context, calculated, paymentContext);
 };
 
 export const cancelCheckoutSession = async (

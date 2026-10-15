@@ -7,7 +7,9 @@ import {
   type OrderPosition,
 } from '@unchainedshop/core-orders';
 import { ACP_API_VERSION, acpConfig, sellerLinks, type ACPContext } from './config.ts';
-import { isACPCanceled } from './order.ts';
+import { acpContextOf, isACPAuthenticationRequired, isACPCanceled } from './order.ts';
+
+const sellerInterventions = new Set(['3ds']);
 
 const missing = (param: string, content: string) => ({
   type: 'error',
@@ -32,6 +34,7 @@ const checkoutStatus = (order: Order, missingFields: unknown[], isPaid: boolean)
   if (order.status === OrderStatus.REJECTED) return 'requires_escalation';
   if (order.status === OrderStatus.PENDING && !isPaid) return 'complete_in_progress';
   if (order.status) return 'completed';
+  if (isACPAuthenticationRequired(order)) return 'authentication_required';
   return missingFields.length ? 'not_ready_for_payment' : 'ready_for_payment';
 };
 
@@ -172,11 +175,15 @@ export const serializeCheckoutSession = async (
   const fee = netTotal(OrderPricingRowCategory.Payment);
   const total = pricing.total({ useNetPrice: false }).amount;
   const tax = total - items + discount - fulfillment - fee;
+  const status = checkoutStatus(order, missingFields, payment?.status === OrderPaymentStatus.PAID);
 
   return {
     id: order._id,
     protocol: { version: ACP_API_VERSION },
-    status: checkoutStatus(order, missingFields, payment?.status === OrderPaymentStatus.PAID),
+    status,
+    ...(status === 'authentication_required' && acpConfig.authenticationMetadata
+      ? { authentication_metadata: acpConfig.authenticationMetadata }
+      : {}),
     currency: order.currencyCode.toLowerCase(),
     buyer: order.contact?.emailAddress
       ? {
@@ -224,7 +231,11 @@ export const serializeCheckoutSession = async (
     links: sellerLinks('terms_of_use'),
     capabilities: {
       payment: { handlers: [acpConfig.paymentHandler] },
-      interventions: {},
+      interventions: {
+        supported: ((acpContextOf(order)?.interventions as string[]) || []).filter((intervention) =>
+          sellerInterventions.has(intervention),
+        ),
+      },
     },
     continue_url: acpConfig.continueUrl,
     created_at: order.created?.toISOString(),

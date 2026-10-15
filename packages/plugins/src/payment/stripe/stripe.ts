@@ -189,6 +189,12 @@ export const createOrderPaymentIntent = async (
 };
 
 const declinedPaymentErrorTypes = new Set(['StripeCardError', 'StripeInvalidRequestError']);
+const authenticatedOutcomes = new Set(['authenticated', 'attempt_acknowledged', 'informational']);
+
+const asPaymentDeclined = (error) =>
+  declinedPaymentErrorTypes.has(error.type)
+    ? new Error(error.message, { cause: 'PAYMENT_DECLINED' })
+    : error;
 
 export const createAcpSharedPaymentTokenIntent = async (
   {
@@ -207,7 +213,7 @@ export const createAcpSharedPaymentTokenIntent = async (
   stripeClient: StripeClient = stripe,
 ) => {
   try {
-    const paymentIntent = await stripeClient.paymentIntents.create(
+    return await stripeClient.paymentIntents.create(
       {
         ...orderIntentParams({ order, orderPayment, pricing, description: descriptorPrefix }),
         confirm: true,
@@ -218,15 +224,32 @@ export const createAcpSharedPaymentTokenIntent = async (
         idempotencyKey: `acp-${orderPayment._id}-${acpToken}`,
       },
     );
-    if (paymentIntent.status === 'requires_action') {
-      throw new Error('The payment requires an authentication of the buyer', {
-        cause: 'PAYMENT_REQUIRES_ACTION',
-      });
+  } catch (error) {
+    throw asPaymentDeclined(error);
+  }
+};
+
+export const resumeAcpPaymentIntent = async (
+  {
+    paymentIntentId,
+    authenticationResult,
+  }: { paymentIntentId: string; authenticationResult?: { outcome?: string } },
+  stripeClient: StripeClient = stripe,
+) => {
+  const options = { apiVersion: ACP_SPT_STRIPE_VERSION };
+  try {
+    const paymentIntent = await stripeClient.paymentIntents.retrieve(paymentIntentId, {}, options);
+    if (paymentIntent.status === 'requires_confirmation') {
+      return await stripeClient.paymentIntents.confirm(paymentIntentId, {}, options);
+    }
+    if (
+      paymentIntent.status === 'requires_action' &&
+      !authenticatedOutcomes.has(authenticationResult?.outcome as string)
+    ) {
+      return await stripeClient.paymentIntents.cancel(paymentIntentId, {}, options);
     }
     return paymentIntent;
   } catch (error) {
-    throw declinedPaymentErrorTypes.has(error.type)
-      ? new Error(error.message, { cause: 'PAYMENT_DECLINED' })
-      : error;
+    throw asPaymentDeclined(error);
   }
 };

@@ -1,6 +1,6 @@
 # Agentic Commerce Protocol (ACP)
 
-`ACPPlugin` implements ACP `2026-04-17`: checkout sessions, a product feed, discovery and signed order webhooks. It registers no payment adapter: checkout charges through the configured payment provider, whose adapter receives the delegated token as `paymentContext.{acpToken, acpHandlerId}` and throws an error with `cause: 'PAYMENT_DECLINED'` on a decline or `'PAYMENT_REQUIRES_ACTION'` when the buyer has to authenticate, answered as `payment_declined` and `requires_3ds` messages (the Stripe adapter charges Stripe Shared Payment Tokens, a Stripe preview API). The `all` preset registers it; it stays inactive until `UNCHAINED_ACP_API_KEY` is set.
+`ACPPlugin` implements ACP `2026-04-17`: checkout sessions, a product feed, discovery and signed order webhooks. It registers no payment adapter: checkout charges through the configured payment provider, whose adapter receives the delegated token as `paymentContext.{acpToken, acpHandlerId}` and throws an error with `cause: 'PAYMENT_DECLINED'` on a decline, answered as a `payment_declined` message, or `'PAYMENT_REQUIRES_ACTION'` when the buyer has to authenticate: the session is then `authentication_required` and frozen until the agent completes it with an `authentication_result`, which the adapter receives as `paymentContext.acpAuthenticationResult` to resume or cancel the payment. The Stripe adapter charges Stripe Shared Payment Tokens (a Stripe preview API); the agent authenticates through the token's next action, and a payment that succeeds later is checked out by the Stripe webhook. The `all` preset registers it; it stays inactive until `UNCHAINED_ACP_API_KEY` is set.
 
 Routes: `POST /acp/checkout_sessions`, `GET|POST /acp/checkout_sessions/:id`, `POST /acp/checkout_sessions/:id/{complete,cancel}`, `GET /acp/feed.jsonl`, and the public `/.well-known/acp.json` with the schemas below `/.well-known/acp/schemas/`. Requests need `Authorization: Bearer`, `API-Version: 2026-04-17` and, for `POST`, an `Idempotency-Key`. Requests to one checkout session run one after another: a request that arrives while another one is processed, for example the payment of `complete`, answers `409` with `Retry-After`. The feed exports what the product search (`services.filters.searchProducts`) finds among active products, so filter plugins decide what agents see; variants are listed under their proxy.
 
@@ -13,6 +13,7 @@ Routes: `POST /acp/checkout_sessions`, `GET|POST /acp/checkout_sessions/:id`, `P
 | `ACP_PAYMENT_ADAPTER_KEYS` | `shop.unchained.payment.stripe` | Adapters that take delegated tokens |
 | `ACP_PAYMENT_HANDLER_{ID,NAME,DISPLAY_NAME,VERSION,PSP}` | `stripe_spt`, … | Advertised payment handler |
 | `ACP_PAYMENT_HANDLER_CONFIG` | `{}` | JSON merged into the handler `config` |
+| `ACP_AUTHENTICATION_METADATA` | | JSON `authentication_metadata` (acquirer details) of `authentication_required` sessions |
 | `ACP_API_PATH`, `ACP_API_BASE_URL` | `/acp`, `ROOT_URL` + path | |
 | `ACP_SELLER_NAME`, `ACP_PRODUCT_URL_BASE` | | Required for the feed |
 | `ACP_SELLER_PRIVACY_POLICY`, `ACP_SELLER_TOS` | | Seller links |

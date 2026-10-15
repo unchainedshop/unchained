@@ -121,7 +121,7 @@ const readySession = async () => {
   return id;
 };
 
-const completeSession = async (orderId, token) => {
+const completeSession = async (orderId, token, authenticationResult) => {
   const res = await acpFetch(`/acp/checkout_sessions/${orderId}/complete`, {
     method: 'POST',
     idempotencyKey: idem(),
@@ -131,6 +131,7 @@ const completeSession = async (orderId, token) => {
         handler_id: 'stripe_spt',
         instrument: { type: 'card', credential: { type: 'spt', token } },
       },
+      ...(authenticationResult ? { authentication_result: authenticationResult } : {}),
     },
   });
   return { status: res.status, body: await res.json() };
@@ -230,9 +231,10 @@ test.describe('Plugins: ACP Shared Payment Token charge (real Stripe)', () => {
     }
   });
 
-  test('reports an SPT that needs authentication and keeps the session open', async () => {
+  test('keeps an SPT payment that needs authentication until the agent reports the result', async () => {
     const orderId = await readySession();
     const sptId = await mintSPT({ paymentMethod: 'pm_card_authenticationRequired' });
+    const freshSptId = await mintSPT();
     try {
       const authenticationRequired = await completeSession(orderId, sptId);
       assert.strictEqual(
@@ -240,13 +242,29 @@ test.describe('Plugins: ACP Shared Payment Token charge (real Stripe)', () => {
         200,
         JSON.stringify(authenticationRequired.body),
       );
-      assert.strictEqual(authenticationRequired.body.status, 'ready_for_payment');
-      assert.deepStrictEqual(
-        authenticationRequired.body.messages.map(({ type, code }) => ({ type, code })),
-        [{ type: 'error', code: 'requires_3ds' }],
+      assert.strictEqual(authenticationRequired.body.status, 'authentication_required');
+      const { paymentId } = await db.collection('orders').findOne({ _id: orderId });
+      const { context } = await db.collection('order_payments').findOne({ _id: paymentId });
+      const pendingPaymentIntentId = context.pendingPaymentIntentId;
+      assert.strictEqual(
+        (await retrievePaymentIntent(pendingPaymentIntentId)).status,
+        'requires_action',
       );
+
+      const stillWaiting = await completeSession(orderId, sptId, { outcome: 'authenticated' });
+      assert.strictEqual(stillWaiting.body.status, 'authentication_required');
+
+      const denied = await completeSession(orderId, sptId, { outcome: 'denied' });
+      assert.deepStrictEqual(
+        [denied.body.status, denied.body.messages.map(({ code }) => code)],
+        ['ready_for_payment', ['payment_declined']],
+      );
+      assert.strictEqual((await retrievePaymentIntent(pendingPaymentIntentId)).status, 'canceled');
+
+      const completed = await completeSession(orderId, freshSptId);
+      assert.strictEqual(completed.body.status, 'completed', JSON.stringify(completed.body));
     } finally {
-      await revokeSPT(sptId);
+      await Promise.all([revokeSPT(sptId), revokeSPT(freshSptId)]);
     }
   });
 });

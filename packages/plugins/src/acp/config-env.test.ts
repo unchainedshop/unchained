@@ -75,4 +75,25 @@ describe('ACP config is env-driven, not Stripe-hardcoded', () => {
       getACPConfigurationErrors().includes('ROOT_URL or ACP_SELLER_URL must be an absolute URL'),
     );
   });
+
+  it('reads the authentication metadata as JSON object', async (t) => {
+    const metadata = { directory_server: 'visa' };
+    const { acpConfig } = await importConfigWith(t, {
+      ...configuredEnvironment,
+      ACP_PAYMENT_MERCHANT_ID: 'merchant-id',
+      ACP_AUTHENTICATION_METADATA: JSON.stringify(metadata),
+    });
+
+    assert.deepEqual(acpConfig.authenticationMetadata, metadata);
+  });
+
+  it('reports authentication metadata that is no JSON object', async (t) => {
+    const { getACPConfigurationErrors } = await importConfigWith(t, {
+      ...configuredEnvironment,
+      ACP_PAYMENT_MERCHANT_ID: 'merchant-id',
+      ACP_AUTHENTICATION_METADATA: '[]',
+    });
+
+    assert.ok(getACPConfigurationErrors().includes('ACP_AUTHENTICATION_METADATA must be a JSON object'));
+  });
 });

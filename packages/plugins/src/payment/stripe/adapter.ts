@@ -4,6 +4,7 @@ import {
   createOrderPaymentIntent,
   createRegistrationIntent,
   createAcpSharedPaymentTokenIntent,
+  resumeAcpPaymentIntent,
   ACP_SPT_STRIPE_VERSION,
 } from './stripe.ts';
 import {
@@ -119,7 +120,13 @@ export const Stripe: IPaymentAdapter = {
         return paymentIntent.client_secret;
       },
 
-      charge: async ({ paymentIntentId, paymentCredentials, acpToken, acpHandlerId }) => {
+      charge: async ({
+        paymentIntentId,
+        paymentCredentials,
+        acpToken,
+        acpHandlerId,
+        acpAuthenticationResult,
+      }) => {
         const { order, orderPayment } = context;
 
         if (!order) throw new Error('order not found in context');
@@ -131,13 +138,32 @@ export const Stripe: IPaymentAdapter = {
         });
 
         if (acpToken) {
-          const paymentIntentObject = await createAcpSharedPaymentTokenIntent({
-            acpToken,
-            order,
-            orderPayment,
-            pricing,
-            descriptorPrefix,
-          });
+          const pendingPaymentIntentId = orderPayment.context?.pendingPaymentIntentId ?? null;
+          const paymentIntentObject = pendingPaymentIntentId
+            ? await resumeAcpPaymentIntent({
+                paymentIntentId: pendingPaymentIntentId,
+                authenticationResult: acpAuthenticationResult,
+              })
+            : await createAcpSharedPaymentTokenIntent({
+                acpToken,
+                order,
+                orderPayment,
+                pricing,
+                descriptorPrefix,
+              });
+
+          const awaitsAuthentication = paymentIntentObject.status === 'requires_action';
+          const nextPendingPaymentIntentId = awaitsAuthentication ? paymentIntentObject.id : null;
+          if (nextPendingPaymentIntentId !== pendingPaymentIntentId) {
+            await modules.orders.payments.updateContext(orderPayment._id, {
+              pendingPaymentIntentId: nextPendingPaymentIntentId,
+            });
+          }
+          if (awaitsAuthentication) {
+            throw new Error('The payment requires an authentication of the buyer', {
+              cause: 'PAYMENT_REQUIRES_ACTION',
+            });
+          }
 
           if (paymentIntentObject.status === 'succeeded') {
             return {
@@ -152,6 +178,10 @@ export const Stripe: IPaymentAdapter = {
                 capturedAt: new Date().toISOString(),
               },
             };
+          }
+
+          if (paymentIntentObject.status !== 'processing') {
+            throw new Error('The payment was not authenticated', { cause: 'PAYMENT_DECLINED' });
           }
 
           logger.info('ACP SPT charge postponed because paymentIntent has wrong status', {

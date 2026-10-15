@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import type { Order } from '@unchainedshop/core-orders';
-import type { ACPContext } from './config.ts';
+import { acpConfig, type ACPContext } from './config.ts';
 import { serializeCheckoutSession } from './serializer.ts';
 
 const context = {
@@ -48,5 +48,23 @@ describe('serializeCheckoutSession', () => {
       ],
     );
     assert.equal(Object.hasOwn(session.capabilities, 'extensions'), false);
+  });
+
+  it('asks for an authentication with the configured metadata', async (t) => {
+    t.mock.property(acpConfig, 'authenticationMetadata', { directory_server: 'visa' });
+    const order = {
+      _id: 'order-id',
+      status: null,
+      currencyCode: 'CHF',
+      calculation: [],
+      context: { acp: { authenticationRequired: true, interventions: ['3ds', 'biometric'] } },
+    } as unknown as Order;
+
+    const session = await serializeCheckoutSession(order, context);
+
+    assert.deepEqual(
+      [session.status, session.authentication_metadata, session.capabilities.interventions],
+      ['authentication_required', { directory_server: 'visa' }, { supported: ['3ds'] }],
+    );
   });
 });
