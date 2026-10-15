@@ -795,7 +795,12 @@ test.describe('Plugins: ACP checkout', () => {
   test('answers line items that cannot be ordered with 400 and keeps no guest', async () => {
     const guestsBefore = await db.collection('users').countDocuments({ guest: true });
     const answers = [];
-    for (const id of ['simpleproduct_draft', 'configurable-product-id', 'proxy-product']) {
+    for (const id of [
+      'simpleproduct_draft',
+      'configurable-product-id',
+      'proxy-product',
+      'plan-product',
+    ]) {
       const res = await acpFetch('/acp/checkout_sessions', {
         method: 'POST',
         idempotencyKey: idem(),
@@ -812,6 +817,7 @@ test.describe('Plugins: ACP checkout', () => {
     }
 
     assert.deepStrictEqual(answers, [
+      [400, 'product_unavailable', '$.line_items[1].id'],
       [400, 'product_unavailable', '$.line_items[1].id'],
       [400, 'product_unavailable', '$.line_items[1].id'],
       [400, 'product_unavailable', '$.line_items[1].id'],
@@ -1049,13 +1055,14 @@ test.describe('Plugins: ACP checkout', () => {
     const proxyVariantIds = ['proxy-plan-product-1', 'proxy-simple-product-1', 'proxy-simple-product-2'];
     assert.ok(exportedIds.includes('simpleproduct'));
     assert.ok(!exportedIds.includes('simpleproduct_draft'));
+    assert.ok(!exportedIds.includes('plan-product'));
     assert.ok(!proxyVariantIds.some((variantId) => exportedIds.includes(variantId)));
     assert.deepStrictEqual(
       rows
         .find(({ id }) => id === 'proxy-product')
         .variants.map(({ id }) => id)
         .sort(),
-      proxyVariantIds,
+      ['proxy-simple-product-1', 'proxy-simple-product-2'],
     );
   });
 });

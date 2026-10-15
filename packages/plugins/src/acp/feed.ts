@@ -1,8 +1,10 @@
-import type { Product, ProductAssignment } from '@unchainedshop/core-products';
+import { ProductType, type Product, type ProductAssignment } from '@unchainedshop/core-products';
 import { acpConfig, sellerLinks, type ACPContext } from './config.ts';
 import { ACPError } from './error.ts';
 
 const PAGE_SIZE = 250;
+
+const isSoldToAgents = ({ type }: Product) => type !== ProductType.PLAN_PRODUCT;
 
 const productURL = (product: Product, slug?: string) =>
   `${acpConfig.productUrlBase}/${slug || product.slugs[0] || product._id}`;
@@ -93,9 +95,12 @@ const feedProduct = async (product: Product, context: ACPContext) => {
     locale: context.locale,
   });
   const title = text?.title || product._id;
-  const assignedProducts = product.proxy?.assignments?.length
-    ? await context.modules.products.proxyProducts(product, [], { includeInactive: false })
-    : [product];
+  const assignedProducts = (
+    product.proxy?.assignments?.length
+      ? await context.modules.products.proxyProducts(product, [], { includeInactive: false })
+      : [product]
+  ).filter(isSoldToAgents);
+  if (!assignedProducts.length) return null;
   const assignments = new Map(
     (product.proxy?.assignments || []).map((assignment) => [assignment.productId, assignment]),
   );
@@ -147,10 +152,10 @@ export const buildACPProductFeed = async (context: ACPContext) => {
       );
       const page = await Promise.all(
         products
-          .filter(({ _id }) => !variantIdsOfExportedProxies.has(_id))
+          .filter((product) => isSoldToAgents(product) && !variantIdsOfExportedProxies.has(product._id))
           .map((product) => feedProduct(product, context)),
       );
-      for (const row of page) yield `${JSON.stringify(row)}\n`;
+      for (const row of page) if (row) yield `${JSON.stringify(row)}\n`;
     }
   })();
   const encoder = new TextEncoder();

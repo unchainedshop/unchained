@@ -135,6 +135,11 @@ const lockACPSession = async (context: ACPContext) => {
 const isUnorderableProductError = (error: any) =>
   error?.cause === 'PRODUCT_INACTIVE' || typeof error?.extensions?.code === 'string';
 
+const unorderableProductTypes = new Map<string, string>([
+  [ProductType.CONFIGURABLE_PRODUCT, 'Choose one of the variants of this product'],
+  [ProductType.PLAN_PRODUCT, 'Subscriptions cannot be paid with a single-use payment token'],
+]);
+
 const assertOrderableItems = async (context: ACPContext, items: { productId: string }[]) => {
   const products = await context.modules.products.findProducts({
     productIds: items.map(({ productId }) => productId),
@@ -144,12 +149,10 @@ const assertOrderableItems = async (context: ACPContext, items: { productId: str
     const product = products.find(({ _id }) => _id === productId);
     const param = `$.line_items[${index}].id`;
     if (!product) throw invalidRequest('product_not_found', `Product not found: ${productId}`, param);
-    if (!context.modules.products.isActive(product)) {
-      throw invalidRequest('product_unavailable', 'This product is inactive', param);
-    }
-    if (product.type === ProductType.CONFIGURABLE_PRODUCT) {
-      throw invalidRequest('product_unavailable', 'Choose one of the variants of this product', param);
-    }
+    const reason = context.modules.products.isActive(product)
+      ? unorderableProductTypes.get(product.type)
+      : 'This product is inactive';
+    if (reason) throw invalidRequest('product_unavailable', reason, param);
   });
 };
 
