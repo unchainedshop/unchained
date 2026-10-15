@@ -602,6 +602,33 @@ test.describe('Plugins: ACP checkout', () => {
     );
   });
 
+  test('rejects malformed email addresses without applying the update', async () => {
+    const created = await createSession();
+    const answers = [];
+    for (const contact of [
+      { buyer: { email: 'a@b' } },
+      { fulfillment_details: { email: 'recipient(at)example.com' } },
+    ]) {
+      const res = await acpFetch(`/acp/checkout_sessions/${created.id}`, {
+        method: 'POST',
+        idempotencyKey: idem(),
+        body: { ...contact, line_items: [{ id: 'simpleproduct', quantity: 2 }] },
+      });
+      const { code, param } = await res.json();
+      answers.push([res.status, code, param]);
+    }
+
+    assert.deepStrictEqual(answers, [
+      [400, 'invalid_email', '$.buyer.email'],
+      [400, 'invalid_email', '$.fulfillment_details.email'],
+    ]);
+    const unchanged = await (await acpFetch(`/acp/checkout_sessions/${created.id}`)).json();
+    assert.deepStrictEqual(
+      [unchanged.buyer, unchanged.line_items[0].quantity],
+      [undefined, created.line_items[0].quantity],
+    );
+  });
+
   test('applies an update and reports an unavailable fulfillment option as a message', async () => {
     const created = await createSession();
     const res = await acpFetch(`/acp/checkout_sessions/${created.id}`, {

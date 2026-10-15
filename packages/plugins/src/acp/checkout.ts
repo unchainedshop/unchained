@@ -65,19 +65,26 @@ const mapAddress = (address: any) => {
   return hasAddress(mappedAddress) ? mappedAddress : undefined;
 };
 
-const mapContact = (contact?: { email?: string; phone_number?: string }) =>
-  contact?.email || contact?.phone_number
+const isEmailAddress = (value: unknown) =>
+  typeof value === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+const mapContact = (contact: { email?: string; phone_number?: string } | undefined, param: string) => {
+  if (contact?.email != null && !isEmailAddress(contact.email)) {
+    throw invalidRequest('invalid_email', 'The email address format is invalid', `${param}.email`);
+  }
+  return contact?.email || contact?.phone_number
     ? {
         ...(contact.email ? { emailAddress: contact.email } : {}),
         ...(contact.phone_number ? { telNumber: contact.phone_number } : {}),
       }
     : undefined;
+};
 
 const mapBuyer = (buyer?: { email?: string; phone_number?: string }) => {
-  if (buyer && (!buyer.email || typeof buyer.email !== 'string')) {
+  if (buyer && !buyer.email) {
     throw invalidRequest('invalid_buyer', 'buyer.email is required', '$.buyer.email');
   }
-  return mapContact(buyer);
+  return mapContact(buyer, '$.buyer');
 };
 
 export const extractACPItems = (lineItems: unknown) => {
@@ -177,7 +184,7 @@ const parseCheckoutUpdate = (body: Record<string, any>) => {
   return {
     items: Object.hasOwn(body, 'line_items') ? extractACPItems(body.line_items) : undefined,
     contact: mapBuyer(body.buyer),
-    fulfillmentContact: mapContact(body.fulfillment_details),
+    fulfillmentContact: mapContact(body.fulfillment_details, '$.fulfillment_details'),
     fulfillmentAddress: mapAddress(body.fulfillment_details?.address),
     billingAddress: mapAddress(body.payment_data?.billing_address),
     selectedOption: selectedOption as { option_id: string; type?: string } | undefined,
