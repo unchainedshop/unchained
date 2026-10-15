@@ -310,6 +310,11 @@ test.describe('Plugins: Stripe Payments', async () => {
           _id: 'stripe-order',
           status: 'CONFIRMED',
         });
+        const orderPayment = await db
+          .collection('order_payments')
+          .findOne({ orderId: 'stripe-order', status: 'PAID' });
+        assert.strictEqual(orderPayment.transactionId, confirmedIntent.id);
+        assert.ok(!JSON.stringify(orderPayment).includes('client_secret'));
       });
     });
 
@@ -389,6 +394,11 @@ test.describe('Plugins: Stripe Payments', async () => {
         });
 
         assert.strictEqual(order.status, 'CONFIRMED');
+        const orderPayment = await db
+          .collection('order_payments')
+          .findOne({ orderId: 'stripe-order2', status: 'PAID' });
+        assert.strictEqual(orderPayment.transactionId, paymentIntent.id);
+        assert.ok(!JSON.stringify(orderPayment).includes('client_secret'));
       });
 
       test('Return 400 when stripe-signature header is missing', async () => {

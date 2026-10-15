@@ -56,7 +56,7 @@ const processWebhookEvent = async (
     if (!orderPayment) {
       throw new Error(`order payment not found with orderPaymentId: ${orderPaymentId}`);
     }
-    await modules.orders.payments.logEvent(orderPaymentId, event);
+    await modules.orders.payments.logEvent(orderPaymentId, { id: event.id, type: event.type });
 
     const paymentContext = { paymentIntentId: paymentIntent.id };
     await services.orders.checkoutOrder(orderPayment.orderId, { paymentContext });

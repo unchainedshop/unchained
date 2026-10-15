@@ -15,6 +15,16 @@ import {
 
 const logger = createLogger('unchained:stripe');
 
+const chargedPaymentIntent = (paymentIntent: {
+  id: string;
+  status: string;
+  payment_method: unknown;
+}) => ({
+  transactionId: paymentIntent.id,
+  status: paymentIntent.status,
+  paymentMethod: paymentIntent.payment_method,
+});
+
 export const Stripe: IPaymentAdapter = {
   ...PaymentAdapter,
 
@@ -131,9 +141,7 @@ export const Stripe: IPaymentAdapter = {
 
           if (paymentIntentObject.status === 'succeeded') {
             return {
-              transactionId: paymentIntentObject.id,
-              status: paymentIntentObject.status,
-              paymentMethod: paymentIntentObject.payment_method,
+              ...chargedPaymentIntent(paymentIntentObject),
               acp: {
                 handlerId: acpHandlerId,
                 chargeId:
@@ -193,7 +201,7 @@ export const Stripe: IPaymentAdapter = {
         }
 
         if (paymentIntentObject.status === 'succeeded') {
-          return paymentIntentObject;
+          return chargedPaymentIntent(paymentIntentObject);
         }
 
         logger.info('Charge postponed because paymentIntent has wrong status', {
