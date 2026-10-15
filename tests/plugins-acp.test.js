@@ -137,7 +137,7 @@ test.describe('Plugins: ACP checkout', () => {
     assert.strictEqual(instrumentResponse.status, 200);
     const configSchema = await configResponse.json();
     const instrumentSchema = await instrumentResponse.json();
-    assert.deepStrictEqual(configSchema.required, ['merchant_id', 'psp']);
+    assert.deepStrictEqual(configSchema.required, ['merchant_id', 'psp', 'accepted_brands']);
     assert.deepStrictEqual(instrumentSchema.required, ['type', 'credential']);
   });
 
@@ -197,11 +197,36 @@ test.describe('Plugins: ACP checkout', () => {
     assert.strictEqual(body.capabilities.payment.handlers[0].psp, 'stripe');
     assert.strictEqual(body.capabilities.payment.handlers[0].config.merchant_id, 'test-merchant');
     assert.strictEqual(body.capabilities.payment.handlers[0].config.psp, 'stripe');
+    assert.deepStrictEqual(body.capabilities.payment.handlers[0].config.accepted_brands, [
+      'visa',
+      'mastercard',
+      'amex',
+    ]);
     assert.strictEqual(
       body.capabilities.payment.handlers[0].config_schema,
       `${baseUrl}/.well-known/acp/schemas/payment-handler-config.json`,
     );
     assert.strictEqual(body.continue_url, 'https://shop.test.example/orders');
+  });
+
+  test('titles a shipping option with the name of its delivery provider', async (t) => {
+    const provider = await db
+      .collection('delivery-providers')
+      .findOne({ _id: 'send-mail-delivery-provider' });
+    t.after(() => db.collection('delivery-providers').replaceOne({ _id: provider._id }, provider));
+    await db
+      .collection('delivery-providers')
+      .updateOne(
+        { _id: provider._id },
+        { $set: { configuration: [{ key: 'name', value: 'Express Post' }] } },
+      );
+
+    const { fulfillment_options } = await createSession();
+
+    assert.deepStrictEqual(Object.fromEntries(fulfillment_options.map(({ id, title }) => [id, title])), {
+      'simple-delivery-provider': 'Manual',
+      'send-mail-delivery-provider': 'Express Post',
+    });
   });
 
   test('supports get / update / cancel and marks the session terminal', async () => {

@@ -85,6 +85,7 @@ export const getACPPaymentHandler = () => {
       new URL('/.well-known/acp/schemas/payment-instrument.json', schemaRoot).toString(),
     ],
     config: {
+      accepted_brands: ['visa', 'mastercard', 'amex'],
       ...paymentHandlerConfig,
       psp: paymentHandlerConfig.psp || ACP_PAYMENT_HANDLER_PSP,
       merchant_id: ACP_PAYMENT_MERCHANT_ID || paymentHandlerConfig.merchant_id,

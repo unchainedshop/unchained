@@ -24,10 +24,16 @@ export const paymentHandlerConfigSchema = async (): Promise<ACPRouteResult> => (
     $schema: 'https://json-schema.org/draft/2020-12/schema',
     title: 'Unchained ACP payment handler configuration',
     type: 'object',
-    required: ['merchant_id', 'psp'],
+    required: ['merchant_id', 'psp', 'accepted_brands'],
     properties: {
       merchant_id: { type: 'string', minLength: 1 },
       psp: { type: 'string', minLength: 1 },
+      accepted_brands: {
+        type: 'array',
+        minItems: 1,
+        uniqueItems: true,
+        items: { enum: ['visa', 'mastercard', 'amex', 'discover', 'diners', 'jcb', 'unionpay'] },
+      },
     },
     additionalProperties: true,
   },

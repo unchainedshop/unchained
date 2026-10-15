@@ -92,7 +92,10 @@ export const getACPFulfillmentOptions = async (
             response: {
               type: 'shipping',
               id: provider._id,
-              title: provider._id,
+              title:
+                provider.configuration?.find(({ key }) => key === 'name')?.value ||
+                DeliveryDirector.getAdapter(provider.adapterKey)?.label ||
+                provider._id,
               totals: [],
             },
           },
