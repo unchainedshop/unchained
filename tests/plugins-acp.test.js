@@ -792,6 +792,65 @@ test.describe('Plugins: ACP checkout', () => {
     );
   });
 
+  test('answers line items that cannot be ordered with 400 and keeps no guest', async () => {
+    const guestsBefore = await db.collection('users').countDocuments({ guest: true });
+    const answers = [];
+    for (const id of ['simpleproduct_draft', 'configurable-product-id', 'proxy-product']) {
+      const res = await acpFetch('/acp/checkout_sessions', {
+        method: 'POST',
+        idempotencyKey: idem(),
+        body: {
+          ...validSessionBody(),
+          line_items: [
+            { id: 'simpleproduct', quantity: 1 },
+            { id, quantity: 1 },
+          ],
+        },
+      });
+      const { code, param } = await res.json();
+      answers.push([res.status, code, param]);
+    }
+
+    assert.deepStrictEqual(answers, [
+      [400, 'product_unavailable', '$.line_items[1].id'],
+      [400, 'product_unavailable', '$.line_items[1].id'],
+      [400, 'product_unavailable', '$.line_items[1].id'],
+    ]);
+    assert.strictEqual(await db.collection('users').countDocuments({ guest: true }), guestsBefore);
+  });
+
+  test('reports a product deactivated before complete as a message', async () => {
+    const product = await db.collection('products').findOne({ _id: 'simpleproduct' });
+    await db
+      .collection('products')
+      .insertOne({ ...product, _id: 'acp-soon-inactive-product', slugs: ['acp-soon-inactive'] });
+    const created = await createSession({
+      ...readySessionBody(),
+      line_items: [{ id: 'acp-soon-inactive-product', quantity: 1 }],
+    });
+    await db
+      .collection('products')
+      .updateOne({ _id: 'acp-soon-inactive-product' }, { $set: { status: null } });
+
+    const res = await acpFetch(`/acp/checkout_sessions/${created.id}/complete`, {
+      method: 'POST',
+      idempotencyKey: idem(),
+      body: {
+        payment_data: {
+          handler_id: 'stripe_spt',
+          instrument: { type: 'card', credential: { type: 'spt', token: 'spt_test' } },
+        },
+      },
+    });
+    const session = await res.json();
+
+    assert.strictEqual(res.status, 200, JSON.stringify(session));
+    assert.partialDeepStrictEqual(session.messages, [
+      { type: 'error', code: 'invalid', param: '$.line_items', content: 'This product is inactive' },
+    ]);
+    assert.strictEqual((await db.collection('orders').findOne({ _id: created.id })).status, null);
+  });
+
   test('processes one request per session while the payment is charged', async (t) => {
     const created = await createSession(readySessionBody());
 

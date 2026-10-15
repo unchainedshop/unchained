@@ -21,7 +21,7 @@ export type OrdersSettingsOptions = Omit<Partial<OrdersSettings>, 'configureSett
 
 export const defaultValidateOrderPosition = async ({ product }, { modules }: any) => {
   if (!modules.products.isActive(product)) {
-    throw new Error('This product is inactive');
+    throw new Error('This product is inactive', { cause: 'PRODUCT_INACTIVE' });
   }
 };
 

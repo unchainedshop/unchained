@@ -2,6 +2,7 @@ import { PaymentDirector } from '@unchainedshop/core';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { PaymentProviderType, type PaymentProvider } from '@unchainedshop/core-payment';
 import type { Order } from '@unchainedshop/core-orders';
+import { ProductType } from '@unchainedshop/core-products';
 import {
   ACP_API_VERSION,
   acpConfig,
@@ -131,17 +132,25 @@ const lockACPSession = async (context: ACPContext) => {
   }
 };
 
-const lineItemError = (
-  items: { productId: string }[],
-  error: Error & { details?: { productId?: string } },
-) => {
-  if (error.name !== 'ProductNotFoundError') return error;
-  const index = items.findIndex(({ productId }) => productId === error.details?.productId);
-  return invalidRequest(
-    'product_not_found',
-    `Product not found: ${error.details?.productId}`,
-    `$.line_items[${index}].id`,
-  );
+const isUnorderableProductError = (error: any) =>
+  error?.cause === 'PRODUCT_INACTIVE' || typeof error?.extensions?.code === 'string';
+
+const assertOrderableItems = async (context: ACPContext, items: { productId: string }[]) => {
+  const products = await context.modules.products.findProducts({
+    productIds: items.map(({ productId }) => productId),
+    includeDrafts: true,
+  });
+  items.forEach(({ productId }, index) => {
+    const product = products.find(({ _id }) => _id === productId);
+    const param = `$.line_items[${index}].id`;
+    if (!product) throw invalidRequest('product_not_found', `Product not found: ${productId}`, param);
+    if (!context.modules.products.isActive(product)) {
+      throw invalidRequest('product_unavailable', 'This product is inactive', param);
+    }
+    if (product.type === ProductType.CONFIGURABLE_PRODUCT) {
+      throw invalidRequest('product_unavailable', 'Choose one of the variants of this product', param);
+    }
+  });
 };
 
 const parseCheckoutUpdate = (body: Record<string, any>) => {
@@ -217,10 +226,13 @@ const applyCheckoutUpdate = async (
   let order = initialOrder;
 
   if (items) {
+    await assertOrderableItems(context, items);
     try {
       await context.services.orders.replaceCartProducts({ order, items }, context);
     } catch (error) {
-      throw lineItemError(items, error);
+      throw isUnorderableProductError(error)
+        ? invalidRequest('product_unavailable', error.message, '$.line_items')
+        : error;
     }
   }
 
@@ -398,6 +410,23 @@ const extractPaymentContext = (paymentData: any) => {
   return { acpToken: token, acpHandlerId: handlerId };
 };
 
+const checkoutErrorMessage = (error: any) => {
+  const paymentCode = paymentMessageCodes.get(error?.cause);
+  if (paymentCode) {
+    return { type: 'error', code: paymentCode, content_type: 'plain', content: error.message };
+  }
+  if (isUnorderableProductError(error)) {
+    return {
+      type: 'error',
+      code: 'invalid',
+      param: '$.line_items',
+      content_type: 'plain',
+      content: error.message,
+    };
+  }
+  return undefined;
+};
+
 export const completeCheckoutSession = async (
   _request: Request,
   context: ACPContext,
@@ -432,14 +461,9 @@ export const completeCheckoutSession = async (
       },
     };
   } catch (error) {
-    const code = paymentMessageCodes.get(error.cause);
-    if (!code) throw error;
-    return {
-      status: 200,
-      body: await serializeCheckoutSession(calculated, context, [
-        { type: 'error', code, content_type: 'plain', content: error.message },
-      ]),
-    };
+    const message = checkoutErrorMessage(error);
+    if (!message) throw error;
+    return { status: 200, body: await serializeCheckoutSession(calculated, context, [message]) };
   }
 };
 
