@@ -1,5 +1,6 @@
 import { createHmac } from 'node:crypto';
 import { setTimeout as wait } from 'node:timers/promises';
+import type { UnchainedCore } from '@unchainedshop/core';
 import type { Order } from '@unchainedshop/core-orders';
 import { subscribe } from '@unchainedshop/events';
 import { createLogger } from '@unchainedshop/logger';
@@ -19,12 +20,12 @@ export const signACPWebhookPayload = (
   return `t=${timestamp},v1=${signature}`;
 };
 
-const sendWebhook = async (order: Order, created: boolean) => {
+const sendWebhook = async (data: unknown, created: boolean) => {
   if (!acpConfig.webhookUrl || !acpConfig.webhookSecret) return;
 
   const rawBody = JSON.stringify({
     type: created ? 'order_create' : 'order_update',
-    data: serializeACPOrder(order),
+    data,
   });
 
   for (let attempt = 0; attempt <= acpConfig.webhookRetries; attempt += 1) {
@@ -51,12 +52,16 @@ const sendWebhook = async (order: Order, created: boolean) => {
   }
 };
 
-export const deliverACPWebhook = async (order: Order, created: boolean) => {
+export const deliverACPWebhook = async (
+  order: Order,
+  created: boolean,
+  unchainedAPI: Pick<UnchainedCore, 'modules'>,
+) => {
   const previousDelivery = deliveriesByOrder.get(order._id);
   const delivery = (async () => {
     await previousDelivery;
     try {
-      await sendWebhook(order, created);
+      await sendWebhook(await serializeACPOrder(order, unchainedAPI), created);
     } catch (error) {
       logger.error(`ACP webhook could not be sent: ${error}`);
     }
@@ -66,7 +71,7 @@ export const deliverACPWebhook = async (order: Order, created: boolean) => {
   if (deliveriesByOrder.get(order._id) === delivery) deliveriesByOrder.delete(order._id);
 };
 
-export const configureACPWebhooks = () => {
+export const configureACPWebhooks = (unchainedAPI: Pick<UnchainedCore, 'modules'>) => {
   if (configured || !acpConfig.webhookUrl || !acpConfig.webhookSecret) {
     return;
   }
@@ -76,7 +81,7 @@ export const configureACPWebhooks = () => {
     subscribe(name, async ({ payload }: any) => {
       const order: Order | undefined = payload?.order;
       if (!order || !acpContextOf(order)) return;
-      await deliverACPWebhook(order, created);
+      await deliverACPWebhook(order, created, unchainedAPI);
     });
   };
 

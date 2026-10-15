@@ -71,7 +71,7 @@ export const ACPPlugin: IPlugin = {
     ),
   ],
 
-  onRegister: () => {
+  onRegister: (unchainedAPI) => {
     if (!acpConfig.apiKey) {
       logger.warn('ACP not configured (UNCHAINED_ACP_API_KEY missing) — skipping ACP routes');
       return false;
@@ -81,7 +81,7 @@ export const ACPPlugin: IPlugin = {
       logger.warn(`ACP configuration is invalid: ${configurationErrors.join('; ')}`);
       return false;
     }
-    configureACPWebhooks();
+    configureACPWebhooks(unchainedAPI);
     return true;
   },
 };

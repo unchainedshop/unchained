@@ -383,6 +383,7 @@ export const createCheckoutSession = async (
         acp: {
           apiVersion: ACP_API_VERSION,
           createdAt: new Date().toISOString(),
+          locale: context.locale.baseName,
           interventions: [body.capabilities.interventions?.supported]
             .flat()
             .filter((intervention) => typeof intervention === 'string'),
@@ -482,7 +483,10 @@ const withAuthenticationRequired = async (
 
 const completedSession = async (order: Order, context: ACPContext): Promise<ACPRouteResult> => ({
   status: 200,
-  body: { ...(await serializeCheckoutSession(order, context)), order: serializeACPOrder(order) },
+  body: {
+    ...(await serializeCheckoutSession(order, context)),
+    order: await serializeACPOrder(order, context),
+  },
 });
 
 const chargeSession = async (

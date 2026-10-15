@@ -1,4 +1,4 @@
-import { DeliveryDirector, OrderPricingRowCategory, OrderPricingSheet } from '@unchainedshop/core';
+import { DeliveryDirector } from '@unchainedshop/core';
 import { DeliveryProviderType, type DeliveryLocation } from '@unchainedshop/core-delivery';
 import {
   OrderPaymentStatus,
@@ -7,7 +7,7 @@ import {
   type OrderPosition,
 } from '@unchainedshop/core-orders';
 import { ACP_API_VERSION, acpConfig, sellerLinks, type ACPContext } from './config.ts';
-import { acpContextOf, isACPAuthenticationRequired, isACPCanceled } from './order.ts';
+import { acpContextOf, acpTotals, isACPAuthenticationRequired, isACPCanceled } from './order.ts';
 
 const sellerInterventions = new Set(['3ds']);
 
@@ -149,12 +149,6 @@ export const serializeCheckoutSession = async (
       : null;
   const missingFields =
     order.status === null && !isACPCanceled(order) ? missingCheckoutFields(order, positions) : [];
-  const pricing = OrderPricingSheet({
-    calculation: order.calculation,
-    currencyCode: order.currencyCode,
-  });
-  const netTotal = (category: (typeof OrderPricingRowCategory)[keyof typeof OrderPricingRowCategory]) =>
-    pricing.total({ category, useNetPrice: true }).amount;
   const fulfillmentOptions = await getACPFulfillmentOptions(order, context);
   const selectedDelivery = order.deliveryId
     ? await context.modules.orders.deliveries.findDelivery({ orderDeliveryId: order.deliveryId })
@@ -172,12 +166,6 @@ export const serializeCheckoutSession = async (
     ? selectedDelivery?.context?.address
     : order.billingAddress;
   const fulfillmentContact = { ...order.contact, ...selectedDelivery?.context?.contact };
-  const items = netTotal(OrderPricingRowCategory.Items);
-  const discount = -netTotal(OrderPricingRowCategory.Discounts);
-  const fulfillment = netTotal(OrderPricingRowCategory.Delivery);
-  const fee = netTotal(OrderPricingRowCategory.Payment);
-  const total = pricing.total({ useNetPrice: false }).amount;
-  const tax = total - items + discount - fulfillment - fee;
   const status = checkoutStatus(order, missingFields, payment?.status === OrderPaymentStatus.PAID);
 
   return {
@@ -210,16 +198,7 @@ export const serializeCheckoutSession = async (
       quantity: position.quantity,
       totals: [],
     })),
-    totals: [
-      { type: 'items_base_amount', display_text: 'Items', amount: items },
-      ...(discount ? [{ type: 'discount', display_text: 'Discount', amount: discount }] : []),
-      ...(fulfillment
-        ? [{ type: 'fulfillment', display_text: 'Fulfillment', amount: fulfillment }]
-        : []),
-      ...(tax ? [{ type: 'tax', display_text: 'Tax', amount: tax }] : []),
-      ...(fee ? [{ type: 'fee', display_text: 'Payment fee', amount: fee }] : []),
-      { type: 'total', display_text: 'Total', amount: total },
-    ],
+    totals: acpTotals(order),
     fulfillment_options: fulfillmentOptions.map(({ response }) => response),
     selected_fulfillment_options: selectedOption
       ? [

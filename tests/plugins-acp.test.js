@@ -1210,6 +1210,18 @@ test.describe('Plugins: ACP checkout', () => {
       JSON.stringify(completed),
     );
     assert.strictEqual((await db.collection('orders').findOne({ _id: created.id })).status, 'PENDING');
+    assert.partialDeepStrictEqual(completed.order, {
+      line_items: [
+        {
+          id: completed.line_items[0].id,
+          title: 'simple product title de',
+          product_id: 'simpleproduct',
+          quantity: { ordered: 1, current: 1, fulfilled: 0 },
+        },
+      ],
+      fulfillments: [{ type: 'pickup', status: 'pending' }],
+    });
+    assert.deepStrictEqual(completed.order.totals, completed.totals);
   });
 
   test('GET /acp/feed.jsonl streams a product feed as ndjson', async () => {

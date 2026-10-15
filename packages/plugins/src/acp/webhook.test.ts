@@ -8,6 +8,10 @@ import { deliverACPWebhook, signACPWebhookPayload } from './webhook.ts';
 const acpOrder = (status: string) =>
   ({ _id: 'order-id', status, currencyCode: 'CHF', calculation: [], context: { acp: {} } }) as Order;
 
+const unchainedAPI = {
+  modules: { orders: { positions: { findOrderPositions: async () => [] } } },
+} as any;
+
 const configureReceiver = (t, retries: number) => {
   t.mock.property(acpConfig, 'webhookUrl', 'https://agent.test/webhooks');
   t.mock.property(acpConfig, 'webhookSecret', 'shared-secret');
@@ -38,8 +42,8 @@ describe('ACP webhook delivery', () => {
     });
 
     await Promise.all([
-      deliverACPWebhook(acpOrder('PENDING'), true),
-      deliverACPWebhook(acpOrder('CONFIRMED'), false),
+      deliverACPWebhook(acpOrder('PENDING'), true, unchainedAPI),
+      deliverACPWebhook(acpOrder('CONFIRMED'), false, unchainedAPI),
     ]);
 
     assert.deepEqual(received, ['created', 'confirmed']);
@@ -54,8 +58,8 @@ describe('ACP webhook delivery', () => {
       async () => new Response('', { status: ++attempts === 1 ? 503 : 200 }),
     );
 
-    await deliverACPWebhook(acpOrder('PENDING'), true);
-    await deliverACPWebhook(acpOrder('PENDING'), true);
+    await deliverACPWebhook(acpOrder('PENDING'), true, unchainedAPI);
+    await deliverACPWebhook(acpOrder('PENDING'), true, unchainedAPI);
 
     assert.equal(attempts, 2);
   });
