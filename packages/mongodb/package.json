@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/mongodb",
-  "version": "4.8.31",
+  "version": "4.8.32",
   "description": "MongoDB database abstraction layer for the Unchained Engine",
   "main": "lib/mongodb-index.js",
   "types": "lib/mongodb-index.d.ts",
@@ -33,13 +33,13 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^4.8.27",
-    "@unchainedshop/utils": "^4.8.27"
+    "@unchainedshop/logger": "^4.8.31",
+    "@unchainedshop/utils": "^4.8.31"
   },
   "peerDependencies": {
     "@mongodb-js/zstd": ">= 7 < 8",
-    "mongodb": ">= 7 < 8",
-    "mongodb-memory-server": ">= 11 < 12"
+    "mongodb": "^7.7.0",
+    "mongodb-memory-server": "^11.3.0"
   },
   "peerDependenciesMeta": {
     "mongodb": {
@@ -53,7 +53,7 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.6.5",
     "typescript": "^6.0.3"
   }
 }

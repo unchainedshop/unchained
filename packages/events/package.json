@@ -1,7 +1,7 @@
 {
   "name": "@unchainedshop/events",
   "description": "Event emitter abstraction layer for the Unchained Engine",
-  "version": "4.8.31",
+  "version": "4.8.32",
   "main": "lib/events-index.js",
   "types": "lib/events-index.d.ts",
   "type": "module",
@@ -34,10 +34,10 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^4.8.27"
+    "@unchainedshop/logger": "^4.8.31"
   },
   "devDependencies": {
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.6.5",
     "typescript": "^6.0.3"
   }
 }

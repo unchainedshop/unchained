@@ -2,14 +2,14 @@
   "name": "@unchainedshop/shared",
   "description": "Shared TypeScript configuration for the Unchained Engine monorepo",
   "private": true,
-  "version": "4.8.31",
+  "version": "4.8.32",
   "scripts": {
     "clean": "",
     "build": "",
     "prepublishOnly": "npm run clean && npm run build"
   },
   "devDependencies": {
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.6.5",
     "typescript": "^6.0.3"
   }
 }
