@@ -1120,8 +1120,15 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         unsubscribeFromOtherUsers: boolean;
       },
     ): Promise<void> => {
+      const p256dh = subscription?.keys?.p256dh;
+      if (typeof p256dh !== 'string') {
+        throw new Error('Push subscription needs a keys.p256dh string', {
+          cause: 'PUSH_SUBSCRIPTION_INVALID',
+        });
+      }
+
       const updateResult = await Users.updateOne(
-        { _id: userId, 'pushSubscriptions.keys.p256dh': { $ne: subscription?.keys?.p256dh } },
+        { _id: userId, 'pushSubscriptions.keys.p256dh': { $ne: p256dh } },
         {
           $push: {
             pushSubscriptions: {
@@ -1133,14 +1140,11 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         {},
       );
       if (updateResult.modifiedCount === 1 && subscriptionOptions?.unsubscribeFromOtherUsers) {
-        await Users.updateMany(
-          { _id: { $ne: userId }, 'pushSubscriptions.keys.p256dh': subscription?.keys?.p256dh },
-          {
-            $pull: {
-              pushSubscriptions: { 'keys.p256dh': subscription?.keys?.p256dh },
-            },
-          } as mongodb.UpdateFilter<User>,
-        );
+        await Users.updateMany({ _id: { $ne: userId }, 'pushSubscriptions.keys.p256dh': p256dh }, {
+          $pull: {
+            pushSubscriptions: { 'keys.p256dh': p256dh },
+          },
+        } as mongodb.UpdateFilter<User>);
       }
     },
 
