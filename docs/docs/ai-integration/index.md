@@ -7,12 +7,13 @@ sidebar_position: 1
 
 # AI Integration
 
-Unchained Engine provides first-class AI integration through three complementary surfaces:
+Unchained Engine provides first-class AI integration through four complementary surfaces:
 
 | Surface | Who uses it | Protocol | Auth | Endpoint |
 |---------|-------------|----------|------|----------|
 | [MCP Server](./mcp-server) | AI agents & IDEs (Claude Desktop, Cursor, Claude Code) | Streamable HTTP (MCP) | Admin bearer token | `/mcp` on the engine |
 | [Admin Copilot](./admin-copilot) | Store operators via Admin UI chat | HTTP streaming (Vercel AI SDK) | Session cookie | `/chat` on the engine |
+| [UCP Checkout](./ucp) | AI shopping agents buying for consumers | UCP 2026-08-25 (REST) | Agent profile, optional API token and signatures | `/.well-known/ucp`, `/ucp` on the engine |
 | `llms.txt` | LLMs & web crawlers | Static files | None | [docs.unchained.shop/llms.txt](https://docs.unchained.shop/llms.txt) |
 
 ## Architecture
