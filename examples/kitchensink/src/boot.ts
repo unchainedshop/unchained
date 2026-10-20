@@ -10,6 +10,7 @@ import { useErrorHandler } from '@envelop/core';
 
 import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
 import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
+import { createUcpPlugin } from '@unchainedshop/plugins/agentic/ucp';
 import {
   registerProductDiscoverabilityFilter,
   pluginRegistry,
@@ -145,6 +146,7 @@ try {
   // Register additional discount plugins
   pluginRegistry.register(HalfPriceManualPlugin);
   pluginRegistry.register(HundredOffPlugin);
+  pluginRegistry.register(createUcpPlugin());
   registerProductDiscoverabilityFilter({ hiddenTagValue: 'device' });
 
   const platform = await startPlatform({
