@@ -3,7 +3,6 @@
 // See packages/api/src/fastify/index.ts for the parallel implementation.
 import e from 'express';
 import session from 'express-session';
-import multer from 'multer';
 import MongoStore from '../mongo-store.ts';
 import { Passport } from 'passport';
 import type { YogaServerInstance } from 'graphql-yoga';
@@ -21,6 +20,7 @@ import {
 import createBulkImportMiddleware from './createBulkImportMiddleware.ts';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.ts';
 import createTempUploadMiddleware from './createTempUploadMiddleware.ts';
+import createTempUploadParser from './createTempUploadParser.ts';
 import createMCPMiddleware from './createMCPMiddleware.ts';
 import { API_EVENTS } from '../events.ts';
 import type { ChatConfiguration } from '../chat/utils.ts';
@@ -58,8 +58,7 @@ const resolveUserRemoteAddress = (req: e.Request) => {
   return { remoteAddress, remotePort };
 };
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = createTempUploadParser();
 
 const {
   BULK_IMPORT_API_PATH = '/bulk-import',

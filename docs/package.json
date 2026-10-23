@@ -47,7 +47,16 @@
     "docusaurus-graphql-plugin": {
       "marked": "^4.0.10",
       "ws": "^8.21.0"
-    }
+    },
+    "launch-editor@>=2 <3": "^2.14.2",
+    "image-size@>=2 <3": "^2.0.3",
+    "source-map-js@>=1 <2": "^1.2.2",
+    "brace-expansion@>=5 <6": "^5.0.11",
+    "brace-expansion@>=1 <2": "^1.1.20",
+    "follow-redirects@>=1 <2": "^1.16.1",
+    "dompurify@>=3 <4": "^3.4.17",
+    "webpack-dev-middleware@>=7 <8": "^7.4.6",
+    "@graphql-tools/utils@<13": "^12.1.0"
   },
   "browserslist": {
     "production": [
