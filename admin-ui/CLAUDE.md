@@ -28,10 +28,18 @@ npm run extract-translation  # Extract translation strings
 npm run compile-translation  # Compile translations
 ```
 
+## Container image
+
+Build from the monorepo root with `docker build -f admin-ui/Dockerfile .`.
+The build uses the shared root workspace lock, runs admin UI lint and build, and
+serves `out/` through Caddy on port 3000 as UID/GID 65534. The app uses
+`output: 'export'`; `next start` cannot serve this output. No Node dependencies
+are installed in the runtime image.
+
 ## Architecture Overview
 
 ### Core Technologies
-- **Next.js 15** with static export mode (`output: 'export'`)
+- **Next.js 16** with static export mode (`output: 'export'`)
 - **React 19** with TypeScript
 - **Apollo Client** for GraphQL data management
 - **Tailwind CSS 4** for styling with custom `@apply` classes in `globals.css`

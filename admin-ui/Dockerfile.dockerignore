@@ -1,0 +1,15 @@
+**/.git
+**/node_modules
+**/.next
+**/.db
+**/.env*
+**/.cache
+**/out
+**/dist
+**/tsconfig.tsbuildinfo
+packages/*/lib
+examples/*/lib
+docs
+typedocs
+env
+.claude

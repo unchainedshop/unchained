@@ -9,7 +9,10 @@ declare module '@apollo/client' {
   interface TypeOverrides {
     signatureStyle: 'classic';
   }
+  // Apollo type overrides require ambient namespace merging.
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace ApolloClient {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace DeclareDefaultOptions {
       interface WatchQuery {
         errorPolicy: 'all';
