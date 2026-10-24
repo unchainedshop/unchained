@@ -30,7 +30,7 @@
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "engines": {
-    "node": ">=22.0.0",
+    "node": "^22.23.4 || ^24.22.1 || >=26.12.1",
     "npm": ">=10.0.0"
   },
   "contributors": [

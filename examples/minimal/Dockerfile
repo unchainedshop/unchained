@@ -1,4 +1,4 @@
-FROM node:26-alpine AS bundler
+FROM node:26.12.1-alpine AS bundler
 
 # Install app dependencies
 RUN mkdir -p /source

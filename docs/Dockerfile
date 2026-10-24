@@ -1,4 +1,4 @@
-FROM node:26.11.1-alpine AS bundler
+FROM node:26.12.1-alpine AS bundler
 
 WORKDIR /source
 COPY package.json package-lock.json ./
@@ -7,7 +7,7 @@ COPY . .
 RUN npm run build
 RUN rm -rf node_modules
 
-FROM node:26.11.1-alpine AS runtime
+FROM node:26.12.1-alpine AS runtime
 
 RUN mkdir -p /webapp && chown node:node /webapp
 WORKDIR /webapp
