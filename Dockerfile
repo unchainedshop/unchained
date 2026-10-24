@@ -11,11 +11,11 @@ RUN apt update -y && apt install -y curl unzip libatomic1 && \
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && \
     chmod +x $NVM_DIR/nvm.sh && \
     . $NVM_DIR/nvm.sh && \
-    nvm install 26.8.2 && \
-    nvm alias default 26.8.2 && \
-    nvm use 26.8.2
+    nvm install 26.12.1 && \
+    nvm alias default 26.12.1 && \
+    nvm use 26.12.1
 
-ENV PATH=/root/.nvm/versions/node/v26.8.2/bin:$NVM_DIR:$PATH
+ENV PATH=/root/.nvm/versions/node/v26.12.1/bin:$NVM_DIR:$PATH
 
 ADD packages /source/
 ADD package* /source/
