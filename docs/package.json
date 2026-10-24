@@ -60,7 +60,11 @@
     "shell-quote@>=1 <2": "^1.11.0",
     "tinypool": "^2.1.2",
     "undici@>=7 <8": "^7.30.1",
-    "body-parser@>=1 <2": "^1.20.9"
+    "body-parser@>=1 <2": "^1.20.9",
+    "@graphql-tools/executor-legacy-ws": "^1.1.35",
+    "compression@>=1 <2": "^1.8.2",
+    "joi@>=17 <18": "^17.13.7",
+    "proxy-addr@>=2 <3": "^2.0.8"
   },
   "browserslist": {
     "production": [
