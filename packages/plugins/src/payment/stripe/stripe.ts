@@ -8,6 +8,7 @@ const logger = createLogger('unchained:stripe');
 const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = process.env;
 
 export const STRIPE_API_VERSION = '2026-09-30.endive';
+export const ACP_SPT_STRIPE_VERSION = '2026-04-22.preview';
 export const stripeEnvironment = STRIPE_WEBHOOK_ENVIRONMENT || '';
 
 export let stripe: StripeClient;
@@ -116,6 +117,31 @@ export const createRegistrationIntent = async (
   });
 };
 
+const orderIntentParams = ({
+  order,
+  orderPayment,
+  pricing,
+  description,
+}: {
+  order: Order;
+  orderPayment: OrderPayment;
+  pricing: IOrderPricingSheet;
+  description?: string;
+}) => {
+  const { currencyCode, amount } = pricing.total({ useNetPrice: false });
+  return {
+    amount: Math.round(amount),
+    currency: currencyCode.toLowerCase(),
+    description: String(description || EMAIL_WEBSITE_NAME || 'Unchained').trim(),
+    receipt_email: order.contact?.emailAddress,
+    metadata: {
+      orderPaymentId: orderPayment._id,
+      orderId: order._id,
+      environment: stripeEnvironment,
+    },
+  };
+};
+
 export const createOrderPaymentIntent = async (
   {
     userId,
@@ -139,36 +165,66 @@ export const createOrderPaymentIntent = async (
   options: Record<string, any> = {},
   stripeClient: StripeClient = stripe,
 ) => {
-  const description =
-    `${options.description || descriptorPrefix || EMAIL_WEBSITE_NAME || 'Unchained'}`.trim();
   const customer = customerId || (await upsertCustomer({ userId, name, email }, stripeClient));
-  const { currencyCode, amount } = pricing.total({ useNetPrice: false });
+  const intentParams = orderIntentParams({
+    order,
+    orderPayment,
+    pricing,
+    description: options.description || descriptorPrefix,
+  });
   const metadata = metadataFrom(options.metadata);
   const forwardedOptions = withoutAuthoritativeFields(options, [
-    'amount',
-    'currency',
+    ...Object.keys(intentParams),
     'customer',
-    'description',
-    'metadata',
-    'receipt_email',
     'statement_descriptor_suffix',
   ]);
 
   return stripeClient.paymentIntents.create({
     setup_future_usage: 'off_session',
     ...forwardedOptions,
-    amount: Math.round(amount),
-    currency: currencyCode.toLowerCase(),
+    ...intentParams,
     customer,
-    description,
-    statement_descriptor_suffix: `${order._id.substring(0, 4)}..${order._id.substring(order._id.length - 4)}`,
-    receipt_email: order.contact?.emailAddress,
-    metadata: {
-      ...metadata,
-      orderPaymentId: orderPayment._id,
-      orderId: order._id,
-      userId,
-      environment: stripeEnvironment,
-    },
+    metadata: { ...metadata, ...intentParams.metadata, userId },
   });
+};
+
+export const createAcpSharedPaymentTokenIntent = async (
+  {
+    acpToken,
+    order,
+    orderPayment,
+    pricing,
+    descriptorPrefix,
+  }: {
+    acpToken: string;
+    order: Order;
+    orderPayment: OrderPayment;
+    pricing: IOrderPricingSheet;
+    descriptorPrefix?: string;
+  },
+  stripeClient: StripeClient = stripe,
+) => {
+  try {
+    const paymentIntent = await stripeClient.paymentIntents.create(
+      {
+        ...orderIntentParams({ order, orderPayment, pricing, description: descriptorPrefix }),
+        confirm: true,
+        payment_method_data: { shared_payment_granted_token: acpToken } as any,
+      },
+      {
+        apiVersion: ACP_SPT_STRIPE_VERSION,
+        idempotencyKey: `acp-${orderPayment._id}-${acpToken}`,
+      },
+    );
+    if (paymentIntent.status === 'requires_action') {
+      throw new Error('The payment requires an authentication of the buyer', {
+        cause: 'PAYMENT_REQUIRES_ACTION',
+      });
+    }
+    return paymentIntent;
+  } catch (error) {
+    throw error.type === 'StripeCardError'
+      ? new Error(error.message, { cause: 'PAYMENT_DECLINED' })
+      : error;
+  }
 };
