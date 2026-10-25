@@ -57,6 +57,7 @@
     "tinypool": "^2.1.2",
     "docusaurus-plugin-llms": {
       "minimatch": "^9.0.9"
-    }
+    },
+    "dompurify@>=3 <4": "^3.4.17"
   }
 }
