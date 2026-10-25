@@ -1,4 +1,5 @@
 import net from 'node:net';
+import { generateKeyPairSync } from 'node:crypto';
 import { createServer } from 'node:http';
 import Fastify from 'fastify';
 import { startPlatform } from '@unchainedshop/platform';
@@ -21,6 +22,10 @@ import {
   readAttendeeName,
 } from '@unchainedshop/ticketing/warehousing/ticket';
 import { BoxOfficePlugin } from '@unchainedshop/ticketing/payment/box-office';
+import { createUcpPlugin, invoiceHandler } from '@unchainedshop/plugins/agentic/ucp';
+import { scriptedHandler } from './ucp/psp.js';
+
+export const ucpPlatforms = [];
 
 let fastify = null;
 let platform = null;
@@ -134,6 +139,10 @@ export async function initializeTestPlatform() {
   process.env.PORT = String(port);
   // Set ROOT_URL dynamically so file upload URLs use the correct port
   process.env.ROOT_URL = `http://localhost:${port}`;
+  // UCP order webhooks are signed with a key of this run
+  process.env.UCP_SIGNING_KEY ??= generateKeyPairSync('ec', { namedCurve: 'P-256' })
+    .privateKey.export({ format: 'pem', type: 'pkcs8' })
+    .toString();
 
   // One MongoDB for the whole run: the platform and the database unit tests of npm test connect to
   // it through MONGO_URL, which also keeps a MONGO_URL from .env away from the tests
@@ -160,6 +169,10 @@ export async function initializeTestPlatform() {
         return attendeeName ? { attendeeName } : undefined;
       },
     }),
+  );
+  // Registered UCP platforms are added by the UCP tests, the plugin reads the list per request
+  pluginRegistry.register(
+    createUcpPlugin({ platforms: ucpPlatforms, paymentHandlers: [invoiceHandler, scriptedHandler] }),
   );
 
   const auditCollectorPort = await startAuditCollector();
