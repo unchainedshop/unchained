@@ -10,13 +10,18 @@ const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = proces
 export let stripe: Stripe;
 const environment = STRIPE_WEBHOOK_ENVIRONMENT ?? null;
 
+const renameLegacyPaymentMethodTypes = ({ payment_method_types, ...options }: Record<string, any>) => ({
+  ...(payment_method_types && { allowed_payment_method_types: payment_method_types }),
+  ...options,
+});
+
 if (!STRIPE_SECRET) {
   logger.warn('STRIPE_SECRET is not set, skipping initialization');
 } else {
   try {
     const { default: Stripe } = await import('stripe');
     stripe = new Stripe(STRIPE_SECRET, {
-      apiVersion: '2026-08-26.dahlia',
+      apiVersion: '2026-09-30.endive',
     });
   } catch {
     logger.warn(`optional peer npm package 'stripe' not installed, stripe adapter will not work`);
@@ -87,7 +92,7 @@ export const createRegistrationIntent = async (
       environment,
     },
     usage: 'off_session',
-    ...options,
+    ...renameLegacyPaymentMethodTypes(options),
   });
   return setupIntent;
 };
@@ -132,7 +137,7 @@ export const createOrderPaymentIntent = async (
       userId,
       environment,
     },
-    ...options,
+    ...renameLegacyPaymentMethodTypes(options),
   });
   return paymentIntent;
 };

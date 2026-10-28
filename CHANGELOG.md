@@ -31,6 +31,7 @@
 
 ## Patch
 - **Breaking: graphql-yoga 6** (`@unchainedshop/api`): the `graphql-yoga` peer is now `^6.0.1`, and the graphql-js engine swap is gone because yoga's own executor applies argument defaults again. See `MIGRATION.md`.
+- **Breaking (Stripe plugin): `stripe` 23 and API version `2026-09-30.endive`** (`@unchainedshop/plugins`): intents use `allowed_payment_method_types`, and a `payment_method_types` transaction context is sent as `allowed_payment_method_types`, which the API version would otherwise reject. See `MIGRATION.md`.
 - **Fastify apps start with `@fastify/session` 11.1.6** (`@unchainedshop/api`): the session store now implements the conditional `compareAndSet` write that 11.1.6 (GHSA-2hw7-jxfh-4rm3) requires of custom stores; before, the Fastify adapter failed at startup with "the store must implement compareAndSet".
 - **nodemailer 10 is accepted** (`@unchainedshop/plugins`): the optional peer range now allows `nodemailer` 10, so projects can install 10.0.9 or later, which fixes the addressparser advisories still open in 9.x (CVE-2026-90776, GHSA-v53p-9fqp-m79j, GHSA-g57g-f23g-4646).
 - **Audit users always name someone** (`@unchainedshop/events`): OCSF users without a login are `anonymous` (type Unknown) for requests and the engine (type System) otherwise, instead of an empty object, which OCSF rejects.

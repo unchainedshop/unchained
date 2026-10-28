@@ -53,7 +53,7 @@ fastify.register((s, opts, registered) => {
 Requires the `stripe` npm package as a peer dependency:
 
 ```bash
-npm install stripe
+npm install stripe@^23
 ```
 
 ## Create Provider
@@ -226,7 +226,7 @@ mutation CheckoutWithSaved {
         token: "pm_stripe_payment_method_id"
         meta: {
           customer: "cus_stripe_customer_id"
-          payment_method_types: ["card"]
+          allowed_payment_method_types: ["card"]
         }
       }
     }

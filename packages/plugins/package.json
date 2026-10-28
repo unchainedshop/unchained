@@ -70,7 +70,7 @@
     "mime": "^4.1.1",
     "minio": "8.x",
     "nodemailer": ">= 6.9 < 11",
-    "stripe": ">= 19 < 23",
+    "stripe": ">= 23 < 24",
     "web-push": ">= 3.6 <4",
     "xml-js": ">= 1.6 < 2"
   },
@@ -134,7 +134,7 @@
     "fastify": "^5.12.7",
     "minio": "^8.0.7",
     "nodemailer": "^10.2.1",
-    "stripe": "^22.6.2",
+    "stripe": "^23.0.1",
     "typescript": "^6.0.3",
     "web-push": "^3.6.7",
     "xml-js": "^1.6.11"

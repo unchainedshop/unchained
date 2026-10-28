@@ -107,7 +107,7 @@ test.describe('Plugins: Stripe Payments', async () => {
             paymentProviderId: 'stripe-payment-provider',
             transactionContext: {
               payment_method: 'pm_card_visa',
-              payment_method_types: ['card'],
+              allowed_payment_method_types: ['card'],
             },
           },
         });
@@ -120,7 +120,7 @@ test.describe('Plugins: Stripe Payments', async () => {
       });
 
       test('Confirm the setup intent', async () => {
-        const stripe = new Stripe(STRIPE_SECRET, { apiVersion: '2024-04-10' });
+        const stripe = new Stripe(STRIPE_SECRET);
 
         const confirmedIntent = await stripe.setupIntents.confirm(idAndSecret[0], {
           return_url: getServerBaseUrl(),
@@ -194,11 +194,16 @@ test.describe('Plugins: Stripe Payments', async () => {
 
         const { data } = await graphqlFetch({
           query: /* GraphQL */ `
-            mutation addAndCheckout($productId: ID!, $paymentContext: JSON, $paymentProviderId: ID) {
-              addCartProduct(productId: $productId) {
+            mutation addAndCheckout(
+              $orderId: ID!
+              $productId: ID!
+              $paymentContext: JSON
+              $paymentProviderId: ID
+            ) {
+              addCartProduct(orderId: $orderId, productId: $productId) {
                 _id
               }
-              updateCart(paymentProviderId: $paymentProviderId) {
+              updateCart(orderId: $orderId, paymentProviderId: $paymentProviderId) {
                 _id
                 status
                 payment {
@@ -207,13 +212,14 @@ test.describe('Plugins: Stripe Payments', async () => {
                   }
                 }
               }
-              checkoutCart(paymentContext: $paymentContext) {
+              checkoutCart(orderId: $orderId, paymentContext: $paymentContext) {
                 _id
                 status
               }
             }
           `,
           variables: {
+            orderId: 'simple-order',
             productId: 'simpleproduct',
             paymentProviderId: 'stripe-payment-provider',
             paymentContext: {
@@ -266,7 +272,7 @@ test.describe('Plugins: Stripe Payments', async () => {
       });
 
       test('Confirm the payment and checkout the order', async () => {
-        const stripe = Stripe(STRIPE_SECRET);
+        const stripe = new Stripe(STRIPE_SECRET);
         const confirmedIntent = await stripe.paymentIntents.confirm(idAndSecret[0], {
           return_url: getServerBaseUrl(),
           use_stripe_sdk: true,
@@ -301,7 +307,7 @@ test.describe('Plugins: Stripe Payments', async () => {
     test.describe('POST /payment/stripe (Webhook)', async () => {
       let stripe;
       test.before(() => {
-        stripe = new Stripe(STRIPE_SECRET, { apiVersion: '2024-04-10' });
+        stripe = new Stripe(STRIPE_SECRET);
       });
 
       test('Handle payment_intent.succeeded webhook event successfully', async () => {
