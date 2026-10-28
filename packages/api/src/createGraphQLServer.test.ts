@@ -1,8 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import createGraphQLServer from './createGraphQLServer.ts';
+import createGraphQLServer, { type GraphQLServerOptions } from './createGraphQLServer.ts';
 
-const post = async (query: string) => {
+const post = async (query: string, options: Partial<GraphQLServerOptions> = { logging: false }) => {
   const server = await createGraphQLServer({
     typeDefs: [
       /* GraphQL */ `
@@ -13,7 +13,7 @@ const post = async (query: string) => {
       `,
     ],
     resolvers: [{ Query: { drafts: (_root, args) => JSON.stringify(args) } }],
-    logging: false,
+    ...options,
   });
   const response = await server.fetch('http://localhost/graphql', {
     method: 'POST',
@@ -33,6 +33,17 @@ describe('createGraphQLServer', () => {
     const { data } = await post(
       'query ($limit: Int, $includeDrafts: Boolean) { drafts(limit: $limit, includeDrafts: $includeDrafts) }',
     );
+    assert.deepStrictEqual(JSON.parse(data.drafts), { limit: 10, includeDrafts: false });
+  });
+
+  it('serves requests with the capitalized LOG_LEVEL values the docs list', async (t) => {
+    const { LOG_LEVEL } = process.env;
+    t.after(() => {
+      if (LOG_LEVEL === undefined) delete process.env.LOG_LEVEL;
+      else process.env.LOG_LEVEL = LOG_LEVEL;
+    });
+    process.env.LOG_LEVEL = 'Info';
+    const { data } = await post('{ drafts }', {});
     assert.deepStrictEqual(JSON.parse(data.drafts), { limit: 10, includeDrafts: false });
   });
 });
