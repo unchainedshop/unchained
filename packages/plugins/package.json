@@ -122,8 +122,8 @@
     }
   },
   "devDependencies": {
-    "@noble/curves": "^2.0.0",
-    "@noble/hashes": "^2.0.0",
+    "@noble/curves": "^2.4.0",
+    "@noble/hashes": "^2.4.0",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@redis/client": "^6.3.0",
     "@scure/bip32": "^2.4.0",
@@ -133,7 +133,7 @@
     "express": "^5.3.0",
     "fastify": "^5.12.7",
     "minio": "^8.0.7",
-    "nodemailer": "^10.1.1",
+    "nodemailer": "^10.2.1",
     "stripe": "^22.6.2",
     "typescript": "^6.0.3",
     "web-push": "^3.6.7",
