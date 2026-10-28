@@ -41,16 +41,16 @@
     "npm": ">=10.0.0"
   },
   "dependencies": {
-    "@unchainedshop/api": "4.9.0",
-    "@unchainedshop/core": "4.9.0",
-    "@unchainedshop/core-orders": "4.9.0",
-    "@unchainedshop/events": "4.9.0",
-    "@unchainedshop/file-upload": "4.9.0",
-    "@unchainedshop/logger": "4.9.0",
-    "@unchainedshop/mongodb": "4.9.0",
-    "@unchainedshop/plugins": "4.9.0",
-    "@unchainedshop/roles": "4.9.0",
-    "@unchainedshop/utils": "4.9.0"
+    "@unchainedshop/api": "^4.9.0",
+    "@unchainedshop/core": "^4.9.0",
+    "@unchainedshop/core-orders": "^4.9.0",
+    "@unchainedshop/events": "^4.9.0",
+    "@unchainedshop/file-upload": "^4.9.0",
+    "@unchainedshop/logger": "^4.9.0",
+    "@unchainedshop/mongodb": "^4.9.0",
+    "@unchainedshop/plugins": "^4.9.0",
+    "@unchainedshop/roles": "^4.9.0",
+    "@unchainedshop/utils": "^4.9.0"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",

@@ -33,8 +33,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "4.9.0",
-    "@unchainedshop/utils": "4.9.0"
+    "@unchainedshop/logger": "^4.9.0",
+    "@unchainedshop/utils": "^4.9.0"
   },
   "peerDependencies": {
     "@mongodb-js/zstd": ">= 7 < 8",
