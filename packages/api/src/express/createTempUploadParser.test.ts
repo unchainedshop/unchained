@@ -35,10 +35,19 @@ const worker = `
 `;
 
 function parse(scenario: string) {
-  const result = spawnSync(process.execPath, [
-    '--no-warnings', '--max-old-space-size=128', '--input-type=module',
-    '--eval', worker, new URL('./createTempUploadParser.ts', import.meta.url).href, scenario,
-  ], { encoding: 'utf8', timeout: 2000 });
+  const result = spawnSync(
+    process.execPath,
+    [
+      '--no-warnings',
+      '--max-old-space-size=128',
+      '--input-type=module',
+      '--eval',
+      worker,
+      new URL('./createTempUploadParser.ts', import.meta.url).href,
+      scenario,
+    ],
+    { encoding: 'utf8', timeout: 2000 },
+  );
   assert.ifError(result.error);
   assert.equal(result.status, 0, result.stderr);
   return JSON.parse(result.stdout);
@@ -55,6 +64,9 @@ test('accepts ordinary text fields and the maximum supported array index', () =>
 
 test('preserves normal in-memory file uploads', () => {
   assert.deepEqual(parse('file'), {
-    error: null, note: 'ordinary', file: 'fixture.txt', contents: 'fixture',
+    error: null,
+    note: 'ordinary',
+    file: 'fixture.txt',
+    contents: 'fixture',
   });
 });

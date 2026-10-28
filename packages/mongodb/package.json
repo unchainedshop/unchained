@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/mongodb",
-  "version": "4.8.32",
+  "version": "4.8.33",
   "description": "MongoDB database abstraction layer for the Unchained Engine",
   "main": "lib/mongodb-index.js",
   "types": "lib/mongodb-index.d.ts",
