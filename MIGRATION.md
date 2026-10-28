@@ -4,11 +4,15 @@
 
 ---
 
-## v4.8.x graphql-yoga 6
+## v4.8 → v4.9
+
+Node.js 22.23.4+, 24.22.1+ or 26.12.1+ is required.
+
+### graphql-yoga 6
 
 `@unchainedshop/api` requires `graphql-yoga` 6: `npm install graphql-yoga@^6`. Yoga options you pass to `startPlatform` change with it: `createGraphQLError` is gone (use `new GraphQLError`), envelop plugins come from `graphql-yoga` or `@envelop/core` 6, and if you set `logging` yourself, yoga's `Logger` throws on any `LOG_LEVEL` other than lowercase `trace`, `debug`, `info`, `warn` or `error` (Unchained's own logging is unaffected). GraphQL request bodies above 25 MB now get `413` unless you raise `maxRequestBodySize`.
 
-## v4.8.x Stripe SDK v23 / API `2026-09-30.endive`
+### Stripe SDK v23 / API `2026-09-30.endive`
 
 The Stripe plugin requires `stripe` 23 (`npm install stripe@^23`) and pins API version `2026-09-30.endive`, which rejects `payment_method_types`. Storefronts should send `allowed_payment_method_types` in the transaction context; the plugin still renames `payment_method_types` for them. Saved credentials now store and charge with `meta.allowed_payment_method_types`; credentials registered before the upgrade let Stripe derive the type from the saved payment method.
 
