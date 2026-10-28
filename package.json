@@ -101,9 +101,5 @@
   "allowScripts": {
     "mongodb-memory-server@11.3.0": true,
     "cypress@16.2.0": true
-  },
-  "overrides": {
-    "body-parser@>=2 <3": "^2.4.0",
-    "multer@>=2 <3": "^2.5.0"
   }
 }
