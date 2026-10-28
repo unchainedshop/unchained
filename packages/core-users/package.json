@@ -36,10 +36,10 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@passwordless-id/webauthn": "^2.4.1",
-    "@unchainedshop/events": "^4.8.31",
-    "@unchainedshop/logger": "^4.8.31",
-    "@unchainedshop/mongodb": "^4.8.31",
-    "@unchainedshop/utils": "^4.8.31",
+    "@unchainedshop/events": "4.9.0",
+    "@unchainedshop/logger": "4.9.0",
+    "@unchainedshop/mongodb": "4.9.0",
+    "@unchainedshop/utils": "4.9.0",
     "bcryptjs": "^3.0.3"
   },
   "peerDependencies": {

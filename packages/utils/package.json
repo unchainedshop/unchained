@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^4.8.31",
+    "@unchainedshop/logger": "4.9.0",
     "libphonenumber-js": "^1.13.15",
     "resolve-accept-language": "^3.2.2"
   },

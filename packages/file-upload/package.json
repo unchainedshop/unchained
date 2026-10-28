@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/utils": "^4.8.31"
+    "@unchainedshop/utils": "4.9.0"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",

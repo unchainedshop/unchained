@@ -39,9 +39,9 @@
     "@fastify/cookie": "^11.1.5",
     "@fastify/multipart": "^10.1.6",
     "@fastify/session": "^11.1.6",
-    "@unchainedshop/platform": "^4.8.31",
-    "@unchainedshop/plugins": "^4.8.31",
-    "@unchainedshop/ticketing": "^4.8.31",
+    "@unchainedshop/platform": "4.9.0",
+    "@unchainedshop/plugins": "4.9.0",
+    "@unchainedshop/ticketing": "4.9.0",
     "fastify": "^5.12.7"
   },
   "devDependencies": {

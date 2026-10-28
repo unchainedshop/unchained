@@ -35,10 +35,10 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/events": "^4.8.31",
-    "@unchainedshop/logger": "^4.8.31",
-    "@unchainedshop/mongodb": "^4.8.31",
-    "@unchainedshop/utils": "^4.8.31"
+    "@unchainedshop/events": "4.9.0",
+    "@unchainedshop/logger": "4.9.0",
+    "@unchainedshop/mongodb": "4.9.0",
+    "@unchainedshop/utils": "4.9.0"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
