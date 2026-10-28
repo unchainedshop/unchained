@@ -89,6 +89,7 @@ interface ConcretConnectMongoOptions {
 interface InternalSessionType {
   _id: string;
   session: SerializedSession;
+  generation?: string | null;
   expires?: Date;
   lastModified?: Date;
 }
@@ -96,6 +97,10 @@ interface InternalSessionType {
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noop = () => {};
 const unit: <T>(a: T) => T = (a) => a;
+
+const sessionGeneration = (sid: string, sessionData: session.SessionData) =>
+  (sessionData as { __fastifySessionMetadata?: { generation?: string } }).__fastifySessionMetadata
+    ?.generation ?? sid;
 
 function defaultSerializeFunction(sessionData: session.SessionData): session.SessionData {
   // Copy each property of the session to a new object
@@ -332,6 +337,52 @@ export default class MongoStore extends session.Store {
     })();
   }
 
+  private async toInternalSession(
+    sid: string,
+    session: session.SessionData,
+  ): Promise<InternalSessionType> {
+    // Removing the lastModified prop from the session object before update
+    // lastModified is added by this store but not part of standard SessionData
+    const sessionWithMeta = session as session.SessionData & { lastModified?: Date };
+    if (this.options.touchAfter > 0 && sessionWithMeta.lastModified) {
+      delete sessionWithMeta.lastModified;
+    }
+    const s: InternalSessionType = {
+      _id: this.computeStorageId(sid),
+      session: this.transformFunctions.serialize(session),
+      generation: sessionGeneration(sid, session),
+    };
+    // Expire handling
+    if (session?.cookie?.expires) {
+      s.expires = new Date(session.cookie.expires);
+    } else {
+      // If there's no expiration date specified, it is
+      // browser-session cookie or there is no cookie at all,
+      // as per the connect docs.
+      //
+      // So we set the expiration to two-weeks from now
+      // - as is common practice in the industry (e.g Django) -
+      // or the default specified in the options.
+      s.expires = new Date(Date.now() + this.options.ttl * 1000);
+    }
+    // Last modify handling
+    if (this.options.touchAfter > 0) {
+      s.lastModified = new Date();
+    }
+    if (this.crypto) {
+      const cryptoSet = util.promisify(this.crypto.set).bind(this.crypto);
+      // Crypto expects string data - serialize if needed
+      const sessionString = typeof s.session === 'string' ? s.session : JSON.stringify(s.session);
+      const data = await cryptoSet(this.options.crypto.secret as string, sessionString).catch(
+        (err: Error) => {
+          throw new Error(err.message);
+        },
+      );
+      s.session = data as string;
+    }
+    return s;
+  }
+
   /**
    * Upsert a session into the store given a session ID (sid) and session (session) object.
    * @param sid session ID
@@ -341,44 +392,7 @@ export default class MongoStore extends session.Store {
     (async () => {
       try {
         logger.debug(`MongoStore#set=${sid}`);
-        // Removing the lastModified prop from the session object before update
-        // lastModified is added by this store but not part of standard SessionData
-        const sessionWithMeta = session as session.SessionData & { lastModified?: Date };
-        if (this.options.touchAfter > 0 && sessionWithMeta.lastModified) {
-          delete sessionWithMeta.lastModified;
-        }
-        const s: InternalSessionType = {
-          _id: this.computeStorageId(sid),
-          session: this.transformFunctions.serialize(session),
-        };
-        // Expire handling
-        if (session?.cookie?.expires) {
-          s.expires = new Date(session.cookie.expires);
-        } else {
-          // If there's no expiration date specified, it is
-          // browser-session cookie or there is no cookie at all,
-          // as per the connect docs.
-          //
-          // So we set the expiration to two-weeks from now
-          // - as is common practice in the industry (e.g Django) -
-          // or the default specified in the options.
-          s.expires = new Date(Date.now() + this.options.ttl * 1000);
-        }
-        // Last modify handling
-        if (this.options.touchAfter > 0) {
-          s.lastModified = new Date();
-        }
-        if (this.crypto) {
-          const cryptoSet = util.promisify(this.crypto.set).bind(this.crypto);
-          // Crypto expects string data - serialize if needed
-          const sessionString = typeof s.session === 'string' ? s.session : JSON.stringify(s.session);
-          const data = await cryptoSet(this.options.crypto.secret as string, sessionString).catch(
-            (err: Error) => {
-              throw new Error(err.message);
-            },
-          );
-          s.session = data as string;
-        }
+        const s = await this.toInternalSession(sid, session);
         const collection = await this.collectionP;
         const rawResp = await collection.updateOne(
           { _id: s._id },
@@ -393,6 +407,43 @@ export default class MongoStore extends session.Store {
         } else {
           this.emit('update', sid);
         }
+        this.emit('set', sid);
+      } catch (error) {
+        return callback(error);
+      }
+      return callback(null);
+    })();
+  }
+
+  /**
+   * Update a session only if the stored one still has the expected generation (@fastify/session >= 11.1.6).
+   * Sessions stored without a generation have their session ID as generation.
+   */
+  compareAndSet(
+    sid: string,
+    expectedGeneration: string,
+    session: session.SessionData,
+    callback: (err: any) => void = noop,
+  ): void {
+    (async () => {
+      try {
+        logger.debug(`MongoStore#compareAndSet=${sid}`);
+        const s = await this.toInternalSession(sid, session);
+        const collection = await this.collectionP;
+        const { matchedCount } = await collection.updateOne(
+          {
+            _id: s._id,
+            generation: expectedGeneration === sid ? { $in: [sid, null] } : expectedGeneration,
+          },
+          { $set: s },
+          { writeConcern: this.options.writeOperationOptions },
+        );
+        if (!matchedCount) {
+          return callback(
+            Object.assign(new Error('The session does not exist or has changed'), { code: 'ENOENT' }),
+          );
+        }
+        this.emit('update', sid);
         this.emit('set', sid);
       } catch (error) {
         return callback(error);
