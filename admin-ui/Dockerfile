@@ -8,7 +8,7 @@ RUN npm run lint --workspace=@unchainedshop/admin-ui
 RUN npm run build --workspace=@unchainedshop/admin-ui
 
 # next.config.js exports static files; next start cannot serve this output.
-FROM caddy:2.11.4-alpine AS runtime
+FROM caddy:2.11.7-alpine AS runtime
 COPY --from=bundler /source/admin-ui/out /srv
 COPY admin-ui/Caddyfile /etc/caddy/Caddyfile
 ENV XDG_CONFIG_HOME=/tmp XDG_DATA_HOME=/tmp
