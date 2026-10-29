@@ -1,7 +1,7 @@
 import { type IWorkerAdapter, WorkerAdapter, WorkerDirector, schedule } from '@unchainedshop/core';
 import type { ProductPriceRate } from '@unchainedshop/core-products';
 
-interface FrankfurterRate {
+interface ExchangeRate {
   quote: string;
   rate: number;
 }
@@ -9,13 +9,37 @@ interface FrankfurterRate {
 const baseCurrency = 'EUR';
 
 // ECB euro reference rates as JSON, served by https://frankfurter.dev
-const getExchangeRates = async (): Promise<FrankfurterRate[]> => {
+const getFrankfurterRates = async (): Promise<ExchangeRate[]> => {
   const res = await fetch(`https://api.frankfurter.dev/v2/rates?base=${baseCurrency}&providers=ecb`);
   if (!res.ok) throw new Error(`Frankfurter responded with HTTP ${res.status}`);
-  const rates = (await res.json()) as FrankfurterRate[];
+  const rates = (await res.json()) as ExchangeRate[];
   // Frankfurter answers an unknown provider with an empty list instead of an error
   if (!rates?.length) throw new Error('Frankfurter returned no ECB rates');
   return rates;
+};
+
+// Same ECB table from a second keyless source, https://allratestoday.com
+const getAllRatesTodayRates = async (): Promise<ExchangeRate[]> => {
+  const res = await fetch(`https://allratestoday.com/api/open/latest/${baseCurrency}`);
+  if (!res.ok) throw new Error(`AllRatesToday responded with HTTP ${res.status}`);
+  const data = (await res.json()) as { result?: string; rates?: Record<string, number> };
+  const rates = Object.entries(data?.rates || {}).map(([quote, rate]) => ({ quote, rate }));
+  if (data?.result !== 'success' || !rates.length)
+    throw new Error('AllRatesToday returned no ECB rates');
+  return rates;
+};
+
+// Frankfurter first; when it fails or has no rates, fall back to AllRatesToday
+const getExchangeRates = async (): Promise<ExchangeRate[]> => {
+  try {
+    return await getFrankfurterRates();
+  } catch (frankfurterError) {
+    try {
+      return await getAllRatesTodayRates();
+    } catch (fallbackError) {
+      throw new Error(`${frankfurterError.message}; ${fallbackError.message}`);
+    }
+  }
 };
 
 // https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html
