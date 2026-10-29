@@ -29,7 +29,9 @@ The ECB publishes daily reference exchange rates for major currencies against EU
 - Fetches the latest ECB reference rates from Frankfurter (`https://api.frankfurter.dev/v2/rates?base=EUR&providers=ecb`)
 - Updates product price rates in the database (rates expire after 24 hours)
 
-The worker needs outbound HTTPS access to `api.frankfurter.dev`.
+If Frankfurter fails or returns no rates, the worker falls back to the same ECB table from [AllRatesToday](https://allratestoday.com) (`https://allratestoday.com/api/open/latest/EUR`, keyless).
+
+The worker needs outbound HTTPS access to `api.frankfurter.dev` (and `allratestoday.com` for the fallback).
 
 ## Auto-Scheduling
 
@@ -67,7 +69,7 @@ Only currencies that exist in your Unchained system (active or inactive) are upd
 
 If EUR is not configured, the result is `{ "ratesUpdated": 0, "info": "EUR not enabled" }` and no request is made.
 
-If Frankfurter responds with an HTTP error or returns no rates, the work fails with `UPDATE_ECB_RATES_FAILED` (the message names the cause) and is retried.
+If Frankfurter responds with an HTTP error or returns no rates, the worker retries with AllRatesToday; if that fails too, the work fails with `UPDATE_ECB_RATES_FAILED` (the message names both causes) and is retried.
 
 ## Adapter Details
 
