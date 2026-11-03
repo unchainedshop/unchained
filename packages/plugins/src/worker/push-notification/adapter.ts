@@ -1,28 +1,7 @@
 import { type IWorkerAdapter, WorkerAdapter } from '@unchainedshop/core';
-import { createLogger } from '@unchainedshop/logger';
-
-const logger = createLogger('unchained:worker:push-notification');
-
-let webPush;
-try {
-  const module = await import('web-push');
-  webPush = module.default;
-} catch {
-  logger.warn(`optional peer npm package 'web-push' not installed, push notifications will not work`);
-}
+import { sendNotification, type WebPushOptions } from './web-push.ts';
 
 const { PUSH_NOTIFICATION_PUBLIC_KEY, PUSH_NOTIFICATION_PRIVATE_KEY } = process.env;
-
-interface NotificationOptions {
-  vapidDetails: {
-    subject: string;
-    publicKey: string;
-    privateKey: string;
-  };
-  TTL: number;
-  urgency?: 'very-low' | 'low' | 'normal' | 'high';
-  topic?: string;
-}
 
 export const PushNotificationWorkerPlugin: IWorkerAdapter<
   {
@@ -44,16 +23,6 @@ export const PushNotificationWorkerPlugin: IWorkerAdapter<
   type: 'PUSH',
 
   doWork: async ({ subscription, subject, payload, urgency = null, topic = null }) => {
-    if (!webPush) {
-      return {
-        success: false,
-        error: {
-          name: 'WEB_PUSH_NOT_INSTALLED',
-          message: 'npm dependency web-push is not installed, please install it to use this worker',
-        },
-      };
-    }
-
     if (!PUSH_NOTIFICATION_PUBLIC_KEY)
       return {
         success: false,
@@ -81,7 +50,7 @@ export const PushNotificationWorkerPlugin: IWorkerAdapter<
       };
     }
 
-    const options: NotificationOptions = {
+    const options: WebPushOptions = {
       vapidDetails: {
         subject,
         publicKey: PUSH_NOTIFICATION_PUBLIC_KEY,
@@ -99,7 +68,7 @@ export const PushNotificationWorkerPlugin: IWorkerAdapter<
     }
 
     try {
-      await webPush.sendNotification(subscription, payload, options);
+      await sendNotification(subscription, payload, options);
 
       return {
         success: true,

@@ -78,8 +78,7 @@
     "mime": ">= 4 < 5",
     "minio": "8.x",
     "nodemailer": ">= 6.9 < 11",
-    "stripe": ">= 23 < 24",
-    "web-push": ">= 3.6 <4"
+    "stripe": ">= 23 < 24"
   },
   "peerDependenciesMeta": {
     "@aws-sdk/client-eventbridge": {
@@ -108,9 +107,6 @@
     },
     "stripe": {
       "optional": true
-    },
-    "web-push": {
-      "optional": true
     }
   },
   "devDependencies": {
@@ -120,10 +116,10 @@
     "@scure/bip32": "^2.0.0",
     "@scure/btc-signer": "^2.0.0",
     "@types/node": "^26.2.0",
+    "mime": "^4.1.0",
     "minio": "^8.0.5",
     "nodemailer": "^10.0.0",
     "stripe": "^23.1.0",
-    "typescript": "^6.0.3",
-    "web-push": "^3.6.7"
+    "typescript": "^6.0.3"
   }
 }

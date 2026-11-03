@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import mime from 'mime/lite';
 import type * as aiTypes from 'ai';
 import { createLogger } from '@unchainedshop/logger';
 
@@ -56,11 +55,10 @@ const generateImageHandler =
             size: size as any,
           });
 
-          const buffer = Buffer.from(image.uint8Array);
-          const extension = mime.getExtension(image.mediaType) || 'png';
+          const extension = /^image\/(\w+)/.exec(image.mediaType)?.[1] ?? 'png';
 
           const filename = `image-${Date.now()}.${extension}`;
-          const file = new File([buffer], filename, { type: image.mediaType });
+          const file = new File([new Uint8Array(image.uint8Array)], filename, { type: image.mediaType });
           const formData = new FormData();
           formData.append('image', file);
 

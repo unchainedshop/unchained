@@ -135,7 +135,6 @@
     "dataloader": "^2.2.3",
     "graphql-scalars": "^2.0.0",
     "jose": "^6.0.10",
-    "mime": ">= 4 < 5",
     "zod": "^4.2.0"
   },
   "devDependencies": {

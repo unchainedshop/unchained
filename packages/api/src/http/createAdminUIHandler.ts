@@ -2,7 +2,6 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { readFile, stat } from 'node:fs/promises';
 import { resolve, sep } from 'node:path';
-import mime from 'mime';
 import { createLogger } from '@unchainedshop/logger';
 import {
   buildImportMapTag,
@@ -27,6 +26,33 @@ export interface AdminUIOptions {
   theme?: AdminUIThemeConfig;
   plugins?: AdminUIPluginConfig[];
 }
+
+const CONTENT_TYPES: Record<string, string> = {
+  avif: 'image/avif',
+  css: 'text/css',
+  gif: 'image/gif',
+  html: 'text/html',
+  ico: 'image/vnd.microsoft.icon',
+  jpeg: 'image/jpeg',
+  jpg: 'image/jpeg',
+  js: 'text/javascript',
+  json: 'application/json',
+  map: 'application/json',
+  mjs: 'text/javascript',
+  png: 'image/png',
+  svg: 'image/svg+xml',
+  txt: 'text/plain',
+  wasm: 'application/wasm',
+  webmanifest: 'application/manifest+json',
+  webp: 'image/webp',
+  woff: 'font/woff',
+  woff2: 'font/woff2',
+  xml: 'application/xml',
+};
+
+const contentTypeOf = (filePath: string) =>
+  CONTENT_TYPES[filePath.slice(filePath.lastIndexOf('.') + 1).toLowerCase()] ??
+  'application/octet-stream';
 
 const withCharset = (contentType: string) =>
   /^text\/|javascript|json/.test(contentType) ? `${contentType}; charset=utf-8` : contentType;
@@ -72,7 +98,7 @@ const serveFile = async (request: Request, root: string, path: string) => {
 
   return conditionalResponse(request, request.method === 'HEAD' ? null : await readFile(filePath), {
     'cache-control': path.startsWith('/_next/static/') ? IMMUTABLE_CACHE : 'public, max-age=0',
-    'content-type': withCharset(mime.getType(filePath) || 'application/octet-stream'),
+    'content-type': withCharset(contentTypeOf(filePath)),
     etag: `W/"${stats.size.toString(16)}-${Math.floor(stats.mtimeMs).toString(16)}"`,
     'last-modified': stats.mtime.toUTCString(),
     'content-length': String(stats.size),

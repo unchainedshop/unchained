@@ -7,7 +7,7 @@ description: W3C compliant web push notifications
 
 # Push Notification Worker
 
-Send W3C compliant web push notifications to subscribed users. Requires the optional `web-push` package (`npm install web-push`).
+Send W3C compliant web push notifications to subscribed users, encrypted (RFC 8291) and signed (VAPID, RFC 8292) with the Web Crypto API, so no extra package is needed.
 
 :::info Included in All Preset
 Registered automatically by `registerAllPlugins()`.
@@ -194,7 +194,8 @@ MessagingDirector.registerTemplate('ORDER_SHIPPED', async ({ orderId }, context)
 ## External Resources
 
 - [W3C Push API Specification](https://www.w3.org/TR/push-api/)
-- [web-push npm package](https://www.npmjs.com/package/web-push)
+- [RFC 8291: Message Encryption for Web Push](https://www.rfc-editor.org/rfc/rfc8291)
+- [RFC 8292: VAPID](https://www.rfc-editor.org/rfc/rfc8292)
 - [Web Push Notifications Guide (MDN)](https://developer.mozilla.org/en-US/docs/Web/API/Push_API)
 
 ## Related
