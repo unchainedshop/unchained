@@ -47,7 +47,7 @@ my-plugin/
     "@unchainedshop/admin-ui": "^5.0.0-alpha.11",
     "esbuild": "^0.25.0",
     "react": "^19.0.0",
-    "tsup": "^8.0.0"
+    "tsup": "^9.0.0"
   }
 }
 ```

@@ -7,7 +7,7 @@ const logger = createLogger('unchained:stripe');
 
 const { STRIPE_SECRET, STRIPE_WEBHOOK_ENVIRONMENT, EMAIL_WEBSITE_NAME } = process.env;
 
-export const STRIPE_API_VERSION = '2026-09-30.endive';
+export const STRIPE_API_VERSION = '2026-10-28.endive';
 export const stripeEnvironment = STRIPE_WEBHOOK_ENVIRONMENT || '';
 
 export let stripe: StripeClient;

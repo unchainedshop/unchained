@@ -53,9 +53,9 @@
     "@unchainedshop/plugins": "^5.0.0-alpha.11",
     "express": "^5.1.0",
     "graphql": "^17.0.2",
-    "graphql-yoga": "^5.24.4",
+    "graphql-yoga": "^6.0.1",
     "nodemailer": "^10.0.0",
-    "stripe": "^23.0.0",
+    "stripe": "^23.1.0",
     "web-push": "^3.6.7"
   },
   "devDependencies": {

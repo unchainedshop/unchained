@@ -6,7 +6,7 @@ import { startPlatform } from '@unchainedshop/platform';
 import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
 import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
 import seed from './seed.ts';
-import { useErrorHandler } from '@envelop/core';
+import { useErrorHandler } from 'graphql-yoga';
 
 import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
 import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';

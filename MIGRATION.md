@@ -4,6 +4,10 @@
 
 ---
 
+## graphql-yoga 6
+
+`@unchainedshop/api` requires `graphql-yoga` 6: `npm install graphql-yoga@^6`. Yoga options you pass to `startPlatform` change with it: `createGraphQLError` is gone (use `new GraphQLError`), envelop plugins come from `graphql-yoga` or `@envelop/core` 6, and if you set `logging` yourself, yoga's `Logger` throws on any `LOG_LEVEL` other than lowercase `trace`, `debug`, `info`, `warn` or `error` (Unchained's own logging is unaffected). GraphQL request bodies above 25 MB now get `413` unless you raise `maxRequestBodySize`.
+
 ## v4.8.x MCP: SDK v2, stateless `/mcp`
 
 The MCP integration migrated from the monolithic MCP TypeScript SDK v1 to the split v2 SDK. The optional peer dependency was **renamed**: `@modelcontextprotocol/sdk` is no longer supported.
@@ -286,9 +290,9 @@ The Braintree plugin was also dropped in v5 (it only exists on the v4.8.x branch
 - Implement a custom PayPal integration using `@paypal/paypal-server-sdk` (new official SDK) via `registerPaymentProvider()`
 - Use alternative payment providers (Stripe, Datatrans, Saferpay, Payrexx, PostFinance Checkout)
 
-### Stripe SDK v23 / API `2026-09-30.endive`
+### Stripe SDK v23 / API `2026-10-28.endive`
 
-**BREAKING CHANGE:** The Stripe plugin now requires `stripe` v23 (peer range `>=23 <24`) and pins Stripe API version `2026-09-30.endive`. Upgrade your installed package: `npm install stripe@^23`.
+**BREAKING CHANGE:** The Stripe plugin now requires `stripe` v23 (peer range `>=23 <24`) and pins Stripe API version `2026-10-28.endive`. Upgrade your installed package: `npm install stripe@^23.1`.
 
 **BREAKING CHANGE:** This API version rejects `payment_method_types` on PaymentIntent and SetupIntent create/confirm (`400 payment_method_types_no_longer_supported`). The plugin passes `transactionContext` through to Stripe unchanged, so storefronts that send `payment_method_types` to `signPaymentProviderForCheckout` / `signPaymentProviderForCredentialRegistration` must switch:
 

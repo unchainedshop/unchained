@@ -12,7 +12,7 @@
     "@unchainedshop/admin-ui": "^5.0.0-alpha.11",
     "jsqr": "^1.4.0",
     "react": "^19.0.0",
-    "tsup": "^8.0.0",
+    "tsup": "^9.0.0",
     "typescript": "^6.0.3"
   }
 }
