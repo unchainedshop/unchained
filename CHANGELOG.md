@@ -75,6 +75,7 @@
 - **Cart and media services:** `services.orders.selectDeliveryProvider` / `selectPaymentProvider` and `services.files.resolveMediaFiles` hold the logic of the cart provider mutations and the MCP media tools.
 
 ### Fixed
+- **Datatrans credential validation works** (`@unchainedshop/plugins`): `validate()` hex-decoded `valid-<timestamp>`, which is not hex, so it sent an empty `refno` that Datatrans rejects and stored payment credentials never validated; it now sends `valid-<timestamp>` as is.
 - **MinIO link uploads keep the remote content type** (`@unchainedshop/plugins`): `uploadFileFromURL` read the response header as a property of `Headers`, so files without a known extension were stored without a type.
 
 - **Organizer-scope denials are audited:** a ticketing action outside the organizer scope is denied through the new `acl.denyAction`, so it emits `ACL_DENIED` with its schema coordinate like any failed permission check.

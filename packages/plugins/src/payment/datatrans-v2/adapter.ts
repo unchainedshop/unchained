@@ -340,7 +340,7 @@ export const Datatrans: IPaymentAdapter = {
         if (!credentials.meta) return false;
         const { objectKey, currency } = credentials.meta;
         const result = await api().validate({
-          refno: Buffer.from(`valid-${new Date().getTime()}`, 'hex').toString('base64'),
+          refno: `valid-${Date.now()}`,
           currency,
           [objectKey]: JSON.parse(credentials.token),
         });
