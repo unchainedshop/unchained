@@ -79,15 +79,7 @@ export function createBackchannelLogoutRoute(providers: OIDCProviderConfig[]): P
         // This is safe because we verify the signature below
         let decodedPayload: jose.JWTPayload;
         try {
-          const parts = logoutToken.split('.');
-          if (parts.length !== 3) {
-            logger.warn('Invalid logout token format: not a valid JWT');
-            return new Response(JSON.stringify({ error: 'invalid_token' }), {
-              status: 400,
-              headers: { 'Content-Type': 'application/json' },
-            });
-          }
-          decodedPayload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
+          decodedPayload = jose.decodeJwt(logoutToken);
         } catch {
           logger.warn('Failed to decode logout token');
           return new Response(JSON.stringify({ error: 'invalid_token' }), {

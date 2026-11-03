@@ -192,7 +192,7 @@ export const MinioAdapter: IFileAdapter = {
 
     const url = new URL(fileLink);
     const response = await fetch(url, { headers });
-    const type = mime.getType(fileName) || response.headers['content-type'];
+    const type = mime.getType(fileName) || response.headers.get('content-type');
     const readable = Readable.fromWeb(response.body as ReadableStream<Uint8Array<ArrayBufferLike>>);
     const metaData = {
       'Content-Type': type,

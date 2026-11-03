@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto';
 import type { Context, GraphQLResolveInfo } from '@unchainedshop/api';
 import { ProductType, type Product } from '@unchainedshop/core-products';
 import { log } from '@unchainedshop/logger';
@@ -18,7 +17,7 @@ export default async function createTicketProduction(
   const services = getProductionServices(context);
   // The organizer scope decides on the production as it will be stored
   const candidate = {
-    _id: `new-ticket-production-${randomUUID()}`,
+    _id: `new-ticket-production-${crypto.randomUUID()}`,
     type: ProductType.CONFIGURABLE_PRODUCT,
     tags: [TICKET_PRODUCTION_TAG, ...(production.tags ?? [])],
   } as Product;

@@ -208,14 +208,7 @@ export async function verifyOIDCToken(
   let decodedPayload: jose.JWTPayload;
 
   try {
-    // Decode to inspect claims (NOT verification)
-    const parts = token.split('.');
-    if (parts.length !== 3) {
-      logger.debug('Invalid JWT format');
-      return null;
-    }
-    // We only need the payload to find the matching provider by issuer
-    decodedPayload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
+    decodedPayload = jose.decodeJwt(token);
   } catch {
     logger.debug('Failed to decode JWT');
     return null;

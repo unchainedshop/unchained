@@ -1,10 +1,7 @@
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 import { definePlugin } from '@unchainedshop/admin-ui/plugins';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
-export const ticketingBundlePath = resolve(__dirname, '../admin-plugin/dist/index.js');
+export const ticketingBundlePath = resolve(import.meta.dirname, '../admin-plugin/dist/index.js');
 
 export const ticketingEntities = [
   {

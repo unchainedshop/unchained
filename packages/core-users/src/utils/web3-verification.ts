@@ -111,7 +111,7 @@ export async function verifyWeb3Signature(
   try {
     // eslint-disable-next-line
     // @ts-ignore
-    const messageHash = hashPersonalMessage(hexToBytes(Buffer.from(nonce, 'utf8').toString('hex')));
+    const messageHash = hashPersonalMessage(new TextEncoder().encode(nonce));
 
     const sigParams = fromRPCSig(signature);
     const publicKey = ecrecover(messageHash, sigParams.v, sigParams.r, sigParams.s);

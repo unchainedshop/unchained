@@ -19,9 +19,7 @@ export class SaferpayConnection {
     return {
       'Content-Type': 'application/json; charset=utf-8',
       Accept: 'application/json',
-      Authorization: `Basic ${Buffer.from(`${this.user}:${this.password}`, 'binary').toString(
-        'base64',
-      )}`,
+      Authorization: `Basic ${btoa(`${this.user}:${this.password}`)}`,
     };
   }
 
