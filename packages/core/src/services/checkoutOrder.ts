@@ -6,6 +6,7 @@ import { processOrderService } from './processOrder.ts';
 import type { User } from '@unchainedshop/core-users';
 import { reserveOrderDiscountsForCheckout } from './reserveOrderDiscountsForCheckout.ts';
 import { reserveOrderQuotationsForCheckout } from './reserveOrderQuotationsForCheckout.ts';
+import { reserveOrderForCheckout } from './reserveOrderForCheckout.ts';
 
 /**
  * Service function to checkout an order.
@@ -35,6 +36,7 @@ export async function checkoutOrderService(
   await using lock = await this.orders.acquireLock(orderId, 'checkout');
   let discounts: Awaited<ReturnType<typeof reserveOrderDiscountsForCheckout>> | undefined;
   let quotations: Awaited<ReturnType<typeof reserveOrderQuotationsForCheckout>> | undefined;
+  let reservation: Awaited<ReturnType<typeof reserveOrderForCheckout>> | undefined;
 
   try {
     const order = await this.orders.findOrder({ orderId });
@@ -43,6 +45,7 @@ export async function checkoutOrderService(
     await validateOrderService.bind(this)(order);
     quotations = await reserveOrderQuotationsForCheckout.call(this, order);
     discounts = await reserveOrderDiscountsForCheckout.call(this, order);
+    reservation = await reserveOrderForCheckout.call(this, order);
     const processedOrder = await processOrderService.bind(this)(order, transactionContext);
 
     // After checkout, store last checkout information on user
@@ -62,6 +65,7 @@ export async function checkoutOrderService(
 
     return processedOrder;
   } finally {
+    await reservation?.release();
     await discounts?.release();
     await quotations?.release();
   }

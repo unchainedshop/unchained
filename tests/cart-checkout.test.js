@@ -358,5 +358,85 @@ test.describe('Cart Checkout Flow', () => {
       assert.strictEqual(errors, undefined);
       assert.deepStrictEqual(quantityDiffs, [5]);
     });
+
+    const useReserveForCheckout = (t, reserveForCheckout) => {
+      const previous = ordersSettings.reserveForCheckout;
+      ordersSettings.reserveForCheckout = reserveForCheckout;
+      t.after(() => {
+        ordersSettings.reserveForCheckout = previous;
+      });
+    };
+
+    test('reserves for the checkout of the cart until its status is saved', async (t) => {
+      const { cartId } = await createChargeableCart('reserved', 1);
+      const { modules } = getTestPlatform().unchainedAPI;
+      const events = [];
+      useReserveForCheckout(t, async (order, unchainedAPI) => {
+        if (order._id !== cartId) return;
+        events.push(['reserve', order.status, typeof unchainedAPI.modules.orders.findOrder]);
+        return {
+          release: async () => {
+            const { status } = await modules.orders.findOrder({ orderId: cartId });
+            events.push(['release', status]);
+          },
+        };
+      });
+      const chargeOrderPayment = PaymentDirector.chargeOrderPayment;
+      t.mock.method(PaymentDirector, 'chargeOrderPayment', async (order, ...args) => {
+        if (order._id === cartId) events.push(['charge']);
+        return chargeOrderPayment(order, ...args);
+      });
+
+      const { data, errors } = await checkoutCart(cartId);
+
+      assert.strictEqual(errors, undefined);
+      assert.strictEqual(data.checkoutCart.status, 'CONFIRMED');
+      assert.deepStrictEqual(events, [
+        ['reserve', null, 'function'],
+        ['charge'],
+        ['release', 'CONFIRMED'],
+      ]);
+    });
+
+    test('releases the checkout reservation when the checkout fails', async (t) => {
+      const { cartId } = await createChargeableCart('reserved-declined', 1);
+      const { modules } = getTestPlatform().unchainedAPI;
+      const released = [];
+      useReserveForCheckout(t, async (order) => ({
+        release: async () => {
+          released.push(order._id);
+        },
+      }));
+      t.mock.method(PaymentDirector, 'chargeOrderPayment', async () => {
+        throw new Error('PAYMENT_DECLINED');
+      });
+
+      const { errors } = await checkoutCart(cartId);
+
+      assert.strictEqual(errors?.[0]?.extensions?.code, 'OrderCheckoutError');
+      assert.strictEqual(errors?.[0]?.extensions?.detailMessage, 'PAYMENT_DECLINED');
+      assert.deepStrictEqual(released, [cartId]);
+      assert.strictEqual((await modules.orders.findOrder({ orderId: cartId })).status, null);
+    });
+
+    test('aborts the checkout when the checkout reservation throws', async (t) => {
+      const { cartId } = await createChargeableCart('reserved-sold-out', 1);
+      useReserveForCheckout(t, async () => {
+        throw Object.assign(new Error('Sold out'), { name: 'SupplyExhaustedError' });
+      });
+      const charge = t.mock.method(PaymentDirector, 'chargeOrderPayment');
+
+      const { errors } = await checkoutCart(cartId);
+
+      assert.strictEqual(errors?.[0]?.extensions?.code, 'OrderCheckoutError');
+      assert.strictEqual(errors?.[0]?.extensions?.detailCode, 'SupplyExhaustedError');
+      assert.strictEqual(errors?.[0]?.extensions?.detailMessage, 'Sold out');
+      assert.strictEqual(charge.mock.callCount(), 0);
+
+      // The failed checkout released the order lock, so the cart can be checked out again
+      ordersSettings.reserveForCheckout = undefined;
+      const { data } = await checkoutCart(cartId);
+      assert.strictEqual(data.checkoutCart.status, 'CONFIRMED');
+    });
   });
 });
