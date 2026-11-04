@@ -75,6 +75,7 @@
 - **Cart and media services:** `services.orders.selectDeliveryProvider` / `selectPaymentProvider` and `services.files.resolveMediaFiles` hold the logic of the cart provider mutations and the MCP media tools.
 
 ### Fixed
+- **Enrollment periods keep their wall-clock time across DST** (`@unchainedshop/core-enrollments`): `addToDate` runs on `Temporal` instead of a vendored date-fns build, which added years before weeks/days and kept the hour shifted when that intermediate date fell into a daylight-saving gap (e.g. 02:57 became 03:57); month-end clamping and exact hour arithmetic are unchanged.
 - **Datatrans credential validation works** (`@unchainedshop/plugins`): `validate()` hex-decoded `valid-<timestamp>`, which is not hex, so it sent an empty `refno` that Datatrans rejects and stored payment credentials never validated; it now sends `valid-<timestamp>` as is.
 - **MinIO link uploads keep the remote content type** (`@unchainedshop/plugins`): `uploadFileFromURL` read the response header as a property of `Headers`, so files without a known extension were stored without a type.
 
