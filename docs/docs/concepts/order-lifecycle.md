@@ -186,7 +186,7 @@ The system proceeds with delivery via the `DeliveryDirector`.
    - If returns `{ trackingNumber }`: Delivery initiated
 
 2. **Position Processing**: For each order position:
-   - **TokenizedProduct**: `WarehousingDirector.tokenize()` creates digital tokens/NFTs
+   - **TokenizedProduct**: `WarehousingDirector.tokenize()` creates digital tokens/NFTs. They are stored after `ORDER_CONFIRMED` has fired; `TOKENS_CREATED` signals when they exist
    - **PlanProduct**: `EnrollmentDirector.transformOrderItemToEnrollment()` creates subscriptions
    - **Quotation**: `QuotationDirector` marks linked quotations as fulfilled
 

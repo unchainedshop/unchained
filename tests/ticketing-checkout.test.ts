@@ -15,6 +15,7 @@ import seedTicketing, {
   GATE_TOKEN,
   TheaterEventId,
   buyTickets,
+  waitForEvents,
 } from './seeds/ticketing.js';
 
 const ADD_TICKETS = /* GraphQL */ `
@@ -216,6 +217,23 @@ test.describe('Ticketing: checkout', () => {
         .collection('products')
         .updateOne({ _id: TheaterEventId }, { $unset: { 'meta.saleRules': 1 } });
     }
+  });
+
+  test('checkout emits TOKENS_CREATED with the ids of the issued tickets', async () => {
+    const { order, tickets } = await buyTickets(userFetch, {
+      orderNumber: 'tickets-created-event',
+      positions: [{ productId: TheaterEventId, quantity: 2 }],
+    });
+    const [item] = order.items;
+
+    const events = await waitForEvents(db, {
+      type: 'TOKENS_CREATED',
+      'payload.orderPositionIds': item._id,
+    });
+    assert.equal(events.length, 1);
+    const { tokenIds, ...ids } = events[0].payload;
+    assert.deepEqual(tokenIds.toSorted(), tickets.map(({ _id }) => _id).toSorted());
+    assert.deepEqual(ids, { productIds: [TheaterEventId], orderPositionIds: [item._id] });
   });
 
   test.describe('Order.magicKey and Order.ticketsPdfUrl', () => {
