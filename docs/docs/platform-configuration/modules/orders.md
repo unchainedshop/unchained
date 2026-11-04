@@ -79,6 +79,7 @@ await startPlatform({
 
 - **Check again under your reservation.** Validation ran before the hook, so repeat the check it has to guard once you hold the lock.
 - **Throwing aborts the checkout** before the payment is charged. The reservations made so far are released, the order stays a cart and `checkoutCart` reports `OrderCheckoutError` with your error's `name` and `message` in `detailCode` and `detailMessage`. Release what the hook acquired before it throws. A busy lock of `modules.orders.acquireLock` throws with `cause: 'LOCKED'`, which `checkoutCart` reports as `OrderLockedError`; rethrow it as your own error if clients need to tell it apart from a locked cart.
+- **Payments confirmed by webhook:** payment plugins that check out from a webhook (for example Stripe, Saferpay or Datatrans) call `checkoutOrder` after the customer paid the provider. A hook that throws there leaves a paid cart, as a failing `validateOrderPosition` does, so refuse such orders before the payment starts (in `validateOrderPosition` or when signing the payment) and keep the hook for the race it guards.
 - **Release never fails the checkout:** an error thrown by `release()` is logged.
 - The hook may return nothing when there is nothing to release.
 

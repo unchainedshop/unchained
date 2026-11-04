@@ -83,7 +83,7 @@ await modules.warehousing.updateTokenOwnership({
 | `TOKEN_OWNERSHIP_CHANGED` | `{ token }` | Emitted when a token is transferred to another user or wallet |
 | `TOKEN_INVALIDATED` | `{ token }` | Emitted when a token is invalidated |
 
-`TOKENS_CREATED` carries ids only: `productIds` and `orderPositionIds` list each id once, and listeners load the tokens with `findTokens({ _id: { $in: tokenIds } })`. During checkout it fires after `ORDER_CONFIRMED`, because the order is confirmed before its tokenized positions are tokenized; listen to `TOKENS_CREATED` when you need the tokens of an order.
+`TOKENS_CREATED` carries ids only: `productIds` and `orderPositionIds` list each id once, and listeners load the tokens with `findTokens({ _id: { $in: tokenIds } })`. During checkout it fires after `ORDER_CONFIRMED`, because the order is confirmed before its tokenized positions are tokenized; listen to `TOKENS_CREATED` when you need the tokens of an order. The order processing calls `createTokens` once per tokenized order position and active `VIRTUAL` provider, so an order with several tokenized positions emits several `TOKENS_CREATED`, and a provider that issues no tokens emits none.
 
 ```typescript
 import { subscribe } from '@unchainedshop/events';
