@@ -635,6 +635,17 @@ Gate Control's camera only accepts ticket QR codes, a ticket id with its access 
 - Remove what only served the old scanner: scan roles that granted private user data, `x-token-accesskey` or pass-code rules and cookies, and custom `updateToken` rules for staff (`scanTicket` checks the ticket, the event and the entry window on the server).
 - Label printers or other side effects on admission subscribe to `TICKET_REDEEMED` instead of `TOKEN_INVALIDATED`, which a cancellation emits as well.
 
+### Work queue: sensitive fields are obfuscated by default
+
+`options.worker.blacklistedVariables` used to obfuscate nothing when it was not configured: the built-in list of `buildObfuscatedFieldsFilter` was unreachable. Now an unconfigured platform obfuscates the keys of `defaultObfuscatedFields` (`@unchainedshop/utils`): `password`, `newPassword`, `oldPassword`, `authorization`, `secret`, `accessKey`, `accessToken` and `token`. This applies to the `WORK_*` event payloads (and so to the `events` collection, Redis and EventBridge), to `Work.input`, `Work.result` and `Work.error` in GraphQL and to the MCP work tools. The stored work and the work that adapters process keep the plain values.
+
+- Keys match case-insensitively, for a custom list too: `['SECRET_KEY']` also obfuscates `secret_key`.
+- A custom list still replaces the defaults. Spread them to add keys: `blacklistedVariables: [...defaultObfuscatedFields, 'apiKey']`. `blacklistedVariables: []` obfuscates nothing, as before.
+- A listed key that holds a plain object is no longer replaced as a whole: the filter descends into it and obfuscates the listed keys inside. This keeps the warehousing token in the input of `EXPORT_TOKEN` work readable for external workers. If you listed a key to hide a whole object, list the keys inside it as well.
+- The filter no longer modifies the work: with a configured list, the work returned by `modules.worker.addWork`, `allocateWork` and `finishWork` used to carry the obfuscated values, so adapters processed `******`.
+- External workers that read a listed key from `Work.input` (GraphQL `workQueue`, `work` or `allocateWork`) now get `******`. Rename the key in the input or configure a list without it.
+- Subscribers to `WORK_*` events that read a listed key from the payload get `******`. Read the work with `modules.worker.findWork({ workId: payload._id })` instead, as the retries of failed work now do (`transformRetry` gets the stored work).
+
 ### Upgrading from an earlier v5 alpha: one-time re-login
 
 A user without a stored `tokenVersion` is now treated as version `0` (earlier alphas used `1`, which made the first revocation a no-op). Tokens those alphas issued to such users are rejected after the upgrade, so affected users log in once more. No data change is needed.

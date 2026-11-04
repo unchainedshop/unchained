@@ -8,7 +8,7 @@ const processNextWork = async (context: Context, options: Params<'WORKER_PROCESS
   const removePrivateFieldsFromWork = buildObfuscatedFieldsFilter(
     context.options.worker?.blacklistedVariables,
   );
-  const work = WorkerDirector.processNextWork(context, worker);
+  const work = await WorkerDirector.processNextWork(context, worker);
   return {
     work: removePrivateFieldsFromWork(work),
   };

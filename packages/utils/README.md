@@ -68,7 +68,8 @@ Available under the `calculation` namespace:
 | Export | Description |
 |--------|-------------|
 | `objectInvert` | Invert object keys and values |
-| `buildObfuscatedFieldsFilter` | Build filter for obfuscating sensitive fields |
+| `buildObfuscatedFieldsFilter` | Build a filter that returns a copy with the values of sensitive keys obfuscated (case-insensitive, `defaultObfuscatedFields` when no list is given) |
+| `defaultObfuscatedFields` | Keys obfuscated when no list is given (`password`, `token`, `secret`, …) |
 
 ### Director/Adapter Building Blocks
 

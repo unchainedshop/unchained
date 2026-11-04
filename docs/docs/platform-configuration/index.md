@@ -136,7 +136,7 @@ await startPlatform({
     },
     // Worker module
     worker: {
-      blacklistedVariables: ['SECRET_KEY'],
+      blacklistedVariables: [...defaultObfuscatedFields, 'SECRET_KEY'], // from @unchainedshop/utils
     },
   },
 });
