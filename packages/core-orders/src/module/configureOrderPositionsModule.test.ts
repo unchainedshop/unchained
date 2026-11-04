@@ -51,8 +51,9 @@ describe('configureOrderPositionsModule', () => {
     positions = configureOrderPositionsModule({ OrderPositions });
     emitAdapter = getEmitAdapter();
     setEmitAdapter({
+      // Order events only: npm test runs this next to a platform whose workers emit in the background
       publish(eventName) {
-        emitted.push(eventName);
+        if (eventName.startsWith('ORDER_')) emitted.push(eventName);
       },
       subscribe: () => undefined,
     });

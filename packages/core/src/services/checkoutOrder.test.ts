@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { afterEach, describe, it, mock } from 'node:test';
+import { afterEach, beforeEach, describe, it, mock } from 'node:test';
 import { ordersSettings } from '@unchainedshop/core-orders';
 import { OrderDiscountDirector } from '../directors/OrderDiscountDirector.ts';
 import { PaymentDirector } from '../directors/PaymentDirector.ts';
@@ -59,8 +59,13 @@ const reservationFor = (events: string[], { failRelease = false } = {}) =>
   });
 
 describe('checkoutOrderService', () => {
+  // ordersSettings is shared with a platform running in the same process (npm test)
+  let configuredReserveForCheckout: typeof ordersSettings.reserveForCheckout;
+  beforeEach(() => {
+    configuredReserveForCheckout = ordersSettings.reserveForCheckout;
+  });
   afterEach(() => {
-    ordersSettings.reserveForCheckout = undefined;
+    ordersSettings.reserveForCheckout = configuredReserveForCheckout;
   });
 
   it('reads the order under the lock and returns orders that left the cart', async () => {

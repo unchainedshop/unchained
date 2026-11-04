@@ -48,8 +48,9 @@ describe('configureOrderModuleMutations', () => {
     });
     emitAdapter = getEmitAdapter();
     setEmitAdapter({
+      // Order events only: npm test runs this next to a platform whose workers emit in the background
       publish(eventName, { payload }) {
-        emitted.push({ eventName, payload });
+        if (eventName.startsWith('ORDER_')) emitted.push({ eventName, payload });
       },
       subscribe: () => undefined,
     });
