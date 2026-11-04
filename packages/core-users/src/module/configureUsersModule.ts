@@ -505,6 +505,17 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
       return false;
     },
 
+    async replaceBcryptPasswordHash(userId: string, plainPassword: string): Promise<void> {
+      const { pbkdf2: pbkdf2SaltAndHash } = await this.hashPassword(plainPassword);
+      await Users.updateOne(
+        { _id: userId, 'services.password.bcrypt': { $exists: true } },
+        {
+          $set: { 'services.password.pbkdf2': pbkdf2SaltAndHash },
+          $unset: { 'services.password.bcrypt': 1 },
+        },
+      );
+    },
+
     async addEmail(userId: string, address: string): Promise<void> {
       if (!(await userSettings.validateEmail(address))) {
         throw new Error(`E-Mail address ${address} is invalid`, { cause: 'EMAIL_INVALID' });

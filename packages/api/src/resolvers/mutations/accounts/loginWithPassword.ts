@@ -45,6 +45,10 @@ export default async function loginWithPassword(
     throw new InvalidCredentialsError({ username, email });
   }
 
+  if (user.services.password.bcrypt) {
+    await context.modules.users.replaceBcryptPasswordHash(user._id, password);
+  }
+
   if (user.guest) {
     await context.modules.users.updateGuest(user, false);
   }

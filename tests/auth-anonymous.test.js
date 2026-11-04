@@ -140,6 +140,38 @@ test.describe('Auth for anonymous users', () => {
         },
       });
     });
+
+    test('replaces a legacy bcrypt hash and keeps the rest of the password service', async () => {
+      const reset = [{ token: 'pending-reset', address: 'bcrypt@unchained.local', when: new Date() }];
+      await Users.insertOne({
+        ...User,
+        _id: 'bcryptuser',
+        username: 'bcryptuser',
+        emails: [{ address: 'bcrypt@unchained.local', verified: true }],
+        initialPassword: true,
+        services: { password: { ...User.services.password, reset } },
+      });
+      const login = () =>
+        graphqlFetch({
+          query: /* GraphQL */ `
+            mutation {
+              loginWithPassword(username: "bcryptuser", password: "password") {
+                user {
+                  _id
+                }
+              }
+            }
+          `,
+        });
+
+      assert.strictEqual((await login()).data?.loginWithPassword.user._id, 'bcryptuser');
+      const { services, initialPassword } = await Users.findOne({ _id: 'bcryptuser' });
+      assert.strictEqual(services.password.bcrypt, undefined);
+      assert.match(services.password.pbkdf2, /^[0-9a-f]{32}:[0-9a-f]{64}$/);
+      assert.deepStrictEqual(services.password.reset, reset);
+      assert.strictEqual(initialPassword, true);
+      assert.strictEqual((await login()).data?.loginWithPassword.user._id, 'bcryptuser');
+    });
   });
 
   test.describe('Mutation.forgotPassword', () => {
