@@ -14,10 +14,11 @@ let graphqlFetchAsAdminUser;
 let graphqlFetchAsNormalUser;
 let graphqlFetchAsAnonymousUser;
 let workId;
+let db;
 
 test.describe('Work Queue', () => {
   test.before(async () => {
-    await setupDatabase();
+    [db] = await setupDatabase();
     graphqlFetchAsAdminUser = createLoggedInGraphqlFetch(ADMIN_TOKEN);
     graphqlFetchAsNormalUser = createLoggedInGraphqlFetch(USER_TOKEN);
     graphqlFetchAsAnonymousUser = createAnonymousGraphqlFetch();
@@ -384,6 +385,49 @@ test.describe('Work Queue', () => {
 
       // Should find at least the original work - retries may or may not have started yet
       assert.strictEqual(matchingWork.length >= 1, true);
+    });
+
+    test('Masks sensitive input by default and retries with the stored input', async () => {
+      const { data: { addWork } = {}, errors } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation addWork($type: WorkType!, $input: JSON, $retries: Int) {
+            addWork(type: $type, input: $input, retries: $retries) {
+              _id
+              input
+            }
+          }
+        `,
+        variables: {
+          type: 'HEARTBEAT',
+          input: { fails: true, token: 'plain-token', Authorization: 'Bearer plain' },
+          retries: 1,
+        },
+      });
+
+      assert.strictEqual(errors, undefined);
+      assert.deepStrictEqual(addWork.input, {
+        fails: true,
+        token: '******',
+        Authorization: '******',
+      });
+
+      await waitForWork(graphqlFetchAsAdminUser, addWork._id, { status: ['FAILED'] });
+
+      // The heartbeat worker got the plain input and returned it as its result
+      const failed = await db.collection('work_queue').findOne({ _id: addWork._id });
+      assert.strictEqual(failed.result.token, 'plain-token');
+
+      let retry;
+      for (let i = 0; i < 50 && !retry; i += 1) {
+        retry = await db.collection('work_queue').findOne({ originalWorkId: addWork._id });
+        if (!retry) await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+      assert.ok(retry, 'the failed work is retried');
+      assert.deepStrictEqual(retry.input, {
+        fails: true,
+        token: 'plain-token',
+        Authorization: 'Bearer plain',
+      });
     });
   });
 
