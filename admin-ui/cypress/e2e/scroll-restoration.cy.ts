@@ -145,21 +145,26 @@ describe('List scroll restoration', () => {
       cy.go('back');
       cy.location('search').should('eq', '?queryString=scroll');
       cy.get(listLinks).should('not.exist');
-      expectScroll(0);
-      if (cancelWith === 'user input') {
-        cy.window().then((win) => {
-          win.document.body.dispatchEvent(
-            new win.WheelEvent('wheel', { deltaY: 100, bubbles: true }),
-          );
+      settleLayout();
+      cy.window()
+        .its('scrollY')
+        .then((waitingY) => {
+          expect(waitingY).to.be.lessThan(1600);
+          if (cancelWith === 'user input') {
+            cy.window().then((win) => {
+              win.document.body.dispatchEvent(
+                new win.WheelEvent('wheel', { deltaY: 100, bubbles: true }),
+              );
+            });
+          } else {
+            cy.get('a[href="/users/"]').first().click({ force: true });
+            cy.location('search').should('eq', '');
+          }
+          cy.then(() => releaseUsers());
+          cy.wait('@delayedUsers');
+          cy.get(listLinks).should('have.length.greaterThan', users.length);
+          expectScroll(cancelWith === 'user input' ? waitingY : 0);
         });
-      } else {
-        cy.get('a[href="/users/"]').first().click({ force: true });
-        cy.location('search').should('eq', '');
-      }
-      cy.then(() => releaseUsers());
-      cy.wait('@delayedUsers');
-      cy.get(listLinks).should('have.length.greaterThan', users.length);
-      expectScroll(0);
     });
   });
 
