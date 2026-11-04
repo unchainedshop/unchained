@@ -244,7 +244,12 @@ export const configureOrderModuleMutations = ({
       { contextKeys = [], clearContext = false }: OrderAnonymizeOptions = {},
     ): Promise<Order | null> => {
       const selector = generateDbFilterById<Order>(orderId);
-      const contextPaths = clearContext ? [] : contextKeys.map((key) => `context.${key}`);
+      // A key inside another listed key is removed with it ($unset of both paths would conflict)
+      const contextPaths = clearContext
+        ? []
+        : contextKeys
+            .filter((key) => !contextKeys.some((other) => key.startsWith(`${other}.`)))
+            .map((key) => `context.${key}`);
       const date = new Date();
       const order = await Orders.findOneAndUpdate(
         {

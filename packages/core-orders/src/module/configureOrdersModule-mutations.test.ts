@@ -89,6 +89,24 @@ describe('configureOrderModuleMutations', () => {
       assert.equal(stored!.userId, 'buyer');
     });
 
+    it('removes dot paths, also when another listed key contains them', async () => {
+      await Orders.insertOne(
+        placedOrder('o1', {
+          context: {
+            marketing: { newsletter: true, source: 'fair' },
+            profile: { name: 'Ada', locale: 'de' },
+          },
+        }),
+      );
+
+      const order = await orders.anonymize('o1', {
+        contextKeys: ['marketing.newsletter', 'marketing', 'profile.name'],
+      });
+
+      assert.deepEqual(order?.context, { profile: { locale: 'de' } });
+      assert.equal(emitted.length, 1);
+    });
+
     it('works in every status and emits ORDER_ANONYMIZED with the order id only', async () => {
       const statuses = [null, ...Object.values(OrderStatus)];
       await Orders.insertMany(statuses.map((status, i) => placedOrder(`o${i}`, { status })));
