@@ -27,7 +27,7 @@ For detailed security documentation including compliance information and deploym
 
 - **Format**: JWT, signed with HS256 (`jose`)
 - **Secret**: `UNCHAINED_TOKEN_SECRET`, minimum 32 characters (enforced at boot)
-- **Expiry**: `UNCHAINED_TOKEN_EXPIRY_SECONDS`, default 3600 (1 hour)
+- **Expiry**: `UNCHAINED_TOKEN_EXPIRY_SECONDS`, default 3600 (1 hour); a custom login can pass its own with `context.login(user, { expiresIn })`
 
 ### Verification & Reset Tokens
 
@@ -121,7 +121,7 @@ The JWT is delivered as an `httpOnly` cookie with these defaults:
   httpOnly: true,           // always true, prevents XSS access
   secure: true,             // unless UNCHAINED_COOKIE_INSECURE is set
   sameSite: 'lax',          // OWASP: CSRF protection
-  maxAge: 3600 * 1000,      // follows UNCHAINED_TOKEN_EXPIRY_SECONDS
+  maxAge: 3600 * 1000,      // follows the token expiry
 }
 ```
 

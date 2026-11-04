@@ -48,7 +48,7 @@ Send subsequent requests with cookies included (`credentials: 'include'` with `f
 | Environment Variable | Default | Description |
 |----------------------|---------|-------------|
 | `UNCHAINED_TOKEN_SECRET` | — (required) | HS256 signing secret, minimum 32 characters |
-| `UNCHAINED_TOKEN_EXPIRY_SECONDS` | `3600` | JWT and cookie lifetime |
+| `UNCHAINED_TOKEN_EXPIRY_SECONDS` | `3600` | JWT and cookie lifetime (unless a login passes `expiresIn`) |
 | `UNCHAINED_TOKEN_ISSUER` | `unchained-engine` | `iss` claim, validated on verification |
 | `UNCHAINED_COOKIE_NAME` | `unchained_token` | JWT cookie name |
 | `UNCHAINED_COOKIE_PATH` | `/` | Cookie path |
@@ -68,6 +68,15 @@ For local storefront development against a remote engine, the server adapters ac
 await connect(fastify, platform, {
   allowRemoteToLocalhostSecureCookies: process.env.NODE_ENV !== 'production',
 });
+```
+
+### Session Length per Login
+
+A custom login resolver can give one login its own lifetime: `context.login(user, { expiresIn })` signs the JWT and sets the cookie for `expiresIn` seconds instead of `UNCHAINED_TOKEN_EXPIRY_SECONDS`, which the built-in login mutations keep using. Sessions are not renewed while in use.
+
+```typescript
+// e.g. a 12 hour session for a custom login mutation
+return context.login(user, { expiresIn: 12 * 60 * 60 });
 ```
 
 ### Logout

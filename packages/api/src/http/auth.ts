@@ -68,6 +68,8 @@ export async function signAccessToken(
   tokenVersion: number,
   options?: {
     impersonatorId?: string;
+    /** Token lifetime in seconds, defaults to UNCHAINED_TOKEN_EXPIRY_SECONDS */
+    expiresIn?: number;
   },
 ): Promise<{ token: string; expires: Date }> {
   if (!UNCHAINED_TOKEN_SECRET) {
@@ -77,7 +79,12 @@ export async function signAccessToken(
   // Validate the configured secret before signing.
   validateSecretStrength(UNCHAINED_TOKEN_SECRET);
 
-  const expirySeconds = parseInt(UNCHAINED_TOKEN_EXPIRY_SECONDS, 10);
+  const expiresIn = options?.expiresIn;
+  if (expiresIn != null && !(Number.isFinite(expiresIn) && Math.floor(expiresIn) > 0)) {
+    throw new Error(`expiresIn must be a positive number of seconds, got ${expiresIn}`);
+  }
+  const expirySeconds =
+    expiresIn != null ? Math.floor(expiresIn) : parseInt(UNCHAINED_TOKEN_EXPIRY_SECONDS, 10);
   const now = Math.floor(Date.now() / 1000);
 
   const payload: Omit<AccessTokenPayload, 'iss' | 'iat' | 'exp'> & { imp?: string } = {

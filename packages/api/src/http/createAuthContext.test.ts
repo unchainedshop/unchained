@@ -1,6 +1,14 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { parseSetCookie } from 'cookie';
+import * as jose from 'jose';
+import { registerEvents } from '@unchainedshop/events';
+import { API_EVENTS } from '../events.ts';
+
+// auth.ts reads the secret when it first loads, before the login cases below sign tokens.
+// npm test sets it through .env.tests.
+process.env.UNCHAINED_TOKEN_SECRET ??= 'test-secret-that-is-at-least-32-characters-long';
+registerEvents(Object.keys(API_EVENTS));
 
 // Cookie settings are read from the environment when the module loads, so every case
 // imports a fresh module instance (distinct URL) after setting UNCHAINED_COOKIE_SAMESITE.
@@ -85,5 +93,33 @@ describe('createAuthContext token cookie', () => {
       'custom+key/with=padding',
     );
     assert.strictEqual(await accessTokenOf('unchained_token=bad%zz'), 'bad%zz');
+  });
+});
+
+describe('createAuthContext login', () => {
+  const loginCookieFor = async (options?: { expiresIn?: number }) => {
+    const { createAuthContext } = await import('./createAuthContext.ts?token-cookie');
+    const setCookies: string[] = [];
+    const { login } = await createAuthContext({
+      getHeader: () => undefined,
+      appendHeader: (_name: string, value: string) => setCookies.push(value),
+    });
+    const { tokenExpires } = await login({ _id: 'user-id', username: 'user' }, options);
+    const { value, expires } = parseSetCookie(setCookies[0]);
+    const { iat, exp } = jose.decodeJwt(value);
+    return { tokenExpires, expires, lifetime: exp! - iat!, exp };
+  };
+
+  it('signs a session of expiresIn seconds and lets the cookie expire with it', async () => {
+    const { tokenExpires, expires, lifetime, exp } = await loginCookieFor({ expiresIn: 43200 });
+    assert.strictEqual(lifetime, 43200);
+    assert.strictEqual(tokenExpires.getTime(), exp! * 1000);
+    assert.deepStrictEqual(expires, tokenExpires);
+  });
+
+  it('keeps UNCHAINED_TOKEN_EXPIRY_SECONDS without expiresIn', async () => {
+    const { tokenExpires, expires, lifetime } = await loginCookieFor();
+    assert.strictEqual(lifetime, Number(process.env.UNCHAINED_TOKEN_EXPIRY_SECONDS || 3600));
+    assert.deepStrictEqual(expires, tokenExpires);
   });
 });

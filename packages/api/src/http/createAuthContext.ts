@@ -109,13 +109,15 @@ export async function createAuthContext(
 
   // Create login function
   const login: LoginFn = async (user: User, options = {}) => {
-    const { impersonator } = options;
+    const { impersonator, expiresIn } = options;
 
     // Get current token version; a missing field is 0 (never revoked)
     const tokenVersion = user.tokenVersion ?? 0;
 
+    // The cookie expires with the token
     const { token: newToken, expires } = await signAccessToken(user._id, tokenVersion, {
       impersonatorId: impersonator?._id,
+      expiresIn,
     });
 
     // Set JWT cookie
