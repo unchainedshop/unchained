@@ -16,7 +16,38 @@ const ORDER_EVENTS: string[] = [
   'ORDER_SET_DELIVERY_PROVIDER',
   'ORDER_SET_PAYMENT_PROVIDER',
   'ORDER_UPDATE',
+  'ORDER_ANONYMIZED',
 ];
+
+export interface OrderUpdateEventOptions {
+  // 'order' (default) emits ORDER_UPDATE with the updated order. 'ids' emits an
+  // OrderUpdateKeysEventPayload instead, so the new values stay out of the event.
+  eventPayload?: 'order' | 'ids';
+}
+
+export interface OrderUpdateKeysEventPayload {
+  orderId: string;
+  field: string;
+  // The keys of the field whose value changed
+  keys: string[];
+}
+
+export interface OrderAnonymizeOptions {
+  // Keys (or dot paths) of order.context to remove, the rest of the context is kept
+  contextKeys?: string[];
+  // Replaces the whole context with {}, contextKeys are ignored then
+  clearContext?: boolean;
+}
+
+export interface OrderAnonymizedEventPayload {
+  orderId: string;
+}
+
+// The keys whose value differs between two flat objects, such as two contacts
+const changedKeys = (before?: Record<string, any> | null, after?: Record<string, any> | null) =>
+  [...new Set([...Object.keys(before || {}), ...Object.keys(after || {})])].filter(
+    (key) => (before?.[key] ?? null) !== (after?.[key] ?? null),
+  );
 
 export const configureOrderModuleMutations = ({
   Orders,
@@ -131,10 +162,14 @@ export const configureOrderModuleMutations = ({
       return order;
     },
 
-    updateContact: async (orderId: string, contact: Contact) => {
+    updateContact: async (
+      orderId: string,
+      contact: Contact,
+      { eventPayload = 'order' }: OrderUpdateEventOptions = {},
+    ) => {
       const selector = generateDbFilterById(orderId);
       const existing = await Orders.findOne(selector, {
-        projection: { billingAddress: true, countryCode: true },
+        projection: { billingAddress: true, countryCode: true, contact: true },
       });
       const defaultCountry = existing?.billingAddress?.countryCode || existing?.countryCode;
       const order = await Orders.findOneAndUpdate(
@@ -148,7 +183,15 @@ export const configureOrderModuleMutations = ({
         { returnDocument: 'after' },
       );
       if (!order) return null;
-      await emit('ORDER_UPDATE', { order, field: 'contact' });
+      if (eventPayload === 'ids') {
+        await emit('ORDER_UPDATE', {
+          orderId: order._id,
+          field: 'contact',
+          keys: changedKeys(existing?.contact, order.contact),
+        } satisfies OrderUpdateKeysEventPayload);
+      } else {
+        await emit('ORDER_UPDATE', { order, field: 'contact' });
+      }
       return order;
     },
 
@@ -190,6 +233,43 @@ export const configureOrderModuleMutations = ({
       );
       if (!order) return null;
       await emit('ORDER_UPDATE', { order, field: 'context' });
+      return order;
+    },
+
+    // Removes the personal data of an order in any status: the contact, the billing address and
+    // the given context keys. Repeating it changes nothing (and emits nothing) unless there is
+    // something left to remove; `anonymized` keeps the date of the first call.
+    anonymize: async (
+      orderId: string,
+      { contextKeys = [], clearContext = false }: OrderAnonymizeOptions = {},
+    ): Promise<Order | null> => {
+      const selector = generateDbFilterById<Order>(orderId);
+      const contextPaths = clearContext ? [] : contextKeys.map((key) => `context.${key}`);
+      const date = new Date();
+      const order = await Orders.findOneAndUpdate(
+        {
+          ...selector,
+          $or: [
+            { anonymized: { $exists: false } },
+            { contact: { $exists: true } },
+            { billingAddress: { $exists: true } },
+            ...(clearContext
+              ? [{ context: { $ne: {} } }]
+              : contextPaths.map((path) => ({ [path]: { $exists: true } }))),
+          ],
+        },
+        {
+          $set: clearContext ? { context: {}, updated: date } : { updated: date },
+          $min: { anonymized: date },
+          $unset: Object.fromEntries(
+            ['contact', 'billingAddress', ...contextPaths].map((path) => [path, 1]),
+          ),
+        },
+        { returnDocument: 'after' },
+      );
+      if (!order) return Orders.findOne(selector, {});
+      // Ids only, so neither the events collection nor a subscriber gets the removed data
+      await emit('ORDER_ANONYMIZED', { orderId: order._id } satisfies OrderAnonymizedEventPayload);
       return order;
     },
 
