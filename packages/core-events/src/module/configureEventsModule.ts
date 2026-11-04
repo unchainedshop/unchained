@@ -6,12 +6,72 @@ import {
   type ModuleInput,
 } from '@unchainedshop/mongodb';
 import { getRegisteredEvents } from '@unchainedshop/events';
-import { SortDirection, type SortOption, type DateFilterInput } from '@unchainedshop/utils';
+import {
+  SortDirection,
+  buildObfuscatedFieldsFilter,
+  defaultObfuscatedFields,
+  type SortOption,
+  type DateFilterInput,
+} from '@unchainedshop/utils';
 import { EventsCollection, type Event } from '../db/EventsCollection.ts';
 import { configureEventHistoryAdapter } from './configureEventHistoryAdapter.ts';
 import { createLogger } from '@unchainedshop/logger';
 
 const logger = createLogger('unchained:core-events');
+
+/**
+ * Keys redacted in the event history when no `redactedPayloadFields` are configured: the
+ * `defaultObfuscatedFields` of `@unchainedshop/utils` and further names of credentials.
+ */
+export const defaultRedactedPayloadFields = [
+  ...defaultObfuscatedFields,
+  'plainPassword',
+  'hashedToken',
+  'refreshToken',
+  'idToken',
+  'apiKey',
+  'clientSecret',
+  'privateKey',
+];
+
+/**
+ * Keys of contact data (e-mail addresses, phone numbers, names and postal addresses), redacted in
+ * the event history with `redactContactData`. A key that holds a plain object (`address` of a user
+ * profile) is filtered recursively, so its postal address fields are redacted.
+ */
+export const contactDataPayloadFields = [
+  'emailAddress',
+  'email',
+  'address',
+  'recipientEmail',
+  'telNumber',
+  'phoneMobile',
+  'username',
+  'userName',
+  'displayName',
+  'firstName',
+  'lastName',
+  'company',
+  'addressLine',
+  'addressLine2',
+  'postalCode',
+  'city',
+];
+
+export interface EventsSettingsOptions {
+  /**
+   * Keys whose values are replaced with `******` in the payloads written to the `events`
+   * collection (event history and `create`), at any depth and case-insensitively. Defaults to
+   * `defaultRedactedPayloadFields`; a list replaces them, `[]` stores payloads as emitted.
+   * Subscribers and emit adapters always get the payload as emitted.
+   */
+  redactedPayloadFields?: string[] | null;
+  /**
+   * Also redact the keys of `contactDataPayloadFields` in the event history. Defaults to false.
+   */
+  redactContactData?: boolean;
+}
+
 export interface EventReport {
   emitCount: number;
   type: string;
@@ -38,16 +98,26 @@ export const buildFindSelector = ({ types, queryString, created }: EventQuery) =
   return selector;
 };
 
-export const configureEventsModule = async ({ db }: ModuleInput<Record<string, never>>) => {
+export const configureEventsModule = async ({
+  db,
+  options = {},
+}: ModuleInput<EventsSettingsOptions>) => {
   const Events = await EventsCollection(db);
+  const redactPayload = buildObfuscatedFieldsFilter([
+    ...(options.redactedPayloadFields ?? defaultRedactedPayloadFields),
+    ...(options.redactContactData ? contactDataPayloadFields : []),
+  ]);
 
   const create = async (
     doc: Omit<Event, '_id' | 'created'> & Pick<Partial<Event>, '_id' | 'created'>,
   ) => {
+    const { payload, ...rest } = doc;
     const result = await Events.insertOne({
       _id: generateDbObjectId(),
       created: new Date(),
-      ...doc,
+      ...rest,
+      // Stores a redacted copy, subscribers and emit adapters keep the payload as emitted
+      ...(payload ? { payload: redactPayload(payload) } : {}),
     });
     return result.insertedId;
   };

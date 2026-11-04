@@ -146,6 +146,25 @@ export const waitForWork = async (graphqlFetch, workId, { status = ['SUCCESS', '
   throw new Error(`Work ${workId} did not reach ${status.join('/')} in time`);
 };
 
+// The plain token of the latest account mail (`reset-password`, `verify-email`, …) of a user. The
+// event history redacts it, the MESSAGE work that sends the mail keeps it.
+export const findAccountActionToken = async (db, { userId, action }) => {
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    const work = await db.collection('work_queue').findOne(
+      {
+        type: 'MESSAGE',
+        'input.template': 'ACCOUNT_ACTION',
+        'input.userId': userId,
+        'input.action': action,
+      },
+      { sort: { created: -1 } },
+    );
+    if (work) return work.input.token;
+    await setTimeout(10);
+  }
+  return undefined;
+};
+
 // Enqueue a work item, wait for it to finish, and return its terminal status.
 export const runWorkToCompletion = async (graphqlFetch, type, input) => {
   const { data } = await graphqlFetch({

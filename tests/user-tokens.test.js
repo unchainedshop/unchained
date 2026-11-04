@@ -5,6 +5,7 @@ import {
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
   disconnect,
+  findAccountActionToken,
 } from './helpers.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 
@@ -68,12 +69,10 @@ test.describe('User Token Validation', () => {
       `,
     });
 
-    const Events = db.collection('events');
-    const resetEvent = await Events.findOne({
-      'payload.userId': 'user-reset-password',
-      'payload.action': 'reset-password',
+    resetPasswordToken = await findAccountActionToken(db, {
+      userId: 'user-reset-password',
+      action: 'reset-password',
     });
-    resetPasswordToken = resetEvent?.payload?.token;
 
     await graphqlFetchAsAdminUser({
       query: /* GraphQL */ `
@@ -85,16 +84,10 @@ test.describe('User Token Validation', () => {
       `,
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    const verifyEvent = await Events.findOne(
-      {
-        'payload.userId': 'user-verify-email',
-        'payload.action': 'verify-email',
-      },
-      { sort: { created: -1 } },
-    );
-    verifyEmailToken = verifyEvent?.payload?.token;
+    verifyEmailToken = await findAccountActionToken(db, {
+      userId: 'user-verify-email',
+      action: 'verify-email',
+    });
 
     if (!resetPasswordToken) {
       throw new Error('Reset password token was not generated');

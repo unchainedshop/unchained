@@ -7,11 +7,42 @@ description: Event history and audit trail
 
 # Events Module
 
-The events module installs a database history adapter when no custom history adapter is configured. It records emitted events for inspection and analytics. Records expire after `EVENTS_TTL_SECONDS` (default: two days); use the audit logging pipeline for longer retention.
+The events module installs a database history adapter when no custom history adapter is configured. It records emitted events for inspection and analytics, with secrets in their payloads [redacted](#redacting-payloads). Records expire after `EVENTS_TTL_SECONDS` (default: two days); use the audit logging pipeline for longer retention.
 
 ## Configuration Options
 
-The events module has no configuration options.
+```typescript
+export interface EventsSettingsOptions {
+  redactedPayloadFields?: string[] | null;
+  redactContactData?: boolean;
+}
+```
+
+### Redacting Payloads
+
+Security Feature.
+
+Before a payload is written to the `events` collection (by the history adapter or `modules.events.create`), the values of redacted keys are replaced with `******`, at any depth. Keys match case-insensitively. The module stores a copy: subscribers and emit adapters (Node.js, Redis, EventBridge) get the payload as emitted, so templates and integrations that read a token or the order contact keep working.
+
+If `redactedPayloadFields` is not configured, the keys of `defaultRedactedPayloadFields` from `@unchainedshop/core-events` are redacted: the [obfuscated work fields](./worker.md#blacklisting-variables) (`password`, `newPassword`, `oldPassword`, `authorization`, `secret`, `accessKey`, `accessToken`, `token`) and `plainPassword`, `hashedToken`, `refreshToken`, `idToken`, `apiKey`, `clientSecret` and `privateKey`. This keeps the plain tokens of `USER_ACCOUNT_ACTION` (password reset, e-mail verification, enrollment) out of the history. A custom list replaces the defaults, `[]` stores payloads as emitted.
+
+`redactContactData: true` also redacts the keys of `contactDataPayloadFields`: `emailAddress`, `email`, `address`, `recipientEmail`, `telNumber`, `phoneMobile`, `username`, `userName`, `displayName`, `firstName`, `lastName`, `company`, `addressLine`, `addressLine2`, `postalCode` and `city`. This covers the order contact and billing address in the `ORDER_*` events, the e-mail addresses, profile and last contact of users in the `USER_*` events and the address in `USER_ACCOUNT_ACTION`.
+
+```typescript
+import { defaultRedactedPayloadFields } from '@unchainedshop/core-events';
+
+await startPlatform({
+  options: {
+    events: {
+      // A login code is a secret here; `code` also matches discount and error codes
+      redactedPayloadFields: [...defaultRedactedPayloadFields, 'code'],
+      redactContactData: true,
+    },
+  },
+});
+```
+
+A redacted key that holds a plain object is not replaced: its keys are redacted in turn, so the warehousing token in `TOKEN_INVALIDATED` and the user profile's `address` keep their structure. Other keys, such as `remoteAddress`, `userAgent` or the `text` of mail work in `WORK_*` events, can be added to the list. `WORK_*` payloads are already obfuscated with [`options.worker.blacklistedVariables`](./worker.md#blacklisting-variables) when they are emitted.
 
 ## Module API
 

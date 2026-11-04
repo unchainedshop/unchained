@@ -646,6 +646,16 @@ Gate Control's camera only accepts ticket QR codes, a ticket id with its access 
 - External workers that read a listed key from `Work.input` (GraphQL `workQueue`, `work` or `allocateWork`) now get `******`. Rename the key in the input or configure a list without it.
 - Subscribers to `WORK_*` events that read a listed key from the payload get `******`. Read the work with `modules.worker.findWork({ workId: payload._id })` instead, as the retries of failed work now do (`transformRetry` gets the stored work).
 
+### Event history: secrets are redacted
+
+The `events` collection used to store every payload as emitted, including the plain token of `USER_ACCOUNT_ACTION` (password reset, e-mail verification, enrollment) for `EVENTS_TTL_SECONDS`. The events module now stores a copy with the keys of `defaultRedactedPayloadFields` (`@unchainedshop/core-events`) replaced by `******`, at any depth and case-insensitively: the `defaultObfuscatedFields` of `@unchainedshop/utils` and `plainPassword`, `hashedToken`, `refreshToken`, `idToken`, `apiKey`, `clientSecret` and `privateKey`. This applies to the history adapter and to `modules.events.create`, so to `Query.events`, `Query.event`, the Admin UI and the MCP event tools.
+
+- Subscribers and emit adapters (Node.js, Redis, EventBridge) still get the payload as emitted; the account mails keep their links.
+- Code or tests that read a token from the `events` collection (`payload.token` of `USER_ACCOUNT_ACTION`) now get `******`. Subscribe to the event instead, or read the `ACCOUNT_ACTION` message work (`type: 'MESSAGE'`, `input.token`) from the work queue.
+- `options.events.redactedPayloadFields` replaces the list; spread `defaultRedactedPayloadFields` to add keys. `redactedPayloadFields: []` stores payloads as emitted, as before.
+- `options.events.redactContactData: true` (default `false`) also redacts the keys of `contactDataPayloadFields`, the order contact and addresses and the e-mail addresses and profiles of users.
+- Like the work obfuscation, a listed key that holds a plain object is filtered recursively instead of replaced.
+
 ### Upgrading from an earlier v5 alpha: one-time re-login
 
 A user without a stored `tokenVersion` is now treated as version `0` (earlier alphas used `1`, which made the first revocation a no-op). Tokens those alphas issued to such users are rejected after the upgrade, so affected users log in once more. No data change is needed.

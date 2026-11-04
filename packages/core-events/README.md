@@ -27,6 +27,8 @@ const report = await events.getReport({ types: ['ORDER_CREATE'] });
 
 Records contain the event type, payload, and creation timestamp. The TTL index removes records after `EVENTS_TTL_SECONDS` (default: 172800 seconds, or two days). Configure long-term audit retention through your logging pipeline.
 
+Stored payloads are redacted copies: the values of `defaultRedactedPayloadFields` (`token`, `password`, `plainPassword`, `hashedToken`, …) become `******`, at any depth and case-insensitively. Configure the keys with `options.events.redactedPayloadFields`, and add `contactDataPayloadFields` (e-mail addresses, phone numbers, names, postal addresses) with `options.events.redactContactData: true`. Subscribers and emit adapters get the payload as emitted.
+
 See the [module guide](https://docs.unchained.shop/platform-configuration/modules/events), [public exports](src/events-index.ts), and [module implementation](src/module/configureEventsModule.ts).
 
 ## License

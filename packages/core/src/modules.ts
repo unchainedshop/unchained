@@ -16,7 +16,11 @@ import {
   type EnrollmentsModule,
   type EnrollmentsSettingsOptions,
 } from '@unchainedshop/core-enrollments';
-import { configureEventsModule, type EventsModule } from '@unchainedshop/core-events';
+import {
+  configureEventsModule,
+  type EventsModule,
+  type EventsSettingsOptions,
+} from '@unchainedshop/core-events';
 import {
   configureFilesModule,
   type FilesModule,
@@ -88,6 +92,7 @@ export interface ModuleOptions {
   payment?: PaymentSettingsOptions;
   filters?: FiltersSettingsOptions;
   enrollments?: EnrollmentsSettingsOptions;
+  events?: EventsSettingsOptions;
   orders?: OrdersSettingsOptions;
   quotations?: QuotationsSettingsOptions;
   files?: FilesSettingsOptions;
@@ -141,6 +146,7 @@ export default async function initModules(
   });
   const events = await configureEventsModule({
     db,
+    options: options.events,
     migrationRepository,
   });
   const files = await configureFilesModule({

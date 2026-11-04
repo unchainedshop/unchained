@@ -3,6 +3,7 @@ import {
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
   disconnect,
+  findAccountActionToken,
 } from './helpers.js';
 import { User, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
@@ -252,13 +253,19 @@ test.describe('Auth for anonymous users', () => {
 
     test('change password with token from forgotPassword call', async () => {
       // Reset the password with that token
-      const Events = db.collection('events');
-      const event = await Events.findOne({
+      const token = await findAccountActionToken(db, {
+        userId: 'userthatforgetspasswords',
+        action: 'reset-password',
+      });
+      assert.ok(token);
+
+      // The event history keeps the event but not the token
+      const event = await db.collection('events').findOne({
+        type: 'USER_ACCOUNT_ACTION',
         'payload.userId': 'userthatforgetspasswords',
         'payload.action': 'reset-password',
       });
-
-      const token = event.payload.token;
+      assert.strictEqual(event.payload.token, '******');
 
       const { data } = await graphqlFetch({
         query: /* GraphQL */ `

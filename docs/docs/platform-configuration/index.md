@@ -125,6 +125,10 @@ await startPlatform({
     enrollments: {
       enrollmentNumberHashFn: (enrollment, index) => `ENR-${index}`,
     },
+    // Events module
+    events: {
+      redactContactData: true, // secrets are redacted in the event history by default
+    },
     // Quotations module
     quotations: {
       quotationNumberHashFn: (quotation, index) => `QUO-${index}`,
