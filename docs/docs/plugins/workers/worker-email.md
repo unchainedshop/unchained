@@ -29,6 +29,20 @@ pluginRegistry.register(EmailPlugin);
 | `MAIL_URL` | - | SMTP connection URL, e.g. `smtp://user:pass@smtp.example.com:587` (required in production) |
 | `UNCHAINED_DISABLE_EMAIL_INTERCEPTION` | - | Set to disable email interception in non-production |
 
+## Input
+
+Template resolvers return the input of `EMAIL` work as `EmailTemplateType` (`@unchainedshop/core`):
+
+| Field | Description |
+|-------|-------------|
+| `from`, `to` | Sender and recipient (`to` is required) |
+| `cc`, `bcc` | Further recipients |
+| `replyTo` | Address that replies go to |
+| `subject`, `text`, `html` | Subject and content |
+| `attachments` | `{ filename, path }`, `{ filename, content, contentType, encoding }` or `{ href, filename }` |
+
+Other keys are passed to Nodemailer as they are.
+
 ## Email Interception
 
 Outside `NODE_ENV=production`, emails are not sent — they are written to a temp HTML file and opened in your browser for preview. Set `UNCHAINED_DISABLE_EMAIL_INTERCEPTION=true` to send real emails in development instead.

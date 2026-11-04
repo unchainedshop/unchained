@@ -47,6 +47,7 @@
 - **Order locks are held until released:** `modules.orders.acquireLock` renews its lease while held, so its `ttl` (default 5 s, now also for checkout, quotations and vouchers) only bounds how long a crashed holder blocks others; release every lock you acquire. Waiters retry with jitter for up to 2 s instead of 10 × 200 ms. The unused `lockOrderDuringCheckout` orders setting is removed.
 
 ### Improvements
+- **`EmailTemplateType` declares `bcc` and `replyTo`** (`@unchainedshop/core`): template resolvers can return them without a cast; the email worker already passed them to Nodemailer.
 - **Legacy bcrypt password hashes are replaced on login** (`@unchainedshop/core-users`, `@unchainedshop/api`): a successful `loginWithPassword` against a bcrypt hash stores a PBKDF2 hash instead and removes the bcrypt one, keeping pending reset tokens and `initialPassword`, without a `USER_UPDATE_PASSWORD` event. This prepares dropping `bcryptjs` in a later major; users who never log in until then will need a password reset.
 - **Push notifications without `web-push`** (`@unchainedshop/plugins`): the push notification worker encrypts (RFC 8291) and signs (VAPID) with the Web Crypto API and sends with `fetch`, so the optional `web-push` peer is gone; existing VAPID keys and subscriptions keep working. `@unchainedshop/api` no longer depends on `mime`.
 
