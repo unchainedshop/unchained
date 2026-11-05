@@ -186,4 +186,69 @@ describe('Work queue retention', { timeout: 30000 }, () => {
       await migration.up({ logger: undefined, unchainedAPI: undefined });
     });
   });
+
+  describe('scrubWorkInput', () => {
+    const finishedWork = async (
+      worker: Awaited<ReturnType<typeof configure>>,
+      type: string,
+      input: Record<string, any>,
+      finished: Date,
+    ) => {
+      const work = await worker.addWork({ type, input });
+      await worker.allocateWork({ types: [type], worker: 'test' });
+      await worker.finishWork(work._id, { success: true, finished, worker: 'test' });
+      return work;
+    };
+
+    it('scrubs the input of work finished or deleted before the date', async () => {
+      const worker = await configure();
+      const twoDaysAgo = new Date(Date.now() - 2 * DAY);
+      const input = { to: 'buyer@example.com', text: 'https://shop.example/reset/plain-token' };
+
+      const sent = await finishedWork(worker, 'EMAIL', input, twoDaysAgo);
+      const recent = await finishedWork(worker, 'EMAIL', input, new Date());
+      const message = await finishedWork(
+        worker,
+        'MESSAGE',
+        { template: 'ACCOUNT_ACTION', token: 'plain-token' },
+        twoDaysAgo,
+      );
+      const otherType = await finishedWork(worker, 'HTTP_REQUEST', input, twoDaysAgo);
+      const pending = await worker.addWork({ type: 'EMAIL', input });
+      const deleted = await worker.addWork({ type: 'EMAIL', input });
+      await worker.deleteWork(deleted._id);
+      await WorkQueue().updateOne({ _id: deleted._id }, { $set: { deleted: twoDaysAgo } });
+
+      const scrubbedCount = await worker.scrubWorkInput({
+        types: ['EMAIL', 'MESSAGE'],
+        before: new Date(Date.now() - DAY),
+        keep: ['template'],
+      });
+
+      assert.equal(scrubbedCount, 3);
+      const stored = async (workId: string) => worker.findWork({ workId });
+      assert.deepEqual((await stored(sent._id))?.input, {});
+      assert.ok((await stored(sent._id))?.scrubbed instanceof Date);
+      assert.deepEqual((await stored(message._id))?.input, { template: 'ACCOUNT_ACTION' });
+      assert.deepEqual((await stored(deleted._id))?.input, {});
+      for (const work of [recent, otherType, pending]) {
+        const { input: storedInput, scrubbed } = (await stored(work._id))!;
+        assert.deepEqual(storedInput, work.input);
+        assert.equal(scrubbed, undefined);
+      }
+
+      // Already scrubbed work is left alone
+      assert.equal(await worker.scrubWorkInput({ types: ['EMAIL', 'MESSAGE'], before: new Date() }), 1);
+      assert.deepEqual((await stored(message._id))?.input, { template: 'ACCOUNT_ACTION' });
+    });
+
+    it('scrubs work without an object input', async () => {
+      const worker = await configure();
+      const work = await finishedWork(worker, 'EMAIL', {}, new Date(Date.now() - DAY));
+      await WorkQueue().updateOne({ _id: work._id }, { $set: { input: null as any } });
+
+      assert.equal(await worker.scrubWorkInput({ types: ['EMAIL'], before: new Date() }), 1);
+      assert.deepEqual((await worker.findWork({ workId: work._id }))?.input, {});
+    });
+  });
 });

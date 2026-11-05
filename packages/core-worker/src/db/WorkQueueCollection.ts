@@ -49,6 +49,8 @@ export type Work = {
   scheduleId?: string;
   // The TTL index deletes the work at this date, see computeWorkExpiry
   expires?: Date;
+  // When scrubWorkInput replaced the input
+  scrubbed?: Date;
 } & TimestampFields;
 
 export const WorkQueueCollection = async (db: mongodb.Db) => {

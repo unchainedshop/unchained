@@ -27,6 +27,14 @@ These workers are registered by `registerBasePlugins()` (from `@unchainedshop/pl
 | [`shop.unchained.worker-plugin.invalidate-carts`](./worker-invalidate-carts.md) | `INVALIDATE_CARTS` | Recalculate recently updated open carts | When refreshing cart pricing after tax or catalog changes |
 | [`shop.unchained.worker.error-notifications`](./worker-error-notifications.md) | `ERROR_NOTIFICATIONS` | Daily error reports | When you want daily summaries of worker failures |
 
+## Opt-in Workers
+
+Not part of any preset, register them yourself:
+
+| Adapter Key | Type | Description |
+|-------------|------|-------------|
+| [`shop.unchained.worker-plugin.scrub-work-input`](./worker-scrub-work-input.md) | `SCRUB_WORK_INPUT` | Scrub the input of sent mails and messages (addresses, texts, links) after a day |
+
 ## SMS Workers
 
 Registered by `registerAllPlugins()` (from `@unchainedshop/plugins/presets/all`):

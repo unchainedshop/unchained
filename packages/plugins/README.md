@@ -101,6 +101,7 @@ npm install @unchainedshop/plugins
 | GC Guests | `worker/gc-guests` | Garbage-collects guest users |
 | Invalidate Carts | `worker/invalidate-carts` | Recalculates open carts |
 | Message | `worker/message` | Renders a message template and starts the delivery jobs |
+| Scrub Work Input | `worker/scrub-work-input` | Opt-in: scrubs the input of sent mails and messages after a day |
 
 ### Event Adapters
 

@@ -250,6 +250,7 @@ const sidebars = {
                 'plugins/workers/worker-zombie-killer',
                 'plugins/workers/worker-gc-guests',
                 'plugins/workers/worker-invalidate-carts',
+                'plugins/workers/worker-scrub-work-input',
                 'plugins/workers/worker-message',
                 'plugins/workers/worker-error-notifications',
                 'plugins/workers/push-notification',

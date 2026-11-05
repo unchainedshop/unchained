@@ -625,6 +625,48 @@ export const configureWorkerModule = async ({
       return work;
     },
 
+    // Work that finished or was deleted does not run again, but its input (e.g. the addresses,
+    // texts and links of a mail) stays until the work expires. This replaces the input of such
+    // work of the given types, finished or deleted before `before`, with its `keep` keys only and
+    // sets `scrubbed`. Returns the number of scrubbed work items.
+    scrubWorkInput: async ({
+      types,
+      before,
+      keep = [],
+    }: {
+      types: string[];
+      before: Date;
+      keep?: string[];
+    }): Promise<number> => {
+      const { modifiedCount } = await WorkQueue.updateMany(
+        {
+          type: { $in: types },
+          scrubbed: { $exists: false },
+          $or: [{ finished: { $lte: before } }, { deleted: { $lte: before } }],
+        },
+        [
+          {
+            $set: {
+              input: {
+                $arrayToObject: {
+                  $filter: {
+                    input: {
+                      $objectToArray: {
+                        $cond: [{ $eq: [{ $type: '$input' }, 'object'] }, '$input', {}],
+                      },
+                    },
+                    cond: { $in: ['$$this.k', { $literal: keep }] },
+                  },
+                },
+              },
+              scrubbed: new Date(),
+            },
+          },
+        ],
+      );
+      return modifiedCount;
+    },
+
     markOldWorkAsFailed: async ({
       types,
       worker = UNCHAINED_WORKER_ID,

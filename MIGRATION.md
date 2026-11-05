@@ -675,6 +675,10 @@ The work queue used to delete work 30 days after `created` (TTL index `created_-
 
 - Code that inserts into `work_queue` directly instead of using `modules.worker` must set `expires` (`computeWorkExpiry({ created, scheduled })` from `@unchainedshop/core-worker`), or the work is never deleted.
 
+### Work queue: scrubbing the input of finished work (opt-in)
+
+Nothing changes unless you register the new plugin. Finished `EMAIL` and `MESSAGE` work keeps its input (recipient addresses, mail texts, links with their tokens) until the work expires. To remove it earlier, register `ScrubWorkInputPlugin`, or `createScrubWorkInputPlugin({ types, maxAgeInSeconds, keep, schedule })` for other defaults, from `@unchainedshop/plugins/worker/scrub-work-input`. Every hour it replaces the input of `EMAIL` and `MESSAGE` work that finished or was deleted more than a day ago with `{}` (`{ template }` for `MESSAGE`) and sets `scrubbed`. A project that runs its own scrub job on `work_queue` can call `modules.worker.scrubWorkInput({ types, before, keep })` instead. Once you enable it, external tools that read the input of older mails (to resend them, for example) get the scrubbed input.
+
 ### Upgrading from an earlier v5 alpha: one-time re-login
 
 A user without a stored `tokenVersion` is now treated as version `0` (earlier alphas used `1`, which made the first revocation a no-op). Tokens those alphas issued to such users are rejected after the upgrade, so affected users log in once more. No data change is needed.

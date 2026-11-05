@@ -45,6 +45,19 @@ Work is deleted 30 days after it was created or is scheduled to run, whichever i
 
 Older versions deleted work 30 days after `created`, even work that had not run yet. Migration `20261104120000` gives existing work its `expires` date and then drops the old TTL index `created_-1` (see MIGRATION.md).
 
+## Scrubbing Finished Input
+
+Finished work keeps its input until it expires. For mails that means 30 days of recipient addresses, texts and links, account links with their tokens included. `modules.worker.scrubWorkInput({ types, before, keep })` takes the work of the given `types` that finished or was deleted before `before` (it will not run again), replaces its input with only its `keep` keys (default none) and sets `scrubbed` to the time of the scrub. It returns the number of scrubbed work items and leaves work that was already scrubbed alone. Result and error are kept.
+
+The opt-in [Scrub Work Input worker](../../plugins/workers/worker-scrub-work-input.md) runs it every hour, by default for `EMAIL` and `MESSAGE` work finished more than a day ago:
+
+```typescript
+import { pluginRegistry } from '@unchainedshop/core';
+import { createScrubWorkInputPlugin } from '@unchainedshop/plugins/worker/scrub-work-input';
+
+pluginRegistry.register(createScrubWorkInputPlugin({ maxAgeInSeconds: 24 * 60 * 60 }));
+```
+
 ## Events
 
 | Event | Payload | Description |
