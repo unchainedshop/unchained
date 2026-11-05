@@ -14,6 +14,7 @@ The products module manages the product catalog including simple products, bundl
 ```typescript
 export interface ProductsSettingsOptions {
   slugify?: (title: string) => string;
+  hideDrafts?: boolean; // default: false
 }
 ```
 
@@ -30,6 +31,22 @@ await startPlatform({
   options: {
     products: {
       slugify,
+    },
+  },
+});
+```
+
+### Hide Drafts
+
+Product lists (`products`, `productsCount`, `searchProducts`) leave out drafts unless the caller asks for them and may list them. The single-product queries `product(productId | slug)` and `productCatalogPrices(productId)` return any product by default, so a draft can be read by anyone who knows or guesses its slug or id.
+
+With `hideDrafts: true`, these queries return drafts and deleted products only to callers who may list drafts, which means `viewProducts` is allowed for `{ includeDrafts: true }` (admins and custom roles that grant `viewProducts`). Everyone else gets what an unknown product gives: `null` from `product`, and the same answer as for an unknown id from `productCatalogPrices`. Active products are unaffected, and so are relations that resolve products (order positions, bookmarks, assortment links) and the module functions such as `modules.products.findProduct`.
+
+```typescript
+await startPlatform({
+  options: {
+    products: {
+      hideDrafts: true,
     },
   },
 });

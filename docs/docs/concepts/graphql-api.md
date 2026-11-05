@@ -69,7 +69,7 @@ All strategies (email/password, WebAuthn, OIDC, access tokens) are covered in [A
 
 | Operation | Arguments | Description |
 |-----------|-----------|-------------|
-| `product` | `productId: ID`, `slug: String` | Get product by ID or slug |
+| `product` | `productId: ID`, `slug: String` | Get product by ID or slug (drafts included unless `options.products.hideDrafts` is set) |
 | `products` | `queryString`, `tags`, `slugs`, `limit = 10`, `offset = 0`, `includeDrafts = false`, `sort` | List published products |
 | `productsCount` | `tags`, `slugs`, `includeDrafts`, `queryString` | Count products |
 | `searchProducts` | `queryString`, `filterQuery`, `assortmentId`, `orderBy`, `includeInactive = false`, `ignoreChildAssortments = false` | Faceted search, returns `ProductSearchResult` |

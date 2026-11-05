@@ -3214,9 +3214,15 @@ export type IQuery = {
   paymentProviders: Array<IPaymentProvider>;
   /** Returns total number of payment providers, optionally filtered by type */
   paymentProvidersCount: Scalars['Int']['output'];
-  /** Get a specific product by id or slug */
+  /**
+   * Get a specific product by id or slug. With the products option hideDrafts, drafts and deleted
+   * products are null unless the caller may list drafts.
+   */
   product?: Maybe<IProduct>;
-  /** List the product's configured catalog prices */
+  /**
+   * List the product's configured catalog prices. Hidden drafts (products option hideDrafts) are
+   * treated like unknown products.
+   */
   productCatalogPrices: Array<IProductCatalogPrice>;
   /** Get a specific product review by ID */
   productReview: IProductReview;

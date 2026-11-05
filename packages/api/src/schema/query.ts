@@ -69,12 +69,14 @@ export default [
       ): [Product!]!
 
       """
-      Get a specific product by id or slug
+      Get a specific product by id or slug. With the products option hideDrafts, drafts and deleted
+      products are null unless the caller may list drafts.
       """
       product(productId: ID, slug: String): Product
 
       """
-      List the product's configured catalog prices
+      List the product's configured catalog prices. Hidden drafts (products option hideDrafts) are
+      treated like unknown products.
       """
       productCatalogPrices(productId: ID!): [ProductCatalogPrice!]!
         @cacheControl(scope: PRIVATE, maxAge: 0)

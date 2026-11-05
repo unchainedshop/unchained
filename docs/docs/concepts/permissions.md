@@ -27,7 +27,7 @@ Roles `__all__`, `__loggedIn__`, `__notLoggedIn__`, and `__notAdmin__` are **spe
 
 | Action | Description |
 |--------|-------------|
-| `viewProduct`, `viewProducts` | View products (public: active only) |
+| `viewProduct`, `viewProducts` | View products (public: active only in lists; `product` also returns drafts unless `options.products.hideDrafts` limits them to callers allowed `viewProducts` with `includeDrafts`) |
 | `viewOrder`, `viewOrders` | View orders (loggedIn: own only) |
 | `viewUser`, `viewUsers`, `viewUserCount` | View user data |
 | `viewUserRoles`, `viewUserPublicInfos`, `viewUserPrivateInfos` | View user details |

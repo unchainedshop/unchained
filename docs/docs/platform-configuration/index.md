@@ -98,6 +98,7 @@ await startPlatform({
     // Products module
     products: {
       slugify: (title) => customSlugify(title),
+      hideDrafts: true, // product(slug) and product(productId) no longer return drafts to the public
     },
     // Delivery module
     delivery: {
