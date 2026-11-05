@@ -39,6 +39,12 @@ await startPlatform({
 
 A blacklisted key that holds a plain object (for example the warehousing token in the input of `EXPORT_TOKEN` work) keeps it and has its keys obfuscated in turn. The work queue stores and processes the plain values: worker adapters and the work returned by `modules.worker` see them. Event subscribers that need them, like the retries of failed work, read the work with `modules.worker.findWork({ workId })`. See [buildObfuscatedFieldsFilter](https://github.com/unchainedshop/unchained/blob/master/packages/utils/src/build-obfuscated-fields-filter.ts).
 
+## Retention
+
+Work is deleted 30 days after it was created or is scheduled to run, whichever is later, whatever its status. Each work item stores that date as `expires`, and a TTL index on `expires` deletes it. `addWork`, `ensureOneWork` (autoscheduling) and `rescheduleWork` set it with `computeWorkExpiry({ created, scheduled })` (`WORK_RETENTION_SECONDS` is 30 days), so work scheduled more than 30 days ahead runs before it expires.
+
+Older versions deleted work 30 days after `created`, even work that had not run yet. Migration `20261104120000` gives existing work its `expires` date and then drops the old TTL index `created_-1` (see MIGRATION.md).
+
 ## Events
 
 | Event | Payload | Description |

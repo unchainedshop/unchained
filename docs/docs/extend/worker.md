@@ -63,6 +63,8 @@ await unchainedAPI.modules.worker.addWork({
 });
 ```
 
+Work is kept for 30 days after it was created or is scheduled to run (`scheduled`), whichever is later, and then deleted whatever its status (see [Retention](../platform-configuration/modules/worker.md#retention)).
+
 ## Related
 
 - [Plugin Factories](./plugin-factories.md#workers) — `registerWorker`

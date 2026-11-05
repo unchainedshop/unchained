@@ -328,6 +328,37 @@ test.describe('Work Queue', () => {
       assert.strictEqual(new Date(work.started).getTime() >= scheduled.getTime(), true);
     });
 
+    test('Far-future work expires 30 days after it is scheduled', async () => {
+      const scheduled = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+
+      const { data: { addWork } = {} } = await graphqlFetchAsAdminUser({
+        query: /* GraphQL */ `
+          mutation addWork($type: WorkType!, $scheduled: Timestamp) {
+            addWork(type: $type, scheduled: $scheduled) {
+              _id
+            }
+          }
+        `,
+        variables: { type: 'HEARTBEAT', scheduled },
+      });
+
+      const WorkQueue = db.collection('work_queue');
+      const work = await WorkQueue.findOne({ _id: addWork._id });
+      assert.strictEqual(
+        work.expires.getTime(),
+        new Date(work.scheduled).getTime() + 30 * 24 * 60 * 60 * 1000,
+      );
+      const ttlIndexes = (await WorkQueue.indexes()).filter(
+        (index) => index.expireAfterSeconds !== undefined,
+      );
+      assert.deepStrictEqual(
+        ttlIndexes.map(({ key, expireAfterSeconds }) => ({ key, expireAfterSeconds })),
+        [{ key: { expires: 1 }, expireAfterSeconds: 0 }],
+      );
+
+      await WorkQueue.deleteOne({ _id: addWork._id });
+    });
+
     test('Worker fails and retries', async () => {
       const addWorkResult = await graphqlFetchAsAdminUser({
         query: /* GraphQL */ `

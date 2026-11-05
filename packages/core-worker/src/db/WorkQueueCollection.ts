@@ -3,6 +3,23 @@ import { type mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 
 const ONE_DAY_IN_SECONDS = 86400;
 
+// Work is kept for 30 days after it was created or is scheduled to run, whichever is later.
+export const WORK_RETENTION_SECONDS = 30 * ONE_DAY_IN_SECONDS;
+
+export const computeWorkExpiry = ({
+  created,
+  scheduled,
+}: {
+  created?: Date;
+  scheduled?: Date | null;
+}): Date => {
+  const times = [created, scheduled]
+    .map((date) => (date ? new Date(date).getTime() : NaN))
+    .filter(Number.isFinite);
+  const latest = times.length ? Math.max(...times) : Date.now();
+  return new Date(latest + WORK_RETENTION_SECONDS * 1000);
+};
+
 export const WorkStatus = {
   NEW: 'NEW',
   ALLOCATED: 'ALLOCATED',
@@ -30,6 +47,8 @@ export type Work = {
   worker?: string | null;
   autoscheduled?: boolean;
   scheduleId?: string;
+  // The TTL index deletes the work at this date, see computeWorkExpiry
+  expires?: Date;
 } & TimestampFields;
 
 export const WorkQueueCollection = async (db: mongodb.Db) => {
@@ -52,10 +71,11 @@ export const WorkQueueCollection = async (db: mongodb.Db) => {
   ]);
 
   await buildDbIndexes<Work>(WorkQueue, [
-    {
-      index: { created: -1 },
-      options: { expireAfterSeconds: 30 * ONE_DAY_IN_SECONDS },
-    },
+    { index: { expires: 1 }, options: { expireAfterSeconds: 0 } },
+    // Ascending: older versions have a TTL index `created_-1` until migration 20261104120000 drops
+    // it, and `{ created: -1 }` without TTL would conflict with it (buildDbIndexes would then drop
+    // and rebuild every index of the collection).
+    { index: { created: 1 } },
     // `status` is derived from started/finished/deleted via WORK_STATUS_FILTER_MAP — index the stored fields, not status.
     { index: { scheduled: 1, type: 1 } },
     { index: { type: 1 } },

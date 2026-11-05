@@ -656,6 +656,25 @@ The `events` collection used to store every payload as emitted, including the pl
 - `options.events.redactContactData: true` (default `false`) also redacts the keys of `contactDataPayloadFields`, the order contact and addresses and the e-mail addresses and profiles of users.
 - Like the work obfuscation, a listed key that holds a plain object is filtered recursively instead of replaced.
 
+### Work queue: work expires 30 days after it is scheduled
+
+The work queue used to delete work 30 days after `created` (TTL index `created_-1`), whatever its `scheduled` date, so work scheduled more than 30 days ahead was deleted before it ran. Work now stores `expires`, 30 days after `created` or `scheduled`, whichever is later, and a TTL index on `expires` (`expires_1`) deletes it. `addWork`, `ensureOneWork` and `rescheduleWork` set it.
+
+- Migration `20261104120000` sets `expires` on the existing work and then drops `created_-1`. Like every migration it runs on the first start of an instance with the worker enabled (not with `disableWorker` / `UNCHAINED_DISABLE_WORKER`). Until it has run, the old index keeps deleting work 30 days after `created`, as before.
+- The engine also creates a `created_1` index without TTL, for the `created` filter and sort of `workQueue` and the Admin UI.
+- Rolling deploys: an instance of an older version that starts after the migration creates `created_-1` again, and the work it adds has no `expires`, so the new index never deletes it. Once every instance runs the new version, run this once in `mongosh`:
+
+  ```js
+  if (db.work_queue.getIndexes().some(({ name }) => name === 'created_-1')) {
+    db.work_queue.dropIndex('created_-1');
+  }
+  db.work_queue.updateMany({ expires: { $exists: false } }, [
+    { $set: { expires: { $add: [{ $max: ['$created', '$scheduled'] }, 30 * 24 * 60 * 60 * 1000] } } },
+  ]);
+  ```
+
+- Code that inserts into `work_queue` directly instead of using `modules.worker` must set `expires` (`computeWorkExpiry({ created, scheduled })` from `@unchainedshop/core-worker`), or the work is never deleted.
+
 ### Upgrading from an earlier v5 alpha: one-time re-login
 
 A user without a stored `tokenVersion` is now treated as version `0` (earlier alphas used `1`, which made the first revocation a no-op). Tokens those alphas issued to such users are rejected after the upgrade, so affected users log in once more. No data change is needed.
