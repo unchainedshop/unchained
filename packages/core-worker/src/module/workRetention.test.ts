@@ -123,7 +123,7 @@ describe('Work queue retention', { timeout: 30000 }, () => {
     });
   });
 
-  describe('migration 20261104120000', () => {
+  describe('migration 20261104120100', () => {
     // Relative to now: MongoDB's TTL monitor would delete expired fixtures during the test
     const created = new Date(Date.now() - 10 * DAY);
     const farFuture = new Date(Date.now() + 120 * DAY);
@@ -164,7 +164,7 @@ describe('Work queue retention', { timeout: 30000 }, () => {
     it('backfills expires and drops the TTL index on created', async () => {
       await setupLegacyQueue();
       await configure();
-      const migration = migrations.get(20261104120000);
+      const migration = migrations.get(20261104120100);
       assert.ok(migration, 'core-worker registers the expiry migration');
 
       await migration.up({ logger: undefined, unchainedAPI: undefined });

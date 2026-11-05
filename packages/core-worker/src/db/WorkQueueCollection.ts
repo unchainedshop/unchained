@@ -74,7 +74,7 @@ export const WorkQueueCollection = async (db: mongodb.Db) => {
 
   await buildDbIndexes<Work>(WorkQueue, [
     { index: { expires: 1 }, options: { expireAfterSeconds: 0 } },
-    // Ascending: older versions have a TTL index `created_-1` until migration 20261104120000 drops
+    // Ascending: older versions have a TTL index `created_-1` until migration 20261104120100 drops
     // it, and `{ created: -1 }` without TTL would conflict with it (buildDbIndexes would then drop
     // and rebuild every index of the collection).
     { index: { created: 1 } },

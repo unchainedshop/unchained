@@ -661,7 +661,7 @@ The `events` collection used to store every payload as emitted, including the pl
 
 The work queue used to delete work 30 days after `created` (TTL index `created_-1`), whatever its `scheduled` date, so work scheduled more than 30 days ahead was deleted before it ran. Work now stores `expires`, 30 days after `created` or `scheduled`, whichever is later, and a TTL index on `expires` (`expires_1`) deletes it. `addWork`, `ensureOneWork` and `rescheduleWork` set it.
 
-- Migration `20261104120000` sets `expires` on the existing work and then drops `created_-1`. Like every migration it runs on the first start of an instance with the worker enabled (not with `disableWorker` / `UNCHAINED_DISABLE_WORKER`). Until it has run, the old index keeps deleting work 30 days after `created`, as before.
+- Migration `20261104120100` sets `expires` on the existing work and then drops `created_-1`. Like every migration it runs on the first start of an instance with the worker enabled (not with `disableWorker` / `UNCHAINED_DISABLE_WORKER`). Until it has run, the old index keeps deleting work 30 days after `created`, as before.
 - The engine also creates a `created_1` index without TTL, for the `created` filter and sort of `workQueue` and the Admin UI.
 - Rolling deploys: an instance of an older version that starts after the migration creates `created_-1` again, and the work it adds has no `expires`, so the new index never deletes it. Once every instance runs the new version, run this once in `mongosh`:
 

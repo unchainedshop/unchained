@@ -10,7 +10,7 @@ import { WORK_RETENTION_SECONDS, WorkQueueCollection } from '../db/WorkQueueColl
  */
 export default function migrateWorkQueueExpiry(repository: MigrationRepository) {
   repository?.register({
-    id: 20261104120000,
+    id: 20261104120100,
     name: 'Expire work 30 days after it was created or is scheduled, whichever is later',
     up: async ({ logger }) => {
       const WorkQueue = await WorkQueueCollection(repository.db);

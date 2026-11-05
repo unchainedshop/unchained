@@ -43,7 +43,7 @@ A blacklisted key that holds a plain object (for example the warehousing token i
 
 Work is deleted 30 days after it was created or is scheduled to run, whichever is later, whatever its status. Each work item stores that date as `expires`, and a TTL index on `expires` deletes it. `addWork`, `ensureOneWork` (autoscheduling) and `rescheduleWork` set it with `computeWorkExpiry({ created, scheduled })` (`WORK_RETENTION_SECONDS` is 30 days), so work scheduled more than 30 days ahead runs before it expires.
 
-Older versions deleted work 30 days after `created`, even work that had not run yet. Migration `20261104120000` gives existing work its `expires` date and then drops the old TTL index `created_-1` (see MIGRATION.md).
+Older versions deleted work 30 days after `created`, even work that had not run yet. Migration `20261104120100` gives existing work its `expires` date and then drops the old TTL index `created_-1` (see MIGRATION.md).
 
 ## Scrubbing Finished Input
 

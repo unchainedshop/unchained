@@ -20,7 +20,7 @@ import {
   WorkQueueCollection,
   WorkStatus,
 } from '../db/WorkQueueCollection.ts';
-import migrateWorkQueueExpiry from '../migrations/20261104120000-work-queue-expires.ts';
+import migrateWorkQueueExpiry from '../migrations/20261104120100-work-queue-expires.ts';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
