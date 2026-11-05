@@ -645,6 +645,7 @@ Gate Control's camera only accepts ticket QR codes, a ticket id with its access 
 - The filter no longer modifies the work: with a configured list, the work returned by `modules.worker.addWork`, `allocateWork` and `finishWork` used to carry the obfuscated values, so adapters processed `******`.
 - External workers that read a listed key from `Work.input` (GraphQL `workQueue`, `work` or `allocateWork`) now get `******`. Rename the key in the input or configure a list without it.
 - Subscribers to `WORK_*` events that read a listed key from the payload get `******`. Read the work with `modules.worker.findWork({ workId: payload._id })` instead, as the retries of failed work now do (`transformRetry` gets the stored work).
+- The Admin UI's *Retry Work* form starts from `Work.input` as GraphQL returns it, so it now holds `******` for the listed keys (the `token` of an `ACCOUNT_ACTION` message, the `authorization` header of an `HTTP_REQUEST`). Replace them before you submit, or the retry sends `******`. The automatic retries of failed work are not affected.
 
 ### Event history: secrets are redacted
 
