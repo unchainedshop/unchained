@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import test from 'node:test';
-import { setupDatabase, disconnect, getServerBaseUrl } from './helpers.js';
+import { setupDatabase, disconnect, getServerBaseUrl, createLoggedInGraphqlFetch } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { JpegMedia, ProxyProduct, SimpleProduct } from './seeds/products.js';
 import { AssortmentProduct } from './seeds/assortments.js';
@@ -151,6 +151,34 @@ test.describe('MCP server (stateless, SDK v2)', () => {
     assert.strictEqual(response.status, 200);
     const message = await parseMcpResponse(response);
     assert.strictEqual(message.result.isError, true);
+  });
+
+  test('WORKER_PROCESS_NEXT returns the processed work with the sensitive fields obfuscated', async () => {
+    // Assigned to a worker of its own, so the platform's worker does not take it first. Added over
+    // GraphQL: the MCP tool schema of WORKER_ADD leaves out `input`.
+    const worker = 'mcp-process-next';
+    const input = { token: 'plain-token', locale: 'de' };
+    const { data: { addWork: added } = {} } = await createLoggedInGraphqlFetch(ADMIN_TOKEN)({
+      query: /* GraphQL */ `
+        mutation addWork($input: JSON, $worker: String) {
+          addWork(type: HEARTBEAT, priority: 1000, input: $input, worker: $worker) {
+            _id
+          }
+        }
+      `,
+      variables: { input, worker },
+    });
+    assert.ok(added?._id);
+
+    const { work } = await callTool('system_management', 'WORKER_PROCESS_NEXT', { worker });
+    assert.strictEqual(work?._id, added._id);
+    assert.strictEqual(work.success, true);
+    assert.deepStrictEqual(work.input, { token: '******', locale: 'de' });
+    assert.deepStrictEqual(work.result, { token: '******', locale: 'de' });
+
+    // The heartbeat worker got the plain input
+    const stored = await db.collection('work_queue').findOne({ _id: added._id });
+    assert.deepStrictEqual(stored.result, input);
   });
 
   test('MAKE_PROPOSAL passes the quotation context to the quotation adapter', async () => {
