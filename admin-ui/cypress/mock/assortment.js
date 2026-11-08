@@ -635,7 +635,7 @@ export const RemoveAssortmentLinkResponse = {
 export const AssortmentMediaResponse = {
   data: {
     assortment: {
-      _id: 'snacks',
+      _id: 'e38361a29cf8e3a6036c837a',
       media: [
         {
           _id: 'a057db39dcd83bb5795ef38f',
