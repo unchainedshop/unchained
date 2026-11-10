@@ -15,7 +15,6 @@ export interface OrdersSettings {
     validationParams: OrderSettingsOrderPositionValidation,
     unchainedAPI: UnchainedAPI,
   ) => Promise<void>;
-  lockOrderDuringCheckout: boolean;
   configureSettings: (options?: OrdersSettingsOptions) => void;
 }
 export type OrdersSettingsOptions = Omit<Partial<OrdersSettings>, 'configureSettings'>;
@@ -30,16 +29,9 @@ export const ordersSettings: OrdersSettings = {
   ensureUserHasCart: false,
   orderNumberHashFn: generateRandomHash,
   validateOrderPosition: defaultValidateOrderPosition,
-  lockOrderDuringCheckout: false,
-  configureSettings({
-    ensureUserHasCart,
-    orderNumberHashFn,
-    validateOrderPosition,
-    lockOrderDuringCheckout,
-  } = {}) {
+  configureSettings({ ensureUserHasCart, orderNumberHashFn, validateOrderPosition } = {}) {
     this.ensureUserHasCart = ensureUserHasCart || false;
     this.orderNumberHashFn = orderNumberHashFn || generateRandomHash;
     this.validateOrderPosition = validateOrderPosition || defaultValidateOrderPosition;
-    this.lockOrderDuringCheckout = lockOrderDuringCheckout || false;
   },
 };
