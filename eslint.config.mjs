@@ -24,6 +24,8 @@ export default tseslint.config(
   {
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
+      // `await using lock = ...` bindings exist to be disposed, not to be read.
+      '@typescript-eslint/no-unused-vars': ['error', { ignoreUsingDeclarations: true }],
       'prettier/prettier': [
         'error',
         {

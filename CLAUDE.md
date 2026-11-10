@@ -109,6 +109,6 @@ The API package supports multiple server frameworks:
 - Use `.env` files for local configuration
 - Default values in `.env.defaults`
 - Integration tests use `.env.tests` with `.env` as fallback
-- Node.js 22+ required (see .nvmrc)
+- Node.js 24+ required (see .nvmrc)
 - MongoDB required (or use MongoDB Memory Server for testing)
  No newline at end of file
