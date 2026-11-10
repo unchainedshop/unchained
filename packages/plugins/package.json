@@ -71,7 +71,7 @@
     "minio": "8.x",
     "nodemailer": ">= 6.9 < 11",
     "stripe": ">= 23 < 24",
-    "web-push": ">= 3.6 <4",
+    "web-push": ">= 3.6 <5",
     "xml-js": ">= 1.6 < 2"
   },
   "peerDependenciesMeta": {
@@ -125,18 +125,18 @@
     "@noble/curves": "^2.4.0",
     "@noble/hashes": "^2.4.0",
     "@paypal/checkout-server-sdk": "^1.0.3",
-    "@redis/client": "^6.3.0",
+    "@redis/client": "^6.3.1",
     "@scure/bip32": "^2.4.0",
     "@scure/btc-signer": "^2.4.1",
     "@types/express": "^5.0.6",
-    "@types/node": "^26.6.5",
+    "@types/node": "^26.6.6",
     "express": "^5.3.0",
-    "fastify": "^5.12.7",
+    "fastify": "^5.12.8",
     "minio": "^8.0.7",
-    "nodemailer": "^10.2.1",
-    "stripe": "^23.0.1",
+    "nodemailer": "^10.5.0",
+    "stripe": "^23.1.0",
     "typescript": "^6.0.3",
-    "web-push": "^3.6.7",
+    "web-push": "^4.0.0",
     "xml-js": "^1.6.11"
   }
 }

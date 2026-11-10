@@ -21,7 +21,7 @@ if (!STRIPE_SECRET) {
   try {
     const { default: Stripe } = await import('stripe');
     stripe = new Stripe(STRIPE_SECRET, {
-      apiVersion: '2026-09-30.endive',
+      apiVersion: '2026-10-28.endive',
     });
   } catch {
     logger.warn(`optional peer npm package 'stripe' not installed, stripe adapter will not work`);

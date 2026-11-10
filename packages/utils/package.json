@@ -30,11 +30,11 @@
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
     "@unchainedshop/logger": "^4.9.0",
-    "libphonenumber-js": "^1.13.15",
+    "libphonenumber-js": "^1.13.16",
     "resolve-accept-language": "^3.2.2"
   },
   "devDependencies": {
-    "@types/node": "^26.6.5",
+    "@types/node": "^26.6.6",
     "typescript": "^6.0.3"
   }
 }

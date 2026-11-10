@@ -35,18 +35,18 @@
   },
   "dependencies": {
     "@fastify/cookie": "^11.1.5",
-    "@fastify/multipart": "^10.1.6",
+    "@fastify/multipart": "^10.1.8",
     "@fastify/oauth2": "^8.3.2",
     "@fastify/session": "^11.1.6",
     "@modelcontextprotocol/server": "^2.4.0",
     "@unchainedshop/admin-ui": "^4.9.0",
     "@unchainedshop/platform": "^4.9.0",
     "@unchainedshop/plugins": "^4.9.0",
-    "fastify": "^5.12.7"
+    "fastify": "^5.12.8"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^26.6.5",
+    "@types/node": "^26.6.6",
     "mongodb-memory-server": "^11.3.0",
     "prettier": "^3.9.10",
     "typescript": "^6.0.3"
