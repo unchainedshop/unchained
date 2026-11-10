@@ -192,8 +192,8 @@ flowchart TD
 
 ```graphql
 # Step 1: Set payment provider
-mutation SetPaymentProvider($orderId: ID!, $paymentProviderId: ID!) {
-  setOrderPaymentProvider(orderId: $orderId, paymentProviderId: $paymentProviderId) {
+mutation SetPaymentProvider($orderId: ID, $paymentProviderId: ID) {
+  updateCart(orderId: $orderId, paymentProviderId: $paymentProviderId) {
     _id
     payment {
       _id

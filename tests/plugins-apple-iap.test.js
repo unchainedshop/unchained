@@ -169,10 +169,14 @@ test.skip('Plugins: Apple IAP', () => {
     });
 
     test('checkout with stored receipt in credentials', async () => {
-      const { data: { updateOrderPaymentGeneric, checkoutCart } = {} } = await graphqlFetch({
+      const { data: { updateCartPaymentGeneric, checkoutCart } = {} } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation checkout($orderId: ID!, $orderPaymentId: ID!, $meta: JSON) {
-            updateOrderPaymentGeneric(orderPaymentId: $orderPaymentId, meta: $meta) {
+            updateCartPaymentGeneric(
+              orderId: $orderId
+              paymentProviderId: $paymentProviderId
+              meta: $meta
+            ) {
               _id
               status
             }
@@ -190,7 +194,7 @@ test.skip('Plugins: Apple IAP', () => {
           },
         },
       });
-      assert.partialDeepStrictEqual(updateOrderPaymentGeneric, {
+      assert.partialDeepStrictEqual(updateCartPaymentGeneric, {
         status: 'OPEN',
       });
       assert.partialDeepStrictEqual(checkoutCart, {
@@ -253,7 +257,11 @@ test.skip('Plugins: Apple IAP', () => {
             updateCart(orderId: $orderId, paymentProviderId: $paymentProviderId) {
               _id
             }
-            updateOrderPaymentGeneric(orderPaymentId: $orderPaymentId, meta: $meta) {
+            updateCartPaymentGeneric(
+              orderId: $orderId
+              paymentProviderId: $paymentProviderId
+              meta: $meta
+            ) {
               _id
               status
             }

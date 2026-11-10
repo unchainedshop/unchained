@@ -69,8 +69,6 @@ import updateCartItem from './orders/updateCartItem.ts';
 import removeCartItem from './orders/removeCartItem.ts';
 import removeCartDiscount from './orders/removeCartDiscount.ts';
 import removeOrder from './orders/removeOrder.ts';
-import setOrderPaymentProvider from './orders/setOrderPaymentProvider.ts';
-import setOrderDeliveryProvider from './orders/setOrderDeliveryProvider.ts';
 import confirmOrder from './orders/confirmOrder.ts';
 import payOrder from './orders/payOrder.ts';
 import deliverOrder from './orders/deliverOrder.ts';
@@ -134,10 +132,6 @@ import updateEnrollment from './enrollments/updateEnrollment.ts';
 import registerPaymentCredentials from './payment/registerPaymentCredentials.ts';
 import markPaymentCredentialsPreferred from './payment/markPaymentCredentialsPreferred.ts';
 import removePaymentCredentials from './payment/removePaymentCredentials.ts';
-import updateOrderDeliveryShipping from './orders/updateOrderDeliveryShipping.ts';
-import updateOrderDeliveryPickUp from './orders/updateOrderDeliveryPickUp.ts';
-import updateOrderPaymentGeneric from './orders/updateOrderPaymentGeneric.ts';
-import updateOrderPaymentInvoice from './orders/updateOrderPaymentInvoice.ts';
 import signPaymentProviderForCredentialRegistration from './payment/signPaymentProviderForCredentialRegistration.ts';
 import signPaymentProviderForCheckout from './orders/signPaymentProviderForCheckout.ts';
 import pageView from './pageView.ts';
@@ -250,12 +244,6 @@ export default {
   updateCartDeliveryShipping: acl(actions.updateCart)(updateCartDeliveryShipping),
   updateCartPaymentGeneric: acl(actions.updateCart)(updateCartPaymentGeneric),
   updateCartPaymentInvoice: acl(actions.updateCart)(updateCartPaymentInvoice),
-  setOrderPaymentProvider: acl(actions.updateOrder)(setOrderPaymentProvider),
-  setOrderDeliveryProvider: acl(actions.updateOrder)(setOrderDeliveryProvider),
-  updateOrderDeliveryShipping: acl(actions.updateOrderDelivery)(updateOrderDeliveryShipping),
-  updateOrderDeliveryPickUp: acl(actions.updateOrderDelivery)(updateOrderDeliveryPickUp),
-  updateOrderPaymentGeneric: acl(actions.updateOrderPayment)(updateOrderPaymentGeneric),
-  updateOrderPaymentInvoice: acl(actions.updateOrderPayment)(updateOrderPaymentInvoice),
   removeOrder: acl(actions.updateOrder)(removeOrder),
   confirmOrder: acl(actions.markOrderConfirmed)(confirmOrder),
   rejectOrder: acl(actions.markOrderRejected)(rejectOrder),

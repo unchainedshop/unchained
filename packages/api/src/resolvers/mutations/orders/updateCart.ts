@@ -1,5 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
+import { InvalidIdError } from '../../../errors.ts';
 import type { Address, Contact } from '@unchainedshop/mongodb';
 import { lockCart } from '../../loadCart.ts';
 
@@ -18,6 +19,11 @@ export default async function updateCart(root: never, params: UpdateCartParams, 
   const { modules, services, userId } = context;
 
   log('mutation updateCart', { userId });
+
+  // Validate IDs - throw error for empty strings
+  if (orderId === '') throw new InvalidIdError({ orderId });
+  if (paymentProviderId === '') throw new InvalidIdError({ paymentProviderId });
+  if (deliveryProviderId === '') throw new InvalidIdError({ deliveryProviderId });
 
   await using order = await lockCart(context, orderId);
 

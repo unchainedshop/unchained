@@ -222,20 +222,6 @@ export default [
       terminateEnrollment(enrollmentId: ID!): Enrollment!
 
       """
-      Change the delivery method/provider to an order. If the delivery provider
-      doesn’t exists new delivery provider will be created with the provided ID.
-      """
-      setOrderDeliveryProvider(orderId: ID!, deliveryProviderId: ID!): Order!
-        @deprecated(reason: "Use updateCart or updateCartDelivery* mutations instead")
-
-      """
-      Change the payment method/provider to an order. If the payment provider
-      doesn’t exists new payment provider will be created with the provided ID.
-      """
-      setOrderPaymentProvider(orderId: ID!, paymentProviderId: ID!): Order!
-        @deprecated(reason: "Use updateCart or updateCartPayment* mutations instead")
-
-      """
       Update the cart by changing the delivery provider and using a shipping specific configuration
       """
       updateCartDeliveryShipping(
@@ -264,36 +250,6 @@ export default [
       Update the cart by changing the payment provider and using a generic specific configuration
       """
       updateCartPaymentGeneric(orderId: ID, paymentProviderId: ID!, meta: JSON): Order!
-
-      """
-      Update a Shipping Delivery Provider's specific configuration
-      """
-      updateOrderDeliveryShipping(
-        orderDeliveryId: ID!
-        address: AddressInput
-        meta: JSON
-      ): OrderDeliveryShipping! @deprecated(reason: "Use updateCartDeliveryShipping instead")
-
-      """
-      Update a Pick Up Delivery Provider's specific configuration
-      """
-      updateOrderDeliveryPickUp(
-        orderDeliveryId: ID!
-        orderPickUpLocationId: ID!
-        meta: JSON
-      ): OrderDeliveryPickUp! @deprecated(reason: "Use updateCartDeliveryPickUp instead")
-
-      """
-      Update an Invoice Payment Provider's specific configuration
-      """
-      updateOrderPaymentInvoice(orderPaymentId: ID!, meta: JSON): OrderPaymentInvoice!
-        @deprecated(reason: "Use updateCartPaymentInvoice instead")
-
-      """
-      Update a Generic Payment Provider's specific configuration
-      """
-      updateOrderPaymentGeneric(orderPaymentId: ID!, meta: JSON): OrderPaymentGeneric!
-        @deprecated(reason: "Use updateCartPaymentGeneric instead")
 
       """
       Remove an order while it's still open
