@@ -18,10 +18,11 @@ export const all = (role, actions) => {
     if (!token) return true;
 
     const isOwnedByUser =
-      token.userId === userId ||
-      user?.services?.web3?.some((service) => {
-        return service.address === token.walletAddress && service.verified;
-      });
+      (!!userId && token.userId === userId) ||
+      (!!token.walletAddress &&
+        user?.services?.web3?.some((service) => {
+          return service.address === token.walletAddress && service.verified;
+        }));
 
     if (isOwnedByUser) return true;
 
