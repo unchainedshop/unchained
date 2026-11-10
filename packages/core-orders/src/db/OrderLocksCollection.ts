@@ -12,8 +12,7 @@ const LOCK_WAIT_MS = 2000;
 const LOCK_RETRY_DELAY_MS = 50;
 
 export const OrderLocksCollection = async (db: mongodb.Db) => {
-  // Same collection name the previously used lock library wrote to, so existing
-  // deployments need no migration (stale rows are TTL-cleaned within seconds).
+  // Keep the established collection name so existing deployments retain their locks.
   const OrderLocks = db.collection<OrderLock>('locco-locks');
 
   // The unique index is what makes acquireLock mutually exclusive, so it is
@@ -49,10 +48,6 @@ export const acquireLock = async (
 ) => {
   const uniqueValue = crypto.randomUUID();
   const lease = () => ({ $set: { key, uniqueValue, expireAt: new Date(Date.now() + ttl) } });
-
-  // Waiters retry on a jittered delay until the deadline instead of in lockstep: a
-  // shared grid makes most attempts collide, which caps how many mutations one order
-  // can serve per second.
   const waitUntil = Date.now() + LOCK_WAIT_MS;
   while (true) {
     try {
@@ -64,33 +59,22 @@ export const acquireLock = async (
     if (Date.now() > waitUntil) throw new Error(`Could not acquire lock ${key}`, { cause: 'LOCKED' });
     await sleep(LOCK_RETRY_DELAY_MS * (0.5 + Math.random()));
   }
-
-  // The lease is renewed while it is held, so `ttl` only bounds how long a holder that
-  // stopped renewing (crashed, or leaked the lock) blocks everybody else. Without this,
-  // app code running inside the lock that outlives the lease — a pricing adapter, a
-  // payment provider call — would let somebody else in while it is still writing.
   const renewal = setInterval(async () => {
     try {
       const { matchedCount } = await OrderLocks.updateOne({ key, uniqueValue }, lease());
       if (!matchedCount) clearInterval(renewal);
     } catch {
-      // A failed renewal is not fatal: the next tick retries, and the lease still
-      // has two thirds of its life left.
+      /**/
     }
   }, ttl / 3);
   renewal.unref?.();
-
   const release = async () => {
     clearInterval(renewal);
     try {
-      // Only our own, still-live lock: a lock taken over after expiry by
-      // somebody else has a different uniqueValue and must survive.
       await OrderLocks.deleteOne({ key, uniqueValue, expireAt: { $gt: new Date() } });
     } catch {
-      // Never throw: every call site releases inside a finally block and
-      // a throwing release would mask the actual error.
+      /**/
     }
   };
-
   return { release, [Symbol.asyncDispose]: release };
 };

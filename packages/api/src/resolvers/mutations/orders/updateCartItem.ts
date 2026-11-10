@@ -29,10 +29,6 @@ export default async function updateCartItem(
   if (!position) throw new OrderItemNotFoundError({ itemId });
 
   await using order = await lockCart(context, position.orderId);
-
-  // quantityDiff below is computed against this item, so it has to be the item as it
-  // stands under the lock: a change made while this mutation waited would otherwise be
-  // validated away and the combined quantity could exceed a product's limits.
   const item = await modules.orders.positions.findOrderPosition({ itemId });
   if (item?.orderId !== order._id) throw new OrderItemNotFoundError({ itemId });
 
