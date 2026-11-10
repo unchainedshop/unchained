@@ -49,10 +49,7 @@ export const payrexxHandler: RouteHandlerMethod = async (
     if (transaction.preAuthorizationId) {
       // Pre-Authorization Flow, referenceId is a userId
       const { invoice } = transaction;
-      const paymentProviderId = await resolvePayrexxPaymentProviderId(
-        transaction.referenceId,
-        modules,
-      );
+      const paymentProviderId = await resolvePayrexxPaymentProviderId(transaction.referenceId, modules);
       const userId = '';
       logger.info(`register credentials for: ${userId}`);
       await services.orders.registerPaymentCredentials(paymentProviderId, {

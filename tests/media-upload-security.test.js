@@ -1,11 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import {
-  setupDatabase,
-  createLoggedInGraphqlFetch,
-  disconnect,
-  getServerBaseUrl,
-} from './helpers.js';
+import { setupDatabase, createLoggedInGraphqlFetch, disconnect, getServerBaseUrl } from './helpers.js';
 import { USER_TOKEN } from './seeds/users.js';
 
 const prepareAvatarUpload = async (graphqlFetch, mediaName) => {

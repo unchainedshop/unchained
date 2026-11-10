@@ -16,8 +16,7 @@ export default async function verifyEmail(root: never, { token }: { token: any }
 
   await modules.users.verifyEmail(unverifiedToken.userId, unverifiedToken.address);
 
-  const isForeignUserSession =
-    !!userId && userId !== unverifiedToken.userId && !currentUser?.guest;
+  const isForeignUserSession = !!userId && userId !== unverifiedToken.userId && !currentUser?.guest;
 
   if (isForeignUserSession) {
     return null;
