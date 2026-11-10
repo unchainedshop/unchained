@@ -42,7 +42,7 @@ Yes. Unchained is designed to scale horizontally and has been used in production
 
 ### What are the system requirements?
 
-- Node.js 22+
+- Node.js 24+
 - MongoDB 6+
 - 1GB+ RAM (2GB+ recommended for production)
 
@@ -346,7 +346,7 @@ See [Multi-Language Setup](../guides/multi-language-setup).
 
 ### What's the recommended production setup?
 
-- Node.js 22+ on container platform
+- Node.js 24+ on container platform
 - MongoDB Atlas for database
 - S3/MinIO for file storage
 - Redis for distributed events

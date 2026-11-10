@@ -20,7 +20,7 @@ flowchart LR
 
 ## Prerequisites
 
-- Node.js 22+
+- Node.js 24+
 - Running Unchained Engine instance
 - Basic TypeScript knowledge
 
