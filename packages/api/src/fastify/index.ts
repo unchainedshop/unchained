@@ -65,6 +65,9 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
   const login: LoginFn = async function (user: User, options = {}) {
     const { impersonator } = options;
 
+    // A new identity has to get a new session id, else a session planted before the
+    // login keeps working afterwards (session fixation).
+    await req.session.regenerate();
     req.session.userId = user._id;
     req.session.impersonatorId = impersonator?._id;
     await req.session.save();
@@ -86,9 +89,9 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
       _id: (req as any).session.sessionId,
       userId: req.session?.userId,
     };
-    req.session.userId = null;
-    req.session.impersonatorId = null;
-    await req.session.save();
+    // regenerate() drops the old session from the store and leaves a fresh one behind,
+    // so the id cannot be reused and stopImpersonation can still log the impersonator in.
+    await req.session.regenerate();
     await emit(API_EVENTS.API_LOGOUT, tokenObject);
     return true;
   };

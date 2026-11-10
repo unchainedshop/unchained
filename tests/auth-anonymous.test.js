@@ -3,6 +3,7 @@ import {
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
   disconnect,
+  getServerBaseUrl,
 } from './helpers.js';
 import { User, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
@@ -116,6 +117,34 @@ test.describe('Auth for anonymous users', () => {
         },
       });
     });
+  });
+
+  test('rotates the session id on login so a planted session cannot be reused', async () => {
+    const baseUrl = getServerBaseUrl();
+    const post = async (query, cookie) => {
+      const response = await fetch(`${baseUrl}/graphql`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          ...(cookie ? { cookie } : {}),
+        },
+        body: JSON.stringify({ query }),
+      });
+      return { setCookie: response.headers.get('set-cookie'), body: await response.json() };
+    };
+
+    const guest = await post('mutation { loginAsGuest { _id } }');
+    const plantedCookie = guest.setCookie.split(';')[0];
+
+    const login = await post(
+      'mutation { loginWithPassword(username: "admin", password: "password") { _id } }',
+      plantedCookie,
+    );
+    assert.ok(login.body.data?.loginWithPassword?._id);
+    assert.notStrictEqual(login.setCookie.split(';')[0], plantedCookie);
+
+    const replayed = await post('{ me { _id } }', plantedCookie);
+    assert.strictEqual(replayed.body.data.me, null);
   });
 
   test.describe('Mutation.loginWithPassword', () => {
