@@ -6,7 +6,7 @@ const logger = createLogger('unchained:worker:push-notification');
 let webPush;
 try {
   const module = await import('web-push');
-  webPush = module.default;
+  webPush = module.default ?? module;
 } catch {
   logger.warn(`optional peer npm package 'web-push' not installed, push notifications will not work`);
 }
