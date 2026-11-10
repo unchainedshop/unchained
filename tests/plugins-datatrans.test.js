@@ -48,7 +48,11 @@ test.describe('Plugins: Datatrans', () => {
     });
 
     // Give each alias checkout its own cart, payment, and delivery without seeded discounts.
-    for (const orderId of ['datatrans-stored-alias', 'datatrans-preferred-alias']) {
+    for (const orderId of [
+      'datatrans-stored-alias',
+      'datatrans-preferred-alias',
+      'datatrans-foreign-transaction',
+    ]) {
       await db.collection('order_payments').findOrInsertOne({
         ...SimplePayment,
         _id: `${orderId}-payment`,
@@ -355,6 +359,36 @@ test.describe('Plugins: Datatrans', () => {
         _id: orderId,
         status: 'CONFIRMED',
       });
+    });
+    test('refuses a transaction authorized for another order payment', async () => {
+      const orderId = 'datatrans-foreign-transaction';
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addAndCheckout($orderId: ID!, $productId: ID!, $paymentContext: JSON) {
+            emptyCart(orderId: $orderId) {
+              _id
+            }
+            addCartProduct(orderId: $orderId, productId: $productId) {
+              _id
+            }
+            updateCart(orderId: $orderId, paymentProviderId: "d4d4d4d4d4") {
+              _id
+            }
+            checkoutCart(orderId: $orderId, paymentContext: $paymentContext) {
+              _id
+              status
+            }
+          }
+        `,
+        variables: {
+          orderId,
+          productId: 'simpleproduct',
+          paymentContext: { transactionId: 'payment_alias_authorized' },
+        },
+      });
+      assert.strictEqual(errors?.[0]?.extensions?.code, 'OrderCheckoutError');
+      const orderPayment = await db.collection('order_payments').findOne({ orderId });
+      assert.notStrictEqual(orderPayment.status, 'PAID');
     });
   });
 });

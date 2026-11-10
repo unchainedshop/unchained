@@ -467,6 +467,18 @@ const Datatrans: IPaymentAdapter = {
           });
         }
 
+        const isForeignTransaction =
+          rawTransactionId &&
+          context.orderPayment &&
+          (status === 'authorized' || status === 'settled') &&
+          transaction.refno !== Buffer.from(context.orderPayment._id, 'hex').toString('base64');
+        if (isForeignTransaction) {
+          throw newDatatransError({
+            code: 'REFNO_MISMATCH',
+            message: 'Transaction belongs to another order payment',
+          });
+        }
+
         if (status === 'authenticated') {
           if (authorizeAuthenticated) {
             checkIfTransactionAmountValid(transactionId, transaction);
