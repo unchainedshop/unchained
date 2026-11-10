@@ -19,6 +19,7 @@ export default tseslint.config(
     'examples/',
     './docs/',
     '**/lib/',
+    '**/dist/',
     './admin-ui',
   ]),
   {
