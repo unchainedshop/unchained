@@ -80,7 +80,7 @@ const AppleIAP: IPaymentAdapter = {
       },
 
       async charge(transactionContext) {
-        const { meta, paymentCredentials, receiptData } = transactionContext || {};
+        const { meta, receiptData } = transactionContext || {};
         const { transactionIdentifier } = meta || {};
 
         if (!transactionIdentifier) {
@@ -100,8 +100,15 @@ const AppleIAP: IPaymentAdapter = {
           throw new Error('Receipt invalid');
         }
 
+        const storedCredentials = receiptResponse
+          ? null
+          : await modules.payment.paymentCredentials.findPaymentCredential({
+              userId: order.userId,
+              paymentProviderId: context.paymentProvider._id,
+              isPreferred: true,
+            });
         const transactions =
-          receiptResponse?.latest_receipt_info || paymentCredentials?.meta?.latestReceiptInfo;
+          receiptResponse?.latest_receipt_info || storedCredentials?.meta?.latestReceiptInfo;
         const matchedTransaction = transactions?.find(
           (transaction) => transaction?.transaction_id === transactionIdentifier,
         );
