@@ -3,6 +3,7 @@ import { getFileAdapter } from '@unchainedshop/core-files';
 import { checkAction } from '../acl.ts';
 import { actions } from '../roles/index.ts';
 import type { Context } from '../context.ts';
+import { isCrossSiteRequest } from '../cross-site-request.ts';
 import type { FastifyRequest, RouteHandlerMethod } from 'fastify';
 
 const logger = createLogger('unchained:temp-upload');
@@ -13,6 +14,11 @@ const tempUploadHandler: RouteHandlerMethod = async (
 ) => {
   try {
     const context = req.unchainedContext;
+
+    if (isCrossSiteRequest((key) => req.headers[key] as string)) {
+      res.status(403);
+      return res.send({ message: 'Cross-site requests are not allowed' });
+    }
 
     await checkAction(context, (actions as any).uploadTempFile);
 

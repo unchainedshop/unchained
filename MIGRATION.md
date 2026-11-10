@@ -16,6 +16,30 @@ Node.js 22.23.4+, 24.22.1+ or 26.12.1+ is required.
 
 The Stripe plugin requires `stripe` 23 (`npm install stripe@^23`) and pins API version `2026-09-30.endive`, which rejects `payment_method_types`. Storefronts should send `allowed_payment_method_types` in the transaction context; the plugin still renames `payment_method_types` for them. Saved credentials now store and charge with `meta.allowed_payment_method_types`; credentials registered before the upgrade let Stripe derive the type from the saved payment method.
 
+---
+
+## v4.8.x Cross-site defaults tightened
+
+The session cookie now defaults to `SameSite=Lax` (was `None`), the GraphQL endpoint no longer sends `Access-Control-Allow-Credentials` to a reflected origin, `/graphql` answers `415` for `application/x-www-form-urlencoded`, `multipart/form-data` and `text/plain`, and `/bulk-import` and `/temp-upload` answer `403` when a browser sends `Sec-Fetch-Site: cross-site`.
+
+**Nothing to do** if your storefront talks to the engine with an `Authorization` header, or is served from the same origin as the engine, or you only use the Admin UI. Server-to-server clients send no fetch metadata and keep working.
+
+**If a storefront on another origin authenticates with the session cookie**, it stopped working. Restore it explicitly, with an origin allow-list rather than the previous reflect-anything behaviour:
+
+```bash
+UNCHAINED_COOKIE_SAMESITE=none
+```
+
+```typescript
+await startPlatform({
+  cors: { origin: ['https://shop.example'], credentials: true },
+});
+```
+
+Prefer moving that storefront to token authentication instead: a cookie sent cross-site with `Allow-Credentials` on a reflected origin means any website can act as your logged-in users.
+
+---
+
 ## v4.8.x MCP: SDK v2, stateless `/mcp`
 
 The MCP integration migrated from the monolithic MCP TypeScript SDK v1 to the split v2 SDK. The optional peer dependency was **renamed**: `@modelcontextprotocol/sdk` is no longer supported.
