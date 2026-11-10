@@ -6,7 +6,7 @@
 
 ## v4.8 → v4.9
 
-Node.js 22.23.4+, 24.22.1+ or 26.12.1+ is required.
+Node.js 24.22.1+ or 26.12.1+ is required.
 
 ### graphql-yoga 6
 
@@ -15,6 +15,16 @@ Node.js 22.23.4+, 24.22.1+ or 26.12.1+ is required.
 ### Stripe SDK v23 / API `2026-09-30.endive`
 
 The Stripe plugin requires `stripe` 23 (`npm install stripe@^23`) and pins API version `2026-09-30.endive`, which rejects `payment_method_types`. Storefronts should send `allowed_payment_method_types` in the transaction context; the plugin still renames `payment_method_types` for them. Saved credentials now store and charge with `meta.allowed_payment_method_types`; credentials registered before the upgrade let Stripe derive the type from the saved payment method.
+
+---
+
+## v4.8.x Node 24, checkout locking, deprecated order mutations removed
+
+- **Node 24.22.1 is the minimum.** The checkout lock uses `await using`, which Node 22 cannot parse.
+- **Cart mutations take the checkout lock.** While a cart is being checked out they answer `OrderLockedError` (`extensions.code`), which is safe to retry.
+- **The deprecated order mutations are removed.** `setOrderPaymentProvider` and `setOrderDeliveryProvider` become `updateCart`; `updateOrderDeliveryShipping`, `updateOrderDeliveryPickUp`, `updateOrderPaymentGeneric` and `updateOrderPaymentInvoice` become their `updateCart*` namesakes, which take the `orderId` instead of the delivery or payment id.
+- **`ordersSettings.lockOrderDuringCheckout` is removed.** Delete it from your options; locking is unconditional.
+- **Callers of `modules.orders.acquireLock`** must release every lock (the lease is renewed while held) and must not acquire `order:checkout:<orderId>` inside a cart mutation.
 
 ---
 
