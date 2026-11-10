@@ -1,7 +1,11 @@
 import { DeliveryDirector } from '@unchainedshop/core';
 import type { Context } from '../../context.ts';
+import { checkTypeResolver } from '../../acl.ts';
+import { actions } from '../../roles/index.ts';
 
 export const DeliveryProviderInterface = {
+  configuration: checkTypeResolver(actions.manageDeliveryProviders, 'configuration'),
+
   async isActive(deliveryProvider, _, context: Context) {
     const director = await DeliveryDirector.actions(deliveryProvider, {}, context);
     return Boolean(director.isActive());

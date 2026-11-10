@@ -1,8 +1,12 @@
 import type { Context } from '../../../context.ts';
+import { checkTypeResolver } from '../../../acl.ts';
+import { actions } from '../../../roles/index.ts';
 import type { PaymentProvider as PaymentProviderType } from '@unchainedshop/core-payment';
 import { PaymentDirector } from '@unchainedshop/core';
 
 export const PaymentProvider = {
+  configuration: checkTypeResolver(actions.managePaymentProviders, 'configuration'),
+
   interface(provider: PaymentProviderType) {
     const Adapter = PaymentDirector.getAdapter(provider.adapterKey);
     if (!Adapter) return null;

@@ -19,7 +19,7 @@ import {
 } from '../context.ts';
 import createBulkImportMiddleware from './createBulkImportMiddleware.ts';
 import createERCMetadataMiddleware from './createERCMetadataMiddleware.ts';
-import createTempUploadMiddleware from './createTempUploadMiddleware.ts';
+import createTempUploadMiddleware, { authorizeTempUpload } from './createTempUploadMiddleware.ts';
 import createTempUploadParser from './createTempUploadParser.ts';
 import createMCPMiddleware from './createMCPMiddleware.ts';
 import { API_EVENTS } from '../events.ts';
@@ -266,7 +266,7 @@ export const connect = (
   expressApp.use(GRAPHQL_API_PATH, graphqlHandler.handle);
   expressApp.use(ERC_METADATA_API_PATH, createERCMetadataMiddleware);
   expressApp.use(BULK_IMPORT_API_PATH, createBulkImportMiddleware);
-  expressApp.use(TEMP_UPLOAD_API_PATH, upload.any(), createTempUploadMiddleware);
+  expressApp.use(TEMP_UPLOAD_API_PATH, authorizeTempUpload, upload.any(), createTempUploadMiddleware);
 
   expressApp.use(MCP_API_PATH, e.json({ limit: '10mb' }));
   expressApp.use(MCP_API_PATH, createMCPMiddleware);

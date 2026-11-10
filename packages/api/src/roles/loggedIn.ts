@@ -223,6 +223,21 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
     return credentials.userId === userId;
   };
 
+  // confirmMediaUpload takes a file id from the client and rewrites that file's type and
+  // size, so it has to be a ticket the caller prepared themselves. Admins bypass via the
+  // admin role, which is what the product and assortment media flows rely on.
+  const isOwnedFileUploadTicket = async (
+    obj: any,
+    { mediaUploadTicketId }: { mediaUploadTicketId?: string },
+    { modules, userId }: Context,
+  ) => {
+    if (!mediaUploadTicketId) return false;
+    const file = await modules.files.findFile({ fileId: mediaUploadTicketId });
+    // return true if db entity not found to let the resolver throw a good exception
+    if (!file) return true;
+    return !!userId && file.meta?.userId === userId;
+  };
+
   const isFileAccessible = async (file, _, context) => {
     const user = context?.user;
 
@@ -271,7 +286,7 @@ export const loggedIn = (role: any, actions: Record<string, string>) => {
   role.allow(actions.changePassword, () => true);
   role.allow(actions.registerPaymentCredentials, () => true);
   role.allow(actions.managePaymentCredentials, isOwnedPaymentCredential);
-  role.allow(actions.confirmMediaUpload, () => true);
+  role.allow(actions.confirmMediaUpload, isOwnedFileUploadTicket);
   role.allow(actions.downloadFile, isFileAccessible);
   role.allow(actions.uploadUserAvatar, canUpdateAvatar);
   role.allow(actions.uploadTempFile, canUpdateAvatar);

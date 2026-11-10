@@ -13,13 +13,10 @@ const methodWrongHandler = (res) => {
   return;
 };
 
-export default async function tempUploadMiddleware(
-  req: Request & { query?: any; files: any; unchainedContext: Context },
-  res,
-) {
+// Runs before the multipart parser so an unauthorized request is refused before its
+// body is buffered into memory.
+export async function authorizeTempUpload(req: Request & { unchainedContext: Context }, res, next) {
   try {
-    const context = req.unchainedContext;
-
     if (req.method !== 'POST') {
       return methodWrongHandler(res);
     }
@@ -29,7 +26,20 @@ export default async function tempUploadMiddleware(
       return;
     }
 
-    await checkAction(context, (actions as any).uploadTempFile);
+    await checkAction(req.unchainedContext, (actions as any).uploadTempFile);
+    next();
+  } catch (e) {
+    logger.error(e);
+    res.status(503).send({ name: e.name, code: e.code, message: e.message });
+  }
+}
+
+export default async function tempUploadMiddleware(
+  req: Request & { query?: any; files: any; unchainedContext: Context },
+  res,
+) {
+  try {
+    const context = req.unchainedContext;
 
     const [data] = req.files || [];
 
