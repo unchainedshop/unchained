@@ -8,6 +8,7 @@ import { type Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 import { getFileAdapter } from '@unchainedshop/core-files';
 import { timingSafeStringEqual } from '@unchainedshop/utils';
+import { buildDownloadSafetyHeaders } from './download-headers.ts';
 
 const { ROOT_URL, GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;
 
@@ -60,8 +61,13 @@ const gridfsHandler = async (
           return;
         }
 
-        if (file.expires === null) {
+        if (file.expires == null) {
           res.status(400).send('File already linked');
+          return;
+        }
+
+        if (new Date(file.expires).getTime() <= Date.now()) {
+          res.status(403).send('Access restricted: URL expired.');
           return;
         }
         // If the type is octet-stream, prefer mimetype lookup from the filename
@@ -136,6 +142,9 @@ const gridfsHandler = async (
       if (file?.length) {
         res.setHeader('Content-Length', file?.length.toString());
       }
+      Object.entries(buildDownloadSafetyHeaders(file?.metadata?.['content-type'])).forEach(
+        ([key, value]) => res.setHeader(key, value),
+      );
 
       const readStream = await modules.gridfsFileUploads.createReadStream(
         directoryName,
