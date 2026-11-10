@@ -9,8 +9,8 @@ const defaultObfuscatedFields = [
   'token',
 ];
 
-const buildObfuscatedFieldsFilter = (blacklistedVariables: string[] = []) => {
-  const sensitiveFields = blacklistedVariables || defaultObfuscatedFields;
+const buildObfuscatedFieldsFilter = (blacklistedVariables?: string[]) => {
+  const sensitiveFields = blacklistedVariables ?? defaultObfuscatedFields;
 
   const obfuscateSensitiveFields = (data) => {
     if (!data) return data;
@@ -20,19 +20,19 @@ const buildObfuscatedFieldsFilter = (blacklistedVariables: string[] = []) => {
     }
 
     if (typeof data === 'object') {
-      const temp = data;
-      Object.keys(temp).forEach((key) => {
-        if (sensitiveFields.includes(key)) {
-          temp[key] = '******';
-        } else {
-          temp[key] = obfuscateSensitiveFields(temp[key]);
-        }
-      });
+      if (data instanceof Date) return data;
 
-      return temp; // Return the modified copy
+      // A copy, not the caller's object: the work queue masks the very document it
+      // then hands to the worker, so mutating in place would send ****** downstream.
+      return Object.fromEntries(
+        Object.entries(data).map(([key, value]) => [
+          key,
+          sensitiveFields.includes(key) ? '******' : obfuscateSensitiveFields(value),
+        ]),
+      );
     }
 
-    return data; // Return unchanged data for non-objects
+    return data;
   };
 
   return obfuscateSensitiveFields;

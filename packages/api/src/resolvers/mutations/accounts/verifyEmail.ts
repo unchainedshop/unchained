@@ -11,7 +11,7 @@ export default async function verifyEmail(root: never, { token }: { token: any }
   const unverifiedToken = await modules.users.findUnverifiedEmailToken(token);
 
   if (!unverifiedToken) {
-    throw new InvalidEmailVerificationTokenError({ token });
+    throw new InvalidEmailVerificationTokenError({});
   }
 
   await modules.users.verifyEmail(unverifiedToken.userId, unverifiedToken.address);

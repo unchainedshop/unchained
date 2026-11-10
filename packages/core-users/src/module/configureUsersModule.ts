@@ -138,6 +138,15 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
   const Users = await UsersCollection(db);
   const webAuthn = await configureUsersWebAuthnModule(moduleInput);
 
+  // Sessions are stored as serialized JSON in the `session` field; the owner id appears
+  // as `"user":"<id>"` (express/passport) or `"userId":"<id>"` (fastify). A substring
+  // (non-anchored) match is required because the id sits inside the larger document.
+  const deleteUserSessions = async (userId: string) => {
+    await db.collection('sessions').deleteMany({
+      session: { $regex: `"user(Id)?":"${escapeRegexString(userId)}"` },
+    });
+  };
+
   const assertAnotherActiveAdminExists = async (userId: string) => {
     const user = await Users.findOne({ _id: userId, deleted: null as any });
     if (!user?.roles?.includes(ADMIN_ROLE)) return;
@@ -785,6 +794,9 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
         { returnDocument: 'after' },
       );
       if (!user) return null;
+      // A new password has to end the sessions established with the old one. The caller
+      // acting on its own account re-establishes its session in the resolver.
+      await deleteUserSessions(userId);
       await emit('USER_UPDATE_PASSWORD', {
         user: removeConfidentialServiceHashes(user),
       });
@@ -882,14 +894,8 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     markDeleted: async (userId: string) => {
       await assertAnotherActiveAdminExists(userId);
 
-      // Invalidate every active session belonging to the user so that deletion
-      // immediately revokes access. Sessions are stored as serialized JSON in the
-      // `session` field; the owner id appears as `"user":"<id>"` (express/passport)
-      // or `"userId":"<id>"` (fastify). A substring (non-anchored) match is required
-      // because the id is embedded inside the larger serialized session document.
-      await db.collection('sessions').deleteMany({
-        session: { $regex: `"user(Id)?":"${escapeRegexString(userId)}"` },
-      });
+      // Deletion has to revoke access immediately.
+      await deleteUserSessions(userId);
       const user = await Users.findOneAndUpdate(
         { _id: userId },
         {

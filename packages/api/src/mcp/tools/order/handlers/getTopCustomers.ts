@@ -1,5 +1,6 @@
 import type { Context } from '../../../../context.ts';
 import { OrderStatus } from '@unchainedshop/core-orders';
+import { removeConfidentialServiceHashes } from '@unchainedshop/core-users';
 import { resolveDateRange } from '../../../utils/orderFilters.ts';
 import type { Params } from '../schemas.ts';
 
@@ -35,10 +36,10 @@ export default async function getTopCustomers(context: Context, params: Params<'
         }));
       return {
         userId: c.userId?.toString?.() ?? null,
-        user: avatar
+        user: user
           ? {
-              ...user,
-              avatar,
+              ...removeConfidentialServiceHashes(user),
+              avatar: avatar || null,
             }
           : null,
         currencyCode: c?.currencyCode || null,

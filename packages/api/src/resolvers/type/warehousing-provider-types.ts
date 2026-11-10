@@ -5,16 +5,21 @@ import {
 } from '@unchainedshop/core';
 import type { WarehousingProvider as WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import type { Context } from '../../context.ts';
+import { checkTypeResolver } from '../../acl.ts';
+import { actions } from '../../roles/index.ts';
 
 export type HelperType<P, T> = (provider: WarehousingProviderType, params: P, context: Context) => T;
 
 export interface WarehousingProviderHelperTypes {
+  configuration: HelperType<never, Promise<WarehousingProviderType['configuration']>>;
   configurationError: HelperType<never, Promise<WarehousingError | null>>;
   interface: HelperType<never, WarehousingInterface | null>;
   isActive: HelperType<never, Promise<boolean>>;
 }
 
 export const WarehousingProvider: WarehousingProviderHelperTypes = {
+  configuration: checkTypeResolver(actions.manageWarehousingProviders, 'configuration') as any,
+
   interface(obj) {
     const Adapter = WarehousingDirector.getAdapter(obj.adapterKey);
     if (!Adapter) return null;

@@ -67,7 +67,7 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
 
     // A new identity has to get a new session id, else a session planted before the
     // login keeps working afterwards (session fixation).
-    await req.session.regenerate();
+    await regenerateSession(req);
     req.session.userId = user._id;
     req.session.impersonatorId = impersonator?._id;
     await req.session.save();
@@ -113,6 +113,24 @@ const middlewareHook = async function middlewareHook(req: any, reply: any) {
     req,
     reply,
   );
+};
+
+const storeSession = (req: FastifyRequest) =>
+  new Promise<void>((resolve, reject) => {
+    req.sessionStore.set(req.session.sessionStoreId, req.session, (error) =>
+      error ? reject(error) : resolve(),
+    );
+  });
+
+const regenerateSession = async (req: FastifyRequest) => {
+  try {
+    await req.session.regenerate();
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw error;
+    // The store no longer holds this session (a password change ended all of them)
+    await storeSession(req);
+    await req.session.regenerate();
+  }
 };
 
 export const unchainedLogger = (prefix: string): FastifyBaseLogger => {

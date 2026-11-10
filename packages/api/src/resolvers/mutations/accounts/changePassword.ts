@@ -8,8 +8,10 @@ export default async function changePassword(
     oldPassword: string;
     newPassword: string;
   },
-  { modules, userId }: Context,
+  context: Context,
 ) {
+  const { modules, userId } = context;
+
   log('mutation changePassword', { userId });
 
   const user = await modules.users.findUserById(userId!);
@@ -25,6 +27,10 @@ export default async function changePassword(
     if (e.cause === 'PASSWORD_INVALID') throw new PasswordInvalidError({ userId });
     else throw e;
   }
+
+  // setPassword ends every session established with the old password, including this
+  // one, so the caller gets a fresh session instead of being signed out.
+  await context.login(user!);
 
   return { success: true };
 }

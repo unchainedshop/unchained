@@ -119,6 +119,41 @@ test.describe('Auth for anonymous users', () => {
     });
   });
 
+  test('ends other sessions when the password changes', async () => {
+    const baseUrl = getServerBaseUrl();
+    const post = async (query, cookie) => {
+      const response = await fetch(`${baseUrl}/graphql`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', ...(cookie ? { cookie } : {}) },
+        body: JSON.stringify({ query }),
+      });
+      const sessionCookie = response.headers
+        .getSetCookie()
+        .map((value) => value.split(';')[0])
+        .filter((value) => value.split('=')[1])
+        .pop();
+      return { sessionCookie, body: await response.json() };
+    };
+    const login = () =>
+      post('mutation { loginWithPassword(username: "admin", password: "password") { _id } }');
+
+    const stolen = (await login()).sessionCookie;
+    const owner = (await login()).sessionCookie;
+
+    const changed = await post(
+      'mutation { changePassword(oldPassword: "password", newPassword: "password") { success } }',
+      owner,
+    );
+    assert.strictEqual(changed.body.data.changePassword.success, true);
+
+    // The other session is gone, the caller keeps a working one.
+    const replayed = await post('{ me { _id } }', stolen);
+    assert.strictEqual(replayed.body.data.me, null);
+
+    const stillValid = await post('{ me { _id } }', changed.sessionCookie);
+    assert.strictEqual(stillValid.body.data.me._id, 'admin');
+  });
+
   test('rotates the session id on login so a planted session cannot be reused', async () => {
     const baseUrl = getServerBaseUrl();
     const post = async (query, cookie) => {
@@ -130,18 +165,23 @@ test.describe('Auth for anonymous users', () => {
         },
         body: JSON.stringify({ query }),
       });
-      return { setCookie: response.headers.get('set-cookie'), body: await response.json() };
+      const sessionCookie = response.headers
+        .getSetCookie()
+        .map((value) => value.split(';')[0])
+        .filter((value) => value.split('=')[1])
+        .pop();
+      return { sessionCookie, body: await response.json() };
     };
 
     const guest = await post('mutation { loginAsGuest { _id } }');
-    const plantedCookie = guest.setCookie.split(';')[0];
+    const plantedCookie = guest.sessionCookie;
 
     const login = await post(
       'mutation { loginWithPassword(username: "admin", password: "password") { _id } }',
       plantedCookie,
     );
     assert.ok(login.body.data?.loginWithPassword?._id);
-    assert.notStrictEqual(login.setCookie.split(';')[0], plantedCookie);
+    assert.notStrictEqual(login.sessionCookie, plantedCookie);
 
     const replayed = await post('{ me { _id } }', plantedCookie);
     assert.strictEqual(replayed.body.data.me, null);
