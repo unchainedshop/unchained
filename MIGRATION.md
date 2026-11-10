@@ -4,6 +4,16 @@
 
 ---
 
+## v4.8.x Node 24, checkout locking, deprecated order mutations removed
+
+- **Node 24.22.1 is the minimum.** The checkout lock uses `await using`, which Node 22 cannot parse.
+- **Cart mutations take the checkout lock.** While a cart is being checked out they answer `OrderLockedError` (`extensions.code`), which is safe to retry.
+- **The deprecated order mutations are removed.** `setOrderPaymentProvider` and `setOrderDeliveryProvider` become `updateCart`; `updateOrderDeliveryShipping`, `updateOrderDeliveryPickUp`, `updateOrderPaymentGeneric` and `updateOrderPaymentInvoice` become their `updateCart*` namesakes, which take the `orderId` instead of the delivery or payment id.
+- **`ordersSettings.lockOrderDuringCheckout` is removed.** Delete it from your options; locking is unconditional.
+- **Callers of `modules.orders.acquireLock`** must release every lock (the lease is renewed while held) and must not acquire `order:checkout:<orderId>` inside a cart mutation.
+
+---
+
 ## v4.8.x Cross-site defaults tightened
 
 The session cookie now defaults to `SameSite=Lax` (was `None`), the GraphQL endpoint no longer sends `Access-Control-Allow-Credentials` to a reflected origin, `/graphql` answers `415` for `application/x-www-form-urlencoded`, `multipart/form-data` and `text/plain`, and `/bulk-import` and `/temp-upload` answer `403` when a browser sends `Sec-Fetch-Site: cross-site`.
