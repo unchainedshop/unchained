@@ -1,5 +1,10 @@
 import type { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
+import {
+  PayrexxWebhookError,
+  resolvePayrexxOrderPayment,
+  resolvePayrexxPaymentProviderId,
+} from './payrexx.ts';
 
 const logger = createLogger('unchained:payrexx:handler');
 
@@ -36,7 +41,11 @@ export const payrexxHandler = async (request, response) => {
   try {
     if (transaction.preAuthorizationId) {
       // Pre-Authorization Flow, referenceId is a userId
-      const { referenceId: paymentProviderId, invoice } = transaction;
+      const { invoice } = transaction;
+      const paymentProviderId = await resolvePayrexxPaymentProviderId(
+        transaction.referenceId,
+        modules,
+      );
       const userId = '';
       logger.info(`register credentials for: ${userId}`);
       await services.orders.registerPaymentCredentials(paymentProviderId, {
@@ -53,17 +62,13 @@ export const payrexxHandler = async (request, response) => {
         userId,
       });
     } else {
-      const { referenceId: orderPaymentId, invoice } = transaction;
+      const { invoice } = transaction;
+      const orderPayment = await resolvePayrexxOrderPayment(transaction.referenceId, modules);
+      const orderPaymentId = orderPayment._id;
       logger.info(`checkout with orderPaymentId: ${orderPaymentId}`);
       await modules.orders.payments.logEvent(orderPaymentId, {
         transactionId: transaction.id,
       });
-      const orderPayment = await modules.orders.payments.findOrderPayment({
-        orderPaymentId,
-      });
-      if (!orderPayment) {
-        throw new Error(`order payment not found with orderPaymentId: ${orderPaymentId}`);
-      }
 
       const order = await services.orders.checkoutOrder(orderPayment.orderId, {
         paymentContext: {
@@ -85,7 +90,7 @@ export const payrexxHandler = async (request, response) => {
     logger.error(error, {
       transactionId: transaction.id,
     });
-    response.status(500).send({
+    response.status(error instanceof PayrexxWebhookError ? 400 : 500).send({
       message: error.message,
       name: error.name,
     });
