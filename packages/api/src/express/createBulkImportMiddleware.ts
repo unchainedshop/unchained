@@ -2,6 +2,7 @@ import { createLogger } from '@unchainedshop/logger';
 import { checkAction } from '../acl.ts';
 import { actions } from '../roles/index.ts';
 import type { Context } from '../context.ts';
+import { isCrossSiteRequest } from '../cross-site-request.ts';
 
 const logger = createLogger('unchained:bulk-import');
 
@@ -20,6 +21,11 @@ export default async function bulkImportMiddleware(
 
     if (req.method !== 'POST') {
       return methodWrongHandler(res);
+    }
+
+    if (isCrossSiteRequest((key) => req.headers[key] as string)) {
+      res.status(403).send({ message: 'Cross-site requests are not allowed' });
+      return;
     }
 
     await checkAction(context, (actions as any).bulkImport);
