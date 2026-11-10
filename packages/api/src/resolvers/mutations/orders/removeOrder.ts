@@ -1,22 +1,20 @@
 import { log } from '@unchainedshop/logger';
-import { OrderNotFoundError, OrderWrongStatusError, InvalidIdError } from '../../../errors.ts';
+import { InvalidIdError } from '../../../errors.ts';
 import type { Context } from '../../../context.ts';
+import { lockCart } from '../../loadCart.ts';
 
 export default async function removeOrder(
   root: never,
   { orderId }: { orderId: string },
-  { modules, services, userId }: Context,
+  context: Context,
 ) {
+  const { services, userId } = context;
+
   log('mutation removeOrder', { userId, orderId });
 
   if (!orderId) throw new InvalidIdError({ orderId });
 
-  const order = await modules.orders.findOrder({ orderId });
-  if (!order) throw new OrderNotFoundError({ orderId });
-
-  if (!modules.orders.isCart(order)) {
-    throw new OrderWrongStatusError({ status: order.status });
-  }
+  await using order = await lockCart(context, orderId);
 
   // Cascade so the cart's positions/payments/deliveries/discounts don't get orphaned.
   await services.orders.deleteCart(orderId);

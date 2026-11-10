@@ -1,20 +1,16 @@
 import type { Context } from '../../../context.ts';
 import { DeliveryProviderType } from '@unchainedshop/core-delivery';
 import { log } from '@unchainedshop/logger';
-import {
-  InvalidIdError,
-  OrderDeliveryNotFoundError,
-  OrderDeliveryTypeError,
-  OrderNotFoundError,
-  OrderWrongStatusError,
-} from '../../../errors.ts';
+import { InvalidIdError, OrderDeliveryNotFoundError, OrderDeliveryTypeError } from '../../../errors.ts';
+import type { Order } from '@unchainedshop/core-orders';
+import { lockCart } from '../../loadCart.ts';
 
 export default async function updateCartDeliveryPickUp(
   root: never,
   params: { orderId: string; deliveryProviderId: string; orderPickUpLocationId: string; meta: any },
   context: Context,
 ) {
-  const { modules, services, userId, user } = context;
+  const { modules, services, userId } = context;
   const { orderId, deliveryProviderId, orderPickUpLocationId, meta } = params;
   log(`mutation updateCartDeliveryPickUp provider ${deliveryProviderId}`, {
     userId,
@@ -22,13 +18,8 @@ export default async function updateCartDeliveryPickUp(
 
   if (!deliveryProviderId) throw new InvalidIdError({ deliveryProviderId });
 
-  let order = await services.orders.findOrInitCart({
-    orderId,
-    user: user!,
-    countryCode: context.countryCode,
-  });
-  if (!order) throw new OrderNotFoundError({ orderId });
-  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
+  await using cart = await lockCart(context, orderId);
+  let order: Order = cart;
 
   const provider = await modules.delivery.findProvider({
     deliveryProviderId,

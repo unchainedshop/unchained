@@ -73,4 +73,17 @@ describe('checkoutCart resolver', () => {
       },
     );
   });
+  it('reports a locked cart instead of a checkout failure', async () => {
+    const context = buildContext(async () => {
+      throw new Error('Could not acquire lock order:checkout:order-1', { cause: 'LOCKED' });
+    });
+    await assert.rejects(
+      () => checkoutCart(null as never, { orderId: 'order-1' }, context),
+      (error: any) => {
+        assert.strictEqual(error.extensions?.code, 'OrderLockedError');
+        assert.strictEqual(error.extensions?.orderId, 'order-1');
+        return true;
+      },
+    );
+  });
 });

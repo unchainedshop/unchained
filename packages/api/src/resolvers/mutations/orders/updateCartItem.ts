@@ -3,11 +3,10 @@ import type { Context } from '../../../context.ts';
 import {
   OrderQuantityTooLowError,
   OrderItemNotFoundError,
-  OrderWrongStatusError,
   ProductNotFoundError,
   InvalidIdError,
-  OrderNotFoundError,
 } from '../../../errors.ts';
+import { lockCart } from '../../loadCart.ts';
 import { ordersSettings } from '@unchainedshop/core-orders';
 
 export default async function updateCartItem(
@@ -26,16 +25,16 @@ export default async function updateCartItem(
 
   if (!itemId) throw new InvalidIdError({ itemId });
 
+  const position = await modules.orders.positions.findOrderPosition({ itemId });
+  if (!position) throw new OrderItemNotFoundError({ itemId });
+
+  await using order = await lockCart(context, position.orderId);
+
+  // quantityDiff below is computed against this item, so it has to be the item as it
+  // stands under the lock: a change made while this mutation waited would otherwise be
+  // validated away and the combined quantity could exceed a product's limits.
   const item = await modules.orders.positions.findOrderPosition({ itemId });
-  if (!item) throw new OrderItemNotFoundError({ itemId });
-
-  const order = await modules.orders.findOrder({ orderId: item.orderId });
-
-  if (!order) throw new OrderNotFoundError({ orderId: item.orderId });
-
-  if (!modules.orders.isCart(order)) {
-    throw new OrderWrongStatusError({ status: order.status });
-  }
+  if (item?.orderId !== order._id) throw new OrderItemNotFoundError({ itemId });
 
   const product = await modules.products.findProduct({
     productId: item.productId,

@@ -6,12 +6,11 @@ import {
   QuotationWrongStatusError,
   OrderQuantityTooLowError,
   InvalidIdError,
-  OrderWrongStatusError,
   ProductNotFoundError,
-  OrderNotFoundError,
   QuotationItemConfigurationError,
 } from '../../../errors.ts';
 import { QuotationDirector } from '@unchainedshop/core';
+import { lockCart } from '../../loadCart.ts';
 
 export default async function addCartQuotation(
   root: never,
@@ -23,7 +22,7 @@ export default async function addCartQuotation(
   },
   context: Context,
 ) {
-  const { modules, services, userId, user } = context;
+  const { modules, services, userId } = context;
   const { orderId, quotationId, quantity, configuration } = params;
 
   log(
@@ -44,13 +43,7 @@ export default async function addCartQuotation(
     throw new QuotationWrongStatusError({ status: quotation.status });
   }
 
-  const order = await services.orders.findOrInitCart({
-    orderId,
-    user: user!,
-    countryCode: context.countryCode,
-  });
-  if (!order) throw new OrderNotFoundError({ orderId });
-  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
+  await using order = await lockCart(context, orderId);
 
   if (
     !(await modules.products.productExists({

@@ -1,7 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import { OrderNotFoundError, OrderWrongStatusError } from '../../../errors.ts';
 import type { Address, Contact } from '@unchainedshop/mongodb';
+import { lockCart } from '../../loadCart.ts';
 
 interface UpdateCartParams {
   orderId?: string;
@@ -15,17 +15,11 @@ interface UpdateCartParams {
 export default async function updateCart(root: never, params: UpdateCartParams, context: Context) {
   const { orderId, billingAddress, contact, paymentProviderId, deliveryProviderId, meta } = params;
 
-  const { modules, services, userId, user } = context;
+  const { modules, services, userId } = context;
 
   log('mutation updateCart', { userId });
 
-  const order = await services.orders.findOrInitCart({
-    orderId,
-    user: user!,
-    countryCode: context.countryCode,
-  });
-  if (!order) throw new OrderNotFoundError({ orderId });
-  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
+  await using order = await lockCart(context, orderId);
 
   // Batch update non-provider fields in a single database operation
   if (meta || billingAddress || contact) {
