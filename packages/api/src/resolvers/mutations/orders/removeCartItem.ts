@@ -18,8 +18,6 @@ export default async function removeCartItem(
   if (!position) throw new OrderItemNotFoundError({ itemId });
 
   await using order = await lockCart(context, position.orderId);
-
-  // The position was read before the lock, so re-check it still belongs to this cart.
   const orderItem = await modules.orders.positions.findOrderPosition({ itemId });
   if (orderItem?.orderId !== order._id) throw new OrderItemNotFoundError({ itemId });
 

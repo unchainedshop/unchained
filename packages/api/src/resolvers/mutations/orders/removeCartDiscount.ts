@@ -19,8 +19,6 @@ export default async function removeCartDiscount(
   if (!discount) throw new OrderDiscountNotFoundError({ discountId });
 
   await using order = await lockCart(requestContext, discount.orderId);
-
-  // The discount was read before the lock, so re-check it still belongs to this cart.
   const orderDiscount = await modules.orders.discounts.findOrderDiscount({ discountId });
   if (orderDiscount?.orderId !== order._id) throw new OrderDiscountNotFoundError({ discountId });
 

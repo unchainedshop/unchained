@@ -30,9 +30,7 @@ export default async function checkoutCart(
     const checkedOutOrder = await services.orders.checkoutOrder(order._id, transactionContext);
     return checkedOutOrder;
   } catch (error) {
-    // Contention is not a checkout failure: the cart is busy, the caller can retry.
     if (error.cause === 'LOCKED') throw new OrderLockedError({ orderId: order._id });
-
     logger.error(error, { userId, orderId: order._id });
     throw new OrderCheckoutError({
       userId,
