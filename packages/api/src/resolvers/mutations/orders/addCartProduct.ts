@@ -1,20 +1,15 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import {
-  ProductNotFoundError,
-  OrderQuantityTooLowError,
-  InvalidIdError,
-  OrderWrongStatusError,
-  OrderNotFoundError,
-} from '../../../errors.ts';
+import { ProductNotFoundError, OrderQuantityTooLowError, InvalidIdError } from '../../../errors.ts';
 import { ordersSettings } from '@unchainedshop/core-orders';
+import { lockCart } from '../../loadCart.ts';
 
 export default async function addCartProduct(
   root: never,
   { orderId, productId: originalProductId, quantity, configuration },
   context: Context,
 ) {
-  const { modules, services, userId, user } = context;
+  const { modules, services, userId } = context;
 
   log(
     `mutation addCartProduct ${originalProductId} ${quantity} ${
@@ -29,14 +24,7 @@ export default async function addCartProduct(
   const originalProduct = await modules.products.findProduct({ productId: originalProductId });
   if (!originalProduct) throw new ProductNotFoundError({ productId: originalProductId });
 
-  const order = await services.orders.findOrInitCart({
-    orderId,
-    user: user!,
-    countryCode: context.countryCode,
-  });
-  if (!order) throw new OrderNotFoundError({ orderId });
-
-  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
+  await using order = await lockCart(context, orderId);
 
   const product = await modules.products.resolveOrderableProduct(originalProduct, { configuration });
 

@@ -1,11 +1,7 @@
 import { log } from '@unchainedshop/logger';
 import type { Context } from '../../../context.ts';
-import {
-  ProductNotFoundError,
-  OrderQuantityTooLowError,
-  OrderWrongStatusError,
-  OrderNotFoundError,
-} from '../../../errors.ts';
+import { ProductNotFoundError, OrderQuantityTooLowError } from '../../../errors.ts';
+import { lockCart } from '../../loadCart.ts';
 
 export default async function addMultipleCartProducts(
   root: never,
@@ -19,7 +15,7 @@ export default async function addMultipleCartProducts(
   },
   context: Context,
 ) {
-  const { modules, services, userId, user, locale, countryCode } = context;
+  const { modules, services, userId, locale, countryCode } = context;
   const { orderId, items } = params;
 
   log(`mutation addMultipleCartProducts ${JSON.stringify(items)}`, {
@@ -34,13 +30,7 @@ export default async function addMultipleCartProducts(
     if (quantity < 1) throw new OrderQuantityTooLowError({ quantity, productId });
   }
 
-  const order = await services.orders.findOrInitCart({
-    orderId,
-    user: user!,
-    countryCode,
-  });
-  if (!order) throw new OrderNotFoundError({ orderId });
-  if (!modules.orders.isCart(order)) throw new OrderWrongStatusError({ status: order.status });
+  await using order = await lockCart(context, orderId);
 
   try {
     await services.orders.addMultipleCartProducts({
