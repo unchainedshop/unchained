@@ -30,15 +30,17 @@ export async function checkoutOrderService(
     nextStatus?: OrderStatus;
   },
 ) {
-  const order = await this.orders.findOrder({ orderId });
-  if (!order) return null;
-  if (order.status !== null) return order;
-
-  await validateOrderService.bind(this)(order);
-
-  const lock = await this.orders.acquireLock(order._id, 'checkout');
+  const lock = await this.orders.acquireLock(orderId, 'checkout');
 
   try {
+    // Re-read inside the lock: a checkout that waited for another one has to see the
+    // status that one left behind instead of processing the order a second time.
+    const order = await this.orders.findOrder({ orderId });
+    if (!order) return null;
+    if (order.status !== null) return order;
+
+    await validateOrderService.bind(this)(order);
+
     const processedOrder = await processOrderService.bind(this)(order, transactionContext);
 
     // After checkout, store last checkout information on user
