@@ -2,10 +2,13 @@ import { type Context } from '@unchainedshop/api';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { createLogger } from '@unchainedshop/logger';
 import { fixPeriods } from './fix-periods.ts';
+import {
+  AppleIAPWebhookError,
+  assertAppleIAPSharedSecret,
+  assertTransactionId,
+} from './shared-secret.ts';
 
 const logger = createLogger('unchained:apple-iap:handler');
-
-const { APPLE_IAP_SHARED_SECRET } = process.env;
 
 const AppleNotificationTypes = {
   INITIAL_BUY: 'INITIAL_BUY',
@@ -21,9 +24,7 @@ export const appleIAPHandler = async (req, res) => {
       const resolvedContext = req.unchainedContext as Context;
       const { modules, services } = resolvedContext;
       const responseBody = req.body || {};
-      if (responseBody.password !== APPLE_IAP_SHARED_SECRET) {
-        throw new Error('shared secret not valid');
-      }
+      await assertAppleIAPSharedSecret(responseBody.password);
 
       const transactions = responseBody?.unified_receipt?.latest_receipt_info;
       const latestTransaction = transactions[0];
@@ -31,7 +32,7 @@ export const appleIAPHandler = async (req, res) => {
       if (responseBody.notification_type === AppleNotificationTypes.INITIAL_BUY) {
         // Find the cart to checkout
         const orderPayment = await modules.orders.payments.findOrderPaymentByTransactionId(
-          latestTransaction.transaction_id,
+          assertTransactionId(latestTransaction.transaction_id),
         );
 
         if (!orderPayment) throw new Error('Could not find any matching order payment');
@@ -68,7 +69,7 @@ export const appleIAPHandler = async (req, res) => {
         // Just store payment credentials, use the enrollments paymentProvider reference and
         // let the job do the rest
         const originalOrderPayment = await modules.orders.payments.findOrderPaymentByTransactionId(
-          latestTransaction.original_transaction_id,
+          assertTransactionId(latestTransaction.original_transaction_id),
         );
         if (!originalOrderPayment) throw new Error('Could not find any matching order payment');
         const originalOrder = await modules.orders.findOrder({
@@ -126,7 +127,9 @@ export const appleIAPHandler = async (req, res) => {
       return;
     } catch (e) {
       logger.warn(`Apple IAP Webhook: ${e.name} - ${e.message}`);
-      res.status(503).send({ name: e.name, code: e.code, message: e.message });
+      res
+        .status(e instanceof AppleIAPWebhookError ? 400 : 503)
+        .send({ name: e.name, code: e.code, message: e.message });
       return;
     }
   }
