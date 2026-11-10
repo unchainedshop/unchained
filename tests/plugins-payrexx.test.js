@@ -140,4 +140,53 @@ test.describe('Plugins: Payrexx', () => {
     });
     assert.strictEqual(result.status, 200);
   });
+
+  const postWebhook = async (transaction) =>
+    fetch(`${getServerBaseUrl()}/payment/payrexx`, {
+      method: 'POST',
+      duplex: 'half',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...webhookReserved,
+        transaction: { ...webhookReserved.transaction, ...transaction },
+      }),
+    });
+
+  test('webhook: does not check out an order payment of a different payment provider', async () => {
+    const result = await postWebhook({
+      referenceId: 'simple-order-payment',
+      invoice: { ...webhookReserved.transaction.invoice, paymentRequestId: 1000001 },
+    });
+
+    assert.strictEqual(result.status, 400);
+    const order = await db.collection('orders').findOne({ _id: 'simple-order' });
+    assert.strictEqual(order.status, null);
+  });
+
+  test('webhook: rejects a referenceId that is not a string', async () => {
+    const result = await postWebhook({
+      referenceId: { $gt: '' },
+      invoice: { ...webhookReserved.transaction.invoice, paymentRequestId: 1000001 },
+    });
+
+    assert.strictEqual(result.status, 400);
+    const checkedOut = await db.collection('orders').countDocuments({
+      _id: { $in: ['simple-order', 'discounted-order'] },
+      status: { $ne: null },
+    });
+    assert.strictEqual(checkedOut, 0);
+  });
+
+  test('webhook: does not write a log entry for an unverified referenceId', async () => {
+    await postWebhook({
+      referenceId: 'simple-order-payment',
+      id: 'unverified-transaction',
+      invoice: { ...webhookReserved.transaction.invoice, paymentRequestId: 1000001 },
+    });
+
+    const logged = await db
+      .collection('order_payments')
+      .countDocuments({ 'log.transactionId': 'unverified-transaction' });
+    assert.strictEqual(logged, 0);
+  });
 });

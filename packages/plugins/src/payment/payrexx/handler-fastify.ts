@@ -1,6 +1,11 @@
 import type { Context } from '@unchainedshop/api';
 import { createLogger } from '@unchainedshop/logger';
 import type { FastifyRequest, RouteHandlerMethod } from 'fastify';
+import {
+  PayrexxWebhookError,
+  resolvePayrexxOrderPayment,
+  resolvePayrexxPaymentProviderId,
+} from './payrexx.ts';
 
 const logger = createLogger('unchained:payrexx:handler');
 
@@ -43,7 +48,11 @@ export const payrexxHandler: RouteHandlerMethod = async (
   try {
     if (transaction.preAuthorizationId) {
       // Pre-Authorization Flow, referenceId is a userId
-      const { referenceId: paymentProviderId, invoice } = transaction;
+      const { invoice } = transaction;
+      const paymentProviderId = await resolvePayrexxPaymentProviderId(
+        transaction.referenceId,
+        modules,
+      );
       const userId = '';
       logger.info(`register credentials for: ${userId}`);
       await services.orders.registerPaymentCredentials(paymentProviderId, {
@@ -61,14 +70,10 @@ export const payrexxHandler: RouteHandlerMethod = async (
         userId,
       });
     } else {
-      const { referenceId: orderPaymentId, invoice } = transaction;
+      const { invoice } = transaction;
+      const orderPayment = await resolvePayrexxOrderPayment(transaction.referenceId, modules);
+      const orderPaymentId = orderPayment._id;
       logger.info(`checkout with orderPaymentId: ${orderPaymentId}`);
-      const orderPayment = await modules.orders.payments.findOrderPayment({
-        orderPaymentId,
-      });
-      if (!orderPayment) {
-        throw new Error(`order payment not found with orderPaymentId: ${orderPaymentId}`);
-      }
 
       await modules.orders.payments.logEvent(orderPaymentId, {
         transactionId: transaction.id,
@@ -95,7 +100,7 @@ export const payrexxHandler: RouteHandlerMethod = async (
     logger.error(error, {
       transactionId: transaction.id,
     });
-    reply.status(500);
+    reply.status(error instanceof PayrexxWebhookError ? 400 : 500);
     return reply.send({
       success: false,
       message: error.message,

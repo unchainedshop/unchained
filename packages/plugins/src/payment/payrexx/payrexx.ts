@@ -1,3 +1,38 @@
+export const PAYREXX_ADAPTER_KEY = 'shop.unchained.payment.payrexx';
+
+export class PayrexxWebhookError extends Error {}
+
+const assertReferenceId = (referenceId: unknown): string => {
+  if (typeof referenceId !== 'string' || !referenceId) {
+    throw new PayrexxWebhookError('referenceId has to be a non-empty string');
+  }
+  return referenceId;
+};
+
+const assertPayrexxProvider = async (paymentProviderId: string, modules: any) => {
+  const provider = await modules.payment.paymentProviders.findProvider({ paymentProviderId });
+  if (provider?.adapterKey !== PAYREXX_ADAPTER_KEY) {
+    throw new PayrexxWebhookError(`payment provider ${paymentProviderId} is not a Payrexx provider`);
+  }
+  return provider;
+};
+
+export const resolvePayrexxPaymentProviderId = async (referenceId: unknown, modules: any) => {
+  const paymentProviderId = assertReferenceId(referenceId);
+  await assertPayrexxProvider(paymentProviderId, modules);
+  return paymentProviderId;
+};
+
+export const resolvePayrexxOrderPayment = async (referenceId: unknown, modules: any) => {
+  const orderPaymentId = assertReferenceId(referenceId);
+  const orderPayment = await modules.orders.payments.findOrderPayment({ orderPaymentId });
+  if (!orderPayment) {
+    throw new PayrexxWebhookError(`order payment not found with orderPaymentId: ${orderPaymentId}`);
+  }
+  await assertPayrexxProvider(orderPayment.paymentProviderId, modules);
+  return orderPayment;
+};
+
 const getRedirects = () => {
   const {
     EMAIL_WEBSITE_URL,
