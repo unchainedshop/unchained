@@ -86,7 +86,7 @@ When checkout is initiated, the order is validated:
 4. **Position Validation**: Each position is validated via `validateOrderPosition`:
    - By default, checks if the product is still active
    - Can be customized via platform settings
-   - Tokenized products with a `tokenization.supply` stay locked from their validation until the order and its tokens are saved, so concurrent checkouts of such a product are validated one after another
+   - Tokenized products with a `tokenization.supply` stay locked from their validation until the order and its tokens are saved, and confirmations of pending orders take the same locks, so concurrent checkouts and confirmations of such a product take turns
 5. **Quotation Check**: If position is a quotation proposal, the Quotation plugin verifies it's still valid
 
 :::warning No Recalculation

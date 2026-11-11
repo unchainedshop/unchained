@@ -13,6 +13,7 @@ import { type Product, ProductType } from '@unchainedshop/core-products';
 import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { WarehousingDirector, DeliveryDirector, PaymentDirector } from '../directors/index.ts';
 import { fulfillQuotationService } from './fulfillQuotation.ts';
+import { lockOrderSupply } from './lockOrderSupply.ts';
 import { createLogger } from '@unchainedshop/logger';
 import { createServiceError } from '../errors.ts';
 
@@ -295,5 +296,9 @@ export async function processOrderUnderLockService(
   await using lock = await this.orders.acquireLock(order._id, 'confirm-reject');
   const lockedOrder = await this.orders.findOrder({ orderId: order._id });
   if (!lockedOrder) return null;
+  await using supplyLocks =
+    lockedOrder.status === OrderStatus.PENDING
+      ? await lockOrderSupply.call(this, lockedOrder)
+      : undefined;
   return await processOrderService.call(this, lockedOrder, orderTransactionContext);
 }

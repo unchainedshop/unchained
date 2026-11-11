@@ -6,6 +6,7 @@ import { processOrderService } from './processOrder.ts';
 import type { User } from '@unchainedshop/core-users';
 import { reserveOrderDiscountsForCheckout } from './reserveOrderDiscountsForCheckout.ts';
 import { reserveOrderQuotationsForCheckout } from './reserveOrderQuotationsForCheckout.ts';
+import { lockOrderSupply } from './lockOrderSupply.ts';
 
 /**
  * Service function to checkout an order.
@@ -40,7 +41,8 @@ export async function checkoutOrderService(
     const order = await this.orders.findOrder({ orderId });
     if (!order || order.status !== null) return order;
 
-    await using supplyLocks = await validateOrderService.bind(this)(order);
+    await using supplyLocks = await lockOrderSupply.call(this, order);
+    await validateOrderService.bind(this)(order);
     quotations = await reserveOrderQuotationsForCheckout.call(this, order);
     discounts = await reserveOrderDiscountsForCheckout.call(this, order);
     const processedOrder = await processOrderService.bind(this)(order, transactionContext);

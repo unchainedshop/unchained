@@ -1,6 +1,7 @@
 import { type Order, OrderStatus } from '@unchainedshop/core-orders';
 import type { Modules } from '../modules.ts';
 import { processOrderService } from './processOrder.ts';
+import { lockOrderSupply } from './lockOrderSupply.ts';
 
 export async function confirmOrderService(
   this: Modules,
@@ -17,6 +18,7 @@ export async function confirmOrderService(
   await using lock = await this.orders.acquireLock(order._id, 'confirm-reject');
   const lockedOrder = await this.orders.findOrder({ orderId: order._id });
   if (lockedOrder?.status !== OrderStatus.PENDING) return lockedOrder;
+  await using supplyLocks = await lockOrderSupply.call(this, lockedOrder);
 
   return await processOrderService.bind(this)(lockedOrder, {
     ...transactionContext,

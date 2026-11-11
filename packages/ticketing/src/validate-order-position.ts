@@ -96,8 +96,8 @@ async function checkSaleRules(
  * (the product is active) first; for TOKENIZED_PRODUCT tickets it then refuses cancelled events,
  * applies the sale rules and keeps the sold tickets within `tokenization.supply`: issued tickets
  * that are not cancelled, PENDING orders and this order together. Without a supply there is no cap.
- * Reducing a quantity is always allowed. Checkouts validate a product with a supply one at a time
- * (validateOrderService in core), so concurrent checkouts count each other.
+ * Reducing a quantity is always allowed. Checkouts and confirmations hold a lock on each product with a
+ * supply until its tickets are issued (lockOrderSupply in core), so they count each other.
  */
 export function createTicketOrderPositionValidator(
   options: TicketOrderPositionValidatorOptions = {},

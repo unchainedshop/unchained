@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { Readable } from 'node:stream';
 import { test } from 'node:test';
+import { setTimeout } from 'node:timers/promises';
+import { DeliveryDirector } from '@unchainedshop/core';
 import { RendererTypes } from '@unchainedshop/ticketing';
 import { registerRenderer } from '@unchainedshop/ticketing/lib/template-registry.js';
 import {
@@ -60,6 +62,49 @@ test.describe('Ticketing: checkout', () => {
 
   const addTickets = (orderId: string, productId: string, quantity: number) =>
     userFetch({ query: ADD_TICKETS, variables: { orderId, productId, quantity } });
+
+  const insertLastSeatEvent = async (productId: string) => {
+    const theater = await db.collection('products').findOne({ _id: TheaterEventId });
+    await db.collection('products').insertOne({
+      ...theater,
+      _id: productId,
+      tokenization: { ...theater.tokenization, supply: 1 },
+    });
+  };
+
+  const prepareTicketCheckout = async (orderNumber: string, productId: string) => {
+    const cartId = await createCart(orderNumber);
+    assert.ifError((await addTickets(cartId, productId, 1)).errors?.[0]);
+    const { errors } = await userFetch({
+      query: /* GraphQL */ `
+        mutation PrepareCheckout($orderId: ID, $paymentProviderId: ID) {
+          updateCart(
+            orderId: $orderId
+            paymentProviderId: $paymentProviderId
+            contact: { emailAddress: "buyer@unchained.local" }
+            billingAddress: { firstName: "Ada", lastName: "Lovelace", countryCode: "CH" }
+          ) {
+            _id
+          }
+        }
+      `,
+      variables: { orderId: cartId, paymentProviderId: SimplePaymentProvider._id },
+    });
+    assert.ifError(errors?.[0]);
+    return cartId;
+  };
+
+  const checkoutTicketCart = (orderId: string) =>
+    userFetch({
+      query: /* GraphQL */ `
+        mutation Checkout($orderId: ID) {
+          checkoutCart(orderId: $orderId) {
+            status
+          }
+        }
+      `,
+      variables: { orderId },
+    });
 
   test.before(async () => {
     [db] = await setupDatabase();
@@ -163,55 +208,63 @@ test.describe('Ticketing: checkout', () => {
   });
 
   test('concurrent checkouts of the last seat sell it once', async () => {
-    const theater = await db.collection('products').findOne({ _id: TheaterEventId });
-    await db.collection('products').insertOne({
-      ...theater,
-      _id: 'ticket-event-last-seat',
-      tokenization: { ...theater.tokenization, supply: 1 },
-    });
+    await insertLastSeatEvent('ticket-event-last-seat');
     const cartIds: string[] = [];
     for (const orderNumber of ['last-seat-1', 'last-seat-2', 'last-seat-3']) {
-      const cartId = await createCart(orderNumber);
-      assert.ifError((await addTickets(cartId, 'ticket-event-last-seat', 1)).errors?.[0]);
-      const { errors } = await userFetch({
-        query: /* GraphQL */ `
-          mutation PrepareCheckout($orderId: ID, $paymentProviderId: ID) {
-            updateCart(
-              orderId: $orderId
-              paymentProviderId: $paymentProviderId
-              contact: { emailAddress: "buyer@unchained.local" }
-              billingAddress: { firstName: "Ada", lastName: "Lovelace", countryCode: "CH" }
-            ) {
-              _id
-            }
-          }
-        `,
-        variables: { orderId: cartId, paymentProviderId: SimplePaymentProvider._id },
-      });
-      assert.ifError(errors?.[0]);
-      cartIds.push(cartId);
+      cartIds.push(await prepareTicketCheckout(orderNumber, 'ticket-event-last-seat'));
     }
 
-    const results = await Promise.all(
-      cartIds.map((orderId) =>
-        userFetch({
-          query: /* GraphQL */ `
-            mutation Checkout($orderId: ID) {
-              checkoutCart(orderId: $orderId) {
-                status
-              }
-            }
-          `,
-          variables: { orderId },
-        }),
-      ),
-    );
+    const results = await Promise.all(cartIds.map(checkoutTicketCart));
 
     assert.deepEqual(
       results
         .map(({ data, errors }) => data?.checkoutCart?.status ?? errors?.[0]?.extensions?.detailCode)
         .toSorted(),
       ['CONFIRMED', 'TicketSoldOutError', 'TicketSoldOutError'],
+    );
+  });
+
+  test('a checkout of the last seat waits for the confirmation of a pending order', async (t) => {
+    await insertLastSeatEvent('ticket-event-confirming');
+    const pendingId = await prepareTicketCheckout('confirming-pending', 'ticket-event-confirming');
+    const cartId = await prepareTicketCheckout('confirming-cart', 'ticket-event-confirming');
+    await db
+      .collection('orders')
+      .updateOne({ _id: pendingId }, { $set: { status: 'PENDING', ordered: new Date() } });
+
+    // The confirmation pauses after it saved CONFIRMED and before it creates the tickets
+    const { promise: delivering, resolve: deliveryReached } = Promise.withResolvers<void>();
+    const { promise: resumed, resolve: resumeDelivery } = Promise.withResolvers<void>();
+    const sendOrderDelivery = DeliveryDirector.sendOrderDelivery;
+    t.mock.method(DeliveryDirector, 'sendOrderDelivery', async (order, ...rest) => {
+      if (order._id === pendingId) {
+        deliveryReached();
+        await resumed;
+      }
+      return sendOrderDelivery(order, ...rest);
+    });
+
+    const confirmation = adminFetch({
+      query: /* GraphQL */ `
+        mutation Confirm($orderId: ID!) {
+          confirmOrder(orderId: $orderId) {
+            status
+          }
+        }
+      `,
+      variables: { orderId: pendingId },
+    });
+    await delivering;
+    const checkout = checkoutTicketCart(cartId);
+    await Promise.race([checkout, setTimeout(500)]);
+    resumeDelivery();
+
+    const [confirmed, checkedOut] = await Promise.all([confirmation, checkout]);
+    assert.equal(confirmed.data?.confirmOrder?.status, 'CONFIRMED');
+    assert.equal(checkedOut.errors?.[0]?.extensions?.detailCode, 'TicketSoldOutError');
+    assert.equal(
+      await db.collection('token_surrogates').countDocuments({ productId: 'ticket-event-confirming' }),
+      1,
     );
   });
 

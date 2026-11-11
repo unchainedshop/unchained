@@ -10,7 +10,7 @@
 
 ### Fixed
 - **`payOrder`, `deliverOrder` and the Cryptopay webhook confirm an order once** (`@unchainedshop/core`): `services.orders.processOrder` reads the order again under the lock of `confirmOrder` and `rejectOrder`, so racing calls no longer send the delivery and create the tokens twice.
-- **Concurrent checkouts no longer sell more than the supply of a tokenized product** (`@unchainedshop/core`): `validateOrderService` validates the positions under a lock on each tokenized product with a `tokenization.supply`, held until the order and its tokens are saved. A checkout that waits more than 2 seconds for it answers `OrderLockedError`.
+- **Concurrent checkouts no longer sell more than the supply of a tokenized product** (`@unchainedshop/core`): checkouts validate the positions, and confirmations of pending orders run, under a lock on each tokenized product with a `tokenization.supply`, held until the order and its tokens are saved. A checkout that waits more than 2 seconds for it answers `OrderLockedError`.
 
 ## v5.0.0-alpha.12 (2026-11-11)
 
