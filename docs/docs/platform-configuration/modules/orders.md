@@ -146,7 +146,7 @@ Access via `modules.orders` in the Unchained API context.
 
 `modules.orders.anonymize(orderId, options?)` removes the personal data of an order in any status, also of confirmed and fulfilled orders (`updateContext` only changes carts and pending orders):
 
-- It removes `contact` and `billingAddress`, and the `contextKeys` you pass (keys or dot paths of `order.context`). `clearContext: true` replaces the whole context with `{}` instead.
+- It removes `contact` and `billingAddress`, and the `contextKeys` you pass (keys or dot paths of `order.context`; a dot path does not reach into arrays, pass the array's key). `clearContext: true` replaces the whole context with `{}` instead.
 - It stores the date of the first call in `order.anonymized` and emits `ORDER_ANONYMIZED` with `{ orderId }` only. It does not emit `ORDER_UPDATE`, so subscribers that keep copies of orders (a search index, for example) listen to `ORDER_ANONYMIZED` to drop the removed data.
 - Calling it again changes and emits nothing, unless something is left to remove (for example a contact set since). Status, status log, order number, owner, positions and prices are kept.
 

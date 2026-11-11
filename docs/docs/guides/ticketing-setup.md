@@ -291,7 +291,7 @@ await startPlatform(withTicketing({ options: { orders: { validateOrderPosition }
 | from `salesEnd` on | `TicketSaleEndedError` (`salesEnd`) |
 | more than `maxPerOrder` tickets of the event in the order | `TicketOrderLimitExceededError` (`maxPerOrder`) |
 
-Cart mutations return these codes in `extensions.code`; `checkoutCart` fails with `OrderCheckoutError` and the code in `extensions.detailCode`. At checkout the second argument of `getSaleRules` only holds `modules`: look users up through `order.userId`. Checkouts of the same event are validated one after another, so they never sell more than the supply; a checkout that waits more than 2 seconds for the event answers `OrderLockedError`. A `PENDING` order that is being confirmed later (`confirmOrder`, `payOrder`) is not counted between its confirmation and the issue of its tickets.
+Cart mutations return these codes in `extensions.code`; `checkoutCart` fails with `OrderCheckoutError` and the code in `extensions.detailCode`. At checkout the second argument of `getSaleRules` only holds `modules`: look users up through `order.userId`. Concurrent checkouts of the same event are validated one after another, so they count each other's tickets; a checkout that waits more than 2 seconds for the event answers `OrderLockedError`. A `PENDING` order that is confirmed later (`confirmOrder`, `payOrder`, `deliverOrder`) is not counted between its confirmation and the issue of its tickets.
 
 ## Gate staff
 
