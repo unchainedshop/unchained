@@ -7,6 +7,7 @@ import {
   OrderWrongStatusError,
   InvalidIdError,
   OrderDeliveryNotFoundError,
+  OrderLockedError,
 } from '../../../errors.ts';
 
 export default async function deliverOrder(
@@ -44,5 +45,9 @@ export default async function deliverOrder(
   }
 
   await modules.orders.deliveries.markAsDelivered(orderDelivery);
-  return services.orders.processOrder(order, {});
+  try {
+    return await services.orders.processOrder(order, {});
+  } catch (error) {
+    throw error.cause === 'LOCKED' ? new OrderLockedError({ orderId }) : error;
+  }
 }

@@ -1,6 +1,6 @@
 import { OrderStatus } from '@unchainedshop/core-orders';
 import type { Context } from '../../../../context.ts';
-import { OrderNotFoundError, OrderWrongStatusError } from '../../../../errors.ts';
+import { OrderNotFoundError, OrderWrongStatusError, OrderLockedError } from '../../../../errors.ts';
 import { getNormalizedOrderDetails } from '../../../utils/getNormalizedOrderDetails.ts';
 import type { Params } from '../schemas.ts';
 
@@ -14,6 +14,10 @@ export default async function rejectOrder(context: Context, params: Params<'REJE
   if (order.status !== OrderStatus.PENDING) {
     throw new OrderWrongStatusError({ status: order.status });
   }
-  await services.orders.rejectOrder(order, transactionContext);
+  try {
+    await services.orders.rejectOrder(order, transactionContext);
+  } catch (error) {
+    throw error.cause === 'LOCKED' ? new OrderLockedError({ orderId }) : error;
+  }
   return { order: await getNormalizedOrderDetails({ orderId }, context) };
 }

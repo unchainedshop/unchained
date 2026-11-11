@@ -7,6 +7,7 @@ import {
   OrderWrongStatusError,
   InvalidIdError,
   OrderPaymentNotFoundError,
+  OrderLockedError,
 } from '../../../errors.ts';
 
 export default async function payOrder(root: never, { orderId }: { orderId: string }, context: Context) {
@@ -38,5 +39,9 @@ export default async function payOrder(root: never, { orderId }: { orderId: stri
   }
 
   await modules.orders.payments.markAsPaid(payment, null);
-  return services.orders.processOrder(order, {});
+  try {
+    return await services.orders.processOrder(order, {});
+  } catch (error) {
+    throw error.cause === 'LOCKED' ? new OrderLockedError({ orderId }) : error;
+  }
 }

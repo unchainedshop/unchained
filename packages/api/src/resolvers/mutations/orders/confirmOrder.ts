@@ -1,7 +1,12 @@
 import type { Context } from '../../../context.ts';
 import { OrderStatus } from '@unchainedshop/core-orders';
 import { log } from '@unchainedshop/logger';
-import { InvalidIdError, OrderNotFoundError, OrderWrongStatusError } from '../../../errors.ts';
+import {
+  InvalidIdError,
+  OrderNotFoundError,
+  OrderWrongStatusError,
+  OrderLockedError,
+} from '../../../errors.ts';
 
 export default async function confirmOrder(
   root: never,
@@ -27,5 +32,9 @@ export default async function confirmOrder(
     throw new OrderWrongStatusError({ status: order.status });
   }
 
-  return services.orders.confirmOrder(order, transactionContext);
+  try {
+    return await services.orders.confirmOrder(order, transactionContext);
+  } catch (error) {
+    throw error.cause === 'LOCKED' ? new OrderLockedError({ orderId }) : error;
+  }
 }

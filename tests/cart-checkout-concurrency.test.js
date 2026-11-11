@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert';
 import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
+import { getTestPlatform } from './setup.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 
 test.describe('Cart checkout concurrency', () => {
@@ -209,5 +210,26 @@ test.describe('Cart checkout concurrency', () => {
       .collection('token_surrogates')
       .countDocuments({ orderPositionId: positionId });
     assert.strictEqual(tokens, 1);
+  });
+
+  test('order mutations answer OrderLockedError while the order is processed elsewhere', async () => {
+    const { orderId } = await preparePendingOrder('locked-order');
+    const lock = await getTestPlatform().unchainedAPI.modules.orders.acquireLock(
+      orderId,
+      'confirm-reject',
+    );
+    try {
+      const results = await Promise.all(
+        ['confirmOrder', 'rejectOrder', 'payOrder', 'deliverOrder'].map((mutation) =>
+          processPendingOrder(mutation, orderId),
+        ),
+      );
+      assert.deepStrictEqual(
+        results.map(({ errors }) => errors?.[0]?.extensions?.code),
+        Array(4).fill('OrderLockedError'),
+      );
+    } finally {
+      await lock.release();
+    }
   });
 });

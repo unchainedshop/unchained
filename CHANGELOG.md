@@ -9,6 +9,7 @@
 - **Passwordless login with a link and a code** (`@unchainedshop/core-users`, `@unchainedshop/core`, `@unchainedshop/api`, `@unchainedshop/plugins`, `@unchainedshop/platform`): opt-in with the users option `loginCode`. `requestLoginCode(email)` queues a `LOGIN_CODE` work that mails a link and a numeric code (`ACCOUNT_ACTION` `login-code`), and `loginWithLoginCode(email, code | token)` logs in once. Challenges are HMAC-hashed, expire, count attempts and are throttled per address. Codes only go to verified addresses or to accounts without a password or passkey. See Login Codes in the docs.
 
 ### Fixed
+- **Order mutations answer `OrderLockedError` while another process holds the order** (`@unchainedshop/api`): `confirmOrder`, `rejectOrder`, `payOrder`, `deliverOrder` and their MCP tools answered a generic error after the 2 second lock wait.
 - **`payOrder`, `deliverOrder` and the Cryptopay webhook confirm an order once** (`@unchainedshop/core`): `services.orders.processOrder` reads the order again under the lock of `confirmOrder` and `rejectOrder`, so racing calls no longer send the delivery and create the tokens twice.
 - **Concurrent checkouts no longer sell more than the supply of a tokenized product** (`@unchainedshop/core`): checkouts validate the positions, and confirmations of pending orders run, under a lock on each tokenized product with a `tokenization.supply`, held until the order and its tokens are saved. A checkout that waits more than 2 seconds for it answers `OrderLockedError`.
 

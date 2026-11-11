@@ -5,6 +5,7 @@ import {
   OrderPaymentNotFoundError,
   OrderWrongPaymentStatusError,
   OrderWrongStatusError,
+  OrderLockedError,
 } from '../../../../errors.ts';
 import { getNormalizedOrderDetails } from '../../../utils/getNormalizedOrderDetails.ts';
 import type { Params } from '../schemas.ts';
@@ -35,6 +36,10 @@ export default async function payOrder(context: Context, params: Params<'PAY_ORD
   }
 
   await modules.orders.payments.markAsPaid(payment, null);
-  await services.orders.processOrder(order, {});
+  try {
+    await services.orders.processOrder(order, {});
+  } catch (error) {
+    throw error.cause === 'LOCKED' ? new OrderLockedError({ orderId }) : error;
+  }
   return { order: await getNormalizedOrderDetails({ orderId }, context) };
 }
