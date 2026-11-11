@@ -1,4 +1,9 @@
-import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
+import {
+  setupDatabase,
+  createLoggedInGraphqlFetch,
+  createAnonymousGraphqlFetch,
+  disconnect,
+} from './helpers.js';
 import { User, Admin, Guest, USER_TOKEN, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -6,12 +11,14 @@ import test from 'node:test';
 let db;
 let graphqlFetch;
 let adminGraphqlFetch;
+let anonymousGraphqlFetch;
 
 test.describe('Auth for logged in users', () => {
   test.before(async () => {
     [db] = await setupDatabase();
     graphqlFetch = createLoggedInGraphqlFetch(USER_TOKEN);
     adminGraphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
+    anonymousGraphqlFetch = createAnonymousGraphqlFetch();
   });
 
   test.after(async () => {
@@ -232,21 +239,20 @@ test.describe('Auth for logged in users', () => {
   });
 
   test.describe('Mutation.verifyEmail', () => {
-    test.before(async () => {
-      const Users = db.collection('users');
+    const seedUserThatMustVerify = async (userId) => {
       const userCopy = {
         ...User,
         username: `${User.username}${Math.random()}`,
       };
       delete userCopy._id;
-      await Users.findOneAndUpdate(
-        { _id: 'userthatmustverifyemail' },
+      await db.collection('users').findOneAndUpdate(
+        { _id: userId },
         {
           $setOnInsert: {
             ...userCopy,
             emails: [
               {
-                address: 'userthatmustverifyemail@unchained.local',
+                address: `${userId}@unchained.local`,
                 verified: false,
               },
             ],
@@ -256,34 +262,84 @@ test.describe('Auth for logged in users', () => {
           upsert: true,
         },
       );
-    });
+    };
 
-    test('create a verification token', async () => {
-      const { data: { sendVerificationEmail } = {} } = await adminGraphqlFetch({
+    const sendVerificationEmailAs = (email) =>
+      adminGraphqlFetch({
         query: /* GraphQL */ `
-          mutation {
-            sendVerificationEmail(email: "userthatmustverifyemail@unchained.local") {
+          mutation sendVerificationEmail($email: String!) {
+            sendVerificationEmail(email: $email) {
               success
             }
           }
         `,
+        variables: { email },
       });
+
+    test.before(async () => {
+      await seedUserThatMustVerify('userthatmustverifyemail');
+      await seedUserThatMustVerify('userthatmustverifyemail2');
+    });
+
+    test('create a verification token', async () => {
+      const { data: { sendVerificationEmail } = {} } = await sendVerificationEmailAs(
+        'userthatmustverifyemail@unchained.local',
+      );
       assert.deepStrictEqual(sendVerificationEmail, {
         success: true,
       });
     });
 
-    test('verifies the e-mail of user', async () => {
-      // Reset the password with that token
-      const Events = db.collection('events');
-      const event = await Events.findOne({
-        'payload.userId': 'userthatmustverifyemail',
+    const findVerificationToken = async (userId) => {
+      const event = await db.collection('events').findOne({
+        'payload.userId': userId,
         'payload.action': 'verify-email',
       });
+      return event.payload.token;
+    };
 
-      const token = event.payload.token;
+    test('does not hand the session of another logged-in user to the token owner', async () => {
+      await sendVerificationEmailAs('userthatmustverifyemail2@unchained.local');
+      const token = await findVerificationToken('userthatmustverifyemail2');
 
-      const { data: { verifyEmail } = {} } = await graphqlFetch({
+      const { data, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation verifyEmail($token: String!) {
+            verifyEmail(token: $token) {
+              _id
+              user {
+                _id
+              }
+            }
+          }
+        `,
+        variables: { token },
+      });
+
+      assert.strictEqual(errors, undefined, JSON.stringify(errors));
+      assert.strictEqual(data.verifyEmail, null);
+
+      const { data: { me } = {} } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            me {
+              _id
+            }
+          }
+        `,
+      });
+      assert.strictEqual(me._id, 'user');
+
+      const donatedCart = await db
+        .collection('orders')
+        .countDocuments({ userId: 'userthatmustverifyemail2' });
+      assert.strictEqual(donatedCart, 0);
+    });
+
+    test('verifies the e-mail of user', async () => {
+      const token = await findVerificationToken('userthatmustverifyemail');
+
+      const { data: { verifyEmail } = {} } = await anonymousGraphqlFetch({
         query: /* GraphQL */ `
           mutation verifyEmail($token: String!) {
             verifyEmail(token: $token) {
