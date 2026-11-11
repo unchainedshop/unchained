@@ -19,10 +19,6 @@ export interface OrderSettingsOrderPositionValidation {
   configuration?: { key: string; value: string }[] | null;
 }
 
-export interface OrderCheckoutReservation {
-  release: () => Promise<void>;
-}
-
 export interface OrdersSettingsOptions {
   ensureUserHasCart?: boolean;
   orderNumberHashFn?: (order: Order, index: number) => string;
@@ -30,10 +26,6 @@ export interface OrdersSettingsOptions {
     validationParams: OrderSettingsOrderPositionValidation,
     unchainedAPI: UnchainedAPI,
   ) => Promise<void>;
-  reserveForCheckout?: (
-    order: Order,
-    unchainedAPI: UnchainedAPI,
-  ) => Promise<OrderCheckoutReservation | void | null | undefined>;
 }
 ```
 
@@ -72,47 +64,6 @@ await startPlatform({
   },
 });
 ```
-
-### Checkout Reservations
-
-`validateOrderPosition` runs before the payment is charged, so two carts checking out at the same time can both pass it, for example for the last item of a limited stock. `reserveForCheckout` lets you hold something across the rest of the checkout. `checkoutOrder` calls it under the order lock, after the order passed validation and after the built-in quotation and discount reservations, with the order and `{ modules }`. The reservation it returns is released when the checkout ends: after the order status is saved, or when the checkout fails. Without the option (the default) nothing is reserved.
-
-- **Check again under your reservation.** Validation ran before the hook, so repeat the check it has to guard once you hold the lock.
-- **Throwing aborts the checkout** before the payment is charged. The reservations made so far are released, the order stays a cart and `checkoutCart` reports `OrderCheckoutError` with your error's `name` and `message` in `detailCode` and `detailMessage`. Release what the hook acquired before it throws. A busy lock of `modules.orders.acquireLock` throws with `cause: 'LOCKED'`, which `checkoutCart` reports as `OrderLockedError`; rethrow it as your own error if clients need to tell it apart from a locked cart.
-- **Payments confirmed by webhook:** payment plugins that check out from a webhook (for example Stripe, Saferpay or Datatrans) call `checkoutOrder` after the customer paid the provider. A hook that throws there leaves a paid cart, as a failing `validateOrderPosition` does, so refuse such orders before the payment starts (in `validateOrderPosition` or when signing the payment) and keep the hook for the race it guards.
-- **Release never fails the checkout:** an error thrown by `release()` is logged.
-- The hook may return nothing when there is nothing to release.
-
-```typescript
-const releaseAll = async (locks) => {
-  await Promise.all(locks.map((lock) => lock.release()));
-};
-
-await startPlatform({
-  options: {
-    orders: {
-      reserveForCheckout: async (order, { modules }) => {
-        const positions = await modules.orders.positions.findOrderPositions({ orderId: order._id });
-        // Sorted, so two checkouts holding the same products lock them in the same order
-        const productIds = [...new Set(positions.map(({ productId }) => productId))].sort();
-        const locks = [];
-        try {
-          for (const productId of productIds) {
-            locks.push(await modules.orders.acquireLock(productId, 'limited-stock'));
-          }
-          await assertInStock(positions, modules); // your check, now under the locks
-        } catch (error) {
-          await releaseAll(locks);
-          throw error;
-        }
-        return { release: () => releaseAll(locks) };
-      },
-    },
-  },
-});
-```
-
-A lock held this way serializes the checkouts that need it: the next checkout waits while the holder charges its payment and saves its order, and gives up after about 2 seconds. Lock only what has to be exclusive.
 
 ## Module API
 

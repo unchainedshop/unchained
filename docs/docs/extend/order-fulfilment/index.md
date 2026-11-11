@@ -40,9 +40,7 @@ When a checkout is initiated, in a first step the order gets validated. This is 
 
 The Order validation step **DOES NOT** recalculate the order, so prices and delivery dates could have been changed since the last cart mutation. If you need such behavior, throw an Error in `validateOrderPosition` and let the client application fix the problem.
 
-With all checks complete, the checkout reserves what concurrent checkouts must not take twice: it locks the order's quotations and checks them again, calls the `reserveForCheckout()` hook of every order discount and then the optional `reserveForCheckout` of the orders settings ([Checkout Reservations](../../platform-configuration/modules/orders.md#checkout-reservations)). The reservations are released when the checkout ends, whether it succeeded or failed; if one of them throws, the checkout stops before payment and the order stays a cart.
-
-Then the order goes into status `PENDING` but as an in-flight status that is not yet persisted in the database.
+With all checks complete, the order goes into status `PENDING` but as an in-flight status that is not yet persisted in the database.
 
 ### `PENDING` => `CONFIRMED` (Confirmation)
 
