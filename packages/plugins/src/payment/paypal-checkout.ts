@@ -13,7 +13,7 @@ let checkoutNodeJssdk;
 try {
   // eslint-disable-next-line
   // @ts-ignore
-  checkoutNodeJssdk = await import('@paypal/checkout-server-sdk');
+  checkoutNodeJssdk = (await import('@paypal/checkout-server-sdk')).default;
   // TODO: npm warn deprecated @paypal/checkout-server-sdk@1.0.3: Package no longer supported. The author suggests using the @paypal/paypal-server-sdk package instead: https://www.npmjs.com/package/@paypal/paypal-server-sdk.
 } catch {
   /* */
@@ -84,9 +84,9 @@ const PaypalCheckout: IPaymentAdapter = {
       },
 
       charge: async ({ orderID }) => {
-        const { order } = context;
+        const { order, orderPayment } = context;
 
-        if (!order) throw new Error('Order missing in payment context');
+        if (!order || !orderPayment) throw new Error('Order missing in payment context');
 
         if (!orderID) {
           throw new Error('You have to provide orderID in paymentContext');
@@ -98,6 +98,10 @@ const PaypalCheckout: IPaymentAdapter = {
           // Fetch the current state of the PayPal order.
           const getRequest = new checkoutNodeJssdk.orders.OrdersGetRequest(orderID);
           let paypalResult = (await client.execute(getRequest)).result;
+
+          if (paypalResult.purchase_units?.[0]?.custom_id !== orderPayment._id) {
+            throw new Error('PayPal order belongs to another order payment');
+          }
 
           // If the buyer approved the order but funds were not captured yet, capture
           // them server-side now. Never trust the client to have captured: marking an
@@ -130,7 +134,7 @@ const PaypalCheckout: IPaymentAdapter = {
           const paidTotal = roundToDecimals(capture.amount.value, 2);
 
           if (ourTotal === paidTotal && capture.amount.currency_code === order.currencyCode) {
-            return order;
+            return { transactionId: orderID };
           }
 
           logger.warn('Missmatch PAYPAL ORDER', JSON.stringify(paypalResult, null, 2));
