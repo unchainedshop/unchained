@@ -2,6 +2,7 @@ import { type Order, ordersSettings } from '@unchainedshop/core-orders';
 import type { Modules } from '../modules.ts';
 import { createServiceError } from '../errors.ts';
 
+/** Holds a lock on each product with a limited supply until the returned stack is disposed */
 export async function validateOrderService(this: Modules, order: Order) {
   if (!order.contact) throw createServiceError('ContactMissingError', 'Contact data not provided');
   if (!order.billingAddress)
@@ -22,15 +23,22 @@ export async function validateOrderService(this: Modules, order: Order) {
     throw createServiceError('NoItemsError', 'No items to checkout');
   }
 
-  for (const orderPosition of orderPositions) {
-    const product = await this.products.findProduct({
-      productId: orderPosition.productId,
-    });
+  const products = await Promise.all(
+    orderPositions.map(({ productId }) => this.products.findProduct({ productId })),
+  );
+  const limitedSupplyProductIds = [
+    ...new Set(products.flatMap((product) => (product?.tokenization?.supply ? [product._id] : []))),
+  ].sort();
+  await using supplyLocks = new AsyncDisposableStack();
+  for (const productId of limitedSupplyProductIds) {
+    supplyLocks.use(await this.orders.acquireLock(productId, 'supply'));
+  }
 
+  for (const [index, orderPosition] of orderPositions.entries()) {
     await ordersSettings.validateOrderPosition(
       {
         order,
-        product,
+        product: products[index],
         configuration: orderPosition.configuration,
         quantityDiff: 0,
       },
@@ -58,4 +66,5 @@ export async function validateOrderService(this: Modules, order: Order) {
       );
     }
   }
+  return supplyLocks.move();
 }

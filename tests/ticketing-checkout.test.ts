@@ -10,6 +10,7 @@ import {
   getServerBaseUrl,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
+import { SimplePaymentProvider } from './seeds/payments.js';
 import seedTicketing, {
   ConcertEventId,
   GATE_TOKEN,
@@ -159,6 +160,59 @@ test.describe('Ticketing: checkout', () => {
       .updateOne({ _id: 'ticket-pending-order' }, { $set: { status: 'REJECTED' } });
     const freed = await addTickets(cartId, ConcertEventId, 1);
     assert.ifError(freed.errors?.[0]);
+  });
+
+  test('concurrent checkouts of the last seat sell it once', async () => {
+    const theater = await db.collection('products').findOne({ _id: TheaterEventId });
+    await db.collection('products').insertOne({
+      ...theater,
+      _id: 'ticket-event-last-seat',
+      tokenization: { ...theater.tokenization, supply: 1 },
+    });
+    const cartIds: string[] = [];
+    for (const orderNumber of ['last-seat-1', 'last-seat-2', 'last-seat-3']) {
+      const cartId = await createCart(orderNumber);
+      assert.ifError((await addTickets(cartId, 'ticket-event-last-seat', 1)).errors?.[0]);
+      const { errors } = await userFetch({
+        query: /* GraphQL */ `
+          mutation PrepareCheckout($orderId: ID, $paymentProviderId: ID) {
+            updateCart(
+              orderId: $orderId
+              paymentProviderId: $paymentProviderId
+              contact: { emailAddress: "buyer@unchained.local" }
+              billingAddress: { firstName: "Ada", lastName: "Lovelace", countryCode: "CH" }
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: { orderId: cartId, paymentProviderId: SimplePaymentProvider._id },
+      });
+      assert.ifError(errors?.[0]);
+      cartIds.push(cartId);
+    }
+
+    const results = await Promise.all(
+      cartIds.map((orderId) =>
+        userFetch({
+          query: /* GraphQL */ `
+            mutation Checkout($orderId: ID) {
+              checkoutCart(orderId: $orderId) {
+                status
+              }
+            }
+          `,
+          variables: { orderId },
+        }),
+      ),
+    );
+
+    assert.deepEqual(
+      results
+        .map(({ data, errors }) => data?.checkoutCart?.status ?? errors?.[0]?.extensions?.detailCode)
+        .toSorted(),
+      ['CONFIRMED', 'TicketSoldOutError', 'TicketSoldOutError'],
+    );
   });
 
   test('a cancelled event is not sold', async () => {
