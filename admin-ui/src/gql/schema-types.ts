@@ -819,6 +819,7 @@ export enum IEventType {
   LanguageRemove = 'LANGUAGE_REMOVE',
   LanguageUpdate = 'LANGUAGE_UPDATE',
   OrderAddProduct = 'ORDER_ADD_PRODUCT',
+  OrderAnonymized = 'ORDER_ANONYMIZED',
   OrderCheckout = 'ORDER_CHECKOUT',
   OrderConfirmed = 'ORDER_CONFIRMED',
   OrderCreate = 'ORDER_CREATE',
@@ -870,6 +871,7 @@ export enum IEventType {
   QuotationRemove = 'QUOTATION_REMOVE',
   QuotationRequestCreate = 'QUOTATION_REQUEST_CREATE',
   QuotationUpdate = 'QUOTATION_UPDATE',
+  TokensCreated = 'TOKENS_CREATED',
   TokenInvalidated = 'TOKEN_INVALIDATED',
   TokenOwnershipChanged = 'TOKEN_OWNERSHIP_CHANGED',
   Unknown = 'UNKNOWN',
@@ -1207,6 +1209,11 @@ export type IMutation = {
   invalidateToken: IToken;
   /** Login as Guest User (creates an anonymous user and returns logged in token) */
   loginAsGuest?: Maybe<ILoginMethodResponse>;
+  /**
+   * Log the user in with the token of the login link, or with the address and the code from the
+   * same mail. Link and code work once.
+   */
+  loginWithLoginCode: ILoginMethodResponse;
   /** Log the user in with a password. */
   loginWithPassword?: Maybe<ILoginMethodResponse>;
   /** Log the user in with a WebAuthn device */
@@ -1335,6 +1342,11 @@ export type IMutation = {
   reorderAssortmentProducts: Array<IAssortmentProduct>;
   /** Reorder a media asset (first is primary) */
   reorderProductMedia: Array<IProductMedia>;
+  /**
+   * Mail a login link with a one-time code to the address if it belongs to a user (users module
+   * option loginCode, disabled by default). Always returns true.
+   */
+  requestLoginCode: Scalars['Boolean']['output'];
   /** Request for Proposal (RFP) for the specified product */
   requestQuotation: IQuotation;
   /** Reset the password for a user using a token received in email. Logs the user in afterwards. */
@@ -1833,6 +1845,13 @@ export type IMutationInvalidateTokenArgs = {
 };
 
 
+export type IMutationLoginWithLoginCodeArgs = {
+  code?: InputMaybe<Scalars['String']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  token?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type IMutationLoginWithPasswordArgs = {
   email?: InputMaybe<Scalars['String']['input']>;
   password: Scalars['String']['input'];
@@ -2114,6 +2133,11 @@ export type IMutationReorderAssortmentProductsArgs = {
 
 export type IMutationReorderProductMediaArgs = {
   sortKeys: Array<IReorderProductMediaInput>;
+};
+
+
+export type IMutationRequestLoginCodeArgs = {
+  email: Scalars['String']['input'];
 };
 
 
@@ -3856,6 +3880,7 @@ export enum IRoleAction {
   Heartbeat = 'heartbeat',
   Impersonate = 'impersonate',
   LoginAsGuest = 'loginAsGuest',
+  LoginWithLoginCode = 'loginWithLoginCode',
   LoginWithPassword = 'loginWithPassword',
   LoginWithWebAuthn = 'loginWithWebAuthn',
   Logout = 'logout',
@@ -3884,6 +3909,7 @@ export enum IRoleAction {
   PageView = 'pageView',
   RegisterPaymentCredentials = 'registerPaymentCredentials',
   RemoveUser = 'removeUser',
+  RequestLoginCode = 'requestLoginCode',
   RequestQuotation = 'requestQuotation',
   ResetPassword = 'resetPassword',
   ReviewProduct = 'reviewProduct',
@@ -4574,6 +4600,7 @@ export enum IWorkType {
   Heartbeat = 'HEARTBEAT',
   HttpRequest = 'HTTP_REQUEST',
   InvalidateCarts = 'INVALIDATE_CARTS',
+  LoginCode = 'LOGIN_CODE',
   Message = 'MESSAGE',
   Push = 'PUSH',
   RefreshTokens = 'REFRESH_TOKENS',
