@@ -53,6 +53,7 @@ const actions: Record<string, string> = [
   'sendEmail',
   'manageUsers',
   'managePrivilegedUsers',
+  'updateUserMeta',
   'enrollUser',
   'manageLanguages',
   'manageCountries',

@@ -117,4 +117,53 @@ test.describe('Privileged users', () => {
     assert.strictEqual(revoked.errors, undefined, JSON.stringify(revoked.errors));
     assert.deepStrictEqual(revoked.data.setRoles.roles, []);
   });
+
+  test('setPassword does not change the own password', async () => {
+    for (const [fetch, userId] of [
+      [asUser, User._id],
+      [asAdmin, Admin._id],
+    ]) {
+      const result = await fetch({
+        query: /* GraphQL */ `
+          mutation setPassword($userId: ID!) {
+            setPassword(userId: $userId, newPassword: "without-the-old-one") {
+              _id
+            }
+          }
+        `,
+        variables: { userId },
+      });
+      assert.strictEqual(errorCode(result), 'NoPermissionError', userId);
+    }
+  });
+
+  test('users cannot write their own meta, admins can', async () => {
+    const updateMeta = (fetch, userId) =>
+      fetch({
+        query: /* GraphQL */ `
+          mutation updateUserProfile($userId: ID) {
+            updateUserProfile(userId: $userId, meta: { priceListId: "b2b" }) {
+              _id
+            }
+          }
+        `,
+        variables: { userId },
+      });
+    assert.strictEqual(errorCode(await updateMeta(asUser, User._id)), 'NoPermissionError');
+    const byAdmin = await updateMeta(asAdmin, User._id);
+    assert.strictEqual(byAdmin.errors, undefined, JSON.stringify(byAdmin.errors));
+    const user = await db.collection('users').findOne({ _id: User._id });
+    assert.deepStrictEqual(user.meta, { priceListId: 'b2b' });
+
+    const profileOnly = await asUser({
+      query: /* GraphQL */ `
+        mutation {
+          updateUserProfile(profile: { displayName: "Own name" }) {
+            _id
+          }
+        }
+      `,
+    });
+    assert.strictEqual(profileOnly.errors, undefined, JSON.stringify(profileOnly.errors));
+  });
 });

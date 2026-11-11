@@ -1,5 +1,10 @@
 import { log } from '@unchainedshop/logger';
-import { UserNotFoundError, InvalidIdError, PasswordInvalidError } from '../../../errors.ts';
+import {
+  UserNotFoundError,
+  InvalidIdError,
+  PasswordInvalidError,
+  NoPermissionError,
+} from '../../../errors.ts';
 import type { Context } from '../../../context.ts';
 
 export default async function setPassword(
@@ -12,6 +17,12 @@ export default async function setPassword(
   log(`mutation setPassword ${normalizedUserId}`, { userId });
 
   if (!normalizedUserId) throw new InvalidIdError({ userId: normalizedUserId });
+
+  if (normalizedUserId === userId)
+    throw new NoPermissionError({
+      userId,
+      message: 'Change your own password with changePassword or the password reset flow',
+    });
 
   if (!(await modules.users.userExists({ userId: normalizedUserId })))
     throw new UserNotFoundError({ userId: normalizedUserId });
