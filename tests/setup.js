@@ -65,6 +65,23 @@ export async function initializeTestPlatform() {
   // Start platform with in-memory MongoDB
   platform = await startPlatform({
     modules: defaultModules,
+    rolesOptions: {
+      additionalRoles: {
+        support: (role, actions) => {
+          [
+            actions.manageUsers,
+            actions.updateUser,
+            actions.updateUsername,
+            actions.impersonate,
+            actions.uploadUserAvatar,
+            actions.viewUser,
+            actions.viewUsers,
+            actions.viewUserRoles,
+            actions.viewUserPrivateInfos,
+          ].forEach((action) => role.allow(action, () => true));
+        },
+      },
+    },
     workQueueOptions: {
       // Workers enabled for work queue tests
       pollInterval: 500, // Process work every 500ms for faster tests

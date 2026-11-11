@@ -1,5 +1,6 @@
 import { actions } from '../../roles/index.ts';
 import { checkResolver as acl } from '../../acl.ts';
+import { guardPrivilegedUsers as privileged } from '../guardPrivilegedUsers.ts';
 import loginWithPassword from './accounts/loginWithPassword.ts';
 import loginWithWebAuthn from './accounts/loginWithWebAuthn.ts';
 import loginAsGuest from './accounts/loginAsGuest.ts';
@@ -153,7 +154,7 @@ import updateCartPaymentInvoice from './orders/updateCartPaymentInvoice.ts';
 export default {
   logout: acl(actions.logout)(logout),
   loginAsGuest: acl(actions.loginAsGuest)(loginAsGuest),
-  impersonate: acl(actions.impersonate)(impersonate),
+  impersonate: acl(actions.impersonate)(privileged(impersonate)),
   stopImpersonation: acl(actions.stopImpersonation)(stopImpersonation),
 
   createWebAuthnCredentialCreationOptions: acl(actions.useWebAuthn)(
@@ -180,15 +181,15 @@ export default {
   sendEnrollmentEmail: acl(actions.sendEmail)(sendEnrollmentEmail),
   changePassword: acl(actions.changePassword)(changePassword),
   heartbeat: acl(actions.heartbeat)(heartbeat),
-  addEmail: acl(actions.updateUser)(addEmail),
-  removeEmail: acl(actions.updateUser)(removeEmail),
-  updateUserProfile: acl(actions.updateUser)(updateUserProfile),
-  removeUser: acl(actions.updateUser)(removeUser),
-  setPassword: acl(actions.updateUser)(setPassword),
-  prepareUserAvatarUpload: acl(actions.uploadUserAvatar)(prepareUserAvatarUpload),
-  setUserTags: acl(actions.manageUsers)(setUserTags),
-  setUsername: acl(actions.updateUsername)(setUsername),
-  setRoles: acl(actions.manageUsers)(setRoles),
+  addEmail: acl(actions.updateUser)(privileged(addEmail)),
+  removeEmail: acl(actions.updateUser)(privileged(removeEmail)),
+  updateUserProfile: acl(actions.updateUser)(privileged(updateUserProfile)),
+  removeUser: acl(actions.updateUser)(privileged(removeUser)),
+  setPassword: acl(actions.updateUser)(privileged(setPassword)),
+  prepareUserAvatarUpload: acl(actions.uploadUserAvatar)(privileged(prepareUserAvatarUpload)),
+  setUserTags: acl(actions.manageUsers)(privileged(setUserTags)),
+  setUsername: acl(actions.updateUsername)(privileged(setUsername)),
+  setRoles: acl(actions.manageUsers)(privileged(setRoles)),
   enrollUser: acl(actions.enrollUser)(enrollUser),
   registerPaymentCredentials: acl(actions.registerPaymentCredentials)(registerPaymentCredentials),
   markPaymentCredentialsPreferred: acl(actions.managePaymentCredentials)(
@@ -308,5 +309,5 @@ export default {
     signPaymentProviderForCredentialRegistration,
   ),
   signPaymentProviderForCheckout: acl(actions.updateOrderPayment)(signPaymentProviderForCheckout),
-  removeUserProductReviews: acl(actions.updateUser)(removeUserProductReviews),
+  removeUserProductReviews: acl(actions.updateUser)(privileged(removeUserProductReviews)),
 };
