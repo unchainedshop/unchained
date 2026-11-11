@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/mongodb",
-  "version": "5.0.0-alpha.12",
+  "version": "5.0.0-alpha.13",
   "files": [
     "lib"
   ],
@@ -36,8 +36,8 @@
   },
   "homepage": "https://github.com/unchainedshop/unchained#readme",
   "dependencies": {
-    "@unchainedshop/logger": "^5.0.0-alpha.12",
-    "@unchainedshop/utils": "^5.0.0-alpha.12"
+    "@unchainedshop/logger": "^5.0.0-alpha.13",
+    "@unchainedshop/utils": "^5.0.0-alpha.13"
   },
   "peerDependencies": {
     "@mongodb-js/zstd": ">= 7 < 8",

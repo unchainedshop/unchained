@@ -1,6 +1,6 @@
 # Unchained Engine v5.0 (Breaking Changes)
 
-## Unreleased
+## v5.0.0-alpha.13 (2026-11-11)
 
 ### Improvements
 - **`TOKENS_CREATED` event** (`@unchainedshop/core-warehousing`): `createTokens` emits `{ tokenIds, productIds, orderPositionIds }` once the tokens are stored, after `ORDER_CONFIRMED`.
