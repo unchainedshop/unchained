@@ -286,3 +286,14 @@ export async function processOrderService(
 
   return (await this.orders.updateStatus(order._id, { status: nextStatus, info: comment })) as Order;
 }
+
+export async function processOrderUnderLockService(
+  this: Modules,
+  order: Order,
+  orderTransactionContext: Parameters<typeof processOrderService>[1],
+) {
+  await using lock = await this.orders.acquireLock(order._id, 'confirm-reject');
+  const lockedOrder = await this.orders.findOrder({ orderId: order._id });
+  if (!lockedOrder) return null;
+  return await processOrderService.call(this, lockedOrder, orderTransactionContext);
+}

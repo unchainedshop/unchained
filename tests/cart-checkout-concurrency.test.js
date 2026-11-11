@@ -195,4 +195,19 @@ test.describe('Cart checkout concurrency', () => {
       .countDocuments({ orderPositionId: positionId });
     assert.strictEqual(tokens, order.status === 'CONFIRMED' ? 1 : 0, order.status);
   });
+
+  test('a payment racing a confirmation tokenizes a pending order once', async () => {
+    const { orderId, positionId } = await preparePendingOrder('pay-confirm-race');
+
+    const results = await Promise.all([
+      processPendingOrder('payOrder', orderId),
+      processPendingOrder('confirmOrder', orderId),
+    ]);
+    results.forEach(({ errors }) => assert.strictEqual(errors, undefined, JSON.stringify(errors)));
+
+    const tokens = await db
+      .collection('token_surrogates')
+      .countDocuments({ orderPositionId: positionId });
+    assert.strictEqual(tokens, 1);
+  });
 });

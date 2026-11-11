@@ -25,7 +25,7 @@ import { searchAssortmentsService } from './searchAssortments.ts';
 import { searchProductsService } from './searchProducts.ts';
 import { calculateDiscountTotalService } from './calculateDiscountTotal.ts';
 import { registerPaymentCredentialsService } from './registerPaymentCredentials.ts';
-import { processOrderService } from './processOrder.ts';
+import { processOrderUnderLockService } from './processOrder.ts';
 import { processEnrollmentService } from './processEnrollment.ts';
 import { checkoutOrderService } from './checkoutOrder.ts';
 import { confirmOrderService } from './confirmOrder.ts';
@@ -138,7 +138,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
       supportedWarehousingProviders: supportedWarehousingProvidersService as Bound<
         typeof supportedWarehousingProvidersService
       >,
-      processOrder: processOrderService as Bound<typeof processOrderService>,
+      processOrder: processOrderUnderLockService as Bound<typeof processOrderUnderLockService>,
       checkoutOrder: checkoutOrderService as Bound<typeof checkoutOrderService>,
       confirmOrder: confirmOrderService as Bound<typeof confirmOrderService>,
       rejectOrder: rejectOrderService as Bound<typeof rejectOrderService>,
