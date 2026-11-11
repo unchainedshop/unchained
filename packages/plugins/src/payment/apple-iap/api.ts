@@ -2,9 +2,9 @@ import { createLogger } from '@unchainedshop/logger';
 import type { UnchainedCore } from '@unchainedshop/core';
 import { EnrollmentStatus } from '@unchainedshop/core-enrollments';
 import { fixPeriods } from './fix-periods.ts';
+import { assertTransactionId, isValidAppleIAPSharedSecret } from './shared-secret.ts';
 
 const logger = createLogger('unchained:apple-iap');
-const { APPLE_IAP_SHARED_SECRET } = process.env;
 
 const AppleNotificationTypes = {
   INITIAL_BUY: 'INITIAL_BUY',
@@ -25,7 +25,7 @@ export async function appleIAPWebhookHandler(
     const responseBody = (await request.json()) as Record<string, any>;
 
     // Validate shared secret
-    if (responseBody.password !== APPLE_IAP_SHARED_SECRET) {
+    if (!(await isValidAppleIAPSharedSecret(responseBody.password))) {
       logger.warn('Apple IAP Webhook: Invalid shared secret');
       return new Response(
         JSON.stringify({
@@ -50,7 +50,7 @@ export async function appleIAPWebhookHandler(
     if (responseBody.notification_type === AppleNotificationTypes.INITIAL_BUY) {
       // Find the cart to checkout
       const orderPayment = await modules.orders.payments.findOrderPaymentByTransactionId(
-        latestTransaction.transaction_id,
+        assertTransactionId(latestTransaction.transaction_id),
       );
 
       if (!orderPayment) {
@@ -93,7 +93,7 @@ export async function appleIAPWebhookHandler(
       // Just store payment credentials, use the enrollments paymentProvider reference and
       // let the job do the rest
       const originalOrderPayment = await modules.orders.payments.findOrderPaymentByTransactionId(
-        latestTransaction.original_transaction_id,
+        assertTransactionId(latestTransaction.original_transaction_id),
       );
 
       if (!originalOrderPayment) {
@@ -167,7 +167,7 @@ export async function appleIAPWebhookHandler(
         code: error.code,
       }),
       {
-        status: 503,
+        status: error?.cause === 'APPLE_IAP_WEBHOOK_INVALID' ? 400 : 503,
         headers: { 'Content-Type': 'application/json' },
       },
     );
