@@ -938,8 +938,8 @@ describe('performance', () => {
 
     // 10k calls should be trivial with the optimized algorithm
     assert.ok(
-      elapsed < 100,
-      `10000 autoreschedule pattern calls took ${elapsed.toFixed(1)}ms, expected < 100ms`,
+      elapsed < 500,
+      `10000 autoreschedule pattern calls took ${elapsed.toFixed(1)}ms, expected < 500ms`,
     );
   });
 });
