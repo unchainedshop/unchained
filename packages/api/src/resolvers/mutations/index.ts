@@ -15,6 +15,8 @@ import sendVerificationEmail from './accounts/sendVerificationEmail.ts';
 import sendEnrollmentEmail from './accounts/sendEnrollmentEmail.ts';
 import forgotPassword from './accounts/forgotPassword.ts';
 import resetPassword from './accounts/resetPassword.ts';
+import requestLoginCode from './accounts/requestLoginCode.ts';
+import loginWithLoginCode from './accounts/loginWithLoginCode.ts';
 import addEmail from './accounts/addEmail.ts';
 import removeEmail from './accounts/removeEmail.ts';
 import createWebAuthnCredentialCreationOptions from './accounts/createWebAuthnCredentialCreationOptions.ts';
@@ -188,6 +190,8 @@ export default {
   verifyEmail: acl(actions.verifyEmail)(verifyEmail),
   loginWithPassword: acl(actions.loginWithPassword)(loginWithPassword),
   loginWithWebAuthn: acl(actions.loginWithWebAuthn)(loginWithWebAuthn),
+  requestLoginCode: acl(actions.requestLoginCode)(requestLoginCode),
+  loginWithLoginCode: acl(actions.loginWithLoginCode)(loginWithLoginCode),
   pageView: acl(actions.pageView)(pageView),
   createUser: acl(actions.createUser)(createUser),
   forgotPassword: acl(actions.forgotPassword)(forgotPassword),

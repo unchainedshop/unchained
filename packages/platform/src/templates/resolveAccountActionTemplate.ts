@@ -86,6 +86,27 @@ const emailConfig = {
     de: verifyEmailEnglishConfig,
     fr: verifyEmailEnglishConfig,
   },
+  'login-code': {
+    url: (token) => `${EMAIL_WEBSITE_URL}/login-code?token=${token}`,
+    en: {
+      buttonText: 'Log in',
+      message: ({ code, expiresInMinutes }) =>
+        `Open the link below to log in, or enter this code: ${code}\n\n  The link and the code are valid for ${expiresInMinutes} minutes and work once. If you did not ask to log in, just ignore this email.`,
+      subject: `${EMAIL_WEBSITE_NAME}: Your login link`,
+    },
+    de: {
+      buttonText: 'Anmelden',
+      message: ({ code, expiresInMinutes }) =>
+        `Öffne den Link unten, um dich anzumelden, oder gib diesen Code ein: ${code}\n\n  Link und Code sind ${expiresInMinutes} Minuten gültig und funktionieren einmal. Falls du dich nicht anmelden wolltest, ignoriere dieses E-Mail einfach.`,
+      subject: `${EMAIL_WEBSITE_NAME}: Dein Login-Link`,
+    },
+    fr: {
+      buttonText: 'Se connecter',
+      message: ({ code, expiresInMinutes }) =>
+        `Ouvre le lien ci-dessous pour te connecter, ou saisis ce code : ${code}\n\n  Le lien et le code sont valables ${expiresInMinutes} minutes et ne fonctionnent qu’une fois. Si tu n’as pas demandé à te connecter, ignore simplement cet e-mail.`,
+      subject: `${EMAIL_WEBSITE_NAME}: Ton lien de connexion`,
+    },
+  },
   '': {
     // password changed!
     url: () => null,
@@ -95,8 +116,10 @@ const emailConfig = {
   },
 };
 
+const groupDigits = (code: string) => String(code ?? '').replace(/(\d{3})(?=\d)/g, '$1 ');
+
 export const resolveAccountActionTemplate: TemplateResolver = async (
-  { userId, action, recipientEmail, token },
+  { userId, action, recipientEmail, token, code, expiresInMinutes },
   { modules },
 ) => {
   if (!token || !action) return [];
@@ -105,11 +128,13 @@ export const resolveAccountActionTemplate: TemplateResolver = async (
   const locale = modules.users.userLocale(user);
 
   const { url } = emailConfig[action];
-  const { subject, message, buttonText } = emailConfig[action][locale.language];
+  const { subject, message, buttonText } =
+    emailConfig[action][locale.language] || emailConfig[action].en;
 
   const text = buildTextTemplate({
     buttonText,
-    message,
+    message:
+      typeof message === 'function' ? message({ code: groupDigits(code), expiresInMinutes }) : message,
     url: url(token),
   });
 
