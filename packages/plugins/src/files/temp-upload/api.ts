@@ -8,6 +8,13 @@ export async function tempUploadHandler(
   context: PluginHttpRequestContext,
 ): Promise<Response> {
   try {
+    if (request.headers.get('sec-fetch-site') === 'cross-site') {
+      return Response.json(
+        { error: 'Forbidden', message: 'Cross-site requests are not allowed' },
+        { status: 403 },
+      );
+    }
+
     const hasPermission = await context.roles?.userHasPermission(context, 'uploadTempFile', []);
     if (!hasPermission) {
       return Response.json(

@@ -4,7 +4,7 @@ This example demonstrates how to integrate [Unchained Commerce](https://unchaine
 
 ## Prerequisites
 
-- Node.js >=26
+- Node.js >=26.12.1
 - An OIDC provider (Zitadel Cloud or Keycloak instance)
 
 ## Getting Started

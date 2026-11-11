@@ -18,10 +18,7 @@ export async function migrateBookmarksService(
   },
 ) {
   const fromBookmarks = await this.bookmarks.findBookmarks({ userId: fromUserId });
-  if (!fromBookmarks) {
-    // No bookmarks no copy needed
-    return;
-  }
+  if (!fromBookmarks.length) return;
   if (!shouldMerge) {
     await this.bookmarks.deleteByUserId(toUserId);
     await this.bookmarks.replaceUserId(fromUserId, toUserId);

@@ -4,17 +4,23 @@ import type { Context } from '../../../context.ts';
 import type { User } from '@unchainedshop/core-users';
 
 export default async function verifyEmail(root: never, { token }: { token: any }, context: Context) {
-  const { modules, userId } = context;
+  const { modules, user: currentUser, userId } = context;
 
   log(`mutation verifyEmail ${userId}`, { userId });
 
   const unverifiedToken = await modules.users.findUnverifiedEmailToken(token);
 
   if (!unverifiedToken) {
-    throw new InvalidEmailVerificationTokenError({ token });
+    throw new InvalidEmailVerificationTokenError({});
   }
 
   await modules.users.verifyEmail(unverifiedToken.userId, unverifiedToken.address);
+
+  const isForeignUserSession = !!userId && userId !== unverifiedToken.userId && !currentUser?.guest;
+
+  if (isForeignUserSession) {
+    return null;
+  }
 
   const user = (await context.modules.users.updateHeartbeat(unverifiedToken.userId, {
     remoteAddress: context.remoteAddress,
@@ -24,8 +30,8 @@ export default async function verifyEmail(root: never, { token }: { token: any }
     countryCode: context.countryCode,
   })) as User;
 
-  if (context.userId) {
-    await context.services.users.migrateUserData(context.userId, user._id);
+  if (userId && userId !== unverifiedToken.userId) {
+    await context.services.users.migrateUserData(userId, user._id);
   }
 
   await context.services.orders.nextUserCart({ user, countryCode: context.countryCode });

@@ -1,6 +1,6 @@
 {
   "name": "@unchainedshop/ticketing-admin-plugin",
-  "version": "1.0.0",
+  "version": "5.0.0-alpha.12",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
-    "@unchainedshop/admin-ui": "^5.0.0-alpha.11",
+    "@unchainedshop/admin-ui": "^5.0.0-alpha.12",
     "jsqr": "^1.4.0",
     "react": "^19.0.0",
     "tsup": "^9.0.0",

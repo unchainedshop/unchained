@@ -1,4 +1,4 @@
-FROM node:26.8-alpine AS bundler
+FROM node:26.12-alpine AS bundler
 
 RUN mkdir -p /source && chown node:node /source
 WORKDIR /source
@@ -13,7 +13,7 @@ COPY --chown=node:node . .
 RUN npm run build
 RUN rm -Rf node_modules
 
-FROM node:26.8-alpine AS runtime
+FROM node:26.12-alpine AS runtime
 
 RUN mkdir -p /webapp && chown node:node /webapp
 WORKDIR /webapp

@@ -200,7 +200,7 @@ export const Cryptopay: IPaymentAdapter = {
             order.confirmed || new Date(),
           );
 
-          if (!rate) throw new Error('No conversion rate found');
+          if (!rate?.max) throw new Error('No conversion rate found');
 
           const convertedAmount = denoteAmount(
             walletForOrderPayment.amount.toString(),
@@ -219,6 +219,7 @@ export const Cryptopay: IPaymentAdapter = {
           logger.info(
             `Cryptopay Plugin: Wallet ${walletForOrderPayment._id} balance too low (yet): ${maxAmount} < ${totalAmount}`,
           );
+          return false;
         }
 
         if (walletForOrderPayment) {

@@ -46,4 +46,31 @@ describe('createGraphQLServer', () => {
     const { data } = await post('{ drafts }', {});
     assert.deepStrictEqual(JSON.parse(data.drafts), { limit: 10, includeDrafts: false });
   });
+
+  it('does not allow credentials for another origin by default', async () => {
+    const server = await createGraphQLServer({
+      typeDefs: ['type Query { echo: String }'],
+      resolvers: [],
+    });
+    const response = await server.fetch('http://localhost/graphql', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', origin: 'https://evil.example' },
+      body: JSON.stringify({ query: '{ echo }' }),
+    });
+    assert.strictEqual(response.status, 200);
+    assert.strictEqual(response.headers.get('access-control-allow-credentials'), null);
+  });
+
+  it('refuses content types a cross-site form can send', async () => {
+    const server = await createGraphQLServer({
+      typeDefs: ['type Query { echo: String }'],
+      resolvers: [],
+    });
+    const response = await server.fetch('http://localhost/graphql', {
+      method: 'POST',
+      headers: { 'content-type': 'text/plain' },
+      body: JSON.stringify({ query: '{ echo }' }),
+    });
+    assert.strictEqual(response.status, 415);
+  });
 });

@@ -15,7 +15,7 @@ describe('createLogger', () => {
 
   beforeEach(() => {
     // Reset environment variables before each test
-    process.env = { ...originalEnv };
+    process.env = { ...originalEnv, LOG_LEVEL: 'info' };
     // Reset logger initialization state
     resetLoggerInitialization();
 

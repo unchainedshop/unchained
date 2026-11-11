@@ -1,5 +1,6 @@
 import { actions } from '../../roles/index.ts';
 import { checkResolver as acl } from '../../roles/acl.ts';
+import { guardPrivilegedUsers as privileged } from '../guardPrivilegedUsers.ts';
 import loginWithPassword from './accounts/loginWithPassword.ts';
 import loginWithWebAuthn from './accounts/loginWithWebAuthn.ts';
 import loginAsGuest from './accounts/loginAsGuest.ts';
@@ -166,9 +167,9 @@ import bulkSetUserRoles from './bulk/bulkSetUserRoles.ts';
 
 export default {
   logout: acl(actions.logout)(logout),
-  logoutAllSessions: acl(actions.logoutAllSessions)(logoutAllSessions),
+  logoutAllSessions: acl(actions.logoutAllSessions)(privileged(logoutAllSessions)),
   loginAsGuest: acl(actions.loginAsGuest)(loginAsGuest),
-  impersonate: acl(actions.impersonate)(impersonate),
+  impersonate: acl(actions.impersonate)(privileged(impersonate)),
   stopImpersonation: acl(actions.stopImpersonation)(stopImpersonation),
 
   createWebAuthnCredentialCreationOptions: acl(actions.useWebAuthn)(
@@ -195,15 +196,15 @@ export default {
   sendEnrollmentEmail: acl(actions.sendEmail)(sendEnrollmentEmail),
   changePassword: acl(actions.changePassword)(changePassword),
   heartbeat: acl(actions.heartbeat)(heartbeat),
-  addEmail: acl(actions.updateUser)(addEmail),
-  removeEmail: acl(actions.updateUser)(removeEmail),
-  updateUserProfile: acl(actions.updateUser)(updateUserProfile),
-  removeUser: acl(actions.removeUser)(removeUser),
-  setPassword: acl(actions.updateUser)(setPassword),
-  prepareUserAvatarUpload: acl(actions.uploadUserAvatar)(prepareUserAvatarUpload),
-  setUserTags: acl(actions.manageUsers)(setUserTags),
-  setUsername: acl(actions.updateUsername)(setUsername),
-  setRoles: acl(actions.manageUsers)(setRoles),
+  addEmail: acl(actions.updateUser)(privileged(addEmail)),
+  removeEmail: acl(actions.updateUser)(privileged(removeEmail)),
+  updateUserProfile: acl(actions.updateUser)(privileged(updateUserProfile)),
+  removeUser: acl(actions.removeUser)(privileged(removeUser)),
+  setPassword: acl(actions.updateUser)(privileged(setPassword)),
+  prepareUserAvatarUpload: acl(actions.uploadUserAvatar)(privileged(prepareUserAvatarUpload)),
+  setUserTags: acl(actions.manageUsers)(privileged(setUserTags)),
+  setUsername: acl(actions.updateUsername)(privileged(setUsername)),
+  setRoles: acl(actions.manageUsers)(privileged(setRoles)),
   enrollUser: acl(actions.enrollUser)(enrollUser),
   registerPaymentCredentials: acl(actions.registerPaymentCredentials)(registerPaymentCredentials),
   markPaymentCredentialsPreferred: acl(actions.managePaymentCredentials)(
@@ -324,19 +325,19 @@ export default {
     signPaymentProviderForCredentialRegistration,
   ),
   signPaymentProviderForCheckout: acl(actions.updateOrderPayment)(signPaymentProviderForCheckout),
-  removeUserProductReviews: acl(actions.updateUser)(removeUserProductReviews),
+  removeUserProductReviews: acl(actions.updateUser)(privileged(removeUserProductReviews)),
   bulkSetProductStatus: acl(actions.bulkSetProductStatus)(bulkSetProductStatus),
   bulkUpdateProductTags: acl(actions.bulkUpdateProductTags)(bulkUpdateProductTags),
   bulkAssignProductsToAssortment: acl(actions.bulkAssignProductsToAssortment)(
     bulkAssignProductsToAssortment,
   ),
   bulkRemoveProducts: acl(actions.bulkRemoveProducts)(bulkRemoveProducts),
-  bulkUpdateUserTags: acl(actions.bulkUpdateUserTags)(bulkUpdateUserTags),
+  bulkUpdateUserTags: acl(actions.bulkUpdateUserTags)(privileged(bulkUpdateUserTags)),
   bulkRemoveAssortments: acl(actions.bulkRemoveAssortments)(bulkRemoveAssortments),
   bulkUpdateAssortmentTags: acl(actions.bulkUpdateAssortmentTags)(bulkUpdateAssortmentTags),
   bulkSetAssortmentActive: acl(actions.bulkSetAssortmentActive)(bulkSetAssortmentActive),
   bulkRemoveFilters: acl(actions.bulkRemoveFilters)(bulkRemoveFilters),
   bulkSetFilterActive: acl(actions.bulkSetFilterActive)(bulkSetFilterActive),
-  bulkRemoveUsers: acl(actions.bulkRemoveUsers)(bulkRemoveUsers),
-  bulkSetUserRoles: acl(actions.bulkSetUserRoles)(bulkSetUserRoles),
+  bulkRemoveUsers: acl(actions.bulkRemoveUsers)(privileged(bulkRemoveUsers)),
+  bulkSetUserRoles: acl(actions.bulkSetUserRoles)(privileged(bulkSetUserRoles)),
 };

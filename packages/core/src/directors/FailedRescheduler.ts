@@ -26,8 +26,12 @@ export const FailedRescheduler: IScheduler<FailedReschedulerParams> = {
   version: '1.0.0',
 
   actions: ({ transformRetry }, unchainedAPI) => {
-    const handleFinishedWork = async ({ payload: work }: { payload: Work }) => {
-      if (!work.success && work.retries > 0) {
+    const handleFinishedWork = async ({ payload }: { payload: Work }) => {
+      if (!payload.success && payload.retries > 0) {
+        // The payload has the blacklisted variables obfuscated, the retry needs the stored input
+        const work: Work =
+          (await unchainedAPI.modules.worker.findWork({ workId: payload._id })) || payload;
+
         const now = new Date();
         const workDelayMs = work.scheduled.getTime() - work.created.getTime();
 

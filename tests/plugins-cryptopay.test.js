@@ -5,13 +5,7 @@ import { USER_TOKEN } from './seeds/users.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { SimpleOrder, SimplePosition, SimplePayment } from './seeds/orders.js';
 import { SimpleProduct } from './seeds/products.js';
-import {
-  BTC_DERIVATIONS,
-  ETH_DERIVATIONS,
-  BTCCurrency,
-  SHIBCurrency,
-  ETHCurrency,
-} from './seeds/cryptopay.js';
+import { BTC_DERIVATIONS, ETH_DERIVATIONS, BTCCurrency, ETHCurrency } from './seeds/cryptopay.js';
 
 test.describe('Plugins: Cryptopay', () => {
   let db;
@@ -28,16 +22,6 @@ test.describe('Plugins: Cryptopay', () => {
 
     await db.collection('currencies').findOrInsertOne(BTCCurrency);
     await db.collection('currencies').findOrInsertOne(ETHCurrency);
-    await db.collection('currencies').findOrInsertOne(SHIBCurrency);
-
-    await db.collection('product_rates').findOrInsertOne({
-      baseCurrency: 'CHF',
-      quoteCurrency: SHIBCurrency.isoCode,
-      rate: 0.00000002711,
-      timestamp: new Date(),
-      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 1), // 1 day
-      archived: false,
-    });
 
     const SimpleBtcProduct = {
       ...SimpleProduct,
@@ -294,7 +278,15 @@ test.describe('Plugins: Cryptopay', () => {
       assert.strictEqual(orderPayment.status, 'PAID');
     });
 
-    await test.skip('Pay too little for converted prices', async () => {
+    await test('Pay too little for converted prices', async () => {
+      await db.collection('product_rates').findOrInsertOne({
+        baseCurrency: 'BTC',
+        quoteCurrency: 'CHF',
+        rate: 60000,
+        timestamp: new Date(),
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 1), // 1 day
+        archived: false,
+      });
       const result = await fetch(`${getServerBaseUrl()}/payment/cryptopay`, {
         method: 'POST',
         headers: {
@@ -303,11 +295,11 @@ test.describe('Plugins: Cryptopay', () => {
         duplex: 'half',
         body: JSON.stringify({
           wallet: {
-            currencyCode: SHIBCurrency.isoCode,
-            contract: SHIBCurrency.contractAddress,
-            decimals: 18,
-            address: ETH_DERIVATIONS[1],
-            amount: '1844337882700110748172344', // 50 Fr. at an SHIB / CHF exchange rate of ~ 0.00002711
+            currencyCode: 'BTC',
+            contract: null,
+            decimals: 8,
+            address: BTC_DERIVATIONS[1],
+            amount: 10 ** 5, // 60 Fr. at 60000 CHF / BTC, the order is 300 Fr.
           },
           secret: 'secret',
         }),
@@ -317,7 +309,7 @@ test.describe('Plugins: Cryptopay', () => {
       assert.notStrictEqual(orderPayment.status, 'PAID');
     });
 
-    await test.skip('Pay product with fiat prices in SHIB', async () => {
+    await test('Pay product with fiat prices in BTC', async () => {
       const result = await fetch(`${getServerBaseUrl()}/payment/cryptopay`, {
         method: 'POST',
         headers: {
@@ -326,11 +318,11 @@ test.describe('Plugins: Cryptopay', () => {
         duplex: 'half',
         body: JSON.stringify({
           wallet: {
-            currencyCode: SHIBCurrency.isoCode,
-            contract: SHIBCurrency.contractAddress,
-            decimals: 18,
-            address: ETH_DERIVATIONS[1],
-            amount: '11857248247879012000000000', // 107.15 Fr. at an SHIB / CHF exchange rate of ~ 0.00002711
+            currencyCode: 'BTC',
+            contract: null,
+            decimals: 8,
+            address: BTC_DERIVATIONS[1],
+            amount: 6 * 10 ** 5, // 360 Fr. at 60000 CHF / BTC
           },
           secret: 'secret',
         }),

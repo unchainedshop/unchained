@@ -1,6 +1,6 @@
 # Pinned deliberately: Node 26.0-26.5 leaks Blob.prototype.stream() backing stores
 # in eternal V8 handles (nodejs/node#63574, fixed in 26.6.0). Do not revert to node:26.
-FROM node:26.8-alpine AS bundler
+FROM node:26-alpine AS bundler
 
 RUN mkdir -p /source && chown node:node /source
 WORKDIR /source
@@ -15,7 +15,7 @@ COPY --chown=node:node . .
 RUN npm run build
 RUN rm -Rf node_modules
 
-FROM node:26.8-alpine AS runtime
+FROM node:26-alpine AS runtime
 
 RUN mkdir -p /webapp && chown node:node /webapp
 WORKDIR /webapp

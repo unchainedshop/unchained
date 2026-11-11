@@ -68,7 +68,7 @@ describe('createAuthContext token cookie', () => {
       else process.env.UNCHAINED_COOKIE_DOMAIN = UNCHAINED_COOKIE_DOMAIN;
     });
     process.env.UNCHAINED_COOKIE_DOMAIN = 'shop.test; SameSite=None';
-    await assert.rejects(import('./createAuthContext.ts?invalid-domain'), /option domain is invalid/);
+    await assert.rejects(import('./createAuthContext.ts?invalid-domain'), /domain is invalid/);
   });
 
   it('decodes a percent-encoded token cookie and keeps a malformed one as sent', async () => {

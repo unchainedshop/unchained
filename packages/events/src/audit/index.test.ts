@@ -17,7 +17,11 @@ import {
 const ORIGINAL_LOG_FORMAT = process.env.UNCHAINED_LOG_FORMAT;
 const ORIGINAL_CONSOLE_LOG = console.log;
 
+const ORIGINAL_LOG_LEVEL = process.env.LOG_LEVEL;
+
 const restoreLogFormat = () => {
+  if (ORIGINAL_LOG_LEVEL === undefined) delete process.env.LOG_LEVEL;
+  else process.env.LOG_LEVEL = ORIGINAL_LOG_LEVEL;
   if (ORIGINAL_LOG_FORMAT === undefined) delete process.env.UNCHAINED_LOG_FORMAT;
   else process.env.UNCHAINED_LOG_FORMAT = ORIGINAL_LOG_FORMAT;
 };
@@ -25,6 +29,7 @@ const restoreLogFormat = () => {
 /** Runs fn against a fresh emit-only AuditLog and returns the OCSF events it emitted. */
 const captureEvents = async (fn: (auditLog: AuditLog) => Promise<void>): Promise<any[]> => {
   process.env.UNCHAINED_LOG_FORMAT = 'json';
+  process.env.LOG_LEVEL = 'info';
   const events: any[] = [];
   console.log = mock.fn((line: any) => {
     try {
@@ -295,6 +300,7 @@ describe('OCSF Constants', () => {
 describe('AuditLog logger sink', () => {
   it('emits the full OCSF event as a structured JSON log line', async () => {
     process.env.UNCHAINED_LOG_FORMAT = 'json';
+    process.env.LOG_LEVEL = 'info';
     const lines: string[] = [];
     console.log = mock.fn((line: any) => {
       lines.push(typeof line === 'string' ? line : JSON.stringify(line));
@@ -332,6 +338,7 @@ describe('AuditLog logger sink', () => {
 
   it('emits nothing when log is disabled', async () => {
     process.env.UNCHAINED_LOG_FORMAT = 'json';
+    process.env.LOG_LEVEL = 'info';
     const lines: string[] = [];
     console.log = mock.fn((line: any) => {
       lines.push(String(line));

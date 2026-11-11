@@ -9,6 +9,13 @@ export async function bulkImportHandler(
   context: PluginHttpRequestContext,
 ): Promise<Response> {
   try {
+    if (request.headers.get('sec-fetch-site') === 'cross-site') {
+      return Response.json(
+        { error: 'Forbidden', message: 'Cross-site requests are not allowed' },
+        { status: 403 },
+      );
+    }
+
     const hasPermission = await context.roles?.userHasPermission(context, 'bulkImport', []);
     if (!hasPermission) {
       return Response.json(

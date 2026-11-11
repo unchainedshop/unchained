@@ -4,10 +4,6 @@ import { SortDirection } from '@unchainedshop/utils';
 import { buildSortOptions, generateDbObjectId } from './mongodb-index.ts';
 
 describe('Mongo', () => {
-  it('Init', () => {
-    assert(true);
-  });
-
   describe('buildSortOptions', () => {
     it('should return the correct db sort format', () => {
       const sort = [

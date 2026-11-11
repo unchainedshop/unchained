@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+### Security
+
+- **Breaking: Node.js 26.12.1 is the minimum** (`@unchainedshop/platform`): the engines floor moves to the patched release of Node 26.
+- **The Payrexx webhook acts only on Payrexx order payments** (`@unchainedshop/plugins`): it checked out whatever order payment `transaction.referenceId` named, without authentication, including one of another payment provider, and a non-string `referenceId` reached the id filter as a MongoDB operator. Such requests now get `400`.
+- **Signed GridFS upload URLs expire and cannot be replayed, and uploads are no longer served inline** (`@unchainedshop/plugins`): a used or expired `putURL` stayed a write capability on its file. Downloads carry `nosniff` and a sandbox CSP, and only known-safe image, audio and video types are served inline.
+- **Token ownership requires a subject** (`@unchainedshop/api`): exporting a token to a wallet removes its `userId`, so anonymous callers could read and invalidate every exported token.
+- **`verifyEmail` no longer hands a foreign session to the token owner** (`@unchainedshop/api`): a signed-in user who opened someone else's verification link had their cart moved to that account and was logged in as it. Guest sessions keep being migrated.
+- **Breaking: tighter cross-site defaults** (`@unchainedshop/api`, `@unchainedshop/plugins`): `/graphql` no longer sends `Access-Control-Allow-Credentials` to a reflected origin and answers `415` for form-urlencoded, multipart and `text/plain` bodies, and `/bulk-import` and `/temp-upload` refuse `Sec-Fetch-Site: cross-site` with `403`. Pass `cors` to `startPlatform` to allow a storefront origin. See `MIGRATION.md`.
+- **Payment adapters only accept a payment that belongs to the order** (`@unchainedshop/plugins`): Cryptopay settled a fiat order for an underpaid or unpriced crypto transfer, Datatrans and Saferpay accepted a transaction issued for another order payment (Datatrans transactions must carry the payment's `refno`), and Apple IAP trusted receipt info sent with the checkout. The Apple IAP webhook compares its shared secret in constant time and refuses non-string transaction ids.
+- **Push subscriptions need a string key** (`@unchainedshop/core-users`): a query operator as `keys.p256dh` decided whose subscriptions `unsubscribeFromOtherUsers` removed. It is refused with cause `PUSH_SUBSCRIPTION_INVALID`.
+
+- **Only privileged users change privileged users** (`@unchainedshop/api`): a role with `manageUsers` could give itself or anybody the admin role or take it away, and a role that may update users could set an admin's password, change their e-mail or username, remove, log out or impersonate them, also through the bulk user mutations. Doing so, or giving a user roles that make them privileged, now requires the new `managePrivilegedUsers` action (admin only by default). See `MIGRATION.md`.
+- **Breaking: `setPassword` refuses the caller's own account** (`@unchainedshop/api`): use `changePassword` or the password reset flow. A new password now ends the other sessions (`tokenVersion` is incremented) and `changePassword` hands the caller a fresh token.
+- **Breaking: writing `User.meta` needs the new `updateUserMeta` action** (`@unchainedshop/api`), which only the admin role has by default.
+- **Breaking: provider `configuration` needs the matching `manage*` action** (`@unchainedshop/api`): stored provider credentials were readable through `simulatedDispatches` and a cart's supported providers.
+- **`confirmMediaUpload` only accepts the caller's own upload tickets** (`@unchainedshop/api`), and the reset and verification token resolvers no longer log the raw token.
+- **Sensitive work fields are obfuscated by default** (`@unchainedshop/utils`, `@unchainedshop/core-worker`): the default list of `buildObfuscatedFieldsFilter` was unreachable and the filter modified the work it masked. See `MIGRATION.md`.
+
 ### Breaking
 
 - **One-time re-login for v5 alpha users:** tokens are now signed and checked with a default `tokenVersion` of `0` instead of `1`. Tokens issued by earlier alphas to users without a stored `tokenVersion` stop working once after the upgrade; those users log in again.
@@ -79,6 +97,10 @@
 - **Cart and media services:** `services.orders.selectDeliveryProvider` / `selectPaymentProvider` and `services.files.resolveMediaFiles` hold the logic of the cart provider mutations and the MCP media tools.
 
 ### Fixed
+- **Work expires 30 days after it is scheduled** (`@unchainedshop/core-worker`): work scheduled further ahead was deleted before it ran. Migration `20261104120100` adds `expires` to existing work.
+- **Confirming and rejecting an order run once** (`@unchainedshop/core`): concurrent `confirmOrder` / `rejectOrder` calls no longer send the delivery and mint the tokens twice, or reject an order that was just confirmed (#817).
+- **A guest login keeps the account's bookmarks** with `mergeUserCartsOnLogin: false` (`@unchainedshop/core`, #816).
+- MCP `WORKER_PROCESS_NEXT` returns the work it processed (`@unchainedshop/api`).
 - **Enrollment periods keep their wall-clock time across DST** (`@unchainedshop/core-enrollments`): `addToDate` runs on `Temporal` instead of a vendored date-fns build, which added years before weeks/days and kept the hour shifted when that intermediate date fell into a daylight-saving gap (e.g. 02:57 became 03:57); month-end clamping and exact hour arithmetic are unchanged.
 - **Datatrans credential validation works** (`@unchainedshop/plugins`): `validate()` hex-decoded `valid-<timestamp>`, which is not hex, so it sent an empty `refno` that Datatrans rejects and stored payment credentials never validated; it now sends `valid-<timestamp>` as is.
 - **MinIO link uploads keep the remote content type** (`@unchainedshop/plugins`): `uploadFileFromURL` read the response header as a property of `Headers`, so files without a known extension were stored without a type.
@@ -269,6 +291,35 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 
 ---
 
+# Unchained Engine v4.9
+
+## Minor
+- **Breaking: graphql-yoga 6** (`@unchainedshop/api`): the `graphql-yoga` peer is now `^6.0.1`, and the graphql-js engine swap is gone because yoga's own executor applies argument defaults again. See `MIGRATION.md`.
+- **Breaking (Stripe plugin): `stripe` 23 and API version `2026-10-28.endive`** (`@unchainedshop/plugins`): intents use `allowed_payment_method_types`, and a `payment_method_types` transaction context is sent as `allowed_payment_method_types`, which the API version would otherwise reject. See `MIGRATION.md`.
+- **Node.js 24.22.1+ or 26.12.1+ required** (`@unchainedshop/platform`): the engines range moves to the patched release of each supported line.
+- All dependencies upgraded to the latest release of their current major.
+- **web-push 4 is accepted** (`@unchainedshop/plugins`): the optional peer range now allows the ESM-only `web-push` 4.
+- **Fastify apps start with `@fastify/session` 11.1.6** (`@unchainedshop/api`): the session store now implements the conditional `compareAndSet` write that 11.1.6 (GHSA-2hw7-jxfh-4rm3) requires of custom stores; before, the Fastify adapter failed at startup with "the store must implement compareAndSet".
+- **Express temp uploads reject oversized multipart array indexes** (`@unchainedshop/api`): the upload parser limits `fieldArrayIndexLimit` to 100, and the `multer` peer requires 2.3 or later.
+
+## Security
+- **Breaking: PayPal orders are bound to the order payment they pay** (`@unchainedshop/plugins`): `charge()` accepted any completed PayPal order with the right amount and currency, so one PayPal payment could be replayed to pay any number of equal-priced orders. Storefronts now put the order payment id into `purchase_units[0].custom_id` when they create the PayPal order; other PayPal orders are refused before anything is captured. The SDK is loaded through its default export, so PayPal charges work again: `orders` was undefined in its ESM namespace and every charge failed. See `MIGRATION.md`.
+- **Only privileged users change privileged users** (`@unchainedshop/api`): a role with `manageUsers` could give itself or anybody the admin role or take it away, and a role that may update users could set an admin's password, change their e-mail or username, remove or impersonate them. Changing a user whose roles grant the new `managePrivilegedUsers` action (admin only by default), or giving a user such roles, now requires that action too. See `MIGRATION.md`.
+- **Breaking: `setPassword` refuses the caller's own account** (`@unchainedshop/api`): it sets a password without the old one, which a hijacked session could use to keep the account. Use `changePassword` or the password reset flow.
+- **Breaking: writing `User.meta` needs the new `updateUserMeta` action** (`@unchainedshop/api`): customers could write their own `meta` through `updateUserProfile`, which the documented B2B pricing pattern trusts. Only the admin role has the action by default.
+- **Breaking: `PaymentProvider.configuration`, `DeliveryProvider.configuration` and `WarehousingProvider.configuration` require the matching `manage*` action** (`@unchainedshop/api`): stored provider credentials were readable by anyone who could reach a provider through `Product.simulatedDispatches` or a cart's supported providers, which includes anonymous callers.
+- **`confirmMediaUpload` only accepts the caller's own upload tickets** (`@unchainedshop/api`): it took a file id from the client with no ownership check, so any logged-in user could rewrite the type and size of any file record.
+- **The MCP `order_management` TOP_CUSTOMERS action strips confidential service hashes** (`@unchainedshop/api`): it returned raw user documents including `services` — password hashes, plaintext reset tokens and the hashed access token — unlike every sibling normalizer.
+- **A new password ends the sessions established with the old one** (`@unchainedshop/core-users`, `@unchainedshop/api`): `changePassword`, `resetPassword` and an admin's `setPassword` left existing sessions valid. The caller's own session is re-established, so changing your own password no longer signs you out.
+- **The reset and verification token query resolvers no longer log the raw token** (`@unchainedshop/api`), and the express `/temp-upload` route authorizes before the multipart parser buffers the body, with multer size and part limits (`@unchainedshop/api`).
+- **Sensitive work fields are obfuscated by default** (`@unchainedshop/utils`, `@unchainedshop/core-worker`): `buildObfuscatedFieldsFilter` never applied its default list and modified the work it masked. Without `blacklistedVariables`, `password`, `token`, `secret`, `authorization` and the other `defaultObfuscatedFields` are now obfuscated case-insensitively in `WORK_*` events, `Work.input`/`result`/`error` and the MCP work tools; the stored work and the work adapters process keep the plain values. See `MIGRATION.md`.
+
+## Patch
+- **Work expires 30 days after it is scheduled** (`@unchainedshop/core-worker`): the work queue deleted work 30 days after `created`, so work scheduled further ahead was deleted before it ran. Migration `20261104120100` adds `expires` to existing work. See `MIGRATION.md`.
+- **Confirming and rejecting an order run once** (`@unchainedshop/core`): `confirmOrder` and `rejectOrder` read the order again under their lock, so concurrent calls no longer send the delivery and mint the tokens twice, or reject an order that was just confirmed (#817).
+- **A guest login keeps the account's bookmarks** (`@unchainedshop/core`): with `mergeUserCartsOnLogin: false`, logging in from a guest session without bookmarks deleted all bookmarks of the account (#816).
+- MCP `WORKER_PROCESS_NEXT` returns the work it processed instead of answering before it finished (`@unchainedshop/api`).
+
 # Unchained Engine v4.8
 
 ## Minor
@@ -292,6 +343,22 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 - `services.warehousing.isTokenInvalidateable({ token, product? })` now accepts an optional `product` to skip the redundant lookup in hot paths.
 - `Web3Address.nonce` GraphQL scalar changed from `Int` to `String` to match the actual hex/base64 nonce values used in SIWE-style flows.
 - ESLint upgraded to v10 across the workspace; Stripe SDK updated alongside.
+
+## Security
+- **Breaking: the session cookie now defaults to `SameSite=Lax` instead of `None`, and the GraphQL endpoint no longer answers cross-origin requests with `Access-Control-Allow-Credentials`** (`@unchainedshop/api`): the previous defaults let any website read and mutate the API as the logged-in user. Set `UNCHAINED_COOKIE_SAMESITE=none` and pass your own `cors` option to `startPlatform` to restore the old behaviour for a storefront on another origin. See `MIGRATION.md`.
+- **Breaking: `/graphql` rejects `application/x-www-form-urlencoded`, `multipart/form-data` and `text/plain` with 415, and `/bulk-import` and `/temp-upload` reject browser requests carrying `Sec-Fetch-Site: cross-site` with 403** (`@unchainedshop/api`): these are the request shapes a cross-site HTML form can send without a preflight. Server-to-server clients send no fetch metadata and are unaffected.
+- **The Payrexx webhook verifies which order payment it may act on** (`@unchainedshop/plugins`): it checked out whatever `transaction.referenceId` named, so an unauthenticated POST could confirm an arbitrary order — including one whose payment provider is not Payrexx and whose adapter allows pay-later — and a non-string `referenceId` reached the id filter as a MongoDB operator.
+- **The Apple IAP webhook fails closed without a shared secret** (`@unchainedshop/plugins`): with `APPLE_IAP_SHARED_SECRET` unset, `password !== APPLE_IAP_SHARED_SECRET` compared `undefined` with `undefined` and let anonymous callers reach order checkout and enrollment termination. The secret is now required and compared in constant time.
+- **Signed GridFS upload URLs expire and cannot be replayed** (`@unchainedshop/plugins`): the PUT branch never compared the signed expiry against the clock, and its "already linked" guard tested `expires === null` while `linkFile` unsets the field, so a used upload URL stayed a permanent write capability on that file.
+- **Uploaded files are no longer served inline on the engine origin** (`@unchainedshop/plugins`): downloads echoed the uploader's `Content-Type` with no disposition, so an HTML or SVG upload executed as script next to the GraphQL endpoint and the session cookie. Responses now carry `nosniff` and a sandbox CSP, and only known-safe image, audio and video types are served inline.
+- **Token ownership requires a subject** (`@unchainedshop/api`): exporting a token to a wallet removes its `userId`, so `token.userId === userId` compared `undefined` with `undefined` and granted anonymous callers `viewToken` and `updateToken` on every exported token — reading it and its `accessKey`, and invalidating it.
+- **`verifyEmail` no longer hands a foreign session to the token owner** (`@unchainedshop/api`): it migrated the caller's cart and bookmarks into the account the token belongs to and logged that browser in as the token owner, so luring a signed-in customer onto a verification link moved their cart, billing address and contact to the attacker. Guest sessions keep being migrated.
+- **Checkout takes its lock before reading the order** (`@unchainedshop/core`): concurrent `checkoutCart` calls for one cart all passed the status check before any held the lock and then each processed the same order from a stale snapshot, so one charge produced several enrollments and several tokens sharing one serial number.
+- **Cart mutations and checkout now exclude each other** (`@unchainedshop/api`, `@unchainedshop/core`, `@unchainedshop/core-orders`): cart mutations and the login cart merge now take the checkout lock and answer `OrderLockedError` while it is held, so a position added during the payment call is no longer confirmed on an order whose charged total predates it.
+- **Breaking: the deprecated `setOrderPaymentProvider`, `setOrderDeliveryProvider`, `updateOrderDeliveryShipping`, `updateOrderDeliveryPickUp`, `updateOrderPaymentGeneric` and `updateOrderPaymentInvoice` mutations are removed** (`@unchainedshop/api`): they were an unlocked route into a cart being charged; use `updateCart`, `updateCartDelivery*` and `updateCartPayment*`.
+- **The login cart merge awaits its own writes** (`@unchainedshop/core`): merged positions could land in the target cart after its recalculation had already run.
+- **Payment adapters only accept a payment that belongs to the order** (`@unchainedshop/plugins`): Cryptopay settled a fiat order for an underpaid or unpriced crypto transfer, Datatrans and Saferpay accepted a transaction issued for another order payment (Datatrans transactions must now carry the `refno` from `signPaymentProviderForCheckout`), and Apple IAP trusted receipt info sent with the checkout.
+- **The Fastify adapter rotates the session id on login and logout** (`@unchainedshop/api`): it assigned the user to whichever session the request already carried, so a session planted before the login kept working afterwards. Express rotated already, through passport.
 
 ## Patch
 - **Validation errors are reported once** (`@unchainedshop/api`): the graphql-js engine swap also handed graphql's validation rules to `useEngine`, which appends them to the rules yoga already registers, so every operation was validated twice and every validation error came back twice.

@@ -55,7 +55,7 @@ Plus: React Hook Form • React Intl • Headless UI • Recharts • Cypress �
 
 ### Prerequisites
 
-- Node.js 26+
+- Node.js 26.12.1+
 - [Unchained Engine](https://github.com/unchainedshop/unchained) running on `localhost:4010`
 
 ### Installation

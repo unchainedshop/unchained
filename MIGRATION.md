@@ -8,6 +8,38 @@
 
 `@unchainedshop/api` requires `graphql-yoga` 6: `npm install graphql-yoga@^6`. Yoga options you pass to `startPlatform` change with it: `createGraphQLError` is gone (use `new GraphQLError`), envelop plugins come from `graphql-yoga` or `@envelop/core` 6, and if you set `logging` yourself, yoga's `Logger` throws on any `LOG_LEVEL` other than lowercase `trace`, `debug`, `info`, `warn` or `error` (Unchained's own logging is unaffected). GraphQL request bodies above 25 MB now get `413` unless you raise `maxRequestBodySize`.
 
+## Cross-site defaults tightened
+
+The GraphQL endpoint no longer sends `Access-Control-Allow-Credentials` to a reflected origin, `/graphql` answers `415` for `application/x-www-form-urlencoded`, `multipart/form-data` and `text/plain`, and `/bulk-import` and `/temp-upload` answer `403` when a browser sends `Sec-Fetch-Site: cross-site`. Server-to-server clients send no fetch metadata and keep working.
+
+A storefront on another origin that authenticates with the session cookie needs an explicit allow-list (prefer token authentication instead):
+
+```bash
+UNCHAINED_COOKIE_SAMESITE=none
+```
+
+```typescript
+await startPlatform({
+  cors: { origin: ['https://shop.example'], credentials: true },
+});
+```
+
+## Privileged users, own passwords and user meta
+
+A user whose roles grant the new `managePrivilegedUsers` action is privileged: by default every admin. Changing a privileged user (`setRoles`, `setUserTags`, `setUsername`, `setPassword`, `addEmail`, `removeEmail`, `updateUserProfile`, `removeUser`, `removeUserProductReviews`, `prepareUserAvatarUpload`, `logoutAllSessions`, `impersonate` and the bulk `bulkSetUserRoles`, `bulkRemoveUsers`, `bulkUpdateUserTags`) and giving a user roles that make them privileged now require `managePrivilegedUsers` in addition to the action of the mutation. Nothing changes for admins; grant `managePrivilegedUsers` to a delegated role only if it should manage admins.
+
+- `setPassword` refuses the caller's own account. Change your own password with `changePassword` (needs the old password) or the password reset flow. `changePassword` ends the other sessions (it increments `tokenVersion`) and returns a fresh token to the caller.
+- Writing `meta` with `updateUserProfile` needs the new `updateUserMeta` action, which only admins have. To let customers edit their own meta, grant it in a role, for example `role.allow(actions.updateUserMeta, (root, { userId } = {}, context) => !userId || userId === context.userId)`.
+
+## Provider configuration
+
+`PaymentProvider.configuration`, `DeliveryProvider.configuration` and `WarehousingProvider.configuration` need `managePaymentProviders`, `manageDeliveryProviders` and `manageWarehousingProviders`. Storefronts that read them as customers get `NoPermissionError`.
+
+## Work queue: obfuscation by default, expiry after the scheduled date
+
+- Without `options.worker.blacklistedVariables`, the keys of `defaultObfuscatedFields` (`@unchainedshop/utils`: `password`, `newPassword`, `oldPassword`, `authorization`, `secret`, `accessKey`, `accessToken`, `token`) are obfuscated, case-insensitively and at any depth, in the `WORK_*` event payloads, in `Work.input`, `Work.result` and `Work.error` and in the MCP work tools. The stored work and the work adapters process keep the plain values. A custom list replaces the defaults (spread `defaultObfuscatedFields` to add keys); `[]` obfuscates nothing. External workers and `WORK_*` subscribers that read a listed key get `******`; read the work with `modules.worker.findWork({ workId })` instead. The Admin UI's *Retry Work* form starts from the obfuscated input, so replace the listed values before you submit.
+- Work stores `expires`, 30 days after `created` or `scheduled`, whichever is later, and a TTL index on `expires` deletes it. Migration `20261104120100` sets `expires` on existing work and drops the old `created_-1` TTL index; it runs on the first start of an instance with the worker enabled. Code that inserts into `work_queue` directly must set `expires` (`computeWorkExpiry({ created, scheduled })` from `@unchainedshop/core-worker`).
+
 ## v4.8.x MCP: SDK v2, stateless `/mcp`
 
 The MCP integration migrated from the monolithic MCP TypeScript SDK v1 to the split v2 SDK. The optional peer dependency was **renamed**: `@modelcontextprotocol/sdk` is no longer supported.

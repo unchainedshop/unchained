@@ -1,6 +1,6 @@
 # Minimal Example
 
-Minimal headless e-commerce backend using ESM JavaScript. Requires Node.js 26+.
+Minimal headless e-commerce backend using ESM JavaScript. Requires Node.js 26.12.1+.
 
 Batteries included:
 - Fastify
