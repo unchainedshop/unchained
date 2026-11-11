@@ -291,11 +291,15 @@ test.describe('Auth for logged in users', () => {
     });
 
     const findVerificationToken = async (userId) => {
-      const event = await db.collection('events').findOne({
-        'payload.userId': userId,
-        'payload.action': 'verify-email',
-      });
-      return event.payload.token;
+      for (let attempt = 0; attempt < 100; attempt++) {
+        const event = await db.collection('events').findOne({
+          'payload.userId': userId,
+          'payload.action': 'verify-email',
+        });
+        if (event) return event.payload.token;
+        await new Promise((resolve) => setTimeout(resolve, 25));
+      }
+      throw new Error(`No verify-email event persisted for ${userId}`);
     };
 
     test('does not hand the session of another logged-in user to the token owner', async () => {
