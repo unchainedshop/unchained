@@ -44,7 +44,7 @@ my-plugin/
   "scripts": { "build": "tsup", "build:watch": "tsup --watch" },
   "devDependencies": {
     "@types/react": "^19.0.0",
-    "@unchainedshop/admin-ui": "^5.0.0-alpha.11",
+    "@unchainedshop/admin-ui": "^5.0.0-alpha.12",
     "esbuild": "^0.25.0",
     "react": "^19.0.0",
     "tsup": "^9.0.0"

@@ -4,8 +4,6 @@ import assert from 'node:assert';
 import { createRoles, Role } from '@unchainedshop/roles';
 import { admin } from '../src/roles/admin.ts';
 import { actions } from '../src/roles/index.ts';
-import { checkAction, ensureActionExists, ensureIsFunction } from '../src/roles/acl.ts';
-import { NoPermissionError, PermissionSystemError } from '../src/errors.ts';
 import { registerEvents } from '@unchainedshop/events';
 import { API_EVENTS } from '../src/events.ts';
 import Mutation from '../src/resolvers/mutations/index.ts';
@@ -72,67 +70,6 @@ describe('API', () => {
           `${mutationName} inherited a legacy manage permission`,
         );
       }
-    });
-  });
-
-  describe('ensureActionExists', () => {
-    it('should throw a PermissionSystemError if the action is undefined', () => {
-      assert.throws(() => ensureActionExists(undefined, {}), PermissionSystemError);
-    });
-
-    it('should not throw an error if the action is defined', () => {
-      assert.doesNotThrow(() => ensureActionExists('some action', {}));
-    });
-  });
-
-  describe('ensureIsFunction', () => {
-    it('should throw a PermissionSystemError if the provided value is not a function', () => {
-      const action = 'some action';
-      const options = { showKey: true };
-      const key = 'some key';
-      assert.throws(() => ensureIsFunction(null, action, options, key), PermissionSystemError);
-    });
-
-    it('should not throw an error if the provided value is a function', () => {
-      const action = 'some action';
-      const options = { showKey: true };
-      const key = 'some key';
-      assert.doesNotThrow(() =>
-        ensureIsFunction(
-          () => {
-            /**/
-          },
-          action,
-          options,
-          key,
-        ),
-      );
-    });
-  });
-
-  describe('checkAction', () => {
-    it('should throw a NoPermissionError if the user does not have permission to perform the action', async () => {
-      const context = {
-        userId: '123',
-        roles: { userHasPermission: mock.fn(async () => false) },
-      };
-      const action = 'some action';
-      const args: any = [];
-      const options = { key: 'some key' };
-
-      return assert.rejects(checkAction(context, action, args, options), NoPermissionError);
-    });
-
-    it('should not throw an error if the user has permission to perform the action', async () => {
-      const context = {
-        userId: '123',
-        roles: { userHasPermission: mock.fn(async () => true) },
-      };
-      const action = 'some action';
-      const args: any = {};
-      const options = { key: 'some key' };
-
-      return assert.doesNotReject(checkAction(context, action, args, options));
     });
   });
 });

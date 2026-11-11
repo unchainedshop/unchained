@@ -2,7 +2,7 @@
   "name": "@unchainedshop/example-ticketing",
   "description": "Event ticketing example for Unchained Engine",
   "private": true,
-  "version": "5.0.0-alpha.11",
+  "version": "5.0.0-alpha.12",
   "license": "EUPL-1.2",
   "type": "module",
   "homepage": "https://unchained.shop",
@@ -36,15 +36,15 @@
     "test:integration:run": "node --no-warnings --test --test-concurrency=1 tests/*.test.*"
   },
   "dependencies": {
-    "@unchainedshop/api": "^5.0.0-alpha.11",
-    "@unchainedshop/core": "^5.0.0-alpha.11",
-    "@unchainedshop/core-delivery": "^5.0.0-alpha.11",
-    "@unchainedshop/core-payment": "^5.0.0-alpha.11",
-    "@unchainedshop/core-products": "^5.0.0-alpha.11",
-    "@unchainedshop/core-warehousing": "^5.0.0-alpha.11",
-    "@unchainedshop/platform": "^5.0.0-alpha.11",
-    "@unchainedshop/plugins": "^5.0.0-alpha.11",
-    "@unchainedshop/ticketing": "^5.0.0-alpha.11",
+    "@unchainedshop/api": "^5.0.0-alpha.12",
+    "@unchainedshop/core": "^5.0.0-alpha.12",
+    "@unchainedshop/core-delivery": "^5.0.0-alpha.12",
+    "@unchainedshop/core-payment": "^5.0.0-alpha.12",
+    "@unchainedshop/core-products": "^5.0.0-alpha.12",
+    "@unchainedshop/core-warehousing": "^5.0.0-alpha.12",
+    "@unchainedshop/platform": "^5.0.0-alpha.12",
+    "@unchainedshop/plugins": "^5.0.0-alpha.12",
+    "@unchainedshop/ticketing": "^5.0.0-alpha.12",
     "fastify": "^5.4.0"
   },
   "devDependencies": {

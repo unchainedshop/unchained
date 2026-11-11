@@ -1376,8 +1376,7 @@ export type IMutation = {
   /**
    * Change billing address and order contact of an open order (cart). All of the parameters
    * except order ID are optional and the update will ocure for parameters provided.
-   * If the delivery provider or payment provider ID provided doesn’t already exist new order payment
-   * will be created with the provided ID.
+   * Delivery and payment providers must exist and be supported by the cart.
    */
   updateCart: IOrder;
   /** Update the cart by changing the delivery provider and using a pick up specific configuration */
@@ -3871,6 +3870,7 @@ export enum IRoleAction {
   ManageLanguages = 'manageLanguages',
   ManagePaymentCredentials = 'managePaymentCredentials',
   ManagePaymentProviders = 'managePaymentProviders',
+  ManagePrivilegedUsers = 'managePrivilegedUsers',
   ManageProductReviews = 'manageProductReviews',
   ManageProducts = 'manageProducts',
   ManageQuotations = 'manageQuotations',
@@ -3900,6 +3900,7 @@ export enum IRoleAction {
   UpdateProductReview = 'updateProductReview',
   UpdateToken = 'updateToken',
   UpdateUser = 'updateUser',
+  UpdateUserMeta = 'updateUserMeta',
   UpdateUsername = 'updateUsername',
   UploadTempFile = 'uploadTempFile',
   UploadUserAvatar = 'uploadUserAvatar',
