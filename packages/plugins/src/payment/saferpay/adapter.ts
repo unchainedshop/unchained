@@ -170,7 +170,7 @@ export const WorldlineSaferpay: IPaymentAdapter = {
           mongodb.ObjectId.createFromHexString(transactionId),
         );
 
-        if (!saferpayTransaction?.token) {
+        if (!saferpayTransaction?.token || saferpayTransaction.orderPaymentId !== orderPayment._id) {
           throw new Error('No initialized transaction Token');
         }
 

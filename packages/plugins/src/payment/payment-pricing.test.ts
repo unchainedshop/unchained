@@ -136,7 +136,10 @@ describe('payment plugin pricing contracts', () => {
           saferpayTransactions: {
             createTransaction: async () => transactionId,
             setToken,
-            findTransactionById: async () => ({ token: 'test-token' }),
+            findTransactionById: async () => ({
+              token: 'test-token',
+              orderPaymentId: context.orderPayment._id,
+            }),
           },
         },
       } as any);
