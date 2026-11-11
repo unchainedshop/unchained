@@ -14,7 +14,7 @@ This guide will help you prepare your development environment for working with U
 ### Required Software
 
 #### Node.js (v26 or newer)
-Unchained Engine requires Node.js 26 or newer. For development in the engine monorepo, use the version specified in `.nvmrc`.
+Unchained Engine requires Node.js 26.12.1 or newer. For development in the engine monorepo, use the version specified in `.nvmrc`.
 
 **Check your version:**
 ```bash

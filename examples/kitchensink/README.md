@@ -17,7 +17,7 @@ Full-featured example of the Unchained Engine using Fastify as the HTTP server. 
 
 ## Prerequisites
 
-- Node.js >=26
+- Node.js >=26.12.1
 - MongoDB (or starts a local MongoDB instance with data stored in `.db`)
 
 ## Quick Start

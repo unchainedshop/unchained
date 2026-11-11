@@ -11,7 +11,7 @@ This guide covers how to set up a development environment and contribute to Unch
 
 ## Prerequisites
 
-- **Node.js 26+** (see `.nvmrc`)
+- **Node.js 26.12.1+** (see `.nvmrc`)
 - **MongoDB** (or MongoDB Memory Server for testing)
 - **npm** (uses npm workspaces)
 

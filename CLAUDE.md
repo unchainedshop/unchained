@@ -225,5 +225,5 @@ The HTTP endpoints besides GraphQL (MCP, chat, plugin routes, back-channel logou
 - Use `.env` files for local configuration
 - Default values in `.env.defaults`
 - Integration tests load `.env.tests`, then optional `.env` overrides; already-set environment variables take precedence
-- Node.js 26+ required (see .nvmrc)
+- Node.js 26.12.1+ required (see .nvmrc)
 - MongoDB required (or use MongoDB Memory Server for testing)

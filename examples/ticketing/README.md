@@ -19,7 +19,7 @@ The example registers no renderers, so the tickets PDF and the wallet routes ans
 
 ## Prerequisites
 
-- Node.js >=26
+- Node.js >=26.12.1
 - MongoDB (or starts a local MongoDB instance with data stored in `.db`)
 
 ## Quick Start

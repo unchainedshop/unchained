@@ -17,7 +17,7 @@ The Admin UI is served at `/`, with the local Bookmark Manager extension registe
 
 ## Prerequisites
 
-- Node.js >=26
+- Node.js >=26.12.1
 - MongoDB (or starts a local MongoDB instance with data stored in `.db`)
 
 ## Quick Start
