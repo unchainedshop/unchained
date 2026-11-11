@@ -8,8 +8,10 @@ export default async function changePassword(
     oldPassword: string;
     newPassword: string;
   },
-  { modules, userId }: Context,
+  context: Context,
 ) {
+  const { modules, userId } = context;
+
   log('mutation changePassword', { userId });
 
   const user = await modules.users.findUserById(userId!);
@@ -19,12 +21,15 @@ export default async function changePassword(
     (await modules.users.verifyPassword(user!.services?.password, params.oldPassword));
   if (!isValidCurrentPassword) throw new InvalidCredentialsError({});
 
+  let updatedUser;
   try {
-    await modules.users.setPassword(user!._id, params.newPassword);
+    updatedUser = await modules.users.setPassword(user!._id, params.newPassword);
   } catch (e) {
     if (e.cause === 'PASSWORD_INVALID') throw new PasswordInvalidError({ userId });
     throw e;
   }
+
+  await context.login(updatedUser);
 
   return { success: true };
 }

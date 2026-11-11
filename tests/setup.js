@@ -200,6 +200,20 @@ export async function initializeTestPlatform() {
           role.allow(actions.manageProducts, () => true);
           role.allow(actions.viewProducts, () => true);
         },
+        support: (role, actions) => {
+          [
+            actions.manageUsers,
+            actions.updateUser,
+            actions.updateUsername,
+            actions.impersonate,
+            actions.uploadUserAvatar,
+            actions.viewUser,
+            actions.viewUsers,
+            actions.viewUserRoles,
+            actions.viewUserPrivateInfos,
+            actions.bulkSetUserRoles,
+          ].forEach((action) => role.allow(action, () => true));
+        },
       },
     },
     workQueueOptions: {

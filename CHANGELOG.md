@@ -13,6 +13,13 @@
 - **Payment adapters only accept a payment that belongs to the order** (`@unchainedshop/plugins`): Cryptopay settled a fiat order for an underpaid or unpriced crypto transfer, Datatrans and Saferpay accepted a transaction issued for another order payment (Datatrans transactions must carry the payment's `refno`), and Apple IAP trusted receipt info sent with the checkout. The Apple IAP webhook compares its shared secret in constant time and refuses non-string transaction ids.
 - **Push subscriptions need a string key** (`@unchainedshop/core-users`): a query operator as `keys.p256dh` decided whose subscriptions `unsubscribeFromOtherUsers` removed. It is refused with cause `PUSH_SUBSCRIPTION_INVALID`.
 
+- **Only privileged users change privileged users** (`@unchainedshop/api`): a role with `manageUsers` could give itself or anybody the admin role or take it away, and a role that may update users could set an admin's password, change their e-mail or username, remove, log out or impersonate them, also through the bulk user mutations. Doing so, or giving a user roles that make them privileged, now requires the new `managePrivilegedUsers` action (admin only by default). See `MIGRATION.md`.
+- **Breaking: `setPassword` refuses the caller's own account** (`@unchainedshop/api`): use `changePassword` or the password reset flow. A new password now ends the other sessions (`tokenVersion` is incremented) and `changePassword` hands the caller a fresh token.
+- **Breaking: writing `User.meta` needs the new `updateUserMeta` action** (`@unchainedshop/api`), which only the admin role has by default.
+- **Breaking: provider `configuration` needs the matching `manage*` action** (`@unchainedshop/api`): stored provider credentials were readable through `simulatedDispatches` and a cart's supported providers.
+- **`confirmMediaUpload` only accepts the caller's own upload tickets** (`@unchainedshop/api`), and the reset and verification token resolvers no longer log the raw token.
+- **Sensitive work fields are obfuscated by default** (`@unchainedshop/utils`, `@unchainedshop/core-worker`): the default list of `buildObfuscatedFieldsFilter` was unreachable and the filter modified the work it masked. See `MIGRATION.md`.
+
 ### Breaking
 
 - **One-time re-login for v5 alpha users:** tokens are now signed and checked with a default `tokenVersion` of `0` instead of `1`. Tokens issued by earlier alphas to users without a stored `tokenVersion` stop working once after the upgrade; those users log in again.
@@ -87,6 +94,10 @@
 - **Cart and media services:** `services.orders.selectDeliveryProvider` / `selectPaymentProvider` and `services.files.resolveMediaFiles` hold the logic of the cart provider mutations and the MCP media tools.
 
 ### Fixed
+- **Work expires 30 days after it is scheduled** (`@unchainedshop/core-worker`): work scheduled further ahead was deleted before it ran. Migration `20261104120100` adds `expires` to existing work.
+- **Confirming and rejecting an order run once** (`@unchainedshop/core`): concurrent `confirmOrder` / `rejectOrder` calls no longer send the delivery and mint the tokens twice, or reject an order that was just confirmed (#817).
+- **A guest login keeps the account's bookmarks** with `mergeUserCartsOnLogin: false` (`@unchainedshop/core`, #816).
+- MCP `WORKER_PROCESS_NEXT` returns the work it processed (`@unchainedshop/api`).
 - **Enrollment periods keep their wall-clock time across DST** (`@unchainedshop/core-enrollments`): `addToDate` runs on `Temporal` instead of a vendored date-fns build, which added years before weeks/days and kept the hour shifted when that intermediate date fell into a daylight-saving gap (e.g. 02:57 became 03:57); month-end clamping and exact hour arithmetic are unchanged.
 - **Datatrans credential validation works** (`@unchainedshop/plugins`): `validate()` hex-decoded `valid-<timestamp>`, which is not hex, so it sent an empty `refno` that Datatrans rejects and stored payment credentials never validated; it now sends `valid-<timestamp>` as is.
 - **MinIO link uploads keep the remote content type** (`@unchainedshop/plugins`): `uploadFileFromURL` read the response header as a property of `Headers`, so files without a known extension were stored without a type.
@@ -287,6 +298,24 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 - **web-push 4 is accepted** (`@unchainedshop/plugins`): the optional peer range now allows the ESM-only `web-push` 4.
 - **Fastify apps start with `@fastify/session` 11.1.6** (`@unchainedshop/api`): the session store now implements the conditional `compareAndSet` write that 11.1.6 (GHSA-2hw7-jxfh-4rm3) requires of custom stores; before, the Fastify adapter failed at startup with "the store must implement compareAndSet".
 - **Express temp uploads reject oversized multipart array indexes** (`@unchainedshop/api`): the upload parser limits `fieldArrayIndexLimit` to 100, and the `multer` peer requires 2.3 or later.
+
+## Security
+- **Breaking: PayPal orders are bound to the order payment they pay** (`@unchainedshop/plugins`): `charge()` accepted any completed PayPal order with the right amount and currency, so one PayPal payment could be replayed to pay any number of equal-priced orders. Storefronts now put the order payment id into `purchase_units[0].custom_id` when they create the PayPal order; other PayPal orders are refused before anything is captured. The SDK is loaded through its default export, so PayPal charges work again: `orders` was undefined in its ESM namespace and every charge failed. See `MIGRATION.md`.
+- **Only privileged users change privileged users** (`@unchainedshop/api`): a role with `manageUsers` could give itself or anybody the admin role or take it away, and a role that may update users could set an admin's password, change their e-mail or username, remove or impersonate them. Changing a user whose roles grant the new `managePrivilegedUsers` action (admin only by default), or giving a user such roles, now requires that action too. See `MIGRATION.md`.
+- **Breaking: `setPassword` refuses the caller's own account** (`@unchainedshop/api`): it sets a password without the old one, which a hijacked session could use to keep the account. Use `changePassword` or the password reset flow.
+- **Breaking: writing `User.meta` needs the new `updateUserMeta` action** (`@unchainedshop/api`): customers could write their own `meta` through `updateUserProfile`, which the documented B2B pricing pattern trusts. Only the admin role has the action by default.
+- **Breaking: `PaymentProvider.configuration`, `DeliveryProvider.configuration` and `WarehousingProvider.configuration` require the matching `manage*` action** (`@unchainedshop/api`): stored provider credentials were readable by anyone who could reach a provider through `Product.simulatedDispatches` or a cart's supported providers, which includes anonymous callers.
+- **`confirmMediaUpload` only accepts the caller's own upload tickets** (`@unchainedshop/api`): it took a file id from the client with no ownership check, so any logged-in user could rewrite the type and size of any file record.
+- **The MCP `order_management` TOP_CUSTOMERS action strips confidential service hashes** (`@unchainedshop/api`): it returned raw user documents including `services` — password hashes, plaintext reset tokens and the hashed access token — unlike every sibling normalizer.
+- **A new password ends the sessions established with the old one** (`@unchainedshop/core-users`, `@unchainedshop/api`): `changePassword`, `resetPassword` and an admin's `setPassword` left existing sessions valid. The caller's own session is re-established, so changing your own password no longer signs you out.
+- **The reset and verification token query resolvers no longer log the raw token** (`@unchainedshop/api`), and the express `/temp-upload` route authorizes before the multipart parser buffers the body, with multer size and part limits (`@unchainedshop/api`).
+- **Sensitive work fields are obfuscated by default** (`@unchainedshop/utils`, `@unchainedshop/core-worker`): `buildObfuscatedFieldsFilter` never applied its default list and modified the work it masked. Without `blacklistedVariables`, `password`, `token`, `secret`, `authorization` and the other `defaultObfuscatedFields` are now obfuscated case-insensitively in `WORK_*` events, `Work.input`/`result`/`error` and the MCP work tools; the stored work and the work adapters process keep the plain values. See `MIGRATION.md`.
+
+## Patch
+- **Work expires 30 days after it is scheduled** (`@unchainedshop/core-worker`): the work queue deleted work 30 days after `created`, so work scheduled further ahead was deleted before it ran. Migration `20261104120100` adds `expires` to existing work. See `MIGRATION.md`.
+- **Confirming and rejecting an order run once** (`@unchainedshop/core`): `confirmOrder` and `rejectOrder` read the order again under their lock, so concurrent calls no longer send the delivery and mint the tokens twice, or reject an order that was just confirmed (#817).
+- **A guest login keeps the account's bookmarks** (`@unchainedshop/core`): with `mergeUserCartsOnLogin: false`, logging in from a guest session without bookmarks deleted all bookmarks of the account (#816).
+- MCP `WORKER_PROCESS_NEXT` returns the work it processed instead of answering before it finished (`@unchainedshop/api`).
 
 # Unchained Engine v4.8
 

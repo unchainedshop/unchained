@@ -14,7 +14,13 @@ import {
   SortDirection,
   type SortOption,
 } from '@unchainedshop/utils';
-import { type Work, WorkQueueCollection, WorkStatus } from '../db/WorkQueueCollection.ts';
+import {
+  computeWorkExpiry,
+  type Work,
+  WorkQueueCollection,
+  WorkStatus,
+} from '../db/WorkQueueCollection.ts';
+import migrateWorkQueueExpiry from '../migrations/20261104120100-work-queue-expires.ts';
 
 const { UNCHAINED_WORKER_ID = os.hostname() } = process.env;
 
@@ -192,7 +198,13 @@ const normalizeWorkQueueAggregateResult = (data: mongodb.Document[] = []): Worke
   }) as unknown as WorkerReport[];
 };
 
-export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerSettingsOptions>) => {
+export const configureWorkerModule = async ({
+  db,
+  options,
+  migrationRepository,
+}: ModuleInput<WorkerSettingsOptions>) => {
+  migrateWorkQueueExpiry(migrationRepository);
+
   registerEvents(Object.values(WorkerEventTypes));
 
   const WorkQueue = await WorkQueueCollection(db);
@@ -430,6 +442,7 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
         input: input || {},
         priority,
         scheduled: scheduled || created,
+        expires: computeWorkExpiry({ created, scheduled }),
         originalWorkId,
         retries,
         worker,
@@ -469,6 +482,7 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
           $set: {
             updated: new Date(),
             scheduled,
+            expires: computeWorkExpiry({ created: currentWork.created, scheduled }),
           },
         },
         { returnDocument: 'after' },
@@ -553,6 +567,7 @@ export const configureWorkerModule = async ({ db, options }: ModuleInput<WorkerS
               scheduled,
               type,
               created,
+              expires: computeWorkExpiry({ created, scheduled }),
               autoscheduled: true,
               priority,
             },

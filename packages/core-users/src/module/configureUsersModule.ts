@@ -825,6 +825,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
               password || crypto.randomUUID().split('-').pop(),
             ),
           },
+          $inc: { tokenVersion: 1 },
         },
         { returnDocument: 'after' },
       );

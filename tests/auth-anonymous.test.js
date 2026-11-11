@@ -3,6 +3,7 @@ import {
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
   disconnect,
+  getServerBaseUrl,
 } from './helpers.js';
 import { User, ADMIN_TOKEN } from './seeds/users.js';
 import assert from 'node:assert';
@@ -116,6 +117,41 @@ test.describe('Auth for anonymous users', () => {
         },
       });
     });
+  });
+
+  test('ends other sessions when the password changes', async () => {
+    const baseUrl = getServerBaseUrl();
+    const post = async (query, cookie) => {
+      const response = await fetch(`${baseUrl}/graphql`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', ...(cookie ? { cookie } : {}) },
+        body: JSON.stringify({ query }),
+      });
+      const sessionCookie = response.headers
+        .getSetCookie()
+        .map((value) => value.split(';')[0])
+        .filter((value) => value.split('=')[1])
+        .pop();
+      return { sessionCookie, body: await response.json() };
+    };
+    const login = () =>
+      post('mutation { loginWithPassword(username: "admin", password: "password") { _id } }');
+
+    const stolen = (await login()).sessionCookie;
+    const owner = (await login()).sessionCookie;
+
+    const changed = await post(
+      'mutation { changePassword(oldPassword: "password", newPassword: "password") { success } }',
+      owner,
+    );
+    assert.strictEqual(changed.body.data.changePassword.success, true);
+
+    // The other session is gone, the caller keeps a working one.
+    const replayed = await post('{ me { _id } }', stolen);
+    assert.strictEqual(replayed.body.data.me, null);
+
+    const stillValid = await post('{ me { _id } }', changed.sessionCookie);
+    assert.strictEqual(stillValid.body.data.me._id, 'admin');
   });
 
   test.describe('Mutation.loginWithPassword', () => {

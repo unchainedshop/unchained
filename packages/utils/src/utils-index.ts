@@ -6,7 +6,10 @@ export { default as objectInvert } from './object-invert.ts';
 export { default as findUnusedSlug } from './find-unused-slug.ts';
 export { default as slugify } from './slugify.ts';
 export { default as generateRandomHash } from './generate-random-hash.ts';
-export { default as buildObfuscatedFieldsFilter } from './build-obfuscated-fields-filter.ts';
+export {
+  default as buildObfuscatedFieldsFilter,
+  defaultObfuscatedFields,
+} from './build-obfuscated-fields-filter.ts';
 export { default as sha256 } from './sha256.ts';
 export { default as sha1 } from './sha1.ts';
 export { timingSafeEqual, timingSafeStringEqual } from './timing-safe-equal.ts';
