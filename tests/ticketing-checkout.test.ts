@@ -10,11 +10,13 @@ import {
   getServerBaseUrl,
 } from './helpers.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
+import { SimplePaymentProvider } from './seeds/payments.js';
 import seedTicketing, {
   ConcertEventId,
   GATE_TOKEN,
   TheaterEventId,
   buyTickets,
+  waitForEvents,
 } from './seeds/ticketing.js';
 
 const ADD_TICKETS = /* GraphQL */ `
@@ -160,6 +162,59 @@ test.describe('Ticketing: checkout', () => {
     assert.ifError(freed.errors?.[0]);
   });
 
+  test('concurrent checkouts of the last seat sell it once', async () => {
+    const theater = await db.collection('products').findOne({ _id: TheaterEventId });
+    await db.collection('products').insertOne({
+      ...theater,
+      _id: 'ticket-event-last-seat',
+      tokenization: { ...theater.tokenization, supply: 1 },
+    });
+    const cartIds: string[] = [];
+    for (const orderNumber of ['last-seat-1', 'last-seat-2', 'last-seat-3']) {
+      const cartId = await createCart(orderNumber);
+      assert.ifError((await addTickets(cartId, 'ticket-event-last-seat', 1)).errors?.[0]);
+      const { errors } = await userFetch({
+        query: /* GraphQL */ `
+          mutation PrepareCheckout($orderId: ID, $paymentProviderId: ID) {
+            updateCart(
+              orderId: $orderId
+              paymentProviderId: $paymentProviderId
+              contact: { emailAddress: "buyer@unchained.local" }
+              billingAddress: { firstName: "Ada", lastName: "Lovelace", countryCode: "CH" }
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: { orderId: cartId, paymentProviderId: SimplePaymentProvider._id },
+      });
+      assert.ifError(errors?.[0]);
+      cartIds.push(cartId);
+    }
+
+    const results = await Promise.all(
+      cartIds.map((orderId) =>
+        userFetch({
+          query: /* GraphQL */ `
+            mutation Checkout($orderId: ID) {
+              checkoutCart(orderId: $orderId) {
+                status
+              }
+            }
+          `,
+          variables: { orderId },
+        }),
+      ),
+    );
+
+    assert.deepEqual(
+      results
+        .map(({ data, errors }) => data?.checkoutCart?.status ?? errors?.[0]?.extensions?.detailCode)
+        .toSorted(),
+      ['CONFIRMED', 'TicketSoldOutError', 'TicketSoldOutError'],
+    );
+  });
+
   test('a cancelled event is not sold', async () => {
     await db
       .collection('products')
@@ -216,6 +271,23 @@ test.describe('Ticketing: checkout', () => {
         .collection('products')
         .updateOne({ _id: TheaterEventId }, { $unset: { 'meta.saleRules': 1 } });
     }
+  });
+
+  test('checkout emits TOKENS_CREATED with the ids of the issued tickets', async () => {
+    const { order, tickets } = await buyTickets(userFetch, {
+      orderNumber: 'tickets-created-event',
+      positions: [{ productId: TheaterEventId, quantity: 2 }],
+    });
+    const [item] = order.items;
+
+    const events = await waitForEvents(db, {
+      type: 'TOKENS_CREATED',
+      'payload.orderPositionIds': item._id,
+    });
+    assert.equal(events.length, 1);
+    const { tokenIds, ...ids } = events[0].payload;
+    assert.deepEqual(tokenIds.toSorted(), tickets.map(({ _id }) => _id).toSorted());
+    assert.deepEqual(ids, { productIds: [TheaterEventId], orderPositionIds: [item._id] });
   });
 
   test.describe('Order.magicKey and Order.ticketsPdfUrl', () => {

@@ -22,6 +22,8 @@ export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
 
 export type Order = {
   _id: string;
+  // Set by modules.orders.anonymize, the date of the first anonymization
+  anonymized?: Date;
   billingAddress?: Address;
   calculation: any[];
   confirmed?: Date;

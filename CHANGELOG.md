@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Improvements
+- **`TOKENS_CREATED` event** (`@unchainedshop/core-warehousing`): `createTokens` emits `{ tokenIds, productIds, orderPositionIds }` once the tokens are stored, after `ORDER_CONFIRMED`.
+- **Order anonymization** (`@unchainedshop/core-orders`): `modules.orders.anonymize(orderId, { contextKeys?, clearContext? })` removes the contact, the billing address and context keys of an order in any status and emits `ORDER_ANONYMIZED` with `{ orderId }` only; `modules.orders.positions.anonymize` removes position configurations, and `updateContact(…, { eventPayload: 'ids' })` emits `ORDER_UPDATE` without the contact.
+
+### Fixed
+- **Concurrent checkouts no longer sell more than the supply of a tokenized product** (`@unchainedshop/core`): `validateOrderService` validates the positions under a lock on each tokenized product with a `tokenization.supply`, held until the order and its tokens are saved. A checkout that waits more than 2 seconds for it answers `OrderLockedError`.
+
+## v5.0.0-alpha.12 (2026-11-11)
+
 ### Security
 
 - **Breaking: Node.js 26.12.1 is the minimum** (`@unchainedshop/platform`): the engines floor moves to the patched release of Node 26.

@@ -86,6 +86,7 @@ When checkout is initiated, the order is validated:
 4. **Position Validation**: Each position is validated via `validateOrderPosition`:
    - By default, checks if the product is still active
    - Can be customized via platform settings
+   - Tokenized products with a `tokenization.supply` stay locked from their validation until the order and its tokens are saved, so concurrent checkouts of such a product are validated one after another
 5. **Quotation Check**: If position is a quotation proposal, the Quotation plugin verifies it's still valid
 
 :::warning No Recalculation
@@ -186,7 +187,7 @@ The system proceeds with delivery via the `DeliveryDirector`.
    - If returns `{ trackingNumber }`: Delivery initiated
 
 2. **Position Processing**: For each order position:
-   - **TokenizedProduct**: `WarehousingDirector.tokenize()` creates digital tokens/NFTs
+   - **TokenizedProduct**: `WarehousingDirector.tokenize()` creates digital tokens/NFTs. They are stored after `ORDER_CONFIRMED` has fired; `TOKENS_CREATED` signals when they exist
    - **PlanProduct**: `EnrollmentDirector.transformOrderItemToEnrollment()` creates subscriptions
    - **Quotation**: `QuotationDirector` marks linked quotations as fulfilled
 

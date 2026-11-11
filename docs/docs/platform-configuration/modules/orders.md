@@ -88,8 +88,9 @@ Access via `modules.orders` in the Unchained API context.
 | `delete` | `orderId` | Delete order |
 | `setCartOwner` | `{ orderId, userId }` | Change order owner |
 | `updateBillingAddress` | `orderId, billingAddress` | Update billing address |
-| `updateContact` | `orderId, contact` | Update contact info |
-| `updateContext` | `orderId, context` | Update order context/meta |
+| `updateContact` | `orderId, contact, { eventPayload? }?` | Update contact info; `eventPayload: 'ids'` keeps the contact out of `ORDER_UPDATE` ([Personal Data](#personal-data)) |
+| `updateContext` | `orderId, context` | Update order context/meta of a cart or pending order |
+| `anonymize` | `orderId, { contextKeys?, clearContext? }?` | Remove the personal data of an order in any status ([Personal Data](#personal-data)) |
 | `updateStatus` | `orderId, { status, info? }` | Update order status |
 | `setPaymentProvider` | `orderId, paymentProviderId` | Set payment method |
 | `setDeliveryProvider` | `orderId, deliveryProviderId` | Set delivery method |
@@ -107,6 +108,7 @@ Access via `modules.orders` in the Unchained API context.
 | `updateProductItem` | `{ orderPositionId, quantity, configuration }` | Update line item |
 | `delete` | `orderPositionId` | Remove line item |
 | `removePositions` | `{ orderId }` | Clear all positions |
+| `anonymize` | `orderId, { configurationKeys? }?` | Remove the configuration of the order's positions, or only the given parameters; returns the number of positions changed |
 
 **`modules.orders.payments`** — Order payments:
 
@@ -140,13 +142,37 @@ Access via `modules.orders` in the Unchained API context.
 | `statistics.aggregateByDateField` | `dateField, dateRange?, options?` | Aggregate stats by date |
 | `statistics.getTopCustomers` | `orderIds, options?` | Get top spending customers |
 
+### Personal Data
+
+`modules.orders.anonymize(orderId, options?)` removes the personal data of an order in any status, also of confirmed and fulfilled orders (`updateContext` only changes carts and pending orders):
+
+- It removes `contact` and `billingAddress`, and the `contextKeys` you pass (keys or dot paths of `order.context`; a dot path does not reach into arrays, pass the array's key). `clearContext: true` replaces the whole context with `{}` instead.
+- It stores the date of the first call in `order.anonymized` and emits `ORDER_ANONYMIZED` with `{ orderId }` only. It does not emit `ORDER_UPDATE`, so subscribers that keep copies of orders (a search index, for example) listen to `ORDER_ANONYMIZED` to drop the removed data.
+- Calling it again changes and emits nothing, unless something is left to remove (for example a contact set since). Status, status log, order number, owner, positions and prices are kept.
+
+`modules.orders.positions.anonymize(orderId, { configurationKeys? })` removes the configuration of all positions of the order, or only the parameters with the given keys. It emits nothing and returns the number of positions it changed.
+
+```typescript
+await modules.orders.anonymize(orderId, { contextKeys: ['attendees'] });
+await modules.orders.positions.anonymize(orderId, { configurationKeys: ['attendees'] });
+```
+
+Neither touches copies kept elsewhere: the delivery address in the context of the order delivery (`modules.orders.deliveries.updateContext`), provider data in the context of the order payment, the owner's `lastContact` and `lastBillingAddress` (`services.users.deleteUser` removes them) and events stored before, which expire after `EVENTS_TTL_SECONDS` (default 2 days). Which orders may be anonymized, for example because of bookkeeping duties for paid orders, is up to the caller.
+
+To change the contact of a placed order without storing it in an event, pass `{ eventPayload: 'ids' }` to `updateContact`. `ORDER_UPDATE` then carries `{ orderId, field: 'contact', keys }` (type `OrderUpdateKeysEventPayload`, `keys` are the contact keys whose value changed) instead of `{ order, field }`. Subscribers that read `payload.order` load the order by `payload.orderId` when it is missing.
+
+```typescript
+await modules.orders.updateContact(orderId, { emailAddress }, { eventPayload: 'ids' });
+```
+
 ## Events
 
 | Event | Payload | Description |
 |-------|---------|-------------|
 | `ORDER_CREATE` | `{ order }` | Emitted when an order is created |
-| `ORDER_UPDATE` | `{ order, field }` | Emitted when an order is updated |
+| `ORDER_UPDATE` | `{ order, field }`, or `{ orderId, field, keys }` after `updateContact(…, { eventPayload: 'ids' })` | Emitted when an order is updated |
 | `ORDER_REMOVE` | `{ orderId }` | Emitted when an order is removed |
+| `ORDER_ANONYMIZED` | `{ orderId }` | Emitted when `anonymize` removed personal data from an order |
 | `ORDER_CHECKOUT` | `{ order, oldStatus }` | Emitted when checkout is initiated |
 | `ORDER_CONFIRMED` | `{ order, oldStatus }` | Emitted when an order is confirmed |
 | `ORDER_FULFILLED` | `{ order, oldStatus }` | Emitted when an order is fulfilled |

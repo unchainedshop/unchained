@@ -45,7 +45,7 @@ For tokenized products (NFTs, digital assets):
 | `findTokens` | `selector, options?` | List tokens |
 | `tokensCount` | `selector?` | Count tokens |
 | `findTokensForUser` | `{ userId } \| { walletAddresses }, options?` | Get user's tokens |
-| `createTokens` | `tokens` | Batch create tokens |
+| `createTokens` | `tokens` | Batch create tokens, then emit `TOKENS_CREATED` |
 | `updateTokenOwnership` | `{ tokenId, userId } \| { tokenId, walletAddress }` | Transfer token ownership |
 | `invalidateToken` | `tokenId` | Revoke a token |
 | `buildAccessKeyFromToken` | `token` | Generate an access key for a token |
@@ -79,6 +79,24 @@ await modules.warehousing.updateTokenOwnership({
 | `WAREHOUSING_PROVIDER_CREATE` | `{ warehousingProvider }` | Emitted when a warehousing provider is created |
 | `WAREHOUSING_PROVIDER_UPDATE` | `{ warehousingProvider }` | Emitted when a warehousing provider is updated |
 | `WAREHOUSING_PROVIDER_REMOVE` | `{ warehousingProvider }` | Emitted when a warehousing provider is removed |
+| `TOKENS_CREATED` | `{ tokenIds, productIds, orderPositionIds }` | Emitted once per `createTokens` call after the tokens are stored |
+| `TOKEN_OWNERSHIP_CHANGED` | `{ token }` | Emitted when a token is transferred to another user or wallet |
+| `TOKEN_INVALIDATED` | `{ token }` | Emitted when a token is invalidated |
+
+`TOKENS_CREATED` carries ids only: `productIds` and `orderPositionIds` list each id once, and listeners load the tokens with `findTokens({ _id: { $in: tokenIds } })`. During checkout it fires after `ORDER_CONFIRMED`, because the order is confirmed before its tokenized positions are tokenized; listen to `TOKENS_CREATED` when you need the tokens of an order. The order processing calls `createTokens` once per tokenized order position and active `VIRTUAL` provider, so an order with several tokenized positions emits several `TOKENS_CREATED`.
+
+```typescript
+import { subscribe } from '@unchainedshop/events';
+import { startPlatform } from '@unchainedshop/platform';
+import type { TokensCreatedEventPayload } from '@unchainedshop/core-warehousing';
+
+const { unchainedAPI } = await startPlatform({ ... });
+
+subscribe<TokensCreatedEventPayload>('TOKENS_CREATED', async ({ payload: { tokenIds } }) => {
+  const tokens = await unchainedAPI.modules.warehousing.findTokens({ _id: { $in: tokenIds } });
+  // ...
+});
+```
 
 ## Related
 

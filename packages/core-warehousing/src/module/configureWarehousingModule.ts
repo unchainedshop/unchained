@@ -24,9 +24,17 @@ const WAREHOUSING_PROVIDER_EVENTS: string[] = [
   'WAREHOUSING_PROVIDER_CREATE',
   'WAREHOUSING_PROVIDER_UPDATE',
   'WAREHOUSING_PROVIDER_REMOVE',
+  'TOKENS_CREATED',
   'TOKEN_OWNERSHIP_CHANGED',
   'TOKEN_INVALIDATED',
 ];
+
+// TOKENS_CREATED payload: the ids of the stored tokens and their distinct product and order position ids
+export interface TokensCreatedEventPayload {
+  tokenIds: string[];
+  productIds: string[];
+  orderPositionIds: string[];
+}
 
 export interface WarehousingProviderQuery {
   warehousingProviderIds?: string[];
@@ -90,6 +98,12 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
 
     createTokens: async (tokens: TokenSurrogate[]): Promise<void> => {
       await TokenSurrogates.insertMany(tokens);
+      // Ids only: listeners load the tokens they need, no user data ends up in the event history
+      await emit('TOKENS_CREATED', {
+        tokenIds: tokens.map(({ _id }) => _id),
+        productIds: [...new Set(tokens.map(({ productId }) => productId))],
+        orderPositionIds: [...new Set(tokens.map(({ orderPositionId }) => orderPositionId))],
+      } satisfies TokensCreatedEventPayload);
     },
 
     findProvider: async (

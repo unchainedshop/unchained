@@ -233,6 +233,29 @@ export const configureOrderPositionsModule = ({
       return deletedCount;
     },
 
+    // Removes the configuration of the order's positions in any status, or only the parameters
+    // with the given keys. Emits nothing and returns the number of positions changed, so
+    // repeating it returns 0.
+    anonymize: async (
+      orderId: string,
+      { configurationKeys }: { configurationKeys?: string[] } = {},
+    ): Promise<number> => {
+      const updated = new Date();
+      const { modifiedCount } = configurationKeys
+        ? await OrderPositions.updateMany(
+            { orderId, 'configuration.key': { $in: configurationKeys } },
+            {
+              $pull: { configuration: { key: { $in: configurationKeys } } },
+              $set: { updated },
+            },
+          )
+        : await OrderPositions.updateMany(
+            { orderId, configuration: { $nin: [null, []] } },
+            { $set: { configuration: null, updated } },
+          );
+      return modifiedCount;
+    },
+
     aggregatePositions: async ({
       match,
       project,

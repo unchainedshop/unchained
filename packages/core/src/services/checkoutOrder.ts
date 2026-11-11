@@ -40,10 +40,11 @@ export async function checkoutOrderService(
     const order = await this.orders.findOrder({ orderId });
     if (!order || order.status !== null) return order;
 
-    await validateOrderService.bind(this)(order);
+    await using supplyLocks = await validateOrderService.bind(this)(order);
     quotations = await reserveOrderQuotationsForCheckout.call(this, order);
     discounts = await reserveOrderDiscountsForCheckout.call(this, order);
     const processedOrder = await processOrderService.bind(this)(order, transactionContext);
+    await supplyLocks[Symbol.asyncDispose]();
 
     // After checkout, store last checkout information on user
     if (processedOrder.billingAddress) {
