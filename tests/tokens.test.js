@@ -390,4 +390,69 @@ test.describe('Tokens', () => {
       assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
+
+  test.describe('A token exported to a wallet', () => {
+    // updateTokenOwnership($unset: { userId }) leaves no userId field at all, which an
+    // anonymous request matched when ownership was compared without a subject.
+    const exportedTokenId = 'token-exported-to-a-wallet';
+
+    test.before(async () => {
+      const [db] = await setupDatabase();
+      await db.collection('token_surrogates').insertOne({
+        ...TestToken1,
+        _id: exportedTokenId,
+        tokenSerialNumber: 'TOKEN-EXPORTED',
+        walletAddress: '0xrecipientwallet',
+        invalidatedDate: null,
+      });
+      await db
+        .collection('token_surrogates')
+        .updateOne({ _id: exportedTokenId }, { $unset: { userId: 1 } });
+    });
+
+    test('is not readable by an anonymous user', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          query Token($tokenId: ID!) {
+            token(tokenId: $tokenId) {
+              _id
+              accessKey
+            }
+          }
+        `,
+        variables: { tokenId: exportedTokenId },
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+    });
+
+    test('is not invalidateable by an anonymous user', async () => {
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: /* GraphQL */ `
+          mutation InvalidateToken($tokenId: ID!) {
+            invalidateToken(tokenId: $tokenId) {
+              _id
+            }
+          }
+        `,
+        variables: { tokenId: exportedTokenId },
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
+    });
+
+    test('is still readable by an admin', async () => {
+      const { data, errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query Token($tokenId: ID!) {
+            token(tokenId: $tokenId) {
+              _id
+              walletAddress
+            }
+          }
+        `,
+        variables: { tokenId: exportedTokenId },
+      });
+      assert.strictEqual(errors, undefined, JSON.stringify(errors));
+      assert.strictEqual(data.token._id, exportedTokenId);
+    });
+  });
 });
