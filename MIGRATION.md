@@ -4,6 +4,56 @@
 
 ---
 
+## v4.9.x Security fixes (4.9.2)
+
+### PayPal: bind the PayPal order to the order payment
+
+The PayPal plugin only accepts a PayPal order that carries the id of the order payment it pays. Set it when the storefront creates the PayPal order, for example with the PayPal JS SDK:
+
+```js
+createOrder: (data, actions) =>
+  actions.order.create({
+    purchase_units: [{ custom_id: cart.payment._id, amount: { currency_code: 'CHF', value: '100.00' } }],
+  }),
+```
+
+Then pass the PayPal order id as before: `checkoutCart(paymentContext: { orderID })`. PayPal orders without the binding are refused. The order payment stores the PayPal order id as `transactionId`.
+
+### Privileged users
+
+A user whose roles grant the new `managePrivilegedUsers` action is privileged: by default every admin. Changing a privileged user (`setRoles`, `setUserTags`, `setUsername`, `setPassword`, `addEmail`, `removeEmail`, `updateUserProfile`, `removeUser`, `removeUserProductReviews`, `prepareUserAvatarUpload`, `impersonate`) and giving a user roles that make them privileged now require `managePrivilegedUsers` in addition to the action of the mutation. Nothing changes for admins. A custom role that was given `manageUsers` or `updateUser` (support staff, for example) can no longer change admins; grant it `managePrivilegedUsers` only if it should.
+
+### Own passwords and user meta
+
+- `setPassword` refuses the caller's own account. Change your own password with `changePassword` (needs the old password) or the password reset flow. Setting someone else's password is unchanged.
+- Writing `meta` with `updateUserProfile` needs the new `updateUserMeta` action, which only admins have. To let customers edit their own meta, grant it in your roles, for example `role.allow(actions.updateUserMeta, (root, { userId } = {}, context) => !userId || userId === context.userId)` in a role added through `rolesOptions.additionalRoles`, or in your own logged-in role.
+
+### Provider configuration
+
+`PaymentProvider.configuration`, `DeliveryProvider.configuration` and `WarehousingProvider.configuration` need `managePaymentProviders`, `manageDeliveryProviders` and `manageWarehousingProviders`. Storefronts that read them as customers get `NoPermissionError`; read what you need from your own code instead.
+
+### Work queue: sensitive fields are obfuscated by default
+
+Without `options.worker.blacklistedVariables`, the keys of `defaultObfuscatedFields` (`@unchainedshop/utils`: `password`, `newPassword`, `oldPassword`, `authorization`, `secret`, `accessKey`, `accessToken`, `token`) are now obfuscated, case-insensitively and at any depth, in the `WORK_*` event payloads, in `Work.input`, `Work.result` and `Work.error` and in the MCP work tools. The stored work and the work adapters process keep the plain values.
+
+- A custom list still replaces the defaults; spread them to add keys: `blacklistedVariables: [...defaultObfuscatedFields, 'apiKey']`. `[]` obfuscates nothing.
+- A listed key that holds a plain object is filtered recursively instead of replaced.
+- External workers and `WORK_*` subscribers that read a listed key now get `******`; read the work with `modules.worker.findWork({ workId })` instead.
+- The Admin UI's *Retry Work* form starts from `Work.input` as GraphQL returns it, so it holds `******` for the listed keys. Replace them before you submit. The automatic retries of failed work are not affected.
+
+### Work queue: work expires 30 days after it is scheduled
+
+Work now stores `expires`, 30 days after `created` or `scheduled`, whichever is later, and a TTL index on `expires` deletes it. Migration `20261104120100` sets `expires` on the existing work and drops the old `created_-1` TTL index; it runs on the first start of an instance with the worker enabled. Code that inserts into `work_queue` directly must set `expires` (`computeWorkExpiry({ created, scheduled })` from `@unchainedshop/core-worker`). In a rolling deploy, an older instance that starts after the migration recreates `created_-1`; once every instance runs 4.9.2, run in `mongosh`:
+
+```js
+if (db.work_queue.getIndexes().some(({ name }) => name === 'created_-1')) db.work_queue.dropIndex('created_-1');
+db.work_queue.updateMany({ expires: { $exists: false } }, [
+  { $set: { expires: { $add: [{ $max: ['$created', '$scheduled'] }, 30 * 24 * 60 * 60 * 1000] } } },
+]);
+```
+
+---
+
 ## v4.8 → v4.9
 
 Node.js 24.22.1+ or 26.12.1+ is required.
