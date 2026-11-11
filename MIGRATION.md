@@ -8,6 +8,22 @@
 
 `@unchainedshop/api` requires `graphql-yoga` 6: `npm install graphql-yoga@^6`. Yoga options you pass to `startPlatform` change with it: `createGraphQLError` is gone (use `new GraphQLError`), envelop plugins come from `graphql-yoga` or `@envelop/core` 6, and if you set `logging` yourself, yoga's `Logger` throws on any `LOG_LEVEL` other than lowercase `trace`, `debug`, `info`, `warn` or `error` (Unchained's own logging is unaffected). GraphQL request bodies above 25 MB now get `413` unless you raise `maxRequestBodySize`.
 
+## Cross-site defaults tightened
+
+The GraphQL endpoint no longer sends `Access-Control-Allow-Credentials` to a reflected origin, `/graphql` answers `415` for `application/x-www-form-urlencoded`, `multipart/form-data` and `text/plain`, and `/bulk-import` and `/temp-upload` answer `403` when a browser sends `Sec-Fetch-Site: cross-site`. Server-to-server clients send no fetch metadata and keep working.
+
+A storefront on another origin that authenticates with the session cookie needs an explicit allow-list (prefer token authentication instead):
+
+```bash
+UNCHAINED_COOKIE_SAMESITE=none
+```
+
+```typescript
+await startPlatform({
+  cors: { origin: ['https://shop.example'], credentials: true },
+});
+```
+
 ## v4.8.x MCP: SDK v2, stateless `/mcp`
 
 The MCP integration migrated from the monolithic MCP TypeScript SDK v1 to the split v2 SDK. The optional peer dependency was **renamed**: `@modelcontextprotocol/sdk` is no longer supported.
