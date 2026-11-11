@@ -144,4 +144,55 @@ test.describe('Cart checkout concurrency', () => {
     const checkoutLogEntries = order.log.filter(({ status }) => status === 'CONFIRMED');
     assert.strictEqual(checkoutLogEntries.length, 1);
   });
+
+  const preparePendingOrder = async (orderNumber) => {
+    const cart = await prepareCart(orderNumber);
+    await db
+      .collection('orders')
+      .updateOne({ _id: cart.orderId }, { $set: { status: 'PENDING', ordered: new Date() } });
+    return cart;
+  };
+
+  const processPendingOrder = (mutation, orderId) =>
+    adminGraphqlFetch({
+      query: /* GraphQL */ `
+        mutation ${mutation}($orderId: ID!) {
+          ${mutation}(orderId: $orderId) {
+            _id
+            status
+          }
+        }
+      `,
+      variables: { orderId },
+    });
+
+  test('concurrent confirmations of a pending order tokenize once', async () => {
+    const { orderId, positionId } = await preparePendingOrder('confirm-race');
+
+    const results = await Promise.all([
+      processPendingOrder('confirmOrder', orderId),
+      processPendingOrder('confirmOrder', orderId),
+    ]);
+    results.forEach(({ errors }) => assert.strictEqual(errors, undefined, JSON.stringify(errors)));
+
+    const tokens = await db
+      .collection('token_surrogates')
+      .countDocuments({ orderPositionId: positionId });
+    assert.strictEqual(tokens, 1);
+  });
+
+  test('a confirmation racing a rejection leaves the order in one state', async () => {
+    const { orderId, positionId } = await preparePendingOrder('confirm-reject-race');
+
+    await Promise.all([
+      processPendingOrder('confirmOrder', orderId),
+      processPendingOrder('rejectOrder', orderId),
+    ]);
+
+    const order = await db.collection('orders').findOne({ _id: orderId });
+    const tokens = await db
+      .collection('token_surrogates')
+      .countDocuments({ orderPositionId: positionId });
+    assert.strictEqual(tokens, order.status === 'CONFIRMED' ? 1 : 0, order.status);
+  });
 });
