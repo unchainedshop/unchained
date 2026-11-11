@@ -33,6 +33,7 @@ import {
   type UserSettingsOptions,
 } from '../users-settings.ts';
 import { configureUsersWebAuthnModule } from './configureUsersWebAuthnModule.ts';
+import { configureUsersLoginCodeModule } from './configureUsersLoginCodeModule.ts';
 import * as pbkdf2 from './pbkdf2.ts';
 import { verifyWeb3Signature } from '../utils/web3-verification.ts';
 import convertUserLocale from '../migrations/20241218092300-convert-locale.ts';
@@ -137,6 +138,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
   registerEvents(USER_EVENTS);
   const Users = await UsersCollection(db);
   const webAuthn = await configureUsersWebAuthnModule(moduleInput);
+  const loginCode = await configureUsersLoginCodeModule(moduleInput);
 
   const assertAnotherActiveAdminExists = async (userId: string) => {
     const user = await Users.findOne({ _id: userId, deleted: null as any });
@@ -193,6 +195,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
   return {
     // Queries
     webAuthn,
+    loginCode,
     async count(query: UserQuery): Promise<number> {
       const userCount = await Users.countDocuments(buildFindSelector(query));
       return userCount;
@@ -534,7 +537,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
     },
 
     async removeEmail(userId: string, address: string): Promise<void> {
-      await this.updateUser(
+      const updatedUser = await this.updateUser(
         { _id: userId, 'emails.address': insensitiveTrimmedRegexOperator(address) },
         {
           $pull: {
@@ -542,6 +545,7 @@ export const configureUsersModule = async (moduleInput: ModuleInput<UserSettings
           },
         },
       );
+      if (updatedUser) await loginCode.voidChallenges({ userId });
     },
 
     // Web3 Address Management
