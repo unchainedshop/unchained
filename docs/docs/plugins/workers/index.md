@@ -26,6 +26,7 @@ These workers are registered by `registerBasePlugins()` (from `@unchainedshop/pl
 | [`shop.unchained.worker-plugin.gc-guests`](./worker-gc-guests.md) | `GC_GUESTS` | Delete inactive guest accounts and their open carts | When expiring abandoned guest sessions |
 | [`shop.unchained.worker-plugin.invalidate-carts`](./worker-invalidate-carts.md) | `INVALIDATE_CARTS` | Recalculate recently updated open carts | When refreshing cart pricing after tax or catalog changes |
 | [`shop.unchained.worker.error-notifications`](./worker-error-notifications.md) | `ERROR_NOTIFICATIONS` | Daily error reports | When you want daily summaries of worker failures |
+| [`shop.unchained.worker-plugin.login-code`](./worker-login-code.md) | `LOGIN_CODE` | Mails login links with a one-time code | When the users module enables `loginCode` |
 
 ## SMS Workers
 

@@ -5,6 +5,8 @@
 ### Improvements
 - **`TOKENS_CREATED` event** (`@unchainedshop/core-warehousing`): `createTokens` emits `{ tokenIds, productIds, orderPositionIds }` once the tokens are stored, after `ORDER_CONFIRMED`.
 - **Order anonymization** (`@unchainedshop/core-orders`): `modules.orders.anonymize(orderId, { contextKeys?, clearContext? })` removes the contact, the billing address and context keys of an order in any status and emits `ORDER_ANONYMIZED` with `{ orderId }` only; `modules.orders.positions.anonymize` removes position configurations, and `updateContact(…, { eventPayload: 'ids' })` emits `ORDER_UPDATE` without the contact.
+- **Session length per login** (`@unchainedshop/api`): `context.login(user, { expiresIn })` signs the JWT and sets the cookie for `expiresIn` seconds (`signAccessToken` takes the same option), so a custom login can last longer or shorter than `UNCHAINED_TOKEN_EXPIRY_SECONDS`, which the built-in login mutations keep using.
+- **Passwordless login with a link and a code** (`@unchainedshop/core-users`, `@unchainedshop/core`, `@unchainedshop/api`, `@unchainedshop/plugins`, `@unchainedshop/platform`): opt-in with the users option `loginCode`. `requestLoginCode(email)` queues a `LOGIN_CODE` work that mails a link and a numeric code (`ACCOUNT_ACTION` `login-code`), and `loginWithLoginCode(email, code | token)` logs in once. Challenges are HMAC-hashed, expire, count attempts and are throttled per address. See Login Codes in the docs.
 
 ### Fixed
 - **Concurrent checkouts no longer sell more than the supply of a tokenized product** (`@unchainedshop/core`): `validateOrderService` validates the positions under a lock on each tokenized product with a `tokenization.supply`, held until the order and its tokens are saved. A checkout that waits more than 2 seconds for it answers `OrderLockedError`.
@@ -73,7 +75,6 @@
 - **Order locks are held until released:** `modules.orders.acquireLock` renews its lease while held, so its `ttl` (default 5 s, now also for checkout, quotations and vouchers) only bounds how long a crashed holder blocks others; release every lock you acquire. Waiters retry with jitter for up to 2 s instead of 10 × 200 ms. The unused `lockOrderDuringCheckout` orders setting is removed.
 
 ### Improvements
-- **Session length per login** (`@unchainedshop/api`): `context.login(user, { expiresIn })` signs the JWT and sets the cookie for `expiresIn` seconds (`signAccessToken` takes the same option), so a custom login can last longer or shorter than `UNCHAINED_TOKEN_EXPIRY_SECONDS`, which the built-in login mutations keep using.
 - **Legacy bcrypt password hashes are replaced on login** (`@unchainedshop/core-users`, `@unchainedshop/api`): a successful `loginWithPassword` against a bcrypt hash stores a PBKDF2 hash instead and removes the bcrypt one, keeping pending reset tokens and `initialPassword`, without a `USER_UPDATE_PASSWORD` event. This prepares dropping `bcryptjs` in a later major; users who never log in until then will need a password reset.
 - **Push notifications without `web-push`** (`@unchainedshop/plugins`): the push notification worker encrypts (RFC 8291) and signs (VAPID) with the Web Crypto API and sends with `fetch`, so the optional `web-push` peer is gone; existing VAPID keys and subscriptions keep working. `@unchainedshop/api` no longer depends on `mime`.
 

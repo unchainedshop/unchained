@@ -118,7 +118,7 @@ MessagingDirector.registerTemplate('ORDER_CONFIRMATION', async (payload, context
 
 The platform registers these templates during `startPlatform` (re-register the same name afterwards to override):
 
-- `ACCOUNT_ACTION` - Email verification, password reset
+- `ACCOUNT_ACTION` - Email verification, password reset, login codes
 - `DELIVERY` - Delivery notifications
 - `ORDER_CONFIRMATION` - Order confirmed
 - `ORDER_REJECTION` - Order rejected

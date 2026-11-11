@@ -14,6 +14,7 @@ Unchained Engine uses stateless JWT sessions. On login, the engine signs an HS25
 | Guest | Anonymous cart & checkout | `loginAsGuest` |
 | Email/Password | Traditional registration | `createUser`, `loginWithPassword` |
 | WebAuthn | Passkeys, biometrics, security keys | `loginWithWebAuthn` |
+| Login Code | Passwordless login by mail, opt-in ([Login Codes](./login-codes.md)) | `requestLoginCode`, `loginWithLoginCode` |
 | OIDC | External identity providers | `authConfig.oidcProviders` + bearer token |
 | Access Token | Machine-to-machine | `modules.users.createAccessToken` |
 

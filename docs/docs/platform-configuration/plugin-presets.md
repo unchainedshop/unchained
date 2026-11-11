@@ -46,7 +46,7 @@ Essential plugins for a minimal e-commerce setup:
 - **Quotations**: Manual
 - **Enrollments**: Licensed
 - **Events**: Node.js Event Emitter
-- **Workers**: Bulk Import, Bulk Export, Zombie Killer, GC Guests, Invalidate Carts, Message, External, HTTP Request, Heartbeat, Email, Error Notifications
+- **Workers**: Bulk Import, Bulk Export, Zombie Killer, GC Guests, Invalidate Carts, Message, External, HTTP Request, Heartbeat, Email, Error Notifications, Login Code
 
 ### Crypto Preset
 
