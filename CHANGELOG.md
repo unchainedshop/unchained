@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Security
+
+- **Breaking: Node.js 26.12.1 is the minimum** (`@unchainedshop/platform`): the engines floor moves to the patched release of Node 26.
+- **The Payrexx webhook acts only on Payrexx order payments** (`@unchainedshop/plugins`): it checked out whatever order payment `transaction.referenceId` named, without authentication, including one of another payment provider, and a non-string `referenceId` reached the id filter as a MongoDB operator. Such requests now get `400`.
+- **Signed GridFS upload URLs expire and cannot be replayed, and uploads are no longer served inline** (`@unchainedshop/plugins`): a used or expired `putURL` stayed a write capability on its file. Downloads carry `nosniff` and a sandbox CSP, and only known-safe image, audio and video types are served inline.
+- **Token ownership requires a subject** (`@unchainedshop/api`): exporting a token to a wallet removes its `userId`, so anonymous callers could read and invalidate every exported token.
+- **`verifyEmail` no longer hands a foreign session to the token owner** (`@unchainedshop/api`): a signed-in user who opened someone else's verification link had their cart moved to that account and was logged in as it. Guest sessions keep being migrated.
+- **Breaking: tighter cross-site defaults** (`@unchainedshop/api`, `@unchainedshop/plugins`): `/graphql` no longer sends `Access-Control-Allow-Credentials` to a reflected origin and answers `415` for form-urlencoded, multipart and `text/plain` bodies, and `/bulk-import` and `/temp-upload` refuse `Sec-Fetch-Site: cross-site` with `403`. Pass `cors` to `startPlatform` to allow a storefront origin. See `MIGRATION.md`.
+- **Payment adapters only accept a payment that belongs to the order** (`@unchainedshop/plugins`): Cryptopay settled a fiat order for an underpaid or unpriced crypto transfer, Datatrans and Saferpay accepted a transaction issued for another order payment (Datatrans transactions must carry the payment's `refno`), and Apple IAP trusted receipt info sent with the checkout. The Apple IAP webhook compares its shared secret in constant time and refuses non-string transaction ids.
+- **Push subscriptions need a string key** (`@unchainedshop/core-users`): a query operator as `keys.p256dh` decided whose subscriptions `unsubscribeFromOtherUsers` removed. It is refused with cause `PUSH_SUBSCRIPTION_INVALID`.
+
 ### Breaking
 
 - **One-time re-login for v5 alpha users:** tokens are now signed and checked with a default `tokenVersion` of `0` instead of `1`. Tokens issued by earlier alphas to users without a stored `tokenVersion` stop working once after the upgrade; those users log in again.
@@ -266,6 +277,17 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 
 ---
 
+# Unchained Engine v4.9
+
+## Minor
+- **Breaking: graphql-yoga 6** (`@unchainedshop/api`): the `graphql-yoga` peer is now `^6.0.1`, and the graphql-js engine swap is gone because yoga's own executor applies argument defaults again. See `MIGRATION.md`.
+- **Breaking (Stripe plugin): `stripe` 23 and API version `2026-10-28.endive`** (`@unchainedshop/plugins`): intents use `allowed_payment_method_types`, and a `payment_method_types` transaction context is sent as `allowed_payment_method_types`, which the API version would otherwise reject. See `MIGRATION.md`.
+- **Node.js 24.22.1+ or 26.12.1+ required** (`@unchainedshop/platform`): the engines range moves to the patched release of each supported line.
+- All dependencies upgraded to the latest release of their current major.
+- **web-push 4 is accepted** (`@unchainedshop/plugins`): the optional peer range now allows the ESM-only `web-push` 4.
+- **Fastify apps start with `@fastify/session` 11.1.6** (`@unchainedshop/api`): the session store now implements the conditional `compareAndSet` write that 11.1.6 (GHSA-2hw7-jxfh-4rm3) requires of custom stores; before, the Fastify adapter failed at startup with "the store must implement compareAndSet".
+- **Express temp uploads reject oversized multipart array indexes** (`@unchainedshop/api`): the upload parser limits `fieldArrayIndexLimit` to 100, and the `multer` peer requires 2.3 or later.
+
 # Unchained Engine v4.8
 
 ## Minor
@@ -289,6 +311,22 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 - `services.warehousing.isTokenInvalidateable({ token, product? })` now accepts an optional `product` to skip the redundant lookup in hot paths.
 - `Web3Address.nonce` GraphQL scalar changed from `Int` to `String` to match the actual hex/base64 nonce values used in SIWE-style flows.
 - ESLint upgraded to v10 across the workspace; Stripe SDK updated alongside.
+
+## Security
+- **Breaking: the session cookie now defaults to `SameSite=Lax` instead of `None`, and the GraphQL endpoint no longer answers cross-origin requests with `Access-Control-Allow-Credentials`** (`@unchainedshop/api`): the previous defaults let any website read and mutate the API as the logged-in user. Set `UNCHAINED_COOKIE_SAMESITE=none` and pass your own `cors` option to `startPlatform` to restore the old behaviour for a storefront on another origin. See `MIGRATION.md`.
+- **Breaking: `/graphql` rejects `application/x-www-form-urlencoded`, `multipart/form-data` and `text/plain` with 415, and `/bulk-import` and `/temp-upload` reject browser requests carrying `Sec-Fetch-Site: cross-site` with 403** (`@unchainedshop/api`): these are the request shapes a cross-site HTML form can send without a preflight. Server-to-server clients send no fetch metadata and are unaffected.
+- **The Payrexx webhook verifies which order payment it may act on** (`@unchainedshop/plugins`): it checked out whatever `transaction.referenceId` named, so an unauthenticated POST could confirm an arbitrary order — including one whose payment provider is not Payrexx and whose adapter allows pay-later — and a non-string `referenceId` reached the id filter as a MongoDB operator.
+- **The Apple IAP webhook fails closed without a shared secret** (`@unchainedshop/plugins`): with `APPLE_IAP_SHARED_SECRET` unset, `password !== APPLE_IAP_SHARED_SECRET` compared `undefined` with `undefined` and let anonymous callers reach order checkout and enrollment termination. The secret is now required and compared in constant time.
+- **Signed GridFS upload URLs expire and cannot be replayed** (`@unchainedshop/plugins`): the PUT branch never compared the signed expiry against the clock, and its "already linked" guard tested `expires === null` while `linkFile` unsets the field, so a used upload URL stayed a permanent write capability on that file.
+- **Uploaded files are no longer served inline on the engine origin** (`@unchainedshop/plugins`): downloads echoed the uploader's `Content-Type` with no disposition, so an HTML or SVG upload executed as script next to the GraphQL endpoint and the session cookie. Responses now carry `nosniff` and a sandbox CSP, and only known-safe image, audio and video types are served inline.
+- **Token ownership requires a subject** (`@unchainedshop/api`): exporting a token to a wallet removes its `userId`, so `token.userId === userId` compared `undefined` with `undefined` and granted anonymous callers `viewToken` and `updateToken` on every exported token — reading it and its `accessKey`, and invalidating it.
+- **`verifyEmail` no longer hands a foreign session to the token owner** (`@unchainedshop/api`): it migrated the caller's cart and bookmarks into the account the token belongs to and logged that browser in as the token owner, so luring a signed-in customer onto a verification link moved their cart, billing address and contact to the attacker. Guest sessions keep being migrated.
+- **Checkout takes its lock before reading the order** (`@unchainedshop/core`): concurrent `checkoutCart` calls for one cart all passed the status check before any held the lock and then each processed the same order from a stale snapshot, so one charge produced several enrollments and several tokens sharing one serial number.
+- **Cart mutations and checkout now exclude each other** (`@unchainedshop/api`, `@unchainedshop/core`, `@unchainedshop/core-orders`): cart mutations and the login cart merge now take the checkout lock and answer `OrderLockedError` while it is held, so a position added during the payment call is no longer confirmed on an order whose charged total predates it.
+- **Breaking: the deprecated `setOrderPaymentProvider`, `setOrderDeliveryProvider`, `updateOrderDeliveryShipping`, `updateOrderDeliveryPickUp`, `updateOrderPaymentGeneric` and `updateOrderPaymentInvoice` mutations are removed** (`@unchainedshop/api`): they were an unlocked route into a cart being charged; use `updateCart`, `updateCartDelivery*` and `updateCartPayment*`.
+- **The login cart merge awaits its own writes** (`@unchainedshop/core`): merged positions could land in the target cart after its recalculation had already run.
+- **Payment adapters only accept a payment that belongs to the order** (`@unchainedshop/plugins`): Cryptopay settled a fiat order for an underpaid or unpriced crypto transfer, Datatrans and Saferpay accepted a transaction issued for another order payment (Datatrans transactions must now carry the `refno` from `signPaymentProviderForCheckout`), and Apple IAP trusted receipt info sent with the checkout.
+- **The Fastify adapter rotates the session id on login and logout** (`@unchainedshop/api`): it assigned the user to whichever session the request already carried, so a session planted before the login kept working afterwards. Express rotated already, through passport.
 
 ## Patch
 - **Validation errors are reported once** (`@unchainedshop/api`): the graphql-js engine swap also handed graphql's validation rules to `useEngine`, which appends them to the rules yoga already registers, so every operation was validated twice and every validation error came back twice.
