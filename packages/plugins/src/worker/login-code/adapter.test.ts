@@ -47,6 +47,14 @@ describe('LoginCodeWorker', () => {
   it('sends to an unverified address only when the account has no login of its own', async () => {
     const cases: [Record<string, any>, boolean][] = [
       [{ services: { password: { pbkdf2: 'hash' } }, emails: [{ address: 'user@example.com' }] }, false],
+      [{ services: { password: { bcrypt: 'hash' } }, emails: [{ address: 'user@example.com' }] }, false],
+      [
+        {
+          services: { password: { reset: [{ token: 'hash', address: 'user@example.com' }] } },
+          emails: [{ address: 'user@example.com' }],
+        },
+        true,
+      ],
       [
         { services: { webAuthn: [{ id: 'passkey' }] }, emails: [{ address: 'user@example.com' }] },
         false,

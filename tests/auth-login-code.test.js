@@ -286,4 +286,25 @@ test.describe('Login with a code sent by mail', () => {
     );
     assert.strictEqual((await waitForLoginCodeMessages(email, 2)).length, 2);
   });
+
+  test('still mails a code after someone requested a password reset for the address', async (t) => {
+    enableLoginCode(t);
+    const email = await insertUser('code-after-reset');
+
+    const { data } = await anonymousGraphqlFetch({
+      query: /* GraphQL */ `
+        mutation ForgotPassword($email: String!) {
+          forgotPassword(email: $email) {
+            success
+          }
+        }
+      `,
+      variables: { email },
+    });
+    assert.strictEqual(data.forgotPassword.success, true);
+
+    const { code } = await requestMailedCode(email);
+    const login = await loginWithLoginCode({ email, code });
+    assert.strictEqual(login.data.loginWithLoginCode.user._id, 'code-after-reset');
+  });
 });

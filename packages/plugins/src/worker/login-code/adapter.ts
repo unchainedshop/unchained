@@ -2,7 +2,11 @@ import { type IWorkerAdapter, WorkerAdapter } from '@unchainedshop/core';
 import type { User } from '@unchainedshop/core-users';
 
 const hasLoginOfItsOwn = (user: User) =>
-  Boolean(user.services?.password || user.services?.webAuthn?.length);
+  Boolean(
+    user.services?.password?.pbkdf2 ||
+    user.services?.password?.bcrypt ||
+    user.services?.webAuthn?.length,
+  );
 
 const hasVerifiedAddress = (user: User, email: string) =>
   Boolean(
