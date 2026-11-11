@@ -23,8 +23,11 @@ export interface UserSettingsOptions {
   validateUsername?: (username: string) => Promise<boolean>;
   validateNewUser?: (user: UserRegistrationData) => Promise<UserRegistrationData>;
   validatePassword?: (password: string) => Promise<boolean>;
+  loginCode?: Partial<UserLoginCodeSettings>;
 }
 ```
+
+`loginCode` enables the passwordless [login with a link and a code](../../concepts/login-codes.md), disabled by default.
 
 ### User Cart Merging
 
@@ -95,7 +98,7 @@ Security Advice: If you use a 3rd party identity provider for example Zitadel, M
 | `USER_CREATE` | `{ user }` | Emitted when a user is created |
 | `USER_UPDATE` | `{ user }` | Emitted when a user is updated |
 | `USER_REMOVE` | `{ user }` | Emitted when a user is removed |
-| `USER_ACCOUNT_ACTION` | `{ action, userId, ... }` | Emitted for account actions (verify email, reset password) |
+| `USER_ACCOUNT_ACTION` | `{ action, userId, ... }` | Emitted for account actions (verify email, reset password, login code) |
 | `USER_ADD_ROLES` | `{ user }` | Emitted when roles are added to a user |
 | `USER_UPDATE_USERNAME` | `{ user }` | Emitted when username is updated |
 | `USER_UPDATE_PASSWORD` | `{ user }` | Emitted when password is updated |

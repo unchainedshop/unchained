@@ -71,6 +71,27 @@ describe('signAccessToken', () => {
     const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
     assert.strictEqual(payload.imp, impersonatorId, 'imp claim should match impersonator ID');
   });
+
+  it('keeps UNCHAINED_TOKEN_EXPIRY_SECONDS without expiresIn', async () => {
+    const { token, expires } = await signAccessToken('user-123', 1, {});
+    const { iat, exp } = jose.decodeJwt(token);
+    assert.strictEqual(exp! - iat!, Number(process.env.UNCHAINED_TOKEN_EXPIRY_SECONDS || 3600));
+    assert.strictEqual(expires.getTime(), exp! * 1000);
+  });
+
+  it('signs a token for the session length of expiresIn', async () => {
+    const { token, expires } = await signAccessToken('user-123', 1, { expiresIn: 43200 });
+    const { iat, exp } = jose.decodeJwt(token);
+    assert.strictEqual(exp! - iat!, 43200);
+    assert.strictEqual(expires.getTime(), exp! * 1000);
+    assert.ok(await verifyLocalToken(token));
+  });
+
+  it('refuses an expiresIn that is not a positive number of seconds', async () => {
+    for (const expiresIn of [0, -60, 0.5, Number.NaN, Number.POSITIVE_INFINITY]) {
+      await assert.rejects(signAccessToken('user-123', 1, { expiresIn }), /expiresIn/);
+    }
+  });
 });
 
 describe('verifyLocalToken', () => {

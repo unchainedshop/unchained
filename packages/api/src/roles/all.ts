@@ -182,6 +182,8 @@ export const all = (role, actions) => {
   role.allow(actions.createUser, () => true);
   role.allow(actions.forgotPassword, () => true);
   role.allow(actions.resetPassword, () => true);
+  role.allow(actions.requestLoginCode, () => true);
+  role.allow(actions.loginWithLoginCode, () => true);
   role.allow(actions.changePassword, () => false);
   role.allow(actions.heartbeat, () => true);
 };

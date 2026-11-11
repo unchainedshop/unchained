@@ -12,6 +12,8 @@ export type LoginFn = (
   user: User,
   options?: {
     impersonator?: User;
+    /** Session length in seconds, defaults to UNCHAINED_TOKEN_EXPIRY_SECONDS */
+    expiresIn?: number;
   },
 ) => Promise<{ _id: string; tokenExpires: Date }>;
 

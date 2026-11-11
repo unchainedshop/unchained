@@ -32,7 +32,7 @@ Unchained registers 7 default message templates:
 
 | Template | Trigger | Description |
 |----------|---------|-------------|
-| `ACCOUNT_ACTION` | User registration, password reset, email verification | Account lifecycle emails with action URLs |
+| `ACCOUNT_ACTION` | User registration, password reset, email verification, login codes | Account lifecycle emails with action URLs |
 | `ORDER_CONFIRMATION` | `ORDER_CHECKOUT`, `ORDER_CONFIRMED` events | Order confirmation sent to the customer |
 | `ORDER_REJECTION` | `ORDER_REJECTED` event | Order rejection notification |
 | `DELIVERY` | `send-message` delivery provider sends | Forwards order details to internal recipients (warehouse, support) |
@@ -49,8 +49,9 @@ Handles all user account lifecycle emails:
 | `enroll-account` | New user enrollment | Welcome email with setup link |
 | `reset-password` | Password reset request | Reset link with token |
 | `verify-email` | Email verification | Verification link |
+| `login-code` | [Login code](../concepts/login-codes.md) request | Login link and one-time code with its expiry |
 
-Input: `{ userId, action, recipientEmail, token }`
+Input: `{ userId, action, recipientEmail, token }`, for `login-code` also `{ code, expiresInMinutes }`
 
 ### ORDER_CONFIRMATION
 
@@ -165,11 +166,11 @@ The built-in resolvers read their branding and link targets from the environment
 |----------|----------|---------|
 | `EMAIL_FROM` | Sender address of all built-in mails | `noreply@unchained.local` |
 | `EMAIL_WEBSITE_NAME` | Shop name in subjects, sender display name and copy | — |
-| `EMAIL_WEBSITE_URL` | Base URL for account action links (`/enroll-account?token=…`, `/reset-password?token=…`, `/verify-email?token=…`) and the website link in order mails | — |
+| `EMAIL_WEBSITE_URL` | Base URL for account action links (`/enroll-account?token=…`, `/reset-password?token=…`, `/verify-email?token=…`, `/login-code?token=…`) and the website link in order mails | — |
 | `EMAIL_ERROR_REPORT_RECIPIENT` | Recipient of `ERROR_REPORT` mails | `support@unchained.local` |
 | `MAIL_URL` | SMTP server used by the email worker | — |
 
-The account action links assume your storefront serves those three paths and completes the flow with the `token` query parameter. If your routes differ, override `ACCOUNT_ACTION` (level 2).
+The account action links assume your storefront serves those paths and completes the flow with the `token` query parameter. If your routes differ, override `ACCOUNT_ACTION` (level 2).
 
 ### Level 2: Overriding a Built-in Template
 

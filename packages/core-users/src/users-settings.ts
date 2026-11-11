@@ -12,9 +12,21 @@ export const UserAccountAction = {
   ENROLL_ACCOUNT: 'enroll-account',
   PASSWORD_RESETTED: 'password-resetted',
   EMAIL_VERIFIED: 'email-verified',
+  LOGIN_CODE: 'login-code',
 } as const;
 
 export type UserAccountAction = (typeof UserAccountAction)[keyof typeof UserAccountAction];
+
+export interface UserLoginCodeSettings {
+  enabled: boolean;
+  expiresInMinutes: number;
+  maxAttempts: number;
+  codeLength: number;
+  maxChallengesPerWindow: number;
+  challengeWindowMinutes: number;
+  sessionExpiresInSeconds?: number;
+}
+
 export interface UserSettings {
   mergeUserCartsOnLogin: boolean;
   autoMessagingAfterUserCreation: boolean;
@@ -26,10 +38,13 @@ export interface UserSettings {
   validateUsername: (username: string) => Promise<boolean>;
   validateNewUser: (user: UserRegistrationData) => Promise<UserRegistrationData>;
   validatePassword: (password: string) => Promise<boolean>;
+  loginCode: UserLoginCodeSettings;
   configureSettings: (options: UserSettingsOptions, db: mongodb.Db) => void;
 }
 
-export type UserSettingsOptions = Omit<Partial<UserSettings>, 'configureSettings'>;
+export type UserSettingsOptions = Omit<Partial<UserSettings>, 'configureSettings' | 'loginCode'> & {
+  loginCode?: Partial<UserLoginCodeSettings>;
+};
 
 const defaultAutoMessagingAfterUserCreation = true;
 const defaultMergeUserCartsOnLogin = true;
@@ -55,6 +70,15 @@ const defaultValidatePassword = async (password: string) => {
   return password?.length >= 8;
 };
 
+const defaultLoginCode: UserLoginCodeSettings = {
+  enabled: false,
+  expiresInMinutes: 15,
+  maxAttempts: 5,
+  codeLength: 6,
+  maxChallengesPerWindow: 5,
+  challengeWindowMinutes: 60,
+};
+
 export const userSettings: UserSettings = {
   autoMessagingAfterUserCreation: defaultAutoMessagingAfterUserCreation,
   mergeUserCartsOnLogin: defaultMergeUserCartsOnLogin,
@@ -64,6 +88,7 @@ export const userSettings: UserSettings = {
   validateEmail: () => Promise.resolve(true),
   validateUsername: () => Promise.resolve(true),
   validatePassword: () => Promise.resolve(true),
+  loginCode: defaultLoginCode,
 
   configureSettings: (
     {
@@ -75,6 +100,7 @@ export const userSettings: UserSettings = {
       validateUsername,
       validateNewUser,
       validatePassword,
+      loginCode,
     },
     db: mongodb.Db,
   ) => {
@@ -104,5 +130,6 @@ export const userSettings: UserSettings = {
     userSettings.validateUsername = validateUsername || defaultValidateUsername;
     userSettings.validateNewUser = validateNewUser || defaultValidateNewUser;
     userSettings.validatePassword = validatePassword || defaultValidatePassword;
+    userSettings.loginCode = { ...defaultLoginCode, ...loginCode };
   },
 };

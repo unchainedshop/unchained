@@ -13,6 +13,18 @@ export default [
       loginWithWebAuthn(webAuthnPublicKeyCredentials: JSON!): LoginMethodResponse
 
       """
+      Mail a login link with a one-time code to the address if it belongs to a user (users module
+      option loginCode, disabled by default). Always returns true.
+      """
+      requestLoginCode(email: String!): Boolean!
+
+      """
+      Log the user in with the token of the login link, or with the address and the code from the
+      same mail. Link and code work once.
+      """
+      loginWithLoginCode(email: String, code: String, token: String): LoginMethodResponse!
+
+      """
       Web3
       """
       addWeb3Address(address: String!): User!

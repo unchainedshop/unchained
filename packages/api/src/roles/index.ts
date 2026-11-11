@@ -124,6 +124,8 @@ const actions: Record<string, string> = [
   'createUser',
   'forgotPassword',
   'resetPassword',
+  'requestLoginCode',
+  'loginWithLoginCode',
   'changePassword',
   'viewUserProductReviews',
   'heartbeat',
