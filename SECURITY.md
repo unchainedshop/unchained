@@ -11,6 +11,8 @@ If you discover a security vulnerability, please report it responsibly:
 
 We will acknowledge receipt within 48 hours and provide a detailed response within 7 days.
 
+Reports about missing rate limiting, login throttling, or GraphQL query-complexity limits are out of scope: these are not built in and each deployment has to add them (see [Rate Limiting](#rate-limiting)).
+
 ## Compliance Support
 
 This section describes how Unchained Engine can support compliance efforts. **Note**: Compliance certifications (PCI DSS, ISO 27001, SOC 2, etc.) are issued to organizations and their processes, not to software products. The controls described here can help organizations meet technical requirements.
@@ -238,7 +240,7 @@ Unchained does **not** enforce GraphQL query-complexity, depth, alias-count, or 
 This matters because:
 
 - **Anonymous access is enabled by default** for read-only storefront queries (`assortments`, `products`, `filters`, `languages`, `currencies`, `countries`, `search`), gated in `packages/api/src/roles/all.ts`.
-- **GraphQL alias batching** lets a single unauthenticated request repeat the same field under many aliases. Each aliased list field resolves to an independent database query, so an unbounded query can amplify one HTTP request into thousands of database operations (advisory `GHSA-732q-p8qr-4mcg`).
+- **GraphQL alias batching** lets a single unauthenticated request repeat the same field under many aliases. Each aliased list field resolves to an independent database query, so an unbounded query can amplify one HTTP request into thousands of database operations.
 
 **Mitigations the integrator should apply:**
 

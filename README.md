@@ -238,15 +238,15 @@ Unchained Engine is designed for deployment in security-sensitive environments i
 
 For deployments requiring FIPS, verify the runtime and all enabled integrations. See [FIPS configuration](SECURITY.md#fips-140-3-compatibility) for the runtime requirements and verification steps.
 
-### API Hardening (Denial-of-Service Protection)
+### API Lockdown & Rate Limiting (not built in)
 
-The GraphQL API does **not** impose query-complexity, depth, alias-count, or rate limits by default. Unchained is a headless engine embedded in your own server process, so where and how these edge protections are enforced is a deployment decision that belongs to the integrator — appropriate thresholds depend on your schema extensions, traffic profile, and infrastructure (CDN, WAF, API gateway, reverse proxy).
+Unchained does **not** lock down its APIs for you. There is no built-in rate limiting, login throttling, bot protection, or GraphQL depth, alias, or cost limit, and request-size limits are left to your server and proxy. Unchained is a headless engine embedded in your own server, so adding these is your project's job, with thresholds that fit your schema extensions, traffic, and infrastructure (CDN, WAF, API gateway, reverse proxy).
 
-Anonymous access is enabled by default for read-only storefront queries (e.g. `assortments`, `products`, `filters`, `languages`, `currencies`, `countries`, `search`). Because GraphQL lets a single request batch many aliased fields, an unbounded query can fan out into many database operations. Bounding this is the operator's responsibility.
+Anonymous access is enabled by default for read-only storefront queries (e.g. `assortments`, `products`, `filters`, `languages`, `currencies`, `countries`, `search`), and a single GraphQL request can batch many aliased fields, so an engine without these protections can be overloaded by anonymous traffic.
 
-**Recommended layers:**
+**What your project has to add:**
 
-1. **Query validation (in-process).** GraphQL Yoga plugins and validation rules are forwarded straight through `startPlatform` / `startAPIServer` to the underlying Yoga server. For example, using [GraphQL Armor](https://escape.tech/graphql-armor/):
+1. **Query limits (in-process).** GraphQL Yoga plugins and validation rules are forwarded straight through `startPlatform` / `startAPIServer` to the underlying Yoga server. For example, using [GraphQL Armor](https://escape.tech/graphql-armor/):
 
    ```ts
    import { startPlatform } from '@unchainedshop/platform';
@@ -264,11 +264,13 @@ Anonymous access is enabled by default for read-only storefront queries (e.g. `a
    });
    ```
 
-2. **Rate limiting & request-size limits (at the edge).** Enforce per-IP / per-token rate limits and body-size caps at your reverse proxy, API gateway, or WAF (e.g. nginx `limit_req`, Cloudflare, AWS WAF). Keep anonymous traffic on a tighter budget than authenticated traffic.
+2. **Rate limits & request-size limits.** Enforce per-IP / per-token rate limits and body-size caps at your reverse proxy, API gateway, or WAF (e.g. nginx `limit_req`, Cloudflare, AWS WAF) or in your server (e.g. `@fastify/rate-limit`). Give anonymous traffic and the login, password-reset, and sign-up mutations the tightest budgets.
 
-3. **Pagination caps.** If you expose custom list resolvers, clamp `limit` / pagination server-side.
+3. **Endpoint exposure.** Expose only the endpoints you use (`/mcp` is always mounted) and restrict internal ones such as MCP, chat, or the Admin UI to trusted networks.
 
-See [SECURITY.md](SECURITY.md) for complete security documentation, compliance details, and deployment recommendations.
+4. **Pagination caps.** If you expose custom list resolvers, clamp `limit` / pagination server-side.
+
+See [SECURITY.md](SECURITY.md) for suggested limits per endpoint, the production checklist, and the complete security documentation.
 
 ## Resources
 
