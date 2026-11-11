@@ -44,6 +44,35 @@ describe('LoginCodeWorker', () => {
     }
   });
 
+  it('sends to an unverified address only when the account has no login of its own', async () => {
+    const cases: [Record<string, any>, boolean][] = [
+      [{ services: { password: { pbkdf2: 'hash' } }, emails: [{ address: 'user@example.com' }] }, false],
+      [
+        { services: { webAuthn: [{ id: 'passkey' }] }, emails: [{ address: 'user@example.com' }] },
+        false,
+      ],
+      [
+        {
+          services: { password: { pbkdf2: 'hash' } },
+          emails: [{ address: 'User@Example.com', verified: true }],
+        },
+        true,
+      ],
+      [{ services: {}, emails: [{ address: 'user@example.com', verified: false }] }, true],
+    ];
+    for (const [user, sent] of cases) {
+      const { unchainedAPI } = createUnchainedAPI({ user: { _id: 'user-id', ...user } });
+
+      const result = await LoginCodeWorker.doWork(
+        { email: 'user@example.com' },
+        unchainedAPI,
+        'work-id',
+      );
+
+      assert.deepStrictEqual(result, { success: true, result: { sent } }, JSON.stringify(user));
+    }
+  });
+
   it('sends nothing once the address reached the request limit', async () => {
     const { unchainedAPI } = createUnchainedAPI({ created: false });
 

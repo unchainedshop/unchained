@@ -60,7 +60,7 @@ The link points to `EMAIL_WEBSITE_URL/login-code?token=…`. Mail scanners open 
 
 - Only HMAC-SHA256 hashes of the token and the code are stored, keyed with `UNCHAINED_TOKEN_SECRET`. The code only works with the address it was sent to, and each attempt is counted in the same update that consumes the challenge. Removing an address from a user voids the user's open challenges.
 - The plain token and code are in the `USER_ACCOUNT_ACTION` event and in the `MESSAGE` and `EMAIL` work, like password reset tokens.
-- The lookup also finds users by an address that is not verified yet. Someone who registered another person's address with a password keeps that password after the owner of the address logged in with a code, so don't enable login codes where users can register unverified addresses with a password.
+- A code only goes to an address that is verified on the account, or to an account without a password or passkey. An account that registered someone else's address with a login of its own gets none until the address is verified.
 - Limit requests per IP at the reverse proxy, see [Rate Limiting](../deployment/security.md#rate-limiting).
 
 ## Related

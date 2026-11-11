@@ -7,7 +7,7 @@ description: Mail login links with a one-time code
 
 # Login Code Worker
 
-Works off `requestLoginCode`: it looks up the user of the address in `input.email` and creates a login code challenge, whose `USER_ACCOUNT_ACTION` event queues the `ACCOUNT_ACTION` mail `login-code`. The result `{ sent }` is `false` for an unknown address, a deleted user or an exhausted request limit. See [Login Codes](../../concepts/login-codes.md).
+Works off `requestLoginCode`: it looks up the user of the address in `input.email` and creates a login code challenge, whose `USER_ACCOUNT_ACTION` event queues the `ACCOUNT_ACTION` mail `login-code`. The result `{ sent }` is `false` for an unknown address, a deleted user, an unverified address of an account with a password or passkey, or an exhausted request limit. See [Login Codes](../../concepts/login-codes.md).
 
 :::info Included in Base Preset
 Registered automatically by `registerBasePlugins()` / `registerAllPlugins()`.

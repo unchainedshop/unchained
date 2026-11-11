@@ -1,4 +1,16 @@
 import { type IWorkerAdapter, WorkerAdapter } from '@unchainedshop/core';
+import type { User } from '@unchainedshop/core-users';
+
+const hasLoginOfItsOwn = (user: User) =>
+  Boolean(user.services?.password || user.services?.webAuthn?.length);
+
+const hasVerifiedAddress = (user: User, email: string) =>
+  Boolean(
+    user.emails?.some(
+      ({ address, verified }) =>
+        verified && address?.trim().toLowerCase() === email.trim().toLowerCase(),
+    ),
+  );
 
 export const LoginCodeWorker: IWorkerAdapter<{ email: string }, { sent: boolean }> = {
   ...WorkerAdapter,
@@ -13,6 +25,7 @@ export const LoginCodeWorker: IWorkerAdapter<{ email: string }, { sent: boolean 
     const created =
       user &&
       !user.deleted &&
+      (hasVerifiedAddress(user, email) || !hasLoginOfItsOwn(user)) &&
       (await modules.users.loginCode.createChallenge({ userId: user._id, email }));
     return { success: true, result: { sent: Boolean(created) } };
   },
