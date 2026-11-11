@@ -6,6 +6,7 @@ import { getFileAdapter, type PluginHttpRequestContext } from '@unchainedshop/co
 import type { GridFSFileUploadsModule } from './module.ts';
 import { createLogger } from '@unchainedshop/logger';
 import { timingSafeStringEqual } from '@unchainedshop/utils';
+import { buildDownloadSafetyHeaders } from './download-headers.ts';
 
 const { GRIDFS_PUT_SERVER_PATH = '/gridfs' } = process.env;
 
@@ -71,10 +72,18 @@ export const gridfsRouteHandler = async (request: Request, context: PluginHttpRe
         });
       }
 
-      if (file.expires === null) {
+      if (file.expires == null) {
         logger.error('File already linked', { fileId });
         return new Response(JSON.stringify({ error: 'File already linked' }), {
           status: 400,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        });
+      }
+
+      if (new Date(file.expires).getTime() <= Date.now()) {
+        logger.error('URL Expired', { fileId, expiryDate });
+        return new Response(JSON.stringify({ error: 'Access restricted: URL expired.' }), {
+          status: 403,
           headers: { 'Content-Type': 'application/json', ...corsHeaders },
         });
       }
@@ -190,6 +199,7 @@ export const gridfsRouteHandler = async (request: Request, context: PluginHttpRe
 
       const headers: Record<string, string> = {
         ...corsHeaders,
+        ...buildDownloadSafetyHeaders(file?.metadata?.['content-type']),
       };
 
       if (file?.metadata?.['content-type']) {
