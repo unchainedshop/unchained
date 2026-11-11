@@ -1,7 +1,45 @@
 import { createLogger } from '@unchainedshop/logger';
 import type { UnchainedCore } from '@unchainedshop/core';
+import { Payrexx } from './adapter.ts';
 
 const logger = createLogger('unchained:payrexx');
+
+const assertReferenceId = (referenceId: unknown): string => {
+  if (typeof referenceId !== 'string' || !referenceId) {
+    throw new Error('referenceId has to be a non-empty string', { cause: 'PAYREXX_WEBHOOK_INVALID' });
+  }
+  return referenceId;
+};
+
+const assertPayrexxProvider = async (paymentProviderId: string, modules: UnchainedCore['modules']) => {
+  const provider = await modules.payment.paymentProviders.findProvider({ paymentProviderId });
+  if (provider?.adapterKey !== Payrexx.key) {
+    throw new Error(`payment provider ${paymentProviderId} is not a Payrexx provider`, {
+      cause: 'PAYREXX_WEBHOOK_INVALID',
+    });
+  }
+};
+
+const resolvePayrexxPaymentProviderId = async (
+  referenceId: unknown,
+  modules: UnchainedCore['modules'],
+) => {
+  const paymentProviderId = assertReferenceId(referenceId);
+  await assertPayrexxProvider(paymentProviderId, modules);
+  return paymentProviderId;
+};
+
+const resolvePayrexxOrderPayment = async (referenceId: unknown, modules: UnchainedCore['modules']) => {
+  const orderPaymentId = assertReferenceId(referenceId);
+  const orderPayment = await modules.orders.payments.findOrderPayment({ orderPaymentId });
+  if (!orderPayment) {
+    throw new Error(`Order payment not found with orderPaymentId: ${orderPaymentId}`, {
+      cause: 'PAYREXX_WEBHOOK_INVALID',
+    });
+  }
+  await assertPayrexxProvider(orderPayment.paymentProviderId, modules);
+  return orderPayment;
+};
 
 export async function payrexxWebhookHandler(
   request: Request,
@@ -52,7 +90,8 @@ export async function payrexxWebhookHandler(
 
     if (transaction.preAuthorizationId) {
       // Pre-Authorization Flow, referenceId is a userId
-      const { referenceId: paymentProviderId, invoice } = transaction;
+      const { invoice } = transaction;
+      const paymentProviderId = await resolvePayrexxPaymentProviderId(transaction.referenceId, modules);
       const userId = '';
       logger.info(`Register credentials for: ${userId}`);
 
@@ -78,20 +117,14 @@ export async function payrexxWebhookHandler(
         },
       );
     } else {
-      const { referenceId: orderPaymentId, invoice } = transaction;
+      const { invoice } = transaction;
+      const orderPayment = await resolvePayrexxOrderPayment(transaction.referenceId, modules);
+      const orderPaymentId = orderPayment._id;
       logger.info(`Checkout with orderPaymentId: ${orderPaymentId}`);
 
       await modules.orders.payments.logEvent(orderPaymentId, {
         transactionId: transaction.id,
       });
-
-      const orderPayment = await modules.orders.payments.findOrderPayment({
-        orderPaymentId,
-      });
-
-      if (!orderPayment) {
-        throw new Error(`Order payment not found with orderPaymentId: ${orderPaymentId}`);
-      }
 
       const order = await services.orders.checkoutOrder(orderPayment.orderId, {
         paymentContext: {
@@ -127,7 +160,7 @@ export async function payrexxWebhookHandler(
         name: error.name,
       }),
       {
-        status: 500,
+        status: error?.cause === 'PAYREXX_WEBHOOK_INVALID' ? 400 : 500,
         headers: { 'Content-Type': 'application/json' },
       },
     );
