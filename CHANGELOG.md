@@ -3,7 +3,7 @@
 ## Unreleased
 
 ### Improvements
-- **`TOKENS_CREATED` event** (`@unchainedshop/core-warehousing`): `createTokens` emits `{ tokenIds, productIds, orderPositionIds }` once the tokens are stored, after `ORDER_CONFIRMED`; `createTokens([])` stores and emits nothing instead of failing.
+- **`TOKENS_CREATED` event** (`@unchainedshop/core-warehousing`): `createTokens` emits `{ tokenIds, productIds, orderPositionIds }` once the tokens are stored, after `ORDER_CONFIRMED`.
 - **Order anonymization** (`@unchainedshop/core-orders`): `modules.orders.anonymize(orderId, { contextKeys?, clearContext? })` removes the contact, the billing address and context keys of an order in any status and emits `ORDER_ANONYMIZED` with `{ orderId }` only; `modules.orders.positions.anonymize` removes position configurations, and `updateContact(…, { eventPayload: 'ids' })` emits `ORDER_UPDATE` without the contact.
 
 ### Fixed

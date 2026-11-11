@@ -97,7 +97,6 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
     },
 
     createTokens: async (tokens: TokenSurrogate[]): Promise<void> => {
-      if (!tokens.length) return;
       await TokenSurrogates.insertMany(tokens);
       // Ids only: listeners load the tokens they need, no user data ends up in the event history
       await emit('TOKENS_CREATED', {

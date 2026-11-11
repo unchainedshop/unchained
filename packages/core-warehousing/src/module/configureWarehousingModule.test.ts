@@ -86,13 +86,6 @@ describe('createTokens', () => {
     assert.equal(await emitted[1].stored, 1);
   });
 
-  it('stores and emits nothing for an empty array', async () => {
-    await warehousing.createTokens([]);
-
-    assert.equal(emitted.length, 0);
-    assert.equal(await db.collection('token_surrogates').countDocuments(), 0);
-  });
-
   it('emits nothing when the insert fails', async () => {
     await warehousing.createTokens([token('t1', 'product-a', 'position-1')]);
 

@@ -45,7 +45,7 @@ For tokenized products (NFTs, digital assets):
 | `findTokens` | `selector, options?` | List tokens |
 | `tokensCount` | `selector?` | Count tokens |
 | `findTokensForUser` | `{ userId } \| { walletAddresses }, options?` | Get user's tokens |
-| `createTokens` | `tokens` | Batch create tokens, then emit `TOKENS_CREATED` (an empty array stores and emits nothing) |
+| `createTokens` | `tokens` | Batch create tokens, then emit `TOKENS_CREATED` |
 | `updateTokenOwnership` | `{ tokenId, userId } \| { tokenId, walletAddress }` | Transfer token ownership |
 | `invalidateToken` | `tokenId` | Revoke a token |
 | `buildAccessKeyFromToken` | `token` | Generate an access key for a token |
@@ -83,7 +83,7 @@ await modules.warehousing.updateTokenOwnership({
 | `TOKEN_OWNERSHIP_CHANGED` | `{ token }` | Emitted when a token is transferred to another user or wallet |
 | `TOKEN_INVALIDATED` | `{ token }` | Emitted when a token is invalidated |
 
-`TOKENS_CREATED` carries ids only: `productIds` and `orderPositionIds` list each id once, and listeners load the tokens with `findTokens({ _id: { $in: tokenIds } })`. During checkout it fires after `ORDER_CONFIRMED`, because the order is confirmed before its tokenized positions are tokenized; listen to `TOKENS_CREATED` when you need the tokens of an order. The order processing calls `createTokens` once per tokenized order position and active `VIRTUAL` provider, so an order with several tokenized positions emits several `TOKENS_CREATED`, and a provider that issues no tokens emits none.
+`TOKENS_CREATED` carries ids only: `productIds` and `orderPositionIds` list each id once, and listeners load the tokens with `findTokens({ _id: { $in: tokenIds } })`. During checkout it fires after `ORDER_CONFIRMED`, because the order is confirmed before its tokenized positions are tokenized; listen to `TOKENS_CREATED` when you need the tokens of an order. The order processing calls `createTokens` once per tokenized order position and active `VIRTUAL` provider, so an order with several tokenized positions emits several `TOKENS_CREATED`.
 
 ```typescript
 import { subscribe } from '@unchainedshop/events';
