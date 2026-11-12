@@ -1,5 +1,4 @@
 import { log } from '@unchainedshop/logger';
-import { userSettings } from '@unchainedshop/core-users';
 import { InvalidCredentialsError } from '../../../errors.ts';
 import type { Context } from '../../../context.ts';
 
@@ -10,7 +9,7 @@ export default async function loginWithLoginCode(
 ) {
   log('mutation loginWithLoginCode', { userId: context.userId });
 
-  const user = await context.services.users.loginWithLoginCode(credentials, {
+  const login = await context.services.users.loginWithLoginCode(credentials, {
     userIdBeforeLogin: context.userId,
     countryCode: context.countryCode,
     lastLogin: {
@@ -21,7 +20,7 @@ export default async function loginWithLoginCode(
       countryCode: context.countryCode,
     },
   });
-  if (!user) throw new InvalidCredentialsError({ email: credentials.email });
+  if (!login) throw new InvalidCredentialsError({ email: credentials.email });
 
-  return context.login(user, { expiresIn: userSettings.loginCode.sessionExpiresInSeconds });
+  return context.login(login.user, { expiresIn: login.expiresIn });
 }

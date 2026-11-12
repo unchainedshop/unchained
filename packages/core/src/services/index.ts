@@ -1,6 +1,7 @@
 import type { Modules } from '../modules.ts';
 import { migrateUserDataService } from './migrateUserData.ts';
 import { requestLoginCodeService } from './requestLoginCode.ts';
+import { sendLoginCodeService } from './sendLoginCode.ts';
 import { loginWithLoginCodeService } from './loginWithLoginCode.ts';
 import { updateUserAvatarAfterUploadService } from './updateUserAvatarAfterUpload.ts';
 import { linkFileService } from './linkFileService.ts';
@@ -190,6 +191,7 @@ export default function initServices(modules: Modules, customServices: CustomSer
       deleteUser: deleteUserService as Bound<typeof deleteUserService>,
       bulkDeleteUsers: bulkDeleteUsersService as Bound<typeof bulkDeleteUsersService>,
       requestLoginCode: requestLoginCodeService as Bound<typeof requestLoginCodeService>,
+      sendLoginCode: sendLoginCodeService as Bound<typeof sendLoginCodeService>,
       loginWithLoginCode: loginWithLoginCodeService as Bound<typeof loginWithLoginCodeService>,
     },
     enrollments: {

@@ -11,7 +11,7 @@ export async function loginWithLoginCodeService(
     countryCode,
     lastLogin,
   }: { userIdBeforeLogin?: string; countryCode: string; lastLogin: UserLastLogin },
-): Promise<User | null> {
+): Promise<{ user: User; expiresIn?: number } | null> {
   if (!userSettings.loginCode.enabled) return null;
 
   const challenge = await this.users.loginCode.consumeChallenge(credentials);
@@ -24,5 +24,5 @@ export async function loginWithLoginCodeService(
 
   if (userIdBeforeLogin) await migrateUserDataService.call(this, userIdBeforeLogin, user._id);
   await nextUserCartService.call(this, { user, countryCode });
-  return user;
+  return { user, expiresIn: userSettings.loginCode.sessionExpiresInSeconds };
 }

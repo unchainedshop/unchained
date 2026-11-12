@@ -34,7 +34,7 @@ The `LOGIN_CODE` worker of the base preset sends the mail, so a worker has to ru
 ## Flow
 
 1. `requestLoginCode(email)` always returns `true` and only queues a `LOGIN_CODE` work, so neither the answer nor its timing tells whether the address belongs to a user.
-2. The worker looks the user up by the address and creates a challenge, which voids the open challenges of the user and of the address. `modules.users.loginCode` then emits `USER_ACCOUNT_ACTION` with the action `login-code`, which queues the `ACCOUNT_ACTION` mail. The work result `{ sent }` tells whether a mail went out.
+2. The worker calls `services.users.sendLoginCode`, which looks the user up by the address and creates a challenge, which voids the open challenges of the user and of the address. `modules.users.loginCode` then emits `USER_ACCOUNT_ACTION` with the action `login-code`, which queues the `ACCOUNT_ACTION` mail. The work result `{ sent }` tells whether a mail went out.
 3. `loginWithLoginCode` consumes the challenge, verifies the address, moves a guest's cart like the other logins and logs in for `sessionExpiresInSeconds`. A wrong, used or expired link or code fails with `InvalidCredentials`.
 
 The ACL actions `requestLoginCode` and `loginWithLoginCode` guard the mutations; every role has them by default.
