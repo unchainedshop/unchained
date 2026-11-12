@@ -326,21 +326,23 @@ test.describe('Ticketing: checkout', () => {
     }
   });
 
-  test('checkout emits TOKENS_CREATED with the ids of the issued tickets', async () => {
+  test('checkout emits TOKEN_CREATED for each issued ticket', async () => {
     const { order, tickets } = await buyTickets(userFetch, {
       orderNumber: 'tickets-created-event',
       positions: [{ productId: TheaterEventId, quantity: 2 }],
     });
     const [item] = order.items;
 
-    const events = await waitForEvents(db, {
-      type: 'TOKENS_CREATED',
-      'payload.orderPositionIds': item._id,
-    });
-    assert.equal(events.length, 1);
-    const { tokenIds, ...ids } = events[0].payload;
-    assert.deepEqual(tokenIds.toSorted(), tickets.map(({ _id }) => _id).toSorted());
-    assert.deepEqual(ids, { productIds: [TheaterEventId], orderPositionIds: [item._id] });
+    const events = await waitForEvents(
+      db,
+      { type: 'TOKEN_CREATED', 'payload.token.orderPositionId': item._id },
+      2,
+    );
+    assert.deepEqual(
+      events.map(({ payload }) => payload.token._id).toSorted(),
+      tickets.map(({ _id }) => _id).toSorted(),
+    );
+    assert.ok(events.every(({ payload }) => payload.token.productId === TheaterEventId));
   });
 
   test.describe('Order.magicKey and Order.ticketsPdfUrl', () => {

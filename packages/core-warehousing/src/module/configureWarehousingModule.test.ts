@@ -4,11 +4,7 @@ import { MongoClient, type Db } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { getEmitAdapter, setEmitAdapter, type EmitAdapter } from '@unchainedshop/events';
 import type { TokenSurrogate } from '../db/TokenSurrogateCollection.ts';
-import {
-  configureWarehousingModule,
-  type TokensCreatedEventPayload,
-  type WarehousingModule,
-} from './configureWarehousingModule.ts';
+import { configureWarehousingModule, type WarehousingModule } from './configureWarehousingModule.ts';
 
 const token = (_id: string, productId: string, orderPositionId: string): TokenSurrogate => ({
   _id,
@@ -26,8 +22,8 @@ describe('createTokens', () => {
   let db: Db;
   let warehousing: WarehousingModule;
   let emitAdapter: EmitAdapter;
-  // Each emitted payload, with the number of its tokens stored when it was emitted
-  let emitted: { payload: TokensCreatedEventPayload; stored: Promise<number> }[];
+  // Each emitted token, with whether it was stored when it was emitted
+  let emitted: { token: TokenSurrogate; stored: Promise<number> }[];
 
   before(async () => {
     // Use MONGO_URL (npm test shares the run's MongoDB), else start a server of its own
@@ -38,10 +34,10 @@ describe('createTokens', () => {
     emitAdapter = getEmitAdapter();
     setEmitAdapter({
       publish(eventName, { payload }) {
-        if (eventName !== 'TOKENS_CREATED') return;
+        if (eventName !== 'TOKEN_CREATED') return;
         emitted.push({
-          payload: payload as TokensCreatedEventPayload,
-          stored: db.collection('token_surrogates').countDocuments({ _id: { $in: payload.tokenIds } }),
+          token: payload.token,
+          stored: db.collection('token_surrogates').countDocuments({ _id: payload.token._id }),
         });
       },
       subscribe: () => undefined,
@@ -63,27 +59,19 @@ describe('createTokens', () => {
     await server?.stop();
   });
 
-  it('emits TOKENS_CREATED once per call, after the tokens are stored, with ids only', async () => {
-    await warehousing.createTokens([
+  it('emits TOKEN_CREATED for each token once the tokens are stored', async () => {
+    const tokens = [
       token('t1', 'product-a', 'position-1'),
       token('t2', 'product-a', 'position-1'),
       token('t3', 'product-b', 'position-2'),
-    ]);
+    ];
+    await warehousing.createTokens(tokens);
 
-    assert.equal(emitted.length, 1);
-    assert.deepEqual(emitted[0].payload, {
-      tokenIds: ['t1', 't2', 't3'],
-      productIds: ['product-a', 'product-b'],
-      orderPositionIds: ['position-1', 'position-2'],
-    });
-    assert.equal(await emitted[0].stored, 3);
-
-    await warehousing.createTokens([token('t4', 'product-a', 'position-3')]);
     assert.deepEqual(
-      emitted.map(({ payload }) => payload.tokenIds),
-      [['t1', 't2', 't3'], ['t4']],
+      emitted.map(({ token }) => token),
+      tokens,
     );
-    assert.equal(await emitted[1].stored, 1);
+    assert.deepEqual(await Promise.all(emitted.map(({ stored }) => stored)), [1, 1, 1]);
   });
 
   it('emits nothing when the insert fails', async () => {

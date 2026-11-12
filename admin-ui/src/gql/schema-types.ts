@@ -871,7 +871,7 @@ export enum IEventType {
   QuotationRemove = 'QUOTATION_REMOVE',
   QuotationRequestCreate = 'QUOTATION_REQUEST_CREATE',
   QuotationUpdate = 'QUOTATION_UPDATE',
-  TokensCreated = 'TOKENS_CREATED',
+  TokenCreated = 'TOKEN_CREATED',
   TokenInvalidated = 'TOKEN_INVALIDATED',
   TokenOwnershipChanged = 'TOKEN_OWNERSHIP_CHANGED',
   Unknown = 'UNKNOWN',

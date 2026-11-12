@@ -3,7 +3,7 @@
 ## v5.0.0-alpha.13 (2026-11-11)
 
 ### Improvements
-- **`TOKENS_CREATED` event** (`@unchainedshop/core-warehousing`): `createTokens` emits `{ tokenIds, productIds, orderPositionIds }` once the tokens are stored, after `ORDER_CONFIRMED`.
+- **`TOKEN_CREATED` event** (`@unchainedshop/core-warehousing`): `createTokens` emits `{ token }` for each token once the tokens are stored, after `ORDER_CONFIRMED`.
 - **Order anonymization** (`@unchainedshop/core-orders`): `modules.orders.anonymize(orderId, { contextKeys?, clearContext? })` removes the contact, the billing address and context keys of an order in any status and emits `ORDER_ANONYMIZED` with `{ orderId }` only; `modules.orders.positions.anonymize` removes position configurations, and `updateContact(…, { eventPayload: 'ids' })` emits `ORDER_UPDATE` without the contact.
 - **Session length per login** (`@unchainedshop/api`): `context.login(user, { expiresIn })` signs the JWT and sets the cookie for `expiresIn` seconds (`signAccessToken` takes the same option), so a custom login can last longer or shorter than `UNCHAINED_TOKEN_EXPIRY_SECONDS`, which the built-in login mutations keep using.
 - **Passwordless login with a link and a code** (`@unchainedshop/core-users`, `@unchainedshop/core`, `@unchainedshop/api`, `@unchainedshop/plugins`, `@unchainedshop/platform`): opt-in with the users option `loginCode`. `requestLoginCode(email)` queues a `LOGIN_CODE` work that mails a link and a numeric code (`ACCOUNT_ACTION` `login-code`), and `loginWithLoginCode(email, code | token)` logs in once. Challenges are HMAC-hashed, expire, count attempts and are throttled per address. Codes only go to verified addresses or to accounts without a password or passkey. See Login Codes in the docs.
