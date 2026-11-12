@@ -232,4 +232,30 @@ test.describe('Cart checkout concurrency', () => {
       await lock.release();
     }
   });
+
+  test('payOrder and deliverOrder change nothing while the order is locked, so a retry works', async () => {
+    const { orderId } = await preparePendingOrder('locked-order-retry');
+    const lock = await getTestPlatform().unchainedAPI.modules.orders.acquireLock(
+      orderId,
+      'confirm-reject',
+    );
+    try {
+      for (const mutation of ['payOrder', 'deliverOrder']) {
+        const { errors } = await processPendingOrder(mutation, orderId);
+        assert.strictEqual(errors?.[0]?.extensions?.code, 'OrderLockedError');
+      }
+    } finally {
+      await lock.release();
+    }
+
+    const order = await db.collection('orders').findOne({ _id: orderId });
+    const payment = await db.collection('order_payments').findOne({ _id: order.paymentId });
+    const delivery = await db.collection('order_deliveries').findOne({ _id: order.deliveryId });
+    assert.deepStrictEqual([payment.status, delivery.status], [null, null]);
+
+    for (const mutation of ['payOrder', 'deliverOrder']) {
+      const { errors } = await processPendingOrder(mutation, orderId);
+      assert.strictEqual(errors, undefined, JSON.stringify(errors));
+    }
+  });
 });

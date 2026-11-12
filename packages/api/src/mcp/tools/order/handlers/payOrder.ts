@@ -35,9 +35,8 @@ export default async function payOrder(context: Context, params: Params<'PAY_ORD
     });
   }
 
-  await modules.orders.payments.markAsPaid(payment, null);
   try {
-    await services.orders.processOrder(order, {});
+    await services.orders.payOrder(order);
   } catch (error) {
     throw error.cause === 'LOCKED' ? new OrderLockedError({ orderId }) : error;
   }

@@ -10,7 +10,7 @@
 
 ### Fixed
 - **Order mutations answer `OrderLockedError` while another process holds the order** (`@unchainedshop/api`): `confirmOrder`, `rejectOrder`, `payOrder`, `deliverOrder` and their MCP tools answered a generic error after the 2 second lock wait.
-- **`payOrder`, `deliverOrder` and the Cryptopay webhook confirm an order once** (`@unchainedshop/core`): `services.orders.processOrder` reads the order again under the lock of `confirmOrder` and `rejectOrder`, so racing calls no longer send the delivery and create the tokens twice.
+- **`payOrder`, `deliverOrder` and the Cryptopay webhook confirm an order once** (`@unchainedshop/core`): `services.orders.processOrder` reads the order again under the lock of `confirmOrder` and `rejectOrder`, so racing calls no longer send the delivery and create the tokens twice. The mutations and their MCP tools go through the new `services.orders.payOrder` and `services.orders.deliverOrder`, which mark the payment or delivery only once they hold the lock, so a call that answers `OrderLockedError` changes nothing and can be retried.
 - **Concurrent checkouts no longer sell more than the supply of a tokenized product** (`@unchainedshop/core`): checkouts validate the positions, and confirmations of pending orders run, under a lock on each tokenized product with a `tokenization.supply`, held until the order and its tokens are saved. A checkout that waits more than 2 seconds for it answers `OrderLockedError`.
 
 ## v5.0.0-alpha.12 (2026-11-11)

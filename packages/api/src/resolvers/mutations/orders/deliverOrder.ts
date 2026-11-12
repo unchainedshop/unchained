@@ -44,9 +44,8 @@ export default async function deliverOrder(
     });
   }
 
-  await modules.orders.deliveries.markAsDelivered(orderDelivery);
   try {
-    return await services.orders.processOrder(order, {});
+    return await services.orders.deliverOrder(order);
   } catch (error) {
     throw error.cause === 'LOCKED' ? new OrderLockedError({ orderId }) : error;
   }

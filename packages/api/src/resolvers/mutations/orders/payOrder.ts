@@ -38,9 +38,8 @@ export default async function payOrder(root: never, { orderId }: { orderId: stri
     });
   }
 
-  await modules.orders.payments.markAsPaid(payment, null);
   try {
-    return await services.orders.processOrder(order, {});
+    return await services.orders.payOrder(order);
   } catch (error) {
     throw error.cause === 'LOCKED' ? new OrderLockedError({ orderId }) : error;
   }
