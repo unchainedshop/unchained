@@ -1,6 +1,6 @@
 # Bundler on a glibc (Debian trixie) node image: the runtime is distroless
 # debian13, so anything native built here must match its libc — not alpine.
-FROM node:26.13.0-trixie-slim AS bundler
+FROM node:26.13.1-trixie-slim AS bundler
 
 RUN mkdir -p /source && chown node:node /source
 WORKDIR /source
