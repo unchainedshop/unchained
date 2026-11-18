@@ -5,8 +5,9 @@ The `docker` runner runs `.forgejo/workflows/ci.yml` and
 requests. The CI workflow also runs for tags. Both workflows support manual runs.
 
 The test jobs use Node 26.8.2. Engine tests use MongoDB Memory Server with MongoDB
-8.2.12. Build, lint, and test failures block the engine workflow; the v4 Jenkins
-convention of ignoring test failures is deliberately not carried over.
+9.0.8, the version the engines run in production. Build, lint, and test failures block
+the engine workflow; the v4 Jenkins convention of ignoring test failures is deliberately
+not carried over.
 
 The Trivy gate scans fixable HIGH/CRITICAL dependency findings. Its Linux amd64
 binary is pinned to 0.74.0 and checksum-verified. The database cache rotates daily.
