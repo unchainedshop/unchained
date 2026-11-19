@@ -177,27 +177,29 @@ export const validatePositiveInteger: Validator = {
 };
 
 export const validateProductCommerceOneZero = (
+  currentIndex,
   getValues: () => any[],
 ): Validator => {
   return {
     isValid: () => {
       const values = typeof getValues === 'function' ? getValues() : getValues;
-      if (!values?.length) return true;
+      const current = values?.[currentIndex];
+      if (!current) return true;
       const isZeroOrEmpty = (v) => isEmpty(v) || Number(v) === 0;
-      if (values.length === 1 && !isZeroOrEmpty(values[0].minQuantity))
-        return false;
-      if (
-        values.filter(({ minQuantity }) => isZeroOrEmpty(minQuantity))
-          ?.length !== 1
-      )
-        return false;
-      return true;
+      return (
+        values.filter(
+          ({ minQuantity, countryCode, currencyCode }) =>
+            countryCode === current.countryCode &&
+            currencyCode === current.currencyCode &&
+            isZeroOrEmpty(minQuantity),
+        ).length === 1
+      );
     },
 
     intlMessageDescriptor: {
       id: 'error_commerce_quantity_null_required',
       defaultMessage:
-        '{label} should have one price with min quantity of 0 or empty',
+        '{label}: every country and currency needs one price with min quantity 0 or empty',
     },
   };
 };
@@ -271,7 +273,7 @@ const useInitializeDefaultErrorMessages = () => {
   formatMessage({
     id: 'error_commerce_quantity_null_required',
     defaultMessage:
-      '{label} should have one price with min quantity of 0 or empty',
+      '{label}: every country and currency needs one price with min quantity 0 or empty',
   });
   formatMessage({
     id: 'error_amount',

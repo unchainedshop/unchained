@@ -1122,7 +1122,7 @@
     "defaultMessage": "500 Error"
   },
   "error_commerce_quantity_null_required": {
-    "defaultMessage": "{label} should have one price with min quantity of 0 or empty"
+    "defaultMessage": "{label}: every country and currency needs one price with min quantity 0 or empty"
   },
   "error_contract_address": {
     "defaultMessage": "Invalid contract address"
@@ -2056,7 +2056,7 @@
     "defaultMessage": "Product bundle items CSV (Optional)"
   },
   "product_commerce_info": {
-    "defaultMessage": "One price should have a min quantity of 0 (or empty) and no two prices should share the same min quantity, currency and country"
+    "defaultMessage": "Every country and currency needs one price with a min quantity of 0 (or empty), and no two prices may share the same min quantity, currency and country"
   },
   "product_creation_failed": {
     "defaultMessage": "Product creation failed"

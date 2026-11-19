@@ -36,6 +36,7 @@
 - **The gate's refusal reason agrees with the ticket issuer** (`@unchainedshop/ticketing`): `scanTicket` read an invalid entry window as unbounded while the issuer refused everyone. Both use the new `explainEntryRefusal`, and `TicketStatus`, `getTicketStatus` and `TicketNotRedeemableReason` moved out of the resolvers (same package exports).
 - **Gate Control and the Box Office keep productions apart** (`@unchainedshop/ticketing`): they grouped the categories of a performance by title, start and location, so two productions with the same values merged. The new `TicketEvent.productionId` groups the dates of a production; standalone events still group by those values.
 - **The ticketing forms keep the prices of other currencies** (`@unchainedshop/ticketing`): saving a category or a date price sent only the shop currency's price, which replaced the whole list. The forms send the other prices and quantity tiers along (new `TicketPriceInput.minQuantity`) and edit the shop currency's price instead of the first one.
+- **The Commerce tab saves prices in more than one country or currency** (`@unchainedshop/admin-ui`): it wanted one price without a min quantity among all rows, so a product with a CHF and a EUR price could not be saved. The rule now holds per country and currency, as the engine picks the tiers.
 
 ## v5.0.0-alpha.13 (2026-11-11)
 

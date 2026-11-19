@@ -39,10 +39,10 @@ const PricingFieldArray = ({
   return (
     <div>
       {fields.map((field, index) => {
-        const minQtyValidators = [validateProductCommerce(index, getPricing)];
-        if (index === 0) {
-          minQtyValidators.push(validateProductCommerceOneZero(getPricing));
-        }
+        const minQtyValidators = [
+          validateProductCommerce(index, getPricing),
+          validateProductCommerceOneZero(index, getPricing),
+        ];
         return (
           <div
             key={field.id}
@@ -128,6 +128,7 @@ const PricingFieldArray = ({
                   'isoCode',
                 )}
                 hideLabel
+                onChange={revalidateMinQuantities}
               />
 
               <SelectField
@@ -147,6 +148,7 @@ const PricingFieldArray = ({
                   'isoCode',
                 )}
                 hideLabel
+                onChange={revalidateMinQuantities}
                 placeholder={formatMessage({
                   id: 'country_currency',
                   defaultMessage: 'Currency',
@@ -159,7 +161,10 @@ const PricingFieldArray = ({
                 <button
                   className="items-center rounded-full bg-surface-input px-1 py-1 text-sm text-rose-500 dark:text-rose-400 hover:bg-rose-50 focus:outline-hidden focus:ring-0 focus:ring-rose-500 focus:ring-offset-2"
                   type="button"
-                  onClick={() => remove(index)}
+                  onClick={() => {
+                    remove(index);
+                    revalidateMinQuantities();
+                  }}
                 >
                   <svg
                     className="h-4 w-4"

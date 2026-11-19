@@ -114,7 +114,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
           {formatMessage({
             id: 'product_commerce_info',
             defaultMessage:
-              'One price should have a min quantity of 0 (or empty) and no two prices should share the same min quantity, currency and country',
+              'Every country and currency needs one price with a min quantity of 0 (or empty), and no two prices may share the same min quantity, currency and country',
           })}
         </p>
       </div>
