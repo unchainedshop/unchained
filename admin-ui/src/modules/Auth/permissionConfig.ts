@@ -39,6 +39,7 @@ const ROUTE_ROLES: Record<string, string> = {
 const UNRESTRICTED_PAGES = [
   '/install',
   '/log-in',
+  '/login-code',
   '/sign-up',
   '/oauth',
   '/account/forgot-password',
@@ -55,6 +56,7 @@ const UNRESTRICTED_PAGES = [
 
 const PUBLIC_ONLY_PAGES = [
   '/log-in',
+  '/login-code',
   '/sign-up',
   '/oauth',
   '/account/forgot-password',

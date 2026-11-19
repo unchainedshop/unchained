@@ -72,6 +72,7 @@ const UnchainedContextWrapper = ({ children }) => {
         return {
           customProperties,
           singleSignOnURL: shopInfo?.adminUiConfig?.singleSignOnURL,
+          loginCodeEnabled: shopInfo?.adminUiConfig?.loginCodeEnabled,
           hydrateFragment,
         };
       }, [shopInfo])}

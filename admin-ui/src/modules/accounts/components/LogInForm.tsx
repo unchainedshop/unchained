@@ -74,7 +74,7 @@ const LogInForm = () => {
   const intl = useIntl();
   const { logInWithPassword } = useLoginWithPassword();
   const { loginWithWebAuthn } = useLoginWithWebAuthn();
-  const { singleSignOnURL } = useUnchainedContext();
+  const { singleSignOnURL, loginCodeEnabled } = useUnchainedContext();
 
   const [step, setStep] = useState(1);
 
@@ -206,6 +206,17 @@ const LogInForm = () => {
                 defaultMessage: 'Log in to your account',
               })}
             </h2>
+            {loginCodeEnabled && (
+              <Link
+                href="/login-code"
+                className="mt-2 inline-block text-sm font-medium text-slate-950 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300"
+              >
+                {formatMessage({
+                  id: 'login_with_code',
+                  defaultMessage: 'Log in with a code',
+                })}
+              </Link>
+            )}
           </div>
           <FormWrapper>
             <Form

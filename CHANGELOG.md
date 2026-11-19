@@ -5,6 +5,9 @@
 ### Security
 - **Token access keys require `UNCHAINED_SECRET`** (`@unchainedshop/core-warehousing`, `@unchainedshop/api`): without it the key was a hash of the token id and its owner alone, so anyone who knew both could forge an `x-token-accesskey`. `buildAccessKeyFromToken` now throws, so `Token.accessKey` and requests carrying the header fail until the variable is set.
 
+### Improvements
+- **Login with a code in the Admin UI** (`@unchainedshop/admin-ui`, `@unchainedshop/api`): while the users option `loginCode` is enabled, the login offers "Log in with a code" and `/login-code` takes the code or the link of the mail. The new `AdminUiConfig.loginCodeEnabled` tells the Admin UI.
+
 ## v5.0.0-alpha.13 (2026-11-11)
 
 ### Improvements

@@ -19,7 +19,7 @@ await startPlatform({
 });
 ```
 
-The `LOGIN_CODE` worker of the base preset sends the mail, so a worker has to run.
+The `LOGIN_CODE` worker of the base preset sends the mail, so a worker has to run. While enabled, `shopInfo.adminUiConfig.loginCodeEnabled` is `true` and the Admin UI offers "Log in with a code" on its `/login-code` page, which also takes the token of the link (`EMAIL_WEBSITE_URL/login-code?token=…`).
 
 | Option | Default | Description |
 |--------|---------|-------------|

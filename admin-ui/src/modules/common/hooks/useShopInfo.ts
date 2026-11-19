@@ -24,6 +24,7 @@ const ShopInfoQuery = gql`
       }
       adminUiConfig {
         singleSignOnURL
+        loginCodeEnabled
         externalLinks {
           href
           title

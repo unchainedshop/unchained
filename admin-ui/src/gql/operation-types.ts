@@ -126,6 +126,15 @@ export type IForgotPasswordMutationVariables = Exact<{
 
 export type IForgotPasswordMutation = { forgotPassword: { success: boolean | null } | null };
 
+export type ILoginWithLoginCodeMutationVariables = Exact<{
+  email?: string | null | undefined;
+  code?: string | null | undefined;
+  token?: string | null | undefined;
+}>;
+
+
+export type ILoginWithLoginCodeMutation = { loginWithLoginCode: { _id: string, tokenExpires: unknown, user: { _id: string, allowedActions: Array<Types.IRoleAction>, roles: Array<string> | null } | null } };
+
 export type ILoginWithPasswordMutationVariables = Exact<{
   username?: string | null | undefined;
   email?: string | null | undefined;
@@ -177,6 +186,13 @@ export type IRemoveWebAuthCredentialsMutationVariables = Exact<{
 
 
 export type IRemoveWebAuthCredentialsMutation = { removeWebAuthnCredentials: { _id: string, username: string | null, isGuest: boolean, isInitialPassword: boolean, name: string, roles: Array<string> | null, tags: Array<unknown> | null, deleted: unknown, lastBillingAddress: { firstName: string | null, lastName: string | null, company: string | null, addressLine: string | null, addressLine2: string | null, postalCode: string | null, countryCode: string | null, regionCode: string | null, city: string | null } | null, lastContact: { emailAddress: string | null, telNumber: string | null } | null, lastLogin: { countryCode: string | null, locale: unknown, remoteAddress: string | null, remotePort: number | null, timestamp: unknown, userAgent: string | null } | null, avatar: { _id: string, name: string, size: number, type: string, url: string | null } | null, paymentCredentials: Array<{ _id: string, isValid: boolean, isPreferred: boolean, paymentProvider: { _id: string, type: Types.IPaymentProviderType | null, interface: { _id: string, label: string | null, version: string | null } | null } }>, emails: Array<{ verified: boolean, address: string }> | null, web3Addresses: Array<{ address: string, nonce: string | null, verified: boolean }>, webAuthnCredentials: Array<{ _id: string, created: unknown, aaguid: string, counter: number, mdsMetadata: { legalHeader: string | null, description: string | null, authenticatorVersion: number | null, protocolFamily: string | null, schema: number | null, authenticationAlgorithms: Array<string> | null, publicKeyAlgAndEncodings: Array<string> | null, attestationTypes: Array<string> | null, keyProtection: Array<string> | null, upv: Array<unknown> | null, tcDisplay: Array<unknown> | null, icon: string | null, authenticatorGetInfo: unknown } | null }>, profile: { displayName: string | null, phoneMobile: string | null, gender: string | null, birthday: unknown, address: { firstName: string | null, lastName: string | null, company: string | null, addressLine: string | null, addressLine2: string | null, postalCode: string | null, countryCode: string | null, regionCode: string | null, city: string | null } | null } | null, primaryEmail: { verified: boolean, address: string } | null, cart: { _id: string, items: Array<{ _id: string }> | null } | null, orders: Array<{ _id: string, items: Array<{ _id: string }> | null }> } };
+
+export type IRequestLoginCodeMutationVariables = Exact<{
+  email: string;
+}>;
+
+
+export type IRequestLoginCodeMutation = { requestLoginCode: boolean };
 
 export type IResetPasswordMutationVariables = Exact<{
   newPlainPassword: string;
@@ -698,7 +714,7 @@ export type IShopStatusQuery = { countriesCount: number, currenciesCount: number
 export type IShopInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type IShopInfoQuery = { shopInfo: { _id: string, version: string | null, language: { _id: string, isoCode: string | null, name: string | null } | null, country: { _id: string, isoCode: string | null, flagEmoji: string | null, name: string | null, defaultCurrency: { _id: string, isoCode: string } | null } | null, adminUiConfig: { singleSignOnURL: string | null, productTags: Array<string>, assortmentTags: Array<string>, userTags: Array<string>, externalLinks: Array<{ href: string | null, title: string | null, target: Types.IExternalLinkTarget | null }>, customProperties: Array<{ entityName: string, inlineFragment: string }> } } };
+export type IShopInfoQuery = { shopInfo: { _id: string, version: string | null, language: { _id: string, isoCode: string | null, name: string | null } | null, country: { _id: string, isoCode: string | null, flagEmoji: string | null, name: string | null, defaultCurrency: { _id: string, isoCode: string } | null } | null, adminUiConfig: { singleSignOnURL: string | null, loginCodeEnabled: boolean, productTags: Array<string>, assortmentTags: Array<string>, userTags: Array<string>, externalLinks: Array<{ href: string | null, title: string | null, target: Types.IExternalLinkTarget | null }>, customProperties: Array<{ entityName: string, inlineFragment: string }> } } };
 
 export type IStatusTypesQueryVariables = Exact<{
   enumName: string;

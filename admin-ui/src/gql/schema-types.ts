@@ -44,6 +44,8 @@ export type IAdminUiConfig = {
   assortmentTags: Array<Scalars['String']['output']>;
   customProperties: Array<IAdminUiConfigCustomEntityInterface>;
   externalLinks: Array<IAdminUiLink>;
+  /** Whether the users option loginCode enables passwordless login with a code */
+  loginCodeEnabled: Scalars['Boolean']['output'];
   productTags: Array<Scalars['String']['output']>;
   singleSignOnURL?: Maybe<Scalars['String']['output']>;
   userTags: Array<Scalars['String']['output']>;

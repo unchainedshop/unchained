@@ -156,6 +156,8 @@ export const configureUsersLoginCodeModule = async ({ db }: ModuleInput<Record<s
     },
 
     voidChallenges,
+
+    isEnabled: () => userSettings.loginCode.enabled,
   };
 };
 

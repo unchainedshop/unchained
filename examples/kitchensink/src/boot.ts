@@ -148,6 +148,9 @@ try {
   registerProductDiscoverabilityFilter({ hiddenTagValue: 'device' });
 
   const platform = await startPlatform({
+    options: {
+      users: { loginCode: { enabled: true } },
+    },
     rolesOptions: {
       additionalRoles: {
         userManager: userManagerRole,
