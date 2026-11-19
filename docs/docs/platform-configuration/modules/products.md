@@ -46,7 +46,7 @@ await startPlatform({
 | `PRODUCT_UNPUBLISH` | `{ product }` | Emitted when a product is unpublished |
 | `PRODUCT_UPDATE_TEXT` | `{ productId, text }` | Emitted when product text is updated |
 | `PRODUCT_ADD_MEDIA` | `{ productMedia }` | Emitted when media is added |
-| `PRODUCT_REMOVE_MEDIA` | `{ productMediaId }` | Emitted when media is removed |
+| `PRODUCT_REMOVE_MEDIA` | `{ productId, productMediaId }` | Emitted when media is removed |
 | `PRODUCT_REORDER_MEDIA` | `{ productMedias }` | Emitted when media is reordered |
 | `PRODUCT_UPDATE_MEDIA_TEXT` | `{ productMediaId }` | Emitted when media text is updated |
 | `PRODUCT_CREATE_VARIATION` | `{ productVariation }` | Emitted when a variation is created |

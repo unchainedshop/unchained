@@ -18,7 +18,6 @@ const {
   removeTicketCategory,
   updateTicketProduction,
   syncTicketProduction,
-  removeTicketProductionMediaCopies,
   removeTicketProduction,
 } = productionServices.ticketing;
 
@@ -460,8 +459,10 @@ test('the media of a production are shared with its performances', async () => {
     1,
   );
 
-  await modules.products.media.delete(cover._id);
-  await removeTicketProductionMediaCopies.call(modules, cover._id);
+  await modules.products.media.deleteMediaFiles({ productId: production._id });
+  await createTicketProductionSyncHandlers({ modules }).PRODUCT_REMOVE_MEDIA({
+    payload: { productId: production._id, productMediaId: cover._id },
+  });
   for (const { product } of await performancesOf(production._id)) {
     assert.deepEqual(await modules.products.media.findProductMedias({ productId: product._id }), []);
   }
@@ -517,7 +518,9 @@ test('media, texts and tags changed on a production in the core tabs reach its p
   );
 
   await modules.products.media.delete(poster._id);
-  await handlers.PRODUCT_REMOVE_MEDIA({ payload: { productMediaId: poster._id } });
+  await handlers.PRODUCT_REMOVE_MEDIA({
+    payload: { productId: production._id, productMediaId: poster._id },
+  });
   await forEachPerformance(async (product) => assert.deepEqual(await mediaOf(product._id), ['photo']));
 
   // The core texts tab changes texts one locale at a time; the slugs of the dates stay

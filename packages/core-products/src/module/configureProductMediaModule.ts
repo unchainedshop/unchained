@@ -142,17 +142,17 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
     },
 
     delete: async (productMediaId: string) => {
-      const selector = generateDbFilterById(productMediaId);
-
       await ProductMediaTexts.deleteMany({ productMediaId });
 
-      const deletedResult = await ProductMedias.deleteOne(selector);
+      const productMedia = await ProductMedias.findOneAndDelete(generateDbFilterById(productMediaId));
+      if (!productMedia) return 0;
 
       await emit('PRODUCT_REMOVE_MEDIA', {
+        productId: productMedia.productId,
         productMediaId,
       });
 
-      return deletedResult.deletedCount;
+      return 1;
     },
 
     deleteMediaFiles: async ({
@@ -174,16 +174,21 @@ export const configureProductMediaModule = async ({ db }: ModuleInput<Record<str
         selector._id = { $nin: excludedProductMediaIds };
       }
 
-      const ids = await ProductMedias.distinct('_id', selector);
+      const productMedias = await ProductMedias.find(selector, {
+        projection: { _id: 1, productId: 1 },
+      }).toArray();
 
-      await ProductMediaTexts.deleteMany({ productMediaId: { $in: ids } });
+      await ProductMediaTexts.deleteMany({
+        productMediaId: { $in: productMedias.map(({ _id }) => _id) },
+      });
 
       const deletedResult = await ProductMedias.deleteMany(selector);
 
       await Promise.all(
-        ids.map(async (assortmentMediaId) =>
+        productMedias.map(async (productMedia) =>
           emit('PRODUCT_REMOVE_MEDIA', {
-            assortmentMediaId,
+            productId: productMedia.productId,
+            productMediaId: productMedia._id,
           }),
         ),
       );

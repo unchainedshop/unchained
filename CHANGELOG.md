@@ -5,6 +5,9 @@
 ### Security
 - **Token access keys require `UNCHAINED_SECRET`** (`@unchainedshop/core-warehousing`, `@unchainedshop/api`): without it the key was a hash of the token id and its owner alone, so anyone who knew both could forge an `x-token-accesskey`. `buildAccessKeyFromToken` now throws, so `Token.accessKey` and requests carrying the header fail until the variable is set.
 
+### Breaking
+- **`services.ticketing.removeTicketProductionMediaCopies` is removed** (`@unchainedshop/ticketing`): a removed production media now syncs the performances of its own production instead of scanning every production.
+
 ### Improvements
 - **Login with a code in the Admin UI** (`@unchainedshop/admin-ui`, `@unchainedshop/api`): while the users option `loginCode` is enabled, the login offers "Log in with a code" and `/login-code` takes the code or the link of the mail. The new `AdminUiConfig.loginCodeEnabled` tells the Admin UI.
 - **Order actions in the Admin UI report their errors** (`@unchainedshop/admin-ui`): confirm, reject, pay and deliver failed silently; they show the error now, and for `OrderLockedError` that another process is working on the order.
@@ -22,6 +25,7 @@
 - **Missing Admin UI texts** (`@unchainedshop/admin-ui`): 21 texts of the bulk actions, the enrollment detail and the last-admin error had no English or German translation.
 - **Ticket prices keep their tax flags** (`@unchainedshop/ticketing`): saving a category or the price of a date in the admin plugin removed `isTaxable` and `isNetPrice`; the category form edits them now.
 - **Changing the tag filter starts at the first page** (`@unchainedshop/admin-ui`): lists with a tag filter kept their page, so a filtered list could show nothing.
+- **`PRODUCT_REMOVE_MEDIA` names the product** (`@unchainedshop/core-products`): it carries `{ productId, productMediaId }`, only for media that existed; removing several media at once emitted `{ assortmentMediaId }`, so ticketing kept their copies on the performances.
 
 ## v5.0.0-alpha.13 (2026-11-11)
 

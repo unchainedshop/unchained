@@ -767,24 +767,6 @@ async function syncTicketProduction(this: Modules, productionId: string) {
   return production;
 }
 
-/** Removes the rows that shared a removed production media with the performances. */
-async function removeTicketProductionMediaCopies(this: Modules, productMediaId: string) {
-  const productions = await this.products.findProducts({
-    type: ProductType.CONFIGURABLE_PRODUCT,
-    tags: [TICKET_PRODUCTION_TAG],
-    includeDrafts: true,
-  });
-  const productIds = productions.flatMap((production) =>
-    (production.proxy?.assignments ?? []).map(({ productId }) => productId),
-  );
-  if (!productIds.length) return 0;
-  const copies = (await this.products.media.findProductMedias({ productIds })).filter(
-    ({ meta }) => meta?.productionMediaId === productMediaId,
-  );
-  for (const copy of copies) await this.products.media.delete(copy._id);
-  return copies.length;
-}
-
 async function addTicketCategory(this: Modules, productionId: string, input: TicketCategoryInput) {
   const production = await findTicketProduction(this, productionId);
   const [category] = normalizeCategories([input]);
@@ -999,7 +981,9 @@ export function createTicketProductionSyncHandlers({ modules }: { modules: Modul
     const next = (queues.get(productId) ?? Promise.resolve()).then(() =>
       run(async () => {
         const product = await modules.products.findProduct({ productId });
-        if (isTicketProduction(product)) await syncProduction.call(modules, productId);
+        if (isTicketProduction(product) && product!.status !== ProductStatus.DELETED) {
+          await syncProduction.call(modules, productId);
+        }
       }),
     );
     queues.set(productId, next);
@@ -1018,12 +1002,8 @@ export function createTicketProductionSyncHandlers({ modules }: { modules: Modul
     // Only changed tags matter; the other product updates do not reach the performances
     PRODUCT_UPDATE: ({ payload }: RawPayloadType<{ productId?: string; tags?: string[] }>) =>
       payload?.tags ? enqueue(payload.productId, syncTicketProductionTags) : Promise.resolve(),
-    PRODUCT_REMOVE_MEDIA: ({ payload }: RawPayloadType<{ productMediaId?: string }>) =>
-      run(async () => {
-        if (payload?.productMediaId) {
-          await removeTicketProductionMediaCopies.call(modules, payload.productMediaId);
-        }
-      }),
+    PRODUCT_REMOVE_MEDIA: ({ payload }: RawPayloadType<{ productId?: string }>) =>
+      enqueue(payload?.productId, syncTicketProductionMedia),
   };
 }
 
@@ -1047,7 +1027,6 @@ export default {
     updateTicketProduction,
     syncTicketProduction,
     removeTicketProduction,
-    removeTicketProductionMediaCopies,
     addTicketPerformance,
     updateTicketPerformance,
     removeTicketPerformance,
@@ -1065,7 +1044,6 @@ export interface TicketProductionServices {
     updateTicketProduction: Bound<typeof updateTicketProduction>;
     syncTicketProduction: Bound<typeof syncTicketProduction>;
     removeTicketProduction: Bound<typeof removeTicketProduction>;
-    removeTicketProductionMediaCopies: Bound<typeof removeTicketProductionMediaCopies>;
     addTicketPerformance: Bound<typeof addTicketPerformance>;
     updateTicketPerformance: Bound<typeof updateTicketPerformance>;
     removeTicketPerformance: Bound<typeof removeTicketPerformance>;
