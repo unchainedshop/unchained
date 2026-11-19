@@ -2,7 +2,7 @@ export const toMinorUnit = (value: string, decimals: number): number => {
   if (!value || decimals < 0) return 0;
 
   const trimmedValue = value.trim();
-  if (!/^-?\d*\.?\d*$/.test(trimmedValue)) return 0;
+  if (!/^-?\d*(?:\.\d*)?$/.test(trimmedValue)) return 0;
 
   const dotIndex = trimmedValue.indexOf('.');
   if (dotIndex === -1) {
