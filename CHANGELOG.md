@@ -1,6 +1,6 @@
 # Unchained Engine v5.0 (Breaking Changes)
 
-## Unreleased
+## v5.0.0-alpha.14 (2026-11-19)
 
 ### Security
 - **Token access keys require `UNCHAINED_SECRET`** (`@unchainedshop/core-warehousing`, `@unchainedshop/api`): without it the key was a hash of the token id and its owner alone, so anyone who knew both could forge an `x-token-accesskey`. `buildAccessKeyFromToken` now throws, so `Token.accessKey` and requests carrying the header fail until the variable is set.
@@ -21,6 +21,7 @@
 - **`modules.warehousing.tokensQuantity(selector)`** (`@unchainedshop/core-warehousing`): sums the quantities of the matching tokens, beside the document count `tokensCount`. The ETH minter uses it instead of loading every token of the product on each stock estimate.
 - **`TicketEvent.available`** (`@unchainedshop/ticketing`): the tickets that can still be bought, counted like checkout (issued tickets and PENDING orders), `null` without a capacity and `0` when sold out or cancelled (`passes.countAvailableTickets`). The admin plugin's event list and Box Office use it, so the Box Office also sells events without a capacity, whose issuer stock is 0.
 - **Exchanging tickets between dates** (`@unchainedshop/ticketing`): `exchangeTickets(tokenIds, productId)` (action `cancelTicket`, organizer scope on both dates) moves tickets to another date of their production, all or none and safe to retry. Each ticket is cancelled and replaced with the same order position, owner and metadata, and `TICKET_EXCHANGED` is emitted; cancelling and rebooking work as before.
+- **Stripe API version `2026-11-18.endive`** (`@unchainedshop/plugins`): the plugin follows the current `stripe` 23 release.
 
 ### Fixed
 - **The roles guard privileged users** (`@unchainedshop/api`): `userHasPermission` refuses the user actions on a privileged user without `managePrivilegedUsers`, so `User.viewerAllowedActions` no longer offers them to the Admin UI and custom resolvers checking these actions are guarded too.
@@ -39,7 +40,7 @@
 - **The Commerce tab saves prices in more than one country or currency** (`@unchainedshop/admin-ui`): it wanted one price without a min quantity among all rows, so a product with a CHF and a EUR price could not be saved. The rule now holds per country and currency, as the engine picks the tiers.
 - **The ticketing admin plugin forms say why a save failed** (`@unchainedshop/ticketing`): they dropped server errors such as an existing category code.
 
-## v5.0.0-alpha.13 (2026-11-11)
+## v5.0.0-alpha.13 (2026-11-11, not published to npm)
 
 ### Improvements
 - **`TOKEN_CREATED` event** (`@unchainedshop/core-warehousing`): `createTokens` emits `{ token }` for each token once the tokens are stored, after `ORDER_CONFIRMED`.
