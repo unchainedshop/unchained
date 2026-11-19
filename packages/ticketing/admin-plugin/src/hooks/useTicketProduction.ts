@@ -84,8 +84,6 @@ const TicketProductionDetailQuery = gql`
               catalogPrice {
                 amount
                 currencyCode
-                isTaxable
-                isNetPrice
               }
               event {
                 startsAt

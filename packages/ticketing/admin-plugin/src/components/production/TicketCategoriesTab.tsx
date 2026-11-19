@@ -6,53 +6,42 @@ import { Button, FormWrapper, NoData, Table } from '@unchainedshop/admin-ui/ui';
 import { CheckboxField, Form, SubmitButton, TextField } from '@unchainedshop/admin-ui/form';
 import { DangerMessage } from '@unchainedshop/admin-ui/modal';
 import { useApp, useForm, useModal } from '@unchainedshop/admin-ui/hooks';
-import useShopDefaults from '../../hooks/useShopDefaults.ts';
 import useTicketProductionMutations from '../../hooks/useTicketProductionMutations.ts';
+import { useCountries } from '@unchainedshop/admin-ui/modules/country';
+import { useCurrencies } from '@unchainedshop/admin-ui/modules/currency';
 import {
-  centsToDecimal,
-  isCategoryCode,
-  toCents,
-  shopPriceOf,
-  toCount,
-  toPriceFlags,
-  withPrice,
-} from '../../utils/production-form.ts';
+  PricingFields,
+  toPricingFormValues,
+  toPricingInput,
+} from '@unchainedshop/admin-ui/modules/product';
+import { isCategoryCode, toCount } from '../../utils/production-form.ts';
 import { useFormatPrice } from '../../utils/misc.ts';
 import { FormFooter, errorMessage } from './fields.tsx';
 
-// Adds a category, or changes the one given: name, capacity and price of new dates.
+// Adds a category, or changes the one given: name, capacity and prices of new dates.
 const CategoryForm = ({ production, category, onDone }) => {
   const { formatMessage } = useIntl();
   const { selectedLocale } = useApp();
-  const shop = useShopDefaults();
+  const { countries } = useCountries();
+  const { currencies } = useCurrencies();
+  const baseCountry = countries?.find(({ isBase }) => isBase);
   const { addTicketCategory, updateTicketCategory } = useTicketProductionMutations();
   const invalid = formatMessage({ id: 'invalid_value', defaultMessage: 'Enter a valid value' });
-  const shopPrice = shopPriceOf(category?.pricing, shop);
 
   const form = useForm({
-    submit: async ({ code, name, capacity, price, isTaxable, isNetPrice, applyToPerformances }) => {
+    submit: async ({ code, name, capacity, pricing, applyToPerformances }) => {
       const errors = [
         !category && !isCategoryCode(code) && 'code',
         Number.isNaN(toCount(capacity)) && 'capacity',
-        Number.isNaN(toCents(price)) && 'price',
       ].filter(Boolean);
       if (errors.length) {
         errors.forEach((field) => form.api.setFieldError(field, invalid));
         return { success: false, error: { message: '' } };
       }
-      const amount = toCents(price);
       const input = {
         texts: [{ locale: selectedLocale, title: name || '' }],
         capacity: toCount(capacity),
-        ...(amount !== null && {
-          pricing: withPrice(category?.pricing, {
-            amount,
-            currencyCode: shop.currencyCode,
-            countryCode: shop.countryCode,
-            isTaxable: Boolean(isTaxable),
-            isNetPrice: Boolean(isNetPrice),
-          }),
-        }),
+        pricing: toPricingInput(pricing ?? [], currencies),
       };
       try {
         if (category) {
@@ -78,10 +67,10 @@ const CategoryForm = ({ production, category, onDone }) => {
       name: category?.option?.texts?.title || '',
       capacity:
         category?.capacity === null || category?.capacity === undefined ? '' : String(category.capacity),
-      price: centsToDecimal(shopPrice?.amount),
-      ...toPriceFlags(shopPrice),
+      pricing: toPricingFormValues(category?.pricing ?? [], currencies),
       applyToPerformances: false,
     },
+    enableReinitialize: true,
   });
 
   return (
@@ -96,7 +85,7 @@ const CategoryForm = ({ production, category, onDone }) => {
                 )
               : formatMessage({ id: 'category_add', defaultMessage: 'Add category' })}
           </h3>
-          <div className="grid gap-4 sm:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-3">
             <TextField
               name="code"
               label={formatMessage({ id: 'category_code', defaultMessage: 'Code' })}
@@ -110,31 +99,24 @@ const CategoryForm = ({ production, category, onDone }) => {
               type="number"
               label={formatMessage({ id: 'category_capacity', defaultMessage: 'Capacity' })}
             />
-            <TextField
-              name="price"
-              label={formatMessage(
-                { id: 'category_price', defaultMessage: 'Price ({currency})' },
-                { currency: shop.currencyCode },
-              )}
-            />
           </div>
-          <div className="mt-4 flex flex-wrap gap-6">
-            <CheckboxField
-              name="isTaxable"
-              label={formatMessage({ id: 'taxable', defaultMessage: 'Taxable' })}
-            />
-            <CheckboxField
-              name="isNetPrice"
-              label={formatMessage({ id: 'net_price', defaultMessage: 'Net Price' })}
-            />
-          </div>
+          <h4 className="mt-6 mb-2 text-sm font-medium text-text-primary">
+            {formatMessage({ id: 'category_prices', defaultMessage: 'Prices of new dates' })}
+          </h4>
+          <PricingFields
+            name="pricing"
+            countries={countries}
+            currencies={currencies}
+            defaultCountryValue={baseCountry?.isoCode}
+            defaultCurrencyValue={baseCountry?.defaultCurrency?.isoCode}
+          />
           {category && (
             <div className="mt-4">
               <CheckboxField
                 name="applyToPerformances"
                 label={formatMessage({
                   id: 'category_apply',
-                  defaultMessage: 'Also set the capacity and price in every date',
+                  defaultMessage: 'Also set the capacity and prices in every date',
                 })}
               />
             </div>
@@ -178,7 +160,6 @@ const TicketCategoriesTab = ({ production }: { production: any }) => {
   const { formatMessage } = useIntl();
   const { formatPrice } = useFormatPrice();
   const { hasRole } = useAuth();
-  const shop = useShopDefaults();
   const { setModal } = useModal();
   const { removeTicketCategory } = useTicketProductionMutations();
   const [editing, setEditing] = useState<string | null>(null);
@@ -210,10 +191,12 @@ const TicketCategoriesTab = ({ production }: { production: any }) => {
     );
 
   const editedCategory = categories.find(({ code }) => code === editing);
-  const priceText = (category) => {
-    const price = shopPriceOf(category.pricing, shop);
-    return price ? formatPrice(price) : '-';
-  };
+  const priceText = (category) =>
+    category.pricing?.length
+      ? category.pricing
+          .map((price) => `${formatPrice(price)}${price.minQuantity ? ` (${price.minQuantity}+)` : ''}`)
+          .join(' · ')
+      : '-';
 
   return (
     <div className="space-y-6">
