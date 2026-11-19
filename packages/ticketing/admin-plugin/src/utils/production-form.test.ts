@@ -9,6 +9,7 @@ import {
   toUpdateTicketProductionInput,
   performanceFormValues,
   toTicketPerformanceInput,
+  ticketPriceFlags,
 } from './production-form.ts';
 
 const shop = { locale: 'de', currencyCode: 'CHF', countryCode: 'CH' };
@@ -145,6 +146,25 @@ test('a performance form shows its own values; blank details are taken from the 
       tickets: [{ category: 'reduced', supply: 10 }],
     },
   });
+  // A new price keeps the tax flags of its category
+  const repriced = {
+    ...values,
+    tickets: { ...values.tickets, adult: { supply: '100', price: '50.00' } },
+  };
+  const flags = { adult: { isTaxable: true, isNetPrice: true } };
+  assert.deepEqual(toTicketPerformanceInput(repriced, values, shop, flags), {
+    input: {
+      saleRules: { onSale: null, salesStart: null, salesEnd: null, maxPerOrder: 2 },
+      tickets: [
+        {
+          category: 'adult',
+          pricing: [
+            { amount: 5000, currencyCode: 'CHF', countryCode: 'CH', isTaxable: true, isNetPrice: true },
+          ],
+        },
+      ],
+    },
+  });
   // A new start reschedules
   const moved = { ...values, startsAt: '2026-11-03T20:00' };
   const movedResult = toTicketPerformanceInput(moved, values, shop);
@@ -163,5 +183,30 @@ test('a new performance sends its start and the values that differ from the cate
   });
   assert.deepEqual(toTicketPerformanceInput({ ...values, startsAt: '' }, null, shop), {
     errors: ['startsAt'],
+  });
+});
+
+test('a changed price keeps the tax flags of the date, a date without a price takes its category', () => {
+  const categories = [
+    { code: 'adult', pricing: [{ isTaxable: true, isNetPrice: false }] },
+    { code: 'child', pricing: [{ isTaxable: true, isNetPrice: true }] },
+  ];
+  const row = {
+    cells: {
+      adult: { catalogPrice: { amount: 4500, isTaxable: false, isNetPrice: true } },
+      child: { catalogPrice: null },
+    },
+    products: [],
+  };
+  assert.deepEqual(ticketPriceFlags(row, ['adult', 'child'], categories), {
+    adult: { isTaxable: false, isNetPrice: true },
+    child: { isTaxable: true, isNetPrice: true },
+  });
+  assert.deepEqual(ticketPriceFlags(null, ['adult'], categories), {
+    adult: { isTaxable: true, isNetPrice: false },
+  });
+  const uncategorized = { cells: {}, products: [{ catalogPrice: { isTaxable: true } }] };
+  assert.deepEqual(ticketPriceFlags(uncategorized, [null], []), {
+    '': { isTaxable: true, isNetPrice: false },
   });
 });
