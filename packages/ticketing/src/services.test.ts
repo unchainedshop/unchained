@@ -86,6 +86,56 @@ test('both cancellation paths reimburse ticket units and validate issuance befor
   }
 });
 
+test('credits and messages follow the purchase, also for walk-ins served by one operator', async () => {
+  const ticket = (_id: string, orderId: string, owner: Record<string, string>) => ({
+    _id,
+    productId: 'event',
+    quantity: 1,
+    meta: { orderId },
+    ...owner,
+  });
+  const tokens = [
+    ticket('a1', 'walk-in-a', { userId: 'operator' }),
+    ticket('a2', 'walk-in-a', { userId: 'operator' }),
+    ticket('b1', 'walk-in-b', { userId: 'operator' }),
+    ticket('w1', 'online', { walletAddress: '0xwallet' }),
+  ];
+  const issued: number[] = [];
+  const messages: any[] = [];
+  const modules = {
+    warehousing: { findTokens: async () => tokens, invalidateToken: async () => undefined },
+    passes: {
+      cancelTicket: async () => undefined,
+      generateDiscountCode: async (amount: number) => `code-${issued.push(amount)}`,
+    },
+    products: {
+      update: async () => undefined,
+      findProduct: async () => ({ _id: 'event' }),
+      prices: { price: async () => ({ amount: 2000, currencyCode: 'CHF' }) },
+    },
+    worker: { addWork: async ({ input }: any) => messages.push(input) },
+  };
+  await services.ticketing.cancelTicketsForProduct.call(modules as any, 'event', {
+    generateDiscount: true,
+    countryCode: 'CH',
+    currencyCode: 'CHF',
+  });
+  assert.deepEqual(issued, [4000, 2000, 2000]);
+  assert.deepEqual(
+    messages.map(({ orderId, userId, discountCode, discountAmount }) => ({
+      orderId,
+      userId,
+      discountCode,
+      discountAmount,
+    })),
+    [
+      { orderId: 'walk-in-a', userId: 'operator', discountCode: 'code-1', discountAmount: 4000 },
+      { orderId: 'walk-in-b', userId: 'operator', discountCode: 'code-2', discountAmount: 2000 },
+      { orderId: 'online', userId: undefined, discountCode: 'code-3', discountAmount: 2000 },
+    ],
+  );
+});
+
 // Records emitted events; the emitter is process-wide, so the previous one is restored.
 async function recordEvents(run: () => Promise<void>) {
   const events: { name: string; payload: any }[] = [];

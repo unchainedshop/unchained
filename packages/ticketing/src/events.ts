@@ -12,6 +12,8 @@ export const TicketingEventTypes = {
   TICKET_CANCELLED: 'TICKET_CANCELLED',
   /** An event was cancelled; one TICKET_CANCELLED per ticket precedes it. */
   TICKET_EVENT_CANCELLED: 'TICKET_EVENT_CANCELLED',
+  /** A ticket moved to another date of its production; its TICKET_CANCELLED precedes it. */
+  TICKET_EXCHANGED: 'TICKET_EXCHANGED',
 } as const;
 
 export type TicketingEventTypes = (typeof TicketingEventTypes)[keyof typeof TicketingEventTypes];
@@ -32,10 +34,18 @@ export interface TicketEventCancelledEventPayload {
   cancelledCount: number;
 }
 
+export interface TicketExchangedEventPayload {
+  tokenId: string;
+  newTokenId: string;
+  fromProductId: string;
+  toProductId: string;
+}
+
 export interface TicketingEventPayloads {
   [TicketingEventTypes.TICKET_REDEEMED]: TicketRedeemedEventPayload;
   [TicketingEventTypes.TICKET_CANCELLED]: TicketCancelledEventPayload;
   [TicketingEventTypes.TICKET_EVENT_CANCELLED]: TicketEventCancelledEventPayload;
+  [TicketingEventTypes.TICKET_EXCHANGED]: TicketExchangedEventPayload;
 }
 
 /** Registers the ticketing events; the passes module does this when it is configured. */

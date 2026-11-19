@@ -7,6 +7,7 @@ export interface GateEvent {
     location?: string | null;
     category?: string | null;
     categoryTitle?: string | null;
+    productionId?: string | null;
   } | null;
   texts?: { title?: string | null } | null;
 }
@@ -20,15 +21,16 @@ export function parseGateEventIds(value: string | string[] | undefined | null): 
 
 export const formatGateEventIds = (eventIds: string[]) => eventIds.join(',');
 
-const performanceKey = (event: GateEvent) =>
-  event.event?.startsAt
-    ? JSON.stringify([event.texts?.title || '', event.event?.startsAt, event.event?.location || ''])
-    : null;
+const performanceKey = ({ event, texts }: GateEvent) => {
+  if (!event?.startsAt) return null;
+  if (event.productionId) return JSON.stringify([event.productionId, event.startsAt]);
+  return JSON.stringify([texts?.title || '', event.startsAt, event.location || '']);
+};
 
 /**
- * The events sold for the same performance as event: same title, start and location, typically
- * one product per ticket category or seating area. Includes event itself; an event without a
- * start stands alone.
+ * The events sold for the same performance as event: the categories of the same date of its
+ * production, or for standalone events those with the same title, start and location (one product
+ * per seating area). Includes event itself; an event without a start stands alone.
  */
 export function findSamePerformance<T extends GateEvent>(events: T[], event: T): T[] {
   const key = performanceKey(event);

@@ -1,7 +1,6 @@
 import type { Context, GraphQLResolveInfo } from '@unchainedshop/api';
 import { InvalidIdError, TokenNotFoundError } from '@unchainedshop/api';
 import type { Product } from '@unchainedshop/core-products';
-import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { log } from '@unchainedshop/logger';
 import { timingSafeStringEqual } from '@unchainedshop/utils';
 import { assertTicketEventInScope, isActiveTicketEvent } from '../../roles.ts';
@@ -14,52 +13,24 @@ import {
 } from '../../errors.ts';
 import {
   getTicketEventDetails,
+  getTicketEventStart,
   isTicketCancelled,
   isTicketEventCancelled,
 } from '../../../event-details.ts';
+import { TicketNotRedeemableReason, explainEntryRefusal } from '../../../entry-window.ts';
 import { TicketingEventTypes, emitTicketingEvent } from '../../../events.ts';
-import { TICKET_WAREHOUSING_ADAPTER_KEY } from '../../../warehousing/ticket/adapter.ts';
+import { findTicketIssuerSettings } from '../../../warehousing/ticket/adapter.ts';
 
-/** Why a ticket that is neither cancelled nor redeemed cannot be redeemed now. */
-export const TicketNotRedeemableReason = {
-  /** The event is missing, not a ticket event or not active. */
-  EVENT_INACTIVE: 'EVENT_INACTIVE',
-  /** The entry window of the ticket issuer has not opened yet. */
-  NOT_YET_OPEN: 'NOT_YET_OPEN',
-  /** The entry window of the ticket issuer has closed. */
-  ENTRY_CLOSED: 'ENTRY_CLOSED',
-  /** The warehousing adapter refused for another reason. */
-  NOT_REDEEMABLE: 'NOT_REDEEMABLE',
-} as const;
-
-const MINUTE = 60_000;
-
-// Same reading as the ticket issuer: an empty value means that side of the window is unbounded.
-const readMinutes = (configuration: { key: string; value: string }[] | undefined, key: string) => {
-  const value = configuration?.find((entry) => entry.key === key)?.value?.trim();
-  if (!value) return null;
-  const minutes = Number(value);
-  return Number.isFinite(minutes) ? minutes : null;
-};
+export { TicketNotRedeemableReason };
 
 // Tells gate staff when the entrance opens or closed, as far as the ticket issuer decides it.
 async function explainRefusal(product: Product, context: Context, now: Date) {
   const { startsAt } = getTicketEventDetails(product);
-  const providers = await context.modules.warehousing.allProviders();
-  const issuer = providers.find(
-    ({ type, adapterKey }) =>
-      type === WarehousingProviderType.VIRTUAL && adapterKey === TICKET_WAREHOUSING_ADAPTER_KEY,
-  );
-  if (!startsAt || !issuer) return { reason: TicketNotRedeemableReason.NOT_REDEEMABLE, startsAt };
-
-  const opens = readMinutes(issuer.configuration, 'entryOpensMinutesBefore');
-  const closes = readMinutes(issuer.configuration, 'entryClosesMinutesAfter');
-  const opensAt = opens === null ? undefined : new Date(startsAt.getTime() - opens * MINUTE);
-  const closesAt = closes === null ? undefined : new Date(startsAt.getTime() + closes * MINUTE);
-  let reason: string = TicketNotRedeemableReason.NOT_REDEEMABLE;
-  if (opensAt && now < opensAt) reason = TicketNotRedeemableReason.NOT_YET_OPEN;
-  else if (closesAt && now > closesAt) reason = TicketNotRedeemableReason.ENTRY_CLOSED;
-  return { reason, startsAt, opensAt, closesAt };
+  const settings = await findTicketIssuerSettings(context.modules);
+  const refusal =
+    settings &&
+    explainEntryRefusal(settings, { start: getTicketEventStart(product), referenceDate: now });
+  return { reason: TicketNotRedeemableReason.NOT_REDEEMABLE, ...refusal, startsAt };
 }
 
 const cancellationOf = (token: any, product: Product | null) => {

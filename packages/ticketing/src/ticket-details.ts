@@ -1,10 +1,16 @@
 import { ProductPricingRowCategory, ProductPricingSheet, type UnchainedCore } from '@unchainedshop/core';
+import type { Order, OrderPosition } from '@unchainedshop/core-orders';
 import type { Product } from '@unchainedshop/core-products';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import type { Price } from '@unchainedshop/utils';
-import { TicketEventProperty, getTicketEventDetails, isTicketEventCancelled } from './event-details.ts';
+import {
+  TicketEventProperty,
+  TicketStatus,
+  getTicketEventDetails,
+  getTicketStatus,
+  isTicketEventCancelled,
+} from './event-details.ts';
 import { buildTicketScanPayload } from './scan-payload.ts';
-import { TicketStatus, getTicketStatus } from './api/resolvers/type/token.ts';
 
 type TicketDetailsAPI = Pick<UnchainedCore, 'modules'>;
 
@@ -41,18 +47,58 @@ export async function findTicketCategoryTitle(
   return text?.title || category;
 }
 
-/** The price of one ticket as it was ordered, before order discounts; null without its order. */
-export async function findTicketPrice(
-  token: TokenSurrogate,
-  { modules }: TicketDetailsAPI,
-): Promise<Price | null> {
+async function findTicketPosition(token: TokenSurrogate, { modules }: TicketDetailsAPI) {
+  if (token.orderPositionId) {
+    return modules.orders.positions.findOrderPosition({ itemId: token.orderPositionId });
+  }
   const orderId = token.meta?.orderId;
   if (typeof orderId !== 'string') return null;
-  const order = await modules.orders.findOrder({ orderId });
-  if (!order) return null;
-  const positions = await modules.orders.positions.findOrderPositions({ orderId });
-  const position = positions.find(({ productId }) => productId === token.productId);
-  if (!position?.quantity) return null;
+  const positions = (await modules.orders.positions.findOrderPositions({ orderId })).filter(
+    ({ productId }) => productId === token.productId,
+  );
+  return positions.length === 1 ? positions[0] : null;
+}
+
+/** The order and order position a ticket was bought with; null without them. */
+export async function findTicketPurchase(
+  token: TokenSurrogate,
+  unchainedAPI: TicketDetailsAPI,
+): Promise<{ order: Order; position: OrderPosition } | null> {
+  const position = await findTicketPosition(token, unchainedAPI);
+  if (!position) return null;
+  const order = await unchainedAPI.modules.orders.findOrder({ orderId: position.orderId });
+  return order ? { order, position } : null;
+}
+
+/** The price of one ticket as it was ordered, before order discounts; null without its order. */
+/**
+ * Where news about a purchase goes: the contact of its order, also for box-office sales and tickets
+ * exported to a wallet, else (tickets without an order) the owner. The locale is the owner's.
+ */
+export async function findPurchaseRecipient(
+  { orderId, userId }: { orderId?: string; userId?: string },
+  { modules }: TicketDetailsAPI,
+): Promise<{ emailAddress?: string; locale: Intl.Locale }> {
+  const user = userId ? await modules.users.findUserById(userId) : null;
+  const locale = modules.users.userLocale(user);
+  if (orderId) {
+    const order = await modules.orders.findOrder({ orderId });
+    return { emailAddress: order?.contact?.emailAddress || undefined, locale };
+  }
+  if (!user) return { locale };
+  return {
+    emailAddress: user.lastContact?.emailAddress || modules.users.primaryEmail(user)?.address,
+    locale,
+  };
+}
+
+export async function findTicketPrice(
+  token: TokenSurrogate,
+  unchainedAPI: TicketDetailsAPI,
+): Promise<Price | null> {
+  const purchase = await findTicketPurchase(token, unchainedAPI);
+  if (!purchase?.position.quantity) return null;
+  const { order, position } = purchase;
   const pricing = ProductPricingSheet({
     calculation: position.calculation,
     currencyCode: order.currencyCode,

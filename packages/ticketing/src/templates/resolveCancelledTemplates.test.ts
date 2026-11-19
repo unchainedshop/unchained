@@ -36,6 +36,13 @@ describe('cancellation templates', () => {
           texts: { findLocalizedText: async () => ({ title: 'Premiere' }) },
         },
         warehousing: { findToken: async () => ({ _id: 'ticket', productId: 'event' }) },
+        orders: {
+          findOrder: async ({ orderId }: { orderId: string }) =>
+            ({
+              'walk-in': { _id: 'walk-in', contact: { emailAddress: 'walk-in@example.com' } },
+              anonymous: { _id: 'anonymous', contact: { emailAddress: null } },
+            })[orderId] ?? null,
+        },
       },
     }) as any;
 
@@ -67,6 +74,29 @@ describe('cancellation templates', () => {
       const [message] = await (resolve as any)(params, context(eventWithDetails));
       assert.equal(message.input.from, 'Theater <tickets@theater.example>');
       assert.ok(message.input.text.endsWith('Theater\nhttps://theater.example\n'));
+    }
+  });
+
+  test('a ticket with an order is mailed to the order contact only, never to its owner', async () => {
+    for (const [resolve, params] of [
+      [resolveEventCancelledTemplate, { productId: 'event' }],
+      [resolveTicketCancelledTemplate, { tokenId: 'ticket' }],
+    ] as const) {
+      const toWalkIn = await (resolve as any)(
+        { ...params, userId: 'buyer', orderId: 'walk-in' },
+        context(eventWithDetails),
+      );
+      assert.equal(toWalkIn[0].input.to, 'walk-in@example.com');
+      const withoutAddress = await (resolve as any)(
+        { ...params, userId: 'buyer', orderId: 'anonymous' },
+        context(eventWithDetails),
+      );
+      assert.deepEqual(withoutAddress, [], 'not the address the operator used last');
+      const exported = await (resolve as any)(
+        { ...params, orderId: 'walk-in' },
+        context(eventWithDetails),
+      );
+      assert.equal(exported[0].input.to, 'walk-in@example.com', 'a ticket without owner');
     }
   });
 });

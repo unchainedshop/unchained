@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { isWithinEntryWindow } from './entry-window.ts';
+import { explainEntryRefusal, isWithinEntryWindow } from './entry-window.ts';
 
 const start = new Date('2026-10-01T18:00:00.000Z');
 const at = (iso: string) => new Date(iso);
@@ -41,4 +41,44 @@ test('the window is computed in absolute time across a daylight saving switch', 
   const window = { start: dstStart, opensMinutesBefore: 120, closesMinutesAfter: 0 };
   assert.equal(isWithinEntryWindow({ ...window, referenceDate: at('2026-10-25T00:30:00.000Z') }), true);
   assert.equal(isWithinEntryWindow({ ...window, referenceDate: at('2026-10-25T00:29:59.999Z') }), false);
+});
+
+test('a refusal says whether the entrance is not open yet or closed, with the bounds', () => {
+  const window = { opensMinutesBefore: 120, closesMinutesAfter: 60 };
+  const opensAt = at('2026-10-01T16:00:00.000Z');
+  const closesAt = at('2026-10-01T19:00:00.000Z');
+  assert.deepEqual(
+    explainEntryRefusal(window, { start, referenceDate: at('2026-10-01T15:00:00.000Z') }),
+    {
+      reason: 'NOT_YET_OPEN',
+      opensAt,
+      closesAt,
+    },
+  );
+  assert.deepEqual(
+    explainEntryRefusal(window, { start, referenceDate: at('2026-10-01T20:00:00.000Z') }),
+    {
+      reason: 'ENTRY_CLOSED',
+      opensAt,
+      closesAt,
+    },
+  );
+  assert.equal(
+    explainEntryRefusal(window, { start, referenceDate: at('2026-10-01T18:00:00.000Z') }),
+    null,
+  );
+});
+
+test('an invalid window or start refuses everyone, as the ticket issuer does', () => {
+  const referenceDate = at('2026-10-01T18:00:00.000Z');
+  assert.deepEqual(explainEntryRefusal({ entryWindowValid: false }, { start, referenceDate }), {
+    reason: 'NOT_REDEEMABLE',
+  });
+  assert.deepEqual(explainEntryRefusal({}, { start: new Date('nonsense'), referenceDate }), {
+    reason: 'NOT_REDEEMABLE',
+  });
+  assert.equal(
+    explainEntryRefusal({ opensMinutesBefore: 1 }, { start: undefined, referenceDate }),
+    null,
+  );
 });

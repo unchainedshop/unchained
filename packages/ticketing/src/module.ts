@@ -5,11 +5,13 @@ import { TokenSurrogateCollection } from '@unchainedshop/core-warehousing';
 import { OrderPricingRowCategory, OrderPricingSheet, type UnchainedCore } from '@unchainedshop/core';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import type { File } from '@unchainedshop/core-files';
+import type { Product } from '@unchainedshop/core-products';
 
 import { RendererTypes, getRenderer, hasRenderer } from './template-registry.ts';
 import { buildPassBinary, pushToApplePushNotificationService } from './mobile-tickets/apple-wallet.ts';
 import { type DiscountCodeHandlers, createDefaultDiscountCodeHandlers } from './discount-codes.ts';
 import { registerTicketingEvents } from './events.ts';
+import { isTicketEventCancelled } from './event-details.ts';
 import {
   OrderDiscountsCollection,
   OrderPositionsCollection,
@@ -297,10 +299,19 @@ const configurePasses = async ({ db, options }: ModuleInput<TicketingOptions>) =
    * redeemed nor cancelled yet, so a scan or another cancellation that got there first wins and
    * null is returned.
    */
-  const cancelTicket = async (tokenId: string, { onlyValid }: { onlyValid?: boolean } = {}) => {
+  const cancelTicket = async (
+    tokenId: string,
+    { onlyValid, meta = {} }: { onlyValid?: boolean; meta?: Record<string, unknown> } = {},
+  ) => {
     return TokenSurrogates.findOneAndUpdate(
       { _id: tokenId, ...(onlyValid ? { invalidatedDate: null, ...notCancelled } : {}) },
-      { $set: { 'meta.cancelled': true, 'meta.cancelledDate': new Date() } },
+      {
+        $set: {
+          ...Object.fromEntries(Object.entries(meta).map(([key, value]) => [`meta.${key}`, value])),
+          'meta.cancelled': true,
+          'meta.cancelledDate': new Date(),
+        },
+      },
       {
         returnDocument: 'after',
       },
@@ -363,6 +374,14 @@ const configurePasses = async ({ db, options }: ModuleInput<TicketingOptions>) =
       ]),
     ]);
     return issued + pending;
+  };
+
+  /** Tickets that can still be bought, counted as checkout does: null without a capacity. */
+  const countAvailableTickets = async (product: Product): Promise<number | null> => {
+    if (isTicketEventCancelled(product)) return 0;
+    const supply = product.tokenization?.supply;
+    if (!supply || !(supply > 0)) return null;
+    return Math.max(0, supply - (await countReservedTickets({ productId: product._id })));
   };
 
   const findHighestTicketSerial = async (productId: string): Promise<number | null> => {
@@ -482,6 +501,7 @@ const configurePasses = async ({ db, options }: ModuleInput<TicketingOptions>) =
     isTicketCancelled,
     countIssuedTickets,
     countReservedTickets,
+    countAvailableTickets,
     reserveTicketSerials,
     getTicketsCreated,
     generateDiscountCode: discountCodeHandlers.generate,

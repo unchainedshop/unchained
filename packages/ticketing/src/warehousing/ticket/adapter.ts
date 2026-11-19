@@ -73,7 +73,13 @@ const defaultTicketMeta: TicketWarehousingOptions['ticketMeta'] = (input) => {
   return attendeeName ? { attendeeName } : undefined;
 };
 
-const RESERVED_TICKET_META_KEYS = ['orderId', 'cancelled', 'cancelledDate'];
+const RESERVED_TICKET_META_KEYS = [
+  'orderId',
+  'cancelled',
+  'cancelledDate',
+  'exchangedTo',
+  'exchangedFrom',
+];
 
 const ConfigurationKey = {
   ENTRY_OPENS_MINUTES_BEFORE: 'entryOpensMinutesBefore',
@@ -89,7 +95,7 @@ const readNumber = (configuration: WarehousingConfiguration, key: string) => {
   return Number.isFinite(number) ? { value: number, valid: true } : { value: null, valid: false };
 };
 
-const readTicketConfiguration = (configuration: WarehousingConfiguration) => {
+export const readTicketConfiguration = (configuration: WarehousingConfiguration) => {
   const opens = readNumber(configuration, ConfigurationKey.ENTRY_OPENS_MINUTES_BEFORE);
   const closes = readNumber(configuration, ConfigurationKey.ENTRY_CLOSES_MINUTES_AFTER);
   const offset = readNumber(configuration, ConfigurationKey.SERIAL_OFFSET);
@@ -103,11 +109,21 @@ const readTicketConfiguration = (configuration: WarehousingConfiguration) => {
   };
 };
 
+/** The settings of the ticket issuer provider, null without one. */
+export async function findTicketIssuerSettings(modules: Pick<UnchainedCore['modules'], 'warehousing'>) {
+  const providers = await modules.warehousing.allProviders();
+  const issuer = providers.find(
+    ({ type, adapterKey }) =>
+      type === WarehousingProviderType.VIRTUAL && adapterKey === TICKET_WAREHOUSING_ADAPTER_KEY,
+  );
+  return issuer ? readTicketConfiguration(issuer.configuration) : null;
+}
+
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
 // Same shape as database ids elsewhere, without depending on the database package here.
-const generateTicketId = () =>
+export const generateTicketId = () =>
   Array.from(crypto.getRandomValues(new Uint8Array(12)), (byte) =>
     byte.toString(16).padStart(2, '0'),
   ).join('');

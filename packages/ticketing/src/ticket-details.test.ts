@@ -1,6 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { findTicketCategoryTitle, findTicketPrice, getTicketDetails } from './ticket-details.ts';
+import {
+  findTicketCategoryTitle,
+  findTicketPrice,
+  findTicketPurchase,
+  getTicketDetails,
+} from './ticket-details.ts';
 
 const performance = {
   _id: 'performance',
@@ -47,17 +52,26 @@ const api = {
       findOrder: async ({ orderId }: { orderId: string }) =>
         orderId === 'order' ? { _id: 'order', currencyCode: 'CHF' } : null,
       positions: {
-        findOrderPositions: async () => [
-          { productId: 'other', quantity: 1, calculation: [{ category: 'ITEM', amount: 999 }] },
-          {
-            productId: 'performance',
-            quantity: 2,
-            calculation: [
-              { category: 'ITEM', amount: 7000 },
-              { category: 'DISCOUNT', amount: -1000 },
-            ],
-          },
-        ],
+        findOrderPositions: async ({ orderId }: { orderId: string }) =>
+          [
+            {
+              _id: 'other-position',
+              orderId: 'order',
+              productId: 'other',
+              quantity: 1,
+              calculation: [{ category: 'ITEM', amount: 999 }],
+            },
+            {
+              _id: 'position',
+              orderId: 'order',
+              productId: 'performance',
+              quantity: 2,
+              calculation: [
+                { category: 'ITEM', amount: 7000 },
+                { category: 'DISCOUNT', amount: -1000 },
+              ],
+            },
+          ].filter((position) => position.orderId === orderId),
       },
     },
     warehousing: {
@@ -97,6 +111,43 @@ test('the ticket price is the item price of its order position, before discounts
   assert.deepEqual(await findTicketPrice(token, api), { amount: 3500, currencyCode: 'CHF' });
   assert.equal(await findTicketPrice({ ...token, meta: {} }, api), null);
   assert.equal(await findTicketPrice({ ...token, meta: { orderId: 'gone' } }, api), null);
+});
+
+test('a ticket is priced by its own order position, not by the first one of its event', async () => {
+  const position = (_id: string, amount: number) => ({
+    _id,
+    orderId: 'order',
+    productId: 'performance',
+    quantity: 1,
+    calculation: [{ category: 'ITEM', amount }],
+  });
+  const positions = [position('p42', 4200), position('p28', 2800)];
+  const twoLines = {
+    modules: {
+      orders: {
+        findOrder: api.modules.orders.findOrder,
+        positions: {
+          findOrderPosition: async ({ itemId }: { itemId: string }) =>
+            positions.find(({ _id }) => _id === itemId) ?? null,
+          findOrderPositions: async () => positions,
+        },
+      },
+    },
+  } as any;
+  const token = { _id: 't', productId: 'performance', meta: { orderId: 'order' } } as any;
+  assert.deepEqual(await findTicketPrice({ ...token, orderPositionId: 'p42' }, twoLines), {
+    amount: 4200,
+    currencyCode: 'CHF',
+  });
+  assert.deepEqual(await findTicketPrice({ ...token, orderPositionId: 'p28' }, twoLines), {
+    amount: 2800,
+    currencyCode: 'CHF',
+  });
+  assert.equal(await findTicketPrice(token, twoLines), null, 'a ticket without a position is ambiguous');
+  assert.equal(
+    (await findTicketPurchase({ ...token, orderPositionId: 'p28' }, twoLines))?.order._id,
+    'order',
+  );
 });
 
 test('getTicketDetails collects what a ticket shows', async () => {

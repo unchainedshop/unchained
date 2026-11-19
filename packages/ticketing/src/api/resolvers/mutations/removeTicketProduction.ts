@@ -12,13 +12,8 @@ export default async function removeTicketProduction(
   log(`mutation removeTicketProduction ${productionId}`, { userId: context.userId });
   const services = getProductionServices(context);
   await findTicketProductionInScope(productionId, context, info);
-  const productIds = await withTicketProductionErrors(
-    () => services.removeTicketProduction(productionId),
-    { productionId },
-  );
-  // Performances first, so none stays on sale as a standalone event
-  for (const productId of productIds) {
-    await context.services.products.removeProduct({ productId });
-  }
+  await withTicketProductionErrors(() => services.removeTicketProduction(productionId, context), {
+    productionId,
+  });
   return context.modules.products.findProduct({ productId: productionId });
 }

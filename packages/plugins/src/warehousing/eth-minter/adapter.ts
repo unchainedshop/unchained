@@ -39,20 +39,12 @@ export const ETHMinter: IWarehousingAdapter = {
       UnchainedCore;
     const { contractAddress, contractStandard, tokenId, supply, ercMetadataProperties } =
       product?.tokenization || {};
-    const getTokensCreated = async () => {
-      const existingTokens = await modules.warehousing.findTokens(
+    const getTokensCreated = () =>
+      modules.warehousing.tokensQuantity(
         contractStandard === ProductContractStandard.ERC721
           ? { productId: product!._id }
-          : {
-              productId: product!._id,
-              tokenSerialNumber: tokenId,
-            },
+          : { productId: product!._id, tokenSerialNumber: tokenId },
       );
-      const tokensCreated = existingTokens.reduce((acc, curToken) => {
-        return acc + curToken.quantity;
-      }, 0);
-      return tokensCreated;
-    };
 
     return {
       ...WarehousingAdapter.actions(configuration, context),

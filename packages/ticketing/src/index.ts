@@ -53,9 +53,16 @@ export {
   getTicketEventStart,
   isTicketEventCancelled,
   isTicketCancelled,
+  TicketStatus,
+  getTicketStatus,
   type TicketEventDetails,
 } from './event-details.ts';
-export { isWithinEntryWindow } from './entry-window.ts';
+export {
+  TicketNotRedeemableReason,
+  explainEntryRefusal,
+  isWithinEntryWindow,
+  type EntryWindow,
+} from './entry-window.ts';
 export {
   buildTicketScanPayload,
   parseTicketScanPayload,
@@ -67,9 +74,8 @@ export {
   type TicketRedeemedEventPayload,
   type TicketCancelledEventPayload,
   type TicketEventCancelledEventPayload,
+  type TicketExchangedEventPayload,
 } from './events.ts';
-export { TicketStatus, getTicketStatus } from './api/resolvers/type/token.ts';
-export { TicketNotRedeemableReason } from './api/resolvers/mutations/scanTicket.ts';
 export {
   createTicketOrderPositionValidator,
   validateTicketOrderPosition,
@@ -89,6 +95,7 @@ export { TICKET_PRODUCTION_TAG, isTicketProduction } from './production.ts';
 export {
   findTicketCategoryTitle,
   findTicketPrice,
+  findTicketPurchase,
   getTicketDetails,
   type TicketDetails,
   type TicketDetailsOptions,

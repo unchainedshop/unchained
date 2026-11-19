@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
-import { USER_TOKEN } from './seeds/users.js';
+import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import seedTicketing, { ConcertEventId, GATE_TOKEN, TheaterEventId } from './seeds/ticketing.js';
 
 const BoxOfficeProvider = {
@@ -162,6 +162,46 @@ test.describe('Ticketing: box office', () => {
         { attendeeName: null, userId: 'gate-staff' },
       ],
     );
+  });
+
+  test('a cancelled event is mailed to each walk-in, not to the operator', async () => {
+    const { data } = await staffFetch({
+      query: ADD_ITEMS,
+      variables: { items: [{ productId: ConcertEventId, quantity: 1 }] },
+    });
+    const orderId = data.addMultipleCartProducts._id;
+    await staffFetch({
+      query: UPDATE_CART,
+      variables: {
+        orderId,
+        paymentProviderId: BoxOfficeProvider._id,
+        contact: { emailAddress: 'second-walk-in@unchained.local', telNumber: null },
+        billingAddress: { firstName: null, lastName: null },
+      },
+    });
+    assert.ifError((await staffFetch({ query: CHECKOUT, variables: { orderId } })).errors?.[0]);
+
+    const { errors } = await createLoggedInGraphqlFetch(ADMIN_TOKEN)({
+      query: /* GraphQL */ `
+        mutation CancelEvent($productId: ID!) {
+          cancelEvent(productId: $productId)
+        }
+      `,
+      variables: { productId: ConcertEventId },
+    });
+    assert.ifError(errors?.[0]);
+
+    // The test platform turns the MESSAGE works into e-mails; failed ones are retried as copies
+    let recipients = [];
+    for (let attempt = 0; attempt < 50 && recipients.length < 2; attempt += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      const emails = await db
+        .collection('work_queue')
+        .find({ type: 'EMAIL', 'input.subject': /Event Cancelled/ })
+        .toArray();
+      recipients = [...new Set(emails.map(({ input }) => input.to))].sort();
+    }
+    assert.deepEqual(recipients, ['second-walk-in@unchained.local', 'walk-in@unchained.local']);
   });
 
   test('checkout with the box office provider is refused for customers', async () => {

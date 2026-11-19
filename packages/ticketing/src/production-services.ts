@@ -518,6 +518,11 @@ async function updateTicketPerformance(
     if (!match) throw fail(`Unknown ticket category: ${ticket.category}`, 'TICKET_CATEGORY_NOT_FOUND');
     return { ticket, product: match.product };
   });
+  await using supplyLocks = await this.orders.lockSupply(
+    ticketsByProduct.flatMap(({ ticket, product }) =>
+      ticket.supply !== undefined ? [product._id] : [],
+    ),
+  );
   for (const { ticket, product } of ticketsByProduct) {
     if (ticket.supply === undefined || ticket.supply === 0) continue;
     const gone = await passes.countReservedTickets({ productId: product._id });
@@ -602,19 +607,21 @@ async function updateTicketPerformance(
 }
 
 /**
- * Removes a performance without tickets from its production and returns the ids of its products,
- * which the caller removes (services.products.removeProduct).
+ * Removes a performance without tickets with its products (services.products.removeProduct, also
+ * from carts and assortments) and returns their ids. Running checkouts of them finish first.
  */
-async function removeTicketPerformance(this: Modules, productionId: string, slot: string) {
-  const { passes } = this as TicketingModules;
+async function removeTicketPerformance(
+  this: Modules,
+  productionId: string,
+  slot: string,
+  { services }: Pick<UnchainedCore, 'services'>,
+) {
   const production = await findTicketProduction(this, productionId);
   const performance = await findTicketPerformance(this, production, slot);
-  for (const { product } of performance) {
-    const [issued, reserved] = await Promise.all([
-      this.warehousing.tokensCount({ productId: product._id }),
-      passes.countReservedTickets({ productId: product._id }),
-    ]);
-    if (issued > 0 || reserved > 0) {
+  const productIds = performance.map(({ product }) => product._id);
+  await using supplyLocks = await this.orders.lockSupply(productIds);
+  for (const productId of productIds) {
+    if (await hasTickets(this, productId)) {
       throw fail(`Performance ${slot} has tickets, cancel it instead`, 'TICKET_PERFORMANCE_HAS_TICKETS');
     }
   }
@@ -628,7 +635,8 @@ async function removeTicketPerformance(this: Modules, productionId: string, slot
     key: SLOT,
   });
   if (slotVariation) await this.products.variations.removeVariationOption(slotVariation._id, slot);
-  return performance.map(({ product }) => product._id);
+  for (const productId of productIds) await services.products.removeProduct({ productId });
+  return productIds;
 }
 
 async function setTicketProductionStatus(this: Modules, productionId: string, publish: boolean) {
@@ -767,24 +775,6 @@ async function syncTicketProduction(this: Modules, productionId: string) {
   return production;
 }
 
-/** Removes the rows that shared a removed production media with the performances. */
-async function removeTicketProductionMediaCopies(this: Modules, productMediaId: string) {
-  const productions = await this.products.findProducts({
-    type: ProductType.CONFIGURABLE_PRODUCT,
-    tags: [TICKET_PRODUCTION_TAG],
-    includeDrafts: true,
-  });
-  const productIds = productions.flatMap((production) =>
-    (production.proxy?.assignments ?? []).map(({ productId }) => productId),
-  );
-  if (!productIds.length) return 0;
-  const copies = (await this.products.media.findProductMedias({ productIds })).filter(
-    ({ meta }) => meta?.productionMediaId === productMediaId,
-  );
-  for (const copy of copies) await this.products.media.delete(copy._id);
-  return copies.length;
-}
-
 async function addTicketCategory(this: Modules, productionId: string, input: TicketCategoryInput) {
   const production = await findTicketProduction(this, productionId);
   const [category] = normalizeCategories([input]);
@@ -867,6 +857,9 @@ async function updateTicketCategory(
   const performances = (await findPerformanceProducts(this, production)).filter(
     ({ assignment }) => assignment.vector?.[CATEGORY] === code,
   );
+  await using supplyLocks = await this.orders.lockSupply(
+    applyToPerformances ? performances.map(({ product }) => product._id) : [],
+  );
   if (applyToPerformances && effective.capacity) {
     for (const { product } of performances) {
       const gone = await passes.countReservedTickets({ productId: product._id });
@@ -905,10 +898,15 @@ async function updateTicketCategory(
 }
 
 /**
- * Removes a category without tickets and returns the ids of its performance products, which the
- * caller removes (services.products.removeProduct). The last category cannot be removed.
+ * Removes a category without tickets with its performance products (services.products.removeProduct)
+ * and returns their ids. The last category cannot be removed.
  */
-async function removeTicketCategory(this: Modules, productionId: string, code: string) {
+async function removeTicketCategory(
+  this: Modules,
+  productionId: string,
+  code: string,
+  { services }: Pick<UnchainedCore, 'services'>,
+) {
   const production = await findTicketProduction(this, productionId);
   const codes = await findTicketCategoryCodes(this, productionId);
   if (!codes.includes(code)) throw fail(`Unknown ticket category: ${code}`, 'TICKET_CATEGORY_NOT_FOUND');
@@ -918,8 +916,10 @@ async function removeTicketCategory(this: Modules, productionId: string, code: s
   const performances = (await findPerformanceProducts(this, production)).filter(
     ({ assignment }) => assignment.vector?.[CATEGORY] === code,
   );
-  for (const { product } of performances) {
-    if (await hasTickets(this, product._id)) {
+  const productIds = performances.map(({ product }) => product._id);
+  await using supplyLocks = await this.orders.lockSupply(productIds);
+  for (const productId of productIds) {
+    if (await hasTickets(this, productId)) {
       throw fail(`Ticket category ${code} has tickets`, 'TICKET_CATEGORY_HAS_TICKETS');
     }
   }
@@ -937,23 +937,32 @@ async function removeTicketCategory(this: Modules, productionId: string, code: s
     Object.entries(production.meta?.ticketCategories ?? {}).filter(([key]) => key !== code),
   );
   await this.products.update(productionId, { 'meta.ticketCategories': ticketCategories });
-  return performances.map(({ product }) => product._id);
+  for (const productId of productIds) await services.products.removeProduct({ productId });
+  return productIds;
 }
 
 /**
- * Checks that no performance of a production has tickets and returns the ids of the performance
- * products and of the production, in the order the caller removes them
- * (services.products.removeProduct).
+ * Removes a production without tickets with its performances (services.products.removeProduct),
+ * the performances first so none stays on sale as a standalone event, and returns their ids.
  */
-async function removeTicketProduction(this: Modules, productionId: string) {
+async function removeTicketProduction(
+  this: Modules,
+  productionId: string,
+  { services }: Pick<UnchainedCore, 'services'>,
+) {
   const production = await findTicketProduction(this, productionId);
-  const performances = await findPerformanceProducts(this, production);
-  for (const { product } of performances) {
-    if (product && (await hasTickets(this, product._id))) {
+  const performanceIds = (await findPerformanceProducts(this, production))
+    .map(({ product }) => product?._id)
+    .filter(Boolean) as string[];
+  await using supplyLocks = await this.orders.lockSupply(performanceIds);
+  for (const productId of performanceIds) {
+    if (await hasTickets(this, productId)) {
       throw fail('The production has tickets, cancel it instead', 'TICKET_PERFORMANCE_HAS_TICKETS');
     }
   }
-  return [...performances.map(({ product }) => product?._id).filter(Boolean), productionId] as string[];
+  const productIds = [...performanceIds, productionId];
+  for (const productId of productIds) await services.products.removeProduct({ productId });
+  return productIds;
 }
 
 /** Shares the media of a production with all its performances again. */
@@ -999,7 +1008,9 @@ export function createTicketProductionSyncHandlers({ modules }: { modules: Modul
     const next = (queues.get(productId) ?? Promise.resolve()).then(() =>
       run(async () => {
         const product = await modules.products.findProduct({ productId });
-        if (isTicketProduction(product)) await syncProduction.call(modules, productId);
+        if (isTicketProduction(product) && product!.status !== ProductStatus.DELETED) {
+          await syncProduction.call(modules, productId);
+        }
       }),
     );
     queues.set(productId, next);
@@ -1018,12 +1029,8 @@ export function createTicketProductionSyncHandlers({ modules }: { modules: Modul
     // Only changed tags matter; the other product updates do not reach the performances
     PRODUCT_UPDATE: ({ payload }: RawPayloadType<{ productId?: string; tags?: string[] }>) =>
       payload?.tags ? enqueue(payload.productId, syncTicketProductionTags) : Promise.resolve(),
-    PRODUCT_REMOVE_MEDIA: ({ payload }: RawPayloadType<{ productMediaId?: string }>) =>
-      run(async () => {
-        if (payload?.productMediaId) {
-          await removeTicketProductionMediaCopies.call(modules, payload.productMediaId);
-        }
-      }),
+    PRODUCT_REMOVE_MEDIA: ({ payload }: RawPayloadType<{ productId?: string }>) =>
+      enqueue(payload?.productId, syncTicketProductionMedia),
   };
 }
 
@@ -1047,7 +1054,6 @@ export default {
     updateTicketProduction,
     syncTicketProduction,
     removeTicketProduction,
-    removeTicketProductionMediaCopies,
     addTicketPerformance,
     updateTicketPerformance,
     removeTicketPerformance,
@@ -1065,7 +1071,6 @@ export interface TicketProductionServices {
     updateTicketProduction: Bound<typeof updateTicketProduction>;
     syncTicketProduction: Bound<typeof syncTicketProduction>;
     removeTicketProduction: Bound<typeof removeTicketProduction>;
-    removeTicketProductionMediaCopies: Bound<typeof removeTicketProductionMediaCopies>;
     addTicketPerformance: Bound<typeof addTicketPerformance>;
     updateTicketPerformance: Bound<typeof updateTicketPerformance>;
     removeTicketPerformance: Bound<typeof removeTicketPerformance>;

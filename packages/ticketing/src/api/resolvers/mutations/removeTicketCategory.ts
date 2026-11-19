@@ -12,13 +12,9 @@ export default async function removeTicketCategory(
   log(`mutation removeTicketCategory ${productionId}`, { userId: context.userId });
   const services = getProductionServices(context);
   await findTicketProductionInScope(productionId, context, info);
-  const productIds = await withTicketProductionErrors(
-    () => services.removeTicketCategory(productionId, code),
-    { productionId, code },
-  );
-  // Removes the products of the category from carts and assortments as well
-  for (const productId of productIds) {
-    await context.services.products.removeProduct({ productId });
-  }
+  await withTicketProductionErrors(() => services.removeTicketCategory(productionId, code, context), {
+    productionId,
+    code,
+  });
   return context.modules.products.findProduct({ productId: productionId });
 }

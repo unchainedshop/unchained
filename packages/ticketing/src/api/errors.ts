@@ -89,9 +89,19 @@ export const TicketPerformanceHasTicketsError = createError(
   'Tickets exist, cancel instead of removing',
 );
 
+export const TicketExchangeInvalidError = createError(
+  'TicketExchangeInvalidError',
+  'The tickets cannot move to this event',
+);
+
 export const TicketSupplyBelowSoldError = createError(
   'TicketSupplyBelowSoldError',
   'The supply cannot be lower than the tickets that are sold or reserved',
+);
+
+export const TicketProductionLockedError = createError(
+  'TicketProductionLockedError',
+  'Tickets of this production are being sold right now, try again',
 );
 
 export const TicketCategoryNotFoundError = createError(
@@ -121,6 +131,7 @@ const PRODUCTION_ERRORS = {
   TICKET_PERFORMANCE_HAS_TICKETS: TicketPerformanceHasTicketsError,
   TICKET_CATEGORY_HAS_TICKETS: TicketPerformanceHasTicketsError,
   TICKET_SUPPLY_BELOW_SOLD: TicketSupplyBelowSoldError,
+  LOCKED: TicketProductionLockedError,
   TICKET_CATEGORY_NOT_FOUND: TicketCategoryNotFoundError,
   TICKET_CATEGORY_EXISTS: TicketCategoryExistsError,
   INVALID_TICKET_SALE_RULES: InvalidTicketSaleRulesError,

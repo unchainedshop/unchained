@@ -116,6 +116,14 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
       return tokenCount;
     },
 
+    tokensQuantity: async (selector: any = {}): Promise<number> => {
+      const [result] = await TokenSurrogates.aggregate<{ quantity: number }>([
+        { $match: buildTokenFindSelector(selector) },
+        { $group: { _id: null, quantity: { $sum: '$quantity' } } },
+      ]).toArray();
+      return result?.quantity ?? 0;
+    },
+
     findTokensForUser: async (
       params: { userId: string } | { walletAddresses: string[] },
       options?: mongodb.FindOptions,

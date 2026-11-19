@@ -16,13 +16,15 @@ import { fileURLToPath } from 'node:url';
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let graphqlFetch;
+let Events;
 
 const productMediaFile2 = fs.createReadStream(path.resolve(dirname, `./assets/zurich.jpg`));
 const productMediaFile3 = fs.createReadStream(path.resolve(dirname, `./assets/contract.pdf`));
 
 test.describe('Product: Media', async () => {
   test.before(async () => {
-    await setupDatabase();
+    const [db] = await setupDatabase();
+    Events = db.collection('events');
     graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
   });
 
@@ -369,6 +371,16 @@ test.describe('Product: Media', async () => {
       });
 
       assert.strictEqual(errors[0]?.extensions?.code, 'ProductMediaNotFoundError');
+
+      let event;
+      for (let i = 0; i < 20 && !event; i++) {
+        event = await Events.findOne({
+          type: 'PRODUCT_REMOVE_MEDIA',
+          'payload.productMediaId': JpegProductMedia._id,
+        });
+        if (!event) await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+      assert.strictEqual(event?.payload?.productId, JpegProductMedia.productId);
     });
 
     test('return not found error when passed non existing productMediaId', async () => {

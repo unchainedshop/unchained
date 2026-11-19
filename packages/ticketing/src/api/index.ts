@@ -6,6 +6,7 @@ import ticketProductions from './resolvers/queries/ticketProductions.ts';
 import ticketProductionsCount from './resolvers/queries/ticketProductionsCount.ts';
 import ticketSalesReport from './resolvers/queries/ticketSalesReport.ts';
 import cancelTicket from './resolvers/mutations/cancelTicket.ts';
+import exchangeTickets from './resolvers/mutations/exchangeTickets.ts';
 import cancelEvent from './resolvers/mutations/cancelEvent.ts';
 import scanTicket from './resolvers/mutations/scanTicket.ts';
 import updateTicketEvent from './resolvers/mutations/updateTicketEvent.ts';
@@ -53,6 +54,7 @@ const ticketingResolvers = {
     scanTicket: checkResolver('scanTicket')(scanTicket),
     cancelTicket: checkResolver('cancelTicket')(cancelTicket),
     cancelEvent: checkResolver('cancelTicket')(cancelEvent),
+    exchangeTickets: checkResolver('cancelTicket')(exchangeTickets),
     updateTicketEvent: checkResolver('manageProducts')(updateTicketEvent),
     createTicketProduction: checkResolver('manageProducts')(createTicketProduction),
     addTicketPerformance: checkResolver('manageProducts')(addTicketPerformance),

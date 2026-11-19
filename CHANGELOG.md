@@ -5,6 +5,11 @@
 ### Security
 - **Token access keys require `UNCHAINED_SECRET`** (`@unchainedshop/core-warehousing`, `@unchainedshop/api`): without it the key was a hash of the token id and its owner alone, so anyone who knew both could forge an `x-token-accesskey`. `buildAccessKeyFromToken` now throws, so `Token.accessKey` and requests carrying the header fail until the variable is set.
 
+### Breaking
+- **`services.ticketing.removeTicketProductionMediaCopies` is removed** (`@unchainedshop/ticketing`): a removed production media now syncs the performances of its own production instead of scanning every production.
+- **The ticketing remove services remove the products** (`@unchainedshop/ticketing`): `removeTicketPerformance`, `removeTicketCategory` and `removeTicketProduction` take `{ services }` as their last argument and call `services.products.removeProduct` themselves, so callers no longer remove the returned ids.
+- **Cancellation credits and mails follow the purchase** (`@unchainedshop/ticketing`): `cancelEvent` and `cancelTicket` issue one credit and one message per order, mailed to the order contact, instead of one per ticket owner, so walk-ins served by one box-office operator each get theirs. The `EVENT_CANCELLED` and `TICKET_CANCELLED` template input gains `orderId`, and `userId` is missing for tickets exported to a wallet.
+
 ### Improvements
 - **Login with a code in the Admin UI** (`@unchainedshop/admin-ui`, `@unchainedshop/api`): while the users option `loginCode` is enabled, the login offers "Log in with a code" and `/login-code` takes the code or the link of the mail. The new `AdminUiConfig.loginCodeEnabled` tells the Admin UI.
 - **Order actions in the Admin UI report their errors** (`@unchainedshop/admin-ui`): confirm, reject, pay and deliver failed silently; they show the error now, and for `OrderLockedError` that another process is working on the order.
@@ -13,6 +18,9 @@
 - **Product type filter** (`@unchainedshop/admin-ui`): the product list filters by product type.
 - **Tag filter in the ticketing admin plugin** (`@unchainedshop/ticketing`, `@unchainedshop/admin-ui`): productions and events filter by tags; `@unchainedshop/admin-ui/ui` exports `SearchWithTags` for plugins.
 - **"Update all dates" in the ticketing admin plugin** (`@unchainedshop/ticketing`): the production header runs `syncTicketProduction`, e.g. after an import.
+- **`modules.warehousing.tokensQuantity(selector)`** (`@unchainedshop/core-warehousing`): sums the quantities of the matching tokens, beside the document count `tokensCount`. The ETH minter uses it instead of loading every token of the product on each stock estimate.
+- **`TicketEvent.available`** (`@unchainedshop/ticketing`): the tickets that can still be bought, counted like checkout (issued tickets and PENDING orders), `null` without a capacity and `0` when sold out or cancelled (`passes.countAvailableTickets`). The admin plugin's event list and Box Office use it, so the Box Office also sells events without a capacity, whose issuer stock is 0.
+- **Exchanging tickets between dates** (`@unchainedshop/ticketing`): `exchangeTickets(tokenIds, productId)` (action `cancelTicket`, organizer scope on both dates) moves tickets to another date of their production, all or none and safe to retry. Each ticket is cancelled and replaced with the same order position, owner and metadata, and `TICKET_EXCHANGED` is emitted; cancelling and rebooking work as before.
 
 ### Fixed
 - **`User.viewerAllowedActions` leaves out the actions on privileged users that need `managePrivilegedUsers`** (`@unchainedshop/api`), so the Admin UI no longer offers them.
@@ -22,6 +30,11 @@
 - **Missing Admin UI texts** (`@unchainedshop/admin-ui`): 21 texts of the bulk actions, the enrollment detail and the last-admin error had no English or German translation.
 - **Ticket prices keep their tax flags** (`@unchainedshop/ticketing`): saving a category or the price of a date in the admin plugin removed `isTaxable` and `isNetPrice`; the category form edits them now.
 - **Changing the tag filter starts at the first page** (`@unchainedshop/admin-ui`): lists with a tag filter kept their page, so a filtered list could show nothing.
+- **`PRODUCT_REMOVE_MEDIA` names the product** (`@unchainedshop/core-products`): it carries `{ productId, productMediaId }`, only for media that existed; removing several media at once emitted `{ assortmentMediaId }`, so ticketing kept their copies on the performances.
+- **A ticket's price follows its own order position** (`@unchainedshop/ticketing`): `findTicketPrice` and `getTicketDetails` took the first position of the order with the same event, so with two lines of one event the second ticket showed the first line's price. The new `findTicketPurchase` returns a ticket's order and position.
+- **Capacity changes and removals of ticket dates wait for running checkouts** (`@unchainedshop/ticketing`, `@unchainedshop/core-orders`): they hold the products' supply locks (new `modules.orders.lockSupply`), so a capacity lowered while a checkout sells the last seat no longer ends below the issued tickets; a busy lock answers `TicketProductionLockedError`.
+- **The gate's refusal reason agrees with the ticket issuer** (`@unchainedshop/ticketing`): `scanTicket` read an invalid entry window as unbounded while the issuer refused everyone. Both use the new `explainEntryRefusal`, and `TicketStatus`, `getTicketStatus` and `TicketNotRedeemableReason` moved out of the resolvers (same package exports).
+- **Gate Control and the Box Office keep productions apart** (`@unchainedshop/ticketing`): they grouped the categories of a performance by title, start and location, so two productions with the same values merged. The new `TicketEvent.productionId` groups the dates of a production; standalone events still group by those values.
 
 ## v5.0.0-alpha.13 (2026-11-11)
 

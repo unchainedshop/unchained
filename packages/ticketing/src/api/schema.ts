@@ -94,6 +94,14 @@ export default [
       cancelTicket(tokenId: ID!, generateDiscount: Boolean): Token!
 
       """
+      Move tickets to another date (productId) of their production: each ticket is cancelled and
+      replaced by one on that date with the same order position, owner and metadata. All or none,
+      and a retry does not move twice. No credit and no message (TICKET_EXCHANGED is emitted).
+      Requires the cancelTicket action, within the organizer scope of both dates.
+      """
+      exchangeTickets(tokenIds: [ID!]!, productId: ID!): [Token!]!
+
+      """
       Cancel all tickets for an event (tokenized product). Invalidates all non-cancelled tokens.
       Requires the cancelTicket action. Optionally generates discount codes for affected users.
       Returns the number of token records cancelled (a token may contain multiple ticket units).
@@ -227,6 +235,10 @@ export default [
       ownSaleRules: TicketSaleRules!
       "Details of a performance that are not taken over from its production"
       overridden: [String!]!
+      "The production this event is a performance of; null for a standalone event"
+      productionId: ID
+      "Tickets that can still be bought, counted like checkout (issued and pending orders): null without a capacity, 0 when sold out or cancelled. A snapshot, checkout decides."
+      available: Int
     }
 
     "Amounts are gross in the smallest unit of currencyCode (e.g. cents); discounts are negative."

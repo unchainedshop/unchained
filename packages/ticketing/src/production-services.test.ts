@@ -18,7 +18,6 @@ const {
   removeTicketCategory,
   updateTicketProduction,
   syncTicketProduction,
-  removeTicketProductionMediaCopies,
   removeTicketProduction,
 } = productionServices.ticketing;
 
@@ -27,6 +26,15 @@ let client: MongoClient;
 let modules: any;
 const reserved: Record<string, number> = {};
 const issued: Record<string, number> = {};
+const locked: string[][] = [];
+const removed: string[] = [];
+const unchainedAPI = {
+  services: {
+    products: {
+      removeProduct: async ({ productId }: { productId: string }) => removed.push(productId) > 0,
+    },
+  },
+} as any;
 
 before(async () => {
   // Use MONGO_URL (npm test shares the run's MongoDB), else start a server of its own
@@ -41,6 +49,12 @@ before(async () => {
     products: await configureProductsModule({ db, migrationRepository: undefined as any }),
     warehousing: { tokensCount: async ({ productId }: any) => issued[productId] ?? 0 },
     passes: { countReservedTickets: async ({ productId }: any) => reserved[productId] ?? 0 },
+    orders: {
+      lockSupply: async (productIds: string[]) => {
+        locked.push([...productIds].sort());
+        return { [Symbol.asyncDispose]: async () => undefined };
+      },
+    },
   };
   productsSettings.slugify = slugify;
 });
@@ -270,12 +284,14 @@ test('performances are added, changed, rescheduled and removed', async () => {
 
   // Removing needs a performance without tickets; the products are returned for removal
   issued[rescheduled[1].product._id] = 1;
-  await assert.rejects(removeTicketPerformance.call(modules, production._id, moved), {
+  await assert.rejects(removeTicketPerformance.call(modules, production._id, moved, unchainedAPI), {
     cause: 'TICKET_PERFORMANCE_HAS_TICKETS',
   });
   delete issued[rescheduled[1].product._id];
-  const removedIds = await removeTicketPerformance.call(modules, production._id, moved);
+  const removedIds = await removeTicketPerformance.call(modules, production._id, moved, unchainedAPI);
   assert.deepEqual(removedIds.toSorted(), rescheduled.map(({ product }: any) => product._id).toSorted());
+  assert.deepEqual(locked.at(-1), removedIds.toSorted(), 'under the supply locks of the date');
+  assert.deepEqual(removed.splice(0).toSorted(), removedIds.toSorted(), 'the products are removed');
   assert.deepEqual(await optionsOf(production._id, 'slot'), [first, second]);
   assert.equal((await performancesOf(production._id)).length, 4);
 });
@@ -387,19 +403,20 @@ test('categories are added, changed and removed', async () => {
 
   // Removing needs a category without tickets and cannot remove the last one
   issued[reduced[1].product._id] = 1;
-  await assert.rejects(removeTicketCategory.call(modules, production._id, 'reduced'), {
+  await assert.rejects(removeTicketCategory.call(modules, production._id, 'reduced', unchainedAPI), {
     cause: 'TICKET_CATEGORY_HAS_TICKETS',
   });
   delete issued[reduced[1].product._id];
-  const removedIds = await removeTicketCategory.call(modules, production._id, 'reduced');
+  const removedIds = await removeTicketCategory.call(modules, production._id, 'reduced', unchainedAPI);
   assert.deepEqual(removedIds.toSorted(), reduced.map(({ product }: any) => product._id).toSorted());
+  assert.deepEqual(removed.splice(0).toSorted(), removedIds.toSorted(), 'the products are removed');
   assert.deepEqual(await optionsOf(production._id, 'category'), ['adult']);
   assert.equal((await performancesOf(production._id)).length, 2);
   assert.equal(
     (await modules.products.findProduct({ productId: production._id })).meta.ticketCategories.reduced,
     undefined,
   );
-  await assert.rejects(removeTicketCategory.call(modules, production._id, 'adult'), {
+  await assert.rejects(removeTicketCategory.call(modules, production._id, 'adult', unchainedAPI), {
     cause: 'INVALID_TICKET_CATEGORY',
   });
 });
@@ -460,8 +477,10 @@ test('the media of a production are shared with its performances', async () => {
     1,
   );
 
-  await modules.products.media.delete(cover._id);
-  await removeTicketProductionMediaCopies.call(modules, cover._id);
+  await modules.products.media.deleteMediaFiles({ productId: production._id });
+  await createTicketProductionSyncHandlers({ modules }).PRODUCT_REMOVE_MEDIA({
+    payload: { productId: production._id, productMediaId: cover._id },
+  });
   for (const { product } of await performancesOf(production._id)) {
     assert.deepEqual(await modules.products.media.findProductMedias({ productId: product._id }), []);
   }
@@ -471,16 +490,17 @@ test('a production without tickets is removed with its performances', async () =
   const production = await createHamlet();
   const performances = await performancesOf(production._id);
   issued[performances[0].product._id] = 2;
-  await assert.rejects(removeTicketProduction.call(modules, production._id), {
+  await assert.rejects(removeTicketProduction.call(modules, production._id, unchainedAPI), {
     cause: 'TICKET_PERFORMANCE_HAS_TICKETS',
   });
   delete issued[performances[0].product._id];
-  const productIds = await removeTicketProduction.call(modules, production._id);
+  const productIds = await removeTicketProduction.call(modules, production._id, unchainedAPI);
   assert.deepEqual(
     productIds,
     [...performances.map(({ product }: any) => product._id), production._id],
     'performances first, the production last',
   );
+  assert.deepEqual(removed.splice(0), productIds, 'removed in that order');
 });
 
 test('media, texts and tags changed on a production in the core tabs reach its performances', async () => {
@@ -517,7 +537,9 @@ test('media, texts and tags changed on a production in the core tabs reach its p
   );
 
   await modules.products.media.delete(poster._id);
-  await handlers.PRODUCT_REMOVE_MEDIA({ payload: { productMediaId: poster._id } });
+  await handlers.PRODUCT_REMOVE_MEDIA({
+    payload: { productId: production._id, productMediaId: poster._id },
+  });
   await forEachPerformance(async (product) => assert.deepEqual(await mediaOf(product._id), ['photo']));
 
   // The core texts tab changes texts one locale at a time; the slugs of the dates stay

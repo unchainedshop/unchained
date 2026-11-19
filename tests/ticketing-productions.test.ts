@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { getTestPlatform } from './setup.js';
 import { ADMIN_TOKEN } from './seeds/users.js';
 import seedTicketing, { ConcertEventId, PRODUCER_B_TOKEN } from './seeds/ticketing.js';
 
@@ -55,6 +56,7 @@ const PRODUCTION_FIELDS = /* GraphQL */ `
               location
               category
               categoryTitle(forceLocale: "de")
+              productionId
               overridden
               saleRules {
                 salesStart
@@ -131,6 +133,10 @@ test.describe('Ticketing: productions', () => {
     const production = data.createTicketProduction;
     productionId = production._id;
     assert.equal(production.status, 'DRAFT');
+    assert.ok(
+      production.assignments.every(({ product }) => product.event.productionId === productionId),
+      'every date knows its production',
+    );
     assert.deepEqual(production.tags, ['ticket-production', 'organizer-a']);
     assert.deepEqual(production.ticketProduction, {
       location: 'Grosse Bühne',
@@ -267,6 +273,70 @@ test.describe('Ticketing: productions', () => {
       variables: { productId: thirdPerformance[0].product._id },
     });
     assert.equal(product.data.product?.status ?? 'DELETED', 'DELETED');
+  });
+
+  test('capacity changes and removals wait for running checkouts of a date', async () => {
+    const productionOf = async () =>
+      (
+        await adminFetch({
+          query: /* GraphQL */ `
+            query Production($productId: ID!) {
+              product(productId: $productId) {
+                ...ProductionFields
+              }
+            }
+            ${PRODUCTION_FIELDS}
+          `,
+          variables: { productId: productionId },
+        })
+      ).data.product;
+    const startsAt = second.toISOString();
+    const before = await productionOf();
+    const [ticket] = before.assignments.filter((assignment) => vectorOf(assignment).slot === startsAt);
+
+    const lock = await getTestPlatform().unchainedAPI.modules.orders.acquireLock(
+      ticket.product._id,
+      'supply',
+    );
+    try {
+      const updated = await adminFetch({
+        query: /* GraphQL */ `
+          mutation Update(
+            $productionId: ID!
+            $startsAt: DateTimeISO!
+            $performance: UpdateTicketPerformanceInput!
+          ) {
+            updateTicketPerformance(
+              productionId: $productionId
+              startsAt: $startsAt
+              performance: $performance
+            ) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          productionId,
+          startsAt,
+          performance: { tickets: [{ category: vectorOf(ticket).category, supply: 3 }] },
+        },
+      });
+      assert.equal(updated.errors?.[0]?.extensions?.code, 'TicketProductionLockedError');
+      const removed = await adminFetch({
+        query: /* GraphQL */ `
+          mutation Remove($productionId: ID!, $startsAt: DateTimeISO!) {
+            removeTicketPerformance(productionId: $productionId, startsAt: $startsAt) {
+              _id
+            }
+          }
+        `,
+        variables: { productionId, startsAt },
+      });
+      assert.equal(removed.errors?.[0]?.extensions?.code, 'TicketProductionLockedError');
+    } finally {
+      await lock.release();
+    }
+    assert.deepEqual((await productionOf()).assignments, before.assignments, 'nothing changed');
   });
 
   test('the start and category of a performance only change through its production', async () => {

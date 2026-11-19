@@ -14,9 +14,11 @@ const TicketEventListItem = ({ product }) => {
   const { formatDateTime } = useFormatDateTime();
 
   const supply = product?.contractConfiguration?.supply || 0;
-  const remaining = product?.simulatedStocks?.reduce((acc, cur) => acc + cur.quantity, 0) || 0;
-  // Without a supply there is no stock to subtract from: count the issued tickets instead.
-  const sold = supply > 0 ? Math.max(0, supply - remaining) : product?.tokensCount || 0;
+  const available = product?.event?.available;
+  const sold =
+    supply > 0 && typeof available === 'number'
+      ? Math.max(0, supply - available)
+      : product?.tokensCount || 0;
   // A cancelled event has no stock left, which says nothing about sales.
   const showSales = !product?.event?.isCanceled;
   const ticketUrl = `/ext/ticketing/${generateUniqueId(product)}`;

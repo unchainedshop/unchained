@@ -7,21 +7,7 @@ export async function lockOrderSupply(this: Modules, order: Order) {
   const products = await Promise.all(
     positions.map(({ productId }) => this.products.findProduct({ productId })),
   );
-  const limitedSupplyProductIds = [
-    ...new Set(products.flatMap((product) => (product?.tokenization?.supply ? [product._id] : []))),
-  ].sort();
-  const locks: { release: () => Promise<void> }[] = [];
-  const release = async () => {
-    await Promise.all(locks.splice(0).map((lock) => lock.release()));
-  };
-
-  try {
-    for (const productId of limitedSupplyProductIds) {
-      locks.push(await this.orders.acquireLock(productId, 'supply'));
-    }
-  } catch (error) {
-    await release();
-    throw error;
-  }
-  return { [Symbol.asyncDispose]: release };
+  return this.orders.lockSupply(
+    products.flatMap((product) => (product?.tokenization?.supply ? [product._id] : [])),
+  );
 }

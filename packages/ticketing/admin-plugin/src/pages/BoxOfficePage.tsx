@@ -25,10 +25,7 @@ const startOfToday = () => {
   return today.toISOString();
 };
 
-const remainingTickets = (event) => {
-  const stocks = event.simulatedStocks || [];
-  return stocks.length ? stocks.reduce((sum, { quantity }) => sum + (quantity || 0), 0) : null;
-};
+const remainingTickets = (event) => event.event?.available ?? null;
 
 const maxQuantity = (event) =>
   Math.max(
