@@ -26,6 +26,7 @@
 - **Ticket prices keep their tax flags** (`@unchainedshop/ticketing`): saving a category or the price of a date in the admin plugin removed `isTaxable` and `isNetPrice`; the category form edits them now.
 - **Changing the tag filter starts at the first page** (`@unchainedshop/admin-ui`): lists with a tag filter kept their page, so a filtered list could show nothing.
 - **`PRODUCT_REMOVE_MEDIA` names the product** (`@unchainedshop/core-products`): it carries `{ productId, productMediaId }`, only for media that existed; removing several media at once emitted `{ assortmentMediaId }`, so ticketing kept their copies on the performances.
+- **A ticket's price follows its own order position** (`@unchainedshop/ticketing`): `findTicketPrice` and `getTicketDetails` took the first position of the order with the same event, so with two lines of one event the second ticket showed the first line's price. The new `findTicketPurchase` returns a ticket's order and position.
 
 ## v5.0.0-alpha.13 (2026-11-11)
 

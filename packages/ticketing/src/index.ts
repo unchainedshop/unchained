@@ -89,6 +89,7 @@ export { TICKET_PRODUCTION_TAG, isTicketProduction } from './production.ts';
 export {
   findTicketCategoryTitle,
   findTicketPrice,
+  findTicketPurchase,
   getTicketDetails,
   type TicketDetails,
   type TicketDetailsOptions,

@@ -1,4 +1,5 @@
 import { ProductPricingRowCategory, ProductPricingSheet, type UnchainedCore } from '@unchainedshop/core';
+import type { Order, OrderPosition } from '@unchainedshop/core-orders';
 import type { Product } from '@unchainedshop/core-products';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import type { Price } from '@unchainedshop/utils';
@@ -41,18 +42,37 @@ export async function findTicketCategoryTitle(
   return text?.title || category;
 }
 
+async function findTicketPosition(token: TokenSurrogate, { modules }: TicketDetailsAPI) {
+  if (token.orderPositionId) {
+    return modules.orders.positions.findOrderPosition({ itemId: token.orderPositionId });
+  }
+  const orderId = token.meta?.orderId;
+  if (typeof orderId !== 'string') return null;
+  const positions = (await modules.orders.positions.findOrderPositions({ orderId })).filter(
+    ({ productId }) => productId === token.productId,
+  );
+  return positions.length === 1 ? positions[0] : null;
+}
+
+/** The order and order position a ticket was bought with; null without them. */
+export async function findTicketPurchase(
+  token: TokenSurrogate,
+  unchainedAPI: TicketDetailsAPI,
+): Promise<{ order: Order; position: OrderPosition } | null> {
+  const position = await findTicketPosition(token, unchainedAPI);
+  if (!position) return null;
+  const order = await unchainedAPI.modules.orders.findOrder({ orderId: position.orderId });
+  return order ? { order, position } : null;
+}
+
 /** The price of one ticket as it was ordered, before order discounts; null without its order. */
 export async function findTicketPrice(
   token: TokenSurrogate,
-  { modules }: TicketDetailsAPI,
+  unchainedAPI: TicketDetailsAPI,
 ): Promise<Price | null> {
-  const orderId = token.meta?.orderId;
-  if (typeof orderId !== 'string') return null;
-  const order = await modules.orders.findOrder({ orderId });
-  if (!order) return null;
-  const positions = await modules.orders.positions.findOrderPositions({ orderId });
-  const position = positions.find(({ productId }) => productId === token.productId);
-  if (!position?.quantity) return null;
+  const purchase = await findTicketPurchase(token, unchainedAPI);
+  if (!purchase?.position.quantity) return null;
+  const { order, position } = purchase;
   const pricing = ProductPricingSheet({
     calculation: position.calculation,
     currencyCode: order.currencyCode,
