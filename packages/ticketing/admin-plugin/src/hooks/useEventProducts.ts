@@ -47,12 +47,10 @@ const TicketEventsQuery = gql`
         contractConfiguration {
           supply
         }
-        simulatedStocks {
-          quantity
-        }
         tokensCount
         event {
           isCanceled
+          available
           startsAt
           location
           category

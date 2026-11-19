@@ -21,6 +21,7 @@ const BoxOfficeEventsQuery = gql`
           category
           categoryTitle
           isCanceled
+          available
           saleRules {
             onSale
             salesEnd
@@ -30,9 +31,6 @@ const BoxOfficeEventsQuery = gql`
         simulatedPrice {
           amount
           currencyCode
-        }
-        simulatedStocks {
-          quantity
         }
       }
     }

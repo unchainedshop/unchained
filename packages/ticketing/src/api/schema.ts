@@ -227,6 +227,8 @@ export default [
       ownSaleRules: TicketSaleRules!
       "Details of a performance that are not taken over from its production"
       overridden: [String!]!
+      "Tickets that can still be bought, counted like checkout (issued and pending orders): null without a capacity, 0 when sold out or cancelled. A snapshot, checkout decides."
+      available: Int
     }
 
     "Amounts are gross in the smallest unit of currencyCode (e.g. cents); discounts are negative."

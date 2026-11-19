@@ -106,6 +106,25 @@ test.describe('Ticketing: checkout', () => {
       variables: { orderId },
     });
 
+  const availableOf = async (productId: string) => {
+    const { data, errors } = await adminFetch({
+      query: /* GraphQL */ `
+        query Available($productId: ID!) {
+          product(productId: $productId) {
+            ... on TokenizedProduct {
+              event {
+                available
+              }
+            }
+          }
+        }
+      `,
+      variables: { productId },
+    });
+    assert.ifError(errors?.[0]);
+    return data.product.event.available;
+  };
+
   test.before(async () => {
     [db] = await setupDatabase();
     await seedTicketing(db);
@@ -177,6 +196,7 @@ test.describe('Ticketing: checkout', () => {
     const cartId = await createCart('tickets-supply');
     const first = await addTickets(cartId, ConcertEventId, 1);
     assert.ifError(first.errors?.[0]);
+    assert.equal(await availableOf(ConcertEventId), 1, 'issued and pending count, the open cart not');
 
     const soldOut = await addTickets(cartId, ConcertEventId, 1);
     assert.equal(soldOut.errors?.[0]?.extensions?.code, 'TicketSoldOutError');
@@ -186,6 +206,7 @@ test.describe('Ticketing: checkout', () => {
     await db
       .collection('order_positions')
       .updateOne({ _id: 'ticket-pending-position' }, { $set: { quantity: 2 } });
+    assert.equal(await availableOf(ConcertEventId), 0);
     const { errors: checkoutErrors } = await userFetch({
       query: /* GraphQL */ `
         mutation Checkout($orderId: ID) {
@@ -205,6 +226,23 @@ test.describe('Ticketing: checkout', () => {
       .updateOne({ _id: 'ticket-pending-order' }, { $set: { status: 'REJECTED' } });
     const freed = await addTickets(cartId, ConcertEventId, 1);
     assert.ifError(freed.errors?.[0]);
+    assert.equal(await availableOf(ConcertEventId), 2);
+
+    const Tokens = db.collection('token_surrogates');
+    await Tokens.updateOne({ productId: ConcertEventId }, { $set: { 'meta.cancelled': true } });
+    assert.equal(await availableOf(ConcertEventId), 3, 'a cancelled ticket frees its seat');
+    await Tokens.updateOne(
+      { productId: ConcertEventId, 'meta.cancelled': true },
+      { $unset: { 'meta.cancelled': '' } },
+    );
+
+    const theater = await db.collection('products').findOne({ _id: TheaterEventId });
+    await db.collection('products').insertOne({
+      ...theater,
+      _id: 'ticket-event-uncapped',
+      tokenization: { ...theater.tokenization, supply: null },
+    });
+    assert.equal(await availableOf('ticket-event-uncapped'), null, 'no capacity, no limit');
   });
 
   test('concurrent checkouts of the last seat sell it once', async () => {

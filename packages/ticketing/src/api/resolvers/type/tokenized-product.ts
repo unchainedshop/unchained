@@ -2,6 +2,7 @@ import type { Context } from '@unchainedshop/api';
 import type { Product } from '@unchainedshop/core-products';
 import { getTicketEventDetails, isTicketEventCancelled } from '../../../event-details.ts';
 import { findTicketCategoryTitle } from '../../../ticket-details.ts';
+import type { TicketingAPI } from '../../../index.ts';
 import {
   getDefaultTicketSaleRules,
   readTicketSaleRules,
@@ -71,4 +72,9 @@ export const TicketEvent = {
   },
   overridden: (product: Product): string[] =>
     Array.isArray(product.meta?.overridden) ? product.meta.overridden : [],
+  available: (
+    product: Product,
+    _params: never,
+    context: Context & Partial<Pick<TicketingAPI, 'modules'>>,
+  ) => context.modules?.passes?.countAvailableTickets(product) ?? null,
 };

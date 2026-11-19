@@ -18,6 +18,7 @@
 - **Tag filter in the ticketing admin plugin** (`@unchainedshop/ticketing`, `@unchainedshop/admin-ui`): productions and events filter by tags; `@unchainedshop/admin-ui/ui` exports `SearchWithTags` for plugins.
 - **"Update all dates" in the ticketing admin plugin** (`@unchainedshop/ticketing`): the production header runs `syncTicketProduction`, e.g. after an import.
 - **`modules.warehousing.tokensQuantity(selector)`** (`@unchainedshop/core-warehousing`): sums the quantities of the matching tokens, beside the document count `tokensCount`. The ETH minter uses it instead of loading every token of the product on each stock estimate.
+- **`TicketEvent.available`** (`@unchainedshop/ticketing`): the tickets that can still be bought, counted like checkout (issued tickets and PENDING orders), `null` without a capacity and `0` when sold out or cancelled (`passes.countAvailableTickets`). The admin plugin's event list and Box Office use it, so the Box Office also sells events without a capacity, whose issuer stock is 0.
 
 ### Fixed
 - **`User.viewerAllowedActions` leaves out the actions on privileged users that need `managePrivilegedUsers`** (`@unchainedshop/api`), so the Admin UI no longer offers them.
