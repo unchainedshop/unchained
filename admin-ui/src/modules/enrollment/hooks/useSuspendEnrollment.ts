@@ -2,8 +2,8 @@ import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
 
 const SuspendEnrollmentMutation = gql`
-  mutation SuspendEnrollment($enrollmentId: ID!) {
-    suspendEnrollment(enrollmentId: $enrollmentId) {
+  mutation SuspendEnrollment($enrollmentId: ID!, $resumeAt: DateTimeISO) {
+    suspendEnrollment(enrollmentId: $enrollmentId, resumeAt: $resumeAt) {
       _id
     }
   }
@@ -14,11 +14,13 @@ const useSuspendEnrollment = () => {
 
   const suspendEnrollment = async ({
     enrollmentId,
+    resumeAt,
   }: {
     enrollmentId: string;
+    resumeAt?: string | null;
   }) => {
     return suspendEnrollmentMutation({
-      variables: { enrollmentId },
+      variables: { enrollmentId, resumeAt },
       refetchQueries: ['Enrollments', 'Enrollment'],
     });
   };

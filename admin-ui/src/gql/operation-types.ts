@@ -881,7 +881,7 @@ export type IUpdateDeliveryProviderMutation = { updateDeliveryProvider:
     | { _id: string, created: unknown, updated: unknown, deleted: unknown, type: Types.IDeliveryProviderType | null, isActive: boolean | null, configuration: unknown, configurationError: Types.IDeliveryProviderError | null, interface: { _id: string, label: string | null, version: string | null } | null }
    };
 
-export type IEnrollmentDetailFragment = { _id: string, enrollmentNumber: string | null, updated: unknown, status: Types.IEnrollmentStatus, created: unknown, expires: unknown, contractStartDate: unknown, minimumCommitmentEnd: unknown, isExpired: boolean | null, country: { _id: string, isoCode: string | null } | null, billingAddress: { addressLine: string | null, addressLine2: string | null, city: string | null, company: string | null, countryCode: string | null, firstName: string | null, lastName: string | null, postalCode: string | null, regionCode: string | null } | null, contact: { emailAddress: string | null, telNumber: string | null } | null, currency: { _id: string, contractAddress: string | null, decimals: number | null, isActive: boolean | null, isoCode: string } | null, delivery: { provider:
+export type IEnrollmentDetailFragment = { _id: string, enrollmentNumber: string | null, updated: unknown, status: Types.IEnrollmentStatus, created: unknown, expires: unknown, resumeAt: unknown, contractStartDate: unknown, minimumCommitmentEnd: unknown, cancellationReason: Types.IEnrollmentTerminationReason | null, cancellationComment: string | null, isExpired: boolean | null, country: { _id: string, isoCode: string | null } | null, billingAddress: { addressLine: string | null, addressLine2: string | null, city: string | null, company: string | null, countryCode: string | null, firstName: string | null, lastName: string | null, postalCode: string | null, regionCode: string | null } | null, contact: { emailAddress: string | null, telNumber: string | null } | null, currency: { _id: string, contractAddress: string | null, decimals: number | null, isActive: boolean | null, isoCode: string } | null, delivery: { provider:
       | { _id: string, configurationError: Types.IDeliveryProviderError | null, isActive: boolean | null, type: Types.IDeliveryProviderType | null, interface: { _id: string, label: string | null, version: string | null } | null, simulatedPrice: { amount: number, currencyCode: string, isNetPrice: boolean, isTaxable: boolean } | null }
       | { _id: string, configurationError: Types.IDeliveryProviderError | null, isActive: boolean | null, type: Types.IDeliveryProviderType | null, interface: { _id: string, label: string | null, version: string | null } | null, simulatedPrice: { amount: number, currencyCode: string, isNetPrice: boolean, isTaxable: boolean } | null }
      | null } | null, payment: { provider: { _id: string, configurationError: Types.IPaymentProviderError | null, isActive: boolean | null, type: Types.IPaymentProviderType | null, interface: { _id: string, label: string | null, version: string | null } | null } | null } | null, periods: Array<{ start: unknown, end: unknown, isTrial: boolean, order: { _id: string } | null }>, plan: { quantity: number, configuration: Array<{ key: string, value: string }> | null, product: { _id: string, texts: { _id: string, title: string | null } | null } }, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null } };
@@ -909,7 +909,7 @@ export type IEnrollmentQueryVariables = Exact<{
 }>;
 
 
-export type IEnrollmentQuery = { enrollment: { _id: string, enrollmentNumber: string | null, updated: unknown, status: Types.IEnrollmentStatus, created: unknown, expires: unknown, contractStartDate: unknown, minimumCommitmentEnd: unknown, isExpired: boolean | null, country: { _id: string, isoCode: string | null } | null, billingAddress: { addressLine: string | null, addressLine2: string | null, city: string | null, company: string | null, countryCode: string | null, firstName: string | null, lastName: string | null, postalCode: string | null, regionCode: string | null } | null, contact: { emailAddress: string | null, telNumber: string | null } | null, currency: { _id: string, contractAddress: string | null, decimals: number | null, isActive: boolean | null, isoCode: string } | null, delivery: { provider:
+export type IEnrollmentQuery = { enrollment: { _id: string, enrollmentNumber: string | null, updated: unknown, status: Types.IEnrollmentStatus, created: unknown, expires: unknown, resumeAt: unknown, contractStartDate: unknown, minimumCommitmentEnd: unknown, cancellationReason: Types.IEnrollmentTerminationReason | null, cancellationComment: string | null, isExpired: boolean | null, country: { _id: string, isoCode: string | null } | null, billingAddress: { addressLine: string | null, addressLine2: string | null, city: string | null, company: string | null, countryCode: string | null, firstName: string | null, lastName: string | null, postalCode: string | null, regionCode: string | null } | null, contact: { emailAddress: string | null, telNumber: string | null } | null, currency: { _id: string, contractAddress: string | null, decimals: number | null, isActive: boolean | null, isoCode: string } | null, delivery: { provider:
         | { _id: string, configurationError: Types.IDeliveryProviderError | null, isActive: boolean | null, type: Types.IDeliveryProviderType | null, interface: { _id: string, label: string | null, version: string | null } | null, simulatedPrice: { amount: number, currencyCode: string, isNetPrice: boolean, isTaxable: boolean } | null }
         | { _id: string, configurationError: Types.IDeliveryProviderError | null, isActive: boolean | null, type: Types.IDeliveryProviderType | null, interface: { _id: string, label: string | null, version: string | null } | null, simulatedPrice: { amount: number, currencyCode: string, isNetPrice: boolean, isTaxable: boolean } | null }
        | null } | null, payment: { provider: { _id: string, configurationError: Types.IPaymentProviderError | null, isActive: boolean | null, type: Types.IPaymentProviderType | null, interface: { _id: string, label: string | null, version: string | null } | null } | null } | null, periods: Array<{ start: unknown, end: unknown, isTrial: boolean, order: { _id: string } | null }>, plan: { quantity: number, configuration: Array<{ key: string, value: string }> | null, product: { _id: string, texts: { _id: string, title: string | null } | null } }, user: { _id: string, username: string | null, name: string, avatar: { _id: string, url: string | null } | null } } | null };
@@ -937,6 +937,7 @@ export type ISendEnrollmentEmailMutation = { sendEnrollmentEmail: { success: boo
 
 export type ISuspendEnrollmentMutationVariables = Exact<{
   enrollmentId: string | number;
+  resumeAt?: unknown;
 }>;
 
 
@@ -944,10 +945,20 @@ export type ISuspendEnrollmentMutation = { suspendEnrollment: { _id: string } };
 
 export type ITerminateEnrollmentMutationVariables = Exact<{
   enrollmentId: string | number;
+  reason?: Types.IEnrollmentTerminationReason | null | undefined;
+  comment?: string | null | undefined;
 }>;
 
 
-export type ITerminateEnrollmentMutation = { terminateEnrollment: { _id: string } };
+export type ITerminateEnrollmentMutation = { terminateEnrollment: { _id: string, status: Types.IEnrollmentStatus, expires: unknown } };
+
+export type IUpdateEnrollmentExpiresMutationVariables = Exact<{
+  enrollmentId: string | number;
+  expires?: unknown;
+}>;
+
+
+export type IUpdateEnrollmentExpiresMutation = { updateEnrollment: { _id: string, expires: unknown } };
 
 export type IUpdateEnrollmentPlanMutationVariables = Exact<{
   enrollmentId: string | number;

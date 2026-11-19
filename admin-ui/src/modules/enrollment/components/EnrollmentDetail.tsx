@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { format } from 'date-fns';
 import { useIntl } from 'react-intl';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
@@ -19,13 +20,15 @@ import useTerminateEnrollment from '../hooks/useTerminateEnrollment';
 import useSuspendEnrollment from '../hooks/useSuspendEnrollment';
 import useSendEnrollmentEmail from '../hooks/useSendEnrollmentEmail';
 import useUpdateEnrollmentPlan from '../hooks/useUpdateEnrollmentPlan';
-import DangerMessage from '../../modal/components/DangerMessage';
+import useUpdateEnrollmentExpires from '../hooks/useUpdateEnrollmentExpires';
 import EnrollmentDetailHeader from './EnrollmentDetailHeader';
+import EnrollmentActionForm from './EnrollmentActionForm';
 import JSONView from '@/components/ui/JSONView';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import {
   IEnrollment,
   IEnrollmentStatus,
+  IEnrollmentTerminationReason,
   IProductType,
   IRoleAction,
   ISortDirection,
@@ -33,7 +36,17 @@ import {
 import useAuth from '../../Auth/useAuth';
 import useProducts from '../../product/hooks/useProducts';
 import Combobox from '@/components/ui/form/Combobox';
+import DatePickerField from '@/components/ui/form/DatePickerField';
+import SelectField from '@/components/ui/form/SelectField';
+import TextAreaField from '@/components/ui/form/TextAreaField';
 import deBounce from '../../common/utils/deBounce';
+import getGraphQLError from '../../common/utils/getGraphQLError';
+
+const toDateTime = (date?: string | null) =>
+  date ? new Date(`${date}T00:00`).toISOString() : null;
+
+const toLocalDate = (dateTime: unknown) =>
+  dateTime ? format(new Date(dateTime as string), 'yyyy-MM-dd') : null;
 
 const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
   const { formatMessage } = useIntl();
@@ -48,6 +61,7 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
   const { suspendEnrollment } = useSuspendEnrollment();
   const { sendEnrollmentEmail } = useSendEnrollmentEmail();
   const { updateEnrollmentPlan } = useUpdateEnrollmentPlan();
+  const { updateEnrollmentExpires } = useUpdateEnrollmentExpires();
 
   const [productQuery, setProductQuery] = useState('');
   const debouncedSetProductQuery = useMemo(
@@ -86,17 +100,22 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
         })}
         message={formatMessage({
           id: 'activate_header_conformation',
-          defaultMessage: 'Are you sure you want to this subscription?',
+          defaultMessage:
+            'Are you sure you want to activate this subscription?',
         })}
         onOkClick={async () => {
           setModal('');
-          await activateEnrollment({ enrollmentId: enrollment?._id });
-          toast.success(
-            formatMessage({
-              id: 'success_message',
-              defaultMessage: 'Subscription successfully activated.',
-            }),
-          );
+          try {
+            await activateEnrollment({ enrollmentId: enrollment?._id });
+            toast.success(
+              formatMessage({
+                id: 'success_message',
+                defaultMessage: 'Subscription successfully activated.',
+              }),
+            );
+          } catch (error) {
+            toast.error(getGraphQLError(error)?.message);
+          }
         }}
       />,
     );
@@ -154,40 +173,98 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
     );
   };
 
+  const terminationReasons: Record<IEnrollmentTerminationReason, string> = {
+    [IEnrollmentTerminationReason.UserRequested]: formatMessage({
+      id: 'termination_reason_user_requested',
+      defaultMessage: 'Requested by the customer',
+    }),
+    [IEnrollmentTerminationReason.PaymentFailed]: formatMessage({
+      id: 'termination_reason_payment_failed',
+      defaultMessage: 'Payment failed',
+    }),
+    [IEnrollmentTerminationReason.Expired]: formatMessage({
+      id: 'termination_reason_expired',
+      defaultMessage: 'Expired',
+    }),
+    [IEnrollmentTerminationReason.AdminAction]: formatMessage({
+      id: 'termination_reason_admin_action',
+      defaultMessage: 'Administrative action',
+    }),
+    [IEnrollmentTerminationReason.Other]: formatMessage({
+      id: 'termination_reason_other',
+      defaultMessage: 'Other',
+    }),
+  };
+
   const onTerminateEnrollment = async () => {
     await setModal(
-      <DangerMessage
-        onCancelClick={async () => setModal('')}
+      <EnrollmentActionForm
+        headerText={formatMessage({
+          id: 'terminate_subscription',
+          defaultMessage: 'Terminate subscription',
+        })}
         message={formatMessage({
           id: 'terminate_enrollment_confirmation',
           defaultMessage:
             'Are you sure you want to terminate this subscription? ',
         })}
-        onOkClick={async () => {
-          setModal('');
-          await terminateEnrollment({ enrollmentId: enrollment?._id });
-          toast.success(
-            formatMessage({
-              id: 'terminate_enrollment_success',
-              defaultMessage: 'Subscription terminated successfully',
-            }),
-          );
-        }}
-        okText={formatMessage({
+        submitText={formatMessage({
           id: 'terminate_subscription',
           defaultMessage: 'Terminate subscription',
         })}
-      />,
+        initialValues={{ reason: '', comment: '' }}
+        onCancel={() => setModal('')}
+        onSubmit={async ({ reason, comment }) => {
+          const { data } = await terminateEnrollment({
+            enrollmentId: enrollment._id,
+            reason: reason || null,
+            comment: comment || null,
+          });
+          const { status, expires } = data?.terminateEnrollment || {};
+          toast.success(
+            status === IEnrollmentStatus.Terminated
+              ? formatMessage({
+                  id: 'terminate_enrollment_success',
+                  defaultMessage: 'Subscription terminated successfully',
+                })
+              : formatMessage(
+                  {
+                    id: 'scheduled_termination',
+                    defaultMessage: 'Termination scheduled for {date}',
+                  },
+                  { date: formatDateTime(expires, { dateStyle: 'full' }) },
+                ),
+          );
+          return { success: true };
+        }}
+      >
+        <SelectField
+          name="reason"
+          label={formatMessage({
+            id: 'cancellation_reason',
+            defaultMessage: 'Cancellation reason',
+          })}
+          placeholder={formatMessage({
+            id: 'cancellation_reason',
+            defaultMessage: 'Cancellation reason',
+          })}
+          options={terminationReasons}
+        />
+        <TextAreaField
+          name="comment"
+          rows={3}
+          label={formatMessage({
+            id: 'cancellation_comment',
+            defaultMessage: 'Comment',
+          })}
+        />
+      </EnrollmentActionForm>,
     );
   };
 
   const onSuspendEnrollment = async () => {
     await setModal(
-      <AlertMessage
-        buttonText={formatMessage({
-          id: 'suspend_button',
-          defaultMessage: 'Suspend',
-        })}
+      <EnrollmentActionForm
         headerText={formatMessage({
           id: 'suspend_header',
           defaultMessage: 'Suspend subscription.',
@@ -197,19 +274,115 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
           defaultMessage:
             'Are you sure you want to suspend this subscription? No new orders will be generated until it is resumed.',
         })}
-        onOkClick={async () => {
-          setModal('');
-          await suspendEnrollment({ enrollmentId: enrollment?._id });
+        submitText={formatMessage({
+          id: 'suspend_button',
+          defaultMessage: 'Suspend',
+        })}
+        initialValues={{ resumeAt: null }}
+        onCancel={() => setModal('')}
+        onSubmit={async ({ resumeAt }) => {
+          await suspendEnrollment({
+            enrollmentId: enrollment._id,
+            resumeAt: toDateTime(resumeAt),
+          });
           toast.success(
             formatMessage({
               id: 'suspend_success',
               defaultMessage: 'Subscription suspended successfully.',
             }),
           );
+          return { success: true };
+        }}
+      >
+        <DatePickerField
+          name="resumeAt"
+          label={formatMessage({
+            id: 'resume_at_label',
+            defaultMessage: 'Resume automatically on (optional)',
+          })}
+        />
+      </EnrollmentActionForm>,
+    );
+  };
+
+  const onSetEndDate = async () => {
+    await setModal(
+      <EnrollmentActionForm
+        headerText={formatMessage({
+          id: 'set_end_date_header',
+          defaultMessage: 'Set end date',
+        })}
+        message={formatMessage({
+          id: 'set_end_date_message',
+          defaultMessage:
+            'The subscription ends on this date. Unlike a termination, no notice period or minimum commitment applies.',
+        })}
+        submitText={formatMessage({ id: 'save', defaultMessage: 'Save' })}
+        initialValues={{ expires: toLocalDate(enrollment.expires) }}
+        onCancel={() => setModal('')}
+        onSubmit={async ({ expires }) => {
+          await updateEnrollmentExpires({
+            enrollmentId: enrollment._id,
+            expires: toDateTime(expires),
+          });
+          toast.success(
+            formatMessage({
+              id: 'end_date_updated',
+              defaultMessage: 'End date updated',
+            }),
+          );
+          return { success: true };
+        }}
+      >
+        <DatePickerField
+          name="expires"
+          required
+          label={formatMessage({ id: 'end_date', defaultMessage: 'End date' })}
+        />
+      </EnrollmentActionForm>,
+    );
+  };
+
+  const onRemoveEndDate = async () => {
+    await setModal(
+      <AlertMessage
+        buttonText={formatMessage({
+          id: 'remove_end_date',
+          defaultMessage: 'Remove end date',
+        })}
+        headerText={formatMessage({
+          id: 'remove_end_date',
+          defaultMessage: 'Remove end date',
+        })}
+        message={formatMessage({
+          id: 'remove_end_date_message',
+          defaultMessage:
+            'The subscription renews again until it is terminated.',
+        })}
+        onOkClick={async () => {
+          setModal('');
+          try {
+            await updateEnrollmentExpires({
+              enrollmentId: enrollment._id,
+              expires: null,
+            });
+            toast.success(
+              formatMessage({
+                id: 'end_date_updated',
+                defaultMessage: 'End date updated',
+              }),
+            );
+          } catch (error) {
+            toast.error(getGraphQLError(error)?.message);
+          }
         }}
       />,
     );
   };
+
+  const canManageEndDate =
+    enrollment.status !== IEnrollmentStatus.Terminated &&
+    hasRole(IRoleAction.ManageEnrollments);
 
   const onChangePlan = async (option: { value: string; label: string }) => {
     if (!option) return;
@@ -361,6 +534,23 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
               },
               {
                 date: formatDateTime(enrollment.expires, {
+                  dateStyle: 'full',
+                  timeStyle: 'short',
+                }),
+              },
+            )}
+          </div>
+        )}
+      {enrollment?.resumeAt &&
+        enrollment?.status === IEnrollmentStatus.Suspended && (
+          <div className="my-2 rounded-md border border-blue-300 bg-blue-50 p-3 text-sm text-blue-800">
+            {formatMessage(
+              {
+                id: 'resumes_automatically',
+                defaultMessage: 'Resumes automatically on {date}',
+              },
+              {
+                date: formatDateTime(enrollment.resumeAt, {
                   dateStyle: 'full',
                   timeStyle: 'short',
                 }),
@@ -532,6 +722,88 @@ const EnrollmentDetail = ({ enrollment }: { enrollment: IEnrollment }) => {
                         onClick={onSendEnrollmentEmail}
                       />
                     )}
+                </div>
+              )}
+              <div className="border-t border-border-default pt-4">
+                <dt className="font-medium text-slate-900">
+                  {formatMessage({
+                    id: 'contract_start',
+                    defaultMessage: 'Contract start',
+                  })}
+                </dt>
+                <dd className="mt-2 text-sm text-slate-500">
+                  {enrollment?.contractStartDate
+                    ? formatDateTime(enrollment.contractStartDate, {
+                        dateStyle: 'medium',
+                      })
+                    : '-'}
+                </dd>
+              </div>
+              <div className="border-t border-border-default pt-4">
+                <dt className="font-medium text-slate-900">
+                  {formatMessage({
+                    id: 'end_date',
+                    defaultMessage: 'End date',
+                  })}
+                </dt>
+                <dd className="mt-2 text-sm text-slate-500">
+                  {enrollment?.expires
+                    ? formatDateTime(enrollment.expires, {
+                        dateStyle: 'medium',
+                      })
+                    : formatMessage({
+                        id: 'renews_automatically',
+                        defaultMessage: 'Renews automatically',
+                      })}
+                </dd>
+                {canManageEndDate && (
+                  <div className="mt-2 flex gap-2">
+                    <Button
+                      text={
+                        enrollment?.expires
+                          ? formatMessage({
+                              id: 'change',
+                              defaultMessage: 'Change',
+                            })
+                          : formatMessage({
+                              id: 'set_end_date_header',
+                              defaultMessage: 'Set end date',
+                            })
+                      }
+                      variant="secondary"
+                      className="px-2 py-1"
+                      onClick={onSetEndDate}
+                    />
+                    {enrollment?.expires && (
+                      <Button
+                        text={formatMessage({
+                          id: 'remove_end_date',
+                          defaultMessage: 'Remove end date',
+                        })}
+                        variant="secondary"
+                        className="px-2 py-1"
+                        onClick={onRemoveEndDate}
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
+              {enrollment?.cancellationReason && (
+                <div className="border-t border-border-default pt-4">
+                  <dt className="font-medium text-slate-900">
+                    {formatMessage({
+                      id: 'cancellation_reason',
+                      defaultMessage: 'Cancellation reason',
+                    })}
+                  </dt>
+                  <dd className="mt-2 text-sm text-slate-500">
+                    {terminationReasons[enrollment.cancellationReason]}
+                  </dd>
+                  {enrollment?.cancellationComment && (
+                    <dd className="mt-2 text-sm text-slate-500">
+                      {enrollment.cancellationComment}
+                    </dd>
+                  )}
                 </div>
               )}
             </div>

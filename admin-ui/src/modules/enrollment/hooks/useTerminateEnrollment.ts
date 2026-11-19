@@ -6,9 +6,19 @@ import {
 } from '../../../gql/types';
 
 const TerminateEnrollmentMutation = gql`
-  mutation TerminateEnrollment($enrollmentId: ID!) {
-    terminateEnrollment(enrollmentId: $enrollmentId) {
+  mutation TerminateEnrollment(
+    $enrollmentId: ID!
+    $reason: EnrollmentTerminationReason
+    $comment: String
+  ) {
+    terminateEnrollment(
+      enrollmentId: $enrollmentId
+      reason: $reason
+      comment: $comment
+    ) {
       _id
+      status
+      expires
     }
   }
 `;
@@ -21,9 +31,11 @@ const useTerminateEnrollment = () => {
 
   const terminateEnrollment = async ({
     enrollmentId,
+    reason,
+    comment,
   }: ITerminateEnrollmentMutationVariables) => {
     return terminateEnrollmentMutation({
-      variables: { enrollmentId },
+      variables: { enrollmentId, reason, comment },
       refetchQueries: ['Enrollments', 'Enrollment'],
     });
   };

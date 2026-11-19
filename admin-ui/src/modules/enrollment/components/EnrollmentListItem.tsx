@@ -53,10 +53,15 @@ const EnrollmentListItem = ({ enrollment, showUser }) => {
               })}
               color="amber"
             />
-          ) : (
+          ) : enrollment.expires ? (
             formatDateTime(enrollment.expires, {
               dateStyle: 'medium',
               timeStyle: 'medium',
+            })
+          ) : (
+            formatMessage({
+              id: 'renews_automatically',
+              defaultMessage: 'Renews automatically',
             })
           )}
         </div>
