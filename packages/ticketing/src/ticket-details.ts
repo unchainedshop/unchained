@@ -3,9 +3,14 @@ import type { Order, OrderPosition } from '@unchainedshop/core-orders';
 import type { Product } from '@unchainedshop/core-products';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import type { Price } from '@unchainedshop/utils';
-import { TicketEventProperty, getTicketEventDetails, isTicketEventCancelled } from './event-details.ts';
+import {
+  TicketEventProperty,
+  TicketStatus,
+  getTicketEventDetails,
+  getTicketStatus,
+  isTicketEventCancelled,
+} from './event-details.ts';
 import { buildTicketScanPayload } from './scan-payload.ts';
-import { TicketStatus, getTicketStatus } from './api/resolvers/type/token.ts';
 
 type TicketDetailsAPI = Pick<UnchainedCore, 'modules'>;
 

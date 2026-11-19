@@ -89,7 +89,7 @@ const readNumber = (configuration: WarehousingConfiguration, key: string) => {
   return Number.isFinite(number) ? { value: number, valid: true } : { value: null, valid: false };
 };
 
-const readTicketConfiguration = (configuration: WarehousingConfiguration) => {
+export const readTicketConfiguration = (configuration: WarehousingConfiguration) => {
   const opens = readNumber(configuration, ConfigurationKey.ENTRY_OPENS_MINUTES_BEFORE);
   const closes = readNumber(configuration, ConfigurationKey.ENTRY_CLOSES_MINUTES_AFTER);
   const offset = readNumber(configuration, ConfigurationKey.SERIAL_OFFSET);

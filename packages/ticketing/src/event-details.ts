@@ -96,3 +96,18 @@ export function isTicketEventCancelled(product?: Product | null): boolean {
 export function isTicketCancelled(token?: TokenSurrogate | null): boolean {
   return Boolean(token?.meta?.cancelled);
 }
+
+export const TicketStatus = {
+  VALID: 'VALID',
+  REDEEMED: 'REDEEMED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export type TicketStatus = (typeof TicketStatus)[keyof typeof TicketStatus];
+
+/** Cancelled wins: cancelling also sets invalidatedDate, and a redeemed ticket can be cancelled later. */
+export function getTicketStatus(token: TokenSurrogate): TicketStatus {
+  if (isTicketCancelled(token)) return TicketStatus.CANCELLED;
+  if (token.invalidatedDate) return TicketStatus.REDEEMED;
+  return TicketStatus.VALID;
+}

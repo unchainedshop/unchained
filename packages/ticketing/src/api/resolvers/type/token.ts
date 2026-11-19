@@ -1,20 +1,7 @@
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
-import { isTicketCancelled } from '../../../event-details.ts';
+import { TicketStatus, getTicketStatus, isTicketCancelled } from '../../../event-details.ts';
 
-export const TicketStatus = {
-  VALID: 'VALID',
-  REDEEMED: 'REDEEMED',
-  CANCELLED: 'CANCELLED',
-} as const;
-
-export type TicketStatus = (typeof TicketStatus)[keyof typeof TicketStatus];
-
-/** Cancelled wins: cancelling also sets invalidatedDate, and a redeemed ticket can be cancelled later. */
-export function getTicketStatus(token: TokenSurrogate): TicketStatus {
-  if (isTicketCancelled(token)) return TicketStatus.CANCELLED;
-  if (token.invalidatedDate) return TicketStatus.REDEEMED;
-  return TicketStatus.VALID;
-}
+export { TicketStatus, getTicketStatus };
 
 const toDate = (value: unknown) => {
   if (!(value instanceof Date) && typeof value !== 'string') return null;
