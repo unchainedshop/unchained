@@ -1,6 +1,6 @@
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
-import { useAuth } from '@unchainedshop/admin-ui/hooks';
+import { useApp, useAuth } from '@unchainedshop/admin-ui/hooks';
 import {
   BreadCrumbs,
   Loading,
@@ -8,7 +8,7 @@ import {
   PageHeader,
   ListHeader,
   AnimatedCounter,
-  SearchField,
+  SearchWithTags,
   Pagination,
 } from '@unchainedshop/admin-ui/ui';
 import TicketEventList from '../components/TicketEventList.tsx';
@@ -26,6 +26,7 @@ const TicketingPage = () => {
   const { formatMessage } = useIntl();
   const { query, push } = useRouter();
   const { hasRole } = useAuth();
+  const { shopInfo } = useApp();
 
   const { queryString, ...rest } = query;
   const view = (VIEWS.includes(query.view as View) ? query.view : 'productions') as View;
@@ -34,6 +35,11 @@ const TicketingPage = () => {
   ) as EventListPeriod;
   const limit = parseInt(query.limit as string, 10) || DefaultLimit;
   const offset = parseInt(query.skip as string, 10) || 0;
+  const tags = (query.tags as string)?.split(',').filter(Boolean) || undefined;
+  const tagOptions = (shopInfo?.adminUiConfig?.productTags || []).map((tag) => ({
+    value: tag,
+    label: tag,
+  }));
 
   const setQueryString = (searchString) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -69,8 +75,14 @@ const TicketingPage = () => {
     slotTo,
     sort,
     standalone: view === 'events',
+    tags,
   });
-  const productionList = useTicketProductions({ limit, offset, queryString: queryString as string });
+  const productionList = useTicketProductions({
+    limit,
+    offset,
+    queryString: queryString as string,
+    tags,
+  });
   const showProductions = view === 'productions';
   const { products, productsCount, loading } = showProductions
     ? {
@@ -154,57 +166,59 @@ const TicketingPage = () => {
             ))}
           </div>
         </div>
-        <div className="my-3 flex flex-wrap items-center gap-3">
-          {!showProductions && (
-            <div className="inline-flex rounded-md shadow-xs" role="group">
-              {EVENT_LIST_PERIODS.map((option, index) => (
-                <button
-                  key={option}
-                  type="button"
-                  aria-pressed={period === option}
-                  onClick={() => setPeriod(option)}
-                  className={[
-                    'border border-border-default px-4 py-2 text-sm font-medium',
-                    index === 0 ? 'rounded-l-md' : '',
-                    index === EVENT_LIST_PERIODS.length - 1 ? 'rounded-r-md' : '',
-                    period === option
-                      ? 'bg-slate-800 text-white'
-                      : 'bg-surface text-text-secondary hover:bg-surface-raised',
-                  ].join(' ')}
-                >
-                  {periodLabels[option]}
-                </button>
-              ))}
-            </div>
-          )}
-          <div className="min-w-0 flex-1">
-            <SearchField onInputChange={setQueryString} defaultValue={queryString} />
+        {!showProductions && (
+          <div className="my-3 inline-flex rounded-md shadow-xs" role="group">
+            {EVENT_LIST_PERIODS.map((option, index) => (
+              <button
+                key={option}
+                type="button"
+                aria-pressed={period === option}
+                onClick={() => setPeriod(option)}
+                className={[
+                  'border border-border-default px-4 py-2 text-sm font-medium',
+                  index === 0 ? 'rounded-l-md' : '',
+                  index === EVENT_LIST_PERIODS.length - 1 ? 'rounded-r-md' : '',
+                  period === option
+                    ? 'bg-slate-800 text-white'
+                    : 'bg-surface text-text-secondary hover:bg-surface-raised',
+                ].join(' ')}
+              >
+                {periodLabels[option]}
+              </button>
+            ))}
           </div>
-        </div>
-        {!showProductions && period !== 'all' && (
-          <p className="mb-3 text-xs text-text-muted">
-            {formatMessage({
-              id: 'events_without_date_hint',
-              defaultMessage: 'Events without a start date are listed under All.',
-            })}
-          </p>
         )}
-        {loading && !products.length ? (
-          <Loading />
-        ) : showProductions ? (
-          <TicketProductionList productions={products} />
-        ) : (
-          <TicketEventList products={products} />
-        )}
-        {!loading && !products?.length && (
-          <NoData
-            message={formatMessage({
-              id: 'no_events_noun',
-              defaultMessage: 'events',
-            })}
-          />
-        )}
-        {productsCount > 0 && <Pagination total={productsCount} data={products} />}
+        <SearchWithTags
+          onSearchChange={setQueryString}
+          defaultSearchValue={queryString}
+          showTagFilter
+          availableTagOptions={tagOptions}
+        >
+          {!showProductions && period !== 'all' && (
+            <p className="mb-3 text-xs text-text-muted">
+              {formatMessage({
+                id: 'events_without_date_hint',
+                defaultMessage: 'Events without a start date are listed under All.',
+              })}
+            </p>
+          )}
+          {loading && !products.length ? (
+            <Loading />
+          ) : showProductions ? (
+            <TicketProductionList productions={products} />
+          ) : (
+            <TicketEventList products={products} />
+          )}
+          {!loading && !products?.length && (
+            <NoData
+              message={formatMessage({
+                id: 'no_events_noun',
+                defaultMessage: 'events',
+              })}
+            />
+          )}
+          {productsCount > 0 && <Pagination total={productsCount} data={products} />}
+        </SearchWithTags>
       </div>
     </>
   );
