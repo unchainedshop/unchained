@@ -141,6 +141,20 @@ const TicketProductionDetail = ({ productId }: { productId: string }) => {
       />,
     );
 
+  const onSync = async () => {
+    try {
+      await mutations.syncTicketProduction(productId);
+      toast.success(
+        formatMessage({
+          id: 'production_synced',
+          defaultMessage: 'All dates took over the texts, tags, details, status and media',
+        }),
+      );
+    } catch (error) {
+      toast.error(errorMessage(error));
+    }
+  };
+
   const onUpdateTags = async ({ tags }) => {
     try {
       await mutations.updateTicketProduction(productId, { tags });
@@ -192,6 +206,13 @@ const TicketProductionDetail = ({ productId }: { productId: string }) => {
             options={statusOptions}
             type={formatMessage({ id: 'production', defaultMessage: 'Production' })}
           />
+          {canManage && (
+            <Button
+              variant="secondary"
+              text={formatMessage({ id: 'production_sync', defaultMessage: 'Update all dates' })}
+              onClick={onSync}
+            />
+          )}
           {canManage && (
             <Button
               variant="danger"

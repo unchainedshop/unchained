@@ -153,6 +153,35 @@ export function toUpdateTicketProductionInput(
   };
 }
 
+export interface PriceFlags {
+  isTaxable: boolean;
+  isNetPrice: boolean;
+}
+
+export const toPriceFlags = (price?: { isTaxable?: boolean; isNetPrice?: boolean } | null) => ({
+  isTaxable: Boolean(price?.isTaxable),
+  isNetPrice: Boolean(price?.isNetPrice),
+});
+
+type GridRow = { cells: Record<string, any>; products: any[] } | null;
+
+const productOf = (row: GridRow, code: string | null) => (code ? row?.cells[code] : row?.products[0]);
+
+export const ticketPriceFlags = (
+  row: GridRow,
+  columns: (string | null)[],
+  categories?: { code: string; pricing?: Partial<PriceFlags>[] | null }[] | null,
+): Record<string, PriceFlags> =>
+  Object.fromEntries(
+    columns.map((code) => [
+      code ?? '',
+      toPriceFlags(
+        productOf(row, code)?.catalogPrice ??
+          categories?.find((category) => category.code === code)?.pricing?.[0],
+      ),
+    ]),
+  );
+
 const withoutNull = <T extends Record<string, unknown>>(value: T) =>
   Object.fromEntries(Object.entries(value).filter(([, entry]) => entry !== null)) as Partial<T>;
 
@@ -174,8 +203,7 @@ export function performanceFormValues(
   row: { startsAt: string; cells: Record<string, any>; products: any[] } | null,
   columns: (string | null)[],
 ): PerformanceEditFormValues {
-  const productOf = (code: string | null) => (code ? row?.cells[code] : row?.products[0]);
-  const first = productOf(columns[0]);
+  const first = productOf(row, columns[0]);
   const event = first?.event;
   const overridden: string[] = event?.overridden ?? [];
   const detail = (key: (typeof PERFORMANCE_DETAILS)[number]) =>
@@ -188,7 +216,7 @@ export function performanceFormValues(
     saleRules: fromTicketSaleRules(event?.ownSaleRules),
     tickets: Object.fromEntries(
       columns.map((code) => {
-        const product = productOf(code);
+        const product = productOf(row, code);
         return [
           code ?? '',
           {
@@ -209,6 +237,7 @@ export function toTicketPerformanceInput(
   values: PerformanceEditFormValues,
   initial: PerformanceEditFormValues | null,
   { currencyCode, countryCode }: Pick<ShopDefaults, 'currencyCode' | 'countryCode'>,
+  priceFlagsByCategory: Record<string, PriceFlags> = {},
 ): { input: Record<string, any> } | { errors: string[] } {
   const errors: string[] = [];
   const input: Record<string, any> = {};
@@ -241,7 +270,7 @@ export function toTicketPerformanceInput(
       supply: ticket.supply !== (before?.supply ?? '') ? supply : null,
       pricing:
         ticket.price !== (before?.price ?? '') && amount !== null
-          ? [{ amount, currencyCode, countryCode }]
+          ? [{ amount, currencyCode, countryCode, ...priceFlagsByCategory[code] }]
           : null,
     });
     return Object.keys(changed).length ? [{ ...(code && { category: code }), ...changed }] : [];

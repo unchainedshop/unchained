@@ -142,6 +142,27 @@ test.describe('Login with a code sent by mail', () => {
     await disconnect();
   });
 
+  test('shopInfo tells the Admin UI whether login codes are enabled', async (t) => {
+    const loginCodeEnabled = async () => {
+      const { data } = await anonymousGraphqlFetch({
+        query: /* GraphQL */ `
+          query {
+            shopInfo {
+              adminUiConfig {
+                loginCodeEnabled
+              }
+            }
+          }
+        `,
+      });
+      return data.shopInfo.adminUiConfig.loginCodeEnabled;
+    };
+
+    assert.strictEqual(await loginCodeEnabled(), false);
+    enableLoginCode(t);
+    assert.strictEqual(await loginCodeEnabled(), true);
+  });
+
   test('is disabled by default', async (t) => {
     const email = await insertUser('code-disabled');
     assert.strictEqual(userSettings.loginCode.enabled, false);

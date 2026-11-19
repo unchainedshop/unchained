@@ -7,6 +7,7 @@ import FormWrapper from '../../common/components/FormWrapper';
 import SelfDocumentingView from '../../common/components/SelfDocumentingView';
 import convertArrayOfObjectToObject from '../../common/convertArrayOfObjectToObject';
 import Form from '../../forms/components/Form';
+import JSONAreaField from '@/components/ui/form/JSONAreaField';
 import SelectField from '@/components/ui/form/SelectField';
 import SubmitButton from '@/components/ui/form/SubmitButton';
 import TextField from '@/components/ui/form/TextField';
@@ -27,14 +28,18 @@ const ProductTokenizationForm = ({ productId, disabled = false }) => {
     contractStandard,
     tokenId,
     supply,
+    ercMetadataProperties,
   }) => {
     await updateProductTokenization({
       productId,
       tokenization: {
-        contractAddress,
+        contractAddress: contractAddress || undefined,
         contractStandard,
-        tokenId: tokenId || '',
+        tokenId: tokenId || undefined,
         supply,
+        ercMetadataProperties: ercMetadataProperties
+          ? JSON.parse(ercMetadataProperties)
+          : undefined,
       },
     });
     return { success: true };
@@ -54,17 +59,24 @@ const ProductTokenizationForm = ({ productId, disabled = false }) => {
       contractStandard: '',
       tokenId: '',
       supply: '',
+      ercMetadataProperties: null,
     },
   });
 
   useEffect(() => {
-    if (!loading)
+    if (!loading) {
+      const ercMetadataProperties =
+        product?.contractConfiguration?.ercMetadataProperties;
       form.api.setValues({
         contractAddress: product?.contractAddress || '',
         contractStandard: product?.contractStandard || '',
         tokenId: product?.contractConfiguration?.tokenId || '',
         supply: product?.contractConfiguration?.supply || '',
+        ercMetadataProperties: ercMetadataProperties
+          ? JSON.stringify(ercMetadataProperties, null, 2)
+          : null,
       });
+    }
   }, [loading]);
 
   return (
@@ -122,7 +134,6 @@ const ProductTokenizationForm = ({ productId, disabled = false }) => {
                 id: 'contract-address-label',
                 defaultMessage: 'Contract Address',
               })}
-              required
               className="block w-full max-w-full rounded-md border-border-default text-sm  focus:ring-focus-ring sm:text-sm"
             />
             <TextField
@@ -152,6 +163,15 @@ const ProductTokenizationForm = ({ productId, disabled = false }) => {
                 defaultMessage: 'Token Serial Number',
               })}
               className="block w-full max-w-full rounded-md border-border-default text-sm  focus:ring-focus-ring sm:text-sm"
+            />
+            <JSONAreaField
+              name="ercMetadataProperties"
+              required={false}
+              rows={6}
+              label={formatMessage({
+                id: 'erc_metadata_properties',
+                defaultMessage: 'ERC metadata properties',
+              })}
             />
           </div>
 

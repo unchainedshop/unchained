@@ -151,6 +151,31 @@ export const validateProductCommerce = (
 const isEmpty = (value) =>
   value === null || value === '' || value === undefined;
 
+export const validateAmount = (decimals: number): Validator => {
+  const amount = new RegExp(
+    `^\\d+${decimals > 0 ? `(\\.\\d{1,${decimals}})?` : ''}$`,
+  );
+  return {
+    isValid: (value) =>
+      isEmpty(value) ||
+      (amount.test(String(value).trim()) && Number(value) > 0),
+    intlMessageDescriptor: {
+      id: 'error_amount',
+      defaultMessage:
+        '{label} must be an amount above 0 with at most {decimals} decimals',
+    },
+    intlMessageValues: { decimals },
+  };
+};
+
+export const validatePositiveInteger: Validator = {
+  isValid: (value) => isEmpty(value) || /^[1-9]\d*$/.test(String(value).trim()),
+  intlMessageDescriptor: {
+    id: 'error_positive_integer',
+    defaultMessage: '{label} must be a whole number above 0',
+  },
+};
+
 export const validateProductCommerceOneZero = (
   getValues: () => any[],
 ): Validator => {
@@ -247,5 +272,14 @@ const useInitializeDefaultErrorMessages = () => {
     id: 'error_commerce_quantity_null_required',
     defaultMessage:
       '{label} should have one price with min quantity of 0 or empty',
+  });
+  formatMessage({
+    id: 'error_amount',
+    defaultMessage:
+      '{label} must be an amount above 0 with at most {decimals} decimals',
+  });
+  formatMessage({
+    id: 'error_positive_integer',
+    defaultMessage: '{label} must be a whole number above 0',
   });
 };

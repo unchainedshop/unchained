@@ -25,6 +25,8 @@ export default [
       customProperties: [AdminUiConfigCustomEntityInterface!]!
       externalLinks: [AdminUiLink!]!
       singleSignOnURL: String
+      "Whether the users option loginCode enables passwordless login with a code"
+      loginCodeEnabled: Boolean!
       productTags: [String!]!
       assortmentTags: [String!]!
       userTags: [String!]!

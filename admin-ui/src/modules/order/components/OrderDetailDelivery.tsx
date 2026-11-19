@@ -14,6 +14,7 @@ import useModal from '../../modal/hooks/useModal';
 import useDeliverOrder from '../hooks/useDeliverOrder';
 import StatusInformation from '../../common/components/StatusInformation';
 import useAuth from '../../Auth/useAuth';
+import getOrderActionErrorMessage from '../getOrderActionErrorMessage';
 
 const OrderDetailDelivery = ({ order }) => {
   const { deliveryProviderType } = useDeliveryProviderTypes();
@@ -45,13 +46,17 @@ const OrderDetailDelivery = ({ order }) => {
         })}
         onOkClick={async () => {
           setModal('');
-          await deliverOrder({ orderId: order._id });
-          toast.success(
-            formatMessage({
-              id: 'order__marked_delivered',
-              defaultMessage: 'Order marked as delivered successfully',
-            }),
-          );
+          try {
+            await deliverOrder({ orderId: order._id });
+            toast.success(
+              formatMessage({
+                id: 'order__marked_delivered',
+                defaultMessage: 'Order marked as delivered successfully',
+              }),
+            );
+          } catch (error) {
+            toast.error(getOrderActionErrorMessage(error, formatMessage));
+          }
         }}
       />,
     );

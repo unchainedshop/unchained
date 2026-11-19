@@ -143,7 +143,6 @@ const OrderDetailFragment = gql`
         updated
         deleted
         type
-        configuration
         interface {
           _id
           label

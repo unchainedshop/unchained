@@ -27,7 +27,13 @@ const useUpdateProductTokenization = () => {
 
   const updateProductTokenization = async ({
     productId,
-    tokenization: { contractAddress, contractStandard, tokenId, supply },
+    tokenization: {
+      contractAddress,
+      contractStandard,
+      tokenId,
+      supply,
+      ercMetadataProperties,
+    },
   }: IUpdateProductTokenizationMutationVariables) => {
     return updateProductTokenizationMutation({
       variables: {
@@ -37,6 +43,7 @@ const useUpdateProductTokenization = () => {
           contractStandard,
           tokenId,
           supply: parseInt(supply as unknown as string, 10),
+          ercMetadataProperties,
         },
       },
       refetchQueries: ['Product', 'Products'],

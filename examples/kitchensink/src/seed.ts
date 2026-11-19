@@ -20,25 +20,27 @@ const seedPassword =
 export default async (unchainedAPI: UnchainedCore) => {
   const { modules } = unchainedAPI;
   try {
-    const createUserIfMissing = async ({ email, roles = [], tags = [], username }) => {
-      if ((await modules.users.count({ username })) > 0) return;
-      await modules.users.createUser(
-        {
-          email,
-          guest: false,
-          initialPassword: seedPassword ? true : undefined,
-          password: seedPassword ? seedPassword : undefined,
-          roles,
-          tags,
-          username,
-        },
-        { skipMessaging: true },
-      );
+    const ensureVerifiedUser = async ({ email, roles = [], tags = [], username }) => {
+      const userId =
+        (await modules.users.findUserByUsername(username))?._id ??
+        (await modules.users.createUser(
+          {
+            email,
+            guest: false,
+            initialPassword: seedPassword ? true : undefined,
+            password: seedPassword ? seedPassword : undefined,
+            roles,
+            tags,
+            username,
+          },
+          { skipMessaging: true },
+        ));
+      await modules.users.verifyEmail(userId, email);
     };
 
     const isInitialized = (await modules.users.count({ username: 'admin' })) > 0;
 
-    await createUserIfMissing({
+    await ensureVerifiedUser({
       email: 'admin@unchained.local',
       roles: ['admin'],
       username: 'admin',
@@ -46,27 +48,27 @@ export default async (unchainedAPI: UnchainedCore) => {
 
     // Recreate these fixtures on startup after destructive local permission tests.
     await Promise.all([
-      createUserIfMissing({
+      ensureVerifiedUser({
         email: 'user-manager@unchained.local',
         roles: ['userManager'],
         username: 'user-manager',
       }),
-      createUserIfMissing({
+      ensureVerifiedUser({
         email: 'user-manager-peer@unchained.local',
         roles: ['userManager'],
         username: 'user-manager-peer',
       }),
-      createUserIfMissing({
+      ensureVerifiedUser({
         email: 'readonly-customer@unchained.local',
         tags: ['permission-test-readonly'],
         username: 'readonly-customer',
       }),
-      createUserIfMissing({
+      ensureVerifiedUser({
         email: 'managed-customer@unchained.local',
         tags: ['permission-test-managed'],
         username: 'managed-customer',
       }),
-      createUserIfMissing({
+      ensureVerifiedUser({
         email: 'disposable-customer@unchained.local',
         tags: ['permission-test-disposable'],
         username: 'disposable-customer',

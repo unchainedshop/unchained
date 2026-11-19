@@ -1,5 +1,5 @@
 import { useIntl } from 'react-intl';
-import { IRoleAction } from '../../gql/types';
+import { IProductType, IRoleAction } from '../../gql/types';
 
 import { useRouter } from 'next/router';
 
@@ -32,6 +32,7 @@ const Products = () => {
   const includeDrafts =
     query?.includeDrafts === 'true' || !query?.includeDrafts;
   const tags = (query.tags as string)?.split(',') || undefined;
+  const type = (query.type as IProductType) || null;
   const sort = query.sort || '';
   const { hasRole } = useAuth();
   const { queryString, slug, ...restQuery } = query;
@@ -53,7 +54,13 @@ const Products = () => {
     queryString: queryString as string,
     includeDrafts,
     tags,
+    type,
   });
+
+  const setType = (value: string) => {
+    const { skip, type: previousType, ...withoutType } = query;
+    push({ query: value ? { ...withoutType, type: value } : withoutType });
+  };
 
   if (slug) return <ProductDetailPage slug={slug} />;
   const headerText =
@@ -112,6 +119,24 @@ const Products = () => {
             toggleKey="includeDrafts"
             active={includeDrafts}
           />
+          <select
+            aria-label={formatMessage({
+              id: 'product_type',
+              defaultMessage: 'Product type',
+            })}
+            value={type || ''}
+            onChange={(event) => setType(event.target.value)}
+            className="rounded-md border-1 border-border-default bg-surface-input py-1.5 pl-3 pr-8 text-sm text-text-primary focus:outline-hidden focus:ring-2 focus:ring-focus-ring"
+          >
+            <option value="">
+              {formatMessage({ id: 'all_types', defaultMessage: 'All types' })}
+            </option>
+            {Object.entries(IProductType).map(([label, value]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
         </ListHeader>
         <SearchWithTags
           onSearchChange={setQueryString}
@@ -123,7 +148,15 @@ const Products = () => {
             <ProductList
               sortable
               availableTagOptions={tagFilterOptions}
-              {...{ queryString, includeDrafts, limit, offset, tags, sortKeys }}
+              {...{
+                queryString,
+                includeDrafts,
+                limit,
+                offset,
+                tags,
+                sortKeys,
+                type,
+              }}
             />
           </LocaleWrapper>
         </SearchWithTags>

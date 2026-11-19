@@ -28,6 +28,7 @@ const ProductList = ({
   includeDrafts,
   sortable,
   availableTagOptions = [],
+  type = null,
 }) => {
   const { formatMessage } = useIntl();
   const { selectedLocale } = useApp();
@@ -40,6 +41,7 @@ const ProductList = ({
     tags,
     sort: sortKeys,
     forceLocale: selectedLocale,
+    type,
   });
   const allIds = products?.map((product) => product._id) || [];
 

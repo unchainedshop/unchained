@@ -7,6 +7,7 @@ import useTicketProductionMutations from '../../hooks/useTicketProductionMutatio
 import {
   fromTicketSaleRules,
   performanceFormValues,
+  ticketPriceFlags,
   toTicketPerformanceInput,
   type PerformanceEditFormValues,
 } from '../../utils/production-form.ts';
@@ -74,6 +75,7 @@ const TicketDateForm = ({
   const sold = row ? row.products.reduce((sum, product) => sum + (product?.tokensCount || 0), 0) : 0;
   const categoryName = (code: string | null) =>
     details.categories?.find((category) => category.code === code)?.option?.texts?.title || code;
+  const priceFlags = ticketPriceFlags(row, columns, details.categories);
 
   const form = useForm({
     submit: async (values) => {
@@ -81,6 +83,7 @@ const TicketDateForm = ({
         fromFormValues(values, columns),
         row ? initial : null,
         shop,
+        priceFlags,
       );
       if ('errors' in result) {
         result.errors.forEach((name) => {

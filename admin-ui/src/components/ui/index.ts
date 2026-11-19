@@ -70,3 +70,4 @@ export { default as MediaAvatar } from '../../modules/common/components/MediaAva
 export { default as FormWrapper } from '../../modules/common/components/FormWrapper';
 export { default as LocaleWrapper } from '../../modules/common/components/LocaleWrapper';
 export { default as SelectOptions } from '../../modules/common/components/SelectOptions';
+export { default as SearchWithTags } from '../../modules/common/components/SearchWithTags';

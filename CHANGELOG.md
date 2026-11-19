@@ -5,6 +5,24 @@
 ### Security
 - **Token access keys require `UNCHAINED_SECRET`** (`@unchainedshop/core-warehousing`, `@unchainedshop/api`): without it the key was a hash of the token id and its owner alone, so anyone who knew both could forge an `x-token-accesskey`. `buildAccessKeyFromToken` now throws, so `Token.accessKey` and requests carrying the header fail until the variable is set.
 
+### Improvements
+- **Login with a code in the Admin UI** (`@unchainedshop/admin-ui`, `@unchainedshop/api`): while the users option `loginCode` is enabled, the login offers "Log in with a code" and `/login-code` takes the code or the link of the mail. The new `AdminUiConfig.loginCodeEnabled` tells the Admin UI.
+- **Order actions in the Admin UI report their errors** (`@unchainedshop/admin-ui`): confirm, reject, pay and deliver failed silently; they show the error now, and for `OrderLockedError` that another process is working on the order.
+- **Enrollments in the Admin UI** (`@unchainedshop/admin-ui`): suspend until a date, terminate with a reason and a comment, and set or remove the end date; the detail shows the contract start, the end date and the cancellation.
+- **Quotation proposals with price and quantity** (`@unchainedshop/admin-ui`): the proposal form sets the price of the quote, net or gross and taxable or not, and its quantity.
+- **Product type filter** (`@unchainedshop/admin-ui`): the product list filters by product type.
+- **Tag filter in the ticketing admin plugin** (`@unchainedshop/ticketing`, `@unchainedshop/admin-ui`): productions and events filter by tags; `@unchainedshop/admin-ui/ui` exports `SearchWithTags` for plugins.
+- **"Update all dates" in the ticketing admin plugin** (`@unchainedshop/ticketing`): the production header runs `syncTicketProduction`, e.g. after an import.
+
+### Fixed
+- **`User.viewerAllowedActions` leaves out the actions on privileged users that need `managePrivilegedUsers`** (`@unchainedshop/api`), so the Admin UI no longer offers them.
+- **Order and enrollment details load without the provider `manage*` actions** (`@unchainedshop/admin-ui`): they asked for the provider `configuration` that alpha.12 restricted.
+- **Saving the token tab keeps `ercMetadataProperties`** (`@unchainedshop/admin-ui`): the form removed them; it edits them now, and the contract address is optional.
+- **Retrying a work refuses masked input** (`@unchainedshop/admin-ui`): the retry form sent the `******` of obfuscated fields back as input.
+- **Missing Admin UI texts** (`@unchainedshop/admin-ui`): 21 texts of the bulk actions, the enrollment detail and the last-admin error had no English or German translation.
+- **Ticket prices keep their tax flags** (`@unchainedshop/ticketing`): saving a category or the price of a date in the admin plugin removed `isTaxable` and `isNetPrice`; the category form edits them now.
+- **Changing the tag filter starts at the first page** (`@unchainedshop/admin-ui`): lists with a tag filter kept their page, so a filtered list could show nothing.
+
 ## v5.0.0-alpha.13 (2026-11-11)
 
 ### Improvements

@@ -8,7 +8,13 @@ import { DangerMessage } from '@unchainedshop/admin-ui/modal';
 import { useApp, useForm, useModal } from '@unchainedshop/admin-ui/hooks';
 import useShopDefaults from '../../hooks/useShopDefaults.ts';
 import useTicketProductionMutations from '../../hooks/useTicketProductionMutations.ts';
-import { centsToDecimal, isCategoryCode, toCents, toCount } from '../../utils/production-form.ts';
+import {
+  centsToDecimal,
+  isCategoryCode,
+  toCents,
+  toCount,
+  toPriceFlags,
+} from '../../utils/production-form.ts';
 import { useFormatPrice } from '../../utils/misc.ts';
 import { FormFooter, errorMessage } from './fields.tsx';
 
@@ -21,7 +27,7 @@ const CategoryForm = ({ production, category, onDone }) => {
   const invalid = formatMessage({ id: 'invalid_value', defaultMessage: 'Enter a valid value' });
 
   const form = useForm({
-    submit: async ({ code, name, capacity, price, applyToPerformances }) => {
+    submit: async ({ code, name, capacity, price, isTaxable, isNetPrice, applyToPerformances }) => {
       const errors = [
         !category && !isCategoryCode(code) && 'code',
         Number.isNaN(toCount(capacity)) && 'capacity',
@@ -36,7 +42,15 @@ const CategoryForm = ({ production, category, onDone }) => {
         texts: [{ locale: selectedLocale, title: name || '' }],
         capacity: toCount(capacity),
         ...(amount !== null && {
-          pricing: [{ amount, currencyCode: shop.currencyCode, countryCode: shop.countryCode }],
+          pricing: [
+            {
+              amount,
+              currencyCode: shop.currencyCode,
+              countryCode: shop.countryCode,
+              isTaxable: Boolean(isTaxable),
+              isNetPrice: Boolean(isNetPrice),
+            },
+          ],
         }),
       };
       try {
@@ -64,6 +78,7 @@ const CategoryForm = ({ production, category, onDone }) => {
       capacity:
         category?.capacity === null || category?.capacity === undefined ? '' : String(category.capacity),
       price: centsToDecimal(category?.pricing?.[0]?.amount),
+      ...toPriceFlags(category?.pricing?.[0]),
       applyToPerformances: false,
     },
   });
@@ -100,6 +115,16 @@ const CategoryForm = ({ production, category, onDone }) => {
                 { id: 'category_price', defaultMessage: 'Price ({currency})' },
                 { currency: shop.currencyCode },
               )}
+            />
+          </div>
+          <div className="mt-4 flex flex-wrap gap-6">
+            <CheckboxField
+              name="isTaxable"
+              label={formatMessage({ id: 'taxable', defaultMessage: 'Taxable' })}
+            />
+            <CheckboxField
+              name="isNetPrice"
+              label={formatMessage({ id: 'net_price', defaultMessage: 'Net Price' })}
             />
           </div>
           {category && (

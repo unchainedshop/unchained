@@ -14,6 +14,7 @@ import type { ProductReview } from '@unchainedshop/core-products';
 import type { Country } from '@unchainedshop/core-countries';
 import { checkAction, checkTypeResolver } from '../../roles/acl.ts';
 import { actions } from '../../roles/index.ts';
+import { grantsPrivilege } from '../guardPrivilegedUsers.ts';
 import type { Context } from '../../context.ts';
 
 export interface PushSubscription {
@@ -108,6 +109,7 @@ export interface UserHelperTypes {
 const {
   impersonate,
   logoutAllSessions,
+  managePrivilegedUsers,
   manageUsers,
   removeUser,
   updateUser,
@@ -145,6 +147,16 @@ const USER_TARGET_ACTIONS = [
   viewUserQuotations,
   viewUserRoles,
   viewUserTokens,
+];
+
+const PRIVILEGE_GUARDED_ACTIONS = [
+  impersonate,
+  logoutAllSessions,
+  manageUsers,
+  removeUser,
+  updateUser,
+  updateUsername,
+  uploadUserAvatar,
 ];
 
 export const User: UserHelperTypes = {
@@ -261,8 +273,13 @@ export const User: UserHelperTypes = {
     const targetArgs: [UserType, { userId: string }] = [user, { userId: user._id }];
     await checkAction(context, viewUser, targetArgs, info);
 
+    const lacksPrivilegedUserAccess =
+      (await grantsPrivilege(context, user._id, user.roles)) &&
+      !(await context.roles!.userHasPermission(context, managePrivilegedUsers, targetArgs));
+
     const allowedActions = await Promise.all(
       USER_TARGET_ACTIONS.map(async (action) => {
+        if (lacksPrivilegedUserAccess && PRIVILEGE_GUARDED_ACTIONS.includes(action)) return null;
         try {
           return (await context.roles!.userHasPermission(context, action, targetArgs)) ? action : null;
         } catch {

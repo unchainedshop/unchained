@@ -43,6 +43,7 @@ export default function shopInfo(
       },
       singleSignOnURL:
         process.env.UNCHAINED_ADMIN_UI_SINGLE_SIGN_ON_URL || adminUiConfig?.singleSignOnURL,
+      loginCodeEnabled: modules.users.loginCode.isEnabled(),
       externalLinks: () => {
         try {
           if (!process.env.EXTERNAL_LINKS) return [];

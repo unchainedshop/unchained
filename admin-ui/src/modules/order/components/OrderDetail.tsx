@@ -21,6 +21,7 @@ import useRejectOrder from '../hooks/useRejectOrder';
 import DangerMessage from '../../modal/components/DangerMessage';
 import useAuth from '../../Auth/useAuth';
 import PluginSlot from '../../plugins/PluginSlot';
+import getOrderActionErrorMessage from '../getOrderActionErrorMessage';
 
 const isWaitingForConfirmation = (order) => {
   return order?.status === 'PENDING';
@@ -56,13 +57,17 @@ const OrderDetail = ({ order }) => {
         })}
         onOkClick={async () => {
           setModal('');
-          await confirmOrder({ orderId: order._id });
-          toast.success(
-            formatMessage({
-              id: 'order_confirmed_success',
-              defaultMessage: 'Order confirmed successfully',
-            }),
-          );
+          try {
+            await confirmOrder({ orderId: order._id });
+            toast.success(
+              formatMessage({
+                id: 'order_confirmed_success',
+                defaultMessage: 'Order confirmed successfully',
+              }),
+            );
+          } catch (error) {
+            toast.error(getOrderActionErrorMessage(error, formatMessage));
+          }
         }}
       />,
     );
@@ -82,13 +87,17 @@ const OrderDetail = ({ order }) => {
         })}
         onOkClick={async () => {
           setModal('');
-          await rejectOrder({ orderId: order._id });
-          toast.success(
-            formatMessage({
-              id: 'order_reject_success',
-              defaultMessage: 'Order rejected successfully',
-            }),
-          );
+          try {
+            await rejectOrder({ orderId: order._id });
+            toast.success(
+              formatMessage({
+                id: 'order_reject_success',
+                defaultMessage: 'Order rejected successfully',
+              }),
+            );
+          } catch (error) {
+            toast.error(getOrderActionErrorMessage(error, formatMessage));
+          }
         }}
       />,
     );

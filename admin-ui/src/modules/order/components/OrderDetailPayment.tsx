@@ -14,6 +14,7 @@ import useStatusTypes from '../../common/hooks/useStatusTypes';
 import useFormatDateTime from '../../common/utils/useFormatDateTime';
 import StatusInformation from '../../common/components/StatusInformation';
 import useAuth from '../../Auth/useAuth';
+import getOrderActionErrorMessage from '../getOrderActionErrorMessage';
 
 const OrderDetailPayment = ({ order }) => {
   const { paymentProviderType } = usePaymentProviderTypes();
@@ -44,13 +45,17 @@ const OrderDetailPayment = ({ order }) => {
         })}
         onOkClick={async () => {
           setModal('');
-          await payOrder({ orderId: order._id });
-          toast.success(
-            formatMessage({
-              id: 'order_paid',
-              defaultMessage: 'Order paid successfully',
-            }),
-          );
+          try {
+            await payOrder({ orderId: order._id });
+            toast.success(
+              formatMessage({
+                id: 'order_paid',
+                defaultMessage: 'Order paid successfully',
+              }),
+            );
+          } catch (error) {
+            toast.error(getOrderActionErrorMessage(error, formatMessage));
+          }
         }}
       />,
     );
