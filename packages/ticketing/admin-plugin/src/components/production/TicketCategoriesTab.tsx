@@ -131,7 +131,7 @@ const CategoryForm = ({ production, category, onDone }) => {
             </p>
           )}
         </div>
-        <FormFooter>
+        <FormFooter displayFieldErrors>
           {category && (
             <Button
               variant="secondary"

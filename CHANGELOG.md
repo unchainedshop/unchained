@@ -37,6 +37,7 @@
 - **Gate Control and the Box Office keep productions apart** (`@unchainedshop/ticketing`): they grouped the categories of a performance by title, start and location, so two productions with the same values merged. The new `TicketEvent.productionId` groups the dates of a production; standalone events still group by those values.
 - **The ticketing admin plugin edits prices in every country and currency** (`@unchainedshop/ticketing`, `@unchainedshop/admin-ui`): categories edit their price list with the product commerce rows, and dates and events get a Prices tab with the product commerce form. The forms took one price in the shop currency, which replaced every other price. `@unchainedshop/admin-ui/modules/product` exports `CommerceForm`, `PricingFields`, `toPricingFormValues` and `toPricingInput`; `TicketPriceInput` takes `minQuantity`.
 - **The Commerce tab saves prices in more than one country or currency** (`@unchainedshop/admin-ui`): it wanted one price without a min quantity among all rows, so a product with a CHF and a EUR price could not be saved. The rule now holds per country and currency, as the engine picks the tiers.
+- **The ticketing admin plugin forms say why a save failed** (`@unchainedshop/ticketing`): they dropped server errors such as an existing category code.
 
 ## v5.0.0-alpha.13 (2026-11-11)
 

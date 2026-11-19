@@ -1,5 +1,5 @@
 import { useIntl } from 'react-intl';
-import { FieldWrapper, SelectField, TextField } from '@unchainedshop/admin-ui/form';
+import { FieldWrapper, FormErrors, SelectField, TextField } from '@unchainedshop/admin-ui/form';
 import { useField } from '@unchainedshop/admin-ui/hooks';
 import type { SaleRulesFormValues } from '../../utils/production-form.ts';
 
@@ -7,11 +7,16 @@ import type { SaleRulesFormValues } from '../../utils/production-form.ts';
 export const errorMessage = (error) =>
   error?.errors?.[0]?.message ?? error?.graphQLErrors?.[0]?.message ?? error?.message;
 
-/** The footer of an admin-ui form card, holding its buttons. */
-export const FormFooter = ({ children }) => (
-  <div className="flex justify-end gap-3 border-t border-t-border-subtle bg-surface-subtle p-5">
-    {children}
-  </div>
+/** The footer of an admin-ui form card: why the form was not saved, then its buttons. */
+export const FormFooter = ({ children, displayFieldErrors = false }) => (
+  <>
+    <div className="px-5">
+      <FormErrors displayFieldErrors={displayFieldErrors} />
+    </div>
+    <div className="flex justify-end gap-3 border-t border-t-border-subtle bg-surface-subtle p-5">
+      {children}
+    </div>
+  </>
 );
 
 /** A date and time in the browser's time zone, styled like the admin-ui date field. */
