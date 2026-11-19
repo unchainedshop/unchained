@@ -12,6 +12,7 @@
 - **Quotation proposals with price and quantity** (`@unchainedshop/admin-ui`): the proposal form sets the price of the quote, net or gross and taxable or not, and its quantity.
 - **Product type filter** (`@unchainedshop/admin-ui`): the product list filters by product type.
 - **Tag filter in the ticketing admin plugin** (`@unchainedshop/ticketing`, `@unchainedshop/admin-ui`): productions and events filter by tags; `@unchainedshop/admin-ui/ui` exports `SearchWithTags` for plugins.
+- **"Update all dates" in the ticketing admin plugin** (`@unchainedshop/ticketing`): the production header runs `syncTicketProduction`, e.g. after an import.
 
 ### Fixed
 - **`User.viewerAllowedActions` leaves out the actions on privileged users that need `managePrivilegedUsers`** (`@unchainedshop/api`), so the Admin UI no longer offers them.
