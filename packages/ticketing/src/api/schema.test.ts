@@ -87,6 +87,7 @@ test('ticketing schema is optional and every plugin operation validates when ins
     'saleRules',
     'ownSaleRules',
     'overridden',
+    'productionId',
     'available',
   ]);
   assert.deepEqual(Object.keys((extended.getType('TicketSaleRules') as GraphQLObjectType).getFields()), [

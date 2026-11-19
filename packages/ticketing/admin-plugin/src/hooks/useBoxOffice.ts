@@ -21,6 +21,7 @@ const BoxOfficeEventsQuery = gql`
           category
           categoryTitle
           isCanceled
+          productionId
           available
           saleRules {
             onSale

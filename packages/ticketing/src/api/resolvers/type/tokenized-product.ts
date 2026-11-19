@@ -72,6 +72,8 @@ export const TicketEvent = {
   },
   overridden: (product: Product): string[] =>
     Array.isArray(product.meta?.overridden) ? product.meta.overridden : [],
+  productionId: async (product: Product, _params: never, context: Context) =>
+    (await getProxyOnce(product, context))?._id ?? null,
   available: (
     product: Product,
     _params: never,

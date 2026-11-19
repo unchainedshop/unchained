@@ -56,6 +56,7 @@ const PRODUCTION_FIELDS = /* GraphQL */ `
               location
               category
               categoryTitle(forceLocale: "de")
+              productionId
               overridden
               saleRules {
                 salesStart
@@ -132,6 +133,10 @@ test.describe('Ticketing: productions', () => {
     const production = data.createTicketProduction;
     productionId = production._id;
     assert.equal(production.status, 'DRAFT');
+    assert.ok(
+      production.assignments.every(({ product }) => product.event.productionId === productionId),
+      'every date knows its production',
+    );
     assert.deepEqual(production.tags, ['ticket-production', 'organizer-a']);
     assert.deepEqual(production.ticketProduction, {
       location: 'Grosse Bühne',

@@ -35,6 +35,7 @@ const GateEventsQuery = gql`
           category
           categoryTitle
           isCanceled
+          productionId
         }
         tokensCount
       }

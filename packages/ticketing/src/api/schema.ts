@@ -227,6 +227,8 @@ export default [
       ownSaleRules: TicketSaleRules!
       "Details of a performance that are not taken over from its production"
       overridden: [String!]!
+      "The production this event is a performance of; null for a standalone event"
+      productionId: ID
       "Tickets that can still be bought, counted like checkout (issued and pending orders): null without a capacity, 0 when sold out or cancelled. A snapshot, checkout decides."
       available: Int
     }

@@ -33,6 +33,7 @@
 - **A ticket's price follows its own order position** (`@unchainedshop/ticketing`): `findTicketPrice` and `getTicketDetails` took the first position of the order with the same event, so with two lines of one event the second ticket showed the first line's price. The new `findTicketPurchase` returns a ticket's order and position.
 - **Capacity changes and removals of ticket dates wait for running checkouts** (`@unchainedshop/ticketing`, `@unchainedshop/core-orders`): they hold the products' supply locks (new `modules.orders.lockSupply`), so a capacity lowered while a checkout sells the last seat no longer ends below the issued tickets; a busy lock answers `TicketProductionLockedError`.
 - **The gate's refusal reason agrees with the ticket issuer** (`@unchainedshop/ticketing`): `scanTicket` read an invalid entry window as unbounded while the issuer refused everyone. Both use the new `explainEntryRefusal`, and `TicketStatus`, `getTicketStatus` and `TicketNotRedeemableReason` moved out of the resolvers (same package exports).
+- **Gate Control and the Box Office keep productions apart** (`@unchainedshop/ticketing`): they grouped the categories of a performance by title, start and location, so two productions with the same values merged. The new `TicketEvent.productionId` groups the dates of a production; standalone events still group by those values.
 
 ## v5.0.0-alpha.13 (2026-11-11)
 

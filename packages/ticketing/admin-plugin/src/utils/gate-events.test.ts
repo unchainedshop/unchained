@@ -52,6 +52,21 @@ test('findSamePerformance finds the products sold for one performance', () => {
   );
 });
 
+test('dates of different productions stay apart even with the same title, start and location', () => {
+  const hamletAdults = event('hamlet-adults', { productionId: 'hamlet' });
+  const hamletReduced = event('hamlet-reduced', { productionId: 'hamlet', location: 'Foyer' });
+  const guestShow = event('guest-show', { productionId: 'guest-show' });
+  const events = [hamletAdults, guestShow, hamletReduced];
+  assert.deepEqual(
+    findSamePerformance(events, hamletAdults).map(({ _id }) => _id),
+    ['hamlet-adults', 'hamlet-reduced'],
+  );
+  assert.deepEqual(
+    findSamePerformance(events, guestShow).map(({ _id }) => _id),
+    ['guest-show'],
+  );
+});
+
 test('summarizeGateEvents names the events of a gate without repeating itself', () => {
   assert.deepEqual(
     summarizeGateEvents([
