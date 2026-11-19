@@ -51,3 +51,6 @@ export { default as useUpdateProductWarehousing } from './hooks/useUpdateProduct
 export { default as useUserTokens } from './hooks/useUserTokens';
 export { default as ProductTextsForm } from './components/ProductTextsForm';
 export { default as ProductMediaForm } from './components/ProductMediaForm';
+export { default as CommerceForm } from './components/CommerceForm';
+export { default as PricingFields } from './components/PricingFields';
+export { toPricingFormValues, toPricingInput } from './utils/price.utils';

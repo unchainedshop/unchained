@@ -42,3 +42,66 @@ export const fromMinorUnit = (
 
   return `${isNegative ? '-' : ''}${intPart}.${decimalPart}`;
 };
+
+export interface PriceListEntry {
+  amount: number;
+  currencyCode: string;
+  countryCode: string;
+  isTaxable?: boolean | null;
+  isNetPrice?: boolean | null;
+  minQuantity?: number | null;
+}
+
+const decimalsOf = (
+  currencies: { isoCode: string; decimals?: number | null }[],
+  currencyCode: string,
+) =>
+  currencies.find(
+    ({ isoCode }) => isoCode.toLowerCase() === currencyCode?.toLowerCase(),
+  )?.decimals ?? 2;
+
+export const toPricingFormValues = (
+  prices: PriceListEntry[] = [],
+  currencies = [],
+) =>
+  prices.map(
+    ({
+      amount,
+      currencyCode,
+      countryCode,
+      isTaxable,
+      isNetPrice,
+      minQuantity,
+    }) => ({
+      countryCode,
+      currencyCode,
+      isTaxable: !!isTaxable,
+      isNetPrice: !!isNetPrice,
+      amount: fromMinorUnit(amount, decimalsOf(currencies, currencyCode)),
+      minQuantity: minQuantity ?? '',
+    }),
+  );
+
+export const toPricingInput = (rows = [], currencies = []): PriceListEntry[] =>
+  rows.map(
+    ({
+      amount,
+      currencyCode,
+      countryCode,
+      isTaxable,
+      isNetPrice,
+      minQuantity,
+    }) => ({
+      currencyCode,
+      countryCode,
+      isTaxable: !!isTaxable,
+      isNetPrice: !!isNetPrice,
+      amount: toMinorUnit(
+        String(amount ?? ''),
+        decimalsOf(currencies, currencyCode),
+      ),
+      ...(minQuantity !== '' &&
+        minQuantity !== null &&
+        minQuantity !== undefined && { minQuantity: Number(minQuantity) }),
+    }),
+  );
