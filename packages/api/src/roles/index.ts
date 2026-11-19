@@ -2,6 +2,7 @@ import { createRoles, Role, type RolesInterface } from '@unchainedshop/roles';
 import { all } from './all.ts';
 import { loggedIn } from './loggedIn.ts';
 import { admin } from './admin.ts';
+import { guardPrivilegedUsers } from './guardPrivilegedUsers.ts';
 
 const actions: Record<string, string> = [
   'impersonate',
@@ -189,6 +190,7 @@ const configureRoles = ({
   all(allRoles.ALL, actions);
   loggedIn(allRoles.LOGGEDIN, actions);
   admin(allRoles.ADMIN, actions);
+  guardPrivilegedUsers(roles, actions);
 
   configuredRoles = roles;
 

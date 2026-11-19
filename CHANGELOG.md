@@ -23,7 +23,7 @@
 - **Exchanging tickets between dates** (`@unchainedshop/ticketing`): `exchangeTickets(tokenIds, productId)` (action `cancelTicket`, organizer scope on both dates) moves tickets to another date of their production, all or none and safe to retry. Each ticket is cancelled and replaced with the same order position, owner and metadata, and `TICKET_EXCHANGED` is emitted; cancelling and rebooking work as before.
 
 ### Fixed
-- **`User.viewerAllowedActions` leaves out the actions on privileged users that need `managePrivilegedUsers`** (`@unchainedshop/api`), so the Admin UI no longer offers them.
+- **The roles guard privileged users** (`@unchainedshop/api`): `userHasPermission` refuses the user actions on a privileged user without `managePrivilegedUsers`, so `User.viewerAllowedActions` no longer offers them to the Admin UI and custom resolvers checking these actions are guarded too.
 - **Order and enrollment details load without the provider `manage*` actions** (`@unchainedshop/admin-ui`): they asked for the provider `configuration` that alpha.12 restricted.
 - **Saving the token tab keeps `ercMetadataProperties`** (`@unchainedshop/admin-ui`): the form removed them; it edits them now, and the contract address is optional.
 - **Retrying a work refuses masked input** (`@unchainedshop/admin-ui`): the retry form sent the `******` of obfuscated fields back as input.
