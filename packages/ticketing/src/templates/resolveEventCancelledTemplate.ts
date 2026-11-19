@@ -1,23 +1,24 @@
 import type { TemplateResolver } from '@unchainedshop/core';
 import { getTicketEventDetails } from '../event-details.ts';
+import { findPurchaseRecipient } from '../ticket-details.ts';
 
 export const resolveEventCancelledTemplate: TemplateResolver<{
   productId: string;
-  userId: string;
+  userId?: string;
+  orderId?: string;
   discountCode?: string;
   discountAmount?: number;
-}> = async ({ productId, userId, discountCode, discountAmount }, { modules }) => {
+}> = async ({ productId, userId, orderId, discountCode, discountAmount }, { modules }) => {
   const { EMAIL_FROM, EMAIL_WEBSITE_NAME = 'Unchained Shop', EMAIL_WEBSITE_URL } = process.env;
-  const user = await modules.users.findUserById(userId);
-  if (!user) return [];
-
   const product = await modules.products.findProduct({ productId });
   if (!product) return [];
 
-  const recipient = user.lastContact?.emailAddress || modules.users.primaryEmail(user)?.address;
+  const { emailAddress: recipient, locale } = await findPurchaseRecipient(
+    { orderId, userId },
+    { modules },
+  );
   if (!recipient) return [];
 
-  const locale = modules.users.userLocale(user);
   const productText = await modules.products.texts.findLocalizedText({
     productId,
     locale,

@@ -8,6 +8,7 @@
 ### Breaking
 - **`services.ticketing.removeTicketProductionMediaCopies` is removed** (`@unchainedshop/ticketing`): a removed production media now syncs the performances of its own production instead of scanning every production.
 - **The ticketing remove services remove the products** (`@unchainedshop/ticketing`): `removeTicketPerformance`, `removeTicketCategory` and `removeTicketProduction` take `{ services }` as their last argument and call `services.products.removeProduct` themselves, so callers no longer remove the returned ids.
+- **Cancellation credits and mails follow the purchase** (`@unchainedshop/ticketing`): `cancelEvent` and `cancelTicket` issue one credit and one message per order, mailed to the order contact, instead of one per ticket owner, so walk-ins served by one box-office operator each get theirs. The `EVENT_CANCELLED` and `TICKET_CANCELLED` template input gains `orderId`, and `userId` is missing for tickets exported to a wallet.
 
 ### Improvements
 - **Login with a code in the Admin UI** (`@unchainedshop/admin-ui`, `@unchainedshop/api`): while the users option `loginCode` is enabled, the login offers "Log in with a code" and `/login-code` takes the code or the link of the mail. The new `AdminUiConfig.loginCodeEnabled` tells the Admin UI.

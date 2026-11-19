@@ -22,6 +22,11 @@ export interface CancelTicketOptions extends DiscountOptions {
   refuseRedeemed?: boolean;
 }
 
+const purchaseOf = (token: TokenSurrogate) => ({
+  orderId: typeof token.meta?.orderId === 'string' ? token.meta.orderId : undefined,
+  userId: token.userId || undefined,
+});
+
 const alreadyRedeemed = (tokenId: string) =>
   new Error(`Ticket ${tokenId} has already been redeemed`, { cause: 'TICKET_ALREADY_REDEEMED' });
 
@@ -53,13 +58,27 @@ async function cancelTicketsForProduct(
     'meta.cancelled': null,
   });
 
-  const affectedUserIds = [...new Set(tokensToCancel.map((t) => t.userId).filter(Boolean))] as string[];
-
-  const discountByUser = new Map<string, { discountCode: string; amount: number }>();
+  const purchases = new Map<
+    string,
+    {
+      orderId?: string;
+      userId?: string;
+      quantity: number;
+      discount?: { discountCode: string; amount: number };
+    }
+  >();
+  for (const token of tokensToCancel) {
+    const { orderId, userId } = purchaseOf(token);
+    if (!orderId && !userId) continue;
+    const key = orderId ? `order:${orderId}` : `user:${userId}`;
+    const purchase = purchases.get(key) ?? { orderId, userId, quantity: 0 };
+    purchase.quantity += token.quantity;
+    purchases.set(key, purchase);
+  }
 
   // Issue credit before touching any ticket: a missing signing secret must not leave
   // tickets cancelled without the requested compensation.
-  if (options?.generateDiscount && tokensToCancel.length > 0 && options.countryCode) {
+  if (options?.generateDiscount && purchases.size > 0 && options.countryCode) {
     const product = await this.products.findProduct({ productId });
     const price =
       product &&
@@ -69,20 +88,10 @@ async function cancelTicketsForProduct(
       }));
 
     if (price?.amount) {
-      const userTokenCounts = tokensToCancel.reduce(
-        (acc, token) => {
-          if (token.userId) {
-            acc[token.userId] = (acc[token.userId] || 0) + token.quantity;
-          }
-          return acc;
-        },
-        {} as Record<string, number>,
-      );
-
-      for (const [userId, quantity] of Object.entries(userTokenCounts)) {
-        const totalAmount = price.amount * quantity;
-        const discountCode = await passes.generateDiscountCode(totalAmount, price.currencyCode);
-        discountByUser.set(userId, { discountCode, amount: totalAmount });
+      for (const purchase of purchases.values()) {
+        const amount = price.amount * purchase.quantity;
+        const discountCode = await passes.generateDiscountCode(amount, price.currencyCode);
+        purchase.discount = { discountCode, amount };
       }
     }
   }
@@ -105,14 +114,14 @@ async function cancelTicketsForProduct(
   });
 
   await Promise.allSettled(
-    affectedUserIds.map(async (userId) => {
-      const discount = discountByUser.get(userId);
+    [...purchases.values()].map(async ({ orderId, userId, discount }) => {
       await this.worker.addWork({
         type: 'MESSAGE',
         input: {
           template: TicketingMessageTypes.EVENT_CANCELLED,
           productId,
           userId,
+          orderId,
           discountCode: discount?.discountCode,
           discountAmount: discount?.amount,
         },
@@ -165,13 +174,15 @@ async function cancelTicketWithDiscount(
     token: cancelledToken || token,
   });
 
-  if (token.userId) {
+  const { orderId, userId } = purchaseOf(token);
+  if (orderId || userId) {
     await this.worker.addWork({
       type: 'MESSAGE',
       input: {
         template: TicketingMessageTypes.TICKET_CANCELLED,
         tokenId,
-        userId: token.userId,
+        userId,
+        orderId,
         discountCode,
         discountAmount,
       },

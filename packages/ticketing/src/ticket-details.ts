@@ -71,6 +71,27 @@ export async function findTicketPurchase(
 }
 
 /** The price of one ticket as it was ordered, before order discounts; null without its order. */
+/**
+ * Where news about a purchase goes: the contact of its order, also for box-office sales and tickets
+ * exported to a wallet, else (tickets without an order) the owner. The locale is the owner's.
+ */
+export async function findPurchaseRecipient(
+  { orderId, userId }: { orderId?: string; userId?: string },
+  { modules }: TicketDetailsAPI,
+): Promise<{ emailAddress?: string; locale: Intl.Locale }> {
+  const user = userId ? await modules.users.findUserById(userId) : null;
+  const locale = modules.users.userLocale(user);
+  if (orderId) {
+    const order = await modules.orders.findOrder({ orderId });
+    return { emailAddress: order?.contact?.emailAddress || undefined, locale };
+  }
+  if (!user) return { locale };
+  return {
+    emailAddress: user.lastContact?.emailAddress || modules.users.primaryEmail(user)?.address,
+    locale,
+  };
+}
+
 export async function findTicketPrice(
   token: TokenSurrogate,
   unchainedAPI: TicketDetailsAPI,
