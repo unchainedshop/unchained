@@ -2,19 +2,17 @@ import { useIntl } from 'react-intl';
 import { Button, FormWrapper } from '@unchainedshop/admin-ui/ui';
 import { Form, SubmitButton, TextField } from '@unchainedshop/admin-ui/form';
 import { useForm } from '@unchainedshop/admin-ui/hooks';
-import useShopDefaults from '../../hooks/useShopDefaults.ts';
 import useTicketProductionMutations from '../../hooks/useTicketProductionMutations.ts';
 import {
   fromTicketSaleRules,
   performanceFormValues,
-  ticketPriceFlags,
   toTicketPerformanceInput,
   type PerformanceEditFormValues,
 } from '../../utils/production-form.ts';
 import type { PerformanceRow } from '../../utils/production-grid.ts';
 import { DateTimeField, FormFooter, SaleRulesFields, errorMessage } from './fields.tsx';
 
-// The admin-ui form keeps flat fields; the tickets of a category are supply_<n> and price_<n>.
+// The admin-ui form keeps flat fields; the capacity of a category is supply_<n>.
 const toFormValues = (values: PerformanceEditFormValues, columns: (string | null)[]) => ({
   startsAt: values.startsAt,
   location: values.location,
@@ -22,10 +20,7 @@ const toFormValues = (values: PerformanceEditFormValues, columns: (string | null
   doorsOpenMinutesBefore: values.doorsOpenMinutesBefore,
   ...values.saleRules,
   ...Object.fromEntries(
-    columns.flatMap((code, index) => [
-      [`supply_${index}`, values.tickets[code ?? '']?.supply ?? ''],
-      [`price_${index}`, values.tickets[code ?? '']?.price ?? ''],
-    ]),
+    columns.map((code, index) => [`supply_${index}`, values.tickets[code ?? '']?.supply ?? '']),
   ),
 });
 
@@ -43,17 +38,15 @@ const fromFormValues = (values, columns: (string | null)[]): PerformanceEditForm
       maxPerOrder: text(values.maxPerOrder),
     },
     tickets: Object.fromEntries(
-      columns.map((code, index) => [
-        code ?? '',
-        { supply: text(values[`supply_${index}`]), price: text(values[`price_${index}`]) },
-      ]),
+      columns.map((code, index) => [code ?? '', { supply: text(values[`supply_${index}`]) }]),
     ),
   };
 };
 
 /**
  * Adds a date (without row) or changes one: a new start reschedules it, empty details and sale
- * rules are taken from the production, capacity and price per category apply to this date only.
+ * rules are taken from the production, the capacity per category applies to this date only. A
+ * date's prices are those of its categories until changed on its Prices tab.
  */
 const TicketDateForm = ({
   production,
@@ -67,7 +60,6 @@ const TicketDateForm = ({
   onDone: () => void;
 }) => {
   const { formatMessage } = useIntl();
-  const shop = useShopDefaults();
   const { addTicketPerformance, updateTicketPerformance } = useTicketProductionMutations();
   const details = production.ticketProduction;
   const initial = performanceFormValues(row, columns);
@@ -75,19 +67,12 @@ const TicketDateForm = ({
   const sold = row ? row.products.reduce((sum, product) => sum + (product?.tokensCount || 0), 0) : 0;
   const categoryName = (code: string | null) =>
     details.categories?.find((category) => category.code === code)?.option?.texts?.title || code;
-  const priceFlags = ticketPriceFlags(row, columns, details.categories);
-
   const form = useForm({
     submit: async (values) => {
-      const result = toTicketPerformanceInput(
-        fromFormValues(values, columns),
-        row ? initial : null,
-        shop,
-        priceFlags,
-      );
+      const result = toTicketPerformanceInput(fromFormValues(values, columns), row ? initial : null);
       if ('errors' in result) {
         result.errors.forEach((name) => {
-          const [, code, key] = name.match(/^tickets\.(.*)\.(supply|price)$/) || [];
+          const [, code, key] = name.match(/^tickets\.(.*)\.(supply)$/) || [];
           const field = key ? `${key}_${columns.indexOf(code || null)}` : name;
           form.api.setFieldError(field, invalid);
         });
@@ -180,13 +165,6 @@ const TicketDateForm = ({
                     type="number"
                     label={formatMessage({ id: 'category_capacity', defaultMessage: 'Capacity' })}
                     placeholder={placeholder(category?.capacity)}
-                  />
-                  <TextField
-                    name={`price_${index}`}
-                    label={formatMessage(
-                      { id: 'category_price', defaultMessage: 'Price ({currency})' },
-                      { currency: shop.currencyCode },
-                    )}
                   />
                 </div>
               );

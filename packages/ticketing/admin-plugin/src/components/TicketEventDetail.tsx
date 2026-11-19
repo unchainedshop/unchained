@@ -4,6 +4,7 @@ import { useIntl } from 'react-intl';
 import { toast } from 'react-toastify';
 import { useModal, DangerMessage } from '@unchainedshop/admin-ui/modal';
 import { Badge, BreadCrumbs, Button, PageHeader, SearchField, Tab } from '@unchainedshop/admin-ui/ui';
+import { CommerceForm } from '@unchainedshop/admin-ui/modules/product';
 import { EmptyNotice } from './Notice.tsx';
 import EventTokenList from './EventTokenList.tsx';
 import TicketEventEditor from './TicketEventEditor.tsx';
@@ -22,7 +23,8 @@ const MAX_ROWS = 200;
 
 const units = (tokens) => tokens.reduce((sum, token) => sum + (token.quantity || 1), 0);
 
-// The tabs of a date: its attendees (search, CSV, cancel, redeem) and its event details and sale rules.
+// The tabs of a date: its attendees (search, CSV, cancel, redeem), its event details and sale rules,
+// and its prices like those of any product.
 const DateTab = ({
   selectedView = 'attendees',
   product,
@@ -42,6 +44,7 @@ const DateTab = ({
   if (selectedView === 'event' && canEdit) {
     return <TicketEventEditor product={product} production={production} onDone={null} />;
   }
+  if (selectedView === 'prices' && canEdit) return <CommerceForm productId={product._id} />;
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -215,6 +218,7 @@ const TicketEventDetail = ({ product }) => {
             id: 'event',
             title: formatMessage({ id: 'production_event_tab', defaultMessage: 'Event & sale' }),
           },
+          { id: 'prices', title: formatMessage({ id: 'event_prices_tab', defaultMessage: 'Prices' }) },
         ]
       : []),
   ];

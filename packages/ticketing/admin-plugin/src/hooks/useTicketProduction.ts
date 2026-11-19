@@ -44,6 +44,7 @@ const TicketProductionDetailQuery = gql`
               countryCode
               isTaxable
               isNetPrice
+              minQuantity
             }
             option {
               _id
@@ -83,8 +84,6 @@ const TicketProductionDetailQuery = gql`
               catalogPrice {
                 amount
                 currencyCode
-                isTaxable
-                isNetPrice
               }
               event {
                 startsAt

@@ -1,30 +1,15 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  centsToDecimal,
   fromTicketSaleRules,
-  toCents,
   toCreateTicketProductionInput,
   toTicketSaleRulesInput,
   toUpdateTicketProductionInput,
   performanceFormValues,
   toTicketPerformanceInput,
-  ticketPriceFlags,
 } from './production-form.ts';
 
-const shop = { locale: 'de', currencyCode: 'CHF', countryCode: 'CH' };
-
-test('prices are entered as decimals and stored in cents', () => {
-  assert.equal(toCents('45'), 4500);
-  assert.equal(toCents('45.5'), 4550);
-  assert.equal(toCents(' 45.05 '), 4505);
-  assert.equal(toCents('0'), 0);
-  assert.equal(toCents(''), null);
-  assert.ok(Number.isNaN(toCents('45,-')));
-  assert.ok(Number.isNaN(toCents('-5')));
-  assert.equal(centsToDecimal(4550), '45.50');
-  assert.equal(centsToDecimal(null), '');
-});
+const shop = { locale: 'de' };
 
 test('the sale rules form keeps unset rules unset, inherit clears them', () => {
   const values = fromTicketSaleRules({
@@ -129,84 +114,40 @@ test('a performance form shows its own values; blank details are taken from the 
   assert.equal(values.durationMinutes, '', 'inherited');
   assert.equal(values.saleRules.maxPerOrder, '2');
   assert.deepEqual(values.tickets, {
-    adult: { supply: '100', price: '45.00' },
-    reduced: { supply: '20', price: '25.00' },
+    adult: { supply: '100' },
+    reduced: { supply: '20' },
   });
 
   // Only what changed is sent; a blank detail goes back to the production value
   const changed = {
     ...values,
     location: '',
-    tickets: { ...values.tickets, reduced: { supply: '10', price: '25.00' } },
+    tickets: { ...values.tickets, reduced: { supply: '10' } },
   };
-  assert.deepEqual(toTicketPerformanceInput(changed, values, shop), {
+  assert.deepEqual(toTicketPerformanceInput(changed, values), {
     input: {
       location: null,
       saleRules: { onSale: null, salesStart: null, salesEnd: null, maxPerOrder: 2 },
       tickets: [{ category: 'reduced', supply: 10 }],
     },
   });
-  // A new price keeps the tax flags of its category
-  const repriced = {
-    ...values,
-    tickets: { ...values.tickets, adult: { supply: '100', price: '50.00' } },
-  };
-  const flags = { adult: { isTaxable: true, isNetPrice: true } };
-  assert.deepEqual(toTicketPerformanceInput(repriced, values, shop, flags), {
-    input: {
-      saleRules: { onSale: null, salesStart: null, salesEnd: null, maxPerOrder: 2 },
-      tickets: [
-        {
-          category: 'adult',
-          pricing: [
-            { amount: 5000, currencyCode: 'CHF', countryCode: 'CH', isTaxable: true, isNetPrice: true },
-          ],
-        },
-      ],
-    },
-  });
   // A new start reschedules
   const moved = { ...values, startsAt: '2026-11-03T20:00' };
-  const movedResult = toTicketPerformanceInput(moved, values, shop);
+  const movedResult = toTicketPerformanceInput(moved, values);
   assert.ok('input' in movedResult);
   assert.equal(movedResult.input.startsAt, new Date('2026-11-03T20:00').toISOString());
 });
 
 test('a new performance sends its start and the values that differ from the categories', () => {
   const values = { ...performanceFormValues(null, ['adult']), startsAt: '2026-12-01T19:00' };
-  assert.deepEqual(values.tickets, { adult: { supply: '', price: '' } });
-  assert.deepEqual(toTicketPerformanceInput(values, null, shop), {
+  assert.deepEqual(values.tickets, { adult: { supply: '' } });
+  assert.deepEqual(toTicketPerformanceInput(values, null), {
     input: {
       startsAt: new Date('2026-12-01T19:00').toISOString(),
       saleRules: { onSale: null, salesStart: null, salesEnd: null, maxPerOrder: null },
     },
   });
-  assert.deepEqual(toTicketPerformanceInput({ ...values, startsAt: '' }, null, shop), {
+  assert.deepEqual(toTicketPerformanceInput({ ...values, startsAt: '' }, null), {
     errors: ['startsAt'],
-  });
-});
-
-test('a changed price keeps the tax flags of the date, a date without a price takes its category', () => {
-  const categories = [
-    { code: 'adult', pricing: [{ isTaxable: true, isNetPrice: false }] },
-    { code: 'child', pricing: [{ isTaxable: true, isNetPrice: true }] },
-  ];
-  const row = {
-    cells: {
-      adult: { catalogPrice: { amount: 4500, isTaxable: false, isNetPrice: true } },
-      child: { catalogPrice: null },
-    },
-    products: [],
-  };
-  assert.deepEqual(ticketPriceFlags(row, ['adult', 'child'], categories), {
-    adult: { isTaxable: false, isNetPrice: true },
-    child: { isTaxable: true, isNetPrice: true },
-  });
-  assert.deepEqual(ticketPriceFlags(null, ['adult'], categories), {
-    adult: { isTaxable: true, isNetPrice: false },
-  });
-  const uncategorized = { cells: {}, products: [{ catalogPrice: { isTaxable: true } }] };
-  assert.deepEqual(ticketPriceFlags(uncategorized, [null], []), {
-    '': { isTaxable: true, isNetPrice: false },
   });
 });
