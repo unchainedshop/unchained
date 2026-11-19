@@ -89,6 +89,11 @@ export const TicketPerformanceHasTicketsError = createError(
   'Tickets exist, cancel instead of removing',
 );
 
+export const TicketExchangeInvalidError = createError(
+  'TicketExchangeInvalidError',
+  'The tickets cannot move to this event',
+);
+
 export const TicketSupplyBelowSoldError = createError(
   'TicketSupplyBelowSoldError',
   'The supply cannot be lower than the tickets that are sold or reserved',

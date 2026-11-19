@@ -1,7 +1,6 @@
 import type { Context, GraphQLResolveInfo } from '@unchainedshop/api';
 import { InvalidIdError, TokenNotFoundError } from '@unchainedshop/api';
 import type { Product } from '@unchainedshop/core-products';
-import { WarehousingProviderType } from '@unchainedshop/core-warehousing';
 import { log } from '@unchainedshop/logger';
 import { timingSafeStringEqual } from '@unchainedshop/utils';
 import { assertTicketEventInScope, isActiveTicketEvent } from '../../roles.ts';
@@ -20,27 +19,17 @@ import {
 } from '../../../event-details.ts';
 import { TicketNotRedeemableReason, explainEntryRefusal } from '../../../entry-window.ts';
 import { TicketingEventTypes, emitTicketingEvent } from '../../../events.ts';
-import {
-  TICKET_WAREHOUSING_ADAPTER_KEY,
-  readTicketConfiguration,
-} from '../../../warehousing/ticket/adapter.ts';
+import { findTicketIssuerSettings } from '../../../warehousing/ticket/adapter.ts';
 
 export { TicketNotRedeemableReason };
 
 // Tells gate staff when the entrance opens or closed, as far as the ticket issuer decides it.
 async function explainRefusal(product: Product, context: Context, now: Date) {
   const { startsAt } = getTicketEventDetails(product);
-  const providers = await context.modules.warehousing.allProviders();
-  const issuer = providers.find(
-    ({ type, adapterKey }) =>
-      type === WarehousingProviderType.VIRTUAL && adapterKey === TICKET_WAREHOUSING_ADAPTER_KEY,
-  );
+  const settings = await findTicketIssuerSettings(context.modules);
   const refusal =
-    issuer &&
-    explainEntryRefusal(readTicketConfiguration(issuer.configuration), {
-      start: getTicketEventStart(product),
-      referenceDate: now,
-    });
+    settings &&
+    explainEntryRefusal(settings, { start: getTicketEventStart(product), referenceDate: now });
   return { reason: TicketNotRedeemableReason.NOT_REDEEMABLE, ...refusal, startsAt };
 }
 

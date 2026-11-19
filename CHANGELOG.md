@@ -20,6 +20,7 @@
 - **"Update all dates" in the ticketing admin plugin** (`@unchainedshop/ticketing`): the production header runs `syncTicketProduction`, e.g. after an import.
 - **`modules.warehousing.tokensQuantity(selector)`** (`@unchainedshop/core-warehousing`): sums the quantities of the matching tokens, beside the document count `tokensCount`. The ETH minter uses it instead of loading every token of the product on each stock estimate.
 - **`TicketEvent.available`** (`@unchainedshop/ticketing`): the tickets that can still be bought, counted like checkout (issued tickets and PENDING orders), `null` without a capacity and `0` when sold out or cancelled (`passes.countAvailableTickets`). The admin plugin's event list and Box Office use it, so the Box Office also sells events without a capacity, whose issuer stock is 0.
+- **Exchanging tickets between dates** (`@unchainedshop/ticketing`): `exchangeTickets(tokenIds, productId)` (action `cancelTicket`, organizer scope on both dates) moves tickets to another date of their production, all or none and safe to retry. Each ticket is cancelled and replaced with the same order position, owner and metadata, and `TICKET_EXCHANGED` is emitted; cancelling and rebooking work as before.
 
 ### Fixed
 - **`User.viewerAllowedActions` leaves out the actions on privileged users that need `managePrivilegedUsers`** (`@unchainedshop/api`), so the Admin UI no longer offers them.

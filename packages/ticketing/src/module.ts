@@ -299,10 +299,19 @@ const configurePasses = async ({ db, options }: ModuleInput<TicketingOptions>) =
    * redeemed nor cancelled yet, so a scan or another cancellation that got there first wins and
    * null is returned.
    */
-  const cancelTicket = async (tokenId: string, { onlyValid }: { onlyValid?: boolean } = {}) => {
+  const cancelTicket = async (
+    tokenId: string,
+    { onlyValid, meta = {} }: { onlyValid?: boolean; meta?: Record<string, unknown> } = {},
+  ) => {
     return TokenSurrogates.findOneAndUpdate(
       { _id: tokenId, ...(onlyValid ? { invalidatedDate: null, ...notCancelled } : {}) },
-      { $set: { 'meta.cancelled': true, 'meta.cancelledDate': new Date() } },
+      {
+        $set: {
+          ...Object.fromEntries(Object.entries(meta).map(([key, value]) => [`meta.${key}`, value])),
+          'meta.cancelled': true,
+          'meta.cancelledDate': new Date(),
+        },
+      },
       {
         returnDocument: 'after',
       },

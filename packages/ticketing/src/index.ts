@@ -74,6 +74,7 @@ export {
   type TicketRedeemedEventPayload,
   type TicketCancelledEventPayload,
   type TicketEventCancelledEventPayload,
+  type TicketExchangedEventPayload,
 } from './events.ts';
 export {
   createTicketOrderPositionValidator,

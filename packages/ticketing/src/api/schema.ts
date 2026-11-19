@@ -94,6 +94,14 @@ export default [
       cancelTicket(tokenId: ID!, generateDiscount: Boolean): Token!
 
       """
+      Move tickets to another date (productId) of their production: each ticket is cancelled and
+      replaced by one on that date with the same order position, owner and metadata. All or none,
+      and a retry does not move twice. No credit and no message (TICKET_EXCHANGED is emitted).
+      Requires the cancelTicket action, within the organizer scope of both dates.
+      """
+      exchangeTickets(tokenIds: [ID!]!, productId: ID!): [Token!]!
+
+      """
       Cancel all tickets for an event (tokenized product). Invalidates all non-cancelled tokens.
       Requires the cancelTicket action. Optionally generates discount codes for affected users.
       Returns the number of token records cancelled (a token may contain multiple ticket units).
