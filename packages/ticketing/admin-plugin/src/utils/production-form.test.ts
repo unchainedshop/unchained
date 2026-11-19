@@ -8,8 +8,10 @@ import {
   toTicketSaleRulesInput,
   toUpdateTicketProductionInput,
   performanceFormValues,
+  shopPriceOf,
   toTicketPerformanceInput,
   ticketPriceFlags,
+  withPrice,
 } from './production-form.ts';
 
 const shop = { locale: 'de', currencyCode: 'CHF', countryCode: 'CH' };
@@ -186,10 +188,20 @@ test('a new performance sends its start and the values that differ from the cate
   });
 });
 
+const price = (amount: number, currencyCode = 'CHF', more = {}) => ({
+  amount,
+  currencyCode,
+  countryCode: currencyCode === 'CHF' ? 'CH' : 'DE',
+  ...more,
+});
+
 test('a changed price keeps the tax flags of the date, a date without a price takes its category', () => {
   const categories = [
-    { code: 'adult', pricing: [{ isTaxable: true, isNetPrice: false }] },
-    { code: 'child', pricing: [{ isTaxable: true, isNetPrice: true }] },
+    {
+      code: 'adult',
+      pricing: [price(4000, 'EUR'), price(4500, 'CHF', { isTaxable: true, isNetPrice: false })],
+    },
+    { code: 'child', pricing: [price(2500, 'CHF', { isTaxable: true, isNetPrice: true })] },
   ];
   const row = {
     cells: {
@@ -198,15 +210,32 @@ test('a changed price keeps the tax flags of the date, a date without a price ta
     },
     products: [],
   };
-  assert.deepEqual(ticketPriceFlags(row, ['adult', 'child'], categories), {
+  assert.deepEqual(ticketPriceFlags(row, ['adult', 'child'], categories, shop), {
     adult: { isTaxable: false, isNetPrice: true },
     child: { isTaxable: true, isNetPrice: true },
   });
-  assert.deepEqual(ticketPriceFlags(null, ['adult'], categories), {
+  assert.deepEqual(ticketPriceFlags(null, ['adult'], categories, shop), {
     adult: { isTaxable: true, isNetPrice: false },
   });
   const uncategorized = { cells: {}, products: [{ catalogPrice: { isTaxable: true } }] };
-  assert.deepEqual(ticketPriceFlags(uncategorized, [null], []), {
+  assert.deepEqual(ticketPriceFlags(uncategorized, [null], [], shop), {
     '': { isTaxable: true, isNetPrice: false },
   });
+});
+
+test('a changed shop price keeps the prices of other currencies and quantity tiers', () => {
+  const prices = [
+    price(4000, 'EUR', { isTaxable: true, __typename: 'TicketCategoryPrice' }),
+    price(4500, 'CHF', { isTaxable: true }),
+    price(4000, 'CHF', { minQuantity: 10 }),
+  ];
+  assert.deepEqual(shopPriceOf(prices, shop), prices[1]);
+  assert.deepEqual(withPrice(prices, price(5000, 'CHF', { isTaxable: true, isNetPrice: false })), [
+    { ...price(4000, 'EUR'), isTaxable: true, isNetPrice: false },
+    { ...price(4000, 'CHF'), isTaxable: false, isNetPrice: false, minQuantity: 10 },
+    { ...price(5000, 'CHF'), isTaxable: true, isNetPrice: false },
+  ]);
+  assert.deepEqual(withPrice(null, price(5000)), [
+    { ...price(5000), isTaxable: false, isNetPrice: false },
+  ]);
 });

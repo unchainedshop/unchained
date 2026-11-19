@@ -37,6 +37,7 @@ export interface TicketPriceInput {
   countryCode: string;
   isTaxable?: boolean | null;
   isNetPrice?: boolean | null;
+  minQuantity?: number | null;
 }
 
 export interface TicketCategoryInput {
@@ -135,8 +136,14 @@ function normalizeSaleRules(input?: UpdateTicketSaleRulesInput | null) {
 
 function normalizePricing(pricing?: TicketPriceInput[] | null): ProductPrice[] | undefined {
   if (pricing === undefined || pricing === null) return undefined;
-  return pricing.map(({ amount, currencyCode, countryCode, isTaxable, isNetPrice }) => {
-    if (!Number.isInteger(amount) || !currencyCode || !countryCode) {
+  return pricing.map(({ amount, currencyCode, countryCode, isTaxable, isNetPrice, minQuantity }) => {
+    const tiered = minQuantity !== undefined && minQuantity !== null;
+    if (
+      !Number.isInteger(amount) ||
+      !currencyCode ||
+      !countryCode ||
+      (tiered && !isCount(minQuantity))
+    ) {
       throw fail('Invalid ticket price', 'INVALID_TICKET_PRICE');
     }
     return {
@@ -145,6 +152,7 @@ function normalizePricing(pricing?: TicketPriceInput[] | null): ProductPrice[] |
       countryCode,
       ...(isTaxable !== undefined && isTaxable !== null && { isTaxable }),
       ...(isNetPrice !== undefined && isNetPrice !== null && { isNetPrice }),
+      ...(tiered && { minQuantity }),
     };
   });
 }

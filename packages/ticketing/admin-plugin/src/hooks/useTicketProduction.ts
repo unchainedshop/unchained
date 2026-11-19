@@ -44,6 +44,7 @@ const TicketProductionDetailQuery = gql`
               countryCode
               isTaxable
               isNetPrice
+              minQuantity
             }
             option {
               _id

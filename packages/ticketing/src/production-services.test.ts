@@ -454,6 +454,24 @@ test('changes of a production are taken over by its performances', async () => {
   }
 });
 
+test('a ticket price list keeps quantity tiers, invalid tiers are refused', async () => {
+  const production = await createHamlet();
+  const pricing = [...CHF(4500), { ...CHF(4000)[0], minQuantity: 10 }];
+  await updateTicketPerformance.call(modules, production._id, first, {
+    tickets: [{ category: 'adult', pricing }],
+  });
+  const [adult] = (await performancesOf(production._id)).filter(
+    ({ vector }: any) => vector.slot === first && vector.category === 'adult',
+  );
+  assert.deepEqual(adult.product.commerce.pricing, pricing);
+  await assert.rejects(
+    updateTicketPerformance.call(modules, production._id, first, {
+      tickets: [{ category: 'adult', pricing: [{ ...CHF(4500)[0], minQuantity: -1 }] }],
+    }),
+    { cause: 'INVALID_TICKET_PRICE' },
+  );
+});
+
 test('the media of a production are shared with its performances', async () => {
   const production = await createHamlet();
   const cover = await modules.products.media.create({

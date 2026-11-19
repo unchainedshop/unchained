@@ -35,6 +35,7 @@
 - **Capacity changes and removals of ticket dates wait for running checkouts** (`@unchainedshop/ticketing`, `@unchainedshop/core-orders`): they hold the products' supply locks (new `modules.orders.lockSupply`), so a capacity lowered while a checkout sells the last seat no longer ends below the issued tickets; a busy lock answers `TicketProductionLockedError`.
 - **The gate's refusal reason agrees with the ticket issuer** (`@unchainedshop/ticketing`): `scanTicket` read an invalid entry window as unbounded while the issuer refused everyone. Both use the new `explainEntryRefusal`, and `TicketStatus`, `getTicketStatus` and `TicketNotRedeemableReason` moved out of the resolvers (same package exports).
 - **Gate Control and the Box Office keep productions apart** (`@unchainedshop/ticketing`): they grouped the categories of a performance by title, start and location, so two productions with the same values merged. The new `TicketEvent.productionId` groups the dates of a production; standalone events still group by those values.
+- **The ticketing forms keep the prices of other currencies** (`@unchainedshop/ticketing`): saving a category or a date price sent only the shop currency's price, which replaced the whole list. The forms send the other prices and quantity tiers along (new `TicketPriceInput.minQuantity`) and edit the shop currency's price instead of the first one.
 
 ## v5.0.0-alpha.13 (2026-11-11)
 

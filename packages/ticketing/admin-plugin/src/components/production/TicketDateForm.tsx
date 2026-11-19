@@ -3,12 +3,14 @@ import { Button, FormWrapper } from '@unchainedshop/admin-ui/ui';
 import { Form, SubmitButton, TextField } from '@unchainedshop/admin-ui/form';
 import { useForm } from '@unchainedshop/admin-ui/hooks';
 import useShopDefaults from '../../hooks/useShopDefaults.ts';
+import useTicketPrices from '../../hooks/useTicketPrices.ts';
 import useTicketProductionMutations from '../../hooks/useTicketProductionMutations.ts';
 import {
   fromTicketSaleRules,
   performanceFormValues,
   ticketPriceFlags,
   toTicketPerformanceInput,
+  withPrice,
   type PerformanceEditFormValues,
 } from '../../utils/production-form.ts';
 import type { PerformanceRow } from '../../utils/production-grid.ts';
@@ -75,7 +77,23 @@ const TicketDateForm = ({
   const sold = row ? row.products.reduce((sum, product) => sum + (product?.tokensCount || 0), 0) : 0;
   const categoryName = (code: string | null) =>
     details.categories?.find((category) => category.code === code)?.option?.texts?.title || code;
-  const priceFlags = ticketPriceFlags(row, columns, details.categories);
+  const priceFlags = ticketPriceFlags(row, columns, details.categories, shop);
+  const findTicketPrices = useTicketPrices();
+
+  const withAllPrices = async (input: Record<string, any>) => {
+    if (!input.tickets) return input;
+    const tickets = await Promise.all(
+      input.tickets.map(async (ticket) => {
+        if (!ticket.pricing) return ticket;
+        const product = ticket.category ? row?.cells[ticket.category] : row?.products[0];
+        const prices = product
+          ? await findTicketPrices(product._id)
+          : details.categories?.find(({ code }) => code === ticket.category)?.pricing;
+        return { ...ticket, pricing: withPrice(prices, ticket.pricing[0]) };
+      }),
+    );
+    return { ...input, tickets };
+  };
 
   const form = useForm({
     submit: async (values) => {
@@ -111,8 +129,9 @@ const TicketDateForm = ({
         return { success: false, error: { message: '' } };
       }
       try {
-        if (row) await updateTicketPerformance(production._id, row.startsAt, result.input);
-        else await addTicketPerformance(production._id, result.input);
+        const input = await withAllPrices(result.input);
+        if (row) await updateTicketPerformance(production._id, row.startsAt, input);
+        else await addTicketPerformance(production._id, input);
         return { success: true };
       } catch (error) {
         return { success: false, error: { message: errorMessage(error) } };

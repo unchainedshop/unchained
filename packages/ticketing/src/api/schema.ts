@@ -319,6 +319,8 @@ export default [
       countryCode: String!
       isTaxable: Boolean
       isNetPrice: Boolean
+      "Lowest quantity of the price tier; none or 0 is the base price"
+      minQuantity: Int
     }
 
     input TicketCategoryTextInput {
@@ -397,6 +399,7 @@ export default [
       countryCode: String!
       isTaxable: Boolean
       isNetPrice: Boolean
+      minQuantity: Int
     }
 
     type TicketCategory {

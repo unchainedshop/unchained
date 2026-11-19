@@ -163,6 +163,39 @@ export const toPriceFlags = (price?: { isTaxable?: boolean; isNetPrice?: boolean
   isNetPrice: Boolean(price?.isNetPrice),
 });
 
+export interface TicketPrice extends Partial<PriceFlags> {
+  amount: number;
+  currencyCode: string;
+  countryCode: string;
+  minQuantity?: number | null;
+}
+
+type PriceTier = Pick<TicketPrice, 'currencyCode' | 'countryCode' | 'minQuantity'>;
+
+const isSameTier = (price: PriceTier, other: PriceTier) =>
+  price.currencyCode === other.currencyCode &&
+  price.countryCode === other.countryCode &&
+  (price.minQuantity ?? 0) === (other.minQuantity ?? 0);
+
+export const shopPriceOf = (
+  prices: TicketPrice[] | null | undefined,
+  { currencyCode, countryCode }: Pick<ShopDefaults, 'currencyCode' | 'countryCode'>,
+) => prices?.find((price) => isSameTier(price, { currencyCode, countryCode }));
+
+const toPriceInput = ({ amount, currencyCode, countryCode, minQuantity, ...flags }: TicketPrice) => ({
+  amount,
+  currencyCode,
+  countryCode,
+  ...toPriceFlags(flags),
+  ...(minQuantity ? { minQuantity } : {}),
+});
+
+/** A price list is replaced as a whole: the list with this price, all other prices kept. */
+export const withPrice = (prices: TicketPrice[] | null | undefined, price: TicketPrice) => [
+  ...(prices ?? []).filter((other) => !isSameTier(price, other)).map(toPriceInput),
+  toPriceInput(price),
+];
+
 type GridRow = { cells: Record<string, any>; products: any[] } | null;
 
 const productOf = (row: GridRow, code: string | null) => (code ? row?.cells[code] : row?.products[0]);
@@ -170,14 +203,15 @@ const productOf = (row: GridRow, code: string | null) => (code ? row?.cells[code
 export const ticketPriceFlags = (
   row: GridRow,
   columns: (string | null)[],
-  categories?: { code: string; pricing?: Partial<PriceFlags>[] | null }[] | null,
+  categories: { code: string; pricing?: TicketPrice[] | null }[] | null | undefined,
+  shop: Pick<ShopDefaults, 'currencyCode' | 'countryCode'>,
 ): Record<string, PriceFlags> =>
   Object.fromEntries(
     columns.map((code) => [
       code ?? '',
       toPriceFlags(
         productOf(row, code)?.catalogPrice ??
-          categories?.find((category) => category.code === code)?.pricing?.[0],
+          shopPriceOf(categories?.find((category) => category.code === code)?.pricing, shop),
       ),
     ]),
   );

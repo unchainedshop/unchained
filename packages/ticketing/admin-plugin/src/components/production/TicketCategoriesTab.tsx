@@ -12,8 +12,10 @@ import {
   centsToDecimal,
   isCategoryCode,
   toCents,
+  shopPriceOf,
   toCount,
   toPriceFlags,
+  withPrice,
 } from '../../utils/production-form.ts';
 import { useFormatPrice } from '../../utils/misc.ts';
 import { FormFooter, errorMessage } from './fields.tsx';
@@ -25,6 +27,7 @@ const CategoryForm = ({ production, category, onDone }) => {
   const shop = useShopDefaults();
   const { addTicketCategory, updateTicketCategory } = useTicketProductionMutations();
   const invalid = formatMessage({ id: 'invalid_value', defaultMessage: 'Enter a valid value' });
+  const shopPrice = shopPriceOf(category?.pricing, shop);
 
   const form = useForm({
     submit: async ({ code, name, capacity, price, isTaxable, isNetPrice, applyToPerformances }) => {
@@ -42,15 +45,13 @@ const CategoryForm = ({ production, category, onDone }) => {
         texts: [{ locale: selectedLocale, title: name || '' }],
         capacity: toCount(capacity),
         ...(amount !== null && {
-          pricing: [
-            {
-              amount,
-              currencyCode: shop.currencyCode,
-              countryCode: shop.countryCode,
-              isTaxable: Boolean(isTaxable),
-              isNetPrice: Boolean(isNetPrice),
-            },
-          ],
+          pricing: withPrice(category?.pricing, {
+            amount,
+            currencyCode: shop.currencyCode,
+            countryCode: shop.countryCode,
+            isTaxable: Boolean(isTaxable),
+            isNetPrice: Boolean(isNetPrice),
+          }),
         }),
       };
       try {
@@ -77,8 +78,8 @@ const CategoryForm = ({ production, category, onDone }) => {
       name: category?.option?.texts?.title || '',
       capacity:
         category?.capacity === null || category?.capacity === undefined ? '' : String(category.capacity),
-      price: centsToDecimal(category?.pricing?.[0]?.amount),
-      ...toPriceFlags(category?.pricing?.[0]),
+      price: centsToDecimal(shopPrice?.amount),
+      ...toPriceFlags(shopPrice),
       applyToPerformances: false,
     },
   });
@@ -177,6 +178,7 @@ const TicketCategoriesTab = ({ production }: { production: any }) => {
   const { formatMessage } = useIntl();
   const { formatPrice } = useFormatPrice();
   const { hasRole } = useAuth();
+  const shop = useShopDefaults();
   const { setModal } = useModal();
   const { removeTicketCategory } = useTicketProductionMutations();
   const [editing, setEditing] = useState<string | null>(null);
@@ -208,6 +210,10 @@ const TicketCategoriesTab = ({ production }: { production: any }) => {
     );
 
   const editedCategory = categories.find(({ code }) => code === editing);
+  const priceText = (category) => {
+    const price = shopPriceOf(category.pricing, shop);
+    return price ? formatPrice(price) : '-';
+  };
 
   return (
     <div className="space-y-6">
@@ -229,7 +235,7 @@ const TicketCategoriesTab = ({ production }: { production: any }) => {
               </Table.Cell>
               <Table.Cell>{category.option?.texts?.title || '-'}</Table.Cell>
               <Table.Cell>{category.capacity ?? '-'}</Table.Cell>
-              <Table.Cell>{category.pricing?.[0] ? formatPrice(category.pricing[0]) : '-'}</Table.Cell>
+              <Table.Cell>{priceText(category)}</Table.Cell>
               <Table.Cell>
                 {canManage && (
                   <div className="flex justify-end gap-2">
