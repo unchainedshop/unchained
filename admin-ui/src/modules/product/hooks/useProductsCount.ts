@@ -11,12 +11,14 @@ const ProductsCountQuery = gql`
     $tags: [LowerCaseString!]
     $slugs: [String!]
     $includeDrafts: Boolean
+    $type: ProductType
   ) {
     productsCount(
       tags: $tags
       slugs: $slugs
       includeDrafts: $includeDrafts
       queryString: $queryString
+      type: $type
     )
   }
 `;
@@ -25,6 +27,7 @@ const useProductsCount = ({
   queryString = '',
   tags = null,
   includeDrafts = true,
+  type = null,
 }: IProductsCountQueryVariables) => {
   const { data, loading, error } = useQuery<
     IProductsCountQuery,
@@ -35,6 +38,7 @@ const useProductsCount = ({
       queryString,
       includeDrafts,
       tags,
+      type,
     },
   });
 

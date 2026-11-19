@@ -2058,6 +2058,7 @@ export type IProductsCountQueryVariables = Exact<{
   tags?: Array<unknown> | null | undefined;
   slugs?: Array<string> | null | undefined;
   includeDrafts?: boolean | null | undefined;
+  type?: Types.IProductType | null | undefined;
 }>;
 
 
