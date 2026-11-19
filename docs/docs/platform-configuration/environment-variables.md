@@ -31,7 +31,7 @@ Variables marked as **Required** are validated at boot by `startPlatform` — th
 | `UNCHAINED_TOKEN_SECRET` | - | Yes | Secret key for signing session JWTs. Must be at least 32 characters long and kept secret, generate randomly by using `uuidgen` |
 | `UNCHAINED_TOKEN_EXPIRY_SECONDS` | `3600` | No | Session token and cookie lifetime in seconds |
 | `UNCHAINED_TOKEN_ISSUER` | `unchained-engine` | No | JWT issuer claim, validated on token verification |
-| `UNCHAINED_SECRET` | - | No | Secret used for hashing token access keys (warehousing) and magic keys (ticketing) |
+| `UNCHAINED_SECRET` | - | No | Secret used for hashing token access keys (warehousing) and magic keys (ticketing). Without it, token access keys are refused and ticketing does not start |
 | `UNCHAINED_COOKIE_NAME` | `unchained_token` | No | Name of the session cookie |
 | `UNCHAINED_COOKIE_PATH` | `/` | No | Cookie path |
 | `UNCHAINED_COOKIE_DOMAIN` | - | No | Cookie domain restriction |

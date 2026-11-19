@@ -1,5 +1,10 @@
 # Unchained Engine v5.0 (Breaking Changes)
 
+## Unreleased
+
+### Security
+- **Token access keys require `UNCHAINED_SECRET`** (`@unchainedshop/core-warehousing`, `@unchainedshop/api`): without it the key was a hash of the token id and its owner alone, so anyone who knew both could forge an `x-token-accesskey`. `buildAccessKeyFromToken` now throws, so `Token.accessKey` and requests carrying the header fail until the variable is set.
+
 ## v5.0.0-alpha.13 (2026-11-11)
 
 ### Improvements

@@ -27,11 +27,10 @@ export const all = (role, actions) => {
     if (isOwnedByUser) return true;
 
     const accessKeyHeader = context.getHeader('x-token-accesskey');
-    const accessKey = await context.modules.warehousing.buildAccessKeyFromToken(token);
-    if (accessKeyHeader && accessKey && (await timingSafeStringEqual(accessKeyHeader, accessKey)))
-      return true;
+    if (!accessKeyHeader) return false;
 
-    return false;
+    const accessKey = await context.modules.warehousing.buildAccessKeyFromToken(token);
+    return timingSafeStringEqual(accessKeyHeader, accessKey);
   };
 
   const isUsersCollectionEmpty = async (_: never, params: never, context: Context) => {
