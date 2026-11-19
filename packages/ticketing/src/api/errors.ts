@@ -94,6 +94,11 @@ export const TicketSupplyBelowSoldError = createError(
   'The supply cannot be lower than the tickets that are sold or reserved',
 );
 
+export const TicketProductionLockedError = createError(
+  'TicketProductionLockedError',
+  'Tickets of this production are being sold right now, try again',
+);
+
 export const TicketCategoryNotFoundError = createError(
   'TicketCategoryNotFoundError',
   'The production has no ticket category with this code',
@@ -121,6 +126,7 @@ const PRODUCTION_ERRORS = {
   TICKET_PERFORMANCE_HAS_TICKETS: TicketPerformanceHasTicketsError,
   TICKET_CATEGORY_HAS_TICKETS: TicketPerformanceHasTicketsError,
   TICKET_SUPPLY_BELOW_SOLD: TicketSupplyBelowSoldError,
+  LOCKED: TicketProductionLockedError,
   TICKET_CATEGORY_NOT_FOUND: TicketCategoryNotFoundError,
   TICKET_CATEGORY_EXISTS: TicketCategoryExistsError,
   INVALID_TICKET_SALE_RULES: InvalidTicketSaleRulesError,

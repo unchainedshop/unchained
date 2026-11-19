@@ -14,6 +14,7 @@ const modulesFor = (order: unknown, events: string[]) =>
         events.push('read');
         return order;
       },
+      lockSupply: async () => ({ [Symbol.asyncDispose]: async () => undefined }),
       positions: { findOrderPositions: async () => [] },
     },
   }) as unknown as Modules;

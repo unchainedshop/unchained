@@ -173,6 +173,22 @@ export const configureOrdersModule = async ({
       return acquireLock(OrderLocks, `order:${identifier}:${orderId}`, ttl);
     },
 
+    lockSupply: async (productIds: string[]) => {
+      const locks: { release: () => Promise<void> }[] = [];
+      const release = async () => {
+        await Promise.all(locks.splice(0).map((lock) => lock.release()));
+      };
+      try {
+        for (const productId of [...new Set(productIds)].sort()) {
+          locks.push(await acquireLock(OrderLocks, `order:supply:${productId}`, 5000));
+        }
+      } catch (error) {
+        await release();
+        throw error;
+      }
+      return { release, [Symbol.asyncDispose]: release };
+    },
+
     setDeliveryProvider: async (orderId: string, deliveryProviderId: string) => {
       const delivery = await OrderDeliveries.findOne({
         orderId,

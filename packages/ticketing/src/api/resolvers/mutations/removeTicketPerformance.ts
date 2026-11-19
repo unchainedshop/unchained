@@ -13,13 +13,9 @@ export default async function removeTicketPerformance(
   const services = getProductionServices(context);
   await findTicketProductionInScope(productionId, context, info);
   const slot = new Date(startsAt).toISOString();
-  const productIds = await withTicketProductionErrors(
-    () => services.removeTicketPerformance(productionId, slot),
-    { productionId, startsAt },
-  );
-  // Removes the performance products from carts and assortments as well
-  for (const productId of productIds) {
-    await context.services.products.removeProduct({ productId });
-  }
+  await withTicketProductionErrors(() => services.removeTicketPerformance(productionId, slot, context), {
+    productionId,
+    startsAt,
+  });
   return context.modules.products.findProduct({ productId: productionId });
 }

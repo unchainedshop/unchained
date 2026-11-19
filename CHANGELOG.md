@@ -7,6 +7,7 @@
 
 ### Breaking
 - **`services.ticketing.removeTicketProductionMediaCopies` is removed** (`@unchainedshop/ticketing`): a removed production media now syncs the performances of its own production instead of scanning every production.
+- **The ticketing remove services remove the products** (`@unchainedshop/ticketing`): `removeTicketPerformance`, `removeTicketCategory` and `removeTicketProduction` take `{ services }` as their last argument and call `services.products.removeProduct` themselves, so callers no longer remove the returned ids.
 
 ### Improvements
 - **Login with a code in the Admin UI** (`@unchainedshop/admin-ui`, `@unchainedshop/api`): while the users option `loginCode` is enabled, the login offers "Log in with a code" and `/login-code` takes the code or the link of the mail. The new `AdminUiConfig.loginCodeEnabled` tells the Admin UI.
@@ -27,6 +28,7 @@
 - **Changing the tag filter starts at the first page** (`@unchainedshop/admin-ui`): lists with a tag filter kept their page, so a filtered list could show nothing.
 - **`PRODUCT_REMOVE_MEDIA` names the product** (`@unchainedshop/core-products`): it carries `{ productId, productMediaId }`, only for media that existed; removing several media at once emitted `{ assortmentMediaId }`, so ticketing kept their copies on the performances.
 - **A ticket's price follows its own order position** (`@unchainedshop/ticketing`): `findTicketPrice` and `getTicketDetails` took the first position of the order with the same event, so with two lines of one event the second ticket showed the first line's price. The new `findTicketPurchase` returns a ticket's order and position.
+- **Capacity changes and removals of ticket dates wait for running checkouts** (`@unchainedshop/ticketing`, `@unchainedshop/core-orders`): they hold the products' supply locks (new `modules.orders.lockSupply`), so a capacity lowered while a checkout sells the last seat no longer ends below the issued tickets; a busy lock answers `TicketProductionLockedError`.
 
 ## v5.0.0-alpha.13 (2026-11-11)
 
