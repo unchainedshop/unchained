@@ -1140,6 +1140,7 @@
   "renews_automatically": "Renews automatically",
   "resume_at_label": "Resume automatically on (optional)",
   "resumes_automatically": "Resumes automatically on {date}",
+  "retry_masked_input": "The input contains masked values (******). Replace them before retrying.",
   "set_end_date_header": "Set end date",
   "set_end_date_message": "The subscription ends on this date. Unlike a termination, no notice period or minimum commitment applies.",
   "termination_reason_admin_action": "Administrative action",

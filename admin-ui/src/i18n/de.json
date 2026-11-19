@@ -1140,6 +1140,7 @@
   "renews_automatically": "Verlängert sich automatisch",
   "resume_at_label": "Automatisch fortsetzen am (optional)",
   "resumes_automatically": "Wird am {date} automatisch fortgesetzt",
+  "retry_masked_input": "Die Eingabe enthält maskierte Werte (******). Ersetzen Sie diese vor dem erneuten Versuch.",
   "set_end_date_header": "Enddatum festlegen",
   "set_end_date_message": "Das Abonnement endet an diesem Datum. Anders als bei einer Kündigung gelten weder Kündigungsfrist noch Mindestlaufzeit.",
   "termination_reason_admin_action": "Administrative Massnahme",

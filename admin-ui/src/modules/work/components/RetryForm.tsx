@@ -105,6 +105,16 @@ const RetryForm = ({
           <div>
             <JSONAreaField
               name="input"
+              validators={[
+                {
+                  isValid: (value) => !String(value ?? '').includes('******'),
+                  intlMessageDescriptor: {
+                    id: 'retry_masked_input',
+                    defaultMessage:
+                      'The input contains masked values (******). Replace them before retrying.',
+                  },
+                },
+              ]}
               label={formatMessage({ id: 'input', defaultMessage: 'Input' })}
               labelClassName="text-sm font-medium text-slate-500 mb-1"
               className="w-full h-48 text-sm text-text-primary dark:bg-slate-800 rounded-md"
