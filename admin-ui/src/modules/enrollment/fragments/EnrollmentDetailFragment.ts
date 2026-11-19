@@ -39,7 +39,6 @@ const EnrollmentDetailFragment = gql`
     delivery {
       provider {
         _id
-        configuration
         configurationError
         interface {
           _id
@@ -60,7 +59,6 @@ const EnrollmentDetailFragment = gql`
     payment {
       provider {
         _id
-        configuration
         configurationError
         interface {
           _id
