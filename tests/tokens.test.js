@@ -7,6 +7,7 @@ import {
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { TestToken1, TestToken3 } from './seeds/tokens.js';
 import assert from 'node:assert';
+import { createHash } from 'node:crypto';
 import test from 'node:test';
 
 test.describe('Tokens', () => {
@@ -453,6 +454,70 @@ test.describe('Tokens', () => {
       });
       assert.strictEqual(errors, undefined, JSON.stringify(errors));
       assert.strictEqual(data.token._id, exportedTokenId);
+    });
+  });
+
+  test.describe('Token access keys', () => {
+    const configuredSecret = process.env.UNCHAINED_SECRET;
+    const tokenQuery = /* GraphQL */ `
+      query Token($tokenId: ID!) {
+        token(tokenId: $tokenId) {
+          _id
+        }
+      }
+    `;
+
+    test.afterEach(() => {
+      if (configuredSecret === undefined) delete process.env.UNCHAINED_SECRET;
+      else process.env.UNCHAINED_SECRET = configuredSecret;
+    });
+
+    test('open the token for an anonymous user', async () => {
+      const {
+        data: {
+          token: { accessKey },
+        },
+      } = await graphqlFetch({
+        query: /* GraphQL */ `
+          query TokenAccessKey($tokenId: ID!) {
+            token(tokenId: $tokenId) {
+              accessKey
+            }
+          }
+        `,
+        variables: { tokenId: TestToken3._id },
+      });
+      const { data, errors } = await graphqlFetchAsAnonymousUser({
+        query: tokenQuery,
+        variables: { tokenId: TestToken3._id },
+        headers: { 'x-token-accesskey': accessKey },
+      });
+      assert.strictEqual(errors, undefined, JSON.stringify(errors));
+      assert.strictEqual(data.token._id, TestToken3._id);
+    });
+
+    test('built without UNCHAINED_SECRET open nothing', async () => {
+      delete process.env.UNCHAINED_SECRET;
+      const { data, errors } = await graphqlFetchAsAnonymousUser({
+        query: tokenQuery,
+        variables: { tokenId: TestToken3._id },
+        headers: {
+          'x-token-accesskey': createHash('sha256')
+            .update(TestToken3._id + TestToken3.walletAddress)
+            .digest('hex'),
+        },
+      });
+      assert.strictEqual(data.token, null);
+      assert.ok(errors?.length);
+    });
+
+    test('a request without a key gets NoPermissionError without UNCHAINED_SECRET', async () => {
+      delete process.env.UNCHAINED_SECRET;
+      const { errors } = await graphqlFetchAsAnonymousUser({
+        query: tokenQuery,
+        variables: { tokenId: TestToken3._id },
+      });
+      assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
     });
   });
 });

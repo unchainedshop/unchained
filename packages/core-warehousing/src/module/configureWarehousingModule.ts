@@ -215,11 +215,13 @@ export const configureWarehousingModule = async ({ db }: ModuleInput<Record<stri
     },
 
     buildAccessKeyFromToken: async (token: TokenSurrogate): Promise<string> => {
-      const payload = [
-        token._id,
-        token.walletAddress || token.userId,
-        process.env.UNCHAINED_SECRET,
-      ].join('');
+      const secret = process.env.UNCHAINED_SECRET;
+      if (!secret) {
+        throw new Error('Token access keys need the UNCHAINED_SECRET environment variable.', {
+          cause: 'UNCHAINED_SECRET_MISSING',
+        });
+      }
+      const payload = [token._id, token.walletAddress || token.userId, secret].join('');
       const msgUint8 = new TextEncoder().encode(payload);
       const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
