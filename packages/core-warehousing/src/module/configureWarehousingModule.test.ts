@@ -82,4 +82,20 @@ describe('createTokens', () => {
     });
     assert.equal(emitted.length, 1);
   });
+
+  it('sums the quantities of the tokens that match, tokensCount counts the documents', async () => {
+    await warehousing.createTokens([
+      { ...token('t1', 'product-a', 'position-1'), quantity: 2 },
+      { ...token('t2', 'product-a', 'position-1'), quantity: 3, meta: { cancelled: true } },
+      token('t3', 'product-b', 'position-2'),
+    ]);
+
+    assert.equal(await warehousing.tokensQuantity({ productId: 'product-a' }), 5);
+    assert.equal(
+      await warehousing.tokensQuantity({ productId: 'product-a', 'meta.cancelled': { $ne: true } }),
+      2,
+    );
+    assert.equal(await warehousing.tokensCount({ productId: 'product-a' }), 2);
+    assert.equal(await warehousing.tokensQuantity({ productId: 'none' }), 0);
+  });
 });

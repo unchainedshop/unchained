@@ -24,12 +24,9 @@ const buildContext = (overrides: Record<string, unknown> = {}) => {
     locale: systemLocale,
     modules: {
       warehousing: {
-        findTokens: async (selector: any) => {
+        tokensQuantity: async (selector: any) => {
           tokenSelectors.push(selector);
-          return [
-            { quantity: 1, meta: {} },
-            { quantity: 2, meta: { cancelled: true } },
-          ];
+          return 3;
         },
       },
       languages: { findLanguages: async () => [{ isoCode: 'en' }, { isoCode: 'de' }] },

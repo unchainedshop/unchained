@@ -17,6 +17,7 @@
 - **Product type filter** (`@unchainedshop/admin-ui`): the product list filters by product type.
 - **Tag filter in the ticketing admin plugin** (`@unchainedshop/ticketing`, `@unchainedshop/admin-ui`): productions and events filter by tags; `@unchainedshop/admin-ui/ui` exports `SearchWithTags` for plugins.
 - **"Update all dates" in the ticketing admin plugin** (`@unchainedshop/ticketing`): the production header runs `syncTicketProduction`, e.g. after an import.
+- **`modules.warehousing.tokensQuantity(selector)`** (`@unchainedshop/core-warehousing`): sums the quantities of the matching tokens, beside the document count `tokensCount`. The ETH minter uses it instead of loading every token of the product on each stock estimate.
 
 ### Fixed
 - **`User.viewerAllowedActions` leaves out the actions on privileged users that need `managePrivilegedUsers`** (`@unchainedshop/api`), so the Admin UI no longer offers them.
