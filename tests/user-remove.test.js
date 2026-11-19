@@ -6,7 +6,7 @@ import {
   createAnonymousGraphqlFetch,
   disconnect,
 } from './helpers.js';
-import { Admin, User, ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
+import { User, Guest, ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 
 let graphqlFetchAsAdmin;
 let graphqlFetchAsUser;
@@ -334,7 +334,7 @@ test.describe('User Removal', () => {
               }
             }
           `,
-          variables: { userId: Admin._id },
+          variables: { userId: Guest._id },
         });
 
         assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');

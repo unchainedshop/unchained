@@ -3,7 +3,7 @@ import { checkAction } from '../roles/acl.ts';
 import { actions } from '../roles/index.ts';
 import type { Context } from '../context.ts';
 
-const grantsPrivilege = (context: Context, userId: string | undefined, roles: string[] = []) =>
+export const grantsPrivilege = (context: Context, userId: string | undefined, roles: string[] = []) =>
   context.roles!.allow({ userId }, roles, actions.managePrivilegedUsers, [undefined, undefined]);
 
 export const guardPrivilegedUsers =

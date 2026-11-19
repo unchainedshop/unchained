@@ -8,6 +8,9 @@
 ### Improvements
 - **Login with a code in the Admin UI** (`@unchainedshop/admin-ui`, `@unchainedshop/api`): while the users option `loginCode` is enabled, the login offers "Log in with a code" and `/login-code` takes the code or the link of the mail. The new `AdminUiConfig.loginCodeEnabled` tells the Admin UI.
 
+### Fixed
+- **`User.viewerAllowedActions` leaves out the actions on privileged users that need `managePrivilegedUsers`** (`@unchainedshop/api`), so the Admin UI no longer offers them.
+
 ## v5.0.0-alpha.13 (2026-11-11)
 
 ### Improvements

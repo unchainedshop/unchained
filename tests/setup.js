@@ -176,12 +176,12 @@ export async function initializeTestPlatform() {
     rolesOptions: {
       additionalRoles: {
         sessionManager: (role, actions) => {
-          role.allow(actions.viewUser, (_, params) => params?.userId === 'admin');
-          role.allow(actions.logoutAllSessions, (_, params) => params?.userId === 'admin');
+          role.allow(actions.viewUser, (_, params) => params?.userId === 'guest');
+          role.allow(actions.logoutAllSessions, (_, params) => params?.userId === 'guest');
         },
         userManager: (role, actions) => {
-          role.allow(actions.viewUser, (_, params) => params?.userId === 'admin');
-          role.allow(actions.updateUser, (_, params) => params?.userId === 'admin');
+          role.allow(actions.viewUser, (_, params) => params?.userId === 'guest');
+          role.allow(actions.updateUser, (_, params) => params?.userId === 'guest');
         },
         userDataViewer: (role, actions) => {
           role.allow(actions.viewUser, () => true);

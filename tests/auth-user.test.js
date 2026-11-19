@@ -113,7 +113,7 @@ test.describe('Auth for logged in users', () => {
               }
             }
           `,
-          variables: { userId: Admin._id },
+          variables: { userId: Guest._id },
         });
 
         assert.ok(user.viewerAllowedActions.includes('updateUser'));
@@ -128,7 +128,7 @@ test.describe('Auth for logged in users', () => {
               }
             }
           `,
-          variables: { userId: Guest._id },
+          variables: { userId: Admin._id },
         });
 
         assert.strictEqual(errors[0]?.extensions?.code, 'NoPermissionError');
@@ -146,7 +146,7 @@ test.describe('Auth for logged in users', () => {
               }
             }
           `,
-          variables: { userId: Admin._id },
+          variables: { userId: Guest._id },
         });
 
         assert.ok(user.viewerAllowedActions.includes('logoutAllSessions'));

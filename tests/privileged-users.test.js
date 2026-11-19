@@ -108,6 +108,43 @@ test.describe('Privileged users', () => {
     assert.strictEqual(admin.deleted, undefined);
   });
 
+  test('viewerAllowedActions offers a user manager no actions on an admin', async () => {
+    const viewerAllowedActions = async (userId) => {
+      const { data, errors } = await asSupport({
+        query: /* GraphQL */ `
+          query viewerAllowedActions($userId: ID!) {
+            user(userId: $userId) {
+              viewerAllowedActions
+            }
+          }
+        `,
+        variables: { userId },
+      });
+      assert.strictEqual(errors, undefined, JSON.stringify(errors));
+      return data.user.viewerAllowedActions;
+    };
+    const guardedActions = [
+      'impersonate',
+      'manageUsers',
+      'updateUser',
+      'updateUsername',
+      'uploadUserAvatar',
+    ];
+
+    const onAdmin = await viewerAllowedActions(Admin._id);
+    assert.ok(onAdmin.includes('viewUserPrivateInfos'));
+    assert.deepStrictEqual(
+      guardedActions.filter((action) => onAdmin.includes(action)),
+      [],
+    );
+
+    const onUser = await viewerAllowedActions(User._id);
+    assert.deepStrictEqual(
+      guardedActions.filter((action) => onUser.includes(action)),
+      guardedActions,
+    );
+  });
+
   test('a user manager still manages unprivileged users', async () => {
     const { errors } = await asSupport({
       query: /* GraphQL */ `
