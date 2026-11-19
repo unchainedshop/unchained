@@ -1127,5 +1127,6 @@
   "work": "Work",
   "workers": "Workers",
   "write_review": "Write a Review",
+  "erc_metadata_properties": "ERC metadata properties",
   "order_locked_error": "Another process is working on this order right now. Please try again in a moment."
 }

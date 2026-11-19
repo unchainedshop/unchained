@@ -12,6 +12,7 @@
 ### Fixed
 - **`User.viewerAllowedActions` leaves out the actions on privileged users that need `managePrivilegedUsers`** (`@unchainedshop/api`), so the Admin UI no longer offers them.
 - **Order and enrollment details load without the provider `manage*` actions** (`@unchainedshop/admin-ui`): they asked for the provider `configuration` that alpha.12 restricted.
+- **Saving the token tab keeps `ercMetadataProperties`** (`@unchainedshop/admin-ui`): the form removed them; it edits them now, and the contract address is optional.
 
 ## v5.0.0-alpha.13 (2026-11-11)
 

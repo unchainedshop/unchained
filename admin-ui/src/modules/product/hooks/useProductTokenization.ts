@@ -15,6 +15,7 @@ const ProductTokenizationQuery = gql`
         contractConfiguration {
           tokenId
           supply
+          ercMetadataProperties
         }
         contractStandard
         contractAddress

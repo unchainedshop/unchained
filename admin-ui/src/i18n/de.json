@@ -1127,5 +1127,6 @@
   "units_available": "{quantity} Einheiten verfügbar",
   "unknown_delivery_provider": "Unbekannter Lieferanbieter",
   "warehouse": "Lager",
+  "erc_metadata_properties": "ERC-Metadaten-Eigenschaften",
   "order_locked_error": "Diese Bestellung wird gerade von einem anderen Vorgang bearbeitet. Bitte versuchen Sie es gleich nochmals."
 }

@@ -1975,7 +1975,7 @@ export type IProductTokenizationQuery = { product:
     | { _id: string }
     | { _id: string }
     | { _id: string }
-    | { contractStandard: Types.ISmartContractStandard | null, contractAddress: string | null, _id: string, contractConfiguration: { tokenId: string | null, supply: number } | null }
+    | { contractStandard: Types.ISmartContractStandard | null, contractAddress: string | null, _id: string, contractConfiguration: { tokenId: string | null, supply: number, ercMetadataProperties: unknown } | null }
    | null };
 
 export type IProductVariationTypeQueryVariables = Exact<{ [key: string]: never; }>;
