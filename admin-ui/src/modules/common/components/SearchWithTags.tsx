@@ -19,16 +19,12 @@ const SearchWithTags = ({
   const { query, push } = useRouter();
 
   const handleTagChange = (value) => {
-    if (isTruthy(value)) {
-      push({
-        query: normalizeQuery(query, value?.join(','), 'tags'),
-      });
-    } else {
-      const { tags, ...rest } = query;
-      push({
-        query: normalizeQuery(rest),
-      });
-    }
+    const { skip, tags, ...rest } = query;
+    push({
+      query: isTruthy(value)
+        ? normalizeQuery(rest, value.join(','), 'tags')
+        : normalizeQuery(rest),
+    });
   };
 
   return (

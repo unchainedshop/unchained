@@ -21,6 +21,7 @@
 - **Retrying a work refuses masked input** (`@unchainedshop/admin-ui`): the retry form sent the `******` of obfuscated fields back as input.
 - **Missing Admin UI texts** (`@unchainedshop/admin-ui`): 21 texts of the bulk actions, the enrollment detail and the last-admin error had no English or German translation.
 - **Ticket prices keep their tax flags** (`@unchainedshop/ticketing`): saving a category or the price of a date in the admin plugin removed `isTaxable` and `isNetPrice`; the category form edits them now.
+- **Changing the tag filter starts at the first page** (`@unchainedshop/admin-ui`): lists with a tag filter kept their page, so a filtered list could show nothing.
 
 ## v5.0.0-alpha.13 (2026-11-11)
 
