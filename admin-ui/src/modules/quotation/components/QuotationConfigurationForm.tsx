@@ -2,8 +2,14 @@ import { CheckIcon } from '@heroicons/react/24/outline';
 import { useIntl } from 'react-intl';
 import SaveAndCancelButtons from '@/components/ui/SaveAndCancelButtons';
 import Form from '../../forms/components/Form';
+import CheckboxField from '@/components/ui/form/CheckboxField';
 import JSONAreaField from '@/components/ui/form/JSONAreaField';
+import TextField from '@/components/ui/form/TextField';
 import useForm from '../../forms/hooks/useForm';
+import {
+  validateAmount,
+  validatePositiveInteger,
+} from '../../forms/lib/validators';
 
 const QuotationConfigurationForm = ({
   successMessage,
@@ -12,6 +18,8 @@ const QuotationConfigurationForm = ({
   icon = null,
   headerText,
   submitButtonText,
+  withProposalFields = false,
+  currencyDecimals = 2,
 }) => {
   const { formatMessage } = useIntl();
   const defaultSuccessMessage = formatMessage({
@@ -25,6 +33,10 @@ const QuotationConfigurationForm = ({
     onSubmitSuccess: onCancel,
     initialValues: {
       quotationContext: null,
+      price: '',
+      quantity: '',
+      isNetPrice: false,
+      isTaxable: true,
     },
   });
   return (
@@ -48,6 +60,34 @@ const QuotationConfigurationForm = ({
           </h3>
         </div>
       </div>
+      {withProposalFields && (
+        <div className="mb-4 grid grid-cols-2 gap-4">
+          <TextField
+            name="price"
+            label={formatMessage({ id: 'price', defaultMessage: 'Price' })}
+            validators={[validateAmount(currencyDecimals)]}
+          />
+          <TextField
+            name="quantity"
+            validators={[validatePositiveInteger]}
+            label={formatMessage({
+              id: 'quantity',
+              defaultMessage: 'Quantity',
+            })}
+          />
+          <CheckboxField
+            name="isNetPrice"
+            label={formatMessage({
+              id: 'net_price',
+              defaultMessage: 'Net Price',
+            })}
+          />
+          <CheckboxField
+            name="isTaxable"
+            label={formatMessage({ id: 'taxable', defaultMessage: 'Taxable' })}
+          />
+        </div>
+      )}
       <div>
         <JSONAreaField
           name="quotationContext"

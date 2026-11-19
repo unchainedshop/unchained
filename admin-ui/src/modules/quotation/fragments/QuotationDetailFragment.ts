@@ -30,6 +30,7 @@ const QuotationDetailFragment = gql`
       _id
       isoCode
       isActive
+      decimals
     }
     product {
       _id

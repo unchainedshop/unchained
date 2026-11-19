@@ -19,6 +19,7 @@ import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { IRoleAction } from '../../../gql/types';
 import { useFormatPrice } from '../../common/utils/utils';
 import useAuth from '../../Auth/useAuth';
+import { toMinorUnit } from '../../product/utils/price.utils';
 
 const QuotationDetail = ({ quotation }) => {
   const { formatMessage } = useIntl();
@@ -98,14 +99,30 @@ const QuotationDetail = ({ quotation }) => {
   };
 
   const proposeQuote = async () => {
+    const currencyDecimals = quotation?.currency?.decimals ?? 2;
     await setModal(
       <QuotationConfigurationForm
-        onSubmit={async ({ quotationContext }) => {
+        withProposalFields
+        currencyDecimals={currencyDecimals}
+        onSubmit={async ({
+          quotationContext,
+          price,
+          quantity,
+          isNetPrice,
+          isTaxable,
+        }) => {
+          const context = {
+            ...(quotationContext ? JSON.parse(quotationContext) : {}),
+            ...(price && {
+              price: toMinorUnit(price, currencyDecimals),
+              isNetPrice,
+              isTaxable,
+            }),
+            ...(quantity && { quantity: Number(quantity) }),
+          };
           await makeQuotationProposal({
             quotationId: quotation?._id,
-            quotationContext: quotationContext
-              ? JSON.parse(quotationContext || null)
-              : null,
+            quotationContext: Object.keys(context).length ? context : null,
           });
           setModal('');
         }}

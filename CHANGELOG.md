@@ -9,6 +9,7 @@
 - **Login with a code in the Admin UI** (`@unchainedshop/admin-ui`, `@unchainedshop/api`): while the users option `loginCode` is enabled, the login offers "Log in with a code" and `/login-code` takes the code or the link of the mail. The new `AdminUiConfig.loginCodeEnabled` tells the Admin UI.
 - **Order actions in the Admin UI report their errors** (`@unchainedshop/admin-ui`): confirm, reject, pay and deliver failed silently; they show the error now, and for `OrderLockedError` that another process is working on the order.
 - **Enrollments in the Admin UI** (`@unchainedshop/admin-ui`): suspend until a date, terminate with a reason and a comment, and set or remove the end date; the detail shows the contract start, the end date and the cancellation.
+- **Quotation proposals with price and quantity** (`@unchainedshop/admin-ui`): the proposal form sets the price of the quote, net or gross and taxable or not, and its quantity.
 
 ### Fixed
 - **`User.viewerAllowedActions` leaves out the actions on privileged users that need `managePrivilegedUsers`** (`@unchainedshop/api`), so the Admin UI no longer offers them.
