@@ -1126,5 +1126,6 @@
   "worker_dynamic": "{worker}",
   "work": "Work",
   "workers": "Workers",
-  "write_review": "Write a Review"
+  "write_review": "Write a Review",
+  "order_locked_error": "Another process is working on this order right now. Please try again in a moment."
 }

@@ -1126,5 +1126,6 @@
   "stock_without_dispatch_route_hint": "Für diese Anbieterkombinationen wird Bestand gemeldet, aber die Engine konnte keinen Versand dafür berechnen.",
   "units_available": "{quantity} Einheiten verfügbar",
   "unknown_delivery_provider": "Unbekannter Lieferanbieter",
-  "warehouse": "Lager"
+  "warehouse": "Lager",
+  "order_locked_error": "Diese Bestellung wird gerade von einem anderen Vorgang bearbeitet. Bitte versuchen Sie es gleich nochmals."
 }

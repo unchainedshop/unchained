@@ -1,10 +1,5 @@
-import { CombinedGraphQLErrors } from '@apollo/client';
 import type { IntlShape } from 'react-intl';
-
-const getGraphQLError = (error: unknown) => {
-  if (CombinedGraphQLErrors.is(error)) return error.errors[0];
-  return error as { message?: string; extensions?: { code?: string } };
-};
+import getGraphQLError from '../common/utils/getGraphQLError';
 
 const getUserManagementErrorMessage = (
   error: unknown,
