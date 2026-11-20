@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert';
+import { getCurrentContextResolver } from '@unchainedshop/api';
+import { WorkerDirector } from '@unchainedshop/core';
 import {
   parser,
   resolveForwardDeliveryTemplate,
@@ -12,7 +14,6 @@ import { SimpleProduct } from './seeds/products.js';
 import { SendMailDeliveryProvider } from './seeds/deliveries.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { BaseCurrency } from './seeds/locale-data.js';
-import { ConfirmedOrder } from './seeds/orders.js';
 
 const billingAddress = {
   firstName: 'Billing',
@@ -102,7 +103,6 @@ test.describe('Order mail templates', () => {
     });
     assert.strictEqual(errors, undefined);
     assert.strictEqual(checkoutCart.status, 'CONFIRMED');
-    await getTestPlatform().unchainedAPI.modules.currencies.update(BaseCurrency._id, { decimals: 4 });
   });
 
   test.after(async () => {
@@ -126,32 +126,33 @@ test.describe('Order mail templates', () => {
     }
   });
 
-  test('order mail uses the precision saved with the cart and the recipient locale', async () => {
+  test('API parsers use request currency data and the message worker reads the current order currency', async () => {
     const { unchainedAPI } = getTestPlatform();
+    const context = await getCurrentContextResolver()({
+      getHeader: (name) => (name === 'x-shop-country' ? 'DE' : undefined),
+    });
     const order = await unchainedAPI.modules.orders.findOrder({ orderId });
-    assert.equal(order.currencyDecimals, 3);
+    assert.equal(Object.hasOwn(order, 'currencyDecimals'), false);
+    assert.equal(context.currencyCode, 'EUR');
+    assert.equal(context.getCurrencyDecimals(order.currencyCode), 3);
+    await unchainedAPI.modules.currencies.update(BaseCurrency._id, { decimals: 4 });
     const locale = new Intl.Locale('de-DE');
-    const [confirmation] = await resolveOrderConfirmationTemplate(
-      { orderId, locale: locale.baseName },
-      unchainedAPI,
-    );
-    const summary = await parser.getOrderSummaryData(order, { locale }, unchainedAPI);
-    const [item] = await parser.getOrderPositionsData(order, { locale }, unchainedAPI);
+    const summary = await parser.getOrderSummaryData(order, { locale }, context);
+    const [item] = await parser.getOrderPositionsData(order, { locale }, context);
     assert.equal(item.rawPrices.unitPrice.amount, 10000);
     assert.equal(summary.rawPrices.gross.amount, 10000);
     assert.equal(item.unitPrice, '10,000\u00a0CHF');
     assert.equal(summary.prices.gross, item.unitPrice);
-    assert.ok(confirmation.input.text.includes(`1x ${item.productTexts.title} ${item.unitPrice}`));
-    assert.ok(confirmation.input.text.includes(`Order Total ${item.unitPrice}`));
-  });
-
-  test('orders predating the precision snapshot keep their cents-based display', async () => {
-    const { unchainedAPI } = getTestPlatform();
-    const [email] = await resolveOrderConfirmationTemplate(
-      { orderId: ConfirmedOrder._id, locale: 'de-DE' },
+    const worker = WorkerDirector.getAdapterByType('MESSAGE');
+    const work = await worker.doWork(
+      { template: 'ORDER_CONFIRMATION', orderId, locale: locale.baseName },
       unchainedAPI,
+      'mail-precision-test',
     );
-    assert.ok(email.input.text.includes('Order Total 300,00\u00a0CHF'));
+    assert.equal(work.success, true);
+    const email = await unchainedAPI.modules.worker.findWork({ workId: work.result.forked[0]._id });
+    assert.ok(email.input.text.includes(`1x ${item.productTexts.title} 1,0000\u00a0CHF`));
+    assert.ok(email.input.text.includes('Order Total 1,0000\u00a0CHF'));
   });
 
   test('the order parser honors a custom formatter for positions and totals', async () => {

@@ -1,4 +1,4 @@
-import type { Order } from '@unchainedshop/core-orders';
+import type { MessageTemplateContext } from '@unchainedshop/core';
 import { formatPrice, type Price } from '@unchainedshop/utils';
 
 export interface OrderDisplayOptions {
@@ -7,9 +7,13 @@ export interface OrderDisplayOptions {
   format?: (price: Price) => string;
 }
 
-export function getOrderPriceFormatter({ currencyDecimals }: Order, options: OrderDisplayOptions) {
+export async function getOrderPriceFormatter(
+  currencyCode: string,
+  options: OrderDisplayOptions,
+  context: MessageTemplateContext,
+) {
+  if (options?.format) return options.format;
+  const decimals = await context.getCurrencyDecimals?.(currencyCode);
   const locale = options?.locale ?? 'de-CH';
-  return (
-    options?.format ?? ((price: Price) => formatPrice({ ...price, locale, decimals: currencyDecimals }))
-  );
+  return (price: Price) => formatPrice({ ...price, locale, decimals });
 }

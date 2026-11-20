@@ -250,16 +250,17 @@ const positions = await parser.getOrderPositionsData(order, { locale }, api);
 // → [{ productTexts, quantity, unitPrice, total, rawPrices, configuration }, ...]
 ```
 
-The parser formats prices in the recipient's locale using the currency precision saved with the cart. Older orders without a saved precision keep their cents-based display. Use `rawPrices` for integer amounts in minor units, or pass a custom `format` function.
+Pass the request or message context as `api`. The request context supplies precision from the shop's currencies, including inactive currencies used by earlier orders. The message worker looks up the order currency once per email. With a bare core instance, the parser uses its historical cents convention. Use `rawPrices` for integer amounts in minor units, or pass a custom `format` function.
 
 ```typescript
 import { formatPrice } from '@unchainedshop/utils';
 
+const decimals = await api.getCurrencyDecimals?.(order.currencyCode);
 const positions = await parser.getOrderPositionsData(
   order,
   {
     locale,
-    format: (price) => formatPrice({ ...price, locale: 'fr-CH', decimals: order.currencyDecimals }),
+    format: (price) => formatPrice({ ...price, locale: 'fr-CH', decimals }),
   },
   api,
 );

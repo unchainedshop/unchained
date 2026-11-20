@@ -49,7 +49,7 @@ export default async function cancelTicket(
       generateDiscount,
       countryCode,
       currencyCode,
-      currency: context.currency,
+      getCurrencyDecimals: context.getCurrencyDecimals,
       refuseRedeemed: true,
     });
     return result.token;

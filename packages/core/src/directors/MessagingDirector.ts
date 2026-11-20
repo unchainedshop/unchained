@@ -1,3 +1,9 @@
+import type { UnchainedCore } from '../core-index.ts';
+
+export interface MessageTemplateContext extends UnchainedCore {
+  getCurrencyDecimals?: (isoCode: string) => number | undefined | Promise<number | undefined>;
+}
+
 export interface EmailTemplateType {
   type: 'EMAIL';
   input: {

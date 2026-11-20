@@ -3,7 +3,6 @@ import { createLogger } from '@unchainedshop/logger';
 import type { IBaseAdapter } from '@unchainedshop/utils';
 import type { mongodb } from '@unchainedshop/mongodb';
 import type { User } from '@unchainedshop/core-users';
-import type { Currency } from '@unchainedshop/core-currencies';
 import type { RolesInterface } from '@unchainedshop/roles';
 
 const logger = createLogger('unchained:core');
@@ -16,7 +15,7 @@ export interface UnchainedRequestContext {
   locale: Intl.Locale;
   countryCode: string;
   currencyCode: string;
-  currency?: Pick<Currency, 'isoCode' | 'decimals'>;
+  getCurrencyDecimals?: (isoCode: string) => number | undefined;
   userId?: string;
   user?: User;
   impersonatorId?: string;

@@ -1,15 +1,19 @@
 import type { Order } from '@unchainedshop/core-orders';
-import { type UnchainedCore, OrderPricingSheet, OrderPricingRowCategory } from '@unchainedshop/core';
+import {
+  type MessageTemplateContext,
+  OrderPricingSheet,
+  OrderPricingRowCategory,
+} from '@unchainedshop/core';
 import { ch } from '@unchainedshop/utils';
 import { getOrderPriceFormatter, type OrderDisplayOptions } from './getOrderPriceFormatter.ts';
 
 export const getOrderSummaryData = async (
   order: Order,
   params: OrderDisplayOptions,
-  context: UnchainedCore,
+  context: MessageTemplateContext,
 ) => {
   const { modules } = context;
-  const format = getOrderPriceFormatter(order, params);
+  const format = await getOrderPriceFormatter(order.currencyCode, params, context);
   const orderDelivery =
     order.deliveryId &&
     (await modules.orders.deliveries.findDelivery({

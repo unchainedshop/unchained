@@ -1,4 +1,4 @@
-import { getPriceDecimals, resolveBestCurrency } from '@unchainedshop/utils';
+import { resolveBestCurrency } from '@unchainedshop/utils';
 import type { User } from '@unchainedshop/core-users';
 import { ordersSettings } from '@unchainedshop/core-orders';
 import { initCartProvidersService } from './initCartProviders.ts';
@@ -31,13 +31,11 @@ export async function nextUserCartService(
   const countryObject = await this.countries.findCountry({ isoCode: countryCode });
   const currencies = await this.currencies.findCurrencies({ includeInactive: false });
   const currencyCode = resolveBestCurrency(countryObject?.defaultCurrencyCode || null, currencies);
-  const currency = currencies.find(({ isoCode }) => isoCode === currencyCode);
 
   const order = await this.orders.create({
     userId: user._id,
     orderNumber,
     currencyCode,
-    currencyDecimals: currency && getPriceDecimals(currency.decimals),
     countryCode,
     billingAddress: user.lastBillingAddress || user.profile?.address,
     contact:

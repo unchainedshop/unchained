@@ -1,4 +1,4 @@
-import type { TemplateResolver, UnchainedCore } from '@unchainedshop/core';
+import type { MessageTemplateContext, TemplateResolver } from '@unchainedshop/core';
 import { formatPrice } from '@unchainedshop/utils';
 import { getTicketEventDetails } from '../event-details.ts';
 import { findPurchaseRecipient } from '../ticket-details.ts';
@@ -16,7 +16,7 @@ async function cancellationEmail(
   kind: 'Event' | 'Ticket',
   productId: string,
   notice: CancellationNotice,
-  { modules }: UnchainedCore,
+  { modules, getCurrencyDecimals }: MessageTemplateContext,
 ) {
   const product = await modules.products.findProduct({ productId });
   if (!product) return [];
@@ -42,7 +42,7 @@ async function cancellationEmail(
           amount: discountAmount,
           currencyCode,
           locale,
-          decimals: notice.discountCurrencyDecimals ?? 2,
+          decimals: notice.discountCurrencyDecimals ?? (await getCurrencyDecimals?.(currencyCode)) ?? 2,
         })
       : (discountAmount / 100).toFixed(2);
     paragraphs.push(

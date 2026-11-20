@@ -32,64 +32,40 @@ test('cancels tickets and marks the product cancelled through the product module
   assert.equal(product.meta.cancelled, true);
 });
 
-test('both cancellation paths reimburse ticket units and validate issuance before mutation', async () => {
+test('both cancellation paths reimburse ticket units and validate issuance before mutation', async (t) => {
   for (const kind of ['event', 'ticket']) {
-    const issued: any[] = [];
-    const messages: any[] = [];
-    let cancelled = false;
-    let failIssuance = false;
     const token = { _id: 'token', productId: 'event', userId: 'buyer', quantity: 3 };
-    const modules = {
-      warehousing: {
-        findTokens: async () => [token],
-        findToken: async () => token,
-        invalidateToken: async () => {
-          cancelled = true;
-        },
+    const { modules, messages, calls } = createTicketModules([token], 1999);
+    const options = {
+      generateDiscount: true,
+      countryCode: 'CH',
+      currencyCode: 'EUR',
+      getCurrencyDecimals: (code: string) => {
+        assert.equal(code, 'CHF');
+        return 3;
       },
-      passes: {
-        cancelTicket: async () => token,
-        generateDiscountCode: async (amount: number, currency: string) => {
-          if (failIssuance) throw new Error('issuance failed');
-          issued.push([amount, currency]);
-          return 'code';
-        },
-      },
-      products: {
-        update: async () => undefined,
-        findProduct: async () => ({ _id: 'event' }),
-        prices: { price: async () => ({ amount: 1999, currencyCode: 'CHF' }) },
-      },
-      worker: { addWork: async ({ input }) => messages.push(input) },
     };
-    const service =
+    const cancel = () =>
       kind === 'event'
-        ? services.ticketing.cancelTicketsForProduct
-        : services.ticketing.cancelTicketWithDiscount;
-    const cancel = (isoCode: string) =>
-      service.call(modules as any, kind, {
-        generateDiscount: true,
-        countryCode: 'CH',
-        currencyCode: 'CHF',
-        currency: { isoCode, decimals: 3 },
-      });
-    await cancel('CHF');
-    assert.deepEqual(issued, [[5997, 'CHF']]);
+        ? services.ticketing.cancelTicketsForProduct.call(modules as any, token.productId, options)
+        : services.ticketing.cancelTicketWithDiscount.call(modules as any, token._id, options);
+    const issue = t.mock.method(modules.passes, 'generateDiscountCode');
+    issue.mock.mockImplementationOnce(async () => {
+      throw new Error('issuance failed');
+    });
+    await assert.rejects(cancel, /issuance failed/);
+    assert.deepEqual(calls, []);
+    await cancel();
+    assert.deepEqual(issue.mock.calls[1].arguments, [5997, 'CHF']);
+    assert.deepEqual(calls, ['cancel:token', 'invalidate:token']);
     assert.equal(messages.length, 1);
     assert.equal(messages[0].discountAmount, 5997);
     assert.equal(messages[0].discountCurrencyCode, 'CHF');
     assert.equal(messages[0].discountCurrencyDecimals, 3);
-    assert.equal(cancelled, true);
-    await cancel('EUR');
-    assert.equal(messages[1].discountCurrencyDecimals, undefined);
-    cancelled = false;
-    failIssuance = true;
-    await assert.rejects(cancel('CHF'), /issuance failed/);
-    assert.equal(cancelled, false);
   }
 });
 
-test('credits and messages follow the purchase, also for walk-ins served by one operator', async () => {
+test('credits and messages follow the purchase, also for walk-ins served by one operator', async (t) => {
   const ticket = (_id: string, orderId: string, owner: Record<string, string>) => ({
     _id,
     productId: 'event',
@@ -103,27 +79,21 @@ test('credits and messages follow the purchase, also for walk-ins served by one 
     ticket('b1', 'walk-in-b', { userId: 'operator' }),
     ticket('w1', 'online', { walletAddress: '0xwallet' }),
   ];
-  const issued: number[] = [];
-  const messages: any[] = [];
-  const modules = {
-    warehousing: { findTokens: async () => tokens, invalidateToken: async () => undefined },
-    passes: {
-      cancelTicket: async () => undefined,
-      generateDiscountCode: async (amount: number) => `code-${issued.push(amount)}`,
-    },
-    products: {
-      update: async () => undefined,
-      findProduct: async () => ({ _id: 'event' }),
-      prices: { price: async () => ({ amount: 2000, currencyCode: 'CHF' }) },
-    },
-    worker: { addWork: async ({ input }: any) => messages.push(input) },
-  };
+  const { modules, issued, messages } = createTicketModules(tokens, 2000);
+  const price = t.mock.method(modules.products.prices, 'price');
   await services.ticketing.cancelTicketsForProduct.call(modules as any, 'event', {
     generateDiscount: true,
     countryCode: 'CH',
     currencyCode: 'CHF',
+    getCurrencyDecimals: (code) => (code === 'EUR' ? 2 : undefined),
   });
-  assert.deepEqual(issued, [4000, 2000, 2000]);
+  assert.equal(price.mock.callCount(), 1);
+  assert.ok(messages.every(({ discountCurrencyDecimals }) => discountCurrencyDecimals === undefined));
+  assert.deepEqual(issued, [
+    [4000, 'CHF'],
+    [2000, 'CHF'],
+    [2000, 'CHF'],
+  ]);
   assert.deepEqual(
     messages.map(({ orderId, userId, discountCode, discountAmount }) => ({
       orderId,
@@ -157,10 +127,11 @@ async function recordEvents(run: () => Promise<void>) {
   return events.filter(({ name }) => (Object.values(TicketingEventTypes) as string[]).includes(name));
 }
 
-function createTicketModules(tokens: any[]) {
+function createTicketModules(tokens: any[], unitPrice = 1000) {
   const calls: string[] = [];
   const productUpdates: Record<string, unknown>[] = [];
   const messages: any[] = [];
+  const issued: [number, string][] = [];
   const stored = new Map(tokens.map((token) => [token._id, structuredClone(token)]));
   const modules = {
     warehousing: {
@@ -183,11 +154,12 @@ function createTicketModules(tokens: any[]) {
         return structuredClone(token);
       },
       // Runs between reading and cancelling the ticket; tests replace it to land a concurrent write.
-      generateDiscountCode: async () => 'code',
+      generateDiscountCode: async (amount: number, currencyCode: string) =>
+        `code-${issued.push([amount, currencyCode])}`,
     },
     products: {
       findProduct: async () => ({ _id: 'event' }),
-      prices: { price: async () => ({ amount: 1000, currencyCode: 'CHF' }) },
+      prices: { price: async () => ({ amount: unitPrice, currencyCode: 'CHF' }) },
       update: async (_id: string, fields: Record<string, unknown>) => {
         productUpdates.push(fields);
       },
@@ -198,7 +170,7 @@ function createTicketModules(tokens: any[]) {
       },
     },
   };
-  return { modules, calls, productUpdates, messages, stored };
+  return { modules, calls, productUpdates, issued, messages, stored };
 }
 
 test('cancelling an event marks every ticket cancelled before invalidating it and emits ticketing events', async () => {

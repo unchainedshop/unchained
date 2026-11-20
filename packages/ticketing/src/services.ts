@@ -2,6 +2,7 @@ import type { TicketingModule } from './module.ts';
 import type { Bound, UnchainedCore, UnchainedRequestContext } from '@unchainedshop/core';
 import { ProductStatus } from '@unchainedshop/core-products';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
+import type { Price } from '@unchainedshop/utils';
 import { isTicketCancelled, isTicketEventCancelled } from './event-details.ts';
 import { findTicketIssuerSettings, generateTicketId } from './warehousing/ticket/adapter.ts';
 import { TicketingMessageTypes } from './templates/index.ts';
@@ -11,14 +12,11 @@ import productionServices, { type TicketProductionServices } from './production-
 type Modules = UnchainedCore['modules'];
 type TicketingModules = Modules & TicketingModule;
 
-export interface DiscountOptions extends Pick<UnchainedRequestContext, 'currency'> {
+export interface DiscountOptions extends Pick<UnchainedRequestContext, 'getCurrencyDecimals'> {
   generateDiscount?: boolean;
   countryCode?: string;
   currencyCode?: string;
 }
-
-const creditDecimals = (currencyCode: string | undefined, options?: DiscountOptions) =>
-  options?.currency && options.currency.isoCode === currencyCode ? options.currency.decimals : undefined;
 
 export interface CancelTicketOptions extends DiscountOptions {
   /**
@@ -35,6 +33,28 @@ const purchaseOf = (token: TokenSurrogate) => ({
 
 const alreadyRedeemed = (tokenId: string) =>
   new Error(`Ticket ${tokenId} has already been redeemed`, { cause: 'TICKET_ALREADY_REDEEMED' });
+
+async function findCreditPrice({ products }: Modules, productId: string, options?: DiscountOptions) {
+  if (!options?.generateDiscount || !options.countryCode) return;
+  const { countryCode, currencyCode, getCurrencyDecimals } = options;
+  const product = await products.findProduct({ productId });
+  const price = product && (await products.prices.price(product, { countryCode, currencyCode }));
+  if (price?.amount) return { ...price, decimals: getCurrencyDecimals?.(price.currencyCode) };
+}
+
+async function issueCredit(
+  passes: TicketingModule['passes'],
+  { amount, currencyCode, decimals }: Price & { decimals?: number },
+  quantity: number,
+) {
+  const discountAmount = amount * quantity;
+  return {
+    discountCode: await passes.generateDiscountCode(discountAmount, currencyCode),
+    discountAmount,
+    discountCurrencyCode: currencyCode,
+    discountCurrencyDecimals: decimals,
+  };
+}
 
 // The cancellation is written first, so TOKEN_INVALIDATED and the Apple pass it re-renders already
 // see a cancelled ticket. Tickets redeemed earlier are not invalidated again and keep their date.
@@ -70,7 +90,7 @@ async function cancelTicketsForProduct(
       orderId?: string;
       userId?: string;
       quantity: number;
-      discount?: { discountCode: string; amount: number; currencyCode: string };
+      discount?: Awaited<ReturnType<typeof issueCredit>>;
     }
   >();
   for (const token of tokensToCancel) {
@@ -84,21 +104,10 @@ async function cancelTicketsForProduct(
 
   // Issue credit before touching any ticket: a missing signing secret must not leave
   // tickets cancelled without the requested compensation.
-  if (options?.generateDiscount && purchases.size > 0 && options.countryCode) {
-    const product = await this.products.findProduct({ productId });
-    const price =
-      product &&
-      (await this.products.prices.price(product, {
-        countryCode: options.countryCode,
-        currencyCode: options.currencyCode,
-      }));
-
-    if (price?.amount) {
-      for (const purchase of purchases.values()) {
-        const amount = price.amount * purchase.quantity;
-        const discountCode = await passes.generateDiscountCode(amount, price.currencyCode);
-        purchase.discount = { discountCode, amount, currencyCode: price.currencyCode };
-      }
+  const price = purchases.size && (await findCreditPrice(this, productId, options));
+  if (price) {
+    for (const purchase of purchases.values()) {
+      purchase.discount = await issueCredit(passes, price, purchase.quantity);
     }
   }
 
@@ -128,10 +137,7 @@ async function cancelTicketsForProduct(
           productId,
           userId,
           orderId,
-          discountCode: discount?.discountCode,
-          discountAmount: discount?.amount,
-          discountCurrencyCode: discount?.currencyCode,
-          discountCurrencyDecimals: creditDecimals(discount?.currencyCode, options),
+          ...discount,
         },
       });
     }),
@@ -150,25 +156,8 @@ async function cancelTicketWithDiscount(
   if (!token || token.meta?.cancelled) return { token };
   if (options?.refuseRedeemed && token.invalidatedDate) throw alreadyRedeemed(tokenId);
 
-  let discountCode: string | undefined;
-  let discountAmount: number | undefined;
-  let discountCurrencyCode: string | undefined;
-
-  if (options?.generateDiscount && options.countryCode) {
-    const product = await this.products.findProduct({ productId: token.productId });
-    const price =
-      product &&
-      (await this.products.prices.price(product, {
-        countryCode: options.countryCode,
-        currencyCode: options.currencyCode,
-      }));
-
-    if (price?.amount) {
-      discountAmount = price.amount * token.quantity;
-      discountCode = await passes.generateDiscountCode(discountAmount, price.currencyCode);
-      discountCurrencyCode = price.currencyCode;
-    }
-  }
+  const price = await findCreditPrice(this, token.productId, options);
+  const discount = price && (await issueCredit(passes, price, token.quantity));
 
   const cancelledToken = await cancelAndInvalidateTicket(this, tokenId, {
     onlyValid: options?.refuseRedeemed,
@@ -188,16 +177,7 @@ async function cancelTicketWithDiscount(
   if (orderId || userId) {
     await this.worker.addWork({
       type: 'MESSAGE',
-      input: {
-        template: TicketingMessageTypes.TICKET_CANCELLED,
-        tokenId,
-        userId,
-        orderId,
-        discountCode,
-        discountAmount,
-        discountCurrencyCode,
-        discountCurrencyDecimals: creditDecimals(discountCurrencyCode, options),
-      },
+      input: { template: TicketingMessageTypes.TICKET_CANCELLED, tokenId, userId, orderId, ...discount },
     });
   }
 

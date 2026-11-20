@@ -30,10 +30,16 @@ const api = {
 };
 
 const templates = {
-  Event: (notice: CancellationNotice) =>
-    resolveEventCancelledTemplate({ template: 'EVENT_CANCELLED', productId: 'event', ...notice }, api),
-  Ticket: (notice: CancellationNotice) =>
-    resolveTicketCancelledTemplate({ template: 'TICKET_CANCELLED', tokenId: 'ticket', ...notice }, api),
+  Event: (notice: CancellationNotice, context = api) =>
+    resolveEventCancelledTemplate(
+      { template: 'EVENT_CANCELLED', productId: 'event', ...notice },
+      context,
+    ),
+  Ticket: (notice: CancellationNotice, context = api) =>
+    resolveTicketCancelledTemplate(
+      { template: 'TICKET_CANCELLED', tokenId: 'ticket', ...notice },
+      context,
+    ),
 };
 
 for (const [kind, render] of Object.entries(templates)) {
@@ -53,18 +59,27 @@ for (const [kind, render] of Object.entries(templates)) {
       assert.ok(input.text.endsWith('Theater\nhttps://theater.example\n'));
     });
 
-    test('formats the issued credit and supports older messages without its currency', async () => {
-      const credit = { ...buyer, discountCode: 'gift', discountAmount: 1240 };
-      const [current] = await render({
-        ...credit,
-        discountCurrencyCode: 'JPY',
-        discountCurrencyDecimals: 0,
-      });
-      assert.match(current.input.text, /worth JPY\u00a01,240:/);
-      const [direct] = await render({ ...credit, discountCurrencyCode: 'CHF' });
-      assert.match(direct.input.text, /worth CHF\u00a012\.40:/);
-      const [legacy] = await render(credit);
-      assert.match(legacy.input.text, /worth 12\.40:/);
+    test('resolves the issued currency only when the notice lacks its precision', async (t) => {
+      const getCurrencyDecimals = t.mock.fn(async (code: string) => (code === 'CHF' ? 3 : undefined));
+      const context = { ...api, getCurrencyDecimals };
+      const body = async (currency: CancellationNotice) => {
+        const [message] = await render(
+          { ...buyer, discountCode: 'gift', discountAmount: 1240, ...currency },
+          context,
+        );
+        return message.input.text;
+      };
+      assert.match(
+        await body({ discountCurrencyCode: 'JPY', discountCurrencyDecimals: 0 }),
+        /worth JPY\u00a01,240:/,
+      );
+      assert.match(await body({ discountCurrencyCode: 'CHF' }), /worth CHF\u00a01\.240:/);
+      assert.match(await body({ discountCurrencyCode: 'EUR' }), /worth EUR\u00a012\.40:/);
+      assert.match(await body({}), /worth 12\.40:/);
+      assert.deepEqual(
+        getCurrencyDecimals.mock.calls.map((call) => call.arguments),
+        [['CHF'], ['EUR']],
+      );
     });
 
     test('mails the order contact, including for a ticket without an owner', async () => {

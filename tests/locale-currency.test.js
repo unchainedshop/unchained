@@ -1,6 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
+import { resolveDefaultContext } from '@unchainedshop/api';
+import { configureCurrenciesModule } from '@unchainedshop/core-currencies';
 import { setupDatabase, createAnonymousGraphqlFetch, disconnect } from './helpers.js';
+import { getTestPlatform } from './setup.js';
 
 let db;
 let graphqlFetch;
@@ -29,6 +32,23 @@ test.describe('Locale: currency of the request country', () => {
 
   test.after(async () => {
     await disconnect();
+  });
+
+  test('identical request headers resolve currency precision independently for each shop', async () => {
+    const { unchainedAPI } = getTestPlatform();
+    const otherDb = db.client.db('other-shop-locale');
+    const currencies = await configureCurrenciesModule({ db: otherDb });
+    await otherDb.collection('currencies').insertOne({ isoCode: 'CHF', decimals: 3, isActive: true });
+    const otherShop = { ...unchainedAPI, modules: { ...unchainedAPI.modules, currencies } };
+    const headers = { acceptLang: 'de', acceptCountry: 'CH' };
+    const [first, second] = await Promise.all(
+      [unchainedAPI, otherShop].map((shop) => resolveDefaultContext(headers, shop)),
+    );
+    assert.equal(first.getCurrencyDecimals('CHF'), 2);
+    assert.equal(first.getCurrencyDecimals('GBP'), 2);
+    assert.equal(second.getCurrencyDecimals('CHF'), 3);
+    assert.equal(resolveDefaultContext.delete('de-CH'), true);
+    assert.equal(resolveDefaultContext.delete('de-CH'), false);
   });
 
   test('prices in the default currency of the request country', async () => {

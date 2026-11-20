@@ -38,7 +38,7 @@ export default async function cancelTicketPerformance(
       generateDiscount,
       countryCode,
       currencyCode,
-      currency: context.currency,
+      getCurrencyDecimals: context.getCurrencyDecimals,
     });
     cancelled += cancelledCount;
   }

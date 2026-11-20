@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import cancelTicket from './cancelTicket.ts';
 
 const token = { _id: 'ticket', productId: 'event' };
-const market = { countryCode: 'CH', currencyCode: 'CHF', currency: { isoCode: 'CHF', decimals: 2 } };
+const market = { countryCode: 'CH', currencyCode: 'CHF', getCurrencyDecimals: () => 2 };
 
 function createContext(cancelTicketWithDiscount: (tokenId: string, options: any) => Promise<any>) {
   return {
