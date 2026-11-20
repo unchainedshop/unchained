@@ -6,6 +6,7 @@ import { resolveTicketSalesReportTemplate } from './templates/resolveTicketSales
 const apiWith = (orders: any[], work: any[]) =>
   ({
     modules: {
+      currencies: { findCurrencies: async () => [{ isoCode: 'CHF', decimals: 3 }] },
       orders: {
         findOrders: async () => orders,
         payments: { findOrderPayments: async () => [] },
@@ -28,9 +29,10 @@ test('the worker e-mails the report of a period with orders to the recipients', 
     currencyCode: 'CHF',
     calculation: [{ category: 'ITEMS', amount: 5000 }],
   };
+  const api = apiWith([order], work);
   const result = await TicketSalesReportWorker.doWork(
-    { ...period, recipients: ['office@example.com'] },
-    apiWith([order], work),
+    { ...period, recipients: ['office@example.com'], locale: 'de-DE' },
+    api,
     'work',
   );
   assert.equal(result.success, true);
@@ -41,12 +43,23 @@ test('the worker e-mails the report of a period with orders to the recipients', 
 
   const [email] = await resolveTicketSalesReportTemplate(work[0], {} as any);
   assert.equal(email.input.to, 'office@example.com');
-  assert.match(email.input.text, /CHF: 1 orders, 0 tickets, 50 CHF/);
+  assert.match(email.input.text, /CHF: 1 orders, 0 tickets, 5,000\u00a0CHF/);
   assert.equal(email.input.attachments.length, 3);
-  assert.match(
-    Buffer.from(email.input.attachments[0].content, 'base64').toString('utf8'),
-    /^\uFEFForderNumber,/,
-  );
+  const csv = Buffer.from(email.input.attachments[0].content, 'base64').toString('utf8');
+  assert.match(csv, /^\uFEFForderNumber,/);
+  assert.equal(csv.split('\r\n')[1].split(',').at(-1), '5');
+});
+
+test('previously queued reports use the ISO precision of their existing attachments', async () => {
+  const payload = {
+    from: new Date(period.from),
+    to: new Date(period.to),
+    recipients: ['office@example.com'],
+    totals: [{ currencyCode: 'JPY', orders: 1, tickets: 1, total: 5000, items: 5000, discounts: 0 }],
+    csv: { orders: 'total\r\n5000\r\n', performances: '', paymentProviders: '' },
+  };
+  const [email] = await resolveTicketSalesReportTemplate(payload, {} as any);
+  assert.match(email.input.text, /JPY\u00a05,000/);
 });
 
 test('the worker sends nothing without recipients or orders', async () => {

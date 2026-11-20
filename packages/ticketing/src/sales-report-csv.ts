@@ -54,15 +54,20 @@ export const currencyDigits = (currencyCode: string) => {
 };
 
 /** An amount in the smallest unit as a decimal number, e.g. 3550 CHF → 35.5 */
-export const toDecimalAmount = (amount: number, currencyCode: string) => {
-  const digits = currencyDigits(currencyCode);
-  return Number((amount / 10 ** digits).toFixed(digits));
-};
+export const toDecimalAmount = (
+  amount: number,
+  currencyCode: string,
+  digits = currencyDigits(currencyCode),
+) => Number((amount / 10 ** digits).toFixed(Math.max(0, digits)));
 
 const toIso = (value: DateLike) => (value ? new Date(value).toISOString() : null);
 
-export function buildSalesReportCsv(report: SalesReportData) {
-  const amount = (value: number, currencyCode: string) => toDecimalAmount(value, currencyCode);
+export function buildSalesReportCsv(
+  report: SalesReportData,
+  currencyDecimals?: Readonly<Record<string, number>>,
+) {
+  const amount = (value: number, currencyCode: string) =>
+    toDecimalAmount(value, currencyCode, currencyDecimals?.[currencyCode]);
   return {
     orders: toCsv([
       [

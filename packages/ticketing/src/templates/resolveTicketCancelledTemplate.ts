@@ -1,4 +1,5 @@
 import type { TemplateResolver } from '@unchainedshop/core';
+import { formatDiscountAmount } from './formatDiscountAmount.ts';
 import { getTicketEventDetails } from '../event-details.ts';
 import { findPurchaseRecipient } from '../ticket-details.ts';
 
@@ -8,7 +9,11 @@ export const resolveTicketCancelledTemplate: TemplateResolver<{
   orderId?: string;
   discountCode?: string;
   discountAmount?: number;
-}> = async ({ tokenId, userId, orderId, discountCode, discountAmount }, { modules }) => {
+  discountCurrencyCode?: string;
+}> = async (
+  { tokenId, userId, orderId, discountCode, discountAmount, discountCurrencyCode },
+  { modules },
+) => {
   const { EMAIL_FROM, EMAIL_WEBSITE_NAME = 'Unchained Shop', EMAIL_WEBSITE_URL } = process.env;
   const token = await modules.warehousing.findToken({ tokenId });
   if (!token) return [];
@@ -40,9 +45,10 @@ export const resolveTicketCancelledTemplate: TemplateResolver<{
 Your ticket for "${eventTitle}"${eventDetails ? ` (${eventDetails})` : ''} has been cancelled.`;
 
   if (discountCode && discountAmount) {
+    const credit = await formatDiscountAmount(discountAmount, discountCurrencyCode, locale, modules);
     text += `
 
-As compensation, you have received a discount code worth ${(discountAmount / 100).toFixed(2)}:
+As compensation, you have received a discount code worth ${credit}:
 
   ${discountCode}
 

@@ -23,6 +23,9 @@ describe('cancellation templates', () => {
   const context = (product: any) =>
     ({
       modules: {
+        currencies: {
+          findCurrency: async ({ isoCode }) => (isoCode === 'JPY' ? { decimals: 0 } : null),
+        },
         users: {
           findUserById: async () => ({
             _id: 'buyer',
@@ -74,6 +77,22 @@ describe('cancellation templates', () => {
       const [message] = await (resolve as any)(params, context(eventWithDetails));
       assert.equal(message.input.from, 'Theater <tickets@theater.example>');
       assert.ok(message.input.text.endsWith('Theater\nhttps://theater.example\n'));
+    }
+  });
+
+  test('cancellation emails display the issued currency and preserve credits in older queued messages', async () => {
+    for (const [resolve, params] of [
+      [resolveEventCancelledTemplate, { productId: 'event' }],
+      [resolveTicketCancelledTemplate, { tokenId: 'ticket' }],
+    ] as const) {
+      const credit = { ...params, userId: 'buyer', discountCode: 'gift', discountAmount: 1240 };
+      const [current] = await (resolve as any)(
+        { ...credit, discountCurrencyCode: 'JPY' },
+        context(eventWithDetails),
+      );
+      assert.match(current.input.text, /worth JPY\u00a01,240:/);
+      const [legacy] = await (resolve as any)(credit, context(eventWithDetails));
+      assert.match(legacy.input.text, /worth 12\.40:/);
     }
   });
 

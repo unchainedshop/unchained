@@ -262,4 +262,5 @@ test('the CSV files carry decimal amounts and keep negative numbers as numbers',
   assert.match(csv.paymentProviders, /\r\nbox,adapter.box,EUR,1,1,20\r\n/);
   assert.equal(toDecimalAmount(1234, 'JPY'), 1234);
   assert.equal(toDecimalAmount(1234, 'ETH'), 12.34);
+  assert.equal(toDecimalAmount(123, 'CHF', -1), 1230);
 });

@@ -35,6 +35,7 @@ test('cancels tickets and marks the product cancelled through the product module
 test('both cancellation paths reimburse ticket units and validate issuance before mutation', async () => {
   for (const kind of ['event', 'ticket']) {
     const issued: any[] = [];
+    const messages: any[] = [];
     let cancelled = false;
     let failIssuance = false;
     const token = { _id: 'token', productId: 'event', userId: 'buyer', quantity: 3 };
@@ -59,7 +60,7 @@ test('both cancellation paths reimburse ticket units and validate issuance befor
         findProduct: async () => ({ _id: 'event' }),
         prices: { price: async () => ({ amount: 1999, currencyCode: 'CHF' }) },
       },
-      worker: { addWork: async () => undefined },
+      worker: { addWork: async ({ input }) => messages.push(input) },
     };
     const service =
       kind === 'event'
@@ -71,6 +72,9 @@ test('both cancellation paths reimburse ticket units and validate issuance befor
       currencyCode: 'CHF',
     });
     assert.deepEqual(issued, [[5997, 'CHF']]);
+    assert.equal(messages.length, 1);
+    assert.equal(messages[0].discountAmount, 5997);
+    assert.equal(messages[0].discountCurrencyCode, 'CHF');
     assert.equal(cancelled, true);
     cancelled = false;
     failIssuance = true;

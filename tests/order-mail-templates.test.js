@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert';
 import {
+  parser,
   resolveForwardDeliveryTemplate,
   resolveOrderConfirmationTemplate,
 } from '@unchainedshop/platform';
@@ -10,6 +11,7 @@ import { ADMIN_TOKEN } from './seeds/users.js';
 import { SimpleProduct } from './seeds/products.js';
 import { SendMailDeliveryProvider } from './seeds/deliveries.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
+import { BaseCurrency } from './seeds/locale-data.js';
 
 const billingAddress = {
   firstName: 'Billing',
@@ -37,6 +39,8 @@ let orderId;
 test.describe('Order mail templates', () => {
   test.before(async () => {
     await setupDatabase();
+    // Deliberately different from Intl's default precision for CHF.
+    await getTestPlatform().unchainedAPI.modules.currencies.update(BaseCurrency._id, { decimals: 3 });
     const graphqlFetch = createLoggedInGraphqlFetch(ADMIN_TOKEN);
 
     const { data: { createCart } = {} } = await graphqlFetch({
@@ -118,5 +122,37 @@ test.describe('Order mail templates', () => {
       assert.doesNotMatch(deliveryAddress, /Rechnungsstrasse 1/);
       assert.match(billingAddressText, /Rechnungsstrasse 1/);
     }
+  });
+
+  test('order mail formats item prices and the gross total in the order currency using the recipient locale', async () => {
+    const { unchainedAPI } = getTestPlatform();
+    const order = await unchainedAPI.modules.orders.findOrder({ orderId });
+    const locale = new Intl.Locale('de-DE');
+    const [confirmation] = await resolveOrderConfirmationTemplate(
+      { orderId, locale: locale.baseName },
+      unchainedAPI,
+    );
+    const money = new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: 'CHF',
+      currencyDisplay: 'code',
+      minimumFractionDigits: 3,
+      maximumFractionDigits: 3,
+    });
+    const summary = await parser.getOrderSummaryData(order, { locale }, unchainedAPI);
+    const [item] = await parser.getOrderPositionsData(order, { locale }, unchainedAPI);
+    assert.ok(item.rawPrices.unitPrice.amount > 0);
+    assert.ok(summary.rawPrices.gross.amount >= item.rawPrices.total.amount);
+    assert.equal(item.unitPrice, money.format(item.rawPrices.unitPrice.amount / 1000));
+    assert.ok(
+      confirmation.input.text.includes(
+        `1x ${item.productTexts.title} ${money.format(item.rawPrices.total.amount / 1000)}`,
+      ),
+    );
+    assert.ok(
+      confirmation.input.text.includes(
+        `Order Total ${money.format(summary.rawPrices.gross.amount / 1000)}`,
+      ),
+    );
   });
 });

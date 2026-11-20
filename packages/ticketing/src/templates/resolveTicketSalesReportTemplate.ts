@@ -1,6 +1,7 @@
 import type { TemplateResolver } from '@unchainedshop/core';
+import { formatPrice } from '@unchainedshop/utils';
 import type { TicketSalesReportMessagePayload } from '../sales-report-worker.ts';
-import { toDecimalAmount } from '../sales-report-csv.ts';
+import { currencyDigits } from '../sales-report-csv.ts';
 
 const csvAttachment = (filename: string, csv: string) => ({
   filename,
@@ -12,16 +13,17 @@ const csvAttachment = (filename: string, csv: string) => ({
 
 export const resolveTicketSalesReportTemplate: TemplateResolver<
   TicketSalesReportMessagePayload
-> = async ({ from, to, recipients, totals, csv }) => {
+> = async ({ from, to, recipients, totals, csv, locale = 'en', currencyDecimals }) => {
   const { EMAIL_FROM, EMAIL_WEBSITE_NAME = 'Unchained Shop' } = process.env;
   if (!recipients?.length) return [];
 
   const period = `${new Date(from).toISOString()} – ${new Date(to).toISOString()}`;
   const day = new Date(from).toISOString().slice(0, 10);
-  const lines = totals.map(
-    ({ currencyCode, orders, tickets, total }) =>
-      `${currencyCode}: ${orders} orders, ${tickets} tickets, ${toDecimalAmount(total, currencyCode)} ${currencyCode}`,
-  );
+  const lines = totals.map(({ currencyCode, orders, tickets, total }) => {
+    const decimals = currencyDecimals?.[currencyCode] ?? currencyDigits(currencyCode);
+    const price = formatPrice({ amount: total, currencyCode, decimals, locale });
+    return `${currencyCode}: ${orders} orders, ${tickets} tickets, ${price}`;
+  });
 
   return [
     {

@@ -1,5 +1,6 @@
 import { getOrderPositionsData } from './getOrderPositionsData.ts';
 import { getOrderSummaryData } from './getOrderSummaryData.ts';
+import { getOrderPriceFormatter } from './getOrderPriceFormatter.ts';
 import type { Order } from '@unchainedshop/core-orders';
 import type { UnchainedCore } from '@unchainedshop/core';
 
@@ -9,8 +10,9 @@ export const transformOrderToText = async (
 ) => {
   const orderDate = new Date(order.ordered!).toLocaleString();
   const orderNumber = order.orderNumber;
-  const summary = await getOrderSummaryData(order, { locale }, context);
-  const positions = await getOrderPositionsData(order, { locale }, context);
+  const format = await getOrderPriceFormatter(order.currencyCode, locale, context);
+  const summary = await getOrderSummaryData(order, { locale, format }, context);
+  const positions = await getOrderPositionsData(order, { locale, format }, context);
 
   const positionsText = positions
     .map((pos) => `  ${pos.quantity}x ${pos.productTexts.title} ${pos.total}`)
