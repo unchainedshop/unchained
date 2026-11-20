@@ -1,13 +1,8 @@
-import { formatPrice } from '../formatPrice.ts';
+import { formatPrice, type Price } from '../formatPrice.ts';
 
-export const priceToString = ({
-  amount,
-  currencyCode,
-  locale = 'de-CH',
-}: {
-  amount: number;
-  currencyCode: string;
-  locale?: Intl.Locale | string;
-}) => formatPrice({ amount, currencyCode, locale });
+type SwissPrice = Price & { locale?: Intl.Locale | string };
+
+export const priceToString = ({ amount, currencyCode, locale = 'de-CH' }: SwissPrice) =>
+  formatPrice({ amount, currencyCode, locale });
 
 export default priceToString;

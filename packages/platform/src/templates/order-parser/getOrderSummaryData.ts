@@ -9,10 +9,7 @@ export const getOrderSummaryData = async (
   context: UnchainedCore,
 ) => {
   const { modules } = context;
-  const {
-    useNetPrice,
-    format = await getOrderPriceFormatter(order.currencyCode, params?.locale, context),
-  } = params || {};
+  const format = await getOrderPriceFormatter(order.currencyCode, params, context);
   const orderDelivery =
     order.deliveryId &&
     (await modules.orders.deliveries.findDelivery({
@@ -41,53 +38,28 @@ export const getOrderSummaryData = async (
     orderDelivery?.context?.address || orderDelivery?.context?.deliveryAddress || order.billingAddress,
   );
   const billingAddress = ch.addressToString(order.billingAddress);
-  const orderPricing = OrderPricingSheet({
-    calculation: order.calculation,
-    currencyCode: order.currencyCode,
-  });
-
-  const paymentTotal = orderPricing.total({
-    category: OrderPricingRowCategory.Payment,
-    useNetPrice,
-  });
-
-  const deliveryTotal = orderPricing.total({
-    category: OrderPricingRowCategory.Delivery,
-    useNetPrice,
-  });
-
-  const taxesTotal = orderPricing.total({
-    category: OrderPricingRowCategory.Taxes,
-    useNetPrice,
-  });
-
-  const itemsTotal = orderPricing.total({
-    category: OrderPricingRowCategory.Items,
-    useNetPrice,
-  });
-
-  const total = orderPricing.total({ useNetPrice });
-
-  const payment = paymentProvider?.adapterKey;
-  const delivery = deliveryProvider?.adapterKey;
+  const sheet = OrderPricingSheet(order);
+  const total = (category?: OrderPricingRowCategory) =>
+    sheet.total({ category, useNetPrice: params?.useNetPrice });
+  const rawPrices = {
+    items: total(OrderPricingRowCategory.Items),
+    taxes: total(OrderPricingRowCategory.Taxes),
+    delivery: total(OrderPricingRowCategory.Delivery),
+    payment: total(OrderPricingRowCategory.Payment),
+    gross: total(),
+  };
 
   return {
-    rawPrices: {
-      items: itemsTotal,
-      taxes: taxesTotal,
-      delivery: deliveryTotal,
-      payment: paymentTotal,
-      gross: total,
-    },
+    rawPrices,
     prices: {
-      items: format(itemsTotal),
-      taxes: format(taxesTotal),
-      delivery: format(deliveryTotal),
-      payment: format(paymentTotal),
-      gross: format(total),
+      items: format(rawPrices.items),
+      taxes: format(rawPrices.taxes),
+      delivery: format(rawPrices.delivery),
+      payment: format(rawPrices.payment),
+      gross: format(rawPrices.gross),
     },
-    payment,
-    delivery,
+    payment: paymentProvider?.adapterKey,
+    delivery: deliveryProvider?.adapterKey,
     deliveryAddress,
     billingAddress,
   };

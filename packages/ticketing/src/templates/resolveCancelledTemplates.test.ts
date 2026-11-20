@@ -1,121 +1,73 @@
-import { afterEach, beforeEach, describe, test } from 'node:test';
+import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
+import type { CancellationNotice } from './resolveCancelledTemplates.ts';
 import { resolveEventCancelledTemplate } from './resolveEventCancelledTemplate.ts';
 import { resolveTicketCancelledTemplate } from './resolveTicketCancelledTemplate.ts';
 
-const ENV_KEYS = ['EMAIL_FROM', 'EMAIL_WEBSITE_NAME', 'EMAIL_WEBSITE_URL'];
-// Hooks stay inside this suite: at the top level they would wrap every test of a shared-process run
-describe('cancellation templates', () => {
-  let savedEnv: Record<string, string | undefined>;
-  beforeEach(() => {
-    savedEnv = Object.fromEntries(ENV_KEYS.map((key) => [key, process.env[key]]));
-  });
-  afterEach(() => {
-    for (const [key, value] of Object.entries(savedEnv)) {
-      if (value === undefined) delete process.env[key];
-      else process.env[key] = value;
-    }
-  });
+const slot = '2026-10-01T18:00:00.000Z';
+const date = new Date(slot).toLocaleString('en', { dateStyle: 'medium', timeStyle: 'short' });
+const buyer = { userId: 'buyer' };
+const api = {
+  modules: {
+    currencies: { findCurrency: async ({ isoCode }) => (isoCode === 'JPY' ? { decimals: 0 } : null) },
+    users: {
+      findUserById: async () => ({ lastContact: { emailAddress: 'buyer@example.com' } }),
+      userLocale: () => new Intl.Locale('en'),
+    },
+    products: {
+      findProduct: async () => ({
+        meta: { slot, location: 'Main stage' },
+        tokenization: { supply: 10, ercMetadataProperties: { location: 'Not the venue' } },
+      }),
+      texts: { findLocalizedText: async () => ({ title: 'Premiere' }) },
+    },
+    warehousing: { findToken: async () => ({ productId: 'event' }) },
+    orders: {
+      findOrder: async ({ orderId }) => ({
+        contact: { emailAddress: orderId === 'walk-in' ? 'walk-in@example.com' : null },
+      }),
+    },
+  },
+};
 
-  const slot = '2026-10-01T18:00:00.000Z';
-  const eventText = `(${new Date(slot).toLocaleString('en', { dateStyle: 'medium', timeStyle: 'short' })} at Main stage)`;
+const templates = {
+  Event: (notice: CancellationNotice) =>
+    resolveEventCancelledTemplate({ template: 'EVENT_CANCELLED', productId: 'event', ...notice }, api),
+  Ticket: (notice: CancellationNotice) =>
+    resolveTicketCancelledTemplate({ template: 'TICKET_CANCELLED', tokenId: 'ticket', ...notice }, api),
+};
 
-  const context = (product: any) =>
-    ({
-      modules: {
-        currencies: {
-          findCurrency: async ({ isoCode }) => (isoCode === 'JPY' ? { decimals: 0 } : null),
-        },
-        users: {
-          findUserById: async () => ({
-            _id: 'buyer',
-            lastContact: { emailAddress: 'buyer@example.com' },
-          }),
-          primaryEmail: () => null,
-          userLocale: () => new Intl.Locale('en'),
-        },
-        products: {
-          findProduct: async () => product,
-          texts: { findLocalizedText: async () => ({ title: 'Premiere' }) },
-        },
-        warehousing: { findToken: async () => ({ _id: 'ticket', productId: 'event' }) },
-        orders: {
-          findOrder: async ({ orderId }: { orderId: string }) =>
-            ({
-              'walk-in': { _id: 'walk-in', contact: { emailAddress: 'walk-in@example.com' } },
-              anonymous: { _id: 'anonymous', contact: { emailAddress: null } },
-            })[orderId] ?? null,
-        },
-      },
-    }) as any;
+for (const [kind, render] of Object.entries(templates)) {
+  describe(`${kind} cancellation e-mail`, () => {
+    test('uses the event details, buyer address and configured sender', async (t) => {
+      t.mock.property(process, 'env', {
+        ...process.env,
+        EMAIL_FROM: 'tickets@theater.example',
+        EMAIL_WEBSITE_NAME: 'Theater',
+        EMAIL_WEBSITE_URL: 'https://theater.example',
+      });
+      const [{ input }] = await render(buyer);
+      assert.ok(input.text.includes(`(${date} at Main stage)`), input.text);
+      assert.equal(input.subject, `Premiere: ${kind} Cancelled`);
+      assert.equal(input.to, 'buyer@example.com');
+      assert.equal(input.from, 'Theater <tickets@theater.example>');
+      assert.ok(input.text.endsWith('Theater\nhttps://theater.example\n'));
+    });
 
-  const eventWithDetails = {
-    _id: 'event',
-    meta: { slot, location: 'Main stage' },
-    tokenization: { supply: 10, ercMetadataProperties: { location: 'Not the venue' } },
-  };
-
-  test('cancellation e-mails describe the event from its event details', async () => {
-    for (const [resolve, params] of [
-      [resolveEventCancelledTemplate, { productId: 'event', userId: 'buyer' }],
-      [resolveTicketCancelledTemplate, { tokenId: 'ticket', userId: 'buyer' }],
-    ] as const) {
-      const [message] = await (resolve as any)(params, context(eventWithDetails));
-      assert.ok(message.input.text.includes(eventText), message.input.text);
-      assert.equal(message.input.to, 'buyer@example.com');
-    }
-  });
-
-  test('the sender is read from the environment when the e-mail is built', async () => {
-    process.env.EMAIL_FROM = 'tickets@theater.example';
-    process.env.EMAIL_WEBSITE_NAME = 'Theater';
-    process.env.EMAIL_WEBSITE_URL = 'https://theater.example';
-    for (const [resolve, params] of [
-      [resolveEventCancelledTemplate, { productId: 'event', userId: 'buyer' }],
-      [resolveTicketCancelledTemplate, { tokenId: 'ticket', userId: 'buyer' }],
-    ] as const) {
-      const [message] = await (resolve as any)(params, context(eventWithDetails));
-      assert.equal(message.input.from, 'Theater <tickets@theater.example>');
-      assert.ok(message.input.text.endsWith('Theater\nhttps://theater.example\n'));
-    }
-  });
-
-  test('cancellation emails display the issued currency and preserve credits in older queued messages', async () => {
-    for (const [resolve, params] of [
-      [resolveEventCancelledTemplate, { productId: 'event' }],
-      [resolveTicketCancelledTemplate, { tokenId: 'ticket' }],
-    ] as const) {
-      const credit = { ...params, userId: 'buyer', discountCode: 'gift', discountAmount: 1240 };
-      const [current] = await (resolve as any)(
-        { ...credit, discountCurrencyCode: 'JPY' },
-        context(eventWithDetails),
-      );
+    test('formats the issued credit and supports older messages without its currency', async () => {
+      const credit = { ...buyer, discountCode: 'gift', discountAmount: 1240 };
+      const [current] = await render({ ...credit, discountCurrencyCode: 'JPY' });
       assert.match(current.input.text, /worth JPY\u00a01,240:/);
-      const [legacy] = await (resolve as any)(credit, context(eventWithDetails));
+      const [legacy] = await render(credit);
       assert.match(legacy.input.text, /worth 12\.40:/);
-    }
-  });
+    });
 
-  test('a ticket with an order is mailed to the order contact only, never to its owner', async () => {
-    for (const [resolve, params] of [
-      [resolveEventCancelledTemplate, { productId: 'event' }],
-      [resolveTicketCancelledTemplate, { tokenId: 'ticket' }],
-    ] as const) {
-      const toWalkIn = await (resolve as any)(
-        { ...params, userId: 'buyer', orderId: 'walk-in' },
-        context(eventWithDetails),
-      );
-      assert.equal(toWalkIn[0].input.to, 'walk-in@example.com');
-      const withoutAddress = await (resolve as any)(
-        { ...params, userId: 'buyer', orderId: 'anonymous' },
-        context(eventWithDetails),
-      );
-      assert.deepEqual(withoutAddress, [], 'not the address the operator used last');
-      const exported = await (resolve as any)(
-        { ...params, orderId: 'walk-in' },
-        context(eventWithDetails),
-      );
-      assert.equal(exported[0].input.to, 'walk-in@example.com', 'a ticket without owner');
-    }
+    test('mails the order contact, including for a ticket without an owner', async () => {
+      const [walkIn] = await render({ ...buyer, orderId: 'walk-in' });
+      assert.equal(walkIn.input.to, 'walk-in@example.com');
+      assert.deepEqual(await render({ ...buyer, orderId: 'anonymous' }), []);
+      const [exported] = await render({ orderId: 'walk-in' });
+      assert.equal(exported.input.to, 'walk-in@example.com');
+    });
   });
-});
+}

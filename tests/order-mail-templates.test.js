@@ -132,27 +132,26 @@ test.describe('Order mail templates', () => {
       { orderId, locale: locale.baseName },
       unchainedAPI,
     );
-    const money = new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: 'CHF',
-      currencyDisplay: 'code',
-      minimumFractionDigits: 3,
-      maximumFractionDigits: 3,
-    });
     const summary = await parser.getOrderSummaryData(order, { locale }, unchainedAPI);
     const [item] = await parser.getOrderPositionsData(order, { locale }, unchainedAPI);
-    assert.ok(item.rawPrices.unitPrice.amount > 0);
-    assert.ok(summary.rawPrices.gross.amount >= item.rawPrices.total.amount);
-    assert.equal(item.unitPrice, money.format(item.rawPrices.unitPrice.amount / 1000));
-    assert.ok(
-      confirmation.input.text.includes(
-        `1x ${item.productTexts.title} ${money.format(item.rawPrices.total.amount / 1000)}`,
-      ),
-    );
-    assert.ok(
-      confirmation.input.text.includes(
-        `Order Total ${money.format(summary.rawPrices.gross.amount / 1000)}`,
-      ),
-    );
+    assert.equal(item.rawPrices.unitPrice.amount, 10000);
+    assert.equal(summary.rawPrices.gross.amount, 10000);
+    assert.equal(item.unitPrice, '10,000\u00a0CHF');
+    assert.equal(summary.prices.gross, item.unitPrice);
+    assert.ok(confirmation.input.text.includes(`1x ${item.productTexts.title} ${item.unitPrice}`));
+    assert.ok(confirmation.input.text.includes(`Order Total ${item.unitPrice}`));
+  });
+
+  test('the order parser honors a custom formatter for positions and totals', async () => {
+    const { unchainedAPI } = getTestPlatform();
+    const order = await unchainedAPI.modules.orders.findOrder({ orderId });
+    const options = {
+      locale: new Intl.Locale('de-DE'),
+      format: ({ amount, currencyCode }) => `${currencyCode} ${amount} minor units`,
+    };
+    const [item] = await parser.getOrderPositionsData(order, options, unchainedAPI);
+    const summary = await parser.getOrderSummaryData(order, options, unchainedAPI);
+    assert.equal(item.unitPrice, 'CHF 10000 minor units');
+    assert.equal(summary.prices.gross, 'CHF 10000 minor units');
   });
 });

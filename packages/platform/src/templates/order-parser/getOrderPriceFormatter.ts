@@ -9,10 +9,11 @@ export interface OrderDisplayOptions {
 
 export async function getOrderPriceFormatter(
   currencyCode: string,
-  locale: Intl.Locale | undefined,
+  options: OrderDisplayOptions,
   { modules }: UnchainedCore,
 ) {
+  if (options?.format) return options.format;
   const currency = await modules.currencies.findCurrency({ isoCode: currencyCode });
   return (price: Price) =>
-    formatPrice({ ...price, locale: locale ?? 'de-CH', decimals: currency?.decimals ?? 2 });
+    formatPrice({ ...price, locale: options?.locale ?? 'de-CH', decimals: currency?.decimals ?? 2 });
 }

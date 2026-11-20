@@ -10,7 +10,7 @@ export const transformOrderToText = async (
 ) => {
   const orderDate = new Date(order.ordered!).toLocaleString();
   const orderNumber = order.orderNumber;
-  const format = await getOrderPriceFormatter(order.currencyCode, locale, context);
+  const format = await getOrderPriceFormatter(order.currencyCode, { locale }, context);
   const summary = await getOrderSummaryData(order, { locale, format }, context);
   const positions = await getOrderPositionsData(order, { locale, format }, context);
 
@@ -18,13 +18,10 @@ export const transformOrderToText = async (
     .map((pos) => `  ${pos.quantity}x ${pos.productTexts.title} ${pos.total}`)
     .join('\n');
 
-  const subtotalText = summary.rawPrices.items.amount ? `  Subtotal ${summary.prices.items}\n` : '';
-  const deliveryFeesText = summary.rawPrices.delivery.amount
-    ? `  Delivery ${summary.prices.delivery}\n`
-    : '';
-  const paymentFeesText = summary.rawPrices.payment.amount
-    ? `  Payment ${summary.prices.payment}\n`
-    : '';
+  const priceLine = (label: string, key: 'items' | 'delivery' | 'payment') =>
+    summary.rawPrices[key].amount ? `  ${label} ${summary.prices[key]}\n` : '';
+  const breakdown =
+    priceLine('Subtotal', 'items') + priceLine('Delivery', 'delivery') + priceLine('Payment', 'payment');
   const totalLine = `  ${'─'.repeat(50)}\n  Order Total ${summary.prices.gross}`;
   const taxesText = summary.rawPrices.taxes.amount ? `\n  (incl. VAT ${summary.prices.taxes})` : '';
 
@@ -59,7 +56,7 @@ ORDER DETAILS
 
 ${positionsText}
 
-${subtotalText}${deliveryFeesText}${paymentFeesText}${totalLine}${taxesText}
+${breakdown}${totalLine}${taxesText}
 ═════════════════════════════════════════════════════
 `;
 };
