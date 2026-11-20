@@ -662,7 +662,7 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
         productSelector: mongodb.Filter<Product>;
       }): Promise<number> => {
         return Products.countDocuments({
-          ...productSelector,
+          $and: [productSelector],
           _id: { $in: productIds },
         });
       },
@@ -679,7 +679,7 @@ export const configureProductsModule = async (moduleInput: ModuleInput<ProductsS
         productSelector: mongodb.Filter<Product>;
         sort?: mongodb.FindOptions['sort'];
       }): Promise<Product[]> => {
-        return findPreservingIds(Products)(productSelector, productIds, {
+        return findPreservingIds(Products)({ $and: [productSelector] }, productIds, {
           skip: offset,
           limit,
           sort,

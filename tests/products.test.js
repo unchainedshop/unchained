@@ -4,6 +4,7 @@ import {
   createAnonymousGraphqlFetch,
   disconnect,
 } from './helpers.js';
+import { getTestPlatform } from './setup.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import {
   PlanProduct,
@@ -32,6 +33,20 @@ test.describe('Products', () => {
 
   test.after(async () => {
     await disconnect();
+  });
+
+  test('filtered product lists and counts respect both candidate IDs and the selector', async () => {
+    const { search } = getTestPlatform().unchainedAPI.modules.products;
+    const query = {
+      productIds: [SimpleProduct._id, PlanProduct._id],
+      productSelector: { _id: { $in: [SimpleProduct._id, ProxyProduct._id] } },
+    };
+    const products = await search.findFilteredProducts(query);
+    const count = await search.countFilteredProducts(query);
+    assert.deepEqual(
+      { ids: products.map(({ _id }) => _id), count },
+      { ids: [SimpleProduct._id], count: 1 },
+    );
   });
 
   test.describe('query.productsCount for admin user should', () => {
