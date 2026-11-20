@@ -2,6 +2,7 @@ export * as calculation from './calculation.ts';
 export * as ch from './ch/index.ts';
 
 export * from './locale-helpers.ts';
+export { formatPrice, getPriceDecimals } from './formatPrice.ts';
 export { default as objectInvert } from './object-invert.ts';
 export { default as findUnusedSlug } from './find-unused-slug.ts';
 export { default as slugify } from './slugify.ts';

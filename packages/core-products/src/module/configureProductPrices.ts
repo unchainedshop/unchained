@@ -1,6 +1,7 @@
 import { getPriceLevels } from './utils/getPriceLevels.ts';
 import { getPriceRange } from './utils/getPriceRange.ts';
 import { type ProductPriceRate, ProductPriceRates } from '../db/ProductPriceRates.ts';
+import { getPriceDecimals } from '@unchainedshop/utils';
 import {
   type Product,
   type ProductConfiguration,
@@ -8,17 +9,7 @@ import {
   type ProductPriceRange,
 } from '../db/ProductsCollection.ts';
 
-export const getDecimals = (originDecimals) => {
-  if (originDecimals === null || originDecimals === undefined) {
-    return 2;
-  }
-  if (originDecimals > 2) {
-    // cryptocurrency, always stored in MAX. 9 decimals
-    // WORKAROUND FOR BIGINT PROBLEM!
-    return Math.min(originDecimals, 9);
-  }
-  return originDecimals;
-};
+export { getPriceDecimals as getDecimals };
 
 export const normalizeRate = (
   baseCurrency: {
@@ -32,8 +23,8 @@ export const normalizeRate = (
   rateRecord: ProductPriceRate,
 ) => {
   let rate = rateRecord.quoteCurrency === quoteCurrency.isoCode ? rateRecord.rate : 1 / rateRecord.rate;
-  const fromDecimals = getDecimals(baseCurrency.decimals);
-  const targetDecimals = getDecimals(quoteCurrency.decimals);
+  const fromDecimals = getPriceDecimals(baseCurrency.decimals);
+  const targetDecimals = getPriceDecimals(quoteCurrency.decimals);
   rate = fromDecimals !== targetDecimals ? rate / 10 ** (fromDecimals - targetDecimals) : rate;
   return rate;
 };

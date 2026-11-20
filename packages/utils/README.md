@@ -49,6 +49,7 @@ const locale = resolveBestSupported('en-US,de-CH', 'CH', {
 | `resolveBestSupported` | Resolve best supported locale from Accept-Language |
 | `resolveBestCurrency` | Resolve best currency from available options |
 | `determineFallbackLocale` | Determine fallback locale from countries/languages |
+| `formatPrice` | Format a minor-unit amount with the shop's locale, currency code and configured decimal precision |
 
 ### Calculation Utilities
 
