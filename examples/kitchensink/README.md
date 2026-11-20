@@ -32,6 +32,7 @@ Server starts at http://localhost:4010 with:
 
 - GraphQL endpoint: `/graphql`
 - Admin UI: `/`
+- Guest storefront MCP: `/mcp/storefront`
 - Default login: `admin@unchained.local` / `password`
 - Target-permission test login: `user-manager@unchained.local` / `password`
 
@@ -45,6 +46,16 @@ the target user's seed tag. Use the user manager login and compare these users i
 | `readonly-customer`               | Read-only; all user-data tabs remain visible                |
 | `managed-customer`                | Editable and force-logout capable, but cannot be deleted    |
 | `disposable-customer`             | Editable, force-logout capable, and deletable               |
+
+### Try product search
+
+Publish a product in the Admin UI, then connect an MCP client to
+`http://localhost:4010/mcp/storefront` using Streamable HTTP. For local Codex, run
+`codex mcp add unchained_storefront --url http://localhost:4010/mcp/storefront` and open a new chat.
+
+Ask “Which products does the Unchained shop have?” followed by “Show me the first one.”
+Clients with MCP Apps support can display the Kitchensink product cards inline.
+Selecting a product title opens its shop page in the same locale and currency.
 
 ## Developing Admin UI extensions
 

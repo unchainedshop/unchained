@@ -10,7 +10,7 @@ import * as jose from 'jose';
 // Import additional discount plugins used by kitchensink
 import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
 import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
-import { pluginRegistry } from '@unchainedshop/core';
+import { pluginRegistry, registerProductDiscoverabilityFilter } from '@unchainedshop/core';
 import {
   createTicketingPlugin,
   validateTicketOrderPosition,
@@ -21,6 +21,7 @@ import {
   readAttendeeName,
 } from '@unchainedshop/ticketing/warehousing/ticket';
 import { BoxOfficePlugin } from '@unchainedshop/ticketing/payment/box-office';
+import { registerStorefront } from '../examples/kitchensink/src/storefront.ts';
 
 let fastify = null;
 let platform = null;
@@ -141,6 +142,11 @@ export async function initializeTestPlatform() {
 
   // Register all plugins before starting platform
   registerAllPlugins();
+  registerStorefront(process.env.ROOT_URL);
+  registerProductDiscoverabilityFilter({
+    adapterId: 'storefront-test',
+    hiddenTagValue: 'storefront-hidden',
+  });
 
   // Register additional discount plugins used by kitchensink
   pluginRegistry.register(HalfPriceManualPlugin);

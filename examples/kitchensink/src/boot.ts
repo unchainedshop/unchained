@@ -6,6 +6,7 @@ import { startPlatform } from '@unchainedshop/platform';
 import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
 import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
 import seed from './seed.ts';
+import { registerStorefront } from './storefront.ts';
 import { useErrorHandler } from 'graphql-yoga';
 
 import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
@@ -141,6 +142,7 @@ const userManagerRole = (role, actions) => {
 try {
   // Register all plugins before starting platform
   registerAllPlugins();
+  registerStorefront(process.env.ROOT_URL || 'http://localhost:4010');
 
   // Register additional discount plugins
   pluginRegistry.register(HalfPriceManualPlugin);
@@ -221,7 +223,10 @@ try {
     fastify.log.info(`Access token for admin: ${result.token}`);
   }
 
-  await fastify.listen({ host: '::', port: process.env.PORT ? parseInt(process.env.PORT) : 3000 });
+  await fastify.listen({
+    host: process.env.HOST || '::',
+    port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
+  });
 } catch (err) {
   fastify.log.error(err);
   process.exit(1);

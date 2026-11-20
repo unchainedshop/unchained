@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Product search</title>
+  <style>
+    :root { color-scheme: light dark; font: 15px/1.45 var(--font-sans, system-ui, sans-serif); color: var(--color-text-primary, CanvasText); }
+    * { box-sizing: border-box; }
+    body, p, h2, ul { margin: 0; }
+    main { padding: 4px; }
+    #status { font-size: .85rem; color: var(--color-text-secondary, GrayText); }
+    ul { list-style: none; padding: 0; display: grid; gap: .65rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); }
+    ul:not(:empty) { margin-top: .6rem; }
+    li { display: flex; flex-direction: column; gap: .3rem; min-width: 0; padding: 1rem; overflow-wrap: anywhere;
+      border: 1px solid var(--color-border-secondary, color-mix(in srgb, CanvasText 20%, Canvas));
+      border-radius: var(--border-radius-lg, .75rem); background: var(--color-background-primary, Canvas); }
+    .brand { color: var(--color-text-secondary, GrayText); font-size: .85rem; }
+    h2 { font-size: 1.13rem; line-height: 1.25; }
+    a { color: inherit; text-underline-offset: .15em; text-decoration-thickness: 1px; }
+    a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+    .description { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+    .price { margin-top: auto; padding-top: .65rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+  <main aria-label="Product search"><p id="status" role="status">Loading products…</p><ul aria-label="Products"></ul></main>
+  <script>
+    const status = document.getElementById('status');
+    const list = document.querySelector('ul');
+    let openLinks = false;
+    let linkId = 0;
+    const send = message => window.parent.postMessage({ jsonrpc: '2.0', ...message }, '*');
+
+    function applyHostContext(context = {}) {
+      if (context.theme) document.documentElement.style.colorScheme = context.theme;
+      for (const [key, value] of Object.entries(context.styles?.variables || {})) {
+        if (key.startsWith('--')) document.documentElement.style.setProperty(key, value);
+      }
+    }
+
+    function paragraph(className, text) {
+      const node = document.createElement('p');
+      node.className = className;
+      node.textContent = text;
+      return node;
+    }
+
+    function productCard(product) {
+      const card = document.createElement('li');
+      if (product.brand) card.append(paragraph('brand', product.brand));
+      const title = document.createElement('h2');
+      title.textContent = product.name;
+      const url = URL.parse(product.url);
+      if (url && ['http:', 'https:'].includes(url.protocol)) {
+        const link = document.createElement('a');
+        link.href = url.href;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = product.name;
+        if (openLinks) link.addEventListener('click', event => {
+          event.preventDefault();
+          send({ id: 'link-' + ++linkId, method: 'ui/open-link', params: { url: link.href } });
+        });
+        title.replaceChildren(link);
+      }
+      card.append(title);
+      if (product.description) card.append(paragraph('description', product.description));
+      const price = product.formatted_price
+        ? product.formatted_price + (product.is_net_price ? ' excl. tax' : '')
+        : 'Price unavailable';
+      card.append(paragraph('price', price));
+      return card;
+    }
+
+    function render(result) {
+      list.replaceChildren();
+      const data = result.structuredContent;
+      if (result.isError || !Array.isArray(data?.products)) {
+        status.textContent = 'Could not load products.';
+        return;
+      }
+      const count = data.products.length;
+      status.textContent = !data.totalCount ? 'No matching products.'
+        : count !== data.totalCount ? count + ' of ' + data.totalCount + ' products'
+        : count + (count === 1 ? ' product' : ' products');
+      list.replaceChildren(...data.products.map(productCard));
+    }
+
+    function reportSize() {
+      send({ method: 'ui/notifications/size-changed', params: {
+        height: Math.ceil(document.body.getBoundingClientRect().height), width: document.documentElement.clientWidth,
+      } });
+    }
+    const resize = new ResizeObserver(reportSize);
+    window.addEventListener('message', function receive(event) {
+      const message = event.data;
+      if (event.source !== window.parent || message?.jsonrpc !== '2.0') return;
+      if (!message.method && message.id === 'init') {
+        if (message.result?.protocolVersion !== '2026-01-26') {
+          status.textContent = 'Unable to connect to the host.';
+          return;
+        }
+        openLinks = Boolean(message.result.hostCapabilities?.openLinks);
+        applyHostContext(message.result.hostContext);
+        send({ method: 'ui/notifications/initialized', params: {} });
+        resize.observe(document.body);
+      } else if (message.method === 'ui/notifications/tool-result') {
+        render(message.params);
+        reportSize();
+      } else if (message.method === 'ui/notifications/tool-cancelled') {
+        list.replaceChildren();
+        status.textContent = 'Search cancelled.';
+      } else if (message.method === 'ui/notifications/host-context-changed') {
+        applyHostContext(message.params);
+      } else if (message.method === 'ui/resource-teardown' || message.method === 'ping') {
+        send({ id: message.id, result: {} });
+        if (message.method === 'ui/resource-teardown') {
+          resize.disconnect();
+          window.removeEventListener('message', receive);
+        }
+      } else if (String(message.id).startsWith('link-') && (message.error || message.result?.isError)) {
+        status.textContent = 'The product link could not be opened.';
+      }
+    });
+    send({ id: 'init', method: 'ui/initialize', params: {
+      protocolVersion: '2026-01-26', appInfo: { name: 'Product search', version: '1.0.0' }, appCapabilities: {},
+    } });
+  </script>
+</body>
+</html>
