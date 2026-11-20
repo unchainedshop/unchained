@@ -1,4 +1,4 @@
-import type { MessageTemplateContext, TemplateResolver } from '@unchainedshop/core';
+import type { TemplateResolver, UnchainedCore } from '@unchainedshop/core';
 import { formatPrice } from '@unchainedshop/utils';
 import { getTicketEventDetails } from '../event-details.ts';
 import { findPurchaseRecipient } from '../ticket-details.ts';
@@ -16,7 +16,7 @@ async function cancellationEmail(
   kind: 'Event' | 'Ticket',
   productId: string,
   notice: CancellationNotice,
-  { modules, getCurrencyDecimals }: MessageTemplateContext,
+  { modules }: UnchainedCore,
 ) {
   const product = await modules.products.findProduct({ productId });
   if (!product) return [];
@@ -36,15 +36,15 @@ async function cancellationEmail(
 
   const { discountCode, discountAmount, discountCurrencyCode: currencyCode } = notice;
   if (discountCode && discountAmount) {
-    // Older queued messages have no credit currency, which can differ from the purchase currency.
-    const credit = currencyCode
-      ? formatPrice({
-          amount: discountAmount,
-          currencyCode,
-          locale,
-          decimals: notice.discountCurrencyDecimals ?? (await getCurrencyDecimals?.(currencyCode)) ?? 2,
-        })
-      : (discountAmount / 100).toFixed(2);
+    let credit: string;
+    if (currencyCode) {
+      const currency = await modules.currencies.findCurrency({ isoCode: currencyCode });
+      const decimals = (currency ? currency.decimals : notice.discountCurrencyDecimals) ?? 2;
+      credit = formatPrice({ amount: discountAmount, currencyCode, locale, decimals });
+    } else {
+      // Older queued messages have no credit currency, which can differ from the purchase currency.
+      credit = (discountAmount / 100).toFixed(2);
+    }
     paragraphs.push(
       `As compensation, you have received a discount code worth ${credit}:`,
       `  ${discountCode}`,

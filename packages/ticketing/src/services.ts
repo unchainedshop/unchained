@@ -1,5 +1,5 @@
 import type { TicketingModule } from './module.ts';
-import type { Bound, UnchainedCore, UnchainedRequestContext } from '@unchainedshop/core';
+import type { Bound, UnchainedCore } from '@unchainedshop/core';
 import { ProductStatus } from '@unchainedshop/core-products';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import type { Price } from '@unchainedshop/utils';
@@ -12,10 +12,11 @@ import productionServices, { type TicketProductionServices } from './production-
 type Modules = UnchainedCore['modules'];
 type TicketingModules = Modules & TicketingModule;
 
-export interface DiscountOptions extends Pick<UnchainedRequestContext, 'getCurrencyDecimals'> {
+export interface DiscountOptions {
   generateDiscount?: boolean;
   countryCode?: string;
   currencyCode?: string;
+  currencyDecimals?: number;
 }
 
 export interface CancelTicketOptions extends DiscountOptions {
@@ -36,10 +37,10 @@ const alreadyRedeemed = (tokenId: string) =>
 
 async function findCreditPrice({ products }: Modules, productId: string, options?: DiscountOptions) {
   if (!options?.generateDiscount || !options.countryCode) return;
-  const { countryCode, currencyCode, getCurrencyDecimals } = options;
+  const { countryCode, currencyCode, currencyDecimals } = options;
   const product = await products.findProduct({ productId });
   const price = product && (await products.prices.price(product, { countryCode, currencyCode }));
-  if (price?.amount) return { ...price, decimals: getCurrencyDecimals?.(price.currencyCode) };
+  if (price?.amount) return { ...price, decimals: currencyDecimals };
 }
 
 async function issueCredit(

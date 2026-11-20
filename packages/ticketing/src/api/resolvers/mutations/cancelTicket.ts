@@ -10,7 +10,7 @@ export default async function cancelTicket(
   context: Context,
   info: GraphQLResolveInfo,
 ) {
-  const { modules, services, userId, countryCode, currencyCode } = context;
+  const { modules, services, userId, countryCode, currencyCode, currencyDecimals } = context;
   log(`mutation cancelTicket ${tokenId}`, { userId, generateDiscount });
 
   if (!tokenId) throw new InvalidIdError({ tokenId });
@@ -49,7 +49,7 @@ export default async function cancelTicket(
       generateDiscount,
       countryCode,
       currencyCode,
-      getCurrencyDecimals: context.getCurrencyDecimals,
+      currencyDecimals,
       refuseRedeemed: true,
     });
     return result.token;

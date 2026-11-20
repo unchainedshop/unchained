@@ -51,26 +51,23 @@ export const configureCurrenciesModule = async ({ db }: ModuleInput<Record<strin
       }
     },
 
-    findCurrencies: async (
-      {
-        limit,
-        offset,
-        sort,
-        ...query
-      }: CurrencyQuery & {
-        limit?: number;
-        offset?: number;
-        sort?: SortOption[];
-      },
-      options?: mongodb.FindOptions,
-    ): Promise<Currency[]> => {
+    findCurrencies: async ({
+      limit,
+      offset,
+      sort,
+      ...query
+    }: CurrencyQuery & {
+      limit?: number;
+      offset?: number;
+      sort?: SortOption[];
+    }): Promise<Currency[]> => {
       const defaultSort = [{ key: 'created', value: SortDirection.ASC }] as SortOption[];
-      return Currencies.find(buildFindSelector(query), {
+      const currencies = Currencies.find(buildFindSelector(query), {
         skip: offset,
         limit,
         sort: buildSortOptions(sort || defaultSort),
-        ...options,
-      }).toArray();
+      });
+      return currencies.toArray();
     },
 
     count: async (query: CurrencyQuery) => {

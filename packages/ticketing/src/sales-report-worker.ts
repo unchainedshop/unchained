@@ -1,7 +1,6 @@
 import { WorkerAdapter, WorkerDirector, schedule, type IWorkerAdapter } from '@unchainedshop/core';
-import { getPriceDecimals } from '@unchainedshop/utils';
-import { buildTicketSalesReport, type TicketSalesReportTotal } from './sales-report.ts';
-import { buildSalesReportCsv } from './sales-report-csv.ts';
+import { buildTicketSalesReport, type TicketSalesReport } from './sales-report.ts';
+import type { buildSalesReportCsv } from './sales-report-csv.ts';
 import { TicketingMessageTypes } from './templates/index.ts';
 
 export const TICKET_SALES_REPORT_WORK_TYPE = 'TICKET_SALES_REPORT';
@@ -17,14 +16,16 @@ export interface TicketSalesReportWorkInput {
   locale?: string;
 }
 
-export interface TicketSalesReportMessagePayload extends TicketSalesReportWorkInput {
-  from: Date;
-  to: Date;
+export type TicketSalesReportMessagePayload = {
   recipients: string[];
-  currencyDecimals?: Record<string, number>;
-  totals: TicketSalesReportTotal[];
-  csv: ReturnType<typeof buildSalesReportCsv>;
-}
+  locale?: string;
+} & (
+  | TicketSalesReport
+  | (Pick<TicketSalesReport, 'from' | 'to' | 'totals'> & {
+      csv: ReturnType<typeof buildSalesReportCsv>;
+      currencyDecimals?: Record<string, number>;
+    })
+);
 
 const yesterday = () => {
   const to = new Date();
@@ -54,19 +55,10 @@ export const TicketSalesReportWorker: IWorkerAdapter<TicketSalesReportWorkInput,
       const summary = { from: report.from, to: report.to, totals: report.totals };
       const sent = Boolean(recipients.length && report.orders.length);
       if (sent) {
-        const currencies = await unchainedAPI.modules.currencies.findCurrencies({
-          isoCodes: report.totals.map(({ currencyCode }) => currencyCode),
-          includeInactive: true,
-        });
-        const currencyDecimals = Object.fromEntries(
-          currencies.map(({ isoCode, decimals }) => [isoCode, getPriceDecimals(decimals)]),
-        );
         await unchainedAPI.services.worker.addMessage(TicketingMessageTypes.TICKET_SALES_REPORT, {
-          ...summary,
+          ...report,
           locale,
           recipients,
-          currencyDecimals,
-          csv: buildSalesReportCsv(report, currencyDecimals),
         } satisfies TicketSalesReportMessagePayload);
       }
       return { success: true, result: { ...summary, sent } };

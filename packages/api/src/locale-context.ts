@@ -11,13 +11,13 @@ const logger = createLogger('unchained:api');
 
 export type UnchainedLocaleContext = Pick<
   UnchainedRequestContext,
-  'countryCode' | 'locale' | 'currencyCode' | 'getCurrencyDecimals'
+  'countryCode' | 'locale' | 'currencyCode' | 'currencyDecimals'
 >;
 
 const uncachedResolveDefaultContext = async (
   { acceptLang, acceptCountry },
   unchainedAPI: UnchainedCore,
-) => {
+): Promise<UnchainedLocaleContext> => {
   const languages = await unchainedAPI.modules.languages.findLanguages(
     { includeInactive: false },
     { projection: { isoCode: 1, isActive: 1 } },
@@ -28,14 +28,7 @@ const uncachedResolveDefaultContext = async (
     { projection: { isoCode: 1, isActive: 1, defaultCurrencyCode: 1 } },
   );
 
-  // Existing orders can use an inactive currency. Only active currencies can be selected for shopping.
-  const currencies = await unchainedAPI.modules.currencies.findCurrencies(
-    { includeInactive: true },
-    { projection: { isoCode: 1, isActive: 1, decimals: 1, _id: 0 } },
-  );
-  const decimalsByCode = new Map(
-    currencies.map(({ isoCode, decimals }) => [isoCode, getPriceDecimals(decimals)]),
-  );
+  const currencies = await unchainedAPI.modules.currencies.findCurrencies({ includeInactive: false });
 
   const locale = resolveBestSupported(acceptLang, acceptCountry, { countries, languages });
 
@@ -43,21 +36,17 @@ const uncachedResolveDefaultContext = async (
     (country) => country.isoCode.toUpperCase() === locale?.region?.toUpperCase(),
   )?.defaultCurrencyCode;
 
-  const currencyCode = resolveBestCurrency(
-    defaultCurrencyCode || null,
-    currencies.filter((currency) => currency.isActive),
-  );
+  const currencyCode = resolveBestCurrency(defaultCurrencyCode || null, currencies);
+  const currency = currencies.find(({ isoCode }) => isoCode === currencyCode);
 
   logger.debug(`Locale Context: Resolved ${locale?.baseName} ${currencyCode}`);
 
-  const newContext: UnchainedLocaleContext = {
+  return {
     locale,
     countryCode: locale.region as string,
     currencyCode,
-    getCurrencyDecimals: (isoCode) => decimalsByCode.get(isoCode),
+    currencyDecimals: currency && getPriceDecimals(currency.decimals),
   };
-
-  return newContext;
 };
 
 const shopIds = new WeakMap<UnchainedCore['modules'], number>();

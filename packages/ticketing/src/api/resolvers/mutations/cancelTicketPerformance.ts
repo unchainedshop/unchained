@@ -18,7 +18,7 @@ export default async function cancelTicketPerformance(
   context: Context,
   info: GraphQLResolveInfo,
 ) {
-  const { modules, userId, countryCode, currencyCode } = context;
+  const { modules, userId, countryCode, currencyCode, currencyDecimals } = context;
   log(`mutation cancelTicketPerformance ${productionId}`, { userId });
   if (!productionId) throw new InvalidIdError({ productionId });
   const services = getProductionServices(context);
@@ -38,7 +38,7 @@ export default async function cancelTicketPerformance(
       generateDiscount,
       countryCode,
       currencyCode,
-      getCurrencyDecimals: context.getCurrencyDecimals,
+      currencyDecimals,
     });
     cancelled += cancelledCount;
   }

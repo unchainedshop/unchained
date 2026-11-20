@@ -39,11 +39,8 @@ test('both cancellation paths reimburse ticket units and validate issuance befor
     const options = {
       generateDiscount: true,
       countryCode: 'CH',
-      currencyCode: 'EUR',
-      getCurrencyDecimals: (code: string) => {
-        assert.equal(code, 'CHF');
-        return 3;
-      },
+      currencyCode: 'CHF',
+      currencyDecimals: 3,
     };
     const cancel = () =>
       kind === 'event'
@@ -85,7 +82,6 @@ test('credits and messages follow the purchase, also for walk-ins served by one 
     generateDiscount: true,
     countryCode: 'CH',
     currencyCode: 'CHF',
-    getCurrencyDecimals: (code) => (code === 'EUR' ? 2 : undefined),
   });
   assert.equal(price.mock.callCount(), 1);
   assert.ok(messages.every(({ discountCurrencyDecimals }) => discountCurrencyDecimals === undefined));

@@ -59,9 +59,13 @@ for (const [kind, render] of Object.entries(templates)) {
       assert.ok(input.text.endsWith('Theater\nhttps://theater.example\n'));
     });
 
-    test('resolves the issued currency only when the notice lacks its precision', async (t) => {
-      const getCurrencyDecimals = t.mock.fn(async (code: string) => (code === 'CHF' ? 3 : undefined));
-      const context = { ...api, getCurrencyDecimals };
+    test('formats issued credits with the current currency precision', async (t) => {
+      const currencies = new Map([
+        ['CHF', { decimals: 3 }],
+        ['EUR', {}],
+      ]);
+      const findCurrency = t.mock.fn(async ({ isoCode }) => currencies.get(isoCode));
+      const context = { modules: { ...api.modules, currencies: { findCurrency } } };
       const body = async (currency: CancellationNotice) => {
         const [message] = await render(
           { ...buyer, discountCode: 'gift', discountAmount: 1240, ...currency },
@@ -73,12 +77,20 @@ for (const [kind, render] of Object.entries(templates)) {
         await body({ discountCurrencyCode: 'JPY', discountCurrencyDecimals: 0 }),
         /worth JPY\u00a01,240:/,
       );
-      assert.match(await body({ discountCurrencyCode: 'CHF' }), /worth CHF\u00a01\.240:/);
-      assert.match(await body({ discountCurrencyCode: 'EUR' }), /worth EUR\u00a012\.40:/);
+      assert.match(
+        await body({ discountCurrencyCode: 'CHF', discountCurrencyDecimals: 2 }),
+        /worth CHF\u00a01\.240:/,
+      );
+      assert.match(
+        await body({ discountCurrencyCode: 'EUR', discountCurrencyDecimals: 3 }),
+        /worth EUR\u00a012\.40:/,
+      );
+      assert.match(await body({ discountCurrencyCode: 'USD' }), /worth USD\u00a012\.40:/);
       assert.match(await body({}), /worth 12\.40:/);
+      assert.doesNotMatch(await body({ discountCode: undefined, discountCurrencyCode: 'CHF' }), /worth/);
       assert.deepEqual(
-        getCurrencyDecimals.mock.calls.map((call) => call.arguments),
-        [['CHF'], ['EUR']],
+        findCurrency.mock.calls.map(({ arguments: [{ isoCode }] }) => isoCode),
+        ['JPY', 'CHF', 'EUR', 'USD'],
       );
     });
 

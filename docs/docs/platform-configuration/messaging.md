@@ -234,37 +234,23 @@ MessagingDirector.registerTemplate('ORDER_CONFIRMATION', async ({ orderId, local
 
 ### Reusing the Order Parser Helpers
 
-You rarely need to re-implement order data extraction. `@unchainedshop/platform` exports the helpers the built-in order mails use themselves:
+`@unchainedshop/platform` exports the helpers used by the built-in order emails. Each order email template reads the order currency once. Custom templates can pass the same precision to all three helpers.
 
 ```typescript
 import { parser } from '@unchainedshop/platform';
 
-// Full plain-text order summary (what the built-in confirmation mail contains):
-const text = await parser.transformOrderToText({ order, locale: new Intl.Locale(locale) }, api);
+const currency = await api.modules.currencies.findCurrency({ isoCode: order.currencyCode });
+const options = { locale: new Intl.Locale(locale), decimals: currency?.decimals ?? 2 };
 
-// Or the structured data, for building your own HTML body:
-const summary = await parser.getOrderSummaryData(order, { locale }, api);
+const text = await parser.transformOrderToText({ order, ...options }, api);
+const summary = await parser.getOrderSummaryData(order, options, api);
 // → { prices: { items, taxes, delivery, payment, gross }, rawPrices, payment,
 //     delivery, deliveryAddress, billingAddress }
-const positions = await parser.getOrderPositionsData(order, { locale }, api);
+const positions = await parser.getOrderPositionsData(order, options, api);
 // → [{ productTexts, quantity, unitPrice, total, rawPrices, configuration }, ...]
 ```
 
-Pass the request or message context as `api`. The request context supplies precision from the shop's currencies, including inactive currencies used by earlier orders. The message worker looks up the order currency once per email. With a bare core instance, the parser uses its historical cents convention. Use `rawPrices` for integer amounts in minor units, or pass a custom `format` function.
-
-```typescript
-import { formatPrice } from '@unchainedshop/utils';
-
-const decimals = await api.getCurrencyDecimals?.(order.currencyCode);
-const positions = await parser.getOrderPositionsData(
-  order,
-  {
-    locale,
-    format: (price) => formatPrice({ ...price, locale: 'fr-CH', decimals }),
-  },
-  api,
-);
-```
+Omitting `decimals` keeps the historical convention of dividing stored amounts by 100. The structured helpers also accept a custom `format(price)` function and expose integer amounts in `rawPrices`.
 
 ### Loading HTML Bodies from Files
 
@@ -278,12 +264,10 @@ const loadBody = async (name: string) =>
 
 MessagingDirector.registerTemplate('ORDER_CONFIRMATION', async ({ orderId, locale }, api) => {
   const order = await api.modules.orders.findOrder({ orderId });
-  const language = new Intl.Locale(locale).language;
-  const summary = await parser.getOrderSummaryData(
-    order,
-    { locale: new Intl.Locale(locale) },
-    api,
-  );
+  const currency = await api.modules.currencies.findCurrency({ isoCode: order.currencyCode });
+  const options = { locale: new Intl.Locale(locale), decimals: currency?.decimals ?? 2 };
+  const language = options.locale.language;
+  const summary = await parser.getOrderSummaryData(order, options, api);
 
   let html = await loadBody(`order-confirmation.${language}.html`);
   // Simple zero-dependency interpolation; bring your own engine if you need more
@@ -299,7 +283,7 @@ MessagingDirector.registerTemplate('ORDER_CONFIRMATION', async ({ orderId, local
         from: process.env.EMAIL_FROM,
         to: order.contact.emailAddress,
         subject: `Order ${order.orderNumber}`,
-        text: await parser.transformOrderToText({ order, locale: new Intl.Locale(locale) }, api),
+        text: await parser.transformOrderToText({ order, ...options }, api),
         html,
       },
     },

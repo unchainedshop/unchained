@@ -11,7 +11,7 @@ export default async function cancelEvent(
   context: Context,
   info: GraphQLResolveInfo,
 ) {
-  const { modules, services, userId, countryCode, currencyCode } = context;
+  const { modules, services, userId, countryCode, currencyCode, currencyDecimals } = context;
   log(`mutation cancelEvent ${productId}`, { userId });
 
   if (!productId) throw new InvalidIdError({ productId });
@@ -40,7 +40,7 @@ export default async function cancelEvent(
     generateDiscount,
     countryCode,
     currencyCode,
-    getCurrencyDecimals: context.getCurrencyDecimals,
+    currencyDecimals,
   });
 
   return result.cancelledCount;

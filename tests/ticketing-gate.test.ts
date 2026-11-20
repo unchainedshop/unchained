@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { MessagingDirector } from '@unchainedshop/core';
 import { buildTicketScanPayload } from '@unchainedshop/ticketing';
 import { setupDatabase, createLoggedInGraphqlFetch } from './helpers.js';
+import { getTestPlatform } from './setup.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import seedTicketing, {
   ConcertEventId,
@@ -55,7 +57,7 @@ const TICKET_LOOKUP = /* GraphQL */ `
 
 const CANCEL_TICKET = /* GraphQL */ `
   mutation CancelTicket($tokenId: ID!) {
-    cancelTicket(tokenId: $tokenId) {
+    cancelTicket(tokenId: $tokenId, generateDiscount: true) {
       ...GateTicket
     }
   }
@@ -231,15 +233,40 @@ test.describe('Ticketing: gate control', () => {
     assert.equal(errors?.[0]?.extensions?.expectedProductId, ConcertEventId);
   });
 
-  test('a cancelled ticket is CANCELLED, not REDEEMED, and refused as cancelled', async () => {
+  test('a cancelled ticket receives credit in the cancellation market and is refused at the gate', async () => {
     const ticket = concertTicketOf('Alan Turing');
-    const cancelled = await adminFetch({ query: CANCEL_TICKET, variables: { tokenId: ticket._id } });
+    await db.collection('currencies').updateOne({ isoCode: 'EUR' }, { $set: { decimals: 3 } });
+    await db
+      .collection('products')
+      .updateOne(
+        { _id: ConcertEventId },
+        { $push: { 'commerce.pricing': { countryCode: 'DE', currencyCode: 'EUR', amount: 7350 } } },
+      );
+    const cancelled = await adminFetch({
+      query: CANCEL_TICKET,
+      variables: { tokenId: ticket._id },
+      headers: { 'x-shop-country': 'DE' },
+    });
     assert.ifError(cancelled.errors?.[0]);
     assert.equal(cancelled.data.cancelTicket.ticketStatus, 'CANCELLED');
     assert.equal(cancelled.data.cancelTicket.isCanceled, true);
     assert.ok(cancelled.data.cancelTicket.cancelledDate);
     // Cancelling also invalidates the ticket
     assert.ok(cancelled.data.cancelTicket.invalidatedDate);
+
+    const { input } = await db
+      .collection('work_queue')
+      .findOne({ type: 'MESSAGE', 'input.template': 'TICKET_CANCELLED', 'input.tokenId': ticket._id });
+    assert.equal(input.discountAmount, 7350);
+    assert.equal(input.discountCurrencyCode, 'EUR');
+    assert.equal(input.discountCurrencyDecimals, 3);
+    const { unchainedAPI } = getTestPlatform();
+    assert.equal(await unchainedAPI.modules.passes.verifyDiscountCode(input.discountCode, 'EUR'), 7350);
+    await db.collection('currencies').updateOne({ isoCode: 'EUR' }, { $set: { decimals: 4 } });
+    const resolveNotice = MessagingDirector.getTemplate(input.template);
+    assert.ok(resolveNotice);
+    const [email] = await resolveNotice(input, unchainedAPI);
+    assert.match(email.input.text, /worth (?:EUR\s+0[.,]7350|0[.,]7350\s+EUR):/);
 
     const [event] = await waitForEvents(db, { type: 'TICKET_CANCELLED' });
     assert.equal(event?.payload?.token?._id, ticket._id);

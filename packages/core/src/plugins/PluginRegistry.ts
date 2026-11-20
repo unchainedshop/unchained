@@ -15,7 +15,7 @@ export interface UnchainedRequestContext {
   locale: Intl.Locale;
   countryCode: string;
   currencyCode: string;
-  getCurrencyDecimals?: (isoCode: string) => number | undefined;
+  currencyDecimals?: number;
   userId?: string;
   user?: User;
   impersonatorId?: string;

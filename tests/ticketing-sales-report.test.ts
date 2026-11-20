@@ -4,7 +4,7 @@ import { MessagingDirector } from '@unchainedshop/core';
 import { TicketSalesReportWorker } from '@unchainedshop/ticketing';
 import { setupDatabase, createLoggedInGraphqlFetch, waitForWork } from './helpers.js';
 import { getTestPlatform } from './setup.js';
-import { ConfirmedOrder } from './seeds/orders.js';
+import { ConfirmedOrder, SimplePosition } from './seeds/orders.js';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import seedTicketing, {
   ConcertEventId,
@@ -126,7 +126,7 @@ test.describe('Ticketing: sales report', () => {
     assert.equal(await messages.countDocuments(reportMessage), before);
   });
 
-  test('the worker uses live currency settings for the report summary and its CSV attachments', async () => {
+  test('a queued report uses current currency settings when rendering the email and all three CSVs', async () => {
     const { unchainedAPI, db } = getTestPlatform();
     const ordered = new Date('2018-01-01T12:00:00Z');
     const orders = ['CHF', 'ETH', 'JPY'].map((currencyCode) => ({
@@ -138,7 +138,16 @@ test.describe('Ticketing: sales report', () => {
       calculation: [{ category: 'ITEMS', amount: 5000 }],
     }));
     await db.collection('orders').insertMany(orders);
-    await db.collection('currencies').updateOne({ isoCode: 'CHF' }, { $set: { decimals: 3 } });
+    await db.collection('order_positions').insertMany(
+      orders.map(({ _id }) => ({
+        ...SimplePosition,
+        _id: `${_id}-position`,
+        orderId: _id,
+        productId: ConcertEventId,
+        quantity: 1,
+        calculation: [{ category: 'ITEM', amount: 5000 }],
+      })),
+    );
     await db.collection('currencies').insertOne({ isoCode: 'ETH', decimals: 18, isActive: false });
 
     const input = {
@@ -150,26 +159,36 @@ test.describe('Ticketing: sales report', () => {
     const result = await TicketSalesReportWorker.doWork(input, unchainedAPI, 'report');
     assert.equal(result.result.sent, true);
     const work = await db.collection('work_queue').findOne(reportMessage);
-    assert.deepEqual(work.input.currencyDecimals, { CHF: 3, ETH: 9 });
-    await db.collection('currencies').updateOne({ isoCode: 'CHF' }, { $set: { decimals: 2 } });
-
+    assert.ok(!Object.hasOwn(work.input, 'currencyDecimals') && !Object.hasOwn(work.input, 'csv'));
+    assert.equal(work.input.orders[0].total, 5000);
     await waitForWork(adminFetch, work._id, { status: ['SUCCESS'] });
-    const email = await db.collection('work_queue').findOne({ type: 'EMAIL', originalWorkId: work._id });
-    await waitForWork(adminFetch, email._id);
+    const first = await db.collection('work_queue').findOne({ type: 'EMAIL', originalWorkId: work._id });
+    await waitForWork(adminFetch, first._id);
+    assert.match(first.input.text, /50,00\u00a0CHF/);
+
+    await db.collection('currencies').updateOne({ isoCode: 'CHF' }, { $set: { decimals: 3 } });
+    const [email] = await MessagingDirector.getTemplate('TICKET_SALES_REPORT')(work.input, unchainedAPI);
     assert.equal(email.input.to, 'office@example.test');
-    assert.equal(email.input.attachments.length, 3);
-    const csv = Buffer.from(email.input.attachments[0].content, 'base64').toString('utf8');
-    assert.match(csv, /^\uFEFForderNumber,/);
-    const rows = csv.split('\r\n');
+    const [orderRows, performanceRows, providerRows] = email.input.attachments.map(({ content }) =>
+      Buffer.from(content, 'base64').toString('utf8').split('\r\n'),
+    );
+    assert.match(orderRows[0], /^\uFEFForderNumber,/);
     for (const [code, formatted, csvTotal] of [
       ['CHF', '5,000', '5'],
       ['ETH', '0,000005000', '0.000005'],
       ['JPY', '5.000', '5000'],
     ]) {
-      const summary = `${code}: 1 orders, 0 tickets, ${formatted}\u00a0${code}`;
-      const csvRow = rows.find((row) => row.startsWith(`${code},`));
+      const summary = `${code}: 1 orders, 1 tickets, ${formatted}\u00a0${code}`;
       assert.ok(email.input.text.includes(summary), email.input.text);
-      assert.equal(csvRow?.split(',').at(-1), csvTotal);
+      assert.equal(
+        orderRows
+          .find((row) => row.startsWith(`${code},`))
+          ?.split(',')
+          .at(-1),
+        csvTotal,
+      );
+      assert.ok(performanceRows.some((row) => row.endsWith(`,${code},1,${csvTotal},0`)));
+      assert.ok(providerRows.some((row) => row.endsWith(`,${code},1,1,${csvTotal}`)));
     }
   });
 
@@ -186,5 +205,9 @@ test.describe('Ticketing: sales report', () => {
       getTestPlatform().unchainedAPI,
     );
     assert.match(email.input.text, /JPY\u00a05,000/);
+    assert.equal(
+      Buffer.from(email.input.attachments[0].content, 'base64').toString('utf8'),
+      '\uFEFFtotal\r\n5000\r\n',
+    );
   });
 });

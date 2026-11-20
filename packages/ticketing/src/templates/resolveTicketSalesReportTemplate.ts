@@ -1,7 +1,7 @@
-import type { TemplateResolver } from '@unchainedshop/core';
-import { formatPrice } from '@unchainedshop/utils';
+import type { TemplateResolver, UnchainedCore } from '@unchainedshop/core';
+import { formatPrice, getPriceDecimals } from '@unchainedshop/utils';
 import type { TicketSalesReportMessagePayload } from '../sales-report-worker.ts';
-import { currencyDigits } from '../sales-report-csv.ts';
+import { buildSalesReportCsv, currencyDigits } from '../sales-report-csv.ts';
 
 const csvAttachment = (filename: string, csv: string) => ({
   filename,
@@ -11,12 +11,27 @@ const csvAttachment = (filename: string, csv: string) => ({
   encoding: 'base64',
 });
 
+async function prepareReport(report: TicketSalesReportMessagePayload, { modules }: UnchainedCore) {
+  if ('csv' in report) return report; // Already queued with formatted attachments.
+  const isoCodes = report.totals.map(({ currencyCode }) => currencyCode);
+  const currencies = await modules.currencies.findCurrencies({ isoCodes, includeInactive: true });
+  const configured = new Map(
+    currencies.map(({ isoCode, decimals }) => [isoCode, getPriceDecimals(decimals)]),
+  );
+  const currencyDecimals = Object.fromEntries(
+    isoCodes.map((code) => [code, configured.get(code) ?? currencyDigits(code)]),
+  );
+  return { csv: buildSalesReportCsv(report, currencyDecimals), currencyDecimals };
+}
+
 export const resolveTicketSalesReportTemplate: TemplateResolver<
   TicketSalesReportMessagePayload
-> = async ({ from, to, recipients, totals, csv, locale = 'en', currencyDecimals }) => {
+> = async (report, api) => {
   const { EMAIL_FROM, EMAIL_WEBSITE_NAME = 'Unchained Shop' } = process.env;
+  const { from, to, recipients, totals, locale = 'en' } = report;
   if (!recipients?.length) return [];
 
+  const { csv, currencyDecimals } = await prepareReport(report, api);
   const period = `${new Date(from).toISOString()} – ${new Date(to).toISOString()}`;
   const day = new Date(from).toISOString().slice(0, 10);
   const lines = totals.map(({ currencyCode, orders, tickets, total }) => {

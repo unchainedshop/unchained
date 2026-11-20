@@ -44,9 +44,10 @@ test.describe('Locale: currency of the request country', () => {
     const [first, second] = await Promise.all(
       [unchainedAPI, otherShop].map((shop) => resolveDefaultContext(headers, shop)),
     );
-    assert.equal(first.getCurrencyDecimals('CHF'), 2);
-    assert.equal(first.getCurrencyDecimals('GBP'), 2);
-    assert.equal(second.getCurrencyDecimals('CHF'), 3);
+    assert.equal(first.currencyCode, 'CHF');
+    assert.equal(first.currencyDecimals, 2);
+    assert.equal(second.currencyCode, 'CHF');
+    assert.equal(second.currencyDecimals, 3);
     assert.equal(resolveDefaultContext.delete('de-CH'), true);
     assert.equal(resolveDefaultContext.delete('de-CH'), false);
   });

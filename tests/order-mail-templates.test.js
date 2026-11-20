@@ -1,6 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { getCurrentContextResolver } from '@unchainedshop/api';
 import { WorkerDirector } from '@unchainedshop/core';
 import {
   parser,
@@ -126,23 +125,22 @@ test.describe('Order mail templates', () => {
     }
   });
 
-  test('API parsers use request currency data and the message worker reads the current order currency', async () => {
+  test('order parsers use supplied decimals and the message worker reads current currency settings', async () => {
     const { unchainedAPI } = getTestPlatform();
-    const context = await getCurrentContextResolver()({
-      getHeader: (name) => (name === 'x-shop-country' ? 'DE' : undefined),
-    });
     const order = await unchainedAPI.modules.orders.findOrder({ orderId });
     assert.equal(Object.hasOwn(order, 'currencyDecimals'), false);
-    assert.equal(context.currencyCode, 'EUR');
-    assert.equal(context.getCurrencyDecimals(order.currencyCode), 3);
     await unchainedAPI.modules.currencies.update(BaseCurrency._id, { decimals: 4 });
     const locale = new Intl.Locale('de-DE');
-    const summary = await parser.getOrderSummaryData(order, { locale }, context);
-    const [item] = await parser.getOrderPositionsData(order, { locale }, context);
+    const options = { locale, decimals: 3 };
+    const summary = await parser.getOrderSummaryData(order, options, unchainedAPI);
+    const [item] = await parser.getOrderPositionsData(order, options, unchainedAPI);
     assert.equal(item.rawPrices.unitPrice.amount, 10000);
     assert.equal(summary.rawPrices.gross.amount, 10000);
     assert.equal(item.unitPrice, '10,000\u00a0CHF');
     assert.equal(summary.prices.gross, item.unitPrice);
+    const text = await parser.transformOrderToText({ order, ...options }, unchainedAPI);
+    assert.ok(text.includes(`1x ${item.productTexts.title} ${item.unitPrice}`));
+    assert.ok(text.includes(`Order Total ${summary.prices.gross}`));
     const worker = WorkerDirector.getAdapterByType('MESSAGE');
     const work = await worker.doWork(
       { template: 'ORDER_CONFIRMATION', orderId, locale: locale.baseName },

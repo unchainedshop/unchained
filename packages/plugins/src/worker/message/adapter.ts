@@ -1,11 +1,5 @@
-import {
-  MessagingDirector,
-  type IWorkerAdapter,
-  type MessageTemplateContext,
-  WorkerAdapter,
-} from '@unchainedshop/core';
+import { MessagingDirector, type IWorkerAdapter, WorkerAdapter } from '@unchainedshop/core';
 import type { Work } from '@unchainedshop/core-worker';
-import { getPriceDecimals } from '@unchainedshop/utils';
 
 export const MessageWorker: IWorkerAdapter<
   { template: string; _id: string; [x: string]: any },
@@ -25,14 +19,7 @@ export const MessageWorker: IWorkerAdapter<
 
       if (!templateResolver) throw new Error(`No template resolver found for template ${template}`);
 
-      const context: MessageTemplateContext = {
-        ...unchainedAPI,
-        getCurrencyDecimals: async (isoCode) => {
-          const currency = await unchainedAPI.modules.currencies.findCurrency({ isoCode });
-          return currency ? getPriceDecimals(currency.decimals) : undefined;
-        },
-      };
-      const workConfigurations = await templateResolver({ ...input }, context);
+      const workConfigurations = await templateResolver({ ...input }, unchainedAPI);
 
       if (workConfigurations.length > 0) {
         const forked = await Promise.all(

@@ -417,7 +417,7 @@ query SalesReport {
 - Amounts are gross, in the smallest unit of the currency (cents), and never summed across currencies. `discounts` are negative: on performances the discounts of the tickets themselves, on orders all order discounts.
 - `buildTicketSalesReport(unchainedAPI, { from, to, locale })` and `buildSalesReportCsv(report)` from `@unchainedshop/ticketing` build the same report and CSV files in your own code.
 
-The `TICKET_SALES_REPORT` worker emails the summary and three CSV files for periods with orders. It accepts `from`, `to`, `recipients`, and `locale` and defaults to yesterday. When preparing an email, the worker looks up the report currencies together and uses their configured precision for both the summary and attachments. Register the `TICKET_SALES_REPORT` message template to customize the email.
+The `TICKET_SALES_REPORT` worker queues reports for periods with orders and recipients. It accepts `from`, `to`, `recipients`, and `locale` and defaults to yesterday. The default message template loads currency precision once when rendering the email summary and three CSVs. Custom templates receive `orders`, `performances`, `paymentProviders`, and `totals` in minor units and can call `buildSalesReportCsv(report, decimalsByCode)` from `@unchainedshop/ticketing`. Older queued messages carry preformatted attachments in `csv`.
 
 ```ts
 pluginRegistry.register(
