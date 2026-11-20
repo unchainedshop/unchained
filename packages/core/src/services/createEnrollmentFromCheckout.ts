@@ -36,6 +36,7 @@ export async function createEnrollmentFromCheckoutService(
     contact: order.contact!,
     countryCode: order.countryCode,
     currencyCode: order.currencyCode,
+    currencyDecimals: order.currencyDecimals,
     delivery: {
       deliveryProviderId: delivery!.deliveryProviderId,
       context: delivery!.context,

@@ -66,26 +66,25 @@ test('both cancellation paths reimburse ticket units and validate issuance befor
       kind === 'event'
         ? services.ticketing.cancelTicketsForProduct
         : services.ticketing.cancelTicketWithDiscount;
-    await service.call(modules as any, kind, {
-      generateDiscount: true,
-      countryCode: 'CH',
-      currencyCode: 'CHF',
-    });
-    assert.deepEqual(issued, [[5997, 'CHF']]);
-    assert.equal(messages.length, 1);
-    assert.equal(messages[0].discountAmount, 5997);
-    assert.equal(messages[0].discountCurrencyCode, 'CHF');
-    assert.equal(cancelled, true);
-    cancelled = false;
-    failIssuance = true;
-    await assert.rejects(
+    const cancel = (isoCode: string) =>
       service.call(modules as any, kind, {
         generateDiscount: true,
         countryCode: 'CH',
         currencyCode: 'CHF',
-      }),
-      /issuance failed/,
-    );
+        currency: { isoCode, decimals: 3 },
+      });
+    await cancel('CHF');
+    assert.deepEqual(issued, [[5997, 'CHF']]);
+    assert.equal(messages.length, 1);
+    assert.equal(messages[0].discountAmount, 5997);
+    assert.equal(messages[0].discountCurrencyCode, 'CHF');
+    assert.equal(messages[0].discountCurrencyDecimals, 3);
+    assert.equal(cancelled, true);
+    await cancel('EUR');
+    assert.equal(messages[1].discountCurrencyDecimals, undefined);
+    cancelled = false;
+    failIssuance = true;
+    await assert.rejects(cancel('CHF'), /issuance failed/);
     assert.equal(cancelled, false);
   }
 });

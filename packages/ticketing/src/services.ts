@@ -1,5 +1,5 @@
 import type { TicketingModule } from './module.ts';
-import type { Bound, UnchainedCore } from '@unchainedshop/core';
+import type { Bound, UnchainedCore, UnchainedRequestContext } from '@unchainedshop/core';
 import { ProductStatus } from '@unchainedshop/core-products';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
 import { isTicketCancelled, isTicketEventCancelled } from './event-details.ts';
@@ -11,11 +11,14 @@ import productionServices, { type TicketProductionServices } from './production-
 type Modules = UnchainedCore['modules'];
 type TicketingModules = Modules & TicketingModule;
 
-export interface DiscountOptions {
+export interface DiscountOptions extends Pick<UnchainedRequestContext, 'currency'> {
   generateDiscount?: boolean;
   countryCode?: string;
   currencyCode?: string;
 }
+
+const creditDecimals = (currencyCode: string | undefined, options?: DiscountOptions) =>
+  options?.currency && options.currency.isoCode === currencyCode ? options.currency.decimals : undefined;
 
 export interface CancelTicketOptions extends DiscountOptions {
   /**
@@ -128,6 +131,7 @@ async function cancelTicketsForProduct(
           discountCode: discount?.discountCode,
           discountAmount: discount?.amount,
           discountCurrencyCode: discount?.currencyCode,
+          discountCurrencyDecimals: creditDecimals(discount?.currencyCode, options),
         },
       });
     }),
@@ -192,6 +196,7 @@ async function cancelTicketWithDiscount(
         discountCode,
         discountAmount,
         discountCurrencyCode,
+        discountCurrencyDecimals: creditDecimals(discountCurrencyCode, options),
       },
     });
   }

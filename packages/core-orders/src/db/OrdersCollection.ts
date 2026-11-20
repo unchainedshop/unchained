@@ -32,6 +32,8 @@ export type Order = {
   context?: any;
   countryCode: string;
   currencyCode: string;
+  /** Minor-unit scale at cart creation. Older orders may omit it. */
+  currencyDecimals?: number;
   deliveryId?: string;
   fulfilled?: Date;
   ordered?: Date;

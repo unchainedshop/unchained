@@ -15,14 +15,14 @@ export interface TicketSalesReportWorkInput {
   recipients?: string[];
   /** Language of the event titles and category names */
   locale?: string;
+  /** Minor-unit precision by currency code. Omitted currencies use their ISO precision. */
+  currencyDecimals?: Record<string, number>;
 }
 
-export interface TicketSalesReportMessagePayload {
+export interface TicketSalesReportMessagePayload extends TicketSalesReportWorkInput {
   from: Date;
   to: Date;
-  locale?: string;
   recipients: string[];
-  currencyDecimals?: Record<string, number>;
   totals: TicketSalesReportTotal[];
   csv: ReturnType<typeof buildSalesReportCsv>;
 }
@@ -48,61 +48,52 @@ export const TicketSalesReportWorker: IWorkerAdapter<TicketSalesReportWorkInput,
   type: TICKET_SALES_REPORT_WORK_TYPE,
   maxParallelAllocations: 1,
 
-  doWork: async ({ from, to, recipients = [], locale } = {}, unchainedAPI) => {
+  doWork: async ({ from, to, recipients = [], locale, currencyDecimals } = {}, unchainedAPI) => {
     try {
       const period = from && to ? { from, to } : yesterday();
       const report = await buildTicketSalesReport(unchainedAPI, { ...period, locale });
+      const summary = { from: report.from, to: report.to, totals: report.totals };
       const sent = Boolean(recipients.length && report.orders.length);
       if (sent) {
-        const currencies = await unchainedAPI.modules.currencies.findCurrencies({
-          isoCodes: report.totals.map(({ currencyCode }) => currencyCode),
-          includeInactive: true,
-        });
-        const currencyDecimals = Object.fromEntries(
-          currencies.map(({ isoCode, decimals }) => [isoCode, getPriceDecimals(decimals)]),
-        );
-        const payload: TicketSalesReportMessagePayload = {
-          from: report.from,
-          to: report.to,
+        const decimals =
+          currencyDecimals &&
+          Object.fromEntries(
+            Object.entries(currencyDecimals).map(([code, scale]) => [code, getPriceDecimals(scale)]),
+          );
+        await unchainedAPI.services.worker.addMessage(TicketingMessageTypes.TICKET_SALES_REPORT, {
+          ...summary,
           locale,
           recipients,
-          currencyDecimals,
-          totals: report.totals,
-          csv: buildSalesReportCsv(report, currencyDecimals),
-        };
-        await unchainedAPI.services.worker.addMessage(
-          TicketingMessageTypes.TICKET_SALES_REPORT,
-          payload,
-        );
+          currencyDecimals: decimals,
+          csv: buildSalesReportCsv(report, decimals),
+        } satisfies TicketSalesReportMessagePayload);
       }
-      return {
-        success: true,
-        result: { from: report.from, to: report.to, sent, totals: report.totals },
-      };
+      return { success: true, result: { ...summary, sent } };
     } catch (err) {
       return { success: false, error: { name: err.name, message: err.message, stack: err.stack } };
     }
   },
 };
 
-export interface TicketSalesReportScheduleOptions {
+export interface TicketSalesReportScheduleOptions extends Pick<
+  TicketSalesReportWorkInput,
+  'locale' | 'currencyDecimals'
+> {
   /** Cron expression (5 fields, server time), e.g. '0 6 * * *' for every day at 6:00 */
   schedule: string;
   /** Who gets the report of the previous day */
   recipients: string[];
-  locale?: string;
 }
 
 /** Sends the report of the previous day on the given schedule. */
 export const configureTicketSalesReportAutoscheduling = ({
   schedule: cron,
-  recipients,
-  locale,
+  ...input
 }: TicketSalesReportScheduleOptions) => {
   WorkerDirector.configureAutoscheduling({
     type: TICKET_SALES_REPORT_WORK_TYPE,
     schedule: schedule.parse.cron(cron),
     retries: 0,
-    input: async () => ({ ...yesterday(), recipients, locale }),
+    input: async () => ({ ...input, ...yesterday() }),
   });
 };

@@ -1,5 +1,6 @@
 import { log } from '@unchainedshop/logger';
 import { EnrollmentDirector } from '@unchainedshop/core';
+import { getPriceDecimals } from '@unchainedshop/utils';
 import type { Context } from '../../../context.ts';
 import { ProductStatus, ProductType } from '@unchainedshop/core-products';
 import {
@@ -15,7 +16,7 @@ export default async function createEnrollment(
   { contact, plan, billingAddress, payment, delivery, meta },
   context: Context,
 ) {
-  const { countryCode, currencyCode, modules, services, userId } = context;
+  const { countryCode, currencyCode, currency, modules, services, userId } = context;
 
   log('mutation createEnrollment', { userId });
 
@@ -47,6 +48,8 @@ export default async function createEnrollment(
     contact,
     countryCode,
     currencyCode,
+    currencyDecimals:
+      currency && currency.isoCode === currencyCode ? getPriceDecimals(currency.decimals) : undefined,
     delivery,
     meta,
     payment,

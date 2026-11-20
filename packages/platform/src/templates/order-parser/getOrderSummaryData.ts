@@ -9,7 +9,7 @@ export const getOrderSummaryData = async (
   context: UnchainedCore,
 ) => {
   const { modules } = context;
-  const format = await getOrderPriceFormatter(order.currencyCode, params, context);
+  const format = getOrderPriceFormatter(order, params);
   const orderDelivery =
     order.deliveryId &&
     (await modules.orders.deliveries.findDelivery({

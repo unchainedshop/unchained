@@ -58,6 +58,7 @@ export type Enrollment = {
   context?: any;
   countryCode: string;
   currencyCode: string;
+  currencyDecimals?: number;
   delivery: {
     deliveryProviderId?: string;
     context?: any;

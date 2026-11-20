@@ -12,6 +12,7 @@ import { SimpleProduct } from './seeds/products.js';
 import { SendMailDeliveryProvider } from './seeds/deliveries.js';
 import { SimplePaymentProvider } from './seeds/payments.js';
 import { BaseCurrency } from './seeds/locale-data.js';
+import { ConfirmedOrder } from './seeds/orders.js';
 
 const billingAddress = {
   firstName: 'Billing',
@@ -101,6 +102,7 @@ test.describe('Order mail templates', () => {
     });
     assert.strictEqual(errors, undefined);
     assert.strictEqual(checkoutCart.status, 'CONFIRMED');
+    await getTestPlatform().unchainedAPI.modules.currencies.update(BaseCurrency._id, { decimals: 4 });
   });
 
   test.after(async () => {
@@ -124,9 +126,10 @@ test.describe('Order mail templates', () => {
     }
   });
 
-  test('order mail formats item prices and the gross total in the order currency using the recipient locale', async () => {
+  test('order mail uses the precision saved with the cart and the recipient locale', async () => {
     const { unchainedAPI } = getTestPlatform();
     const order = await unchainedAPI.modules.orders.findOrder({ orderId });
+    assert.equal(order.currencyDecimals, 3);
     const locale = new Intl.Locale('de-DE');
     const [confirmation] = await resolveOrderConfirmationTemplate(
       { orderId, locale: locale.baseName },
@@ -140,6 +143,15 @@ test.describe('Order mail templates', () => {
     assert.equal(summary.prices.gross, item.unitPrice);
     assert.ok(confirmation.input.text.includes(`1x ${item.productTexts.title} ${item.unitPrice}`));
     assert.ok(confirmation.input.text.includes(`Order Total ${item.unitPrice}`));
+  });
+
+  test('orders predating the precision snapshot keep their cents-based display', async () => {
+    const { unchainedAPI } = getTestPlatform();
+    const [email] = await resolveOrderConfirmationTemplate(
+      { orderId: ConfirmedOrder._id, locale: 'de-DE' },
+      unchainedAPI,
+    );
+    assert.ok(email.input.text.includes('Order Total 300,00\u00a0CHF'));
   });
 
   test('the order parser honors a custom formatter for positions and totals', async () => {

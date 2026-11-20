@@ -3,12 +3,12 @@ import assert from 'node:assert/strict';
 import cancelTicket from './cancelTicket.ts';
 
 const token = { _id: 'ticket', productId: 'event' };
+const market = { countryCode: 'CH', currencyCode: 'CHF', currency: { isoCode: 'CHF', decimals: 2 } };
 
 function createContext(cancelTicketWithDiscount: (tokenId: string, options: any) => Promise<any>) {
   return {
     userId: 'staff',
-    countryCode: 'CH',
-    currencyCode: 'CHF',
+    ...market,
     modules: {
       warehousing: { findToken: async () => token },
       passes: { cancelTicket: async () => null },
@@ -33,9 +33,7 @@ test('cancelTicket refuses a ticket that is redeemed while the cancellation runs
       return true;
     },
   );
-  assert.deepEqual(requests, [
-    ['ticket', { generateDiscount: true, countryCode: 'CH', currencyCode: 'CHF', refuseRedeemed: true }],
-  ]);
+  assert.deepEqual(requests, [['ticket', { ...market, generateDiscount: true, refuseRedeemed: true }]]);
 
   const failure = new Error('issuance failed');
   await assert.rejects(

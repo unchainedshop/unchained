@@ -4,6 +4,7 @@ import { formatPrice } from './formatPrice.ts';
 
 for (const [currencyCode, locale, decimals, amount, expected] of [
   ['JPY', 'en-US', 0, 1050, 'JPY 1,050'],
+  ['JPY', 'en-US', null, 1050, 'JPY 11'],
   ['CHF', 'de-CH', 3, 1050, 'CHF 1.050'],
   ['TOKEN', 'de-DE', 9, 1050, 'TOKEN 0,000001050'],
   ['ETH', 'de-CH', 18, 1_500_000_000, 'ETH 1.500000000'],

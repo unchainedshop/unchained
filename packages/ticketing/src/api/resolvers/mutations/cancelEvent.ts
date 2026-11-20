@@ -40,6 +40,7 @@ export default async function cancelEvent(
     generateDiscount,
     countryCode,
     currencyCode,
+    currency: context.currency,
   });
 
   return result.cancelledCount;

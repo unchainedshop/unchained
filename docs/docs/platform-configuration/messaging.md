@@ -250,17 +250,16 @@ const positions = await parser.getOrderPositionsData(order, { locale }, api);
 // → [{ productTexts, quantity, unitPrice, total, rawPrices, configuration }, ...]
 ```
 
-Prices in `prices`/`unitPrice`/`total` are pre-formatted with `Intl.NumberFormat` in the given locale (e.g. `CHF 1'234.56` for `de-CH`, `1.234,56 EUR` for `de-DE`). Pass a `format` function to take over formatting entirely, and use `rawPrices` (`{ amount, currencyCode }` in minor units) when you need the numbers:
+The parser formats prices in the recipient's locale using the currency precision saved with the cart. Older orders without a saved precision keep their cents-based display. Use `rawPrices` for integer amounts in minor units, or pass a custom `format` function.
 
 ```typescript
+import { formatPrice } from '@unchainedshop/utils';
+
 const positions = await parser.getOrderPositionsData(
   order,
   {
     locale,
-    format: ({ amount, currencyCode }) =>
-      new Intl.NumberFormat('fr-CH', { style: 'currency', currency: currencyCode }).format(
-        amount / 100,
-      ),
+    format: (price) => formatPrice({ ...price, locale: 'fr-CH', decimals: order.currencyDecimals }),
   },
   api,
 );

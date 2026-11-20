@@ -6,7 +6,6 @@ import { resolveTicketSalesReportTemplate } from './templates/resolveTicketSales
 const apiWith = (orders: any[], work: any[]) =>
   ({
     modules: {
-      currencies: { findCurrencies: async () => [{ isoCode: 'CHF', decimals: 3 }] },
       orders: {
         findOrders: async () => orders,
         payments: { findOrderPayments: async () => [] },
@@ -19,36 +18,44 @@ const apiWith = (orders: any[], work: any[]) =>
   }) as any;
 
 const period = { from: '2030-01-01T00:00:00.000Z', to: '2030-01-02T00:00:00.000Z' };
+const order = {
+  _id: 'o1',
+  orderNumber: 'A1',
+  ordered: new Date('2030-01-01T10:00:00.000Z'),
+  currencyCode: 'JPY',
+  calculation: [{ category: 'ITEMS', amount: 5000 }],
+};
 
-test('the worker e-mails the report of a period with orders to the recipients', async () => {
-  const work: any[] = [];
-  const order = {
-    _id: 'o1',
-    orderNumber: 'A1',
-    ordered: new Date('2030-01-01T10:00:00.000Z'),
-    currencyCode: 'CHF',
-    calculation: [{ category: 'ITEMS', amount: 5000 }],
-  };
-  const api = apiWith([order], work);
-  const result = await TicketSalesReportWorker.doWork(
-    { ...period, recipients: ['office@example.com'], locale: 'de-DE' },
-    api,
-    'work',
-  );
-  assert.equal(result.success, true);
-  assert.equal(result.result.sent, true);
-  assert.equal(work.length, 1);
-  assert.equal(work[0].template, 'TICKET_SALES_REPORT');
-  assert.match(work[0].csv.orders, /\r\nA1,/);
+for (const [currencyCode, decimals, formatted, csvTotal] of [
+  ['JPY', undefined, '5.000', '5000'],
+  ['CHF', 3, '5,000', '5'],
+  ['ETH', 18, '0,000005000', '0.000005'],
+] as const) {
+  test(`the worker e-mails consistent ${currencyCode} totals in the summary and CSV`, async () => {
+    const work: any[] = [];
+    const api = apiWith([{ ...order, currencyCode }], work);
+    const currencyDecimals = decimals === undefined ? undefined : { [currencyCode]: decimals };
+    const result = await TicketSalesReportWorker.doWork(
+      { ...period, recipients: ['office@example.com'], locale: 'de-DE', currencyDecimals },
+      api,
+      'work',
+    );
+    assert.equal(result.success, true);
+    assert.equal(result.result.sent, true);
+    assert.equal(work.length, 1);
+    assert.equal(work[0].template, 'TICKET_SALES_REPORT');
+    assert.match(work[0].csv.orders, /\r\nA1,/);
 
-  const [email] = await resolveTicketSalesReportTemplate(work[0], {} as any);
-  assert.equal(email.input.to, 'office@example.com');
-  assert.match(email.input.text, /CHF: 1 orders, 0 tickets, 5,000\u00a0CHF/);
-  assert.equal(email.input.attachments.length, 3);
-  const csv = Buffer.from(email.input.attachments[0].content, 'base64').toString('utf8');
-  assert.match(csv, /^\uFEFForderNumber,/);
-  assert.equal(csv.split('\r\n')[1].split(',').at(-1), '5');
-});
+    const [email] = await resolveTicketSalesReportTemplate(work[0], {} as any);
+    assert.equal(email.input.to, 'office@example.com');
+    const summary = `${currencyCode}: 1 orders, 0 tickets, ${formatted}\u00a0${currencyCode}`;
+    assert.ok(email.input.text.includes(summary), email.input.text);
+    assert.equal(email.input.attachments.length, 3);
+    const csv = Buffer.from(email.input.attachments[0].content, 'base64').toString('utf8');
+    assert.match(csv, /^\uFEFForderNumber,/);
+    assert.equal(csv.split('\r\n')[1].split(',').at(-1), csvTotal);
+  });
+}
 
 test('previously queued reports use the ISO precision of their existing attachments', async () => {
   const payload = {
@@ -70,7 +77,7 @@ test('the worker sends nothing without recipients or orders', async () => {
     'w',
   );
   assert.equal(empty.result.sent, false);
-  const silent = await TicketSalesReportWorker.doWork(period, apiWith([], work), 'w');
+  const silent = await TicketSalesReportWorker.doWork(period, apiWith([order], work), 'w');
   assert.equal(silent.result.sent, false);
   assert.equal(work.length, 0);
 });

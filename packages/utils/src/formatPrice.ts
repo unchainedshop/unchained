@@ -6,16 +6,16 @@ export interface Price {
 /** Amounts are stored with at most nine decimal places, including currencies with a higher precision. */
 export const getPriceDecimals = (decimals?: number | null) => Math.min(decimals ?? 2, 9);
 
-type LocalizedPrice = Price & { locale: Intl.Locale | string; decimals?: number };
+type LocalizedPrice = Price & { locale: Intl.Locale | string; decimals?: number | null };
 
 /** Format a stored minor-unit amount. Without a configured scale, assume cents and use Intl's display precision. */
 export function formatPrice({ amount, currencyCode, locale, decimals }: LocalizedPrice) {
   const scale = getPriceDecimals(decimals);
   const majorAmount = amount / 10 ** scale;
-  const digits = decimals === undefined ? undefined : Math.max(0, scale);
+  const digits = decimals == null ? undefined : Math.max(0, scale);
   const precision = { minimumFractionDigits: digits, maximumFractionDigits: digits };
   try {
-    if (decimals !== undefined && !/^[a-z]{3}$/i.test(currencyCode)) {
+    if (decimals != null && !/^[a-z]{3}$/i.test(currencyCode)) {
       return `${currencyCode} ${majorAmount.toLocaleString(locale, precision)}`;
     }
     return new Intl.NumberFormat(locale, {

@@ -8,7 +8,7 @@ export const getOrderPositionsData = async (
   context: UnchainedCore,
 ) => {
   const { modules } = context;
-  const format = await getOrderPriceFormatter(order.currencyCode, params, context);
+  const format = getOrderPriceFormatter(order, params);
   const orderPositions = await modules.orders.positions.findOrderPositions({ orderId: order._id });
   const useNetPrice = params?.useNetPrice;
 

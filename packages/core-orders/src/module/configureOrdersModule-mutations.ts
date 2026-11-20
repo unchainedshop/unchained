@@ -76,6 +76,7 @@ export const configureOrderModuleMutations = ({
       userId,
       orderNumber,
       currencyCode,
+      currencyDecimals,
       countryCode,
       billingAddress,
       contact,
@@ -87,6 +88,7 @@ export const configureOrderModuleMutations = ({
       contact?: Contact;
       countryCode: string;
       currencyCode: string;
+      currencyDecimals?: number;
       orderNumber?: string;
       originEnrollmentId?: string;
       context?: Record<string, any>;
@@ -99,6 +101,7 @@ export const configureOrderModuleMutations = ({
         contact: normalizeContactPhone(contact, billingAddress?.countryCode || countryCode),
         userId,
         currencyCode,
+        currencyDecimals,
         countryCode,
         calculation: [],
         log: [],

@@ -19,6 +19,7 @@ export async function generateOrderFromEnrollmentService(
   const order = await this.orders.create({
     userId: enrollment.userId,
     currencyCode: enrollment.currencyCode,
+    currencyDecimals: enrollment.currencyDecimals,
     countryCode: enrollment.countryCode,
     contact: enrollment.contact,
     billingAddress: enrollment.billingAddress,

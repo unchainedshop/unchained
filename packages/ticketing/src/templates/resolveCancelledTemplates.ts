@@ -9,6 +9,7 @@ export interface CancellationNotice {
   discountCode?: string;
   discountAmount?: number;
   discountCurrencyCode?: string;
+  discountCurrencyDecimals?: number;
 }
 
 async function cancellationEmail(
@@ -36,11 +37,13 @@ async function cancellationEmail(
   const { discountCode, discountAmount, discountCurrencyCode: currencyCode } = notice;
   if (discountCode && discountAmount) {
     // Older queued messages have no credit currency, which can differ from the purchase currency.
-    const currency = currencyCode
-      ? await modules.currencies.findCurrency({ isoCode: currencyCode })
-      : null;
     const credit = currencyCode
-      ? formatPrice({ amount: discountAmount, currencyCode, locale, decimals: currency?.decimals ?? 2 })
+      ? formatPrice({
+          amount: discountAmount,
+          currencyCode,
+          locale,
+          decimals: notice.discountCurrencyDecimals ?? 2,
+        })
       : (discountAmount / 100).toFixed(2);
     paragraphs.push(
       `As compensation, you have received a discount code worth ${credit}:`,

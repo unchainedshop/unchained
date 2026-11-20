@@ -9,7 +9,6 @@ const date = new Date(slot).toLocaleString('en', { dateStyle: 'medium', timeStyl
 const buyer = { userId: 'buyer' };
 const api = {
   modules: {
-    currencies: { findCurrency: async ({ isoCode }) => (isoCode === 'JPY' ? { decimals: 0 } : null) },
     users: {
       findUserById: async () => ({ lastContact: { emailAddress: 'buyer@example.com' } }),
       userLocale: () => new Intl.Locale('en'),
@@ -56,8 +55,14 @@ for (const [kind, render] of Object.entries(templates)) {
 
     test('formats the issued credit and supports older messages without its currency', async () => {
       const credit = { ...buyer, discountCode: 'gift', discountAmount: 1240 };
-      const [current] = await render({ ...credit, discountCurrencyCode: 'JPY' });
+      const [current] = await render({
+        ...credit,
+        discountCurrencyCode: 'JPY',
+        discountCurrencyDecimals: 0,
+      });
       assert.match(current.input.text, /worth JPY\u00a01,240:/);
+      const [direct] = await render({ ...credit, discountCurrencyCode: 'CHF' });
+      assert.match(direct.input.text, /worth CHF\u00a012\.40:/);
       const [legacy] = await render(credit);
       assert.match(legacy.input.text, /worth 12\.40:/);
     });

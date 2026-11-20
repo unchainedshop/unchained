@@ -6,7 +6,7 @@ const logger = createLogger('unchained:api');
 
 export type UnchainedLocaleContext = Pick<
   UnchainedRequestContext,
-  'countryCode' | 'locale' | 'currencyCode'
+  'countryCode' | 'locale' | 'currencyCode' | 'currency'
 >;
 
 const uncachedResolveDefaultContext = async (
@@ -39,6 +39,7 @@ const uncachedResolveDefaultContext = async (
     locale,
     countryCode: locale.region as string,
     currencyCode,
+    currency: currencies.find(({ isoCode }) => isoCode === currencyCode),
   };
 
   return newContext;
