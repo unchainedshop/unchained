@@ -11,6 +11,8 @@ Unchained Engine includes a built-in [Model Context Protocol (MCP)](https://mode
 
 The MCP server is available at the `/mcp` endpoint (configurable via the `MCP_API_PATH` environment variable). The only requirement is the optional peer package `@modelcontextprotocol/server` in your app's dependencies — without it, the endpoint responds with `503`.
 
+For a customer-facing catalog, enable [guest product search](#guest-product-search) in your shop.
+
 ## Authentication
 
 - **Admin-only**: The MCP server requires an authenticated user with the `admin` role. Authenticated non-admin users receive a `403`.
@@ -243,3 +245,24 @@ curl https://your-engine.example.com/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"system_management","arguments":{"action":"SHOP_INFO"}}}'
 ```
+
+## Guest product search
+
+Install `@modelcontextprotocol/server` in your shop and register the storefront plugin before calling `startPlatform`. Supply a URL for each product on your storefront.
+
+```ts
+import { pluginRegistry } from '@unchainedshop/core';
+import { createProductSearchTool, createStorefrontMcpPlugin } from '@unchainedshop/plugins/mcp/storefront';
+
+pluginRegistry.register(createStorefrontMcpPlugin({
+  shopName: 'Example Shop',
+  tools: [createProductSearchTool({
+    productUrl: ({ productId, locale }) =>
+      `https://shop.example/${locale.baseName}/products/${encodeURIComponent(productId)}`,
+  })],
+}));
+```
+
+Connect an MCP client to `/mcp/storefront` without credentials. Call `search_products` with `{"query":"backpack"}`, then pass a returned ID as `{"product_id":"…"}` to show that product. An empty input browses the catalog. The shop resolves the language, country and currency through its usual request context, including the `Accept-Language` and `X-Shop-Country` headers.
+
+To display your own product cards in MCP Apps hosts, pass `ui: { resourceUri, title, html }` to `createProductSearchTool`. The URI must start with `ui://`. The same view receives structured results for searches and exact-ID follow-ups. Kitchensink includes a working HTML example.
