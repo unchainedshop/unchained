@@ -520,8 +520,8 @@ test.describe('Bulk Importer', () => {
       assert.strictEqual(result, true);
     }, 30000);
 
-    test('keeps the options when an event omits them', async () => {
-      const importFilter = async (operation, specification, options = {}) => {
+    test('keeps omitted options and inserts new filters without options', async () => {
+      const importFilter = async (_id, operation, specification, options = {}) => {
         const { data: { addWork } = {} } = await graphqlFetch({
           query: /* GraphQL */ `
             mutation addWork($input: JSON) {
@@ -532,13 +532,13 @@ test.describe('Bulk Importer', () => {
           `,
           variables: {
             input: {
-              events: [{ entity: 'FILTER', operation, payload: { _id: 'Filter B', specification } }],
+              events: [{ entity: 'FILTER', operation, payload: { _id, specification } }],
               ...options,
             },
           },
         });
         await waitForImport(addWork._id);
-        return (await db.collection('filters').findOne({ _id: 'Filter B' })).options;
+        return (await db.collection('filters').findOne({ _id }))?.options;
       };
       const specification = {
         key: 'width_cm',
@@ -546,13 +546,36 @@ test.describe('Bulk Importer', () => {
         content: { de: { title: 'Width' } },
       };
 
-      await importFilter('CREATE', { ...specification, options: [{ value: '10' }, { value: '20' }] });
-      assert.deepStrictEqual(await importFilter('UPDATE', { isActive: true }), ['10', '20']);
+      await importFilter('Filter B', 'CREATE', {
+        ...specification,
+        options: [{ value: '10' }, { value: '20' }],
+      });
+      assert.deepStrictEqual(await importFilter('Filter B', 'UPDATE', { isActive: true }), ['10', '20']);
       assert.deepStrictEqual(
-        await importFilter('CREATE', specification, { createShouldUpsertIfIDExists: true }),
+        await importFilter('Filter B', 'CREATE', specification, { createShouldUpsertIfIDExists: true }),
         ['10', '20'],
       );
-      assert.deepStrictEqual(await importFilter('UPDATE', { options: [{ value: '30' }] }), ['30']);
+      assert.deepStrictEqual(await importFilter('Filter B', 'UPDATE', { options: [{ value: '30' }] }), [
+        '30',
+      ]);
+      assert.deepStrictEqual(
+        await importFilter(
+          'Filter C',
+          'CREATE',
+          { ...specification, key: 'depth_cm' },
+          { createShouldUpsertIfIDExists: true },
+        ),
+        [],
+      );
+      assert.deepStrictEqual(
+        await importFilter(
+          'Filter D',
+          'UPDATE',
+          { ...specification, key: 'height_cm' },
+          { updateShouldUpsertIfIDNotExists: true },
+        ),
+        [],
+      );
     }, 30000);
   });
 
