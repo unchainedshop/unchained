@@ -7,7 +7,7 @@ description: Public, read-only product search for shopping assistants
 
 # Storefront MCP
 
-The storefront MCP plugin lets shopping assistants such as ChatGPT or Claude search your catalog as a guest and hand the shopper over to your shop. It serves one tool, `search_products`, at `/mcp/storefront`.
+The storefront MCP plugin lets shopping assistants such as ChatGPT or Claude search your catalog and hand the shopper over to your shop. It serves one tool, `search_products`, at `/mcp/storefront`.
 
 ```typescript
 import { pluginRegistry } from '@unchainedshop/core';
@@ -53,7 +53,7 @@ Each call searches one market:
 - **Country:** the `X-Shop-Country` header, else ChatGPT's `openai/userLocation` hint, else the shop default. The currency follows the country.
 - **Language:** ChatGPT's `openai/locale` hint, else `Accept-Language`.
 
-Results state the market they used. Every request is a guest request, even when the client sends credentials.
+Results state the market they used. Searches run with the caller's permissions like GraphQL, anonymous callers get the guest rules, and results only ever include active products.
 
 ## Product cards
 

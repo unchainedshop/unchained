@@ -195,7 +195,7 @@ test.describe('Storefront MCP', () => {
     assert.deepStrictEqual(ids(await searchProducts({ product_ids: ['sf-mini-8'] })), ['sf-mini-8']);
   });
 
-  test('keeps drafts and products the shop hides out of guest results, even for admins', async () => {
+  test('keeps drafts and products the shop hides out of the results, also for admins', async () => {
     const admin = { authorization: ADMIN_TOKEN };
     const selected = await searchProducts(
       { product_ids: ['sf-draft', 'sf-hidden', 'sf-variant-draft'] },
@@ -204,6 +204,29 @@ test.describe('Storefront MCP', () => {
     assert.deepStrictEqual(ids(selected), []);
     const browsed = ids(await searchProducts({ brand: 'Nordlicht', limit: 100 }, { headers: admin }));
     assert.ok(!browsed.includes('sf-draft') && !browsed.includes('sf-hidden'));
+  });
+
+  test('searches as the signed-in caller, like GraphQL', async () => {
+    const result = await searchProducts(
+      { brand: 'Nordlicht', limit: 100 },
+      { headers: { authorization: USER_TOKEN } },
+    );
+    const { data } = await createLoggedInGraphqlFetch(USER_TOKEN)({
+      query: /* GraphQL */ `
+        query {
+          searchProducts(filterQuery: [{ key: "meta.brand", value: "Nordlicht" }]) {
+            products(limit: 100) {
+              _id
+            }
+          }
+        }
+      `,
+      headers: { 'x-shop-country': 'CH' },
+    });
+    assert.deepStrictEqual(
+      ids(result),
+      data.searchProducts.products.map(({ _id }) => _id),
+    );
   });
 
   test('holds no sessions or streams and publishes an honest OCP manifest', async () => {

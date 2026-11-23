@@ -5,19 +5,19 @@ export type StorefrontMarket = UnchainedLocaleContext;
 export async function resolveStorefrontMarket(
   context: Context,
   hints: Record<string, any> = {},
-  request?: Request,
 ): Promise<StorefrontMarket> {
-  const header = (name: string) => request?.headers.get(name) || context.getHeader(name) || undefined;
-  const acceptLang = hints['openai/locale'] || header('accept-language');
-  const country = (header('x-shop-country') || hints['openai/userLocation']?.country)?.toUpperCase();
+  const { locale, countryCode, currencyCode } = context;
+  const hintedLanguage = hints['openai/locale'];
+  const hintedCountry = context.getHeader('x-shop-country')
+    ? undefined
+    : hints['openai/userLocation']?.country?.toUpperCase();
+  if (!hintedLanguage && !hintedCountry) return { locale, countryCode, currencyCode };
 
-  if (country) {
-    const market = await resolveDefaultContext({ acceptLang, acceptCountry: country }, context);
-    if (market.countryCode === country) return market;
-  }
-  const { countryCode } = await resolveDefaultContext(
-    { acceptLang: undefined, acceptCountry: undefined },
+  const acceptLang = hintedLanguage || locale.baseName;
+  const market = await resolveDefaultContext(
+    { acceptLang, acceptCountry: hintedCountry || countryCode },
     context,
   );
+  if (!hintedCountry || market.countryCode === hintedCountry) return market;
   return resolveDefaultContext({ acceptLang, acceptCountry: countryCode }, context);
 }

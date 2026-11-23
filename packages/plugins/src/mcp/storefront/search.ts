@@ -1,5 +1,5 @@
 import type { McpServer } from '@modelcontextprotocol/server';
-import { getCurrentSchema, type Context } from '@unchainedshop/api';
+import { acl, getCurrentSchema, NoPermissionError, roles, type Context } from '@unchainedshop/api';
 import { FilterDirector } from '@unchainedshop/core';
 import type { Product } from '@unchainedshop/core-products';
 import { z } from 'zod';
@@ -27,11 +27,12 @@ export async function searchStorefrontProducts(
   productUrl: ProductUrlBuilder,
 ) {
   const searchQuery = { ...query, includeInactive: false, strictFilterQuery: true };
-  if (!(await context.roles?.userHasPermission(context, 'search', [undefined, searchQuery]))) {
-    return null;
-  }
+  await acl.checkAction(context, roles.actions.search, [undefined, searchQuery]);
   const { searchConfiguration, aggregatedFilteredProductIds: productIds } =
-    await context.services.filters.searchProducts(searchQuery, market);
+    await context.services.filters.searchProducts(searchQuery, {
+      ...market,
+      userId: context.userId,
+    });
   const { productSelector, sortStage } = searchConfiguration;
   const [products, totalCount]: [Product[], number] = productIds.length
     ? await Promise.all([
@@ -57,11 +58,12 @@ export async function searchStorefrontProducts(
 }
 
 async function exposedInputs(context: Context) {
-  const { modules, loaders, locale, roles } = context;
-  if (
-    !(await roles?.userHasPermission(context, 'viewFilters', [undefined, { includeInactive: false }]))
-  ) {
-    return [];
+  const { modules, loaders, locale } = context;
+  try {
+    await acl.checkAction(context, roles.actions.viewFilters, [undefined, { includeInactive: false }]);
+  } catch (error) {
+    if (error instanceof NoPermissionError) return [];
+    throw error;
   }
   const filters = await modules.filters.findFilters({ ...exposedFilterSelector, limit: 0 });
   const inputs = await Promise.all(
@@ -159,7 +161,7 @@ export function createProductSearchTool({
           }),
         },
         async ({ query, product_ids, sort, offset, limit, ...selected }, ctx) => {
-          const market = await resolveStorefrontMarket(context, ctx.mcpReq._meta, ctx.http?.req);
+          const market = await resolveStorefrontMarket(context, ctx.mcpReq._meta);
           const filterQuery = Object.entries(selected).flatMap(([name, value]) => {
             const { key } = inputs.find((input) => input.name === name)!.filter;
             return [value].flat().map((option) => ({ key, value: String(option) }));
@@ -178,12 +180,12 @@ export function createProductSearchTool({
               market,
               productUrl,
             );
-            if (!result) return toolError('This shop does not allow guests to search its catalog.');
             return {
               structuredContent: result,
               content: [{ type: 'text', text: JSON.stringify(result) }],
             };
           } catch (error) {
+            if (error instanceof NoPermissionError) return toolError(error.message);
             if ((error as Error).cause !== 'FILTER_NOT_APPLICABLE') throw error;
             const filterActions = await FilterDirector.actions({ searchQuery: {} }, context);
             const selector = await filterActions.transformFilterSelector({ isActive: true }, market);

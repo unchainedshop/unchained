@@ -5,6 +5,7 @@ import { createCatalogPriceFilterPlugin } from '@unchainedshop/plugins/filters/c
 import {
   createProductSearchTool,
   createStorefrontMcpPlugin,
+  resolveStorefrontMarket,
   searchStorefrontProducts,
   type ProductUrlBuilder,
 } from '@unchainedshop/plugins/mcp/storefront';
@@ -17,25 +18,19 @@ const productUrl: ProductUrlBuilder = ({ productId, locale, countryCode }) =>
 const escapeHtml = (text: string) =>
   text.replace(/[&<>"']/g, (character) => `&#${character.charCodeAt(0)};`);
 
-async function productPage(request: Request, context: PluginHttpRequestContext) {
-  const guest = {
-    ...context,
-    userId: undefined,
-    user: undefined,
-    impersonatorId: undefined,
-  } as unknown as Context;
-  const locale = new URL(request.url).searchParams.get('locale') || undefined;
-  const market = await resolveDefaultContext(
-    { acceptLang: locale, acceptCountry: locale?.split('-')[1] },
-    guest,
-  );
-  const result = await searchStorefrontProducts(
-    guest,
-    { productIds: [context.params.productId], limit: 1 },
+async function productPage(request: Request, requestContext: PluginHttpRequestContext) {
+  const context = requestContext as unknown as Context;
+  const locale = new URL(request.url).searchParams.get('locale');
+  const market = locale
+    ? await resolveDefaultContext({ acceptLang: locale, acceptCountry: locale.split('-')[1] }, context)
+    : await resolveStorefrontMarket(context);
+  const { products } = await searchStorefrontProducts(
+    context,
+    { productIds: [requestContext.params.productId], limit: 1 },
     market,
     productUrl,
   );
-  const [product] = result?.products || [];
+  const [product] = products;
   if (!product) return new Response('Product not found', { status: 404 });
 
   const price = product.price

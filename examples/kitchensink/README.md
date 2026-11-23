@@ -68,7 +68,7 @@ repository root to supply the artifacts that the published packages include.
 
 ## Storefront MCP
 
-Shopping assistants can search the catalog as guests at http://localhost:4010/mcp/storefront.
+Shopping assistants can search the catalog at http://localhost:4010/mcp/storefront.
 `src/storefront.ts` registers the plugin with product cards (`mcp/product-cards.html`), a
 product page at `/shop/products/:productId` and catalog price filters for `price_ch` (CHF)
 and `price_us` (USD). Create those RANGE filters in Admin UI, then expose them and your other

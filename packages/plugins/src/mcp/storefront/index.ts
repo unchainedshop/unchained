@@ -54,9 +54,13 @@ export function createStorefrontMcpPlugin({
       async ({ authInfo }) => createServer((authInfo!.extra as { context: Context }).context),
       { maxSubscriptions: 0 },
     );
-    const guest = { ...context, userId: undefined, user: undefined, impersonatorId: undefined };
     return handler.fetch(request, {
-      authInfo: { token: 'guest', clientId: 'guest', scopes: [], extra: { context: guest } },
+      authInfo: {
+        token: 'unchained-context',
+        clientId: context.userId ?? 'anonymous',
+        scopes: [],
+        extra: { context },
+      },
     });
   };
 
