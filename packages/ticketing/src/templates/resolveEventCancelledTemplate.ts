@@ -1,6 +1,6 @@
 import type { TemplateResolver } from '@unchainedshop/core';
 import { getTicketEventDetails } from '../event-details.ts';
-import { findPurchaseRecipient } from '../ticket-details.ts';
+import { findPurchaseRecipient, formatCredit } from '../ticket-details.ts';
 
 export const resolveEventCancelledTemplate: TemplateResolver<{
   productId: string;
@@ -8,7 +8,11 @@ export const resolveEventCancelledTemplate: TemplateResolver<{
   orderId?: string;
   discountCode?: string;
   discountAmount?: number;
-}> = async ({ productId, userId, orderId, discountCode, discountAmount }, { modules }) => {
+  discountCurrencyCode?: string;
+}> = async (
+  { productId, userId, orderId, discountCode, discountAmount, discountCurrencyCode },
+  { modules },
+) => {
   const { EMAIL_FROM, EMAIL_WEBSITE_NAME = 'Unchained Shop', EMAIL_WEBSITE_URL } = process.env;
   const product = await modules.products.findProduct({ productId });
   if (!product) return [];
@@ -37,9 +41,13 @@ export const resolveEventCancelledTemplate: TemplateResolver<{
 We regret to inform you that the event "${eventTitle}"${eventDetails ? ` (${eventDetails})` : ''} has been cancelled.`;
 
   if (discountCode && discountAmount) {
+    const worth = await formatCredit(
+      { amount: discountAmount, currencyCode: discountCurrencyCode, locale },
+      { modules },
+    );
     text += `
 
-As compensation, you have received a discount code worth ${(discountAmount / 100).toFixed(2)}:
+As compensation, you have received a discount code worth ${worth}:
 
   ${discountCode}
 

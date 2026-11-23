@@ -67,7 +67,7 @@ async function cancelTicketsForProduct(
       orderId?: string;
       userId?: string;
       quantity: number;
-      discount?: { discountCode: string; amount: number };
+      discount?: { discountCode: string; amount: number; currencyCode: string };
     }
   >();
   for (const token of tokensToCancel) {
@@ -94,7 +94,7 @@ async function cancelTicketsForProduct(
       for (const purchase of purchases.values()) {
         const amount = price.amount * purchase.quantity;
         const discountCode = await passes.generateDiscountCode(amount, price.currencyCode);
-        purchase.discount = { discountCode, amount };
+        purchase.discount = { discountCode, amount, currencyCode: price.currencyCode };
       }
     }
   }
@@ -127,6 +127,7 @@ async function cancelTicketsForProduct(
           orderId,
           discountCode: discount?.discountCode,
           discountAmount: discount?.amount,
+          discountCurrencyCode: discount?.currencyCode,
         },
       });
     }),
@@ -147,6 +148,7 @@ async function cancelTicketWithDiscount(
 
   let discountCode: string | undefined;
   let discountAmount: number | undefined;
+  let discountCurrencyCode: string | undefined;
 
   if (options?.generateDiscount && options.countryCode) {
     const product = await this.products.findProduct({ productId: token.productId });
@@ -160,6 +162,7 @@ async function cancelTicketWithDiscount(
     if (price?.amount) {
       discountAmount = price.amount * token.quantity;
       discountCode = await passes.generateDiscountCode(discountAmount, price.currencyCode);
+      discountCurrencyCode = price.currencyCode;
     }
   }
 
@@ -188,6 +191,7 @@ async function cancelTicketWithDiscount(
         orderId,
         discountCode,
         discountAmount,
+        discountCurrencyCode,
       },
     });
   }

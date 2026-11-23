@@ -1,23 +1,15 @@
+import { formatAmount } from '../format-amount.ts';
+
 export const priceToString = ({
   amount,
   currencyCode,
+  decimals = 2,
   locale = 'de-CH',
 }: {
   amount: number;
   currencyCode: string;
+  decimals?: number;
   locale?: Intl.Locale | string;
-}) => {
-  const majorUnitAmount = amount / 100;
-  try {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: currencyCode,
-      currencyDisplay: 'code',
-    }).format(majorUnitAmount);
-  } catch {
-    // Non-ISO currency codes (custom tokens etc.) make Intl.NumberFormat throw
-    return `${currencyCode} ${majorUnitAmount}`;
-  }
-};
+}) => formatAmount({ amount, currencyCode, decimals, locale, currencyDisplay: 'code' });
 
 export default priceToString;

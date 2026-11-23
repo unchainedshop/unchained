@@ -245,7 +245,7 @@ test('the sales report refuses invalid dates', async () => {
 });
 
 test('the CSV files carry decimal amounts and keep negative numbers as numbers', async () => {
-  const csv = buildSalesReportCsv(await buildTicketSalesReport(api, { from, to }));
+  const csv = buildSalesReportCsv(await buildTicketSalesReport(api, { from, to }), { CHF: 2, EUR: 2 });
   const [header, first] = csv.orders.split('\r\n');
   assert.equal(
     header,
@@ -260,6 +260,10 @@ test('the CSV files carry decimal amounts and keep negative numbers as numbers',
     /\r\nbalcony,Title balcony,2030-03-01T19:00:00.000Z,balcony,CHF,3,90,-5\r\n/,
   );
   assert.match(csv.paymentProviders, /\r\nbox,adapter.box,EUR,1,1,20\r\n/);
-  assert.equal(toDecimalAmount(1234, 'JPY'), 1234);
-  assert.equal(toDecimalAmount(1234, 'ETH'), 12.34);
+  assert.equal(toDecimalAmount(1234, 0), 1234);
+  assert.equal(toDecimalAmount(1234, 9), 0.000001234);
+  assert.match(
+    buildSalesReportCsv(await buildTicketSalesReport(api, { from, to }), { CHF: 0, EUR: 2 }).orders,
+    /,CHF,2,8000,-1000,500,0,7500\r\n/,
+  );
 });

@@ -1,5 +1,6 @@
 export * as calculation from './calculation.ts';
 export * as ch from './ch/index.ts';
+export { formatAmount } from './format-amount.ts';
 
 export * from './locale-helpers.ts';
 export { default as objectInvert } from './object-invert.ts';
@@ -15,6 +16,7 @@ export { default as sha1 } from './sha1.ts';
 export { timingSafeEqual, timingSafeStringEqual } from './timing-safe-equal.ts';
 export { normalizePhoneNumber, phoneNumberToParts } from './phone-number.ts';
 export { default as memoizeWithTTL } from './memoize-with-ttl.ts';
+export { currencyDecimals } from './currency-decimals.ts';
 export { executeBulkOperation } from './executeBulkOperation.ts';
 
 export const SortDirection = {

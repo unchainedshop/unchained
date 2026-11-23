@@ -31,6 +31,17 @@ describe('priceToString', () => {
   });
 
   it('should fall back to plain concatenation for non-ISO currency codes', () => {
-    assert.strictEqual(priceToString({ amount: 1050, currencyCode: 'SHRDLU' }), 'SHRDLU 10.5');
+    assert.strictEqual(priceToString({ amount: 1050, currencyCode: 'SHRDLU' }), 'SHRDLU 10.50');
+  });
+
+  it('should use the decimals of the currency', () => {
+    assert.strictEqual(
+      priceToString({ amount: 5900, currencyCode: 'JPY', decimals: 0 }),
+      `JPY${NBSP}5'900`,
+    );
+    assert.strictEqual(
+      priceToString({ amount: 12345, currencyCode: 'KWD', decimals: 3 }),
+      `KWD${NBSP}12.345`,
+    );
   });
 });

@@ -2,7 +2,7 @@ import { ProductPricingRowCategory, ProductPricingSheet, type UnchainedCore } fr
 import type { Order, OrderPosition } from '@unchainedshop/core-orders';
 import type { Product } from '@unchainedshop/core-products';
 import type { TokenSurrogate } from '@unchainedshop/core-warehousing';
-import type { Price } from '@unchainedshop/utils';
+import { currencyDecimals, formatAmount, type Price } from '@unchainedshop/utils';
 import {
   TicketEventProperty,
   TicketStatus,
@@ -90,6 +90,15 @@ export async function findPurchaseRecipient(
     emailAddress: user.lastContact?.emailAddress || modules.users.primaryEmail(user)?.address,
     locale,
   };
+}
+
+export async function formatCredit(
+  { amount, currencyCode, locale }: { amount: number; currencyCode?: string; locale: Intl.Locale },
+  { modules }: TicketDetailsAPI,
+) {
+  if (!currencyCode) return (amount / 100).toFixed(2);
+  const currency = await modules.currencies.findCurrency({ isoCode: currencyCode });
+  return formatAmount({ amount, currencyCode, decimals: currencyDecimals(currency?.decimals), locale });
 }
 
 export async function findTicketPrice(

@@ -36,6 +36,7 @@ describe('cancellation templates', () => {
           texts: { findLocalizedText: async () => ({ title: 'Premiere' }) },
         },
         warehousing: { findToken: async () => ({ _id: 'ticket', productId: 'event' }) },
+        currencies: { findCurrency: async ({ isoCode }) => ({ isoCode, decimals: 0 }) },
         orders: {
           findOrder: async ({ orderId }: { orderId: string }) =>
             ({
@@ -60,6 +61,17 @@ describe('cancellation templates', () => {
       const [message] = await (resolve as any)(params, context(eventWithDetails));
       assert.ok(message.input.text.includes(eventText), message.input.text);
       assert.equal(message.input.to, 'buyer@example.com');
+    }
+  });
+
+  test('cancellation e-mails show the credit in its currency', async () => {
+    const credit = { discountCode: 'CODE', discountAmount: 4000, discountCurrencyCode: 'JPY' };
+    for (const [resolve, params] of [
+      [resolveEventCancelledTemplate, { productId: 'event', userId: 'buyer', ...credit }],
+      [resolveTicketCancelledTemplate, { tokenId: 'ticket', userId: 'buyer', ...credit }],
+    ] as const) {
+      const [message] = await (resolve as any)(params, context(eventWithDetails));
+      assert.ok(message.input.text.includes('worth ¥4,000:'), message.input.text);
     }
   });
 

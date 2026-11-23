@@ -122,16 +122,35 @@ test('credits and messages follow the purchase, also for walk-ins served by one 
   });
   assert.deepEqual(issued, [4000, 2000, 2000]);
   assert.deepEqual(
-    messages.map(({ orderId, userId, discountCode, discountAmount }) => ({
+    messages.map(({ orderId, userId, discountCode, discountAmount, discountCurrencyCode }) => ({
       orderId,
       userId,
       discountCode,
       discountAmount,
+      discountCurrencyCode,
     })),
     [
-      { orderId: 'walk-in-a', userId: 'operator', discountCode: 'code-1', discountAmount: 4000 },
-      { orderId: 'walk-in-b', userId: 'operator', discountCode: 'code-2', discountAmount: 2000 },
-      { orderId: 'online', userId: undefined, discountCode: 'code-3', discountAmount: 2000 },
+      {
+        orderId: 'walk-in-a',
+        userId: 'operator',
+        discountCode: 'code-1',
+        discountAmount: 4000,
+        discountCurrencyCode: 'CHF',
+      },
+      {
+        orderId: 'walk-in-b',
+        userId: 'operator',
+        discountCode: 'code-2',
+        discountAmount: 2000,
+        discountCurrencyCode: 'CHF',
+      },
+      {
+        orderId: 'online',
+        userId: undefined,
+        discountCode: 'code-3',
+        discountAmount: 2000,
+        discountCurrencyCode: 'CHF',
+      },
     ],
   );
 });

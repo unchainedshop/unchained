@@ -1,9 +1,9 @@
 import type { UnchainedCore } from '@unchainedshop/core';
 import type { Order } from '@unchainedshop/core-orders';
 import { ProductPricingSheet } from '@unchainedshop/core';
-import { ch } from '@unchainedshop/utils';
+import { ch, currencyDecimals } from '@unchainedshop/utils';
 
-type PriceFormatter = ({ amount, currencyCode }: { amount: number; currencyCode: string }) => string;
+type PriceFormatter = (price: { amount: number; currencyCode: string; decimals: number }) => string;
 
 export const getOrderPositionsData = async (
   order: Order,
@@ -13,6 +13,9 @@ export const getOrderPositionsData = async (
   const { modules } = context;
   const { useNetPrice, format = (price) => ch.priceToString({ ...price, locale: params?.locale }) } =
     params || {};
+  const currency = await modules.currencies.findCurrency({ isoCode: order.currencyCode });
+  const formatPrice = (price: { amount: number; currencyCode: string }) =>
+    format({ ...price, decimals: currencyDecimals(currency?.decimals) });
   const orderPositions = await modules.orders.positions.findOrderPositions({
     orderId: order._id,
   });
@@ -43,8 +46,8 @@ export const getOrderPositionsData = async (
           unitPrice,
           total,
         },
-        unitPrice: format(unitPrice),
-        total: format(total),
+        unitPrice: formatPrice(unitPrice),
+        total: formatPrice(total),
       };
     }),
   );

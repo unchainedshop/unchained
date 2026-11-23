@@ -2,6 +2,7 @@ import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { BreadCrumbs, Button, Loading, NoData, PageHeader, Table } from '@unchainedshop/admin-ui/ui';
+import { useCurrencies } from '@unchainedshop/admin-ui/modules/currency';
 import useTicketSalesReport from '../hooks/useTicketSalesReport.ts';
 import { buildSalesReportCsv, toDecimalAmount } from '../../../src/sales-report-csv.ts';
 import { downloadCsv } from '../utils/download.ts';
@@ -18,10 +19,15 @@ import { errorMessage } from '../components/production/fields.tsx';
 // Orders are listed up to this number; the CSV always holds all of them.
 const ORDER_ROWS = 200;
 
-const formatAmount = (amount: number, currencyCode: string) => {
-  const value = toDecimalAmount(amount, currencyCode);
+const formatDecimalAmount = (amount: number, currencyCode: string, decimals: number) => {
+  const value = toDecimalAmount(amount, decimals);
   try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: currencyCode }).format(value);
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currencyCode,
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    }).format(value);
   } catch {
     return `${value} ${currencyCode}`;
   }
@@ -42,6 +48,12 @@ const SalesReportPage = () => {
   const toDay = (query.to as string) || '';
   const range = reportPeriod(period, new Date(), { fromDay, toDay });
   const { report, loading, error } = useTicketSalesReport({ from: range?.from, to: range?.to });
+  const { currencies } = useCurrencies({ limit: 0 });
+  const decimals = Object.fromEntries(
+    currencies.map((currency) => [currency.isoCode, currency.decimals]),
+  );
+  const formatAmount = (amount: number, currencyCode: string) =>
+    formatDecimalAmount(amount, currencyCode, decimals[currencyCode] ?? 2);
 
   const setQuery = (next: Record<string, string>) => replace({ query: { ...query, ...next } });
   const choosePeriod = (next: ReportPeriod) => {
@@ -66,7 +78,7 @@ const SalesReportPage = () => {
   };
 
   const download = (file: 'orders' | 'performances' | 'paymentProviders') => {
-    const csv = buildSalesReportCsv(report);
+    const csv = buildSalesReportCsv(report, decimals);
     const suffix = `${toDateInputValue(new Date(report.from))}_${toDateInputValue(
       new Date(new Date(report.to).getTime() - 1),
     )}`;

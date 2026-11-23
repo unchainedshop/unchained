@@ -1,4 +1,5 @@
 import { WorkerAdapter, WorkerDirector, schedule, type IWorkerAdapter } from '@unchainedshop/core';
+import { currencyDecimals } from '@unchainedshop/utils';
 import { buildTicketSalesReport, type TicketSalesReportTotal } from './sales-report.ts';
 import { buildSalesReportCsv } from './sales-report-csv.ts';
 import { TicketingMessageTypes } from './templates/index.ts';
@@ -21,6 +22,7 @@ export interface TicketSalesReportMessagePayload {
   to: Date;
   recipients: string[];
   totals: TicketSalesReportTotal[];
+  decimals: Record<string, number>;
   csv: ReturnType<typeof buildSalesReportCsv>;
 }
 
@@ -51,12 +53,19 @@ export const TicketSalesReportWorker: IWorkerAdapter<TicketSalesReportWorkInput,
       const report = await buildTicketSalesReport(unchainedAPI, { ...period, locale });
       const sent = Boolean(recipients.length && report.orders.length);
       if (sent) {
+        const currencies = await unchainedAPI.modules.currencies.findCurrencies({
+          includeInactive: true,
+        });
+        const decimals = Object.fromEntries(
+          currencies.map((currency) => [currency.isoCode, currencyDecimals(currency.decimals)]),
+        );
         const payload: TicketSalesReportMessagePayload = {
           from: report.from,
           to: report.to,
           recipients,
           totals: report.totals,
-          csv: buildSalesReportCsv(report),
+          decimals,
+          csv: buildSalesReportCsv(report, decimals),
         };
         await unchainedAPI.services.worker.addMessage(
           TicketingMessageTypes.TICKET_SALES_REPORT,

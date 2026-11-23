@@ -12,7 +12,7 @@ const csvAttachment = (filename: string, csv: string) => ({
 
 export const resolveTicketSalesReportTemplate: TemplateResolver<
   TicketSalesReportMessagePayload
-> = async ({ from, to, recipients, totals, csv }) => {
+> = async ({ from, to, recipients, totals, decimals, csv }) => {
   const { EMAIL_FROM, EMAIL_WEBSITE_NAME = 'Unchained Shop' } = process.env;
   if (!recipients?.length) return [];
 
@@ -20,7 +20,7 @@ export const resolveTicketSalesReportTemplate: TemplateResolver<
   const day = new Date(from).toISOString().slice(0, 10);
   const lines = totals.map(
     ({ currencyCode, orders, tickets, total }) =>
-      `${currencyCode}: ${orders} orders, ${tickets} tickets, ${toDecimalAmount(total, currencyCode)} ${currencyCode}`,
+      `${currencyCode}: ${orders} orders, ${tickets} tickets, ${toDecimalAmount(total, decimals?.[currencyCode] ?? 2)} ${currencyCode}`,
   );
 
   return [

@@ -41,28 +41,16 @@ interface SalesReportData {
   }[];
 }
 
-/** Digits after the decimal point of a currency, 2 for codes Intl does not know (crypto). */
-export const currencyDigits = (currencyCode: string) => {
-  try {
-    return (
-      new Intl.NumberFormat('en', { style: 'currency', currency: currencyCode }).resolvedOptions()
-        .maximumFractionDigits ?? 2
-    );
-  } catch {
-    return 2;
-  }
-};
-
-/** An amount in the smallest unit as a decimal number, e.g. 3550 CHF → 35.5 */
-export const toDecimalAmount = (amount: number, currencyCode: string) => {
-  const digits = currencyDigits(currencyCode);
-  return Number((amount / 10 ** digits).toFixed(digits));
-};
+/** An amount in the smallest unit as a decimal number, e.g. 3550 with 2 decimals → 35.5 */
+export const toDecimalAmount = (amount: number, decimals: number) =>
+  Number((amount / 10 ** decimals).toFixed(decimals));
 
 const toIso = (value: DateLike) => (value ? new Date(value).toISOString() : null);
 
-export function buildSalesReportCsv(report: SalesReportData) {
-  const amount = (value: number, currencyCode: string) => toDecimalAmount(value, currencyCode);
+/** `decimals` maps currency codes to `Currency.decimals`; missing codes use 2. */
+export function buildSalesReportCsv(report: SalesReportData, decimals: Record<string, number>) {
+  const amount = (value: number, currencyCode: string) =>
+    toDecimalAmount(value, decimals[currencyCode] ?? 2);
   return {
     orders: toCsv([
       [

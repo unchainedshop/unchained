@@ -511,11 +511,13 @@ export function formatPrice(amount: number, currency: string, decimals = 2): str
   return new Intl.NumberFormat('de-CH', {
     style: 'currency',
     currency,
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
   }).format(amount / 10 ** decimals);
 }
 ```
 
-Pass the currency's `decimals` value when formatting amounts; currencies such as JPY and cryptocurrency tokens do not necessarily use two decimal places.
+Amounts are in the minor unit of their currency, which isn't always cents: JPY uses 0 decimals, KWD 3. `Price` carries only the `currencyCode`, so load `currencies { isoCode decimals }` once, keep a map by code, and pass the decimals when formatting.
 
 ### Slugify
 

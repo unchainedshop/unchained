@@ -13,6 +13,7 @@ const apiWith = (orders: any[], work: any[]) =>
       },
       payment: { paymentProviders: { findProviders: async () => [] } },
       products: { findProducts: async () => [] },
+      currencies: { findCurrencies: async () => [{ isoCode: 'CHF' }] },
     },
     services: { worker: { addMessage: async (template, input) => work.push({ template, ...input }) } },
   }) as any;
