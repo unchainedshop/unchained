@@ -153,7 +153,11 @@ export const Stripe: IPaymentAdapter = {
         }
 
         if (paymentIntentObject.status === 'succeeded') {
-          return paymentIntentObject;
+          return {
+            transactionId: paymentIntentObject.id,
+            status: paymentIntentObject.status,
+            paymentMethod: paymentIntentObject.payment_method,
+          };
         }
 
         logger.info('Charge postponed because paymentIntent has wrong status', {

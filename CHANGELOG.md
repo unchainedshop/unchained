@@ -7,6 +7,7 @@
 - **The filter CSV export contains the filters with their own texts** (`@unchainedshop/core`): the export type `FILTERS` from the work input ended up in the filter query, so both files were empty, and the texts of a filter's options could replace its own.
 - **Stripe could not charge about 2% of carts** (`@unchainedshop/plugins`): the statement descriptor suffix was the first and last four characters of the order id, and Stripe refused the payment intent whenever all eight were digits. Payment intents no longer set a suffix, so the statement shows the account's statement descriptor.
 - **Stripe confirms orders that waited for their payment** (`@unchainedshop/plugins`): on `payment_intent.succeeded` the webhook only checked out carts, so an order whose payment was still processing at checkout stayed `PENDING` with an open payment. Pending orders are processed now.
+- **Stripe payments keep their payment intent id** (`@unchainedshop/plugins`): a charge stored no `transactionId` on the order payment and logged the whole payment intent, its client secret included, and the webhook logged the whole event. The order payment stores the payment intent id as `transactionId` now, and the webhook logs only the event id and type.
 
 ## v5.0.0-alpha.14 (2026-11-19)
 

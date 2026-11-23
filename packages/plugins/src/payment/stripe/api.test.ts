@@ -63,7 +63,10 @@ describe('Stripe webhook handler', () => {
     });
     assert.deepEqual(constructEvent.mock.calls[0].arguments, [rawBody, 'signature', 'whsec_test']);
     assert.deepEqual(findOrderPayment.mock.calls[0].arguments, [{ orderPaymentId: 'payment-1' }]);
-    assert.deepEqual(logEvent.mock.calls[0].arguments, ['payment-1', event]);
+    assert.deepEqual(logEvent.mock.calls[0].arguments, [
+      'payment-1',
+      { id: event.id, type: event.type },
+    ]);
     assert.deepEqual(checkoutOrder.mock.calls[0].arguments, [
       'order-1',
       { paymentContext: { paymentIntentId: 'pi_1' } },
