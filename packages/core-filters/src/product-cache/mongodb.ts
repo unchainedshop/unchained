@@ -1,5 +1,6 @@
 import { mongodb, buildDbIndexes } from '@unchainedshop/mongodb';
 import { sha256, memoizeWithTTL } from '@unchainedshop/utils';
+import DataLoader from 'dataloader';
 
 export interface FilterProductIdCacheRecord {
   filterId: string;
@@ -68,25 +69,35 @@ export default async function mongodbCache(db: mongodb.Db) {
     { index: { filterId: 1, filterOptionValue: 1 } },
   ]);
 
+  // Misses of the same tick share one query. Retention and eviction stay with the memo below.
+  const databaseLoader = new DataLoader(
+    async (filterIds: readonly string[]) => {
+      const rows = await FilterProductIdCache.find(
+        { filterId: { $in: filterIds } },
+        { projection: { filterId: 1, productIds: 1, filterOptionValue: 1 } },
+      ).toArray();
+      const rowsByFilterId = Map.groupBy(rows, (row) => row.filterId);
+
+      return filterIds.map((filterId) => {
+        const filterProductIdCache = rowsByFilterId.get(filterId);
+        if (!filterProductIdCache) return null;
+
+        const allProductIds =
+          filterProductIdCache.find((cache) => cache.filterOptionValue === null)?.productIds || [];
+        const productIdsMap = Object.fromEntries(
+          filterProductIdCache
+            .filter((cache) => cache.filterOptionValue !== null)
+            .map((cache) => [cache.filterOptionValue as string, cache.productIds]),
+        );
+        return [allProductIds, productIdsMap] as [string[], Record<string, string[]>];
+      });
+    },
+    { cache: false },
+  );
+
   const getCachedProductIdsFromMemoryCache = memoizeWithTTL(
     async function getCachedProductIdsFromDatabase(filterId: string) {
-      const filterProductIdCache = await FilterProductIdCache.find(
-        {
-          filterId,
-        },
-        { projection: { productIds: 1, filterOptionValue: 1 } },
-      ).toArray();
-
-      if (!filterProductIdCache.length) return null;
-
-      const allProductIds =
-        filterProductIdCache.find((cache) => cache.filterOptionValue === null)?.productIds || [];
-      const productIdsMap = Object.fromEntries(
-        filterProductIdCache
-          .filter((cache) => cache.filterOptionValue !== null)
-          .map((cache) => [cache.filterOptionValue as string, cache.productIds]),
-      );
-      return [allProductIds, productIdsMap] as [string[], Record<string, string[]>];
+      return databaseLoader.load(filterId);
     },
     {
       ttl: process.env.NODE_ENV === 'production' ? CACHE_TTL_MS : 1,
