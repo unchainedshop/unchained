@@ -71,11 +71,12 @@ export default async function mongodbCache(db: mongodb.Db) {
     { index: { filterId: 1, filterOptionValue: 1 } },
   ]);
 
-  // The last value read per filter and the hashes of its rows. When the memo below expires, a
-  // filter whose rows still carry the same hashes keeps its arrays instead of decoding them again.
+  // The last value read per filter, the hashes of its rows and when a search last needed it. When
+  // the memo below expires, a filter whose rows still carry the same hashes keeps its arrays
+  // instead of decoding them again.
   const lastRead = new Map<
     string,
-    { signature: string; value: [string[], Record<string, string[]>] | null }
+    { signature: string; value: [string[], Record<string, string[]>] | null; readAt: number }
   >();
   const signatureOf = (rows: { filterOptionValue?: string | null; hash?: string }[] = []) =>
     rows.some((row) => !row.hash)
@@ -88,6 +89,13 @@ export default async function mongodbCache(db: mongodb.Db) {
   // Misses of the same tick share one query. Retention and eviction stay with the memo below.
   const databaseLoader = new DataLoader(
     async (filterIds: readonly string[]) => {
+      // A filter no search needed for ten cache lifetimes is forgotten, so the memberships of a
+      // filter deleted through another process do not stay in this one until it restarts.
+      const now = Date.now();
+      for (const [filterId, { readAt }] of lastRead) {
+        if (now - readAt > 10 * CACHE_TTL_MS) lastRead.delete(filterId);
+      }
+
       // Filters read before only need their hashes; the others are read completely. Their entries
       // are taken now, because a purge while the reads below are in flight drops them from lastRead.
       const known = new Map(
@@ -120,7 +128,10 @@ export default async function mongodbCache(db: mongodb.Db) {
 
       return filterIds.map((filterId) => {
         const kept = unchanged.get(filterId);
-        if (kept) return kept.value;
+        if (kept) {
+          kept.readAt = now;
+          return kept.value;
+        }
         const filterProductIdCache = rowsByFilterId.get(filterId);
         let value: [string[], Record<string, string[]>] | null = null;
         if (filterProductIdCache) {
@@ -135,7 +146,7 @@ export default async function mongodbCache(db: mongodb.Db) {
         }
         const signature = signatureOf(filterProductIdCache);
         if (signature === null) lastRead.delete(filterId);
-        else lastRead.set(filterId, { signature, value });
+        else lastRead.set(filterId, { signature, value, readAt: now });
         return value;
       });
     },

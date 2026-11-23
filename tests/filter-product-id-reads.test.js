@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { setTimeout } from 'node:timers/promises';
+import { setFlagsFromString } from 'node:v8';
+import { runInNewContext } from 'node:vm';
 import { Collection } from 'mongodb';
 import { filtersSettings } from '@unchainedshop/core-filters';
 import { FilterDirector } from '@unchainedshop/core';
@@ -285,4 +287,61 @@ test('a purge while a batch reads product ids fails none of its reads', async (t
     [['fresh'], { yes: ['fresh'] }],
   ]);
   assert.equal(await readExpired('purged'), null);
+});
+
+// The production memo lifetime. A process forgets a filter no search needed for ten of them.
+const lifetime = Number(process.env.UNCHAINED_FILTER_CACHE_TTL_MS || 60_000);
+
+// Stops Date.now for the rest of the test; move it with clock.now. Not through t.mock, which
+// records the stack of every call and with it keeps alive what the memory check below expects gone.
+const stopClock = (t) => {
+  const { now } = Date;
+  const clock = { now: now() };
+  Date.now = () => clock.now;
+  t.after(() => {
+    Date.now = now;
+  });
+  return clock;
+};
+
+test('a filter no search needed for ten cache lifetimes is read completely again', async (t) => {
+  const [db] = await setupDatabase();
+  const originalSettings = { ...filtersSettings };
+  t.after(() => filtersSettings.configureSettings(originalSettings, db));
+  await filtersSettings.configureSettings({}, db);
+  await filtersSettings.setCachedProductIds('idle', ['p1'], { yes: ['p1'] }, 1);
+  const clock = stopClock(t);
+  const reads = recordReads(t);
+
+  await filtersSettings.getCachedProductIds('idle');
+  clock.now += 10 * lifetime;
+  await filtersSettings.getCachedProductIds('idle');
+  clock.now += 10 * lifetime + 1;
+  assert.deepEqual(await filtersSettings.getCachedProductIds('idle'), [['p1'], { yes: ['p1'] }]);
+  assert.deepEqual(reads, ['productIds', 'hashes', 'productIds']);
+});
+
+test('a filter deleted through another process does not stay in memory', async (t) => {
+  setFlagsFromString('--expose-gc');
+  const gc = runInNewContext('gc');
+  const [db] = await setupDatabase();
+  const originalSettings = { ...filtersSettings };
+  t.after(() => filtersSettings.configureSettings(originalSettings, db));
+  await filtersSettings.configureSettings({}, db);
+  const otherProcess = { ...filtersSettings };
+  await filtersSettings.configureSettings({}, db);
+  await filtersSettings.setCachedProductIds('deleted', ['p1'], { yes: ['p1'] }, 1);
+  const clock = stopClock(t);
+
+  // Read in a function of its own, so this test's frame does not hold on to the value.
+  const readWeakly = async (filterId) =>
+    new WeakRef((await filtersSettings.getCachedProductIds(filterId))[0]);
+  const loaded = await readWeakly('deleted');
+  await otherProcess.purgeCachedProductIds('deleted');
+  // This process goes on searching, but no search asks for the deleted filter any more.
+  clock.now += 10 * lifetime + 1;
+  await filtersSettings.getCachedProductIds('other');
+  await setTimeout(0);
+  gc();
+  assert.equal(loaded.deref(), undefined);
 });
