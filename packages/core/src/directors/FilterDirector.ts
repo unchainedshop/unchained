@@ -13,6 +13,18 @@ import {
 import type { Product } from '@unchainedshop/core-products';
 import type { Modules } from '../modules.ts';
 
+// One Set per cached product id array: the arrays only change when the cache reloads them, and
+// callers only intersect the returned Sets.
+const productIdSets = new WeakMap<string[], Set<string>>();
+const asSet = (productIds: string[]) => {
+  let set = productIdSets.get(productIds);
+  if (!set) {
+    set = new Set(productIds);
+    productIdSets.set(productIds, set);
+  }
+  return set;
+};
+
 export const parseQueryArray = (query?: SearchFilterQuery): Record<string, string[]> =>
   (query || []).reduce(
     (accumulator, { key, value }) => ({
@@ -198,17 +210,19 @@ export const FilterDirector: IFilterDirector = {
       Object.keys(keyToProductIdMap),
     );
 
-    if (filteredKeys.includes(undefined)) return new Set(allProductIds);
+    if (filteredKeys.includes(undefined)) return asSet(allProductIds);
+
+    // Own properties only. The keys come straight from a user supplied filterQuery, so
+    // asking for `constructor` or `toString` would otherwise reach Object.prototype and
+    // throw while iterating it.
+    const keys = (filteredKeys as string[]).filter(
+      (key) => Object.hasOwn(keyToProductIdMap, key) && keyToProductIdMap[key],
+    );
+    if (keys.length === 1) return asSet(keyToProductIdMap[keys[0]]);
 
     const result = new Set<string>();
-    for (const key of filteredKeys as string[]) {
-      // Own properties only. The keys come straight from a user supplied filterQuery, so
-      // asking for `constructor` or `toString` would otherwise reach Object.prototype and
-      // throw while iterating it.
-      if (!Object.hasOwn(keyToProductIdMap, key)) continue;
-      const additionalValues = keyToProductIdMap[key];
-      if (!additionalValues) continue;
-      for (const val of additionalValues) result.add(val);
+    for (const key of keys) {
+      for (const val of keyToProductIdMap[key]) result.add(val);
     }
     return result;
   },
