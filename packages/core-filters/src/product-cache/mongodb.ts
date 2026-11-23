@@ -8,6 +8,8 @@ export interface FilterProductIdCacheRecord {
   productIds: string[];
   /* The filter generation this row was computed from, see filterCacheGeneration. */
   computedAt?: number;
+  /* Hash of the row's product ids. Rows without one are read again on every expiry. */
+  hash?: string;
 }
 
 const DUPLICATE_KEY = 11000;
@@ -69,27 +71,83 @@ export default async function mongodbCache(db: mongodb.Db) {
     { index: { filterId: 1, filterOptionValue: 1 } },
   ]);
 
+  // The last value read per filter, the hashes of its rows and when a search last needed it. When
+  // the memo below expires, a filter whose rows still carry the same hashes keeps its arrays
+  // instead of decoding them again.
+  const lastRead = new Map<
+    string,
+    { signature: string; value: [string[], Record<string, string[]>] | null; readAt: number }
+  >();
+  const signatureOf = (rows: { filterOptionValue?: string | null; hash?: string }[] = []) =>
+    rows.some((row) => !row.hash)
+      ? null
+      : rows
+          .map((row) => `${row.filterOptionValue ?? ''}\u0000${row.hash}`)
+          .sort()
+          .join('\u0001');
+
   // Misses of the same tick share one query. Retention and eviction stay with the memo below.
   const databaseLoader = new DataLoader(
     async (filterIds: readonly string[]) => {
-      const rows = await FilterProductIdCache.find(
-        { filterId: { $in: filterIds } },
-        { projection: { filterId: 1, productIds: 1, filterOptionValue: 1 } },
-      ).toArray();
+      // A filter no search needed for ten cache lifetimes is forgotten, so the memberships of a
+      // filter deleted through another process do not stay in this one until it restarts.
+      const now = Date.now();
+      for (const [filterId, { readAt }] of lastRead) {
+        if (now - readAt > 10 * CACHE_TTL_MS) lastRead.delete(filterId);
+      }
+
+      // Filters read before only need their hashes; the others are read completely. Their entries
+      // are taken now, because a purge while the reads below are in flight drops them from lastRead.
+      const known = new Map(
+        filterIds.flatMap((filterId) => {
+          const entry = lastRead.get(filterId);
+          return entry ? [[filterId, entry] as const] : [];
+        }),
+      );
+      const hashRows = known.size
+        ? await FilterProductIdCache.find(
+            { filterId: { $in: [...known.keys()] } },
+            { projection: { _id: 0, filterId: 1, filterOptionValue: 1, hash: 1 } },
+          ).toArray()
+        : [];
+      const hashRowsByFilterId = Map.groupBy(hashRows, (row) => row.filterId);
+      const unchanged = new Map(
+        [...known].filter(
+          ([filterId, entry]) => entry.signature === signatureOf(hashRowsByFilterId.get(filterId)),
+        ),
+      );
+
+      const toRead = filterIds.filter((filterId) => !unchanged.has(filterId));
+      const rows = toRead.length
+        ? await FilterProductIdCache.find(
+            { filterId: { $in: toRead } },
+            { projection: { filterId: 1, productIds: 1, filterOptionValue: 1, hash: 1 } },
+          ).toArray()
+        : [];
       const rowsByFilterId = Map.groupBy(rows, (row) => row.filterId);
 
       return filterIds.map((filterId) => {
+        const kept = unchanged.get(filterId);
+        if (kept) {
+          kept.readAt = now;
+          return kept.value;
+        }
         const filterProductIdCache = rowsByFilterId.get(filterId);
-        if (!filterProductIdCache) return null;
-
-        const allProductIds =
-          filterProductIdCache.find((cache) => cache.filterOptionValue === null)?.productIds || [];
-        const productIdsMap = Object.fromEntries(
-          filterProductIdCache
-            .filter((cache) => cache.filterOptionValue !== null)
-            .map((cache) => [cache.filterOptionValue as string, cache.productIds]),
-        );
-        return [allProductIds, productIdsMap] as [string[], Record<string, string[]>];
+        let value: [string[], Record<string, string[]>] | null = null;
+        if (filterProductIdCache) {
+          const allProductIds =
+            filterProductIdCache.find((cache) => cache.filterOptionValue === null)?.productIds || [];
+          const productIdsMap = Object.fromEntries(
+            filterProductIdCache
+              .filter((cache) => cache.filterOptionValue !== null)
+              .map((cache) => [cache.filterOptionValue as string, cache.productIds]),
+          );
+          value = [allProductIds, productIdsMap];
+        }
+        const signature = signatureOf(filterProductIdCache);
+        if (signature === null) lastRead.delete(filterId);
+        else lastRead.set(filterId, { signature, value, readAt: now });
+        return value;
       });
     },
     { cache: false },
@@ -115,6 +173,7 @@ export default async function mongodbCache(db: mongodb.Db) {
   const purgeCachedProductIds = async (filterId: string) => {
     await FilterProductIdCache.deleteMany({ filterId });
     evictFromMemoryCache(filterId);
+    lastRead.delete(filterId);
   };
 
   return {

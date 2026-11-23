@@ -19,6 +19,11 @@ export interface FiltersSettings {
     productIdsMap: Record<string, string[]>,
     computedAt: number,
   ) => Promise<number>;
+  /*
+   * Returns the cached product ids of a filter. Hand out new arrays when they change and never
+   * modify an array already returned: the filter director keeps one Set per array for as long as
+   * the array lives.
+   */
   getCachedProductIds: (filterId: string) => Promise<[string[], Record<string, string[]>] | null>;
   /* Drop the whole cache of a filter, used when the filter itself goes away. */
   purgeCachedProductIds: (filterId: string) => Promise<void>;
