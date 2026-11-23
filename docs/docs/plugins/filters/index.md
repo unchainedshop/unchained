@@ -13,6 +13,7 @@ Filter plugins implement product search and filtering functionality.
 |-------------|-------------|--------|
 | [`shop.unchained.filters.local-search`](./filter-local-search.md) | MongoDB full-text search | `all` |
 | [`shop.unchained.filters.strict-equal`](./filter-strict-equal.md) | Exact match filtering | `all` |
+| [`shop.unchained.filters.catalog-price`](./filter-catalog-price.md) | Price ranges per market | - |
 
 ## Creating Custom Filter Plugins
 
