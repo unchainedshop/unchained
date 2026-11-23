@@ -28,7 +28,7 @@ jobs:
   test:
     name: Lint + tests
     runs-on: rootless
-    container: node:26.8.2-bookworm
+    container: node:26.13.1-bookworm
     env:
       NODE_ENV: test
       NODE_NO_WARNINGS: '1'

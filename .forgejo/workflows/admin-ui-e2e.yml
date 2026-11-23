@@ -26,7 +26,7 @@ jobs:
   e2e:
     name: Cypress e2e
     runs-on: rootless
-    container: node:26.8.2-bookworm
+    container: node:26.13.1-bookworm
     steps:
       - uses: actions/checkout@v4
 
