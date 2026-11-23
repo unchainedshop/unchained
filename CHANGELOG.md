@@ -5,6 +5,7 @@
 ### Fixed
 - **Bulk import keeps a filter's options when an event omits them** (`@unchainedshop/core`, `@unchainedshop/admin-ui`): an `UPDATE`, or a `CREATE` that upserts an existing filter, replaced them with none, and the Admin UI CSV import sent an empty list for filters without rows in the options file.
 - **The filter CSV export contains the filters with their own texts** (`@unchainedshop/core`): the export type `FILTERS` from the work input ended up in the filter query, so both files were empty, and the texts of a filter's options could replace its own.
+- **Stripe could not charge about 2% of carts** (`@unchainedshop/plugins`): the statement descriptor suffix was the first and last four characters of the order id, and Stripe refused the payment intent whenever all eight were digits. Payment intents no longer set a suffix, so the statement shows the account's statement descriptor.
 
 ## v5.0.0-alpha.14 (2026-11-19)
 

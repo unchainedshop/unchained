@@ -76,6 +76,7 @@ describe('Stripe gateway', () => {
         currency: 'usd',
         customer: 'cus_untrusted',
         receipt_email: 'attacker@example.com',
+        statement_descriptor_suffix: 'attacker',
         metadata: {
           orderId: 'other-order',
           orderPaymentId: 'other-payment',
@@ -92,6 +93,7 @@ describe('Stripe gateway', () => {
     assert.equal(params.customer, 'cus_expected');
     assert.equal(params.receipt_email, 'buyer@example.com');
     assert.equal(params.payment_method, 'pm_card_visa');
+    assert.equal(params.statement_descriptor_suffix, undefined);
     assert.deepEqual(params.metadata, {
       custom: 'preserved',
       orderPaymentId: 'payment-1',

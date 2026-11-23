@@ -161,7 +161,6 @@ export const createOrderPaymentIntent = async (
     currency: currencyCode.toLowerCase(),
     customer,
     description,
-    statement_descriptor_suffix: `${order._id.substring(0, 4)}..${order._id.substring(order._id.length - 4)}`,
     receipt_email: order.contact?.emailAddress,
     metadata: {
       ...metadata,
