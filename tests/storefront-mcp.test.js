@@ -6,6 +6,7 @@ import {
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
 } from './helpers.js';
+import { createProductSearchTool } from '@unchainedshop/plugins/mcp/storefront';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { seedStorefrontCatalog } from './seeds/storefront.js';
 
@@ -46,16 +47,7 @@ const searchProducts = async (args, { meta, headers } = {}) =>
     )
   ).result;
 
-const SetSearchInput = /* GraphQL */ `
-  mutation SetSearchInput($filterId: ID!, $name: String) {
-    setFilterStorefrontSearchInput(filterId: $filterId, name: $name) {
-      storefrontSearchInput
-    }
-  }
-`;
-
-const setSearchInput = (filterId, name, token = ADMIN_TOKEN) =>
-  createLoggedInGraphqlFetch(token)({ query: SetSearchInput, variables: { filterId, name } });
+const adminGraphqlFetch = createLoggedInGraphqlFetch();
 
 const ids = (result) => result.structuredContent.products.map(({ id }) => id);
 
@@ -63,13 +55,10 @@ test.describe('Storefront MCP', () => {
   test.before(async () => {
     const [db] = await setupDatabase();
     baseUrl = getServerBaseUrl();
-    filterIds = await seedStorefrontCatalog(db, createLoggedInGraphqlFetch());
-    await setSearchInput(filterIds.brand, 'brand');
-    await setSearchInput(filterIds.priceCH, 'price_ch');
-    await setSearchInput(filterIds.priceDE, 'price_de');
+    filterIds = await seedStorefrontCatalog(db, adminGraphqlFetch);
   });
 
-  test('discovers the merchant inputs, the shop sort orders and the product cards', async () => {
+  test('discovers the configured inputs, the shop sort orders and the product cards', async () => {
     const tool = await searchTool();
     const { properties } = tool.inputSchema;
     assert.deepStrictEqual(properties.brand.enum, ['Nordlicht', 'Alpenwerk']);
@@ -83,29 +72,50 @@ test.describe('Storefront MCP', () => {
     assert.strictEqual(result.contents[0].mimeType, 'text/html;profile=mcp-app');
   });
 
-  test('follows renamed, changed and removed inputs on the next discovery', async () => {
-    await setSearchInput(filterIds.brand, 'make');
-    const renamed = (await searchTool()).inputSchema.properties;
-    assert.ok(renamed.make && !renamed.brand);
+  test('follows changed options and deactivated filters on the next discovery', async () => {
+    const graphql = (query) => adminGraphqlFetch({ query, variables: { filterId: filterIds.brand } });
+    await graphql(`
+      mutation ($filterId: ID!) {
+        createFilterOption(filterId: $filterId, option: "Bergwind") {
+          _id
+        }
+      }
+    `);
+    assert.ok((await searchTool()).inputSchema.properties.brand.enum.includes('Bergwind'));
 
+    await graphql(`
+      mutation ($filterId: ID!) {
+        updateFilter(filterId: $filterId, filter: { isActive: false }) {
+          _id
+        }
+      }
+    `);
+    assert.ok(!(await searchTool()).inputSchema.properties.brand);
     const obsolete = await searchProducts({ brand: 'Nordlicht' });
     assert.strictEqual(obsolete.isError, true);
-    assert.match(obsolete.content[0].text, /brand.*accepted inputs: make, price_ch, price_de/);
+    assert.match(obsolete.content[0].text, /brand.*accepted inputs: price_ch, price_de, query/);
 
-    await setSearchInput(filterIds.brand, null);
-    assert.ok(!(await searchTool()).inputSchema.properties.make);
-    await setSearchInput(filterIds.brand, 'brand');
+    await graphql(`
+      mutation ($filterId: ID!) {
+        updateFilter(filterId: $filterId, filter: { isActive: true }) {
+          _id
+        }
+      }
+    `);
+    await graphql(`
+      mutation ($filterId: ID!) {
+        removeFilterOption(filterId: $filterId, filterOptionValue: "Bergwind") {
+          _id
+        }
+      }
+    `);
   });
 
-  test('rejects reserved, invalid and duplicate names and non-admin writes', async () => {
-    const codes = async (name, token) =>
-      (await setSearchInput(filterIds.brand, name, token)).errors?.map(
-        ({ extensions }) => extensions.code,
-      );
-    assert.deepStrictEqual(await codes('query'), ['InvalidStorefrontSearchInputError']);
-    assert.deepStrictEqual(await codes('meta.brand'), ['InvalidStorefrontSearchInputError']);
-    assert.deepStrictEqual(await codes('price_ch'), ['StorefrontSearchInputInUseError']);
-    assert.deepStrictEqual(await codes('brand', USER_TOKEN), ['NoPermissionError']);
+  test('rejects built-in and invalid input names when the shop sets up the tool', () => {
+    const setUp = (inputs) => createProductSearchTool({ productUrl: () => '', inputs });
+    assert.throws(() => setUp({ query: 'meta.brand' }), /Invalid search inputs query/);
+    assert.throws(() => setUp({ 'meta.brand': 'meta.brand' }), /Invalid search inputs meta\.brand/);
+    assert.ok(setUp({ brand: 'meta.brand' }));
   });
 
   test('searches the market the host hints at', async () => {

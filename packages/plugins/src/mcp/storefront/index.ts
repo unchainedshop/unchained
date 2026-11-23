@@ -2,12 +2,9 @@ import type { McpServer } from '@modelcontextprotocol/server';
 import type { Context } from '@unchainedshop/api';
 import { createMcpHttpHandler } from '@unchainedshop/api/mcp';
 import type { IPlugin } from '@unchainedshop/core';
-import { createSearchInputIndex } from './exposure.ts';
 
 export { createProductSearchTool, searchStorefrontProducts } from './search.ts';
 export { resolveStorefrontMarket } from './market.ts';
-export { storefrontMcpTypeDefs, storefrontMcpResolvers } from './exposure.ts';
-export { storefrontMcpAdminPlugin } from './admin-plugin.ts';
 export type { ProductUrlBuilder } from './results.ts';
 
 const MCP_APP_MIME_TYPE = 'text/html;profile=mcp-app';
@@ -55,7 +52,6 @@ export function createStorefrontMcpPlugin({
     key: 'shop.unchained.mcp.storefront',
     label: 'Storefront MCP',
     version: '1.0.0',
-    module: ({ db }) => ({ storefrontMcp: createSearchInputIndex(db) }),
     routes: [
       {
         path: '/mcp/storefront',

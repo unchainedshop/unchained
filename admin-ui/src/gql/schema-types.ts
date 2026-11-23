@@ -917,7 +917,6 @@ export type IFilter = {
   key?: Maybe<Scalars['String']['output']>;
   options?: Maybe<Array<IFilterOption>>;
   optionsAreGenerated: Scalars['Boolean']['output'];
-  storefrontSearchInput?: Maybe<Scalars['String']['output']>;
   texts?: Maybe<IFilterTexts>;
   type?: Maybe<IFilterType>;
   updated?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -1359,7 +1358,6 @@ export type IMutation = {
   sendEnrollmentEmail?: Maybe<ISuccessResponse>;
   /** Send an email with a link the user can use verify their email address. */
   sendVerificationEmail?: Maybe<ISuccessResponse>;
-  setFilterStorefrontSearchInput: IFilter;
   /** Set a new password for a specific user */
   setPassword: IUser;
   /** Set roles of a user */
@@ -2166,12 +2164,6 @@ export type IMutationSendEnrollmentEmailArgs = {
 
 export type IMutationSendVerificationEmailArgs = {
   email?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type IMutationSetFilterStorefrontSearchInputArgs = {
-  filterId: Scalars['ID']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 

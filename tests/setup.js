@@ -14,8 +14,6 @@ import { createCatalogPriceFilterPlugin } from '@unchainedshop/plugins/filters/c
 import {
   createProductSearchTool,
   createStorefrontMcpPlugin,
-  storefrontMcpResolvers,
-  storefrontMcpTypeDefs,
 } from '@unchainedshop/plugins/mcp/storefront';
 import { pluginRegistry, registerProductDiscoverabilityFilter } from '@unchainedshop/core';
 import {
@@ -170,6 +168,7 @@ export async function initializeTestPlatform() {
         createProductSearchTool({
           productUrl: ({ productId, locale }) =>
             `https://shop.example.com/${locale.baseName}/products/${productId}`,
+          inputs: { brand: 'meta.brand', price_ch: 'price_ch', price_de: 'price_de' },
           ui: { uri: 'ui://test/product-cards.html', html: '<!doctype html><title>Cards</title>' },
         }),
       ],
@@ -197,8 +196,7 @@ export async function initializeTestPlatform() {
 
   // Platform options with in-memory MongoDB
   const platformOptions = {
-    typeDefs: [...storefrontMcpTypeDefs, 'extend enum SearchOrderBy { meta_rating_DESC }'],
-    resolvers: [storefrontMcpResolvers],
+    typeDefs: ['extend enum SearchOrderBy { meta_rating_DESC }'],
     options: {
       orders: {
         // Ticket supply, cancelled events and the built-in sale rules (product.meta.saleRules);

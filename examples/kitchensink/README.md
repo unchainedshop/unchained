@@ -71,9 +71,9 @@ repository root to supply the artifacts that the published packages include.
 Shopping assistants can search the catalog at http://localhost:4010/mcp/storefront.
 `src/storefront.ts` registers the plugin with product cards (`mcp/product-cards.html`), a
 product page at `/shop/products/:productId` and catalog price filters for `price_ch` (CHF)
-and `price_us` (USD). Create those RANGE filters in Admin UI, then expose them and your other
-filters to assistants in each filter's **Assistants** tab. OCP discovery is served at
-`/.well-known/ocp.json`.
+and `price_us` (USD). It exposes the filters keyed `tags`, `price_ch` and `price_us` as the
+inputs `tag`, `price_ch` and `price_us`, so create those filters in Admin UI to search with them.
+OCP discovery is served at `/.well-known/ocp.json`.
 
 ## Scripts
 

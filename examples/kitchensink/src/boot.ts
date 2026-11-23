@@ -12,11 +12,6 @@ import { useErrorHandler } from 'graphql-yoga';
 import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
 import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
 import {
-  storefrontMcpAdminPlugin,
-  storefrontMcpResolvers,
-  storefrontMcpTypeDefs,
-} from '@unchainedshop/plugins/mcp/storefront';
-import {
   registerProductDiscoverabilityFilter,
   pluginRegistry,
   type UnchainedCore,
@@ -155,8 +150,6 @@ try {
   registerStorefront();
 
   const platform = await startPlatform({
-    typeDefs: storefrontMcpTypeDefs,
-    resolvers: [storefrontMcpResolvers],
     options: {
       users: { loginCode: { enabled: true } },
     },
@@ -183,7 +176,6 @@ try {
     adminUI: {
       theme: adminUITheme,
       plugins: [
-        storefrontMcpAdminPlugin(),
         definePlugin({
           name: 'bookmark-manager',
           version: '1.0.0',

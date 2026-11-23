@@ -3,13 +3,15 @@ import { acl, getCurrentSchema, NoPermissionError, roles, type Context } from '@
 import { FilterDirector } from '@unchainedshop/core';
 import type { Product } from '@unchainedshop/core-products';
 import { z } from 'zod';
-import { exposedFilterSelector, searchInputOf } from './exposure.ts';
 import { resolveStorefrontMarket, type StorefrontMarket } from './market.ts';
 import { productResults, type ProductUrlBuilder } from './results.ts';
 import type { StorefrontMcpTool, StorefrontMcpView } from './index.ts';
 
 const RANGE_SYNTAX =
   'Inclusive range lower:upper, either bound may be left out (:5000 or 5000:), a value without a colon matches exactly.';
+
+const BUILT_IN_INPUTS = ['query', 'product_ids', 'sort', 'offset', 'limit'];
+const INPUT_NAME = /^[A-Za-z][A-Za-z0-9_]{0,63}$/;
 
 export interface StorefrontSearch {
   queryString?: string;
@@ -57,7 +59,7 @@ export async function searchStorefrontProducts(
   };
 }
 
-async function exposedInputs(context: Context) {
+async function exposedInputs(context: Context, filterKeys: Record<string, string>) {
   const { modules, loaders, locale } = context;
   try {
     await acl.checkAction(context, roles.actions.viewFilters, [undefined, { includeInactive: false }]);
@@ -65,9 +67,14 @@ async function exposedInputs(context: Context) {
     if (error instanceof NoPermissionError) return [];
     throw error;
   }
-  const filters = await modules.filters.findFilters({ ...exposedFilterSelector, limit: 0 });
+  const filters = await modules.filters.findFilters({
+    key: { $in: Object.values(filterKeys) },
+    limit: 0,
+  });
   const inputs = await Promise.all(
-    filters.map(async (filter) => {
+    Object.entries(filterKeys).map(async ([name, key]) => {
+      const filter = filters.find((candidate) => candidate.key === key);
+      if (!filter) return null;
       const options = filter.type === 'RANGE' ? [] : await FilterDirector.optionValues(filter);
       const choice = options.length ? z.enum(options as [string, ...string[]]) : null;
       const schema = {
@@ -85,7 +92,7 @@ async function exposedInputs(context: Context) {
       const description = [texts?.title, texts?.subtitle, filter.type === 'RANGE' && RANGE_SYNTAX]
         .filter(Boolean)
         .join('. ');
-      return { name: searchInputOf(filter)!, filter, schema: schema.optional().describe(description) };
+      return { name, filter, schema: schema.optional().describe(description) };
     }),
   );
   return inputs.filter((input) => input !== null);
@@ -106,15 +113,26 @@ const toolError = (text: string) => ({ isError: true, content: [{ type: 'text' a
 
 export function createProductSearchTool({
   productUrl,
+  inputs: filterKeys = {},
   ui,
 }: {
   productUrl: ProductUrlBuilder;
+  inputs?: Record<string, string>;
   ui?: StorefrontMcpView;
 }): StorefrontMcpTool {
+  const invalidNames = Object.keys(filterKeys).filter(
+    (name) => !INPUT_NAME.test(name) || BUILT_IN_INPUTS.includes(name),
+  );
+  if (invalidNames.length) {
+    throw new Error(
+      `Invalid search inputs ${invalidNames.join(', ')}: use a letter followed by letters, digits or _ (at most 64 characters), other than ${BUILT_IN_INPUTS.join(', ')}`,
+    );
+  }
+
   return {
     ui,
     async register(server: McpServer, context: Context) {
-      const inputs = await exposedInputs(context);
+      const inputs = await exposedInputs(context, filterKeys);
       const sortOrders = shopSortOrders();
       const shape = {
         ...Object.fromEntries(inputs.map(({ name, schema }) => [name, schema])),

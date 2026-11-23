@@ -68,6 +68,7 @@ export function registerStorefront() {
       tools: [
         createProductSearchTool({
           productUrl,
+          inputs: { tag: 'tags', price_ch: 'price_ch', price_us: 'price_us' },
           ui: {
             uri: 'ui://kitchensink/product-cards.html',
             html: readFileSync(new URL('../mcp/product-cards.html', import.meta.url), 'utf8'),

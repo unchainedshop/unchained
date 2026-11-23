@@ -52,7 +52,6 @@
     "packages/core",
     "packages/api",
     "packages/plugins",
-    "packages/plugins/admin-plugins/storefront-mcp",
     "packages/ticketing",
     "packages/ticketing/admin-plugin",
     "packages/platform",
@@ -80,8 +79,7 @@
     "build": "run-p build:*",
     "build:packages": "npm run clean && tsc --build",
     "build:admin-ui": "cd admin-ui && npm run build",
-    "build:ticketing-admin-plugin": "npm run build -w @unchainedshop/ticketing-admin-plugin",
-    "build:storefront-mcp-admin-plugin": "npm run build -w @unchainedshop/storefront-mcp-admin-plugin"
+    "build:ticketing-admin-plugin": "npm run build -w @unchainedshop/ticketing-admin-plugin"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

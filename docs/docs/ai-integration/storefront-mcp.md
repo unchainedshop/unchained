@@ -14,9 +14,6 @@ import { pluginRegistry } from '@unchainedshop/core';
 import {
   createProductSearchTool,
   createStorefrontMcpPlugin,
-  storefrontMcpAdminPlugin,
-  storefrontMcpResolvers,
-  storefrontMcpTypeDefs,
 } from '@unchainedshop/plugins/mcp/storefront';
 
 pluginRegistry.register(
@@ -26,34 +23,33 @@ pluginRegistry.register(
     tools: [
       createProductSearchTool({
         productUrl: ({ slug, locale }) => `https://shop.example.com/${locale.baseName}/${slug}`,
+        inputs: { brand: 'meta.brand', price: 'price_ch' },
       }),
     ],
   }),
 );
-
-const platform = await startPlatform({
-  typeDefs: storefrontMcpTypeDefs,
-  resolvers: [storefrontMcpResolvers],
-});
-await connect(fastify, platform, { adminUI: { plugins: [storefrontMcpAdminPlugin()] } });
 ```
 
 Install the optional peer dependency `@modelcontextprotocol/server`.
 
 ## Search inputs
 
-In Admin UI, open an active filter, select **Assistants** and expose it under an input name. Single-choice filters list their options, multiple-choice filters accept a list, switches a boolean and ranges a `lower:upper` string. The filter's title and subtitle describe the input, so state units there, for example "CHF in Rappen". Combine it with the [catalog price filter](../plugins/filters/filter-catalog-price.md) for budget searches.
+`inputs` maps input names to filter keys. Each active filter among them becomes an input of `search_products`:
 
-`query`, `product_ids`, `offset` and `limit` are always available. `sort` appears when your schema extends `SearchOrderBy`. Unknown or outdated inputs fail with the list of accepted inputs.
+- single-choice filters list their options;
+- multiple-choice filters accept a list;
+- switches take a boolean;
+- ranges take a `lower:upper` string.
 
-## Market
+The filter's title and subtitle describe the input, so state units there, for example "CHF in Rappen". Combine it with the [catalog price filter](../plugins/filters/filter-catalog-price.md) for budget searches.
 
-Each call searches one market:
+Input names are letters, digits and `_`, other than the built-in `query`, `product_ids`, `sort`, `offset` and `limit`. Invalid names fail at startup. `sort` appears when your schema extends `SearchOrderBy`. Changed options and deactivated filters show on the next discovery, and inputs a client no longer may use fail with the list of accepted inputs.
 
-- **Country:** the `X-Shop-Country` header, else ChatGPT's `openai/userLocation` hint, else the shop default. The currency follows the country.
-- **Language:** ChatGPT's `openai/locale` hint, else `Accept-Language`.
+## Market and caller
 
-Results state the market they used. Searches run with the caller's permissions like GraphQL, anonymous callers get the guest rules, and results only ever include active products.
+Each call searches the market the shop's context resolver picks for the request, for example from `X-Shop-Country` and `Accept-Language`. ChatGPT's hints override it: `openai/locale` sets the language, and `openai/userLocation` sets the country unless `X-Shop-Country` is sent. The currency follows the country, and results state the market they used.
+
+Searches run with the caller's permissions like GraphQL. Anonymous callers get the guest rules, and results only ever include active products.
 
 ## Product cards
 
