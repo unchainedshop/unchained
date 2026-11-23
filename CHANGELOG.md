@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Breaking
+- **Currency decimals are checked and fixed** (`@unchainedshop/core-currencies`, `@unchainedshop/api`): a new currency gets its ISO 4217 minor unit unless `decimals` is given, other codes like BTC must give it, `decimals` is an integer from 0 to 18, and it can't change once set. `createCurrency` and `updateCurrency` answer `CurrencyDecimalsError`.
+- **`getDecimals` is `currencyDecimals` in `@unchainedshop/utils`** (`@unchainedshop/core-products`): it still means 2 when unset and at most 9.
+- **`Currency.decimals` is the precision amounts are stored with** (`@unchainedshop/api`): 9 for a currency set to 18, also in the MCP currencies resource.
+
+### Improvements
+- **Currencies are read once a minute** (`@unchainedshop/core-currencies`): `modules.currencies.allCurrencies()` and `findCachedCurrency(isoCode)` serve the locale context, `currencyLoader`, rate conversion, Cryptopay and new carts, which queried the database on every lookup.
+
 ### Fixed
 - **Bulk import keeps a filter's options when an event omits them** (`@unchainedshop/core`, `@unchainedshop/admin-ui`): an `UPDATE`, or a `CREATE` that upserts an existing filter, replaced them with none, and the Admin UI CSV import sent an empty list for filters without rows in the options file.
 - **The filter CSV export contains the filters with their own texts** (`@unchainedshop/core`): the export type `FILTERS` from the work input ended up in the filter query, so both files were empty, and the texts of a filter's options could replace its own.

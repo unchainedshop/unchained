@@ -1,17 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { configureProductPricesModule, getDecimals, normalizeRate } from '../configureProductPrices.ts';
+import { configureProductPricesModule, normalizeRate } from '../configureProductPrices.ts';
 
 describe('Rate conversion', () => {
-  it('getDecimals', () => {
-    assert.strictEqual(getDecimals(18), 9);
-    assert.strictEqual(getDecimals(8), 8);
-    assert.strictEqual(getDecimals(1), 1);
-    assert.strictEqual(getDecimals(null), 2);
-    assert.strictEqual(getDecimals(undefined), 2);
-    assert.strictEqual(getDecimals(0), 0);
-  });
-
   it('normalizeRate converting between FIAT with 2 decimals', () => {
     assert.strictEqual(
       normalizeRate(

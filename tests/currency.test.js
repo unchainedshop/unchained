@@ -593,10 +593,11 @@ test.describe('Currency', () => {
       } = await graphqlFetch({
         query: /* GraphQL */ `
           mutation {
-            createCurrency(currency: { isoCode: "btc" }) {
+            createCurrency(currency: { isoCode: "btc", decimals: 8 }) {
               _id
               isoCode
               isActive
+              decimals
             }
           }
         `,
@@ -605,8 +606,67 @@ test.describe('Currency', () => {
       assert.partialDeepStrictEqual(createCurrency, {
         isoCode: 'BTC',
         isActive: true,
+        decimals: 8,
       });
       await Currencies.deleteOne({ isoCode: 'BTC' });
+    });
+
+    test('defaults the decimals of an ISO currency and requires them for other codes', async () => {
+      const create = (currency) =>
+        graphqlFetch({
+          query: /* GraphQL */ `
+            mutation createCurrency($currency: CreateCurrencyInput!) {
+              createCurrency(currency: $currency) {
+                isoCode
+                decimals
+              }
+            }
+          `,
+          variables: { currency },
+        });
+
+      const { data } = await create({ isoCode: 'jpy' });
+      assert.deepStrictEqual(data.createCurrency, { isoCode: 'JPY', decimals: 0 });
+      assert.strictEqual((await Currencies.findOne({ isoCode: 'JPY' })).decimals, 0);
+
+      const { errors } = await create({ isoCode: 'MATIC' });
+      assert.strictEqual(errors[0].extensions.code, 'CurrencyDecimalsError');
+      assert.strictEqual(errors[0].extensions.reason, 'CURRENCY_DECIMALS_REQUIRED');
+
+      const { errors: invalid } = await create({ isoCode: 'ETH', decimals: 19 });
+      assert.strictEqual(invalid[0].extensions.reason, 'CURRENCY_DECIMALS_INVALID');
+      await Currencies.deleteOne({ isoCode: 'JPY' });
+    });
+
+    test('keeps the decimals of a currency once created', async () => {
+      const currencyId = await Currencies.insertOne({
+        _id: 'jpy-fixed',
+        isoCode: 'JPY',
+        isActive: true,
+        decimals: 0,
+        created: new Date(),
+      }).then(({ insertedId }) => insertedId);
+      const update = (currency) =>
+        graphqlFetch({
+          query: /* GraphQL */ `
+            mutation updateCurrency($currencyId: ID!, $currency: UpdateCurrencyInput!) {
+              updateCurrency(currencyId: $currencyId, currency: $currency) {
+                isActive
+                decimals
+              }
+            }
+          `,
+          variables: { currencyId, currency },
+        });
+
+      const { errors } = await update({ isoCode: 'JPY', decimals: 2 });
+      assert.strictEqual(errors[0].extensions.reason, 'CURRENCY_DECIMALS_FIXED');
+
+      const { data } = await update({ isoCode: 'JPY', isActive: false, decimals: 0 });
+      assert.deepStrictEqual(data.updateCurrency, { isActive: false, decimals: 0 });
+      const { data: toggled } = await update({ isoCode: 'JPY', isActive: true });
+      assert.deepStrictEqual(toggled.updateCurrency, { isActive: true, decimals: 0 });
+      await Currencies.deleteOne({ _id: currencyId });
     });
 
     test('update a currency', async () => {

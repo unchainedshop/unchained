@@ -86,7 +86,7 @@ export const LocalizationEntitySchema = z.object({
     .nonnegative()
     .optional()
     .describe(
-      'Decimal precision for currency calculations - only used when localizationType is CURRENCY (2 for traditional currencies like USD, 18 for crypto tokens), ignored otherwise',
+      'Decimal places of the currency amounts - only used when localizationType is CURRENCY, ignored otherwise. Defaults to the ISO 4217 minor unit (JPY 0, CHF 2, KWD 3) and is required for other codes like BTC (8). Can not change after creation',
     ),
 });
 

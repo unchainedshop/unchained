@@ -154,7 +154,7 @@ AI agents should check these resources **before** using localization tools to va
 
 ## Important notes
 
-- **Prices are integers**: All monetary values are stored as integers. Check the currency resource for decimal precision (e.g., CHF has 2 decimals, so `1990` = `19.90 CHF`).
+- **Prices are integers**: All monetary values are stored as integers. Check the currency resource for decimal precision (e.g., CHF has 2 decimals, so `1990` = `19.90 CHF`; JPY has 0, so `1990` = `JPY 1,990`).
 - **Resource validation**: Always check resources before creating or referencing localization entities to avoid errors.
 - **Stateless**: There is no session state to lose — reconnecting is just sending the next request with valid credentials.
 

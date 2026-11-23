@@ -29,7 +29,9 @@ export async function nextUserCartService(
   if (!shouldCreateNewCart) return null;
 
   const countryObject = await this.countries.findCountry({ isoCode: countryCode });
-  const currencies = await this.currencies.findCurrencies({ includeInactive: false });
+  const currencies = (await this.currencies.allCurrencies()).filter(
+    ({ isActive, deleted }) => isActive && !deleted,
+  );
   const currencyCode = resolveBestCurrency(countryObject?.defaultCurrencyCode || null, currencies);
 
   const order = await this.orders.create({

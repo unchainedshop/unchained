@@ -1,6 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/server';
 import type { Context } from '../../context.ts';
 import { createLogger } from '@unchainedshop/logger';
+import { currencyDecimals } from '@unchainedshop/utils';
 
 const logger = createLogger('unchained:api:mcp');
 
@@ -39,7 +40,7 @@ export async function getShopCurrenciesText(context: Context): Promise<string> {
         isoCode: c.isoCode,
         name: c.isoCode,
         isActive: c.isActive,
-        decimals: c.decimals,
+        decimals: currencyDecimals(c.decimals),
       })),
       note: 'If a required currency is missing, ask the user if they want to add it using localization_management tool with action: CREATE',
     },

@@ -43,15 +43,15 @@ export const Cryptopay: IPaymentAdapter = {
     const { modules } = context as typeof context & { modules: CryptopayModule };
 
     const setConversionRates = async (currencyCode: string, existingAddresses: any[]) => {
-      const originCurrencyObj = await modules.currencies.findCurrency({ isoCode: currencyCode });
+      const originCurrencyObj = await modules.currencies.findCachedCurrency(currencyCode);
 
       if (!originCurrencyObj?.isActive) throw new Error('Origin currency is not supported');
 
       const updatedAddresses = await Promise.all(
         existingAddresses.map(async (addressData) => {
-          const targetCurrencyObj = await modules.currencies.findCurrency({
-            isoCode: addressData.currencyCode,
-          });
+          const targetCurrencyObj = await modules.currencies.findCachedCurrency(
+            addressData.currencyCode,
+          );
           if (!targetCurrencyObj?.isActive) return null;
           const rateData = await modules.products.prices.rates.getRate(
             originCurrencyObj,
@@ -184,13 +184,13 @@ export const Cryptopay: IPaymentAdapter = {
         const totalAmount = BigInt(pricing?.total({ useNetPrice: false }).amount);
 
         if (walletForOrderPayment && walletForOrderPayment.currencyCode !== order.currencyCode) {
-          const baseCurrency = await modules.currencies.findCurrency({
-            isoCode: walletForOrderPayment.currencyCode,
-          });
+          const baseCurrency = await modules.currencies.findCachedCurrency(
+            walletForOrderPayment.currencyCode,
+          );
 
           if (!baseCurrency) throw new Error('Base currency not found');
 
-          const quoteCurrency = await modules.currencies.findCurrency({ isoCode: order.currencyCode });
+          const quoteCurrency = await modules.currencies.findCachedCurrency(order.currencyCode);
 
           if (!quoteCurrency) throw new Error('Quote currency not found');
 

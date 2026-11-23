@@ -38,12 +38,8 @@ export const ProductPriceRateConversion: IProductPricingAdapter = {
           return pricingAdapter.calculate();
         }
 
-        const fromCurrencyObj = await modules.currencies.findCurrency({
-          isoCode: productPrice.currencyCode,
-        });
-        const targetCurrencyObj = await modules.currencies.findCurrency({
-          isoCode: targetCurrency,
-        });
+        const fromCurrencyObj = await modules.currencies.findCachedCurrency(productPrice.currencyCode);
+        const targetCurrencyObj = await modules.currencies.findCachedCurrency(targetCurrency);
 
         if (!targetCurrencyObj?.isActive || !fromCurrencyObj?.isActive)
           return pricingAdapter.calculate();

@@ -1,5 +1,5 @@
+import { currencyDecimals } from '@unchainedshop/utils';
+
 export const Currency = {
-  decimals: (currency) => {
-    return currency.decimals ?? 2;
-  },
+  decimals: (currency) => currencyDecimals(currency.decimals),
 };

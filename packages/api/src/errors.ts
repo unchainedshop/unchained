@@ -78,6 +78,7 @@ export const FilterNotFoundError = createError('FilterNotFoundError', 'Filter no
 
 export const CountryNotFoundError = createError('CountryNotFoundError', 'Country not found');
 export const CurrencyNotFoundError = createError('CurrencyNotFoundError', 'Currency not found');
+export const CurrencyDecimalsError = createError('CurrencyDecimalsError', 'Invalid currency decimals');
 
 export const DeliverProviderNotFoundError = createError(
   'DeliverProviderNotFoundError',

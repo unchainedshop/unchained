@@ -84,7 +84,7 @@ mutation SetMultiCurrencyPrices {
 }
 ```
 
-Amounts are integers in the currency's smallest unit (cents).
+Amounts are integers in the currency's minor unit, set by `decimals`: 4999 is CHF 49.99, 5900 is JPY 5,900. A new currency gets its ISO 4217 minor unit unless you pass `decimals`, codes that aren't ISO (BTC, ETH) must pass it, and it can't change once set. Amounts use at most 9 decimals, so `decimals: 18` stores 1 ETH as 1000000000.
 
 ## Exchange Rates
 
@@ -277,7 +277,7 @@ The rate conversion described above works for crypto pairs too — the Coinbase 
 
 ## Best Practices
 
-- **Store amounts as integers** in the smallest unit (`4999` = 49.99 CHF) — never floats. For display, divide by `10^decimals` (2 by default) and format with `Intl.NumberFormat`.
+- **Store amounts as integers** in the minor unit (`4999` = 49.99 CHF) — never floats. For display, read `decimals` from `currencies { isoCode decimals }` (it is already capped at 9), divide by `10^decimals` and format with `Intl.NumberFormat` and that many fraction digits.
 - **Round consistently** — `Math.round()` after conversion, as the built-in rate conversion adapter does.
 - **Give rates a realistic validity window** — expired rates are ignored, so a stale feed makes conversion-priced products unavailable rather than mispriced.
 - **Prefer explicit catalog prices** for your main currencies; use rate conversion for the long tail.

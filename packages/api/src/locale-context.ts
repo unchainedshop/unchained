@@ -23,7 +23,9 @@ const uncachedResolveDefaultContext = async (
     { projection: { isoCode: 1, isActive: 1, defaultCurrencyCode: 1 } },
   );
 
-  const currencies = await unchainedAPI.modules.currencies.findCurrencies({ includeInactive: false });
+  const currencies = (await unchainedAPI.modules.currencies.allCurrencies()).filter(
+    ({ isActive, deleted }) => isActive && !deleted,
+  );
 
   const locale = resolveBestSupported(acceptLang, acceptCountry, { countries, languages });
 

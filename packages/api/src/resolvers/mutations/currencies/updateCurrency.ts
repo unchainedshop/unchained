@@ -1,7 +1,7 @@
 import type { Context } from '../../../context.ts';
 import type { Currency } from '@unchainedshop/core-currencies';
 import { log } from '@unchainedshop/logger';
-import { CurrencyNotFoundError, InvalidIdError } from '../../../errors.ts';
+import { CurrencyDecimalsError, CurrencyNotFoundError, InvalidIdError } from '../../../errors.ts';
 
 export default async function updateCurrency(
   root: never,
@@ -14,7 +14,12 @@ export default async function updateCurrency(
   if (!(await modules.currencies.currencyExists({ currencyId })))
     throw new CurrencyNotFoundError({ currencyId });
 
-  await modules.currencies.update(currencyId, currency);
+  try {
+    await modules.currencies.update(currencyId, currency);
+  } catch (error) {
+    if (!String(error.cause).startsWith('CURRENCY_DECIMALS')) throw error;
+    throw new CurrencyDecimalsError({ message: error.message, reason: error.cause });
+  }
 
   return modules.currencies.findCurrency({ currencyId });
 }

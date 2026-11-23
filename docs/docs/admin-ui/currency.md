@@ -30,7 +30,7 @@ To add a new currency to your e-commerce store, you can navigate to the currenci
 
 For regular currencies, you will need to enter the ISO code for the currency, which is a three-letter code that represents the currency on the global market. After submitting the form, you will be redirected to the detail page for the newly added currency.
 
-However, if you want to add an ERC token as a currency, you will need to provide the token's contract address and precision using the inputs provided in the form. The contract address is a unique identifier for the token on the blockchain, while the precision determines how many decimal places are used to represent the token's value. After submitting the form, you will be redirected to the detail page for the new ERC token currency.
+However, if you want to add an ERC token as a currency, you will need to provide the token's contract address and precision using the inputs provided in the form. The contract address is a unique identifier for the token on the blockchain, while the precision determines how many decimal places are used to represent the token's value. Codes that aren't ISO currencies need it, and amounts use at most 9 decimals. After submitting the form, you will be redirected to the detail page for the new ERC token currency.
 
 By providing a simple and intuitive form for adding new currencies, the Admin UI makes it easy to manage multiple currencies and tokens for your e-commerce store. 
 
@@ -40,7 +40,7 @@ By providing a simple and intuitive form for adding new currencies, the Admin UI
 
 To view or update the details of a currency on the currencies list, you can click on the edit icon next to the currency you want to modify. This will take you to the currency detail page, where you can view and update the currency's information.
 
-On the detail page, you will see the current values for the currency's contract address, status, and ISO code. If you need to update any of these values, you can do so by making changes in the provided input fields. However, as a precaution, it is not recommended to change the ISO code or contract address unless absolutely necessary, as doing so may cause data integrity issues throughout the system.
+On the detail page, you will see the current values for the currency's contract address, status, and ISO code. If you need to update any of these values, you can do so by making changes in the provided input fields. However, as a precaution, it is not recommended to change the ISO code or contract address unless absolutely necessary, as doing so may cause data integrity issues throughout the system. The decimals can't change, because stored prices and orders are amounts in them.
 
 Before making any changes to the currency information, be sure to carefully consider the potential impact on other parts of the system, and consult with any relevant stakeholders or experts to ensure that the change will not cause any unintended consequences or issues with data integrity.
 

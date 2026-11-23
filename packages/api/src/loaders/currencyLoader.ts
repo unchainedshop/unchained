@@ -4,17 +4,9 @@ import DataLoader from 'dataloader';
 
 export default (unchainedAPI: UnchainedCore) =>
   new DataLoader<{ isoCode: string }, Currency>(async (queries) => {
-    const isoCodes = [...new Set(queries.map((q) => q.isoCode).filter(Boolean))];
-
-    const currencies = await unchainedAPI.modules.currencies.findCurrencies({
-      isoCodes,
-      includeInactive: true,
-    });
-
-    const currencyMap = {};
-    for (const currency of currencies) {
-      currencyMap[currency.isoCode] = currency;
-    }
-
-    return queries.map((q) => currencyMap[q.isoCode]);
+    const currencies = await unchainedAPI.modules.currencies.allCurrencies();
+    return queries.map(
+      ({ isoCode }) =>
+        currencies.find((currency) => !currency.deleted && currency.isoCode === isoCode) as Currency,
+    );
   });
