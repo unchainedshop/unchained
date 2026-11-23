@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { setTimeout } from 'node:timers/promises';
 import { Collection } from 'mongodb';
 import { filtersSettings } from '@unchainedshop/core-filters';
 import { FilterDirector } from '@unchainedshop/core';
@@ -160,4 +161,65 @@ test('a failed read is retried instead of remembered', async (t) => {
   await assert.rejects(read(), /database unavailable/);
   outage.mock.restore();
   assert.deepEqual(await read(), ['p1']);
+});
+
+// Records whether each read on the cache collection fetched product ids or only row hashes.
+const recordReads = (t) => {
+  const reads = [];
+  const find = Collection.prototype.find;
+  t.mock.method(Collection.prototype, 'find', function (selector, options, ...rest) {
+    if (this.collectionName === 'filter_productId_cache') {
+      reads.push(options?.projection?.productIds ? 'productIds' : 'hashes');
+    }
+    return find.call(this, selector, options, ...rest);
+  });
+  return reads;
+};
+
+// Outside production the memo expires after 1 ms, so each read below starts after an expiry.
+const readExpired = async (filterId) => {
+  await setTimeout(5);
+  return filtersSettings.getCachedProductIds(filterId);
+};
+
+test('an expired filter is checked by its hashes and read again only after a change', async (t) => {
+  const [db] = await setupDatabase();
+  const originalSettings = { ...filtersSettings };
+  t.after(() => filtersSettings.configureSettings(originalSettings, db));
+  await filtersSettings.configureSettings({}, db);
+  await filtersSettings.setCachedProductIds('revalidated', ['p1', 'p2'], { yes: ['p1'], no: ['p2'] }, 1);
+  const reads = recordReads(t);
+
+  const first = await readExpired('revalidated');
+  const second = await readExpired('revalidated');
+  assert.deepEqual(reads, ['productIds', 'hashes']);
+  assert.equal(second[0], first[0]);
+  assert.deepEqual(second, [['p1', 'p2'], { yes: ['p1'], no: ['p2'] }]);
+
+  reads.length = 0;
+  await filtersSettings.setCachedProductIds('revalidated', ['p1'], { yes: ['p1'] }, 2);
+  assert.deepEqual(await readExpired('revalidated'), [['p1'], { yes: ['p1'] }]);
+  assert.deepEqual(reads, ['hashes', 'productIds']);
+
+  reads.length = 0;
+  await filtersSettings.purgeCachedProductIds('revalidated');
+  assert.equal(await readExpired('revalidated'), null);
+  assert.deepEqual(reads, ['productIds']);
+});
+
+test('rows without a hash are read completely on every expiry', async (t) => {
+  const [db] = await setupDatabase();
+  const originalSettings = { ...filtersSettings };
+  t.after(() => filtersSettings.configureSettings(originalSettings, db));
+  await filtersSettings.configureSettings({}, db);
+  await db.collection('filter_productId_cache').insertMany([
+    { filterId: 'unhashed', filterOptionValue: null, productIds: ['p1'] },
+    { filterId: 'unhashed', filterOptionValue: 'yes', productIds: ['p1'] },
+  ]);
+  const reads = recordReads(t);
+
+  for (let i = 0; i < 2; i += 1) {
+    assert.deepEqual(await readExpired('unhashed'), [['p1'], { yes: ['p1'] }]);
+  }
+  assert.deepEqual(reads, ['productIds', 'productIds']);
 });

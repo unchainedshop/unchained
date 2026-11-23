@@ -8,6 +8,8 @@ export interface FilterProductIdCacheRecord {
   productIds: string[];
   /* The filter generation this row was computed from, see filterCacheGeneration. */
   computedAt?: number;
+  /* Hash of the row's product ids. Rows without one are read again on every expiry. */
+  hash?: string;
 }
 
 const DUPLICATE_KEY = 11000;
@@ -69,27 +71,66 @@ export default async function mongodbCache(db: mongodb.Db) {
     { index: { filterId: 1, filterOptionValue: 1 } },
   ]);
 
+  // The last value read per filter and the hashes of its rows. When the memo below expires, a
+  // filter whose rows still carry the same hashes keeps its arrays instead of decoding them again.
+  const lastRead = new Map<
+    string,
+    { signature: string; value: [string[], Record<string, string[]>] | null }
+  >();
+  const signatureOf = (rows: { filterOptionValue?: string | null; hash?: string }[] = []) =>
+    rows.some((row) => !row.hash)
+      ? null
+      : rows
+          .map((row) => `${row.filterOptionValue ?? ''}\u0000${row.hash}`)
+          .sort()
+          .join('\u0001');
+
   // Misses of the same tick share one query. Retention and eviction stay with the memo below.
   const databaseLoader = new DataLoader(
     async (filterIds: readonly string[]) => {
-      const rows = await FilterProductIdCache.find(
-        { filterId: { $in: filterIds } },
-        { projection: { filterId: 1, productIds: 1, filterOptionValue: 1 } },
-      ).toArray();
+      // Filters read before only need their hashes; the others are read completely.
+      const known = filterIds.filter((filterId) => lastRead.has(filterId));
+      const hashRows = known.length
+        ? await FilterProductIdCache.find(
+            { filterId: { $in: known } },
+            { projection: { _id: 0, filterId: 1, filterOptionValue: 1, hash: 1 } },
+          ).toArray()
+        : [];
+      const hashRowsByFilterId = Map.groupBy(hashRows, (row) => row.filterId);
+      const unchanged = new Set(
+        known.filter((filterId) => {
+          const signature = signatureOf(hashRowsByFilterId.get(filterId));
+          return signature !== null && lastRead.get(filterId)!.signature === signature;
+        }),
+      );
+
+      const toRead = filterIds.filter((filterId) => !unchanged.has(filterId));
+      const rows = toRead.length
+        ? await FilterProductIdCache.find(
+            { filterId: { $in: toRead } },
+            { projection: { filterId: 1, productIds: 1, filterOptionValue: 1, hash: 1 } },
+          ).toArray()
+        : [];
       const rowsByFilterId = Map.groupBy(rows, (row) => row.filterId);
 
       return filterIds.map((filterId) => {
+        if (unchanged.has(filterId)) return lastRead.get(filterId)!.value;
         const filterProductIdCache = rowsByFilterId.get(filterId);
-        if (!filterProductIdCache) return null;
-
-        const allProductIds =
-          filterProductIdCache.find((cache) => cache.filterOptionValue === null)?.productIds || [];
-        const productIdsMap = Object.fromEntries(
-          filterProductIdCache
-            .filter((cache) => cache.filterOptionValue !== null)
-            .map((cache) => [cache.filterOptionValue as string, cache.productIds]),
-        );
-        return [allProductIds, productIdsMap] as [string[], Record<string, string[]>];
+        let value: [string[], Record<string, string[]>] | null = null;
+        if (filterProductIdCache) {
+          const allProductIds =
+            filterProductIdCache.find((cache) => cache.filterOptionValue === null)?.productIds || [];
+          const productIdsMap = Object.fromEntries(
+            filterProductIdCache
+              .filter((cache) => cache.filterOptionValue !== null)
+              .map((cache) => [cache.filterOptionValue as string, cache.productIds]),
+          );
+          value = [allProductIds, productIdsMap];
+        }
+        const signature = signatureOf(filterProductIdCache);
+        if (signature === null) lastRead.delete(filterId);
+        else lastRead.set(filterId, { signature, value });
+        return value;
       });
     },
     { cache: false },
@@ -115,6 +156,7 @@ export default async function mongodbCache(db: mongodb.Db) {
   const purgeCachedProductIds = async (filterId: string) => {
     await FilterProductIdCache.deleteMany({ filterId });
     evictFromMemoryCache(filterId);
+    lastRead.delete(filterId);
   };
 
   return {
