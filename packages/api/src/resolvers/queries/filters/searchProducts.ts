@@ -14,7 +14,7 @@ export default async function searchProducts(
   },
   context: Context,
 ) {
-  const { modules, loaders, services, userId, locale } = context;
+  const { modules, loaders, services, userId, locale, countryCode, currencyCode } = context;
   const { queryString, includeInactive, filterQuery, assortmentId, ignoreChildAssortments, ...rest } =
     query;
 
@@ -31,12 +31,12 @@ export default async function searchProducts(
     });
     return services.filters.searchProducts(
       { queryString, includeInactive, filterQuery, productIds, filterIds, ...rest },
-      { locale: locale, userId },
+      { locale, userId, countryCode, currencyCode },
     );
   }
 
   return services.filters.searchProducts(
     { queryString, includeInactive, filterQuery, ...rest },
-    { locale: locale, userId },
+    { locale, userId, countryCode, currencyCode },
   );
 }

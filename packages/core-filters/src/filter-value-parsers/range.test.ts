@@ -23,4 +23,21 @@ describe('range', () => {
     const result = range(values, allKeys);
     assert.deepStrictEqual(result, ['1', '2', '3']);
   });
+
+  it('accepts bounds that fall between keys', () => {
+    assert.deepStrictEqual(range(['1500:3500'], ['1000', '2000', '3000', '4000']), ['2000', '3000']);
+  });
+
+  it('treats a missing bound as open', () => {
+    const allKeys = ['10', '20', '30'];
+    assert.deepStrictEqual(range([':20'], allKeys), ['10', '20']);
+    assert.deepStrictEqual(range(['20:'], allKeys), ['20', '30']);
+    assert.deepStrictEqual(range([':'], allKeys), allKeys);
+  });
+
+  it('matches nothing for an empty or non-numeric range', () => {
+    const allKeys = ['10', '20'];
+    assert.deepStrictEqual(range([''], allKeys), []);
+    assert.deepStrictEqual(range(['a:b'], allKeys), []);
+  });
 });

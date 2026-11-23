@@ -10,6 +10,8 @@ export async function loadFiltersService(
     forceLiveCollection?: boolean;
     locale?: Intl.Locale;
     userId?: string;
+    countryCode?: string;
+    currencyCode?: string;
   },
 ) {
   const filterActions = await FilterDirector.actions({ searchQuery }, { modules: this });

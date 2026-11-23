@@ -16,7 +16,7 @@ import useApp from '../../common/hooks/useApp';
 const FilterOptions = ({ filterId }) => {
   const { formatMessage } = useIntl();
   const { selectedLocale } = useApp();
-  const { filterOptions } = useFilterOptions({
+  const { filterOptions, optionsAreGenerated } = useFilterOptions({
     filterId,
     locale: selectedLocale,
   });
@@ -41,7 +41,7 @@ const FilterOptions = ({ filterId }) => {
         defaultMessage: 'Filter options',
       })}
       sideComponents={
-        hasRole(IRoleAction.ManageFilters) ? (
+        hasRole(IRoleAction.ManageFilters) && !optionsAreGenerated ? (
           <button
             type="button"
             onClick={() =>
@@ -63,7 +63,11 @@ const FilterOptions = ({ filterId }) => {
       }
     >
       <div className="mt-8 w-full border-border-default p-3 sm:mt-0 shadow-md  bg-surface-input">
-        <FilterOptionsList filterId={filterId} options={filterOptions} />
+        <FilterOptionsList
+          filterId={filterId}
+          options={filterOptions}
+          readOnly={optionsAreGenerated}
+        />
       </div>
     </SelfDocumentingView>
   );

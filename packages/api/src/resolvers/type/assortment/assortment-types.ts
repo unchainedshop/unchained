@@ -132,6 +132,8 @@ export const AssortmentTypes = {
       {
         locale: requestContext.locale,
         userId: requestContext.userId,
+        countryCode: requestContext.countryCode,
+        currencyCode: requestContext.currencyCode,
       },
     );
   },

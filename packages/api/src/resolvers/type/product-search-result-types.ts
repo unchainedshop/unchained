@@ -66,6 +66,8 @@ export const ProductSearchResult = {
       userId: context.userId,
       productIds: relevantProductIds,
       forceLiveCollection: searchConfiguration.forceLiveCollection,
+      countryCode: searchConfiguration.countryCode,
+      currencyCode: searchConfiguration.currencyCode,
     });
   },
 };

@@ -10,7 +10,12 @@ import TableActionsMenu from '../../common/components/TableActionsMenu';
 import Button from '@/components/ui/Button';
 import useApp from '../../common/hooks/useApp';
 
-const FilterOptionsListItem = ({ filterId, option, onDelete }) => {
+const FilterOptionsListItem = ({
+  filterId,
+  option,
+  onDelete,
+  readOnly = false,
+}) => {
   const { formatMessage } = useIntl();
   const [isEdit, setIsEdit] = useState(false);
   const { selectedLocale } = useApp();
@@ -98,7 +103,7 @@ const FilterOptionsListItem = ({ filterId, option, onDelete }) => {
               </div>
             </div>
             <div>
-              {isEdit ? (
+              {readOnly ? null : isEdit ? (
                 <div className="flex gap-2">
                   <Button
                     variant="secondary"

@@ -10,7 +10,13 @@ import { FilterDirector, type SearchProductsOptions } from '../directors/index.t
 export async function searchProductsService(
   this: Modules,
   searchQuery: SearchQuery,
-  options: { forceLiveCollection?: boolean; locale: Intl.Locale; userId?: string },
+  options: {
+    forceLiveCollection?: boolean;
+    locale: Intl.Locale;
+    userId?: string;
+    countryCode?: string;
+    currencyCode?: string;
+  },
 ) {
   const filterActions = await FilterDirector.actions({ searchQuery }, { modules: this });
 

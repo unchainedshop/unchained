@@ -44,6 +44,7 @@ export default [
       type: FilterType
       key: String
       options: [FilterOption!]
+      optionsAreGenerated: Boolean!
     }
 
     type LoadedFilterOption @cacheControl(maxAge: 180) {

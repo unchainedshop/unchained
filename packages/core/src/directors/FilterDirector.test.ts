@@ -41,6 +41,7 @@ describe('FilterDirector', () => {
     const facetedSearch = (
       productIdMaps: Record<string, Record<string, string[]>>,
       filterQuery: { key: string; value: string }[],
+      strictFilterQuery?: boolean,
     ) => {
       const director = {
         ...FilterDirector,
@@ -57,7 +58,11 @@ describe('FilterDirector', () => {
       };
       return director.productFacetedSearch(
         hitsByRelevance,
-        { searchQuery: { filterQuery }, filterSelector: {}, forceLiveCollection: true } as any,
+        {
+          searchQuery: { filterQuery, strictFilterQuery },
+          filterSelector: {},
+          forceLiveCollection: true,
+        } as any,
         { modules } as any,
       );
     };
@@ -82,6 +87,15 @@ describe('FilterDirector', () => {
         ],
       );
       assert.deepStrictEqual(result, ['p5', 'p3', 'p1']);
+    });
+
+    it('should ignore a key without an applicable filter unless the query is strict', async () => {
+      const productIdMaps = { brand: { nike: ['p1', 'p3', 'p5'] } };
+      const filterQuery = [{ key: 'price', value: '0:5000' }];
+      assert.deepStrictEqual(await facetedSearch(productIdMaps, filterQuery), hitsByRelevance);
+      await assert.rejects(facetedSearch(productIdMaps, filterQuery, true), {
+        cause: 'FILTER_NOT_APPLICABLE',
+      });
     });
   });
 

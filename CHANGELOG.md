@@ -1,5 +1,13 @@
 # Unchained Engine v5.0 (Breaking Changes)
 
+## Unreleased
+
+### Breaking
+- **RANGE filters accept open bounds** (`@unchainedshop/core-filters`): `100:` now matches 100 and above and `:500` up to 500, instead of the exact value 100 and nothing.
+
+### Improvements
+- **Filter adapters can generate a filter's options** (`@unchainedshop/core`): `generatedOptions` replaces the option scan of a cache rebuild, `Filter.optionsAreGenerated` marks them read-only in Admin UI, and transforms receive the request's `countryCode` and `currencyCode`.
+
 ## v5.0.0-alpha.14 (2026-11-19)
 
 ### Security

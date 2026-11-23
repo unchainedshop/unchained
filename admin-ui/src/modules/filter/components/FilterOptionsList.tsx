@@ -7,7 +7,7 @@ import DangerMessage from '../../modal/components/DangerMessage';
 import FilterOptionsListItem from './FilterOptionsListItem';
 import useApp from '../../common/hooks/useApp';
 
-const FilterOptionsList = ({ filterId, options }) => {
+const FilterOptionsList = ({ filterId, options, readOnly = false }) => {
   const { formatMessage } = useIntl();
   const { setModal } = useModal();
   const { selectedLocale } = useApp();
@@ -49,6 +49,7 @@ const FilterOptionsList = ({ filterId, options }) => {
             key={`${option._id}${selectedLocale}`}
             option={option}
             onDelete={onRemoveFilterOption}
+            readOnly={readOnly}
           />
         ))}
       </ul>

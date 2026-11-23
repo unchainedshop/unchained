@@ -1065,7 +1065,7 @@ export type IFilterOptionsQueryVariables = Exact<{
 }>;
 
 
-export type IFilterOptionsQuery = { filter: { _id: string, options: Array<{ _id: string, value: string | null, texts: { _id: string, title: string | null, subtitle: string | null, locale: unknown } | null }> | null } | null };
+export type IFilterOptionsQuery = { filter: { _id: string, optionsAreGenerated: boolean, options: Array<{ _id: string, value: string | null, texts: { _id: string, title: string | null, subtitle: string | null, locale: unknown } | null }> | null } | null };
 
 export type IFilterTypesQueryVariables = Exact<{ [key: string]: never; }>;
 

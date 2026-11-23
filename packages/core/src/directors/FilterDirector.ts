@@ -4,6 +4,7 @@ import type { FilterAdapterActions, FilterContext, IFilterAdapter } from './Filt
 import {
   type Filter,
   filterCacheGeneration,
+  filterOptionValues,
   filtersSettings,
   FilterType,
   type SearchConfiguration,
@@ -29,6 +30,8 @@ export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
     unchainedAPI: { modules: Modules },
   ) => Promise<FilterAdapterActions>;
   invalidateProductIdCache: (filter: Filter, unchainedAPI: { modules: Modules }) => Promise<void>;
+  hasGeneratedOptions: (filter: Filter) => boolean;
+  optionValues: (filter: Filter) => Promise<string[]>;
   findProductIds: (
     filter: Filter,
     { value }: { value?: boolean | string },
@@ -66,8 +69,24 @@ export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
   ) => Promise<string[]>;
 };
 
+const generatedOptionsOf = (filter: Filter) =>
+  FilterDirector.getAdapters().find((adapter) => adapter.generatedOptions?.appliesTo(filter))
+    ?.generatedOptions;
+
 export const FilterDirector: IFilterDirector = {
   ...registryDirector<IFilterAdapter>(FilterAdapter.adapterType!),
+
+  hasGeneratedOptions(filter) {
+    return Boolean(generatedOptionsOf(filter));
+  },
+
+  async optionValues(filter) {
+    if (!generatedOptionsOf(filter)) return filterOptionValues(filter);
+    const [, productIdMap] = (await filtersSettings.getCachedProductIds(filter._id)) || [[], {}];
+    return Object.keys(productIdMap).toSorted((left, right) =>
+      left.localeCompare(right, undefined, { numeric: true }),
+    );
+  },
 
   actions: async (filterContext, unchainedAPI) => {
     const context = { ...filterContext, ...unchainedAPI };
@@ -229,6 +248,17 @@ export const FilterDirector: IFilterDirector = {
         })
       : [];
 
+    if (searchQuery.strictFilterQuery) {
+      const inapplicableKey = Object.keys(parsedFilterQuery).find(
+        (key) => !filters.some((filter) => filter.key === key),
+      );
+      if (inapplicableKey) {
+        throw new Error(`Filter ${inapplicableKey} does not apply to this search`, {
+          cause: 'FILTER_NOT_APPLICABLE',
+        });
+      }
+    }
+
     const selectedProductIdSets = await Promise.all(
       filters
         .filter((filter) => parsedFilterQuery[filter.key])
@@ -312,7 +342,10 @@ export const FilterDirector: IFilterDirector = {
   async invalidateProductIdCache(filter: Filter, unchainedAPI: { modules: Modules }) {
     if (!filter) return;
 
-    const [productIds, productIdMap] = await this.buildProductIdMap(filter, unchainedAPI);
+    const generatedOptions = generatedOptionsOf(filter);
+    const [productIds, productIdMap] = generatedOptions
+      ? await generatedOptions.buildProductIdMap(filter, unchainedAPI)
+      : await this.buildProductIdMap(filter, unchainedAPI);
 
     // A deleted filter has no generation left to be overtaken by, so it needs its own check.
     // This is about not rebuilding the cache of something that no longer exists rather than

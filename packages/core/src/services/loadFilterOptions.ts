@@ -1,4 +1,4 @@
-import { filterOptionValues, type Filter, type SearchQuery } from '@unchainedshop/core-filters';
+import type { Filter, SearchQuery } from '@unchainedshop/core-filters';
 import type { Modules } from '../modules.ts';
 import { FilterDirector, parseQueryArray } from '../directors/FilterDirector.ts';
 
@@ -16,7 +16,7 @@ export async function loadFilterOptionsService(
   const filterQueryParsed = parseQueryArray(searchQuery?.filterQuery);
   const values = filterQueryParsed[filter.key];
 
-  const allOptions = filterOptionValues(filter);
+  const allOptions = await FilterDirector.optionValues(filter);
   const mappedOptions = await Promise.all(
     allOptions.map(async (value) => {
       const filterOptionProductIds = await FilterDirector.filterProductIds(

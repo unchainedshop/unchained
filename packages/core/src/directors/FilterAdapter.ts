@@ -29,7 +29,11 @@ export interface TransformOptions {
   value?: any;
   userId?: string;
   locale?: Intl.Locale;
+  countryCode?: string;
+  currencyCode?: string;
 }
+
+export type FilterProductIdMap = [string[], Record<string, string[]>];
 
 export interface FilterAdapterActions {
   aggregateProductIds: (params: { productIds: string[] }) => string[];
@@ -64,6 +68,14 @@ export interface FilterAdapterActions {
 
 export type IFilterAdapter = IBaseAdapter & {
   orderIndex: number;
+
+  generatedOptions?: {
+    appliesTo: (filter: Filter) => boolean;
+    buildProductIdMap: (
+      filter: Filter,
+      unchainedAPI: { modules: Modules },
+    ) => Promise<FilterProductIdMap>;
+  };
 
   actions: (params: FilterContext & { modules: Modules }) => FilterAdapterActions;
 };

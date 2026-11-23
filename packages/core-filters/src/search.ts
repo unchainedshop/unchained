@@ -15,6 +15,7 @@ export interface SearchQuery {
   orderBy?: string;
   productIds?: string[];
   queryString?: string;
+  strictFilterQuery?: boolean;
 }
 export interface SearchConfiguration {
   searchQuery?: SearchQuery;
@@ -23,6 +24,8 @@ export interface SearchConfiguration {
   forceLiveCollection: boolean;
   locale: Intl.Locale;
   userId?: string;
+  countryCode?: string;
+  currencyCode?: string;
 }
 
 export interface FilterQuery {

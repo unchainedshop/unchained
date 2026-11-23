@@ -10,6 +10,7 @@ const FilterOptionsQuery = gql`
   query FilterOptions($filterId: ID, $forceLocale: Locale) {
     filter(filterId: $filterId) {
       _id
+      optionsAreGenerated
       options {
         ...FilterOptionFragment
       }
@@ -32,6 +33,7 @@ const useFilterOptions = ({
 
   return {
     filterOptions: data?.filter?.options || [],
+    optionsAreGenerated: data?.filter?.optionsAreGenerated,
     loading,
     error,
   };
