@@ -1,5 +1,10 @@
 # Unchained Engine v5.0 (Breaking Changes)
 
+## Unreleased
+
+### Fixed
+- **Bulk import keeps a filter's options when an event omits them** (`@unchainedshop/core`, `@unchainedshop/admin-ui`): an `UPDATE`, or a `CREATE` that upserts an existing filter, replaced them with none, and the Admin UI CSV import sent an empty list for filters without rows in the options file.
+
 ## v5.0.0-alpha.14 (2026-11-19)
 
 ### Security

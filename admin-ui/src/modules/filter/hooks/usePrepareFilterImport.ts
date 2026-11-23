@@ -118,7 +118,9 @@ const buildFilterEvents = (filter: BuildFilterEventsParam) => {
         key: filter['key'] || '',
         isActive: filter['isActive'] === 'true',
         content: normalizeContent(filter),
-        options: (filter?.options ?? []).map(normalizeOptions),
+        ...(filter.options?.length
+          ? { options: filter.options.map(normalizeOptions) }
+          : {}),
         meta,
       },
     },

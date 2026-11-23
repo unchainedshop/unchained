@@ -519,6 +519,41 @@ test.describe('Bulk Importer', () => {
 
       assert.strictEqual(result, true);
     }, 30000);
+
+    test('keeps the options when an event omits them', async () => {
+      const importFilter = async (operation, specification, options = {}) => {
+        const { data: { addWork } = {} } = await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation addWork($input: JSON) {
+              addWork(type: BULK_IMPORT, input: $input, retries: 0, priority: 10) {
+                _id
+              }
+            }
+          `,
+          variables: {
+            input: {
+              events: [{ entity: 'FILTER', operation, payload: { _id: 'Filter B', specification } }],
+              ...options,
+            },
+          },
+        });
+        await waitForImport(addWork._id);
+        return (await db.collection('filters').findOne({ _id: 'Filter B' })).options;
+      };
+      const specification = {
+        key: 'width_cm',
+        type: 'SINGLE_CHOICE',
+        content: { de: { title: 'Width' } },
+      };
+
+      await importFilter('CREATE', { ...specification, options: [{ value: '10' }, { value: '20' }] });
+      assert.deepStrictEqual(await importFilter('UPDATE', { isActive: true }), ['10', '20']);
+      assert.deepStrictEqual(
+        await importFilter('CREATE', specification, { createShouldUpsertIfIDExists: true }),
+        ['10', '20'],
+      );
+      assert.deepStrictEqual(await importFilter('UPDATE', { options: [{ value: '30' }] }), ['30']);
+    }, 30000);
   });
 
   test.describe('Import Assortments', () => {

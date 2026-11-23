@@ -56,7 +56,7 @@ export default async function createFilter(
     logger.debug('entity already exists, falling back to update', specification);
     await modules.filters.update(_id, {
       ...filterData,
-      options: options?.map((option) => option.value) || [],
+      ...(options && { options: options.map((option) => option.value) }),
     });
   }
 
