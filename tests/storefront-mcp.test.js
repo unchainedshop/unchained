@@ -11,6 +11,7 @@ import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { seedStorefrontCatalog } from './seeds/storefront.js';
 
 let baseUrl;
+let db;
 let filterIds;
 
 const parseMcpResponse = async (response) => {
@@ -53,7 +54,7 @@ const ids = (result) => result.structuredContent.products.map(({ id }) => id);
 
 test.describe('Storefront MCP', () => {
   test.before(async () => {
-    const [db] = await setupDatabase();
+    [db] = await setupDatabase();
     baseUrl = getServerBaseUrl();
     filterIds = await seedStorefrontCatalog(db, adminGraphqlFetch);
   });
@@ -205,6 +206,40 @@ test.describe('Storefront MCP', () => {
       [configurable.price.amount, configurable.price.maxPrice.amount],
       [3000, 9000],
     );
+  });
+
+  test('formats prices with the decimals of the market currency', async () => {
+    await db
+      .collection('currencies')
+      .insertOne({ _id: 'kwd', isoCode: 'KWD', isActive: true, decimals: 3 });
+    await db
+      .collection('countries')
+      .insertOne({ _id: 'kw', isoCode: 'KW', isActive: true, defaultCurrencyCode: 'KWD' });
+    await db.collection('products').updateOne(
+      { _id: 'sf-mini-8' },
+      {
+        $push: {
+          'commerce.pricing': {
+            countryCode: 'KW',
+            currencyCode: 'KWD',
+            amount: 12345,
+            minQuantity: 0,
+            isTaxable: true,
+            isNetPrice: false,
+          },
+        },
+      },
+    );
+    const result = await searchProducts(
+      { product_ids: ['sf-mini-8'] },
+      { meta: { 'openai/locale': 'en-US', 'openai/userLocation': { country: 'KW' } } },
+    );
+    assert.deepStrictEqual(result.structuredContent.products[0].price, {
+      amount: 12345,
+      formatted: 'KWD\u00a012.345',
+      currency: 'KWD',
+      isNetPrice: false,
+    });
   });
 
   test('pages through results and selects earlier results by ID', async () => {
