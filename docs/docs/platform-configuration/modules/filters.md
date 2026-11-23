@@ -42,6 +42,10 @@ Storing `computedAt` alongside each cached value and comparing before writing or
 enough. A generation moving without the cache actually changing is harmless — it costs a skipped
 write, and whatever moved it queues an invalidation anyway.
 
+`getCachedProductIds` must return new arrays when a filter's product ids change and must never
+modify an array it has already returned: the filter director builds one `Set` per array and
+reuses it for as long as the array lives.
+
 `purgeCachedProductIds` drops a filter's cache outright and is called when the filter is
 deleted.
 

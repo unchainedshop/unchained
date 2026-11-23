@@ -13,8 +13,9 @@ import {
 import type { Product } from '@unchainedshop/core-products';
 import type { Modules } from '../modules.ts';
 
-// One Set per cached product id array: the arrays only change when the cache reloads them, and
-// callers only intersect the returned Sets.
+// One Set per cached product id array. Cache backends hand out new arrays when memberships change
+// and never modify one they returned, and callers get the Sets read-only, so a Set stays right for
+// as long as its array lives.
 const productIdSets = new WeakMap<string[], Set<string>>();
 const asSet = (productIds: string[]) => {
   let set = productIdSets.get(productIds);
@@ -49,11 +50,12 @@ export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
     filter: Filter,
     unchainedAPI: { modules: Modules },
   ) => Promise<[string[], Record<string, string[]>]>;
+  /* The Set can be shared with other callers and later searches: intersect it, never change it. */
   filterProductIds: (
     filter: Filter,
     { values, forceLiveCollection }: { values: string[]; forceLiveCollection?: boolean },
     unchainedAPI: { modules: Modules },
-  ) => Promise<Set<string>>;
+  ) => Promise<ReadonlySet<string>>;
 
   filterFacets: (
     filter: Filter,
@@ -67,7 +69,7 @@ export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
   ) => Promise<{
     examinedProductIdSet: Set<string>;
     filteredByOtherFiltersSet: Set<string>;
-    filteredByThisFilterSet: Set<string>;
+    filteredByThisFilterSet: ReadonlySet<string>;
   }>;
 
   productFacetedSearch: (
@@ -199,7 +201,7 @@ export const FilterDirector: IFilterDirector = {
     filter: Filter,
     { values, forceLiveCollection }: { values: string[]; forceLiveCollection?: boolean },
     unchainedAPI: { modules: Modules },
-  ): Promise<Set<string>> {
+  ): Promise<ReadonlySet<string>> {
     const [allProductIds, keyToProductIdMap]: [string[], Record<string, string[]>] =
       (!forceLiveCollection && (await filtersSettings.getCachedProductIds(filter._id))) ||
       (await this.buildProductIdMap(filter, unchainedAPI));

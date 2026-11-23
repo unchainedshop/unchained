@@ -8,7 +8,7 @@ export interface LoadedFilterData {
   filter: Filter;
   examinedProductIdSet: Set<string>;
   filteredByOtherFiltersSet: Set<string>;
-  filteredByThisFilterSet: Set<string>;
+  filteredByThisFilterSet: ReadonlySet<string>;
 }
 
 export const LoadedFilter = {
