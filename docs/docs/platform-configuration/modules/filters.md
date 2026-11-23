@@ -42,14 +42,22 @@ Storing `computedAt` alongside each cached value and comparing before writing or
 enough. A generation moving without the cache actually changing is harmless — it costs a skipped
 write, and whatever moved it queues an invalidation anyway.
 
+`getCachedProductIds` must return new arrays when a filter's product ids change and must never
+modify an array it has already returned: the filter director builds one `Set` per array and
+reuses it for as long as the array lives.
+
 `purgeCachedProductIds` drops a filter's cache outright and is called when the filter is
 deleted.
 
 ### Default Caching Implementation
 
 The MongoDB backend loads concurrent cache misses with one query on the filter ID index, so a
-search reads the memberships of all its expired filters together. Missing memberships still
-use the filter adapter to compute a live result.
+search reads the memberships of all its expired filters together. When a filter it has read
+before expires, it compares the stored row hashes first and reads the product IDs again only if
+they changed; rows without a hash are always read again. A filter no search needed for ten times
+the cache lifetime (`UNCHAINED_FILTER_CACHE_TTL_MS`, ten minutes by default) is forgotten and read
+completely the next time, so a filter deleted through another process does not stay in memory.
+Missing memberships still use the filter adapter to compute a live result.
 
 - [mongodb](https://github.com/unchainedshop/unchained/blob/master/packages/core-filters/src/product-cache/mongodb.ts)
 

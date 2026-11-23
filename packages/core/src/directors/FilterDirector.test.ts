@@ -139,4 +139,37 @@ describe('FilterDirector', () => {
       assert.deepStrictEqual(await facetedSearch([{ key: 'material', value: 'wool' }]), hitsByRelevance);
     });
   });
+
+  describe('filterProductIds from cached memberships', () => {
+    it('builds the Set of a cached product id list once', async (t) => {
+      let cached: [string[], Record<string, string[]>] = [
+        ['p1', 'p2', 'p3'],
+        { nike: ['p1', 'p3'], adidas: ['p2'] },
+      ];
+      t.mock.method(filtersSettings, 'getCachedProductIds', async () => cached);
+      const modules = { filters: { parse: (filter, values) => values } };
+      const read = (values: (string | undefined)[]) =>
+        FilterDirector.filterProductIds(
+          { _id: 'brand', key: 'brand' } as any,
+          { values } as any,
+          {
+            modules,
+          } as any,
+        );
+
+      const all = await read([undefined]);
+      assert.strictEqual(await read([undefined]), all);
+      assert.deepStrictEqual([...all], ['p1', 'p2', 'p3']);
+      const nike = await read(['nike']);
+      assert.strictEqual(await read(['nike']), nike);
+      assert.deepStrictEqual([...nike], ['p1', 'p3']);
+      assert.deepStrictEqual([...(await read(['nike', 'adidas']))].sort(), ['p1', 'p2', 'p3']);
+
+      // A reload brings new arrays, and with them new Sets.
+      cached = [['p1'], { nike: ['p1'] }];
+      const reloaded = await read(['nike']);
+      assert.notStrictEqual(reloaded, nike);
+      assert.deepStrictEqual([...reloaded], ['p1']);
+    });
+  });
 });
