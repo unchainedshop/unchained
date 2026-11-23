@@ -322,9 +322,9 @@ The Braintree plugin was also dropped in v5 (it only exists on the v4.8.x branch
 - Implement a custom PayPal integration using `@paypal/paypal-server-sdk` (new official SDK) via `registerPaymentProvider()`
 - Use alternative payment providers (Stripe, Datatrans, Saferpay, Payrexx, PostFinance Checkout)
 
-### Stripe SDK v23 / API `2026-10-28.endive`
+### Stripe SDK v23 / API `2026-11-18.endive`
 
-**BREAKING CHANGE:** The Stripe plugin now requires `stripe` v23 (peer range `>=23 <24`) and pins Stripe API version `2026-10-28.endive`. Upgrade your installed package: `npm install stripe@^23.1`.
+**BREAKING CHANGE:** The Stripe plugin now requires `stripe` v23 (peer range `>=23 <24`) and pins Stripe API version `2026-11-18.endive`. Upgrade your installed package: `npm install stripe@^23.1`.
 
 **BREAKING CHANGE:** This API version rejects `payment_method_types` on PaymentIntent and SetupIntent create/confirm (`400 payment_method_types_no_longer_supported`). The plugin passes `transactionContext` through to Stripe unchanged, so storefronts that send `payment_method_types` to `signPaymentProviderForCheckout` / `signPaymentProviderForCredentialRegistration` must switch:
 

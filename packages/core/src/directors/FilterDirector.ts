@@ -15,6 +15,20 @@ import type { Product } from '@unchainedshop/core-products';
 import type { Modules } from '../modules.ts';
 import { registryDirector } from './registryDirector.ts';
 import { FilterAdapter } from './FilterAdapter.ts';
+
+// One Set per cached product id array. Cache backends hand out new arrays when memberships change
+// and never modify one they returned, and callers get the Sets read-only, so a Set stays right for
+// as long as its array lives.
+const productIdSets = new WeakMap<string[], Set<string>>();
+const asSet = (productIds: string[]) => {
+  let set = productIdSets.get(productIds);
+  if (!set) {
+    set = new Set(productIds);
+    productIdSets.set(productIds, set);
+  }
+  return set;
+};
+
 export const parseQueryArray = (query?: SearchFilterQuery): Record<string, string[]> =>
   (query || []).reduce(
     (accumulator, { key, value }) => ({
@@ -41,11 +55,12 @@ export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
     filter: Filter,
     unchainedAPI: { modules: Modules },
   ) => Promise<[string[], Record<string, string[]>]>;
+  /* The Set can be shared with other callers and later searches: intersect it, never change it. */
   filterProductIds: (
     filter: Filter,
     { values, forceLiveCollection }: { values: string[]; forceLiveCollection?: boolean },
     unchainedAPI: { modules: Modules },
-  ) => Promise<Set<string>>;
+  ) => Promise<ReadonlySet<string>>;
 
   filterFacets: (
     filter: Filter,
@@ -59,7 +74,7 @@ export type IFilterDirector = IBaseDirector<IFilterAdapter> & {
   ) => Promise<{
     examinedProductIdSet: Set<string>;
     filteredByOtherFiltersSet: Set<string>;
-    filteredByThisFilterSet: Set<string>;
+    filteredByThisFilterSet: ReadonlySet<string>;
   }>;
 
   productFacetedSearch: (
@@ -203,7 +218,7 @@ export const FilterDirector: IFilterDirector = {
     filter: Filter,
     { values, forceLiveCollection }: { values: string[]; forceLiveCollection?: boolean },
     unchainedAPI: { modules: Modules },
-  ): Promise<Set<string>> {
+  ): Promise<ReadonlySet<string>> {
     const [allProductIds, keyToProductIdMap]: [string[], Record<string, string[]>] =
       (!forceLiveCollection && (await filtersSettings.getCachedProductIds(filter._id))) ||
       (await this.buildProductIdMap(filter, unchainedAPI));
@@ -214,17 +229,19 @@ export const FilterDirector: IFilterDirector = {
       Object.keys(keyToProductIdMap),
     );
 
-    if (filteredKeys.includes(undefined)) return new Set(allProductIds);
+    if (filteredKeys.includes(undefined)) return asSet(allProductIds);
+
+    // Own properties only. The keys come straight from a user supplied filterQuery, so
+    // asking for `constructor` or `toString` would otherwise reach Object.prototype and
+    // throw while iterating it.
+    const keys = (filteredKeys as string[]).filter(
+      (key) => Object.hasOwn(keyToProductIdMap, key) && keyToProductIdMap[key],
+    );
+    if (keys.length === 1) return asSet(keyToProductIdMap[keys[0]]);
 
     const result = new Set<string>();
-    for (const key of filteredKeys as string[]) {
-      // Own properties only. The keys come straight from a user supplied filterQuery, so
-      // asking for `constructor` or `toString` would otherwise reach Object.prototype and
-      // throw while iterating it.
-      if (!Object.hasOwn(keyToProductIdMap, key)) continue;
-      const additionalValues = keyToProductIdMap[key];
-      if (!additionalValues) continue;
-      for (const val of additionalValues) result.add(val);
+    for (const key of keys) {
+      for (const val of keyToProductIdMap[key]) result.add(val);
     }
     return result;
   },

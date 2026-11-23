@@ -360,7 +360,7 @@ See [MIGRATION.md](./MIGRATION.md#v4--v5-breaking-changes) for detailed migratio
 
 ## Minor
 - **Breaking: graphql-yoga 6** (`@unchainedshop/api`): the `graphql-yoga` peer is now `^6.0.1`, and the graphql-js engine swap is gone because yoga's own executor applies argument defaults again. See `MIGRATION.md`.
-- **Breaking (Stripe plugin): `stripe` 23 and API version `2026-10-28.endive`** (`@unchainedshop/plugins`): intents use `allowed_payment_method_types`, and a `payment_method_types` transaction context is sent as `allowed_payment_method_types`, which the API version would otherwise reject. See `MIGRATION.md`.
+- **Breaking (Stripe plugin): `stripe` 23 and API version `2026-11-18.endive`** (`@unchainedshop/plugins`): intents use `allowed_payment_method_types`, and a `payment_method_types` transaction context is sent as `allowed_payment_method_types`, which the API version would otherwise reject. See `MIGRATION.md`.
 - **Node.js 24.22.1+ or 26.12.1+ required** (`@unchainedshop/platform`): the engines range moves to the patched release of each supported line.
 - All dependencies upgraded to the latest release of their current major.
 - **web-push 4 is accepted** (`@unchainedshop/plugins`): the optional peer range now allows the ESM-only `web-push` 4.
