@@ -88,20 +88,25 @@ export default async function mongodbCache(db: mongodb.Db) {
   // Misses of the same tick share one query. Retention and eviction stay with the memo below.
   const databaseLoader = new DataLoader(
     async (filterIds: readonly string[]) => {
-      // Filters read before only need their hashes; the others are read completely.
-      const known = filterIds.filter((filterId) => lastRead.has(filterId));
-      const hashRows = known.length
+      // Filters read before only need their hashes; the others are read completely. Their entries
+      // are taken now, because a purge while the reads below are in flight drops them from lastRead.
+      const known = new Map(
+        filterIds.flatMap((filterId) => {
+          const entry = lastRead.get(filterId);
+          return entry ? [[filterId, entry] as const] : [];
+        }),
+      );
+      const hashRows = known.size
         ? await FilterProductIdCache.find(
-            { filterId: { $in: known } },
+            { filterId: { $in: [...known.keys()] } },
             { projection: { _id: 0, filterId: 1, filterOptionValue: 1, hash: 1 } },
           ).toArray()
         : [];
       const hashRowsByFilterId = Map.groupBy(hashRows, (row) => row.filterId);
-      const unchanged = new Set(
-        known.filter((filterId) => {
-          const signature = signatureOf(hashRowsByFilterId.get(filterId));
-          return signature !== null && lastRead.get(filterId)!.signature === signature;
-        }),
+      const unchanged = new Map(
+        [...known].filter(
+          ([filterId, entry]) => entry.signature === signatureOf(hashRowsByFilterId.get(filterId)),
+        ),
       );
 
       const toRead = filterIds.filter((filterId) => !unchanged.has(filterId));
@@ -114,7 +119,8 @@ export default async function mongodbCache(db: mongodb.Db) {
       const rowsByFilterId = Map.groupBy(rows, (row) => row.filterId);
 
       return filterIds.map((filterId) => {
-        if (unchanged.has(filterId)) return lastRead.get(filterId)!.value;
+        const kept = unchanged.get(filterId);
+        if (kept) return kept.value;
         const filterProductIdCache = rowsByFilterId.get(filterId);
         let value: [string[], Record<string, string[]>] | null = null;
         if (filterProductIdCache) {

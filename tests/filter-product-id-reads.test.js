@@ -223,3 +223,66 @@ test('rows without a hash are read completely on every expiry', async (t) => {
   }
   assert.deepEqual(reads, ['productIds', 'productIds']);
 });
+
+// Lets the first read of the given kind fetch its rows and holds them back until release().
+const holdRead = (t, kind) => {
+  const fetched = Promise.withResolvers();
+  const released = Promise.withResolvers();
+  let holding = false;
+  const find = Collection.prototype.find;
+  t.mock.method(Collection.prototype, 'find', function (selector, options, ...rest) {
+    const cursor = find.call(this, selector, options, ...rest);
+    const reads = options?.projection?.productIds ? 'productIds' : 'hashes';
+    if (!holding && this.collectionName === 'filter_productId_cache' && reads === kind) {
+      holding = true;
+      const toArray = cursor.toArray.bind(cursor);
+      cursor.toArray = async () => {
+        const rows = await toArray();
+        fetched.resolve();
+        await released.promise;
+        return rows;
+      };
+    }
+    return cursor;
+  });
+  return { fetched: fetched.promise, release: released.resolve };
+};
+
+// Reads `batch` after the memo expired and purges the filter `purged` while the read of the given
+// kind is in flight, after it fetched its rows. `purged` and `kept` were read before, `fresh` not.
+const purgeDuringRead = async (t, kind, batch) => {
+  const [db] = await setupDatabase();
+  const originalSettings = { ...filtersSettings };
+  t.after(() => filtersSettings.configureSettings(originalSettings, db));
+  await filtersSettings.configureSettings({}, db);
+  for (const filterId of ['purged', 'kept', 'fresh']) {
+    await filtersSettings.setCachedProductIds(filterId, [filterId], { yes: [filterId] }, 1);
+  }
+  await filtersSettings.getCachedProductIds('purged');
+  await filtersSettings.getCachedProductIds('kept');
+  await setTimeout(5);
+
+  const { fetched, release } = holdRead(t, kind);
+  const reads = Promise.all(batch.map((filterId) => filtersSettings.getCachedProductIds(filterId)));
+  await fetched;
+  await filtersSettings.purgeCachedProductIds('purged');
+  release();
+  return reads;
+};
+
+// The batch started before the purge, so it answers with the rows it found. The next read finds none.
+test('a purge while a batch compares hashes fails none of its reads', async (t) => {
+  assert.deepEqual(await purgeDuringRead(t, 'hashes', ['purged', 'kept']), [
+    [['purged'], { yes: ['purged'] }],
+    [['kept'], { yes: ['kept'] }],
+  ]);
+  assert.equal(await readExpired('purged'), null);
+});
+
+test('a purge while a batch reads product ids fails none of its reads', async (t) => {
+  assert.deepEqual(await purgeDuringRead(t, 'productIds', ['purged', 'fresh']), [
+    [['purged'], { yes: ['purged'] }],
+    [['fresh'], { yes: ['fresh'] }],
+  ]);
+  assert.equal(await readExpired('purged'), null);
+});
