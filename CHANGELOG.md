@@ -11,6 +11,9 @@
 - **Catalog price filter** (`@unchainedshop/plugins`): `createCatalogPriceFilterPlugin` indexes the quantity-one catalog prices of one market per RANGE filter, with a product count per price.
 - **Storefront MCP** (`@unchainedshop/plugins`): `createStorefrontMcpPlugin` serves product search for shopping assistants at `/mcp/storefront`, with filters the shop exposes as search inputs, market hints, MCP Apps product cards and an OCP manifest.
 
+### Fixed
+- **The filter CSV export contains the filters with their own texts** (`@unchainedshop/core`): the export type `FILTERS` from the work input ended up in the filter query, so both files were empty, and the texts of a filter's options could replace its own.
+
 ## v5.0.0-alpha.14 (2026-11-19)
 
 ### Security
