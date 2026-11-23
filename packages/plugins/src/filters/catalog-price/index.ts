@@ -66,7 +66,7 @@ export function createCatalogPriceFilterPlugin({
           market.countryCode === countryCode && market.currencyCode === currencyCode ? [] : [key],
         );
         if (!otherMarketKeys.length) return selector;
-        return { $and: [selector, { key: { $nin: otherMarketKeys } }] };
+        return { ...selector, $and: [...(selector.$and || []), { key: { $nin: otherMarketKeys } }] };
       },
     }),
   };
