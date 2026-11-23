@@ -6,9 +6,12 @@ import {
   createAnonymousGraphqlFetch,
   createLoggedInGraphqlFetch,
 } from './helpers.js';
+import { resolveDefaultContext } from '@unchainedshop/api';
 import { createProductSearchTool } from '@unchainedshop/plugins/mcp/storefront';
 import { ADMIN_TOKEN, USER_TOKEN } from './seeds/users.js';
 import { seedStorefrontCatalog } from './seeds/storefront.js';
+
+const lifetime = Number(process.env.UNCHAINED_FILTER_CACHE_TTL_MS || 60_000);
 
 let baseUrl;
 let db;
@@ -67,6 +70,7 @@ test.describe('Storefront MCP', () => {
     assert.match(properties.price_de.description, /EUR in Cent/);
     assert.deepStrictEqual(properties.sort.enum, ['meta_rating_DESC']);
     assert.strictEqual(tool.inputSchema.additionalProperties, false);
+    assert.match(tool.description, /default language and only explain this schema/);
     assert.deepStrictEqual(Object.keys(tool.outputSchema.properties), [
       'market',
       'totalCount',
@@ -84,8 +88,20 @@ test.describe('Storefront MCP', () => {
     assert.strictEqual(result.contents[0].mimeType, 'text/html;profile=mcp-app');
   });
 
-  test('follows changed options and deactivated filters on the next discovery', async () => {
+  test('follows changed options and deactivated filters after the filter cache lifetime', async (t) => {
+    const { now } = Date;
+    let offset = 0;
+    Date.now = () => now() + offset;
+    t.after(() => {
+      Date.now = now;
+      resolveDefaultContext.clear();
+    });
+    const expire = () => {
+      offset += lifetime + 1;
+    };
     const graphql = (query) => adminGraphqlFetch({ query, variables: { filterId: filterIds.brand } });
+
+    await searchTool();
     await graphql(`
       mutation ($filterId: ID!) {
         createFilterOption(filterId: $filterId, option: "Bergwind") {
@@ -93,6 +109,8 @@ test.describe('Storefront MCP', () => {
         }
       }
     `);
+    assert.ok(!(await searchTool()).inputSchema.properties.brand.enum.includes('Bergwind'));
+    expire();
     assert.ok((await searchTool()).inputSchema.properties.brand.enum.includes('Bergwind'));
 
     await graphql(`
@@ -102,6 +120,7 @@ test.describe('Storefront MCP', () => {
         }
       }
     `);
+    expire();
     assert.ok(!(await searchTool()).inputSchema.properties.brand);
     const obsolete = await searchProducts({ brand: 'Nordlicht' });
     assert.strictEqual(obsolete.isError, true);
@@ -121,6 +140,11 @@ test.describe('Storefront MCP', () => {
         }
       }
     `);
+    expire();
+    assert.deepStrictEqual((await searchTool()).inputSchema.properties.brand.enum, [
+      'Nordlicht',
+      'Alpenwerk',
+    ]);
   });
 
   test('rejects built-in and invalid input names when the shop sets up the tool', () => {

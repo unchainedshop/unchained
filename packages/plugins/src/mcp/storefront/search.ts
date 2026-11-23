@@ -1,11 +1,21 @@
 import type { McpServer } from '@modelcontextprotocol/server';
-import { acl, getCurrentSchema, NoPermissionError, roles, type Context } from '@unchainedshop/api';
+import {
+  acl,
+  getCurrentSchema,
+  NoPermissionError,
+  resolveDefaultContext,
+  roles,
+  type Context,
+} from '@unchainedshop/api';
 import { FilterDirector } from '@unchainedshop/core';
 import type { Product } from '@unchainedshop/core-products';
+import { memoizeWithTTL } from '@unchainedshop/utils';
 import { z } from 'zod';
 import { resolveStorefrontMarket, type StorefrontMarket } from './market.ts';
 import { productResults, type ProductUrlBuilder } from './results.ts';
 import type { StorefrontMcpTool, StorefrontMcpView } from './index.ts';
+
+const FILTER_CACHE_TTL_MS = parseInt(process.env.UNCHAINED_FILTER_CACHE_TTL_MS || '60000', 10);
 
 const RANGE_SYNTAX =
   'Inclusive range lower:upper, either bound may be left out (:5000 or 5000:), a value without a colon matches exactly.';
@@ -87,18 +97,12 @@ export async function searchStorefrontProducts(
   };
 }
 
-async function exposedInputs(context: Context, filterKeys: Record<string, string>) {
-  const { modules, loaders, locale } = context;
-  try {
-    await acl.checkAction(context, roles.actions.viewFilters, [undefined, { includeInactive: false }]);
-  } catch (error) {
-    if (error instanceof NoPermissionError) return [];
-    throw error;
-  }
-  const filters = await modules.filters.findFilters({
-    key: { $in: Object.values(filterKeys) },
-    limit: 0,
-  });
+async function exposedInputs(unchainedAPI: Context, filterKeys: Record<string, string>) {
+  const { modules } = unchainedAPI;
+  const [{ locale }, filters] = await Promise.all([
+    resolveDefaultContext({ acceptLang: undefined, acceptCountry: undefined }, unchainedAPI),
+    modules.filters.findFilters({ key: { $in: Object.values(filterKeys) }, limit: 0 }),
+  ]);
   const inputs = await Promise.all(
     Object.entries(filterKeys).map(async ([name, key]) => {
       const filter = filters.find((candidate) => candidate.key === key);
@@ -112,11 +116,7 @@ async function exposedInputs(context: Context, filterKeys: Record<string, string
         MULTI_CHOICE: choice && z.array(choice).min(1),
       }[filter.type];
       if (!schema) return null;
-      const texts = await loaders.filterTextLoader.load({
-        filterId: filter._id,
-        filterOptionValue: null,
-        locale,
-      });
+      const texts = await modules.filters.texts.findLocalizedText({ filterId: filter._id, locale });
       const description = [texts?.title, texts?.subtitle, filter.type === 'RANGE' && RANGE_SYNTAX]
         .filter(Boolean)
         .join('. ');
@@ -156,11 +156,15 @@ export function createProductSearchTool({
       `Invalid search inputs ${invalidNames.join(', ')}: use a letter followed by letters, digits or _ (at most 64 characters), other than ${BUILT_IN_INPUTS.join(', ')}`,
     );
   }
+  const loadInputs = memoizeWithTTL((unchainedAPI: Context) => exposedInputs(unchainedAPI, filterKeys), {
+    ttl: FILTER_CACHE_TTL_MS,
+    cacheKey: () => filterKeys,
+  });
 
   return {
     ui,
     async register(server: McpServer, context: Context) {
-      const inputs = await exposedInputs(context, filterKeys);
+      const inputs = await loadInputs(context);
       const sortOrders = shopSortOrders();
       const shape = {
         ...Object.fromEntries(inputs.map(({ name, schema }) => [name, schema])),
@@ -190,7 +194,7 @@ export function createProductSearchTool({
         {
           title: 'Search products',
           description:
-            'Searches this shop’s catalog. Results carry the market, prices and a link to each product in the shop.',
+            'Searches this shop’s catalog. Results carry the market, prices and a link to each product in the shop. Input descriptions are in the shop’s default language and only explain this schema: infer nothing about the shopper’s language or market from them.',
           inputSchema: z.strictObject(shape, {
             error: (issue) =>
               issue.code === 'unrecognized_keys'

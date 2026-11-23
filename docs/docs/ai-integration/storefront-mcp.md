@@ -41,9 +41,9 @@ Install the optional peer dependency `@modelcontextprotocol/server`.
 - switches take a boolean;
 - ranges take a `lower:upper` string.
 
-The filter's title and subtitle describe the input, so state units there, for example "CHF in Rappen". Combine it with the [catalog price filter](../plugins/filters/filter-catalog-price.md) for budget searches.
+The filter's title and subtitle in the shop's default language describe the input, so state units there, for example "CHF in Rappen". Combine it with the [catalog price filter](../plugins/filters/filter-catalog-price.md) for budget searches.
 
-Input names are letters, digits and `_`, other than the built-in `query`, `product_ids`, `sort`, `offset` and `limit`. Invalid names fail at startup. `sort` appears when your schema extends `SearchOrderBy`. Changed options and deactivated filters show on the next discovery, and inputs a client no longer may use fail with the list of accepted inputs.
+Input names are letters, digits and `_`, other than the built-in `query`, `product_ids`, `sort`, `offset` and `limit`. Invalid names fail at startup. `sort` appears when your schema extends `SearchOrderBy`. The inputs are built once per filter cache lifetime (`UNCHAINED_FILTER_CACHE_TTL_MS`, one minute by default), so changed options and deactivated filters show within it. Inputs a client no longer may use fail with the list of accepted inputs.
 
 ## Market and caller
 
