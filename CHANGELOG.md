@@ -12,6 +12,7 @@
 - **Storefront MCP** (`@unchainedshop/plugins`): `createStorefrontMcpPlugin` serves product search for shopping assistants at `/mcp/storefront`, with filters the shop exposes as search inputs, market hints, MCP Apps product cards and an OCP manifest.
 
 ### Fixed
+- **Bulk import keeps a filter's options when an event omits them** (`@unchainedshop/core`, `@unchainedshop/admin-ui`): an `UPDATE`, or a `CREATE` that upserts an existing filter, replaced them with none, and the Admin UI CSV import sent an empty list for filters without rows in the options file.
 - **The filter CSV export contains the filters with their own texts** (`@unchainedshop/core`): the export type `FILTERS` from the work input ended up in the filter query, so both files were empty, and the texts of a filter's options could replace its own.
 
 ## v5.0.0-alpha.14 (2026-11-19)

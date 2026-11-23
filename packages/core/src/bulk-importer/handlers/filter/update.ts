@@ -49,7 +49,7 @@ export default async function updateFilter(
     logger.debug('update filter object', specification);
     await modules.filters.update(_id, {
       ...filterData,
-      options: options?.map((option) => option.value) || [],
+      ...(options && { options: options.map((option) => option.value) }),
     });
   }
 

@@ -519,6 +519,64 @@ test.describe('Bulk Importer', () => {
 
       assert.strictEqual(result, true);
     }, 30000);
+
+    test('keeps omitted options and inserts new filters without options', async () => {
+      const importFilter = async (_id, operation, specification, options = {}) => {
+        const { data: { addWork } = {} } = await graphqlFetch({
+          query: /* GraphQL */ `
+            mutation addWork($input: JSON) {
+              addWork(type: BULK_IMPORT, input: $input, retries: 0, priority: 10) {
+                _id
+              }
+            }
+          `,
+          variables: {
+            input: {
+              events: [{ entity: 'FILTER', operation, payload: { _id, specification } }],
+              ...options,
+            },
+          },
+        });
+        await waitForImport(addWork._id);
+        return (await db.collection('filters').findOne({ _id }))?.options;
+      };
+      const specification = {
+        key: 'width_cm',
+        type: 'SINGLE_CHOICE',
+        content: { de: { title: 'Width' } },
+      };
+
+      await importFilter('Filter B', 'CREATE', {
+        ...specification,
+        options: [{ value: '10' }, { value: '20' }],
+      });
+      assert.deepStrictEqual(await importFilter('Filter B', 'UPDATE', { isActive: true }), ['10', '20']);
+      assert.deepStrictEqual(
+        await importFilter('Filter B', 'CREATE', specification, { createShouldUpsertIfIDExists: true }),
+        ['10', '20'],
+      );
+      assert.deepStrictEqual(await importFilter('Filter B', 'UPDATE', { options: [{ value: '30' }] }), [
+        '30',
+      ]);
+      assert.deepStrictEqual(
+        await importFilter(
+          'Filter C',
+          'CREATE',
+          { ...specification, key: 'depth_cm' },
+          { createShouldUpsertIfIDExists: true },
+        ),
+        [],
+      );
+      assert.deepStrictEqual(
+        await importFilter(
+          'Filter D',
+          'UPDATE',
+          { ...specification, key: 'height_cm' },
+          { updateShouldUpsertIfIDNotExists: true },
+        ),
+        [],
+      );
+    }, 30000);
   });
 
   test.describe('Import Assortments', () => {
