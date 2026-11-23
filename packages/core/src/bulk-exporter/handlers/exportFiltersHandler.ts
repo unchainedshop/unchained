@@ -13,7 +13,8 @@ export const FilterExportPayloadSchema = z.object({
 export interface FilterExportParams {
   exportFilters?: boolean;
   exportFilterOptions?: boolean;
-  [key: string]: any;
+  queryString?: string;
+  includeInactive?: boolean;
 }
 
 const FILTER_CSV_SCHEMA = {
@@ -49,19 +50,19 @@ const mapTextsToRow = (row: Record<string, any>, texts: Record<string, any>, loc
 const fetchTexts = async (
   modules: UnchainedCore['modules'],
   filterId: string,
-  filterOptionValue?: string,
+  filterOptionValue: string | null = null,
 ) => {
   const texts = await modules.filters.texts.findTexts({ filterId, filterOptionValue });
   return texts.reduce((acc, t) => ({ ...acc, [t.locale]: t }), {} as Record<string, any>);
 };
 
 const exportFiltersHandler = async (
-  { exportFilterOptions, exportFilters, ...params }: FilterExportParams,
+  { exportFilterOptions, exportFilters, queryString, includeInactive }: FilterExportParams,
   locales: string[],
   unchainedAPI: UnchainedCore,
 ) => {
   const { modules } = unchainedAPI;
-  const filters = await modules.filters.findFilters({ ...params });
+  const filters = await modules.filters.findFilters({ queryString, includeInactive });
 
   const filterRows: Record<string, any>[] = [];
   const optionRows: Record<string, any>[] = [];

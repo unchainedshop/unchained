@@ -1,5 +1,10 @@
 # Unchained Engine v5.0 (Breaking Changes)
 
+## Unreleased
+
+### Fixed
+- **The filter CSV export contains the filters with their own texts** (`@unchainedshop/core`): the export type `FILTERS` from the work input ended up in the filter query, so both files were empty, and the texts of a filter's options could replace its own.
+
 ## v5.0.0-alpha.14 (2026-11-19)
 
 ### Security
