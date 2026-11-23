@@ -47,6 +47,10 @@ deleted.
 
 ### Default Caching Implementation
 
+The MongoDB backend loads concurrent cache misses with one query on the filter ID index, so a
+search reads the memberships of all its expired filters together. Missing memberships still
+use the filter adapter to compute a live result.
+
 - [mongodb](https://github.com/unchainedshop/unchained/blob/master/packages/core-filters/src/product-cache/mongodb.ts)
 
 :::warning

@@ -229,26 +229,20 @@ export const FilterDirector: IFilterDirector = {
         })
       : [];
 
-    const intersectedProductIds = await filters.reduce(
-      async (productIdSetPromise: Promise<Set<string>>, filter) => {
-        const productIdSet = await productIdSetPromise;
-
-        if (!parsedFilterQuery[filter.key]) return productIdSet;
-
-        const values = parsedFilterQuery[filter.key];
-
-        const filterOptionProductIds = await this.filterProductIds(
-          filter,
-          {
-            values,
-            forceLiveCollection,
-          },
-          unchainedAPI,
-        );
-
-        return productIdSet.intersection(filterOptionProductIds);
-      },
-      Promise.resolve(new Set(productIds)),
+    const selectedProductIdSets = await Promise.all(
+      filters
+        .filter((filter) => parsedFilterQuery[filter.key])
+        .map((filter) =>
+          this.filterProductIds(
+            filter,
+            { values: parsedFilterQuery[filter.key], forceLiveCollection },
+            unchainedAPI,
+          ),
+        ),
+    );
+    const intersectedProductIds = selectedProductIdSets.reduce(
+      (productIdSet, filterOptionProductIds) => productIdSet.intersection(filterOptionProductIds),
+      new Set(productIds),
     );
 
     return productIds.filter((productId) => intersectedProductIds.has(productId));

@@ -1,5 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
+import { filtersSettings } from '@unchainedshop/core-filters';
 import { FilterDirector, parseQueryArray } from './FilterDirector.ts';
 
 describe('FilterDirector', () => {
@@ -81,6 +82,61 @@ describe('FilterDirector', () => {
         ],
       );
       assert.deepStrictEqual(result, ['p5', 'p3', 'p1']);
+    });
+  });
+
+  describe('productFacetedSearch from cached memberships', () => {
+    const hitsByRelevance = ['p5', 'p3', 'p9', 'p1', 'p7'];
+    const memberships: Record<string, [string[], Record<string, string[]>]> = {
+      brand: [['p1', 'p3', 'p5', 'p8'], { nike: ['p1', 'p5'], adidas: ['p3', 'p8'], puma: [] }],
+      color: [['p1', 'p3', 'p5', 'p7'], { red: ['p1', 'p3', 'p5', 'p7'] }],
+      size: [['p9'], { xl: ['p9'] }],
+    };
+    const modules = {
+      filters: {
+        findFilters: async () => Object.keys(memberships).map((key) => ({ _id: key, key })),
+        parse: (filter, values) => values,
+      },
+    };
+    const facetedSearch = (filterQuery: { key: string; value: string }[]) =>
+      FilterDirector.productFacetedSearch(
+        hitsByRelevance,
+        { searchQuery: { filterQuery }, filterSelector: {}, forceLiveCollection: false } as any,
+        { modules } as any,
+      );
+
+    it('requests every selected filter before the first answers, so a cache can batch them', async (t) => {
+      const requested: string[] = [];
+      const answers: (() => void)[] = [];
+      t.mock.method(
+        filtersSettings,
+        'getCachedProductIds',
+        (filterId: string) =>
+          new Promise((resolve) => {
+            requested.push(filterId);
+            answers.push(() => resolve(memberships[filterId]));
+          }),
+      );
+      const result = facetedSearch([
+        { key: 'brand', value: 'nike' },
+        { key: 'brand', value: 'adidas' },
+        { key: 'color', value: 'red' },
+      ]);
+
+      await new Promise((resolve) => setImmediate(resolve));
+      assert.deepStrictEqual(requested, ['brand', 'color']);
+      for (const answer of answers) answer();
+      assert.deepStrictEqual(await result, ['p5', 'p3', 'p1']);
+    });
+
+    it('matches nothing for a value without products and ignores selections without a filter', async (t) => {
+      t.mock.method(
+        filtersSettings,
+        'getCachedProductIds',
+        async (filterId: string) => memberships[filterId],
+      );
+      assert.deepStrictEqual(await facetedSearch([{ key: 'brand', value: 'puma' }]), []);
+      assert.deepStrictEqual(await facetedSearch([{ key: 'material', value: 'wool' }]), hitsByRelevance);
     });
   });
 });
