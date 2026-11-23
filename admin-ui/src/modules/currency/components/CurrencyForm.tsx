@@ -49,7 +49,7 @@ const CurrencyForm = ({
       isoCode: '',
       contractAddress: '',
       isActive: false,
-      decimals: 2,
+      decimals: '',
       ...defaultValue,
     },
   });
@@ -87,11 +87,14 @@ const CurrencyForm = ({
             id: 'decimals',
             defaultMessage: 'Decimals',
           })}
-          required
+          placeholder={formatMessage({
+            id: 'decimals_default',
+            defaultMessage: 'Default',
+          })}
           name="decimals"
-          disabled={!hasRole(IRoleAction.ManageCurrencies)}
+          disabled={isEdit || !hasRole(IRoleAction.ManageCurrencies)}
           options={Object.fromEntries(
-            new Array(32).fill(null).map((_, i) => [i, `${i}`]),
+            new Array(19).fill(null).map((_, i) => [i, `${i}`]),
           )}
         />
 

@@ -8,7 +8,8 @@ import { DangerMessage } from '@unchainedshop/admin-ui/modal';
 import { useModal } from '@unchainedshop/admin-ui/hooks';
 import useTicketProductionMutations from '../../hooks/useTicketProductionMutations.ts';
 import { buildPerformanceGrid, type PerformanceRow } from '../../utils/production-grid.ts';
-import { generateUniqueId, useFormatDateTime, useFormatPrice } from '../../utils/misc.ts';
+import { useFormatPrice } from '@unchainedshop/admin-ui/hooks';
+import { generateUniqueId, useFormatDateTime } from '../../utils/misc.ts';
 import TicketDateForm from './TicketDateForm.tsx';
 import { errorMessage } from './fields.tsx';
 

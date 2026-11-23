@@ -12,7 +12,8 @@ import {
 import { useBoxOfficeEvents, useBoxOfficeSale } from '../hooks/useBoxOffice.ts';
 import useScanTicket from '../hooks/useScanTicket.ts';
 import { groupPerformances, saleErrorCode } from '../utils/box-office.ts';
-import { useFormatDateTime, useFormatPrice } from '../utils/misc.ts';
+import { useFormatPrice } from '@unchainedshop/admin-ui/hooks';
+import { useFormatDateTime } from '../utils/misc.ts';
 import { AlertNotice } from '../components/Notice.tsx';
 import { errorMessage } from '../components/production/fields.tsx';
 

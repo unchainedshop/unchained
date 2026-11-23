@@ -13,3 +13,4 @@ export { default as useFormContext } from '../modules/forms/hooks/useFormContext
 export { default as useApp } from '../modules/common/hooks/useApp';
 export { default as useAuth } from '../modules/Auth/useAuth';
 export { default as useFormatDateTime } from '../modules/common/utils/useFormatDateTime';
+export { useFormatPrice } from '../modules/common/utils/utils';

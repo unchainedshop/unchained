@@ -1,14 +1,30 @@
+import { useContext } from 'react';
 import { ISortOptionInput } from '../../../gql/types';
+import AppContext from '../components/AppContext';
 
 const useFormatPrice = () => {
+  const currencies = useContext(AppContext)?.currencies;
   const formatPrice = (price: { currencyCode: string; amount: number }) => {
     if (!price?.currencyCode) return 'n/a';
     if (price?.amount === undefined || price?.amount === null) return '';
-    const { amount, currencyCode } = price || {};
-    return new Intl.NumberFormat(navigator.language, {
-      style: 'currency',
-      currency: currencyCode,
-    }).format(amount / 100);
+    const { amount, currencyCode } = price;
+    const decimals =
+      currencies?.find(({ isoCode }) => isoCode === currencyCode)?.decimals ??
+      2;
+    const value = amount / 10 ** decimals;
+    const digits = {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    };
+    try {
+      return new Intl.NumberFormat(navigator.language, {
+        style: 'currency',
+        currency: currencyCode,
+        ...digits,
+      }).format(value);
+    } catch {
+      return `${currencyCode} ${new Intl.NumberFormat(navigator.language, digits).format(value)}`;
+    }
   };
 
   return { formatPrice };

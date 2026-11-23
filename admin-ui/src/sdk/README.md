@@ -81,7 +81,8 @@ import { FormattedMessage } from 'react-intl';
 ```
 
 SDK components and hooks use the host app's contexts: `useModal` opens the
-admin-ui modal, `useApp` returns the selected locale and shop info, and
+admin-ui modal, `useApp` returns the selected locale, the shop info and all currencies,
+`useFormatPrice` formats an amount with the decimals of its currency, and
 `useAuth().hasRole(action)` checks the actions of the user
 (`User.allowedActions`), including the actions your plugin adds with
 `rolesOptions.additionalActions`; administrators hold all of them. Build pages like the admin-ui does, with `BreadCrumbs`,

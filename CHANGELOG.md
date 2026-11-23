@@ -8,6 +8,7 @@
 - **Stripe could not charge about 2% of carts** (`@unchainedshop/plugins`): the statement descriptor suffix was the first and last four characters of the order id, and Stripe refused the payment intent whenever all eight were digits. Payment intents no longer set a suffix, so the statement shows the account's statement descriptor.
 - **Stripe confirms orders that waited for their payment** (`@unchainedshop/plugins`): on `payment_intent.succeeded` the webhook only checked out carts, so an order whose payment was still processing at checkout stayed `PENDING` with an open payment. Pending orders are processed now.
 - **Stripe payments keep their payment intent id** (`@unchainedshop/plugins`): a charge stored no `transactionId` on the order payment and logged the whole payment intent, its client secret included, and the webhook logged the whole event. The order payment stores the payment intent id as `transactionId` now, and the webhook logs only the event id and type.
+- **The Admin UI shows and edits amounts with the decimals of their currency** (`@unchainedshop/admin-ui`, `@unchainedshop/ticketing`): it divided every price by 100, broke the page for codes like MATIC, turned 0 decimals into 2 when a currency was saved, and its price editors only knew the first 20 currencies. Decimals are optional when a currency is created and read-only afterwards, `useApp()` carries all currencies, and the SDK exports `useFormatPrice`.
 
 ## v5.0.0-alpha.14 (2026-11-19)
 

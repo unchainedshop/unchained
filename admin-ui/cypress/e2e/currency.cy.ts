@@ -134,8 +134,10 @@ describe('Currencies', () => {
 
     cy.wait(fullAliasMutationName(CurrencyOperations.CreateCurrency)).then(
       (currentSubject) => {
-        expect(currentSubject.request.body.variables.currency.isoCode).to.eq('de');
-        expect(currentSubject.request.body.variables.currency.decimals).to.eq(2);
+        expect(currentSubject.request.body.variables.currency).to.deep.eq({
+          isoCode: 'de',
+          contractAddress: null,
+        });
         expect(currentSubject.response.body).to.deep.eq(
           CreateCurrencyResponse,
         );
@@ -157,6 +159,7 @@ describe('Currencies', () => {
     cy.get('input#contractAddress').type(
       '0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce',
     );
+    cy.get('select#decimals').select('18');
     cy.get('input[type="submit"]')
       .contains(localizations.en.add_currency)
       .click();
@@ -167,7 +170,7 @@ describe('Currencies', () => {
           currency: {
             isoCode: 'de',
             contractAddress: '0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce',
-            decimals: 2,
+            decimals: 18,
           },
         });
         expect(currentSubject.response.body).to.deep.eq(
@@ -254,6 +257,7 @@ describe('Currencies', () => {
         expect(response.body).to.deep.eq(SingleCurrencyResponse);
       },
     );
+    cy.get('select#decimals').should('be.disabled');
     cy.get('input#contractAddress')
       .clear()
       .type('0x26b3E189B7DEE08EB86cCc698abc9D33980e39c6');
@@ -268,7 +272,6 @@ describe('Currencies', () => {
             contractAddress: '0x26b3E189B7DEE08EB86cCc698abc9D33980e39c6',
             isoCode: currency.isoCode,
             isActive: currency.isActive,
-            decimals: currency.decimals,
           },
           currencyId: currency._id,
         });

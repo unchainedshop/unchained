@@ -30,10 +30,10 @@ const CurrencyDetailPage = ({ currencyId }) => {
   });
   const { updateCurrency } = useUpdateCurrency();
   const { removeCurrency } = useRemoveCurrency();
-  const onSubmit = async ({ isActive, isoCode, contractAddress, decimals }) => {
+  const onSubmit = async ({ isActive, isoCode, contractAddress }) => {
     await updateCurrency({
       currencyId: currencyId as string,
-      currency: { isActive, isoCode, contractAddress, decimals },
+      currency: { isActive, isoCode, contractAddress },
     });
     return true;
   };

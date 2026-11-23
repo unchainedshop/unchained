@@ -3,10 +3,11 @@ import sharedContext from '../utils/sharedContext';
 import { useIntl } from 'react-intl';
 import useLanguages from '../../language/hooks/useLanguages';
 import useCountries from '../../country/hooks/useCountries';
+import useCurrencies from '../../currency/hooks/useCurrencies';
 import useShopInfo from '../hooks/useShopInfo';
 import useLocalStorage from '../hooks/useLocalStorage';
 import useCurrentUser from '../../accounts/hooks/useCurrentUser';
-import { IShopInfoQuery } from '../../../gql/types';
+import { ICurrenciesQuery, IShopInfoQuery } from '../../../gql/types';
 
 const isSupportedLocale = (locale) => {
   try {
@@ -23,6 +24,7 @@ type AppContextProps = IShopInfoQuery & {
   isSystemReady: boolean;
   setSelectedLocale: (locale: string) => void;
   languageDialectList: { _id: string; isoCode: string }[];
+  currencies: ICurrenciesQuery['currencies'];
 };
 
 const AppContext = sharedContext(
@@ -66,6 +68,7 @@ export const AppContextWrapper = ({
   );
   const { shopInfo, loading: shopInfoLoading } = useShopInfo();
   const { countries } = useCountries({ skip: !isAuthenticated });
+  const { currencies } = useCurrencies({ limit: 0, skip: !isAuthenticated });
 
   const [selectedLocale, setSelectedLocale] = useState<string>(locale);
   const setSelectedLocaleWrapper = (newLocale: string) => {
@@ -99,6 +102,7 @@ export const AppContextWrapper = ({
         languageDialectList,
         isSystemReady,
         shopInfo,
+        currencies,
       }}
     >
       {children}

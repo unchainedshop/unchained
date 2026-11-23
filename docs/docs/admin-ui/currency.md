@@ -28,7 +28,7 @@ When you navigate to the currencies page using the link in the navigation menu, 
 ## Add new currency
 To add a new currency to your e-commerce store, you can navigate to the currencies page and click on the "Add" button. This will bring up a form where you can enter the necessary details for the currency you want to add.
 
-For regular currencies, you will need to enter the ISO code for the currency, which is a three-letter code that represents the currency on the global market. After submitting the form, you will be redirected to the detail page for the newly added currency.
+For regular currencies, you will need to enter the ISO code for the currency, which is a three-letter code that represents the currency on the global market. Leave the decimals at Default to let the engine choose them. After submitting the form, you will be redirected to the detail page for the newly added currency.
 
 However, if you want to add an ERC token as a currency, you will need to provide the token's contract address and precision using the inputs provided in the form. The contract address is a unique identifier for the token on the blockchain, while the precision determines how many decimal places are used to represent the token's value. After submitting the form, you will be redirected to the detail page for the new ERC token currency.
 

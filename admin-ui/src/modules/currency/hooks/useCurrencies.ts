@@ -37,12 +37,14 @@ const useCurrencies = ({
   offset = 0,
   includeInactive = true,
   sort = [],
-}: ICurrenciesQueryVariables = {}) => {
+  skip = false,
+}: ICurrenciesQueryVariables & { skip?: boolean } = {}) => {
   const { data, loading, error, fetchMore } = useQuery<
     ICurrenciesQuery,
     ICurrenciesQueryVariables
   >(CurrenciesQuery, {
     variables: { queryString, limit, offset, includeInactive, sort },
+    skip,
   });
 
   const currencies = data?.currencies || [];

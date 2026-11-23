@@ -24,12 +24,13 @@ const useCreateCurrency = () => {
   const createCurrency = async ({
     currency: { isoCode, contractAddress, decimals },
   }: ICreateCurrencyMutationVariables) => {
+    const chosenDecimals = `${decimals ?? ''}`;
     return createCurrencyMutation({
       variables: {
         currency: {
           isoCode,
           contractAddress,
-          decimals: parseInt((decimals || '2') as string, 10),
+          ...(chosenDecimals !== '' && { decimals: Number(chosenDecimals) }),
         },
       },
       refetchQueries: ['Currencies', 'ShopStatus', 'ShopInfo'],

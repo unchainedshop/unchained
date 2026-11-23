@@ -3,7 +3,7 @@ import { IRoleAction } from '../../../gql/types';
 
 import useAuth from '../../Auth/useAuth';
 import convertArrayOfObjectToObject from '../../common/convertArrayOfObjectToObject';
-import useCurrencies from '../../currency/hooks/useCurrencies';
+import useApp from '../../common/hooks/useApp';
 import Toggle from '@/components/ui/Toggle';
 import Form from '../../forms/components/Form';
 
@@ -31,7 +31,7 @@ const CountryForm = ({
     defaultMessage: 'Country updated successfully!',
   });
 
-  const { currencies } = useCurrencies();
+  const { currencies } = useApp();
   const form = useForm({
     submit: onSubmit,
     onSubmitSuccess,

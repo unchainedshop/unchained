@@ -5,7 +5,7 @@ import {
   IUpdateProductCommerceMutationVariables,
 } from '../../../gql/types';
 import ProductDetailFragment from '../fragments/ProductDetailFragment';
-import useCurrencies from '../../currency/hooks/useCurrencies';
+import useApp from '../../common/hooks/useApp';
 import { toPricingInput } from '../utils/price.utils';
 
 const UpdateProductCommerceMutation = gql`
@@ -25,7 +25,7 @@ const useUpdateProductCommerce = () => {
     IUpdateProductCommerceMutation,
     IUpdateProductCommerceMutationVariables
   >(UpdateProductCommerceMutation);
-  const { currencies } = useCurrencies();
+  const { currencies } = useApp();
 
   const updateProductCommerce = async ({
     productId,

@@ -8,22 +8,20 @@ import { DangerMessage } from '@unchainedshop/admin-ui/modal';
 import { useApp, useForm, useModal } from '@unchainedshop/admin-ui/hooks';
 import useTicketProductionMutations from '../../hooks/useTicketProductionMutations.ts';
 import { useCountries } from '@unchainedshop/admin-ui/modules/country';
-import { useCurrencies } from '@unchainedshop/admin-ui/modules/currency';
 import {
   PricingFields,
   toPricingFormValues,
   toPricingInput,
 } from '@unchainedshop/admin-ui/modules/product';
 import { isCategoryCode, toCount } from '../../utils/production-form.ts';
-import { useFormatPrice } from '../../utils/misc.ts';
+import { useFormatPrice } from '@unchainedshop/admin-ui/hooks';
 import { FormFooter, errorMessage } from './fields.tsx';
 
 // Adds a category, or changes the one given: name, capacity and prices of new dates.
 const CategoryForm = ({ production, category, onDone }) => {
   const { formatMessage } = useIntl();
-  const { selectedLocale } = useApp();
+  const { selectedLocale, currencies } = useApp();
   const { countries } = useCountries();
-  const { currencies } = useCurrencies();
   const baseCountry = countries?.find(({ isBase }) => isBase);
   const { addTicketCategory, updateTicketCategory } = useTicketProductionMutations();
   const invalid = formatMessage({ id: 'invalid_value', defaultMessage: 'Enter a valid value' });

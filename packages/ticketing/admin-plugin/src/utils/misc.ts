@@ -10,20 +10,6 @@ export const shortenAddress = (fullAddress) => {
   return fullAddress ? `${fullAddress.substr(0, 6)}...${fullAddress.substr(-4, 4)}` : '0x0';
 };
 
-export const useFormatPrice = () => {
-  const formatPrice = (price: { currencyCode: string; amount: number }) => {
-    if (!price?.currencyCode) return 'n/a';
-    if (price?.amount === undefined || price?.amount === null) return '';
-    const { amount, currencyCode } = price || {};
-    return new Intl.NumberFormat(navigator.language, {
-      style: 'currency',
-      currency: currencyCode,
-    }).format(amount / 100);
-  };
-
-  return { formatPrice };
-};
-
 export const useFormatDateTime = () => {
   const formatDateTime = (date, options: Intl.DateTimeFormatOptions = {}) => {
     if (!date || !Date.parse(date)) return 'n/a';

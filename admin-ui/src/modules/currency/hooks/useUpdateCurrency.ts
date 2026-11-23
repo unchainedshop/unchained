@@ -22,7 +22,7 @@ const useUpdateCurrency = () => {
   >(UpdateCurrencyMutation);
 
   const updateCurrency = async ({
-    currency: { isoCode, isActive, decimals, contractAddress },
+    currency: { isoCode, isActive, contractAddress },
     currencyId,
   }: IUpdateCurrencyMutationVariables) => {
     return updateCurrencyMutation({
@@ -31,7 +31,6 @@ const useUpdateCurrency = () => {
           isoCode,
           isActive,
           contractAddress,
-          decimals: parseInt((decimals || '2') as string, 10),
         },
         currencyId,
       },

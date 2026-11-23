@@ -2,6 +2,7 @@ import Link from 'next/link';
 import React from 'react';
 import { useIntl } from 'react-intl';
 import generateUniqueId from '../../../common/utils/getUniqueId';
+import { useFormatPrice } from '../../../common/utils/utils';
 
 interface AssignmentListItemCompactProps {
   product?: {
@@ -28,6 +29,7 @@ const AssignmentListItemCompact: React.FC<AssignmentListItemCompactProps> = ({
   vectors,
 }) => {
   const { formatMessage } = useIntl();
+  const { formatPrice } = useFormatPrice();
 
   const title =
     product?.texts?.title ||
@@ -79,7 +81,7 @@ const AssignmentListItemCompact: React.FC<AssignmentListItemCompactProps> = ({
 
         {price !== undefined && currency && (
           <p className="text-xs font-semibold text-text-primary mt-1">
-            {(price / 100).toFixed(2)} {currency}
+            {formatPrice({ amount: price, currencyCode: currency })}
           </p>
         )}
       </div>

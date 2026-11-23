@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl';
 import useAuth from '../../Auth/useAuth';
 import FormWrapper from '../../common/components/FormWrapper';
 import useCountries from '../../country/hooks/useCountries';
-import useCurrencies from '../../currency/hooks/useCurrencies';
+import useApp from '../../common/hooks/useApp';
 
 import Form from '../../forms/components/Form';
 import FormErrors from '@/components/ui/form/FormErrors';
@@ -34,7 +34,7 @@ const CommerceForm = ({ productId, disabled = false }) => {
 
   const { updateProductCommerce } = useUpdateProductCommerce();
   const { countries } = useCountries();
-  const { currencies } = useCurrencies();
+  const { currencies } = useApp();
 
   const baseCountry = countries?.find(({ isBase }) => isBase);
 
