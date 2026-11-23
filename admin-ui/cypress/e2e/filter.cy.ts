@@ -525,94 +525,15 @@ describe('Filter', () => {
       );
       cy.get('input[name="key"]').type(SingleFilterResponse.data.filter.key);
       cy.get('select[name="type"]').select(firstFilterType.value);
-      cy.get('button.border-danger').first().click();
       cy.get('input[type="submit"]')
         .contains(localizations.en.create_filter)
         .click();
       cy.wait(fullAliasMutationName(FilterOperations.CreateFiler)).then(
         (currentSubject) => {
           const { request, response } = currentSubject;
-          expect(request.body.variables.filter).to.deep.include({
+          expect(request.body.variables.filter).to.deep.eq({
             key: SingleFilterResponse.data.filter.key,
             type: firstFilterType.value,
-            options: [],
-          });
-          expect(response.body).to.deep.eq(CreateFilterResponse);
-        },
-      );
-      cy.url().should('include', `/filters/?filterId=${CreateFilterResponse.data.createFilter._id}`);
-    });
-
-    it('Should [CREATE FILTER with 2 OPTIONS] successfully', () => {
-      const [firstFilterType] = FilterTypesResponse.data.filterTypes.options;
-
-      cy.get('input[name="title"]').type(
-        SingleFilterResponse.data.filter.texts.title,
-      );
-      cy.get('input[name="key"]').type(SingleFilterResponse.data.filter.key);
-      cy.get('select[name="type"]').select(firstFilterType.value);
-      cy.get('input[name="options.0"]').type('option 1');
-      cy.get('button[type="button"]')
-        .contains(localizations.en.add_option)
-        .click();
-      cy.get('input[name="options.1"]').type('option 2');
-      cy.get('input[type="submit"]')
-        .contains(localizations.en.create_filter)
-        .click();
-      cy.wait(fullAliasMutationName(FilterOperations.CreateFiler)).then(
-        (currentSubject) => {
-          const { request, response } = currentSubject;
-          expect(request.body.variables.filter).to.deep.include({
-            key: SingleFilterResponse.data.filter.key,
-            type: firstFilterType.value,
-            options: ['option 1', 'option 2'],
-          });
-          expect(response.body).to.deep.eq(CreateFilterResponse);
-        },
-      );
-      cy.url().should('include', `/filters/?filterId=${CreateFilterResponse.data.createFilter._id}`);
-    });
-
-    it('Should [SHOW ERROR] if option field is left empty successfully', () => {
-      const [firstFilterType] = FilterTypesResponse.data.filterTypes.options;
-
-      cy.get('input[name="title"]').type(
-        SingleFilterResponse.data.filter.texts.title,
-      );
-      cy.get('input[name="key"]').type(SingleFilterResponse.data.filter.key);
-      cy.get('select[name="type"]').select(firstFilterType.value);
-      cy.get('input[type="submit"]')
-        .contains(localizations.en.create_filter)
-        .click();
-
-      cy.get('label[for="options.0"]').should(
-        'contain.text',
-        replaceIntlPlaceholder(
-          localizations.en.error_required,
-          localizations.en.option,
-        ),
-      );
-    });
-
-    it('Should Display [ERROR when CREATE FILTER] required fields are missing', () => {
-      const [firstFilterType] = FilterTypesResponse.data.filterTypes.options;
-
-      cy.get('input[name="title"]').type(
-        SingleFilterResponse.data.filter.texts.title,
-      );
-      cy.get('input[name="key"]').type(SingleFilterResponse.data.filter.key);
-      cy.get('select[name="type"]').select(firstFilterType.value);
-      cy.get('button.border-danger').first().click();
-      cy.get('input[type="submit"]')
-        .contains(localizations.en.create_filter)
-        .click();
-      cy.wait(fullAliasMutationName(FilterOperations.CreateFiler)).then(
-        (currentSubject) => {
-          const { request, response } = currentSubject;
-          expect(request.body.variables.filter).to.deep.include({
-            key: SingleFilterResponse.data.filter.key,
-            type: firstFilterType.value,
-            options: [],
           });
           expect(response.body).to.deep.eq(CreateFilterResponse);
         },
@@ -646,8 +567,6 @@ describe('Filter', () => {
           localizations.en.type,
         ),
       );
-
-      // Add options required test
 
       cy.get('input[type="submit"]').should('be.disabled');
     });

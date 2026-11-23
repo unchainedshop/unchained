@@ -25,11 +25,11 @@ const useCreateFilter = () => {
   >(CreateFilterMutation);
 
   const createFilter = async ({
-    filter: { key, type, options },
+    filter: { key, type },
     texts,
   }: ICreateFilterMutationVariables) => {
     return createFilterMutation({
-      variables: { filter: { key, type, options }, texts },
+      variables: { filter: { key, type }, texts },
     });
   };
   const newFilter = data?.createFilter;
