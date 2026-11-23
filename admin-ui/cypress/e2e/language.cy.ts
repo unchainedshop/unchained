@@ -233,7 +233,7 @@ describe('Languages', () => {
   });
 
   it('Show [DELETE LANGUAGE FROM LIST] successfully', () => {
-    const { language } = SingleLanguageResponse.data;
+    const [language] = LanguagesResponse.data.languages;
 
     cy.location('pathname').should('eq', '/language/');
     cy.get('button[aria-label="Actions menu"]').first().click({ force: true });

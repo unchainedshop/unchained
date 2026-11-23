@@ -25,7 +25,7 @@ export const LanguagesResponse = {
 export const SingleLanguageResponse = {
   data: {
     language: {
-      _id: '3d8f7cff0b038f582c48417d',
+      _id: '401d3dcaffada1d7942a567c',
       isoCode: 'de',
       isActive: true,
       isBase: true,
@@ -47,7 +47,7 @@ export const CreateLanguageResponse = {
 export const UpdateLanguageResponse = {
   data: {
     updateLanguage: {
-      _id: '3d8f7cff0b038f582c48417d',
+      _id: '401d3dcaffada1d7942a567c',
       __typename: 'Language',
     },
   },
@@ -56,7 +56,7 @@ export const UpdateLanguageResponse = {
 export const RemoveLanguageResponse = {
   data: {
     removeLanguage: {
-      _id: '3d8f7cff0b038f582c48417d',
+      _id: '401d3dcaffada1d7942a567c',
       __typename: 'Language',
     },
   },
