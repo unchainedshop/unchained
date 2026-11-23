@@ -1,5 +1,6 @@
 import { registerEvents } from '@unchainedshop/events';
 import createGraphQLServer, { type GraphQLServerOptions } from './createGraphQLServer.ts';
+export { getCurrentSchema } from './createGraphQLServer.ts';
 import {
   createContextResolver,
   setCurrentContextResolver,

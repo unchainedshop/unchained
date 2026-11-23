@@ -66,6 +66,15 @@ is needed. Inside this monorepo, build the Admin UI and client once with
 `npm run build:admin-ui` and `npm --prefix admin-ui run build:client` from the
 repository root to supply the artifacts that the published packages include.
 
+## Storefront MCP
+
+Shopping assistants can search the catalog as guests at http://localhost:4010/mcp/storefront.
+`src/storefront.ts` registers the plugin with product cards (`mcp/product-cards.html`), a
+product page at `/shop/products/:productId` and catalog price filters for `price_ch` (CHF)
+and `price_us` (USD). Create those RANGE filters in Admin UI, then expose them and your other
+filters to assistants in each filter's **Assistants** tab. OCP discovery is served at
+`/.well-known/ocp.json`.
+
 ## Scripts
 
 | Command                    | Description                              |

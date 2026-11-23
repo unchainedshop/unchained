@@ -127,7 +127,7 @@ const filters = [
   { key: 'brand', value: 'samsung' },
 
   // Range filter
-  { key: 'price', value: '100-500' },
+  { key: 'weight', value: '100:500' }, // inclusive, ':500' and '100:' leave a bound open
 ];
 ```
 
@@ -137,7 +137,7 @@ const filters = [
 |------|-------------|---------|
 | `SINGLE_CHOICE` | Select one option | Category |
 | `MULTI_CHOICE` | Select multiple options | Brand, Color |
-| `RANGE` | Numeric range | Price, Weight |
+| `RANGE` | Numeric range over the options, see the [catalog price filter](../plugins/filters/filter-catalog-price.md) for prices | Price, Weight |
 | `SWITCH` | Boolean toggle | In Stock |
 
 ### Creating Filters

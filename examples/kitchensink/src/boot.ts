@@ -6,10 +6,16 @@ import { startPlatform } from '@unchainedshop/platform';
 import { connect, unchainedLogger } from '@unchainedshop/api/fastify';
 import { registerAllPlugins } from '@unchainedshop/plugins/presets/all';
 import seed from './seed.ts';
+import { registerStorefront } from './storefront.ts';
 import { useErrorHandler } from 'graphql-yoga';
 
 import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
 import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
+import {
+  storefrontMcpAdminPlugin,
+  storefrontMcpResolvers,
+  storefrontMcpTypeDefs,
+} from '@unchainedshop/plugins/mcp/storefront';
 import {
   registerProductDiscoverabilityFilter,
   pluginRegistry,
@@ -146,8 +152,11 @@ try {
   pluginRegistry.register(HalfPriceManualPlugin);
   pluginRegistry.register(HundredOffPlugin);
   registerProductDiscoverabilityFilter({ hiddenTagValue: 'device' });
+  registerStorefront();
 
   const platform = await startPlatform({
+    typeDefs: storefrontMcpTypeDefs,
+    resolvers: [storefrontMcpResolvers],
     options: {
       users: { loginCode: { enabled: true } },
     },
@@ -174,6 +183,7 @@ try {
     adminUI: {
       theme: adminUITheme,
       plugins: [
+        storefrontMcpAdminPlugin(),
         definePlugin({
           name: 'bookmark-manager',
           version: '1.0.0',

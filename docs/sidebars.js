@@ -225,7 +225,11 @@ const sidebars = {
               type: 'category',
               label: 'Filters',
               link: { type: 'doc', id: 'plugins/filters/index' },
-              items: ['plugins/filters/filter-local-search', 'plugins/filters/filter-strict-equal'],
+              items: [
+                'plugins/filters/filter-local-search',
+                'plugins/filters/filter-strict-equal',
+                'plugins/filters/filter-catalog-price',
+              ],
             },
             {
               type: 'category',
@@ -298,7 +302,12 @@ const sidebars = {
             type: 'doc',
             id: 'ai-integration/index',
           },
-          items: ['ai-integration/mcp-server', 'ai-integration/admin-copilot', 'ai-integration/ai-faq'],
+          items: [
+            'ai-integration/mcp-server',
+            'ai-integration/storefront-mcp',
+            'ai-integration/admin-copilot',
+            'ai-integration/ai-faq',
+          ],
         },
 
         // Troubleshooting

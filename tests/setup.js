@@ -10,7 +10,14 @@ import * as jose from 'jose';
 // Import additional discount plugins used by kitchensink
 import { HalfPriceManualPlugin } from '@unchainedshop/plugins/pricing/discount-half-price-manual';
 import { HundredOffPlugin } from '@unchainedshop/plugins/pricing/discount-100-off';
-import { pluginRegistry } from '@unchainedshop/core';
+import { createCatalogPriceFilterPlugin } from '@unchainedshop/plugins/filters/catalog-price';
+import {
+  createProductSearchTool,
+  createStorefrontMcpPlugin,
+  storefrontMcpResolvers,
+  storefrontMcpTypeDefs,
+} from '@unchainedshop/plugins/mcp/storefront';
+import { pluginRegistry, registerProductDiscoverabilityFilter } from '@unchainedshop/core';
 import {
   createTicketingPlugin,
   validateTicketOrderPosition,
@@ -146,6 +153,30 @@ export async function initializeTestPlatform() {
   pluginRegistry.register(HalfPriceManualPlugin);
   pluginRegistry.register(HundredOffPlugin);
 
+  // Storefront MCP with one catalog price filter per market (tests/storefront-*.test.js)
+  pluginRegistry.register(
+    createCatalogPriceFilterPlugin({
+      filters: {
+        price_ch: { countryCode: 'CH', currencyCode: 'CHF' },
+        price_de: { countryCode: 'DE', currencyCode: 'EUR' },
+      },
+    }),
+  );
+  pluginRegistry.register(
+    createStorefrontMcpPlugin({
+      shopName: 'Test Shop',
+      shopUrl: 'https://shop.example.com',
+      tools: [
+        createProductSearchTool({
+          productUrl: ({ productId, locale }) =>
+            `https://shop.example.com/${locale.baseName}/products/${productId}`,
+          ui: { uri: 'ui://test/product-cards.html', html: '<!doctype html><title>Cards</title>' },
+        }),
+      ],
+    }),
+  );
+  registerProductDiscoverabilityFilter({ hiddenTagValue: 'storefront-hidden' });
+
   // Ticketing without renderers (the ticketing tests register stub renderers themselves). The
   // ticket issuer only issues tickets where a test seeds its VIRTUAL provider (tests/seeds/ticketing.js).
   pluginRegistry.register(createTicketingPlugin());
@@ -166,6 +197,8 @@ export async function initializeTestPlatform() {
 
   // Platform options with in-memory MongoDB
   const platformOptions = {
+    typeDefs: [...storefrontMcpTypeDefs, 'extend enum SearchOrderBy { meta_rating_DESC }'],
+    resolvers: [storefrontMcpResolvers],
     options: {
       orders: {
         // Ticket supply, cancelled events and the built-in sale rules (product.meta.saleRules);

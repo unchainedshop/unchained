@@ -57,6 +57,10 @@ export interface UnchainedSchemaExtension {
 
 export type GraphQLServerOptions = YogaServerOptions<any, any> & UnchainedSchemaExtension;
 
+let currentSchema: YogaSchemaDefinition<any, any> | undefined;
+
+export const getCurrentSchema = () => currentSchema;
+
 export default async (options: GraphQLServerOptions) => {
   const schema =
     'schema' in options
@@ -65,6 +69,7 @@ export default async (options: GraphQLServerOptions) => {
           typeDefs: options.typeDefs,
           resolvers: options.resolvers,
         });
+  currentSchema = schema;
 
   const server = createYoga({
     schema,
