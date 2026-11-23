@@ -4,14 +4,15 @@ This directory contains the Model Context Protocol (MCP) server implementation f
 
 ## Architecture
 
-The `/mcp` endpoint is **stateless**: `createMcpHandler` builds a fresh `McpServer` for every HTTP request from that request's authenticated context (passed through `authInfo.extra`). There is no session map — no `Mcp-Session-Id` is issued, `GET`/`DELETE` return `405`, and the endpoint works multi-replica. All auth (401 with OAuth resource metadata, 403 unless the user has the `admin` role, 503 when the optional SDK is missing) and the SDK-required `Host`/browser `Origin` validation happen in `handleMcpHttpRequest.ts` before SDK dispatch. The hostname configured in `ROOT_URL` and localhost aliases are accepted.
+The `/mcp` endpoint is **stateless**: `createMcpHandler` builds a fresh `McpServer` for every HTTP request from that request's authenticated context (passed through `authInfo.extra`). There is no session map — no `Mcp-Session-Id` is issued, `GET`/`DELETE` return `405`, and the endpoint works multi-replica. Auth (401 with OAuth resource metadata, 403 unless the user has the `admin` role) happens in `handleMcpHttpRequest.ts`. The transport, 503 when the optional SDK is missing and the SDK-required `Host`/browser `Origin` validation live in `createMcpHttpHandler.ts`, which plugins import from `@unchainedshop/api/mcp` for their own endpoints. The hostname configured in `ROOT_URL`, localhost aliases and the `allowedHostnames` option are accepted.
 
 ## Structure
 
 ```
 mcp/
 ├── index.ts                 # Registers all tools + resources onto a McpServer (admin-gated)
-├── handleMcpHttpRequest.ts  # Web-standard entrypoint: auth wall, optional-peer guard, createMcpHandler
+├── createMcpHttpHandler.ts  # Shared stateless transport: optional-peer guard, Host/Origin checks, createMcpHandler
+├── handleMcpHttpRequest.ts  # Admin entrypoint: auth wall around createMcpHttpHandler
 ├── nodeHttpBridge.ts        # Node req/res <-> web Request/Response bridge shared by Express/Fastify
 ├── resources/               # MCP resources (shop localization) + in-process builders for chat
 ├── tools/                   # One "<domain>_management" mega-tool per domain (9 total)

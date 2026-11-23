@@ -7,6 +7,7 @@
 
 ### Improvements
 - **Filter adapters can generate a filter's options** (`@unchainedshop/core`): `generatedOptions` replaces the option scan of a cache rebuild, `Filter.optionsAreGenerated` marks them read-only in Admin UI, and transforms receive the request's `countryCode` and `currencyCode`.
+- **Shared MCP transport** (`@unchainedshop/api`): `createMcpHttpHandler` from `@unchainedshop/api/mcp` serves a stateless MCP endpoint with the optional-SDK check and Host/Origin validation, used by `/mcp` and plugins.
 - **Catalog price filter** (`@unchainedshop/plugins`): `createCatalogPriceFilterPlugin` indexes the quantity-one catalog prices of one market per RANGE filter, with a product count per price.
 - **Storefront MCP** (`@unchainedshop/plugins`): `createStorefrontMcpPlugin` serves product search for shopping assistants at `/mcp/storefront`, with merchant-exposed filter inputs, market hints, MCP Apps product cards and an OCP manifest.
 

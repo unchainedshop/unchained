@@ -1,5 +1,6 @@
-import { createMcpHandler, McpServer, type McpHttpHandler } from '@modelcontextprotocol/server';
+import type { McpServer } from '@modelcontextprotocol/server';
 import type { Context } from '@unchainedshop/api';
+import { createMcpHttpHandler } from '@unchainedshop/api/mcp';
 import type { IPlugin } from '@unchainedshop/core';
 import { createSearchInputIndex } from './exposure.ts';
 
@@ -36,33 +37,19 @@ export function createStorefrontMcpPlugin({
 }): IPlugin {
   const views = [...new Map(tools.flatMap(({ ui }) => (ui ? [[ui.uri, ui] as const] : []))).values()];
 
-  const createServer = async (context: Context) => {
-    const server = new McpServer({ name: shopName, version: '1.0.0' });
-    for (const { uri, html, csp } of views) {
-      const meta = csp && { _meta: { ui: { csp } } };
-      server.registerResource(uri, uri, { mimeType: MCP_APP_MIME_TYPE, ...meta }, async () => ({
-        contents: [{ uri, mimeType: MCP_APP_MIME_TYPE, text: html, ...meta }],
-      }));
-    }
-    for (const tool of tools) await tool.register(server, context);
-    return server;
-  };
-
-  let handler: McpHttpHandler | undefined;
-  const handleMcpRequest = (request: Request, context: Context) => {
-    handler ??= createMcpHandler(
-      async ({ authInfo }) => createServer((authInfo!.extra as { context: Context }).context),
-      { maxSubscriptions: 0 },
-    );
-    return handler.fetch(request, {
-      authInfo: {
-        token: 'unchained-context',
-        clientId: context.userId ?? 'anonymous',
-        scopes: [],
-        extra: { context },
-      },
-    });
-  };
+  const serveStorefrontMcp = createMcpHttpHandler(
+    { name: shopName, version: '1.0.0' },
+    async (server, context) => {
+      for (const { uri, html, csp } of views) {
+        const meta = csp && { _meta: { ui: { csp } } };
+        server.registerResource(uri, uri, { mimeType: MCP_APP_MIME_TYPE, ...meta }, async () => ({
+          contents: [{ uri, mimeType: MCP_APP_MIME_TYPE, text: html, ...meta }],
+        }));
+      }
+      for (const tool of tools) await tool.register(server, context);
+    },
+    { maxSubscriptions: 0, allowedHostnames: shopUrl ? [new URL(shopUrl).hostname] : [] },
+  );
 
   return {
     key: 'shop.unchained.mcp.storefront',
@@ -73,7 +60,7 @@ export function createStorefrontMcpPlugin({
       {
         path: '/mcp/storefront',
         method: 'ALL',
-        handler: (request, context) => handleMcpRequest(request, context as unknown as Context),
+        handler: (request, context) => serveStorefrontMcp(request, context as unknown as Context),
       },
       ...(shopUrl
         ? [

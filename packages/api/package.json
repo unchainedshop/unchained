@@ -32,6 +32,10 @@
       "import": "./lib/http/createFetchHandler.js",
       "types": "./lib/http/createFetchHandler.d.ts"
     },
+    "./mcp": {
+      "import": "./lib/mcp/createMcpHttpHandler.js",
+      "types": "./lib/mcp/createMcpHttpHandler.d.ts"
+    },
     "./lib/*": {
       "import": "./lib/*",
       "types": "./lib/*"
