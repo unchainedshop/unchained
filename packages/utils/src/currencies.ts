@@ -26,8 +26,6 @@ const ISO_MINOR_UNITS: Record<string, number> = {
 
 const isoCurrencyCodes = new Set(Intl.supportedValuesOf('currency'));
 
-export const currencyDecimals = (decimals?: number | null) => Math.min(decimals ?? 2, 9);
-
 export const isoCurrencyDecimals = (isoCode: string) => {
   const code = isoCode.toUpperCase();
   if (!isoCurrencyCodes.has(code)) return undefined;

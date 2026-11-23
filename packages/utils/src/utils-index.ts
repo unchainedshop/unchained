@@ -15,7 +15,7 @@ export { default as sha1 } from './sha1.ts';
 export { timingSafeEqual, timingSafeStringEqual } from './timing-safe-equal.ts';
 export { normalizePhoneNumber, phoneNumberToParts } from './phone-number.ts';
 export { default as memoizeWithTTL } from './memoize-with-ttl.ts';
-export { currencyDecimals, isoCurrencyDecimals } from './currencies.ts';
+export { currencyDecimals } from './currency-decimals.ts';
 export { executeBulkOperation } from './executeBulkOperation.ts';
 
 export const SortDirection = {
@@ -57,3 +57,4 @@ export interface DateFilterInput {
 
 export * from './director/BaseAdapter.ts';
 export * from './director/BaseDirector.ts';
+export { isoCurrencyDecimals } from './currencies.ts';

@@ -195,14 +195,17 @@ subscribe('ORDER_CHECKOUT', async ({ payload }) => {
     calculation: order.calculation,
     currencyCode: order.currencyCode,
   }).total();
+  const currency = await unchainedAPI.modules.currencies.findCachedCurrency(currencyCode);
 
   await gtag('event', 'purchase', {
     transaction_id: order._id,
-    value: amount / 100,
+    value: amount / 10 ** currencyDecimals(currency?.decimals),
     currency: currencyCode,
   });
 });
 ```
+
+`findCachedCurrency` reads from a cache that is refreshed once a minute, and `currencyDecimals` from `@unchainedshop/utils` turns the stored `decimals` into the precision of the amounts.
 
 ### Webhook Triggers
 

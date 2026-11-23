@@ -1,6 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { currencyDecimals, isoCurrencyDecimals } from './currencies.ts';
+import { currencyDecimals } from './currency-decimals.ts';
+import { isoCurrencyDecimals } from './currencies.ts';
 
 describe('currencies', () => {
   it('currencyDecimals defaults to 2 and stores at most 9', () => {
