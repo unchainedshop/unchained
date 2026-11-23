@@ -13,6 +13,34 @@ const RANGE_SYNTAX =
 const BUILT_IN_INPUTS = ['query', 'product_ids', 'sort', 'offset', 'limit'];
 const INPUT_NAME = /^[A-Za-z][A-Za-z0-9_]{0,63}$/;
 
+const formattedAmount = z.object({
+  amount: z.number().int().describe('Minor units of the currency'),
+  formatted: z.string(),
+});
+
+const outputSchema = z.object({
+  market: z.object({ country: z.string(), language: z.string(), currency: z.string() }),
+  totalCount: z.number().int().nonnegative(),
+  products: z.array(
+    z.object({
+      id: z.string(),
+      title: z.string(),
+      brand: z.string().optional(),
+      description: z.string().optional(),
+      image: z.string().optional(),
+      url: z.string(),
+      price: formattedAmount
+        .extend({
+          currency: z.string(),
+          isNetPrice: z.boolean(),
+          maxPrice: formattedAmount.optional(),
+        })
+        .nullable()
+        .describe('Quantity-one catalog price, with maxPrice when the variants differ'),
+    }),
+  ),
+});
+
 export interface StorefrontSearch {
   queryString?: string;
   filterQuery?: { key: string; value: string }[];
@@ -169,7 +197,13 @@ export function createProductSearchTool({
                 ? `Unknown input ${issue.keys.join(', ')}, accepted inputs: ${acceptedInputs}`
                 : undefined,
           }),
-          annotations: { readOnlyHint: true, openWorldHint: false },
+          outputSchema,
+          annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+            openWorldHint: false,
+          },
           ...(ui && {
             _meta: {
               ui: { resourceUri: ui.uri },

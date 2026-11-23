@@ -77,12 +77,14 @@ export async function productResults(
           countryCode,
           currencyCode,
         }),
-        price: prices && {
-          ...price(prices.min.amount),
-          currency: currencyCode,
-          isNetPrice: Boolean(prices.min.isNetPrice),
-          ...(prices.max.amount !== prices.min.amount && { maxPrice: price(prices.max.amount) }),
-        },
+        price: prices
+          ? {
+              ...price(prices.min.amount),
+              currency: currencyCode,
+              isNetPrice: Boolean(prices.min.isNetPrice),
+              ...(prices.max.amount !== prices.min.amount && { maxPrice: price(prices.max.amount) }),
+            }
+          : null,
       };
     }),
   );

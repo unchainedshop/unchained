@@ -66,6 +66,17 @@ test.describe('Storefront MCP', () => {
     assert.match(properties.price_de.description, /EUR in Cent/);
     assert.deepStrictEqual(properties.sort.enum, ['meta_rating_DESC']);
     assert.strictEqual(tool.inputSchema.additionalProperties, false);
+    assert.deepStrictEqual(Object.keys(tool.outputSchema.properties), [
+      'market',
+      'totalCount',
+      'products',
+    ]);
+    assert.deepStrictEqual(tool.annotations, {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    });
     assert.strictEqual(tool._meta.ui.resourceUri, 'ui://test/product-cards.html');
 
     const { result } = await storefront('resources/read', { uri: 'ui://test/product-cards.html' });
