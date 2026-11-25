@@ -2565,6 +2565,26 @@ export type IGlobalSearchQuery = { globalSearch: { counts: Array<{ type: Types.I
       | { __typename: 'Work', _id: string, type: Types.IWorkType }
     > } };
 
+export type IShopSettingsQueryVariables = Exact<{
+  namespace: Types.ISettingsNamespace;
+}>;
+
+
+export type IShopSettingsQuery = { shopSettingsSchema: unknown, shopInfo: { _id: string, settings: unknown } };
+
+export type IShopSettingsNamespacesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type IShopSettingsNamespacesQuery = { shopSettingsNamespaces: Array<Types.ISettingsNamespace> };
+
+export type IUpdateShopSettingsMutationVariables = Exact<{
+  namespace: Types.ISettingsNamespace;
+  value: unknown;
+}>;
+
+
+export type IUpdateShopSettingsMutation = { updateShopSettings: unknown };
+
 export type IInvalidateTokenMutationVariables = Exact<{
   tokenId: string | number;
 }>;

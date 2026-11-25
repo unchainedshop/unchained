@@ -34,6 +34,7 @@ const ROUTE_ROLES: Record<string, string> = {
   '/tokens': 'viewTokens',
   '/copilot': 'viewProducts',
   '/exports': 'viewWorkQueue',
+  '/settings': 'manageShopSettings',
 };
 
 const UNRESTRICTED_PAGES = [

@@ -873,6 +873,7 @@ export enum IEventType {
   QuotationRemove = 'QUOTATION_REMOVE',
   QuotationRequestCreate = 'QUOTATION_REQUEST_CREATE',
   QuotationUpdate = 'QUOTATION_UPDATE',
+  ShopSettingsUpdated = 'SHOP_SETTINGS_UPDATED',
   TokenCreated = 'TOKEN_CREATED',
   TokenInvalidated = 'TOKEN_INVALIDATED',
   TokenOwnershipChanged = 'TOKEN_OWNERSHIP_CHANGED',
@@ -1449,6 +1450,12 @@ export type IMutation = {
   updateProductVariationTexts: Array<IProductVariationTexts>;
   /** Modify warehousing part of a product */
   updateProductWarehousing?: Maybe<IProduct>;
+  /**
+   * Update runtime settings for a given namespace. Validates against the
+   * registered zod schema and emits SHOP_SETTINGS_UPDATED on success.
+   * Requires the manageShopSettings permission.
+   */
+  updateShopSettings: Scalars['JSON']['output'];
   /** Update Profile of any user or logged in user if userId is not provided */
   updateUserProfile: IUser;
   /** Updates warehousing provider information with the provided ID */
@@ -2401,6 +2408,12 @@ export type IMutationUpdateProductWarehousingArgs = {
 };
 
 
+export type IMutationUpdateShopSettingsArgs = {
+  namespace: ISettingsNamespace;
+  value: Scalars['JSON']['input'];
+};
+
+
 export type IMutationUpdateUserProfileArgs = {
   meta?: InputMaybe<Scalars['JSON']['input']>;
   profile?: InputMaybe<IUserProfileInput>;
@@ -3271,6 +3284,14 @@ export type IQuery = {
   searchProducts: IProductSearchResult;
   /** Get shop-global data and the resolved country/language pair */
   shopInfo: IShop;
+  /** List all registered settings namespace keys. */
+  shopSettingsNamespaces: Array<ISettingsNamespace>;
+  /**
+   * JSON Schema for the given settings namespace, so admin forms can be
+   * generated rather than hand-built. Returns null when the namespace is
+   * not registered.
+   */
+  shopSettingsSchema?: Maybe<Scalars['JSON']['output']>;
   /** Get token */
   token?: Maybe<IToken>;
   /** Get all tokens */
@@ -3645,6 +3666,11 @@ export type IQuerySearchProductsArgs = {
 };
 
 
+export type IQueryShopSettingsSchemaArgs = {
+  namespace: ISettingsNamespace;
+};
+
+
 export type IQueryTokenArgs = {
   tokenId: Scalars['ID']['input'];
 };
@@ -3901,6 +3927,7 @@ export enum IRoleAction {
   ManageProductReviews = 'manageProductReviews',
   ManageProducts = 'manageProducts',
   ManageQuotations = 'manageQuotations',
+  ManageShopSettings = 'manageShopSettings',
   ManageUsers = 'manageUsers',
   ManageWarehousingProviders = 'manageWarehousingProviders',
   ManageWorker = 'manageWorker',
@@ -4016,14 +4043,30 @@ export enum ISearchableEntity {
   Work = 'WORK'
 }
 
+export enum ISettingsNamespace {
+  Unknown = 'UNKNOWN',
+  Shop = 'shop'
+}
+
 export type IShop = {
   _id: Scalars['ID']['output'];
   adminUiConfig: IAdminUiConfig;
   country?: Maybe<ICountry>;
   language?: Maybe<ILanguage>;
+  /**
+   * Runtime settings for the given namespace. Public namespaces are readable
+   * by anyone; private namespaces require the manageShopSettings permission.
+   * Returns null when the namespace is not registered.
+   */
+  settings?: Maybe<Scalars['JSON']['output']>;
   userRoles: Array<Scalars['String']['output']>;
   vapidPublicKey?: Maybe<Scalars['String']['output']>;
   version?: Maybe<Scalars['String']['output']>;
+};
+
+
+export type IShopSettingsArgs = {
+  namespace: ISettingsNamespace;
 };
 
 /** Simple Product */

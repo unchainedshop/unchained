@@ -295,6 +295,14 @@ const LayoutContent = ({ children, pageHeader = '', componentName }) => {
           requiredRole: 'viewWarehousingProviders',
           href: '/warehousing-provider',
         },
+        {
+          name: formatMessage({
+            id: 'settings',
+            defaultMessage: 'Settings',
+          }),
+          requiredRole: 'manageShopSettings',
+          href: '/settings',
+        },
       ].filter(Boolean),
     },
     {
