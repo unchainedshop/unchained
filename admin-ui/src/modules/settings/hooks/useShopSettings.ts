@@ -1,9 +1,9 @@
-import { IShopSettingsQuery, IShopSettingsQueryVariables } from '../../../gql/types';
+import { IShopSettingsQuery, IShopSettingsQueryVariables, ISettingsNamespace } from '../../../gql/types';
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 
 const ShopSettingsQuery = gql`
-  query ShopSettings($namespace: String!) {
+  query ShopSettings($namespace: SettingsNamespace!) {
     shopSettingsSchema(namespace: $namespace)
     shopInfo {
       _id
@@ -16,7 +16,7 @@ const useShopSettings = ({ namespace }: { namespace: string }) => {
   const { data, loading, error } = useQuery<IShopSettingsQuery, IShopSettingsQueryVariables>(
     ShopSettingsQuery,
     {
-      variables: { namespace },
+      variables: { namespace: namespace as ISettingsNamespace },
       fetchPolicy: 'cache-and-network',
     },
   );

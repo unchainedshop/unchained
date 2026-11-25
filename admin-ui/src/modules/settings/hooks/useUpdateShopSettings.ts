@@ -1,9 +1,9 @@
-import { IUpdateShopSettingsMutation, IUpdateShopSettingsMutationVariables } from '../../../gql/types';
+import { IUpdateShopSettingsMutation, IUpdateShopSettingsMutationVariables, ISettingsNamespace } from '../../../gql/types';
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client/react';
 
 const UpdateShopSettingsMutation = gql`
-  mutation UpdateShopSettings($namespace: String!, $value: JSON!) {
+  mutation UpdateShopSettings($namespace: SettingsNamespace!, $value: JSON!) {
     updateShopSettings(namespace: $namespace, value: $value)
   }
 `;
@@ -21,7 +21,7 @@ const useUpdateShopSettings = () => {
     value: Record<string, unknown>;
   }) => {
     return updateShopSettingsMutation({
-      variables: { namespace, value },
+      variables: { namespace: namespace as ISettingsNamespace, value },
       refetchQueries: ['ShopSettings', 'ShopInfo'],
     });
   };
