@@ -54,6 +54,7 @@ import {
   type UsersModule,
 } from '@unchainedshop/core-users';
 import { configureWarehousingModule, type WarehousingModule } from '@unchainedshop/core-warehousing';
+import { configureSettingsModule, type SettingsModule } from '@unchainedshop/core-settings';
 import {
   configureWorkerModule,
   type WorkerModule,
@@ -76,6 +77,7 @@ export interface Modules {
   payment: PaymentModule;
   products: ProductsModule;
   quotations: QuotationsModule;
+  settings: SettingsModule;
   users: UsersModule;
   warehousing: WarehousingModule;
   worker: WorkerModule;
@@ -177,6 +179,10 @@ export default async function initModules(
     options: options.quotations,
     migrationRepository,
   });
+  const settings = await configureSettingsModule({
+    db,
+    migrationRepository,
+  });
   const users = await configureUsersModule({
     db,
     options: options.users,
@@ -207,6 +213,7 @@ export default async function initModules(
     payment,
     products,
     quotations,
+    settings,
     users,
     warehousing,
     worker,

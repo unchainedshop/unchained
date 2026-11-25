@@ -11,6 +11,7 @@ import {
   errorHandler,
 } from './utils.ts';
 import { buildChatResourceContext } from '../mcp/resources/localization.ts';
+import { buildSettingsChatResourceContext } from '../mcp/resources/settings.ts';
 import {
   createInProcessMcpTransport,
   isAllowedBrowserOrigin,
@@ -149,7 +150,10 @@ export const createChatHandler = (chatConfiguration: ChatConfiguration) => {
 
       // Shop configuration is read in-process from the same data the MCP resources serve
       // (admin-gated inside the builder, mirroring the /mcp auth wall).
-      const resourceContext = await buildChatResourceContext(context);
+      const [resourceContext, settingsContext] = await Promise.all([
+        buildChatResourceContext(context),
+        buildSettingsChatResourceContext(context),
+      ]);
 
       const tools: aiTypes.ToolSet = {
         ...defaultUnchainedTools,
@@ -209,7 +213,7 @@ export const createChatHandler = (chatConfiguration: ChatConfiguration) => {
         ...restChatConfig,
         abortSignal: lifecycle.signal,
         messages: messagesToInclude,
-        system: system + resourceContext,
+        system: system + resourceContext + settingsContext,
         model,
         tools: cacheControlledTools,
         onEnd: async (event) => {

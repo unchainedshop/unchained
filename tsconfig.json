@@ -16,6 +16,7 @@
     { "path": "packages/core-delivery", },
     { "path": "packages/core-payment", },
     { "path": "packages/core-quotations", },
+    { "path": "packages/core-settings", },
     { "path": "packages/core-products", },
     { "path": "packages/core-assortments", },
     { "path": "packages/core-filters", },

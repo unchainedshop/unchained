@@ -391,3 +391,13 @@ export const paymentProviderErrors = {
   PaymentProviderNotFoundError,
   PaymentProviderNotSupportedError: OrderPaymentTypeError,
 };
+
+export const SettingsNamespaceNotFoundError = createError(
+  'SettingsNamespaceNotFoundError',
+  'Settings namespace not registered',
+);
+
+export const SettingsValidationError = createError(
+  'SettingsValidationError',
+  'Settings value failed schema validation',
+);
