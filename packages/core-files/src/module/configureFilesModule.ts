@@ -1,6 +1,7 @@
 import type { ModuleInput } from '@unchainedshop/mongodb';
 import { emit, registerEvents } from '@unchainedshop/events';
-import { generateDbFilterById, generateDbObjectId, mongodb } from '@unchainedshop/mongodb';
+import { generateDbFilterById, generateDbObjectId, buildSortOptions, mongodb } from '@unchainedshop/mongodb';
+import { type SortOption, SortDirection } from '@unchainedshop/utils';
 import { MediaObjectsCollection, type File } from '../db/MediaObjectsCollection.ts';
 import { filesSettings, type FilesSettingsOptions } from '../files-settings.ts';
 
@@ -11,8 +12,44 @@ export interface FileQuery {
   excludeFileId?: string;
   path?: string;
   paths?: string[];
+  types?: string[];
   meta?: Record<string, any>;
   createdBefore?: Date;
+  queryString?: string;
+}
+
+function buildFileSelector(query: FileQuery): mongodb.Filter<File> {
+  const selector: mongodb.Filter<File> = {};
+  if (query.fileIds) {
+    selector._id = { $in: query.fileIds };
+  }
+  if (query.excludeFileId) {
+    selector._id = { $ne: query.excludeFileId };
+  }
+  if (query.path) {
+    selector.path = query.path;
+  }
+  if (query.paths) {
+    selector.path = { $in: query.paths };
+  }
+  if (query.types?.length) {
+    const pattern = query.types
+      .map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+      .join('|');
+    selector.type = { $regex: `^(${pattern})` };
+  }
+  if (query.meta) {
+    Object.entries(query.meta).forEach(([key, value]) => {
+      selector[`meta.${key}`] = value;
+    });
+  }
+  if (query.createdBefore) {
+    selector.created = { $lt: query.createdBefore };
+  }
+  if (query.queryString) {
+    selector.$text = { $search: query.queryString };
+  }
+  return selector;
 }
 
 export const configureFilesModule = async ({
@@ -48,29 +85,32 @@ export const configureFilesModule = async ({
       return Files.findOne(generateDbFilterById(params.fileId), options);
     },
 
-    findFiles: async (query: FileQuery, options?: mongodb.FindOptions): Promise<File[]> => {
-      const selector: mongodb.Filter<File> = {};
-      if (query.fileIds) {
-        selector._id = { $in: query.fileIds };
-      }
-      if (query.excludeFileId) {
-        selector._id = { $ne: query.excludeFileId };
-      }
-      if (query.path) {
-        selector.path = query.path;
-      }
-      if (query.paths) {
-        selector.path = { $in: query.paths };
-      }
-      if (query.meta) {
-        Object.entries(query.meta).forEach(([key, value]) => {
-          selector[`meta.${key}`] = value;
-        });
-      }
-      if (query.createdBefore) {
-        selector.created = { $lt: query.createdBefore };
-      }
-      return Files.find(selector, options).toArray();
+    findFiles: async (
+      {
+        limit,
+        offset,
+        sort,
+        ...query
+      }: FileQuery & {
+        limit?: number;
+        offset?: number;
+        sort?: SortOption[];
+      },
+      options?: mongodb.FindOptions,
+    ): Promise<File[]> => {
+      const defaultSort = [{ key: 'created', value: SortDirection.DESC }] as SortOption[];
+      const selector = buildFileSelector(query);
+      return Files.find(selector, {
+        skip: offset,
+        limit,
+        sort: buildSortOptions(sort || defaultSort),
+        ...options,
+      }).toArray();
+    },
+
+    count: async (query: FileQuery): Promise<number> => {
+      const selector = buildFileSelector(query);
+      return Files.countDocuments(selector);
     },
 
     deleteMany: async (fileIds: string[]): Promise<number> => {

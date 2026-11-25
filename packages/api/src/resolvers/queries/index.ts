@@ -27,6 +27,9 @@ import filtersCount from './filters/filtersCount.ts';
 import language from './languages/language.ts';
 import languages from './languages/languages.ts';
 import languagesCount from './languages/languagesCount.ts';
+import media from './media/media.ts';
+import medias from './media/medias.ts';
+import mediasCount from './media/mediasCount.ts';
 import me from './users/me.ts';
 import order from './orders/order.ts';
 import orders from './orders/orders.ts';
@@ -120,6 +123,9 @@ export default {
   assortments: acl(actions.viewAssortments)(assortments),
   translatedAssortmentMediaTexts: acl(actions.viewTranslations)(translatedAssortmentMediaTexts),
   assortment: acl(actions.viewAssortment)(assortment),
+  media: acl(actions.viewMedia)(media),
+  medias: acl(actions.viewMedias)(medias),
+  mediasCount: acl(actions.viewMedias)(mediasCount),
   filtersCount: acl(actions.viewFilters)(filtersCount),
   filters: acl(actions.viewFilters)(filters),
   filter: acl(actions.viewFilter)(filter),

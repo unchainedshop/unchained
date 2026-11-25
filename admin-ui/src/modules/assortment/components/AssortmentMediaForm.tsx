@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { IRoleAction } from '../../../gql/types';
 
 import { useIntl } from 'react-intl';
@@ -13,9 +13,11 @@ import {
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import MediaUploader from '../../common/components/MediaUploader';
+import MediaPicker from '../../media/components/MediaPicker';
 import DangerMessage from '../../modal/components/DangerMessage';
 import useModal from '../../modal/hooks/useModal';
 import useAddAssortmentMedia from '../hooks/useAddAssortmentMedia';
+import useLinkAssortmentMedia from '../hooks/useLinkAssortmentMedia';
 
 import useAssortmentMedia from '../hooks/useAssortmentMedia';
 import useRemoveAssortmentMedia from '../hooks/useRemoveAssortmentMedia';
@@ -32,6 +34,8 @@ const AssortmentMediaForm = ({ assortmentId }) => {
   const { removeAssortmentMedia } = useRemoveAssortmentMedia();
   const { reorderAssortmentMedia } = useReorderAssortmentMedia();
   const { addAssortmentMedia } = useAddAssortmentMedia();
+  const { linkAssortmentMedia } = useLinkAssortmentMedia();
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -116,6 +120,25 @@ const AssortmentMediaForm = ({ assortmentId }) => {
     }
   };
 
+  const onLinkMedia = async (media) => {
+    try {
+      await linkAssortmentMedia({ assortmentId, mediaId: media._id });
+      toast.success(
+        formatMessage({
+          id: 'assortment_media_linked',
+          defaultMessage: 'Media linked successfully',
+        }),
+      );
+    } catch (err) {
+      toast.error(
+        formatMessage({
+          id: 'fail_link_media',
+          defaultMessage: 'Failed to link media',
+        }),
+      );
+    }
+  };
+
   const onRemoveMedia = async (assortmentMediaId) => {
     await setModal(
       <DangerMessage
@@ -185,8 +208,23 @@ const AssortmentMediaForm = ({ assortmentId }) => {
   return (
     <div className="mx-auto mt-5 max-w-fullpy-6 grid lg:grid-cols-12 gap-5">
       {hasRole(IRoleAction.ManageAssortments) && (
-        <div className="lg:col-span-6">
+        <div className="lg:col-span-6 space-y-3">
           <MediaUploader onlyDragAndDrop addMedia={onAddMedia} />
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            className="w-full rounded-md border border-border-default bg-white dark:bg-slate-600 py-2 px-3 text-sm font-medium text-text-secondary shadow-xs hover:bg-slate-50 focus:outline-hidden focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
+          >
+            {formatMessage({
+              id: 'select_from_library',
+              defaultMessage: 'Select from media library',
+            })}
+          </button>
+          <MediaPicker
+            open={pickerOpen}
+            onClose={() => setPickerOpen(false)}
+            onSelect={onLinkMedia}
+          />
         </div>
       )}
 

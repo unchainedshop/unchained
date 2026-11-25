@@ -1209,6 +1209,12 @@ export type IMutation = {
   impersonate: ILoginMethodResponse;
   /** Tokenize */
   invalidateToken: IToken;
+  /** Link an existing media file to an assortment */
+  linkAssortmentMedia: IAssortmentMedia;
+  /** Link an existing media file to a product */
+  linkProductMedia: IProductMedia;
+  /** Link an existing media file as a user's avatar */
+  linkUserAvatar: IUser;
   /** Login as Guest User (creates an anonymous user and returns logged in token) */
   loginAsGuest?: Maybe<ILoginMethodResponse>;
   /**
@@ -1844,6 +1850,24 @@ export type IMutationImpersonateArgs = {
 
 export type IMutationInvalidateTokenArgs = {
   tokenId: Scalars['ID']['input'];
+};
+
+
+export type IMutationLinkAssortmentMediaArgs = {
+  assortmentId: Scalars['ID']['input'];
+  mediaId: Scalars['ID']['input'];
+};
+
+
+export type IMutationLinkProductMediaArgs = {
+  mediaId: Scalars['ID']['input'];
+  productId: Scalars['ID']['input'];
+};
+
+
+export type IMutationLinkUserAvatarArgs = {
+  mediaId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
 };
 
 
@@ -3223,6 +3247,12 @@ export type IQuery = {
   languagesCount: Scalars['Int']['output'];
   /** Currently logged in user */
   me?: Maybe<IUser>;
+  /** Get a specific media object by ID */
+  media?: Maybe<IMedia>;
+  /** List all media objects in the system, sorted by creation date (descending) by default */
+  medias: Array<IMedia>;
+  /** Returns total number of media objects matching the filters */
+  mediasCount: Scalars['Int']['output'];
   /** Get a specific single order */
   order?: Maybe<IOrder>;
   /** Returns aggregated report of all the orders that occurred in the system */
@@ -3503,6 +3533,28 @@ export type IQueryLanguagesArgs = {
 export type IQueryLanguagesCountArgs = {
   includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
   queryString?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type IQueryMediaArgs = {
+  mediaId: Scalars['ID']['input'];
+};
+
+
+export type IQueryMediasArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  path?: InputMaybe<Scalars['String']['input']>;
+  queryString?: InputMaybe<Scalars['String']['input']>;
+  sort?: InputMaybe<Array<ISortOptionInput>>;
+  types?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+
+export type IQueryMediasCountArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+  queryString?: InputMaybe<Scalars['String']['input']>;
+  types?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
@@ -3952,6 +4004,8 @@ export enum IRoleAction {
   ViewLanguage = 'viewLanguage',
   ViewLanguages = 'viewLanguages',
   ViewLogs = 'viewLogs',
+  ViewMedia = 'viewMedia',
+  ViewMedias = 'viewMedias',
   ViewOrder = 'viewOrder',
   ViewOrders = 'viewOrders',
   ViewPaymentInterfaces = 'viewPaymentInterfaces',
