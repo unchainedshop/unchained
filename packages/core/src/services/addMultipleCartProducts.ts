@@ -26,6 +26,14 @@ export async function addMultipleCartProductsService(
   const order = await this.orders.findOrder({ orderId });
   if (!order) return null;
 
+  // Resolve and validate every item before the first one is added, so an item that fails
+  // validation leaves the cart as it was instead of keeping the items before it.
+  const positions: {
+    quantity: number;
+    configuration?: { key: string; value: string }[];
+    originalProductId: string;
+    productId: string;
+  }[] = [];
   for (const { productId, quantity, configuration } of items) {
     const originalProduct = await this.products.findProduct({ productId });
     if (!originalProduct) {
@@ -43,13 +51,16 @@ export async function addMultipleCartProductsService(
       { modules: this, ...context },
     );
 
-    await this.orders.positions.addProductItem({
+    positions.push({
       quantity,
       configuration,
       originalProductId: originalProduct._id,
       productId: product._id,
-      orderId: order._id,
     });
+  }
+
+  for (const position of positions) {
+    await this.orders.positions.addProductItem({ ...position, orderId: order._id });
   }
 
   return order;
