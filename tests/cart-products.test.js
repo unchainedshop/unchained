@@ -1,5 +1,10 @@
 import { setupDatabase, createLoggedInGraphqlFetch, disconnect } from './helpers.js';
-import { LeveledPricingProduct, SimpleProduct } from './seeds/products.js';
+import {
+  LeveledPricingProduct,
+  SimpleProduct,
+  SimpleProduct2,
+  SimpleProductDraft,
+} from './seeds/products.js';
 import { ConfirmedOrder, SimplePosition } from './seeds/orders.js';
 import assert from 'node:assert';
 import test from 'node:test';
@@ -419,6 +424,47 @@ test.describe('Cart: Product Items', () => {
           },
         ],
       });
+    });
+
+    test('add nothing when one of the products cannot be added', async () => {
+      const cartItems = async () => {
+        const { data: { me } = {} } = await graphqlFetch({
+          query: /* GraphQL */ `
+            query {
+              me {
+                cart {
+                  items {
+                    quantity
+                    product {
+                      _id
+                    }
+                  }
+                }
+              }
+            }
+          `,
+        });
+        return me.cart.items.map((item) => [item.product._id, item.quantity]);
+      };
+      const before = await cartItems();
+
+      const { errors } = await graphqlFetch({
+        query: /* GraphQL */ `
+          mutation addMultipleCartProducts($items: [OrderItemInput!]!) {
+            addMultipleCartProducts(items: $items) {
+              _id
+            }
+          }
+        `,
+        variables: {
+          items: [
+            { productId: SimpleProduct2._id, quantity: 1 },
+            { productId: SimpleProductDraft._id, quantity: 1 },
+          ],
+        },
+      });
+      assert.ok(errors?.length);
+      assert.deepStrictEqual(await cartItems(), before);
     });
   });
 
